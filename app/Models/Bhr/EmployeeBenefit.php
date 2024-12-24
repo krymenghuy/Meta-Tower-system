@@ -113,7 +113,7 @@ class EmployeeBenefit
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
 
-    function getAllBenefitsList($arr, $ss = null)
+    function getAllBenefitList($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;

@@ -180,6 +180,145 @@ class Report {
         ];
     } 
 
+    function getPayrollList($filter,$ss=null) {
+
+    
+        $header_list = ['No','Employee','Salary','Benefit','Deduction','Allowance','Tax Rate','Bias','Tax Base','Benefit Tax','	Total'];
+        $key_list = ['no','employee','salary','benefit','deduction','allowance','tax_rate','bias','tax_base','benefit_tax','total_salary'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('payroll_list as pl')
+            ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
+            ->selectRaw('pl.id,
+                        p.id as payroll_id,
+                        p.name as payroll_name,
+                        e.id as emp_id,
+                        e.name as employee,
+                        pos.title as emp_position,
+                        b.name as branch_name,
+                        pl.salary,
+                        e.apply_payroll_tax,
+                        pl.benefit,
+                        pl.deduction,
+                        pl.tax_rate,
+                        pl.bias,
+                        pl.tax_base,
+                        pl.benefit_tax,
+                        pl.total_salary,
+                        pl.disburse,
+                        e.photo_file_name as emp_photo')
+            ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $i=>$row){
+            $row->no = $i+1;
+            $row->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
+
+            $row->tax_base = ($row->tax_base ?? 0);
+            $row->total_salary = ($row->total_salary ?? 0);
+            $row->benefit = ($row->benefit ?? 0);
+            $row->deduction = ($row->deduction ?? 0);
+            $row->allowance = ($row->allowance ?? 0);
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+        $start_date = date('d-M-Y', strtotime($start_date));
+        $end_date = date('d-M-Y', strtotime($end_date));
+        $title = 'Payroll list';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
+    function getEmployeeBenefitsReport($filter,$ss=null) {
+
+    
+        $header_list = ['No','Name','Benefit','Balance','Benefit Type','Amount','Tax Option','Flat Tax Rate','Remarks'];
+        $key_list = ['no','name','benefit','balance','benefit_type','amount','tax_ption','flat_tax_rate','remarks'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('emp_benefits as b')
+        ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+        ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
+        ->selectRaw(
+            'b.id, emp.id as emp_id, emp.name as name, emp.email as email, bc.name as benefit_name,
+            b.benefit_type_id,b.benefit_id,b.tax_option_id,b.flat_tax_rate,b.balance, b.amount, b.remarks, b.update_user,b.updated_at, b.create_date, emp.photo_file_name as emp_photo'
+        )
+        ->orderBy('b.id', 'desc')
+            ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $i=>$row){
+            $row->no = $i+1;
+            $row->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
+
+            $row->tax_base = ($row->tax_base ?? 0);
+            $row->total_salary = ($row->total_salary ?? 0);
+            $row->benefit = ($row->benefit ?? 0);
+            $row->deduction = ($row->deduction ?? 0);
+            $row->allowance = ($row->allowance ?? 0);
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+        $start_date = date('d-M-Y', strtotime($start_date));
+        $end_date = date('d-M-Y', strtotime($end_date));
+        $title = 'Payroll list';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    }
+
     function getBranchInfo($branch_id=0){
         $branch_ids = getAccessBranches($ss,$branch_id);
         $rows = DB::table('um_branches AS b')->whereIn('b.branch_id',$branch_ids)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
@@ -193,7 +332,420 @@ class Report {
          return (object)array("name"=>'(Company Name)','phone_number'=>'(Unvailaible phone)','website'=>'Unvailable');
     }
 
+    function getEmployeeMovementReport($filter,$ss=null) {
+
     
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    }
+
+    function getWalletAccountList($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    }
+
+    function getEmployeeAccountReport($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    }
+
+    function getForEachAccount($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    }
+
+    function getPayslipPrint($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
+    function getPrintEmployeeCV($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
+    function getPayrollExpensesByMonth($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
+    function getEmployeeAttendanceSummary($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
+    function getEmployeeAttendance($filter,$ss=null) {
+
+    
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->whereRaw($str_branch_id);
+        $rows = $query->get();
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Type Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            'company_profile' => CompanyProfile::details($ss)
+        ];
+    } 
+
 
     function getScalarData_loan($loan_app_id=0,$loan_id=0){
         return (object)[

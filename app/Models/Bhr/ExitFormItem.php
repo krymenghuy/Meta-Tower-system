@@ -36,7 +36,7 @@ class ExitFormItem
             'check_point_id' => '1|number',
             'amount' => '0|number',
             'remarks' => '0|string',
-            'is_settled' => '1|choice|1,2,3|default=1',
+            'is_finished' => '1|choice|1,2,3|default=1',
             'item_type' => '1|choice|1,2,3|default=1'
         ];
 
@@ -109,7 +109,7 @@ class ExitFormItem
             'efi.id,
             efi.check_point_id,
             efi.form_id,
-            ef.name as form_name,
+            
             efi.amount,
             efi.remarks,
             efi.item_type,
@@ -158,7 +158,7 @@ class ExitFormItem
                
                 efi.check_point_id,
                 efi.form_id,
-                ef.name as form_name,
+                
                 efi.amount,
                 efi.remarks,
                 efi.item_type,
@@ -198,7 +198,7 @@ class ExitFormItem
 
         return (object) [
             'check_points' => DB::table('check_points')->select('id', 'name')->get(),
-            'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
+            // 'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
             'check_point_categories' => DB::table('check_point_categories')->select('id', 'name')->get(),
             'exit_form_items' => $exit_form_items,
         ];
@@ -224,11 +224,10 @@ class ExitFormItem
            
             efi.check_point_id,
             efi.form_id,
-            ef.name as form_name,
+            
             efi.amount,
             efi.remarks,
-            efi.item_type,
-            efi.is_settled,
+            is_settled,
             cp.name as item_name,
             cp.check_point_cat_id'
             );

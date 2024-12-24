@@ -24,8 +24,9 @@ class EmployeeSkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return $this->employee_skill->save($req, $ss,$req->id ?? null);
+        $id = $req->id ?? null;
+        $employee_skill = new EmployeeSkill($id);
+        return $employee_skill->save($req, $ss ,$id);
     }
 
     public function getEmployeeSkillListPaginate(Request $req)
