@@ -1278,7 +1278,7 @@ var EmployeeComponent = new (function () {
                             <td><small>${d.qty}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}</small></td>
-                            <td class="text-end">
+                            <td class="text-start">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance me-2">
                                     <i class="fa-regular fa-pen-to-square fs-10 text-warning"></i>
                                 </a>
