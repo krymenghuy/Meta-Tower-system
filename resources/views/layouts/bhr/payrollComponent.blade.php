@@ -26,7 +26,7 @@
 
 <div id="_main_payrollComponent" style="display:none;padding:10px 0 0">
     <div class="d-flex justify-content-between w-100 p-4" id="_divFilter">
-        <div class="d-flex align-items-center gap-2 ">
+        <div class="d-flex align-items-center gap-2 w-50 ">
             <div class="w-50">
                 <input type="text" class="form-control filter-field d-flex btn_search" id="_sdl_search_payroll"
                     placeholder="Search Payroll" />
@@ -40,7 +40,7 @@
                     data-field="disbursed"></select>
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 text-nowrap">
+        <div class="d-flex align-items-center justify-content-end gap-2 text-nowrap -50">
             <button type="button" class="btn_add" id="_btnAddpayroll">
                 <i class="fas fa-plus"></i>
                 <span>Add Payroll</span>

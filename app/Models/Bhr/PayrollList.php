@@ -240,7 +240,6 @@ class PayrollList
             return JDV::error('Payroll not found');
         }
 
-        // Get payroll period
         $payroll = DB::table('payrolls')->where('id', $payroll_id)->first();
         if (!$payroll) {
             return JDV::error('Payroll period not found');
@@ -633,6 +632,14 @@ class PayrollList
         $master_account_id = 1;
         $transfer_amount = 0;
 
+        $master_account_balance = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->value('balance');
+
+        if (!$master_account_balance) {
+            return DV::error('Master account not found');
+        }
+
         $existingDisbursement = DB::table('payroll_list')
             ->where('id', $id)
             ->value('disburse');
@@ -664,6 +671,9 @@ class PayrollList
 
         if(!$trx->authorized){
             return DV::error($trx->remarks.' is not authorized ');
+        }
+        if($master_account_balance < $trx->amount){
+            return DV::error('Insufficient balance');
         }
         $transfer = Transaction::createTransaction((array)$trx, $ss);
 
@@ -707,6 +717,14 @@ class PayrollList
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
+
+        $master_account_balance = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->value('balance');
+
+        if (!$master_account_balance) {
+            return DV::error('Master account not found');
+        }
 
         $payroll = DB::table('payrolls')
             ->where('id', $payroll_id)
@@ -770,6 +788,10 @@ class PayrollList
                 'error_message' => $error_message,
                 'data' => $emp_id_no_account,
             ];
+        }
+
+        if($master_account_balance < $payrollEntries->sum('amount')){
+            return DV::error('Insufficient Balance');
         }
 
         $results = [];

@@ -1,8 +1,8 @@
 <div id="_main_leave_component" style="display:none;padding:20px 0 0;">
     <div id="_divFilter_leave" class="px-3">
-        
+
         <div class="d-flex align-items-center gap-2 w-100">
-            
+
             <div class="d-flex justify-content-end gap-3 w-50">
                 <div class="d-flex align-items-center w-75">
                     <input type="text" class="form-control filter-field btn_search" id="_sdl_search_leave"
@@ -34,7 +34,7 @@
                 </button>
             </div>
             <div class="d-flex w-50">
-               
+
             </div>
         </div>
     </div>
@@ -42,14 +42,4 @@
 </div>
 
 <style>
-    #_leave_request_list {
-        height: 400px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
-    #_leave_request_list_paginator {
-        bottom: 0;
-    }
 </style>

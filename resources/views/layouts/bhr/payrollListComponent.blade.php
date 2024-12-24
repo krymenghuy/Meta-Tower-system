@@ -57,13 +57,6 @@
 </div>
 
 <style>
-    #_payrollList_list {
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
     .payment_footer {
         display: flex;
         justify-content: flex-end;

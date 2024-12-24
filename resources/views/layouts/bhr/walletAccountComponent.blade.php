@@ -37,11 +37,4 @@
 
 </div>
 <style>
-    #_wallet_account_list{
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
 </style>

@@ -21,14 +21,14 @@ var DepartmentComponent = new (function () {
             className: "align-middle text-capitalize p-3  text-left",
             data: (data)=>`
                 <span class="text-primary-custom">${data.name}</span>`,
-        
+
         },
         {
             title: "Short Name",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data)=>
                 `<span class="text-warning ">${data.shortcut}</span>`,
-            
+
         },
         {
             title: "Updated By",
@@ -46,7 +46,7 @@ var DepartmentComponent = new (function () {
                 <span class="text-primary-custom" style="font-size: 12px;">${data.updated_at ??""}</span>
             </div>`,
         },
-       
+
         {
             title: "Actions",
             className: "col_action align-middle",
@@ -102,12 +102,16 @@ var DepartmentComponent = new (function () {
             }, 200);
         });
 
-      
+
         const pr_tbl = mThis.DepartmentListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 210) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
+        }
+
 
         mThis.setActionListeners();
         mThis.initAlready = true;
@@ -196,7 +200,7 @@ var DepartmentComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-               
+
             });
     };
 
@@ -208,7 +212,7 @@ var DepartmentComponent = new (function () {
             mThis.jm.siblings().hide();
             mThis.jm.hide().fadeIn(250);
         });
-       
+
     };
 })();
 

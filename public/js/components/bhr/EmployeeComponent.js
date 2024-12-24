@@ -107,9 +107,9 @@ var EmployeeComponent = new (function () {
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
-        // window.onresize = () => {
-        //     sh_parent.style.height = window.innerHeight - 190 + "px";
-        // };
+        window.onresize = () => {
+            sh_parent.style.height = window.innerHeight - 220 + "px";
+        };
 
         mThis.initAlready = true;
     };
@@ -421,7 +421,7 @@ var EmployeeComponent = new (function () {
                                 </div>
                                 <div class="d-flex mt-3  justify-content-center">
                                     <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${data.code}</span></small>
-                                    
+
                                 </div>
                                 <div class="d-flex  justify-content-center">
                                     <small class="text-nowrap" style="color:#cab54a;">${data.position}</small>
@@ -464,11 +464,11 @@ var EmployeeComponent = new (function () {
                                         <P class="px-2">:</p>
                                         <P class="text-nowrap text-white">${data.marital_status}</p>
                                     </div>
-                                    
-                                       
+
+
 
                                     </div>`,
-                            
+
                                     `<div class="col-md-4 mt-3">
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p">Staff Type</p>
@@ -480,7 +480,7 @@ var EmployeeComponent = new (function () {
                                             <P class="px-2">:</p>
                                             <P class="text-nowrap" style="color:#cab54a;">${data.position}</p>
                                         </div>
-                                        
+
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Email</p>
                                             <P class="px-2">:</p>
@@ -524,7 +524,7 @@ var EmployeeComponent = new (function () {
                                             <P class="pl-5 pr-2">:</p>
                                             <P class="text-white">${data.spouse_occ_code ?? 'ទទេ'}</p>
                                         </div>
-                                    
+
                                     </div>
 
 
@@ -555,10 +555,10 @@ var EmployeeComponent = new (function () {
                                                 <P class="px-2">:</p>
                                                 <P class="text-nowrap" style="color:#cab54a;">${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
                                             </div>
-                                         
-                                           
+
+
                                         </div>
-                                       
+
                                         <div class="col">
                                             <div class="d-flex">
                                                 <P class="text-nowrap width-p">salary</p>
@@ -595,15 +595,15 @@ var EmployeeComponent = new (function () {
                                             </a>
 
                                             </div>
-                                   
+
                                         </div>`,
-                                    
+
                                     `</div>`,
                                 `</div>`,
                              `</div>`,
-                          
 
-                       
+
+
                     `</div>`,
 
                     `</div>`].join('');
@@ -895,10 +895,10 @@ var EmployeeComponent = new (function () {
                             <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
                                 <i class="fa-solid text-danger fa-xmark tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
                             </a>
-                        </div> 
+                        </div>
                     </div>
 
-                   
+
                 </div>
                 `].join('');
                 cmt++;
@@ -1250,7 +1250,7 @@ var EmployeeComponent = new (function () {
                             <h6 class="mt-1">Tax Allowance</h6>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
-                                   
+
                                     <small class="text-warning border border-white px-1 rounded-2"> <i class="fa fa-plus fs-7 "></i> Add</small>
                                 </a>
                             </div>
@@ -1288,13 +1288,13 @@ var EmployeeComponent = new (function () {
                         </tr>`;
                     cmt++;
                 });
-                
+
                 if(cmt === 0){
                     html += `<table><tbody><div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></tbody></table></div>`;
 
                 }
 
-                        
+
                 html += `</tbody></table></div></div></div>`;
                 this.tax_allowance_card.innerHTML = html;
 
@@ -1442,8 +1442,8 @@ var EmployeeComponent = new (function () {
                                     </a>
                                 </div>
 
-                               
-                          
+
+
                             </div>
 
                         </div>
@@ -2668,7 +2668,7 @@ const EmployeeDialog = (() => {
                         `<div class="col-3">`,
                             `<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">`,
                                 `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
-                            `</div>`, 
+                            `</div>`,
                         `</div>`,
                         `<div class="col-9">`,
                             `<div class="row">`,
@@ -2723,7 +2723,7 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />
                             </div>`,
-                            
+
                             `<div class="form-group col-4">
                                 <label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>
                                 <span class="text-danger" >*</span>
@@ -2737,7 +2737,7 @@ const EmployeeDialog = (() => {
                                 <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
                                 <input name="passport_number" class="form-control data-input" data-field="passport_number" />
                             </div>`,
-                         
+
                             `<div class="form-group col-4">
                                   <label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>
                                     <span class="text-danger" >*</span>
@@ -2747,7 +2747,7 @@ const EmployeeDialog = (() => {
                                 <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
                                 <select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>
                             </div>`,
-                           
+
                             `<div class="form-group col-4">
                                 <label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>
                                 <span class="text-danger">*</span>
@@ -2768,13 +2768,13 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                             </div>`,
-                            
+
                             `<div class="form-group salary col-4">
                                 <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
                                 <input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />
                             </div>`,
-                          
-                            
+
+
                             `<div class="form-group col-6">
                                 <label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>
                                 <span class="text-danger">*</span>
@@ -2785,7 +2785,7 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input name="joining_date"  class="form-control data-input" data-field="joining_date" />
                             </div>`,
-                            
+
                             `<div class="form-group col-4">
                                 <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
                                 <input name="spouse_name" class="form-control data-input" data-field="spouse_name" />
@@ -2798,13 +2798,13 @@ const EmployeeDialog = (() => {
                                 <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
                                 <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />
                             </div>`,
-                           
-                            
-                            
-                            
-                       
-                      
-                            
+
+
+
+
+
+
+
                             `<div class="form-group col-12">
                                 <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
                                 <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
@@ -2816,7 +2816,7 @@ const EmployeeDialog = (() => {
             contentCreated: (me) => {
                 // const salary = me.divModal.querySelector(".salary");
                 // console.log(123,salary);
-                
+
                 // salary.classList.add("d-none");
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);

@@ -8,7 +8,7 @@
                             <select class="filter-field data-input" data-field="branch_id"></select>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <label for="emp_type_id" class="form-label " style="color: #cab567;" vslang="titles.All Employee"></label>
@@ -16,7 +16,7 @@
                             <select class="filter-field data-input" data-field="emp_type_id"></select>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <label for="department_id" class="form-label " style="color: #cab567;" vslang="titles.Department"></label>
@@ -24,7 +24,7 @@
                             <select class="filter-field data-input" data-field="department_id"></select>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <label for="work_shift_id" class="form-label " style="color: #cab567;" vslang="titles.WorkShift"></label>
@@ -32,7 +32,7 @@
                             <select class="filter-field data-input" data-field="work_shift_id"></select>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
         <div class="d-flex w-100 gap-2 px-4 mt-2 py-2">
@@ -54,20 +54,4 @@
     <div id="_staff_attendance_list" class="m-4"></div>
 </div>
 <style>
-    #_staff_attendance_list {
-        height: 390px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
-    #_staff_attendance_list_paginator {
-        bottom: 0;
-    }
-
-    .choices__list {
-        max-height: 600px;
-        overflow-y: auto;
-    }
-
 </style>

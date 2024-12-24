@@ -15,7 +15,7 @@ var HolidayComponent = new (function () {
             title: "",
             className: "align-middle",
             // data: (data, index, i) => {
-                
+
             // },
         },
         {
@@ -31,7 +31,7 @@ var HolidayComponent = new (function () {
                             </div>`
             },
         },
-        
+
         {
             title: "Holiday",
             className: "align-middle fw-bold",
@@ -108,8 +108,12 @@ var HolidayComponent = new (function () {
         };
         const listContainer = mThis.HolidayListView.getListContainer();
         const sh_parent = listContainer;
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
@@ -231,7 +235,7 @@ const HolidayDialog = (() => {
         dialog = new GeneralDialog({
             cssClass: "modal-md",
             backdrop: "static",
-            keyboard: true, 
+            keyboard: true,
             createContent: () => {
                 return [
                     `<div class="row">
@@ -245,7 +249,7 @@ const HolidayDialog = (() => {
                             <span class="text-danger" >*</span>
                             <select name="holiday_type" class=" form-control data-input"  data-field="holiday_type_id"></select>
                         </div>
-                     
+
                         <div class="form-group col-md-6">
                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
                            <input name="start_date" class="rounded-5 form-control data-input" data-field="start_date">
@@ -256,7 +260,7 @@ const HolidayDialog = (() => {
                         </div>
                         <div class="form-group col-md-12">
                            <label for="description" class="form-label" vslang="titles.Description"></label>
-                           <textarea class="form-control data-input" data-field="description"></textarea>             
+                           <textarea class="form-control data-input" data-field="description"></textarea>
                         </div>
                     </div>`,
                 ].join("");
