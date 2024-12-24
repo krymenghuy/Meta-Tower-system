@@ -111,28 +111,7 @@
     }
 
     
-
-    .social-icons a {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        transition: transform 0.2s ease;
-    }
-
-    .social-icons a:hover {
-        transform: scale(1.1);
-    }
-
-    .social-icon {
-        width: 100%;
-        height: 100%;
-    }
-
-    .social-icons img {
-        display: block;
-        width: 100%;
-        height: auto;
-    }
+ 
 
     #_view_profile_container {
         padding-bottom: 20%;
