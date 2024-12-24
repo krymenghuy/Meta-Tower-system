@@ -17,10 +17,10 @@
     </div>
 </div>
 <style>
-    /* #_check_point_list {
+    #_check_point_list {
         height: 520px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
-    } */
+    }
 </style>
