@@ -1,57 +1,59 @@
 "use strict";
 
-var ExitFormComponent = new (function () {
+var ExitFormItemComponent = new (function () {
     const mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_exit_form_component");
+    this.jm = main_view.appContent.children("#_main_exit_form_item_component");
     this.self = this.jm[0];
-    this.title_prop = "Exit Form";
-    this.btnAdd = this.self.querySelector("#_btnAddExitForm");
-    this.elSearch = this.self.querySelector("#_exit_form_search");
-    this.divFilter = this.self.querySelector("#container_exit_form");
-    this.viewExitForm = this.self.querySelector("#view_exit_form_");
+    this.title_prop = "Exit Form Item";
+    this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
+    this.elSearch = this.self.querySelector("#_exit_form_item_search");
+    this.divFilter = this.self.querySelector("#container_exit_form_item");
+    this.viewExitForm = this.self.querySelector("#view_exit_form_item");
     this.cols = [
         {
-            title: "Name",
-            className: "align-middle text-start w-25",
-            data: (data) => {
-                return `
-                <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${
-                        data.image_url
-                    }" alt=""
-                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                    <div>
-                        <span style="font-size: 14px; font-weight: bold;">${
-                            data.emp_name ?? ""
-                        }</span><br/>
-                        <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
-                        }</span>
-                    </div>
-                </div>`;
-            },
-        },
-        {
-            title: "Postion",
-            className: "align-middle ",
-            data: (data) =>
-                `<span class="text-primary-custom">${data.position}</span>`,
-        },
-        {
             title: "Form Name",
-            className: "align-middle ",
+            className: "align-middl",
             data: (data) =>
-                `<span class="text-primary-custom">${data.name ?? ""}</span>`,
+                `<span class="text-primary-custom">${
+                    data.form_name ?? ""
+                }</span>`,
+        },
+        {
+            title: "Item Name",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-primary-custom">${
+                    data.item_name ?? ""
+                }</span>`,
+        },
+        {
+            title: "Amount",
+            className: "align-middl",
+            data: (data) =>
+                `<span class="text-primary-custom">
+                    ${
+                        main_view.currency.symbol +
+                        " " +
+                        (data.amount ?? "0.00")
+                    }</span>`,
+        },
+        {
+            title: "Remarks",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-primary-custom">${
+                    data.remarks ?? "N/A"
+                }</span>`,
         },
         {
             title: "Settled",
             className: "settled text-nowrap align-middle",
             data: (data) => {
-                let settledText = "Not Yet";
+                let settledText = "Pending";
                 let settledClass = "";
 
-                if (data.is_settled == 1) {
+                if (data.settled == 1) {
                     settledText = "Done";
                     settledClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
@@ -64,19 +66,50 @@ var ExitFormComponent = new (function () {
             },
         },
         {
+            title: "Item Type",
+            className: "ItemType text-nowrap align-middle",
+            data: (data) => {
+                let ItemTypeText = "no type";
+                let ItemTypeClass = "";
+
+                if (data.ItemType == 1) {
+                    ItemTypeText = "Item";
+                    ItemTypeClass =
+                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                } else if (data.ItemType == 2) {
+                    ItemTypeText = "Loan";
+                    ItemTypeClass =
+                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                } else if (data.ItemType == 3) {
+                    ItemTypeText = "Document";
+                    ItemTypeClass =
+                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                } else if (data.ItemType == 4) {
+                    ItemTypeText = "General";
+                    ItemTypeClass =
+                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                } else {
+                    ItemTypeClass =
+                        "text-white text-center bg-warning border border-info rounded-5 p-1";
+                }
+
+                return `<p class="p-0 m-0 text-white ${ItemTypeClass}" style="border-radius: 5px; padding: 5px;">${ItemTypeText}</p>`;
+            },
+        },
+        {
             title: "",
             className: "col_action align-end",
             data: (data) => {
                 return `
-                <div class="d-flex justify-content-end align-items-center">
-                    <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form-modify" data-id="${data.id}">
+                <div class="d-flex justify-content-end align-items-end">
+                    <div class="text-end align-end gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form_item-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form-delete" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form_item-delete" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-success btn-exit_form-view" data-id="${data.id}" data-emp_id="${data.emp_id}">
+                        <button class="btn rounded-3 p-1 btn-success btn-exit_form_item-view" data-id="${data.id}" data-emp_id="${data.emp_id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-eye"></i>
                         </button>
                     </div>
@@ -86,8 +119,8 @@ var ExitFormComponent = new (function () {
     ];
     this.init = function () {
         if (mThis.initAlready) return;
-        mThis.ExitFormListView = new ListView("_exit_form_list", {
-            fetchApi: `${mThis.base_url}/hr/exit-form/list-paginate`,
+        mThis.ExitFormItemListView = new ListView("_exit_form_item_list", {
+            fetchApi: `${mThis.base_url}/hr/exit-form-item/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -97,11 +130,11 @@ var ExitFormComponent = new (function () {
         });
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.ExitFormListView.showPage(mThis.getFilterData());
+            mThis.ExitFormItemListView.showPage(mThis.getFilterData());
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
-                mThis.ExitFormListView.showPage(mThis.getFilterData());
+                mThis.ExitFormItemListView.showPage(mThis.getFilterData());
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -109,13 +142,13 @@ var ExitFormComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.ExitFormListView.showPage();
+                    mThis.ExitFormItemListView.showPage();
                 },
             };
-            ExitFormDialog.show(op);
+            FormItemDialog.show(op);
         };
 
-        const pr_tbl = mThis.ExitFormListView.getListContainer();
+        const pr_tbl = mThis.ExitFormItemListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
@@ -124,17 +157,17 @@ var ExitFormComponent = new (function () {
 
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.ExitFormListView.showPage(mThis.getFilterData());
+            mThis.ExitFormItemListView.showPage(mThis.getFilterData());
         });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.ExitFormListView) {
-                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            if (mThis.ExitFormItemListView) {
+                mThis.ExitFormItemListView.showPage(mThis.getFilterData());
             } else {
-                console.error("Exit Form is not defined");
+                console.error("Exit Form Item is not defined");
             }
         }, 200);
     });
@@ -155,37 +188,40 @@ var ExitFormComponent = new (function () {
     };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-exit_form-modify");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-exit_form_item-modify"
+            );
             if (btn) {
-                mThis.edit_exit_form(btn.dataset.id, btn);
+                mThis.edit_exit_form_item(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-exit_form_item-delete");
             if (btn) {
-                mThis.delete_exit_form(btn.dataset.id, btn);
+                mThis.delete_exit_form_item(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-view");
+            btn = VSUtil.closestLimited(e.target, ".btn-exit_form_item-view");
             if (btn) {
-                mThis.view_exit_form(btn.dataset.emp_id, btn);
+                mThis.view_exit_form_item(btn.dataset.emp_id, btn);
             }
         });
     };
-    this.edit_exit_form = (id, menulink) => {
+    this.edit_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.ExitFormItemListView.showPage();
             },
         };
 
-        ExitFormDialog.show(op);
+        FormItemDialog.show(op);
     };
-    this.delete_exit_form = (id, menulink) => {
+    this.delete_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.ExitFormItemListView.showPage();
             },
         };
         cv_interact.confirm(
@@ -199,7 +235,7 @@ var ExitFormComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/exit-form/delete`,
+                            `${main_view.base_url}/hr/exit-form-item/delete`,
                             op,
                             false,
                             false,
@@ -210,27 +246,27 @@ var ExitFormComponent = new (function () {
                                 cv_interact.success(
                                     "Item Status Delete Successfully"
                                 );
-                                mThis.ExitFormListView.showPage();
+                                mThis.ExitFormItemListView.showPage();
                             }
                         });
                 }
             }
         );
     };
-    this.view_exit_form = (id, menulink) => {
+    this.view_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.ExitFormItemListView.showPage();
             },
         };
-        ViewExitFormDialog.show(op);
+        ViewFormItemDialog.show(op);
     };
 
     this.prepareFormOptions = () => {
         vsapi.call(
-            `${main_view.base_url}/hr/exit-form/form-options`,
+            `${main_view.base_url}/hr/exit-form-item/form-options`,
             null,
             null,
             null
@@ -240,13 +276,13 @@ var ExitFormComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.ExitFormListView.showPage();
+        mThis.ExitFormItemListView.showPage();
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
 })();
 
-const ExitFormDialog = (() => {
+const FormItemDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -260,19 +296,27 @@ const ExitFormDialog = (() => {
                     return [
                         `<div class="row">
                             <div class="form-group col-12">
-                                <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                                <select name="employee" class="form-control data-input" data-field="emp_id"></select>
+                                <label for="form_name" class="form-label" vslang="titles.Form"></label>
+                                <select name="form_name" class="form-control data-input" data-field="form_id"></select>
                             </div>
                             <div class="form-group col-12">
-                                <label for="name" class="form-label" vslang="titles.Form"></label>
-                                <input name="name" class="form-control data-input" data-field="name" />
+                                <label for="item_name" class="form-label" vslang="titles.check point"></label>
+                                <select name="item_name" class="form-control data-input" data-field="check_point_id"></select>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="is_settled" class="form-label" vslang="titles.Is Settled"></label>
-                                <select name="is_settled" class="modal-select data-input" data-field="is_settled" id="is_settled">
-                                    <option value="1">Done</option>
-                                    <option value="2">Not Yet</option>
+                                <label for="settled" class="form-label" vslang="titles.settled"></label>
+                                <select name="settled" class="modal-select data-input" data-field="settled" id="settled">
+                                    <option value="0">Done</option>
+                                    <option value="1">Not Yet</option>
                                 </select>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control data-input" data-field="remarks" />
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="amount" class="form-label" vslang="titles.amount"></label>
+                                <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
                             
                         </div>`,
@@ -280,10 +324,15 @@ const ExitFormDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
+                        name: "form_name",
+                        data: "exit_forms",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "item_name",
+                        data: "check_points",
+                        textField: "name",
                         valueField: "id",
                     },
                 ],
@@ -307,7 +356,7 @@ const ExitFormDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/exit-form/save",
+                                        "/hr/exit-form-item/save",
                                     ].join(""),
                                     p,
                                     btn,
@@ -327,13 +376,13 @@ const ExitFormDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Exit Form",
-                    modifyTitle: "Edit Exit Form",
-                    targetProp: "exit_forms",
+                    createTitle: "Add Exit Form Item",
+                    modifyTitle: "Edit Exit FormItem",
+                    targetProp: "exit_form_items",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/exit-form/form-options",
+                            "/hr/exit-form-item/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
@@ -355,7 +404,8 @@ const ExitFormDialog = (() => {
     return self;
 })();
 
-const ViewExitFormDialog = (() => {
+
+const ViewFormItemDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -373,7 +423,9 @@ const ViewExitFormDialog = (() => {
                 return `
                     <th class="table-header bg bg-secondary">
                         ${displayName}
-                    </th>`;
+                    </th>
+                    
+                    `;
             })
             .join("");
     };
@@ -404,7 +456,6 @@ const ViewExitFormDialog = (() => {
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
                                 })
-                                
                                 .join("");
 
                             return `<td class="text-start">${divContent}</td>`;
@@ -416,63 +467,11 @@ const ViewExitFormDialog = (() => {
                 return `<tr class="table-row">${rowData}</tr>`;
             })
             .join("");
-        
     };
-    const generateEmployeeInfo = (employeeInfo) => {
-        const {
-            emp_name = "",
-            position = "",
-            code = "",
-            joining_date = "",
-            branch_name = "",
-            effective_date = "",
-            emp = "resignation",
-        } = employeeInfo[0];
-
-        return `
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr colspan="6">
-                            <td colspan="1">ឈ្មោះបុគ្គលិក៖</td>
-                            <td colspan="1"> ${emp_name}</td>
-                            <td colspan="1">អត្ថលេខ៖</td>
-                            <td colspan="1">${code}</td>
-                            <td colspan="1">កាលបរិច្ឆេទចូលធ្វើការ៖</td>
-                            <td colspan="1">${joining_date}</td>
-                        </tr>
-                        <tr colspan="6">
-                            <td colspan="1">កាលបរិច្ឆេទបិទការងារ៖</td>
-                            <td colspan="1"> ${effective_date}</td>
-                            <td colspan="1">នាយកដ្ឋាន ឬសាខា៖</td>
-                            <td colspan="3">${branch_name}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="text-align:left;">
-                                <div class="d-flex text-center gap-4">
-                                    <span>គោលបំណង៖</span>
-                                    <div class="d-flex disabled">
-                                        <div class="form-check me-3">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
-                                            <label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>
-                                        </div>
-                                        <div class="form-check me-3">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>
-                                            <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>
-                                            <label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>`;
-    };
+    
     self.show = (op) => {
         vsapi
-            .call(`${main_view.base_url}/hr/exit-form/list-all`, {
+            .call(`${main_view.base_url}/hr/exit-form-item/list-all`, {
                 emp_id: op.id,
             })
             .then((res) => {
@@ -488,12 +487,42 @@ const ViewExitFormDialog = (() => {
                         <div class="d-block position-relative min-height-top">
                             <div class="d-flex flex-column gap-2">
                                 <h4 class="text-center text-uppercase">${title}</h4>
-                            </div>
-                            <div class="employee-info-section">
-                                ${generateEmployeeInfo(employee)}
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr colspan="6">
+                                            <td colspan="1">ឈ្មោះបុគ្គលិក៖</td>
+                                            <td colspan="3">អត្ថលេខ៖</td>
+                                            <td colspan="2">កាលបរិច្ឆេទចូលធ្វើការ៖</td>
+                                        </tr>
+                                        <tr colspan="6">
+                                            <td colspan="1">កាលបរិច្ឆេទបិទការងារ៖</td>
+                                            <td colspan="2"></td>
+                                            <td colspan="3">នាយកដ្ឋាន ឬសាខា៖</td>
+                                        </tr>
+                                        <tr colspan="6">
+                                            <td colspan="1">គោលបំណង៖</td>
+                                            <td colspan="5">
+                                                <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" id="purpose1">
+                                                        <label class="form-check-label" for="purpose1">ការចាកចេញគ្រប់គ្រង</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" id="purpose2">
+                                                        <label class="form-check-label" for="purpose2">ការចុះ</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" id="purpose3">
+                                                        <label class="form-check-label" for="purpose3">ផ្សេងៗ</label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div class="pb-3 bg-white">
+                        <div class="mt-3 pt-3 pb-3 bg-white">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>${generateTableHeaders(thead)}</tr>
@@ -503,14 +532,14 @@ const ViewExitFormDialog = (() => {
                                     thead
                                 )}</tbody>
                             </table>
-                            <table class="table table-bordered mt-3">
+                            <table class="table table-bordered mt-5">
                                 <thead class="bg bg-secondary">
                                     <tr>
-                                        <th class="align-middle text-center ">បុគ្គលិក</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">អនុម័តដោយ</th>
+                                        <th class="align-middle text-center">បុគ្គលិក</th>
+                                        <th class="align-middle text-center">បញ្ជាក់ដោយ</th>
+                                        <th class="align-middle text-center">បញ្ជាក់ដោយ</th>
+                                        <th class="align-middle text-center">បញ្ជាក់ដោយ</th>
+                                        <th class="align-middle text-center">អនុម័តដោយ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -559,11 +588,10 @@ const ViewExitFormDialog = (() => {
                                     </tr>
                                 </tbody>
                             </table>
-
-                        </div>
-                        <div class="d-flex flex-column"> 
-                            <span><strong>ចំណាំ៖</strong></span>
-                            <span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>
+                            <div class="d-flex flex-column"> 
+                                <span><strong>ចំណាំ៖</strong></span>
+                                <span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>
+                            </div>
                         </div>
                     `;
 
@@ -589,7 +617,7 @@ const ViewExitFormDialog = (() => {
 
                                     vsapi
                                         .call(
-                                            `${main_view.base_url}/hr/exit-form/details`,
+                                            `${main_view.base_url}/hr/exit-form-item/details`,
                                             p,
                                             btn
                                         )
@@ -606,13 +634,13 @@ const ViewExitFormDialog = (() => {
                             },
                         ],
                         prepareFormOptions: {
-                            createTitle: "View Exit Form",
-                            modifyTitle: "View Exit Form",
+                            createTitle: "View Exit Form Item",
+                            modifyTitle: "View Exit Form Item",
                             targetProp: "exit_forms",
                             api: {
                                 endpoint: [
                                     main_view.base_url,
-                                    "/hr/exit-form/form-options",
+                                    "/hr/exit-form-item/form-options",
                                 ].join(""),
                                 params: (op) => {
                                     return { id: op.id };

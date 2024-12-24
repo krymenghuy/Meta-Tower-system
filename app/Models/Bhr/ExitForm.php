@@ -34,8 +34,9 @@ class ExitForm
 
         $v_rule = [
             'id' => '0|identity=1',
+            'name' => '1|string|0-250',
             'emp_id' => '1|number',
-            'is_finished' => '1|choice|1,2|default=1',
+            'is_settled' => '1|choice|1,2|default=1',
         ];
         $remark = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
@@ -53,19 +54,19 @@ class ExitForm
                 ->first();
 
             if ($existingExitForm) {
-                return DV::error('This item already exists for the same employee. Please choose a different item.');
+                return DV::error('This form name already exists for this employee. Please choose a different Form Name.');
             }
         }
 
         if ($id) {
             $updated = DB::table('exit_forms')
-            ->where('id', $id)
+                ->where('id', $id)
                 ->update($inputs);
 
             if ($updated) {
                 return DV::depends($id, ['id' => $id], 'Update successful');
             } else {
-                return DV::error('Upda  te failed. Record may not exist or data is unchanged.');
+                return DV::error('Update failed. Record may not exist or data is unchanged.');
             }
         } else {
             $newId = DB::table('exit_forms')->insertGetId($inputs);
@@ -88,28 +89,29 @@ class ExitForm
         $search_name = $d->name ?? null;
 
         $employeesWithStatus = DB::table('employees')
-        ->where('status_id', 20)
-        ->pluck('id');
+            ->where('status_id', 20)
+            ->pluck('id');
 
         if ($employeesWithStatus->isEmpty()) {
             return new LengthAwarePaginator([], 0, $per_page, $current_page);
         }
         $resignations = DB::table('resignations')
-        ->whereIn('emp_id', $employeesWithStatus)
+            ->whereIn('emp_id', $employeesWithStatus)
             ->get()
             ->keyBy('emp_id');
 
         $currentDate = date('Y-m-d');
 
         $query = DB::table('exit_forms as ef')
-        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->where('emp.status_id', 20)
-        ->selectRaw(
-            'ef.emp_id,
-            ef.id,'.'
-            ef.is_finished,
+            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->where('emp.status_id', 20)
+            ->selectRaw(
+                'ef.emp_id,
+            ef.id,
+            ef.name,
+            ef.is_settled,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -117,7 +119,7 @@ class ExitForm
             emp.position_id,
             pos.title as position,
             emp.photo_file_name as emp_photo'
-        )
+            )
             ->orderBy('ef.id', 'desc');
 
         if ($search_name) {
@@ -165,7 +167,8 @@ class ExitForm
             ->selectRaw(
                 'ef.emp_id,
             ef.id,
-            ef.is_finished,
+            ef.name,
+            ef.is_settled,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -182,7 +185,7 @@ class ExitForm
         }
 
         $resignation = DB::table('resignations as res')
-        ->where('emp_id', $details->emp_id)
+            ->where('emp_id', $details->emp_id)
             ->select('effective_date')
             ->first();
 
@@ -243,15 +246,16 @@ class ExitForm
         $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
 
         $query = DB::table('exit_forms as ef')
-        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
-        ->where('emp.status_id', 20)
-        ->selectRaw("
+            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
+            ->where('emp.status_id', 20)
+            ->selectRaw("
             ef.id,
+            ef.name,
             ef.emp_id,
-            ef.is_finished,
+            ef.is_settled,
             emp.id as emp_id,
             emp.name as employee_name,
             emp.code,
@@ -263,7 +267,7 @@ class ExitForm
             emp.photo_file_name as emp_photo,
             $col_effective_date
         ")
-        ->where('ef.emp_id', $emp_id);
+            ->where('ef.emp_id', $emp_id);
 
         if (!empty($data->search_value)) {
             $query->where(function ($q) use ($data) {
@@ -275,15 +279,14 @@ class ExitForm
         $exitFormItems = $query->get();
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
+        $forms = DB::table('exit_forms')->selectRaw('id, is_settled, emp_id')->where('emp_id', $emp_id)->first();
 
-        // Ensure $forms is not null before proceeding
         $form_items = [];
         if ($forms) {
             $form_items = DB::table('exit_form_items')
-            ->selectRaw('id, form_id, check_point_id as item_id')
-            ->where('form_id', $forms->id)
-            ->get();
+                ->selectRaw('id, form_id, check_point_id as item_id')
+                ->where('form_id', $forms->id)
+                ->get();
         }
 
         $groupedData = [];
@@ -292,11 +295,11 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>'; 
+                    $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>';
 
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>'; 
+                            $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>';
                             break;
                         }
                     }
@@ -311,8 +314,6 @@ class ExitForm
                 }
             }
         }
-
-
 
         $employeeData = $exitFormItems->map(function ($ef) {
             return [
