@@ -426,7 +426,7 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex  justify-content-center">
                                     <small class="text-nowrap" style="color:#cab54a;">${data.position}</small>
                                 </div>
-                                 <div class="d-flex social-icons mt-3 w-100 justify-content-start">
+                                 <div class="d-flex social-icons mt-3 w-100 justify-content-center">
                                     <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
                                     <a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                     <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
@@ -576,22 +576,22 @@ var EmployeeComponent = new (function () {
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-regular fa-pen-to-square text-success fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                                <i class="fa-regular fa-pen-to-square  fs-5 tool-tip" style="color:#fff;"><span class="tool-tiptext fs-6">Edit Profile</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="delete_employee" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-solid text-danger fa-user-xmark fs-5 tool-tip"><span class="tool-tiptext fs-6">Delete</span></i>
+                                                <i class="fa-solid fa-user-xmark fs-5 tool-tip" style="color:#e21f2c;"><span class="tool-tiptext fs-6">Delete</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="set_resign" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-solid fa-triangle-exclamation text-warning tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                                <i class="fa-solid fa-circle-exclamation tool-tip fs-5" style="color:#efc84a;"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="movement" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>
+                                                <i class="fa-brands fa-stack-exchange tool-tip fs-5" style="color:#05ff77"><span class="tool-tiptext fs-6">movement</span></i>
                                             </a>
 
                                             </div>
@@ -706,7 +706,7 @@ var EmployeeComponent = new (function () {
                             <h6 class="mt-1">Skill</h6>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-skill">
-                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
+                                    <i class="fa fa-plus-circle fs-7 text-white"></i>
                                 </a>
                             </div>
                         </div>
@@ -761,7 +761,6 @@ var EmployeeComponent = new (function () {
                         let btn = document.querySelector(
                             ".lnk-add-skill"
                         );
-                        console.log(333, btn.dataset);
 
                         let op = {
                             id: null,
@@ -784,6 +783,8 @@ var EmployeeComponent = new (function () {
                             const id = e.target
                                 .closest("a")
                                 .getAttribute("data-id");
+                            console.log(123,id);
+                            
 
                             let op = {
                                 id: id,
@@ -871,7 +872,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Education</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_education">
-                            <i class="fa fa-plus-circle fs-5 text-white"></i>
+                            <i class="fa fa-plus-circle fs-7 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -890,10 +891,10 @@ var EmployeeComponent = new (function () {
                         <small class="text-primary" ><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/books.svg" />${d.major}</small>
                         <div class="d-flex justify-content-end gap-3">
                             <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
-                                <i class="fa-solid text-warning fa-check tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
+                                <i class="fa-solid fa-pen text-warning tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
                             </a>
                             <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
-                                <i class="fa-solid text-danger fa-xmark tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
+                                <i class="fa-solid text-danger fa-trash-can tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
                             </a>
                         </div> 
                     </div>
@@ -1066,7 +1067,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Experience</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_experience">
-                            <i class="fa-solid fa-square-plus fs-5" style="color:#cab54a;"></i>
+                           <i class="fa fa-plus-circle fs-7 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -1247,13 +1248,13 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h6 class="mt-1">Tax Allowance</h6>
-                            <div class="d-flex gap-2">
-                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
-                                   
-                                    <small class="text-warning border border-white px-1 rounded-2"> <i class="fa fa-plus fs-7 "></i> Add</small>
-                                </a>
-                            </div>
+                            <h6 class="mt-1">Tax Allowance
+                                <small>
+                                        <a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">
+                                            (<i class="text-success  fa fa-plus"></i>)
+                                        </a>
+                                </small>
+                            </h6>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                         <div class="">
@@ -1277,7 +1278,7 @@ var EmployeeComponent = new (function () {
                             <td><small>${d.qty}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}</small></td>
-                            <td class="text-end">
+                            <td class="text-start">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance me-2">
                                     <i class="fa-regular fa-pen-to-square fs-10 text-warning"></i>
                                 </a>
@@ -1415,12 +1416,12 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h6 class="mt-1">Document</h6>
-                            <div class="d-flex gap-2">
-                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
-                                    <i class="fa fa-plus fs-7 text-white"></i>
-                                </a>
-                            </div>
+                            <h6 class="mt-1">Document 
+                               <small><a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
+                                        (<i class="text-white fa fa-plus"></i>)
+                                      </a>
+                                </small>
+                            </h6>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                 `;
@@ -1482,27 +1483,7 @@ var EmployeeComponent = new (function () {
                         AddEmployeeDocumentDialog.show(op);
                     });
 
-                    document
-                    .querySelector(".lnk-add-emp-document")
-                    .addEventListener("click", function (e) {
-                        e.preventDefault();
-
-                        let btn = document.querySelector(".lnk-add-emp-document");
-                        console.log(333, btn.dataset);
-
-                        let op = {
-                            id: null,
-                            emp_id: btn.dataset.empid,
-                            btn: e.target,
-                            title: "New Employee Document",
-                            onClose: () => {
-                                mThis.EmployeeListView.showPage();
-                            },
-                        };
-                        AddEmployeeDocumentDialog.show(op);
-                    });
-
-                // Add event listeners for all "download" buttons
+                   
                 document
                     .querySelectorAll(".lnk-download-emp-document")
                     .forEach((btn) => {
@@ -3073,9 +3054,7 @@ const AddSkillDialog = (() => {
 
     self.show = (op) => {
 
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog =  new GeneralDialog({
                 title: op.id ? "Add Skill" : " Edit Skill ",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
@@ -3084,7 +3063,7 @@ const AddSkillDialog = (() => {
 
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Skill">Skill</label>
-                             <select name="skill" class=" data-input"  data-field="skill_id"></select>
+                             <select name="skill_id" class="data-input"  data-field="skill_id"></select>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Rate">Rate</label>
@@ -3096,7 +3075,7 @@ const AddSkillDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "skill",
+                        name: "skill_id",
                         data: "skills",
                         textField: "skill",
                         valueField: "id",
