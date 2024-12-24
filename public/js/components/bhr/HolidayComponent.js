@@ -24,9 +24,9 @@ var HolidayComponent = new (function () {
             data: (data)=>{
                 return ` <div class="d-flex flex-column">
                                 <div class="d-flex justify-content-start align-items-center">
-                                    <span class="text-muted fw-bold" style="font-size: 90%;">${data.start_date}</span>
-                                    <span class="text-primary-custom px-1">→</span>
-                                    <span class="text-muted  fw-bold" style="font-size: 90%;">${data.end_date}</span>
+                                    <span class="text-nowrap fw-bold" style="font-size: 90%;">${data.start_date}</span>
+                                    <span class="text-primary px-1">~</span>
+                                    <span class="text-nowrap  fw-bold" style="font-size: 90%;">${data.end_date}</span>
                                 </div>
                             </div>`
             },
@@ -50,9 +50,9 @@ var HolidayComponent = new (function () {
             data: (data, index, tr) => {
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
                 return `<div class="d-flex flex-column">
-                    <span class="text-primary-custom fw-semibold">${data.update_user}</span>
+                    <span class="text-primary fw-semibold">${data.update_user}</span>
                     <span>
-                        <small class="text-muted">${data.updated_at}</small>
+                        <small class="text-nowrap">${data.updated_at}</small>
                     </span>
                 </div>`;
 
@@ -65,7 +65,7 @@ var HolidayComponent = new (function () {
                 return `
                     <div class="d-flex align-items-center gap-3">
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-modify">
-                            <i class="fa-solid fa-pen-to-square text-primary-custom fs-6"></i>
+                            <i class="fa-solid fa-pen-to-square text-primary fs-6"></i>
                         </a>
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-delete">
                             <i class="fa-regular fa-calendar-xmark text-danger fs-6"></i>

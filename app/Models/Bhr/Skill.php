@@ -128,8 +128,8 @@ class Skill
         $str_search = '1=1';
 
         $query = DB::table('skills as s')
-            ->selectRaw('s.id, s.title, s.description, s.image_file_name, s.count_member')
-            ->whereRaw('s.branch_id =' . $branch_id);
+            ->selectRaw('s.id, s.title, s.description, s.image_file_name, s.count_member');
+            // ->whereRaw('s.branch_id =' . $branch_id);
         if ($search_id) {
             $query->whereRaw('s.id =' . $search_id);
         }

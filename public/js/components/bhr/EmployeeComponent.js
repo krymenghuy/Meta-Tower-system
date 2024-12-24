@@ -1427,30 +1427,39 @@ var EmployeeComponent = new (function () {
                 `;
 
                 data.map((d) => {
-                    html = [html,`
-                        <div class="row mt-2  border-bottom border-white">
+                    html = [
+                        html,
+                        `
+                        <div class="row mt-2 border-bottom border-white">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
                                     <h6 style="color:#2b3991;">${d.name}</h6>
                                 </div>
-                                <small class="text-nowrap pb-1 d-block" style=""><img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/folder.png" alt=""" />${d.file_name}</small>
+                                <small class="text-nowrap pb-1 d-block">
+                                    <img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/folder.png" alt="" />
+                                    ${d.file_name}
+                                </small>
                                 <div class="d-flex justify-content-end gap-3">
-                                    <a href="javascript:void(0)" data-id="${d.id}" class="lnk-download-emp-document">
+                                    <a href="${main_view.base_url}/hr/emp-document/download/${d.id}" 
+                                       class="lnk-download-emp-document" 
+                                       target="_blank" 
+                                       download="${d.file_name}">
                                         <i class="fa fa-download fs-7 text-primary"></i>
                                     </a>
-                                    <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-emp-document ms-2">
+                                    <a href="javascript:void(0)" 
+                                       data-id="${d.id}" 
+                                       data-emp-id="${employeeId}" 
+                                       class="lnk-delete-emp-document ms-2">
                                         <i class="fa fa-trash fs-7 text-danger"></i>
                                     </a>
                                 </div>
-
-                               
-                          
                             </div>
-
                         </div>
-                    `].join('');
+                        `,
+                    ].join('');
                     cmt++;
                 });
+                
                 if(cmt === 0){
                     html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
 
@@ -1482,50 +1491,6 @@ var EmployeeComponent = new (function () {
                         };
                         AddEmployeeDocumentDialog.show(op);
                     });
-
-                   
-                document
-                    .querySelectorAll(".lnk-download-emp-document")
-                    .forEach((btn) => {
-                        btn.addEventListener("click", function (e) {
-                            e.preventDefault();
-
-                            const id = e.target.closest("a").getAttribute("data-id");
-                            const fileType = e.target.closest("a").getAttribute("data-type"); // You should have a `data-type` attribute (e.g., pdf, image)
-
-                            if (!id || !fileType) {
-                                console.error("No document ID or file type found for download.");
-                                return;
-                            }
-
-                            const downloadUrl = `${main_view.base_url}/hr/emp-document/download?id=${id}&type=${fileType}`;
-
-                            const link = document.createElement("a");
-                            link.target = "_blank"; // Open in a new tab or trigger download
-
-                            if (fileType === 'pdf') {
-                                // For PDF files
-                                link.href = downloadUrl;
-                                link.download = `employee-document-${id}.pdf`; // Set the PDF file name
-                            } else if (fileType === 'image') {
-                                // For image files (jpg, png, etc.)
-                                link.href = downloadUrl;
-                                link.download = `employee-document-${id}.jpg`; // Adjust this to match the image format (jpg, png, etc.)
-                            } else {
-                                console.error("Unsupported file type");
-                                return;
-                            }
-
-                            // Triggering download
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        });
-                    });
-
-
-
-
                 document
                     .querySelectorAll(".lnk-delete-emp-document")
                     .forEach((btn) => {

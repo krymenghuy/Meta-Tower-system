@@ -8,65 +8,73 @@ var SkillsComponent = new (function () {
     this.title_prop = "Skills";
     this.btnAdd = this.self.querySelector("#_btnAddSkill");
     this.divFilter = this.self.querySelector("#_divFilter_skill");
-    this.elSearch = this.self.querySelector("#_sdl_search_skill");
-    this.containerPagination = mThis.self.querySelector('#container_pagination');
-
+    this.elSearch = this.self.querySelector("#_search_skill");
+    let div = mThis.self.querySelector("#_skill_list");
 
 
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.SkillsListView = new ListView('_skill_list', {
+        mThis.SkillListView = new ListView('_skill_list', {
             fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
             perPage: 8,
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
-            // processResponse: (res) => {
-
-            //     return res.data;
-            // },
+            processResponse: (res) => {
+                return res.data;
+            },
             renderItems: (data,list_container) => {
-
-                mThis.renderskillsList(list_container, data);
-
+                mThis.renderSkillCard(list_container, data);
             },
             listContainerClass: null
         });
-        this.listContainer = mThis.SkillsListView.getListContainer();
-
-        let content = mThis.self.querySelector('#_skill_list');
-        // console.log(2222, content);
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
             let op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SkillsListView.showPage();
+                    mThis.SkillListView.showPage(mThis.getFilterData());
                 }
             };
-
-
-            SkillDailog.show(op);
+            SkillDialog.show(op);
         };
-        const pr_tbl = mThis.SkillsListView.getListContainer();
-        const sh_parent = pr_tbl;
-        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
-
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
-            mThis.SkillsListView.showPage(mThis.getDataFormFilter());
+            mThis.SkillListView.showPage(mThis.getFilterData());
         });
+
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.SkillListView) {
+                    mThis.SkillListView.showPage(mThis.getFilterData());
+                } 
+            }, 200);
+        });
+        this.listContainer = mThis.SkillListView.getListContainer();
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        mThis.setAction(sh_parent);
+
+        
 
         mThis.initAlready = true;
     };
-    this.setAction = (tbl)=>{
-        console.log(9999,tbl);
+    this.getFilterData = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
 
+        return p;
+    };
+    this.setAction = (tbl)=>{
         tbl.addEventListener('click', (e) => {
 
             let btn = VSUtil.closestLimited(e.target,'button.b-btn-delete');
@@ -82,155 +90,135 @@ var SkillsComponent = new (function () {
         })
     }
 
-    this.renderskillsList = (div,data) => {
-        console.log(666,div,777,data);
+    this.renderSkillCard = (div,data) => {
         data = data ?? [];
         if(!AuthManager)
         {
             console.error('Authentication Management does not seems to work properly. You may need to refresh page');
             return;
         }
-        //AuthManager() provides current user information
-        // console.log(AuthManager.init);
-
+       
         AuthManager.init().then(user => {
-            // console.log(user);
-           mThis.renderskills(data,user)
+           mThis.renderSkill(data,user)
         });
     }
-    this.renderskills = (data) => {
-        console.log(777, data);
-
-        let div = mThis.self.querySelector("#_skill_list");
+    this.renderSkill = (data) => {
         let html = `
-            <div id="_scroll_skill">
-                <div id="_skill_detail" class="row py-5">
+            <div class="card-row-skill">
         `;
-
-        let cmt = 0;
-
+    
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                console.log(5555,d);
-
                 html += `
-                        <div class="skills col-3">
-                        <div class="default">
-                            <div class="card_header">
-                                <h3 id="title">${d.title}</h3>
-                                <img src="${d.image_url}" alt="">
-                            </div>
-                            <p>${d.description}</p>
-                            <div class="count_staff">
-                                <div class="count">
-                                    <i class="fa fa-users"></i>
-                                    <span>${d.count_member}</span>
-                                </div>
-                                <div class="action">
-                                    <button class="btn btn-sm btn-primary b-btn-edit" data-id="${d.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                                    <button class="btn btn-sm btn-danger b-btn-delete" data-id="${d.id}"><i class="fa-regular fa-trash-can"></i></button>
+                    <div class="col-md-3 mt-3">
+                        <div class="card-container">
+                            <div class="w-100 d-flex flex-row justify-content-center align-items-center p-1 mb-2 shadow rounded-3" style="background-color: #ffffff;">
+                                <!-- <div class="position-relative ms-3" style="width: 120px; height: 100px;">
+                                    <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                                        <path class="circle-bg" d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                            fill="none" stroke="#2b3991" stroke-width="4" />
+                                        <path class="circle" d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                            fill="none" stroke="#cab54a" stroke-width="4" 
+                                            stroke-dasharray="100, 100" stroke-linecap="round" />
+                                    </svg>
+                                    <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                                        style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
+                                        <p class="fs-6 m-0">${d.count_member}</p>
+                                        <small>Members</small>
+                                    </div>
+                                </div> -->
+                                <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
+                                    <div class="w-100">
+                                        <p class="fs-6" style="color: #2b3991;">${d.title}</p>
+                                        <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                        <div class="d-flex">
+                                            <a href="javascript:void(0)" data-id="${d.id}" class="me-3 text-warning b-btn-edit text-decoration-none" >
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" data-id="${d.id}" class="text-danger b-btn-delete text-decoration-none">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
-                cmt++;
             });
-        }
-
-        if (cmt === 0) {
+        } else {
             html += `
-                <div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
-                    <div class="row">
-                        <div class="col">No Data Found</div>
+                <div class="col-12 text-center">
+                    <div class="alert alert-info" role="alert">
+                        No skills available to display.
                     </div>
-                </div>`;
+                </div>
+            `;
         }
-
-        html += `</div></div>`;
+    
+        html += `
+            </div>
+        `;
+    
         div.innerHTML = html;
-
-
-        const sh_parent = div.querySelector('#_scroll_skill');
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
-
-        mThis.setAction(sh_parent);
-
-
     };
-    mThis.elSearch.addEventListener('keyup', (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.SkillsListView) {
-                mThis.SkillsListView.showPage(mThis.getDataFormFilter());
-            } else {
-                console.error("SkillsListView is not defined");
-            }
-        }, 200);
-    });
-    this.getDataFormFilter = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-        console.log(222, p);
+    
+    
+   
+  
+    // this.editSkill = (id, menuLink) => {
 
-        return p;
-    };
-    this.editSkill = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.SkillListView.showPage();
+    //         }
+    //     };
+    //     console.log(333,op);
 
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.SkillsListView.showPage();
-            }
-        };
-        console.log(333,op);
+    //     SkillDialog.show(op);
+    // }
 
-        SkillDailog.show(op);
-    }
+    // this.deleteSkill = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.SkillListView.showPage();
+    //         }
+    //     };
+    //     cv_interact.confirm('Delete this Skill?',{
+    //         title: 'Delete Skill',
+    //         context: 'delete',
+    //         confirmButtonText:"Delete"
+    //     },function(e){
+    //         if(e){
+    //             vsapi.call(`${main_view.base_url}/hr/skills/delete`,op,false,false,false).then(res => {
+    //                 if(res.status_code == 200){
+    //                     cv_interact.success('Deleted Successfully');
+    //                     mThis.SkillListView.showPage();
+    //                 }
+    //             })
+    //         }
+    //     });
 
-    this.deleteSkill = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.SkillsListView.showPage();
-            }
-        };
-        cv_interact.confirm('Delete this Skill?',{
-            title: 'Delete Skill',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/hr/skills/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
-                        mThis.SkillsListView.showPage();
-                    }
-                })
-            }
-        });
-
-    }
+    // }
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.SkillsListView.showPage(null, null, () => {
+        mThis.SkillListView.showPage(null, null, () => {
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
         });
     };
 })();
-const SkillDailog = (() => {
+const SkillDialog = (() => {
     const self = {};
     let dialog = null;
 
