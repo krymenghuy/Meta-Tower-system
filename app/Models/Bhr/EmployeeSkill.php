@@ -17,17 +17,16 @@ class EmployeeSkill
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $ss = null , $id = null) {
+    function save($arr, $ss = null , $id = null) {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-
         $v_rule = [
             'emp_id' => '1|number',
             'skill_id' => '1|number',
             'rate' => '1|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -36,7 +35,7 @@ class EmployeeSkill
 
         $id = saveData($ss, 'emp_skills', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['emp_skills' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving data');
@@ -90,12 +89,12 @@ class EmployeeSkill
 
     function getDetails($id, $ss) {
         $query = DB::table('emp_skills as es')
-            ->join('skills as s', 's.id', '=', 'es.skill_id')
-            ->join('employees as e', 'e.id', '=', 'es.emp_id')
-            ->selectRaw('es.id, es.emp_id, e.name as emp_name, s.title as skill, es.rate')
+            // ->join('skills as s', 's.id', '=', 'es.skill_id')
+            ->join('employees as emp', 'emp.id', '=', 'es.emp_id')
+            ->selectRaw('es.id,es.skill_id, es.emp_id, es.rate,emp.name as emp_name')
             ->where('es.branch_id', $ss->branch_id)
             ->where('es.id', $id)
-            ->first();
+            ->take(1)->first();
         return $query;
     }
 

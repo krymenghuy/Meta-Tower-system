@@ -100,8 +100,9 @@ class Account
        $per_page = $d->per_page ?? 10;
        if (!is_numeric($current_page))  $current_page = 1;
        $skip_rows = ($current_page - 1) * $per_page;
-
        $search_value = $d->search_value ?? null;
+       $sort_by = $d->sort_by ?? 'a.id';
+       $sort_order = $d->sort_order ?? 'asc';
        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
        $str_search = '1=1';
@@ -122,17 +123,14 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Payroll')
-           ->orderBy('id', 'ASC');
+           ->where('a.account_type', 'Payroll');
 
-       if ($search_value) {
-           $search_value = escape_like_str($search_value);
-           $str_search = "a.account_number LIKE '%" . $search_value . "%'
-                      OR e.name LIKE '%" . $search_value . "%'
-                      OR pos.title LIKE '%" . $search_value . "%'";
-           $query->whereRaw($str_search);
-       }
+           if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->where('e.name', 'LIKE', '%' . $search_value . '%');
+        }
 
+       $query->orderBy($sort_by, $sort_order);
        $count = $query->count('a.id');
        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
@@ -153,8 +151,9 @@ class Account
        $per_page = $d->per_page ?? 10;
        if (!is_numeric($current_page))  $current_page = 1;
        $skip_rows = ($current_page - 1) * $per_page;
-
        $search_value = $d->search_value ?? null;
+       $sort_by = $d->sort_by ?? 'a.id';
+       $sort_order = $d->sort_order ?? 'asc';
        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
        $str_search = '1=1';
@@ -175,17 +174,15 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Wallet')
-           ->orderBy('a.id', 'ASC');
+           ->where('a.account_type', 'Wallet');
+
 
        if ($search_value) {
-           $search_value = escape_like_str($search_value);
-           $str_search = "a.account_number LIKE '%" . $search_value . "%'
-                      OR e.name LIKE '%" . $search_value . "%'
-                      OR pos.title LIKE '%" . $search_value . "%'";
-           $query->whereRaw($str_search);
-       }
+        $search_value = escape_like_str($search_value);
+        $query->where('e.name', 'LIKE', '%' . $search_value . '%');
+        }
 
+       $query->orderBy($sort_by, $sort_order);
        $count = $query->count('a.id');
        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
@@ -267,30 +264,55 @@ class Account
             'accounts' => $account,
         ];
     }
+    function ConfirmTransfer($arr, $ss) {
+        $d = (object) $arr;
 
-    /** $arr = [from_account_id, to_account_id, amount, currency_code, remarks] */
+        $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
+        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
+        $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
+        $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
+
+        if (!$from_account_id || !$to_account_id) {
+            return DV::error('Account not found');
+        }
+
+        if($d->balance < $d->amount) {
+            return DV::error('Insufficient balance');
+        }
+        return DV::depends(1, [
+            'emp_name' => $emp_name,
+            'from_account_type' => $d->account_type,
+            'from_account_number' => $d->account_number,
+            'to_account_type' => $d->to_account_type,
+            'to_account_number' => $d->to_account_number,
+            'amount' => $d->amount
+        ]);
+    }
+
     function transfer($arr, $ss) {
         $d = (object) $arr;
         $transfer_amount = 0;
 
         $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
-        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
         $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
-
+        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
         $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
 
         if (!$from_account_id || !$to_account_id) {
             return DV::error('Account not found');
         }
 
+        $amount_in = $d->amount;
+        $amount_out = $d->amount;
+
         if ($d->currency === 'KHR' && $d->to_account_currency === 'USD') {
-            $d->amount *= $d->exchange_rate;
-        } elseif ($d->currency === 'KHR' && $d->to_account_currency === 'KHR') {
-            $d->amount = $d->amount;
-        } elseif ($d->currency === 'USD' && $d->to_account_currency === 'USD') {
-            $d->amount = $d->amount;
-        }elseif ($d->currency === 'USD' && $d->to_account_currency === 'KHR') {
-            $d->amount /= $d->exchange_rate;
+            $amount_out = $amount_in * $d->exchange_rate;
+        } elseif ($d->currency === 'USD' && $d->to_account_currency === 'KHR') {
+            $amount_out = $amount_in / $d->exchange_rate;
+        }
+
+        if($d->balance < $amount_out) {
+            return DV::error('Insufficient balance');
         }
 
         $trx = $d;
@@ -300,10 +322,7 @@ class Account
         $trx->to_account_id = $to_account_id;
         $trx->account_id = $to_account_id;
         $trx->remarks = "$d->account_type $d->account_number to $d->to_account_type $d->to_account_number";
-
-        if ($trx->balance < $trx->amount) {
-            return DV::error('Insufficient Balance');
-        }
+        $trx->amount = $amount_in;
 
         $transfer = Transaction::createTransaction((array)$trx, $ss);
 
@@ -319,9 +338,9 @@ class Account
         unset($withdrawData['emp_id']);
 
         $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
-
         $withdrawData['emp_id'] = $emp_id;
         $withdrawData['account_id'] = $from_account_id;
+        $withdrawData['amount'] = $amount_out;
 
         $res = Account::withdraw($withdrawData, $ss);
 
@@ -342,19 +361,20 @@ class Account
                 'to_account_type' => $d->to_account_type,
                 'to_account_number' => $d->to_account_number,
                 'emp_name' => $emp_name,
-                'amount' => $d->amount
+                'amount_in' => $amount_in,
+                'amount_out' => $amount_out,
             ]);
         }
+
         return DV::error('Error transferring account');
     }
+
 
     function getAccountInfo($arr, $ss) {
         $d = (object) $arr;
 
         $account_type = DB::table('accounts')->where('account_number', $d->account_number)->value('account_type');
-
         $emp_id = DB::table('accounts')->where('account_number', $d->account_number)->value('emp_id');
-
         $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
         $currency = DB::table('accounts')->where('account_number', $d->account_number)->value('currency');
 
@@ -366,10 +386,6 @@ class Account
         ]);
 
     }
-
-
-
-
     static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
     {
         if(!$account_id || !$trx_id){
@@ -406,7 +422,7 @@ class Account
             'to_account_id' => '1|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['status'] = 'out';

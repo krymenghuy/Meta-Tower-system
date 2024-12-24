@@ -223,8 +223,14 @@ var AccountMenagmentComponent = new (function () {
             tableClass: "table table--white overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
-        console.log(222,mThis.TransactionListView);
-
+        const pr_tbl = mThis.TransactionListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+        }
 
         mThis.initTransactionAlready = true;
 
@@ -263,9 +269,13 @@ var AccountMenagmentComponent = new (function () {
 
         const pr_tbl = mThis.AccountListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+        }
+
 
         mThis.initDropdownMenus(pr_tbl);
 
@@ -357,7 +367,7 @@ var AccountMenagmentComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Account Transferred Successfully');
+
                 mThis.AccountListView.showPage();
             },
         };
@@ -772,10 +782,6 @@ const TransferDialog = (() => {
 
                         });
                     };
-
-
-
-
                 },
 
                 buttons: [
@@ -796,11 +802,18 @@ const TransferDialog = (() => {
                             p.to_account_type = me.to_account_type;
                             p.to_account_currency = me.to_account_currency;
                             p.id = me.dataOptions.id;
-                            console.log(1234, p);
+                            // console.log(1234, p);
 
-                            vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
+                            if(me.to_account_currency != me.currency){
+                                if(!me.controls.exchange_rate.value){
+                                    cv_interact.error('Please enter exchange rate');
+                                    return;
+                                }
+                            }
+
+                            vsapi.call([main_view.base_url, '/hr/account/get-confirm'].join(''), p, null, null).then(res => {
                                 if (res.status_code === 200 && res.data) {
-                                    const confirmationMessage = `Are you sure to transfer? To '${res.data.to_account_number} (${res.data.to_account_type}) - ${res.data.emp_name}'`;
+                                    const confirmationMessage = `Are you sure to transfer? To [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
 
                                     cv_interact.confirm(confirmationMessage, {
                                         title: 'Confirm or Cancel Transfer',
@@ -808,39 +821,48 @@ const TransferDialog = (() => {
                                         confirmButtonText: "Transfer"
                                     }, function (confirmation) {
                                         if (confirmation) {
-                                            console.log(222,p);
+                                            // console.log('Transfer data to be sent:', p);
 
                                             vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
-                                                if (res.status_code === 200 && res.data && res.data.message === 'Transfer Success') {
-                                                    cv_interact.error('Transfer successful');
-                                                } else {
+                                                // console.log('Transfer response:', res);
+
+                                                if (res.status_code === 200 && res.data) {
                                                     let formattedData = `
+                                                        Transfer Successful
                                                         From: ${res.data.from_account_number}
                                                         To: ${res.data.to_account_number}
                                                     `;
                                                     cv_interact.success(formattedData);
                                                     AccountMenagmentComponent.AccountListView.showPage();
                                                     me.hide(false);
+                                                } else {
+                                                    cv_interact.error(res.error_message || 'Error in processing transfer');
                                                 }
+                                            }).catch(err => {
+                                                console.log('Error during transfer:', err);
+                                                cv_interact.error($res.error_message || 'Error in processing transfer');
                                             });
+                                        } else {
+                                            cv_interact.info('Transfer Cancelled!');
                                         }
                                     });
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.error(res.error_message || 'Error fetching confirmation data');
                                 }
+                            }).catch(err => {
+                                console.log('Error fetching confirmation:', err);
+                                cv_interact.error('Error in processing confirmation');
                             });
+
+
                         }
 
                     },
                 ],
-
-
-
             });
 
         dialog.show(op);
     };
-
     return self;
 })();
 

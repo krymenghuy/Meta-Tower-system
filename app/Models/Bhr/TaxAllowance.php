@@ -18,12 +18,13 @@ class TaxAllowance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $ss = null,$id = null,) {
+    function save($arr = [], $ss = null,$id = null) {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'amount' => '1|number',
             'qty' => '1|number',
@@ -35,6 +36,7 @@ class TaxAllowance
         if ($res->error) {
             return DV::error($res->error);
         }
+        $id = $res->id;
 
         $inputs = $res->values;
 
@@ -42,7 +44,7 @@ class TaxAllowance
 
         $id = saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['tax_allowances' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving data');

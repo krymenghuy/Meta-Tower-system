@@ -15,10 +15,5 @@
 </div>
 <style>
 
-    #_benefit_disbursement_policy_list{
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        max-height: 500px;
-    }
+
 </style>

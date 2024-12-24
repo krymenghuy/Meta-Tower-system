@@ -11,25 +11,15 @@
                 <input type="text" class="form-control btn_search filter-field" id="_sdl_search_position"
                     placeholder="Search Position">
 
-                
+
             </div>
         </div>
     </div>
     <div id="_position_list" class="pt-3 px-3"></div>
 </div>
 <style>
-    #_position_list_paginator {
-        bottom: 0;
-    }
 
-    #_position_list {
-        height: 550px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
-    #_main_positionComponent th,
+   #_main_positionComponent th,
     #_main_positionComponent td {
         padding: 10px;
         vertical-align: middle;

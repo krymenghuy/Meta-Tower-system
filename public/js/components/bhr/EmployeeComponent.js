@@ -107,9 +107,9 @@ var EmployeeComponent = new (function () {
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
-        // window.onresize = () => {
-        //     sh_parent.style.height = window.innerHeight - 190 + "px";
-        // };
+        window.onresize = () => {
+            sh_parent.style.height = window.innerHeight - 220 + "px";
+        };
 
         mThis.initAlready = true;
     };
@@ -421,12 +421,12 @@ var EmployeeComponent = new (function () {
                                 </div>
                                 <div class="d-flex mt-3  justify-content-center">
                                     <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${data.code}</span></small>
-                                    
+
                                 </div>
                                 <div class="d-flex  justify-content-center">
                                     <small class="text-nowrap" style="color:#cab54a;">${data.position}</small>
                                 </div>
-                                 <div class="d-flex social-icons mt-3 w-100 justify-content-start">
+                                 <div class="d-flex social-icons mt-3 w-100 justify-content-center">
                                     <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
                                     <a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                     <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
@@ -464,11 +464,11 @@ var EmployeeComponent = new (function () {
                                         <P class="px-2">:</p>
                                         <P class="text-nowrap text-white">${data.marital_status}</p>
                                     </div>
-                                    
-                                       
+
+
 
                                     </div>`,
-                            
+
                                     `<div class="col-md-4 mt-3">
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p">Staff Type</p>
@@ -480,7 +480,7 @@ var EmployeeComponent = new (function () {
                                             <P class="px-2">:</p>
                                             <P class="text-nowrap" style="color:#cab54a;">${data.position}</p>
                                         </div>
-                                        
+
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Email</p>
                                             <P class="px-2">:</p>
@@ -524,7 +524,7 @@ var EmployeeComponent = new (function () {
                                             <P class="pl-5 pr-2">:</p>
                                             <P class="text-white">${data.spouse_occ_code ?? 'ទទេ'}</p>
                                         </div>
-                                    
+
                                     </div>
 
 
@@ -555,10 +555,10 @@ var EmployeeComponent = new (function () {
                                                 <P class="px-2">:</p>
                                                 <P class="text-nowrap" style="color:#cab54a;">${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
                                             </div>
-                                         
-                                           
+
+
                                         </div>
-                                       
+
                                         <div class="col">
                                             <div class="d-flex">
                                                 <P class="text-nowrap width-p">salary</p>
@@ -576,34 +576,34 @@ var EmployeeComponent = new (function () {
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-regular fa-pen-to-square text-success fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                                <i class="fa-regular fa-pen-to-square  fs-5 tool-tip" style="color:#fff;"><span class="tool-tiptext fs-6">Edit Profile</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="delete_employee" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-solid text-danger fa-user-xmark fs-5 tool-tip"><span class="tool-tiptext fs-6">Delete</span></i>
+                                                <i class="fa-solid fa-user-xmark fs-5 tool-tip" style="color:#e21f2c;"><span class="tool-tiptext fs-6">Delete</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="set_resign" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-solid fa-triangle-exclamation text-warning tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                                <i class="fa-solid fa-circle-exclamation tool-tip fs-5" style="color:#efc84a;"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="movement" data-id="${
                                                     data.id
                                                 }" data-status ="${data.status_id}">
-                                                <i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>
+                                                <i class="fa-brands fa-stack-exchange tool-tip fs-5" style="color:#05ff77"><span class="tool-tiptext fs-6">movement</span></i>
                                             </a>
 
                                             </div>
-                                   
+
                                         </div>`,
-                                    
+
                                     `</div>`,
                                 `</div>`,
                              `</div>`,
-                          
 
-                       
+
+
                     `</div>`,
 
                     `</div>`].join('');
@@ -706,7 +706,7 @@ var EmployeeComponent = new (function () {
                             <h6 class="mt-1">Skill</h6>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-skill">
-                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
+                                    <i class="fa fa-plus-circle fs-7 text-white"></i>
                                 </a>
                             </div>
                         </div>
@@ -761,7 +761,6 @@ var EmployeeComponent = new (function () {
                         let btn = document.querySelector(
                             ".lnk-add-skill"
                         );
-                        console.log(333, btn.dataset);
 
                         let op = {
                             id: null,
@@ -784,6 +783,8 @@ var EmployeeComponent = new (function () {
                             const id = e.target
                                 .closest("a")
                                 .getAttribute("data-id");
+                            console.log(123,id);
+
 
                             let op = {
                                 id: id,
@@ -871,7 +872,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Education</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_education">
-                            <i class="fa fa-plus-circle fs-5 text-white"></i>
+                            <i class="fa fa-plus-circle fs-7 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -890,15 +891,15 @@ var EmployeeComponent = new (function () {
                         <small class="text-primary" ><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/books.svg" />${d.major}</small>
                         <div class="d-flex justify-content-end gap-3">
                             <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
-                                <i class="fa-solid text-warning fa-check tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
+                                <i class="fa-solid fa-pen text-warning tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
                             </a>
                             <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
-                                <i class="fa-solid text-danger fa-xmark tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
+                                <i class="fa-solid text-danger fa-trash-can tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
                             </a>
-                        </div> 
+                        </div>
                     </div>
 
-                   
+
                 </div>
                 `].join('');
                 cmt++;
@@ -1066,7 +1067,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Experience</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_experience">
-                            <i class="fa-solid fa-square-plus fs-5" style="color:#cab54a;"></i>
+                           <i class="fa fa-plus-circle fs-7 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -1250,10 +1251,17 @@ var EmployeeComponent = new (function () {
                             <h6 class="mt-1">Tax Allowance</h6>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
-                                   
+
                                     <small class="text-warning border border-white px-1 rounded-2"> <i class="fa fa-plus fs-7 "></i> Add</small>
                                 </a>
                             </div>
+                            <h6 class="mt-1">Tax Allowance
+                                <small>
+                                        <a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">
+                                            (<i class="text-success  fa fa-plus"></i>)
+                                        </a>
+                                </small>
+                            </h6>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                         <div class="">
@@ -1277,7 +1285,7 @@ var EmployeeComponent = new (function () {
                             <td><small>${d.qty}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}</small></td>
                             <td><small>${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}</small></td>
-                            <td class="text-end">
+                            <td class="text-start">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance me-2">
                                     <i class="fa-regular fa-pen-to-square fs-10 text-warning"></i>
                                 </a>
@@ -1288,13 +1296,13 @@ var EmployeeComponent = new (function () {
                         </tr>`;
                     cmt++;
                 });
-                
+
                 if(cmt === 0){
                     html += `<table><tbody><div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></tbody></table></div>`;
 
                 }
 
-                        
+
                 html += `</tbody></table></div></div></div>`;
                 this.tax_allowance_card.innerHTML = html;
 
@@ -1415,41 +1423,50 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h6 class="mt-1">Document</h6>
-                            <div class="d-flex gap-2">
-                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
-                                    <i class="fa fa-plus fs-7 text-white"></i>
-                                </a>
-                            </div>
+                            <h6 class="mt-1">Document
+                               <small><a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
+                                        (<i class="text-white fa fa-plus"></i>)
+                                      </a>
+                                </small>
+                            </h6>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                 `;
 
                 data.map((d) => {
-                    html = [html,`
-                        <div class="row mt-2  border-bottom border-white">
+                    html = [
+                        html,
+                        `
+                        <div class="row mt-2 border-bottom border-white">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between">
                                     <h6 style="color:#2b3991;">${d.name}</h6>
                                 </div>
-                                <small class="text-nowrap pb-1 d-block" style=""><img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/folder.png" alt=""" />${d.file_name}</small>
+                                <small class="text-nowrap pb-1 d-block">
+                                    <img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/folder.png" alt="" />
+                                    ${d.file_name}
+                                </small>
                                 <div class="d-flex justify-content-end gap-3">
-                                    <a href="javascript:void(0)" data-id="${d.id}" class="lnk-download-emp-document">
+                                    <a href="${main_view.base_url}/hr/emp-document/download/${d.id}" 
+                                       class="lnk-download-emp-document" 
+                                       target="_blank" 
+                                       download="${d.file_name}">
                                         <i class="fa fa-download fs-7 text-primary"></i>
                                     </a>
-                                    <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-emp-document ms-2">
+                                    <a href="javascript:void(0)" 
+                                       data-id="${d.id}" 
+                                       data-emp-id="${employeeId}" 
+                                       class="lnk-delete-emp-document ms-2">
                                         <i class="fa fa-trash fs-7 text-danger"></i>
                                     </a>
                                 </div>
-
-                               
-                          
                             </div>
-
                         </div>
-                    `].join('');
+                        `,
+                    ].join('');
                     cmt++;
                 });
+                
                 if(cmt === 0){
                     html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
 
@@ -1481,70 +1498,6 @@ var EmployeeComponent = new (function () {
                         };
                         AddEmployeeDocumentDialog.show(op);
                     });
-
-                    document
-                    .querySelector(".lnk-add-emp-document")
-                    .addEventListener("click", function (e) {
-                        e.preventDefault();
-
-                        let btn = document.querySelector(".lnk-add-emp-document");
-                        console.log(333, btn.dataset);
-
-                        let op = {
-                            id: null,
-                            emp_id: btn.dataset.empid,
-                            btn: e.target,
-                            title: "New Employee Document",
-                            onClose: () => {
-                                mThis.EmployeeListView.showPage();
-                            },
-                        };
-                        AddEmployeeDocumentDialog.show(op);
-                    });
-
-                // Add event listeners for all "download" buttons
-                document
-                    .querySelectorAll(".lnk-download-emp-document")
-                    .forEach((btn) => {
-                        btn.addEventListener("click", function (e) {
-                            e.preventDefault();
-
-                            const id = e.target.closest("a").getAttribute("data-id");
-                            const fileType = e.target.closest("a").getAttribute("data-type"); // You should have a `data-type` attribute (e.g., pdf, image)
-
-                            if (!id || !fileType) {
-                                console.error("No document ID or file type found for download.");
-                                return;
-                            }
-
-                            const downloadUrl = `${main_view.base_url}/hr/emp-document/download?id=${id}&type=${fileType}`;
-
-                            const link = document.createElement("a");
-                            link.target = "_blank"; // Open in a new tab or trigger download
-
-                            if (fileType === 'pdf') {
-                                // For PDF files
-                                link.href = downloadUrl;
-                                link.download = `employee-document-${id}.pdf`; // Set the PDF file name
-                            } else if (fileType === 'image') {
-                                // For image files (jpg, png, etc.)
-                                link.href = downloadUrl;
-                                link.download = `employee-document-${id}.jpg`; // Adjust this to match the image format (jpg, png, etc.)
-                            } else {
-                                console.error("Unsupported file type");
-                                return;
-                            }
-
-                            // Triggering download
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        });
-                    });
-
-
-
-
                 document
                     .querySelectorAll(".lnk-delete-emp-document")
                     .forEach((btn) => {
@@ -2668,7 +2621,7 @@ const EmployeeDialog = (() => {
                         `<div class="col-3">`,
                             `<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">`,
                                 `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
-                            `</div>`, 
+                            `</div>`,
                         `</div>`,
                         `<div class="col-9">`,
                             `<div class="row">`,
@@ -2723,7 +2676,7 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />
                             </div>`,
-                            
+
                             `<div class="form-group col-4">
                                 <label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>
                                 <span class="text-danger" >*</span>
@@ -2737,7 +2690,7 @@ const EmployeeDialog = (() => {
                                 <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
                                 <input name="passport_number" class="form-control data-input" data-field="passport_number" />
                             </div>`,
-                         
+
                             `<div class="form-group col-4">
                                   <label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>
                                     <span class="text-danger" >*</span>
@@ -2747,7 +2700,7 @@ const EmployeeDialog = (() => {
                                 <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
                                 <select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>
                             </div>`,
-                           
+
                             `<div class="form-group col-4">
                                 <label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>
                                 <span class="text-danger">*</span>
@@ -2768,13 +2721,13 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                             </div>`,
-                            
+
                             `<div class="form-group salary col-4">
                                 <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
                                 <input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />
                             </div>`,
-                          
-                            
+
+
                             `<div class="form-group col-6">
                                 <label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>
                                 <span class="text-danger">*</span>
@@ -2785,7 +2738,7 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger">*</span>
                                 <input name="joining_date"  class="form-control data-input" data-field="joining_date" />
                             </div>`,
-                            
+
                             `<div class="form-group col-4">
                                 <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
                                 <input name="spouse_name" class="form-control data-input" data-field="spouse_name" />
@@ -2798,13 +2751,13 @@ const EmployeeDialog = (() => {
                                 <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
                                 <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />
                             </div>`,
-                           
-                            
-                            
-                            
-                       
-                      
-                            
+
+
+
+
+
+
+
                             `<div class="form-group col-12">
                                 <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
                                 <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
@@ -2816,7 +2769,7 @@ const EmployeeDialog = (() => {
             contentCreated: (me) => {
                 // const salary = me.divModal.querySelector(".salary");
                 // console.log(123,salary);
-                
+
                 // salary.classList.add("d-none");
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);
@@ -3073,9 +3026,7 @@ const AddSkillDialog = (() => {
 
     self.show = (op) => {
 
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog =  new GeneralDialog({
                 title: op.id ? "Add Skill" : " Edit Skill ",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
@@ -3084,7 +3035,7 @@ const AddSkillDialog = (() => {
 
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Skill">Skill</label>
-                             <select name="skill" class=" data-input"  data-field="skill_id"></select>
+                             <select name="skill_id" class="data-input"  data-field="skill_id"></select>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Rate">Rate</label>
@@ -3096,7 +3047,7 @@ const AddSkillDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "skill",
+                        name: "skill_id",
                         data: "skills",
                         textField: "skill",
                         valueField: "id",

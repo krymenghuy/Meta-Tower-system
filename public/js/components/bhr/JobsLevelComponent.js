@@ -19,20 +19,20 @@ var JobsLevelComponent = new (function () {
             //     return index + 1;
             // },
         },
-      
+
         {
             title: "Job Level",
             className: "align-middle ",
             data: (data)=>
                 `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
         },
-       
+
         {
             title: "Ranking",
             className: "align-middle",
             data: (data)=>
                 `<span class="text-primary-custom">${data.rank}</span>`,
-         
+
         },
         {
             title: "Last Updated",
@@ -49,7 +49,7 @@ var JobsLevelComponent = new (function () {
             data: (data)=>
                 `<div  class="text-remark" >${data.description}</div>`,
         },
-    
+
         {
             title: "Action",
             className: "col_action align-middle",
@@ -93,11 +93,14 @@ var JobsLevelComponent = new (function () {
         };
         const pr_tbl = mThis.JobLevelListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
 
-       
+
 
         mThis.initDropdownMenus(pr_tbl);
 
@@ -118,7 +121,7 @@ var JobsLevelComponent = new (function () {
         }, 200);
     });
 
-   
+
     this.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
@@ -250,15 +253,15 @@ const JobLevelDialog = (() => {
                              <div class="form-group col-md-6">
                                 <label for="rank" class="form-label">Rank</label>
                                 <span class="text-danger">*<small>(1-100)</small></span>
-                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="" required>                        
+                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="" required>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="description" class="form-label">Description</label>
                                 <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description"></textarea>
                             </div>
-                            
-                           
-                           
+
+
+
                          </div>`,
                     ].join("");
                 },
@@ -267,7 +270,7 @@ const JobLevelDialog = (() => {
                         label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                          
+
                             me.hide(false);
                         },
                     },

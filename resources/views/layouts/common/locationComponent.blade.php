@@ -9,7 +9,7 @@
   <div class="bg-white p-3 rounded-3">
     <div class="row">
       <div class="col-lg-6">
-        <div id="_sttn_loc_countryListpanel" class="border-style1 rounded-3 border" style="margin-top:40px;background-color:#F6FAFA;padding:10px;height:40vw;">
+        <div id="_sttn_loc_countryListpanel" class="border-style1 rounded-3 border" style="margin-top:40px;background-color:#F6FAFA;padding:10px;height:540px;">
           <span class="py-2 text-success fw-bold" style="font-size:15px">Countries</span>
           <a id="_sttn_loc_lnkNewCountry" href="javascript:void(0)">
             (<i class="fa fa-plus text-success"></i>)
@@ -34,18 +34,18 @@
             </a>
           </div>
           <div class="tab-body mt-3">
-            <div class="tab-panel border-style1" id="_sttn_tabpanel_cities" style="height:40vw" data-viewname="cities">
+            <div class="tab-panel border-style1" id="_sttn_tabpanel_cities" style="height:450px" data-viewname="cities">
               <a id="_sttn_loc_lnkNewCity" href="javascript:void(0)" class="btn btn-sm btn-outline-success btn-hover">
                 <span>Add City</span>
               </a>
-              <div id="_sttn_loc_tblCities" class="table-responsive p-3 rounded-3 border table-responsive-hover mt-2" style="height:95.5%">
+              <div id="_sttn_loc_tblCities" class="table-responsive p-3 rounded-3 border table-responsive-hover mt-2" style="height:450px">
                 <table  class="table fixed-body-table">
                   <thead></thead>
                   <tbody id="_sttn_loc_tblCities_body"></tbody>
                 </table>
               </div>
             </div>
-            <div class="tab-panel border-style1" id="_sttn_tabpanel_districts" style="height:40vw" data-viewname="districts">
+            <div class="tab-panel border-style1" id="_sttn_tabpanel_districts" style="height:450px" data-viewname="districts">
               <div class="d-flex gap-2">
                 <div class="min-width-select">
                   <select class="select2" id="_sttn_loc_filter_city"></select>
@@ -54,7 +54,7 @@
                   <span class="text-no-wrap">Add district</span>
                 </button>
               </div>
-              <div class="table-responsive p-3 rounded-3 border mt-2 table-responsive-hover" style="height:95.5%">
+              <div class="table-responsive p-3 rounded-3 border mt-2 table-responsive-hover" style="height:480px">
                 <table id="_sttn_loc_tblDistricts" class="table fixed-body-table">
                   <thead>
                     <tr>
@@ -68,7 +68,7 @@
                 </table>
               </div>
             </div>
-            <div class="tab-panel border-style1" id="_sttn_tabpanel_communes" style="height:40vw" data-viewname="communes">
+            <div class="tab-panel border-style1" id="_sttn_tabpanel_communes" style="height:400px" data-viewname="communes">
               <div class="d-flex gap-2">
                 <div class="min-width-select">
                   <select class="modal-select2" id="_sttn_loc_filter_city_district"></select>
@@ -80,7 +80,7 @@
                   <span>Add commune</span>
                 </button>
               </div>
-              <div class="table-responsive rounded-3 border p-3 table-responsive-hover mt-2" style="height:95.5%">
+              <div class="table-responsive rounded-3 border p-3 table-responsive-hover mt-2" style="height:493px">
                 <table id="_sttn_loc_tblCommunes" class="table fixed-body-table">
                   <thead>
                     <tr>

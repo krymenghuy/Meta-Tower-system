@@ -174,7 +174,7 @@ var WalletAccountComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.amount ?? 0)}</p>`;
+                return `<p class="p-0 m-0">${formattedNumber(data.amount ?? 0)}</p>`;
             },
         },
         {
@@ -229,7 +229,14 @@ var WalletAccountComponent = new (function () {
             tableClass: "table table--white overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
-        console.log(222, mThis.TransactionListView);
+        const pr_tbl = mThis.TransactionListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+        }
 
         mThis.initTransactionAlready = true;
     };
@@ -270,8 +277,12 @@ var WalletAccountComponent = new (function () {
 
         const pr_tbl = mThis.WalletAccountListView.getListContainer();
         const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+        }
 
         mThis.initDropdownMenus(pr_tbl);
 

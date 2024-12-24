@@ -145,13 +145,4 @@
         max-width: 180px;
     }
 
-    #_job_level_list {
-        height: 550px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-    #_job_level_list_paginator{
-        bottom: 0;
-    }
 </style>
