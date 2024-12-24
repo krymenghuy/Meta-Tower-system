@@ -36,7 +36,7 @@ class ExitForm
             'id' => '0|identity=1',
             'name' => '1|string|0-250',
             'emp_id' => '1|number',
-            'is_settled' => '1|choice|1,2|default=1',
+            'is_finished' => '1|choice|1,2|default=1',
         ];
         $remark = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
@@ -110,8 +110,7 @@ class ExitForm
             ->selectRaw(
                 'ef.emp_id,
             ef.id,
-            ef.name,
-            ef.is_settled,
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -167,8 +166,8 @@ class ExitForm
             ->selectRaw(
                 'ef.emp_id,
             ef.id,
-            ef.name,
-            ef.is_settled,
+            
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -253,9 +252,9 @@ class ExitForm
             ->where('emp.status_id', 20)
             ->selectRaw("
             ef.id,
-            ef.name,
+            
             ef.emp_id,
-            ef.is_settled,
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as employee_name,
             emp.code,
@@ -279,7 +278,7 @@ class ExitForm
         $exitFormItems = $query->get();
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, is_settled, emp_id')->where('emp_id', $emp_id)->first();
+        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
 
         $form_items = [];
         if ($forms) {

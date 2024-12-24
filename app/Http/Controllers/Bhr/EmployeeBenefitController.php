@@ -29,7 +29,7 @@ class EmployeeBenefitController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        return JDV::result($this->benefitModel->getAllBenefitsList($req->all(),$ss));
+        return JDV::result($this->benefitModel->getAllBenefitList($req->all(),$ss));
     }
     public function getDetails(Request $req)
     {
