@@ -1447,10 +1447,10 @@ var EmployeeComponent = new (function () {
                                     ${d.file_name}
                                 </small>
                                 <div class="d-flex justify-content-end gap-3">
-                                    <a href="${main_view.base_url}/hr/emp-document/download" 
+                                    <a href="${d.file_url}" 
                                        class="lnk-download-emp-document" 
                                        target="_blank" 
-                                       download="${d.file_url}">
+                                       download="${d.name}">
                                         <i class="fa fa-download fs-7 text-primary"></i>
                                     </a>
                                     <a href="javascript:void(0)" 
