@@ -18,8 +18,12 @@ class BenefitController extends Controller
     function saveBenefit(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->benefity_category->save($req->benefit_type_id, $ss, $req->all());
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->benefit_id ?? $req->id;
+        $benefit = new Benefit($id, $ss);
+        $res = $benefit->save($req->all());
         return JDV::raw($res);
     }
     public function getBenefitPaginate(Request $req)

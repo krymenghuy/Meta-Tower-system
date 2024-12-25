@@ -23,7 +23,10 @@ class BenefitDisbursePolicyController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->bdp->save($req, $ss);
+        $id = $req->benefit_disburse_policy_id ?? $req->id;
+        $bdp = new BenefitDisbursePolicy($id, $ss);
+        $res = $bdp->save($req->all());
+        return JDV::raw($res);
     }
 
     public function getBenefitDisbursePolicyListPaginate(Request $req)

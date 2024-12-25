@@ -925,7 +925,7 @@ var EmployeeComponent = new (function () {
                             actions.classList.add('d-flex');
                         }
                     });
-                
+
                     item.addEventListener("mouseout", () => {
                         const actions = item.querySelector(".action-buttons");
                         if (actions) {
@@ -935,8 +935,8 @@ var EmployeeComponent = new (function () {
                         }
                     });
                 });
-                
-                
+
+
                 document
                     .getElementById("lnk_add_education")
                     .addEventListener("click", function (e) {
@@ -1272,7 +1272,7 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                       
+
                             <h6 class="mt-1">Tax Allowance </h6>
                             <div class="d-flex"><a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">(<i class="fa fa-plus"></i>)</a></div>
 
@@ -1458,15 +1458,19 @@ var EmployeeComponent = new (function () {
                                     ${d.file_name}
                                 </small>
                                 <div class="d-flex justify-content-end gap-3">
-                                    <a href="${d.file_url}" 
-                                       class="lnk-download-emp-document" 
-                                       target="_blank" 
+                                    <a href="${main_view.base_url}/hr/emp-document/download/${d.id}"
+                                       class="lnk-download-emp-document"
+                                       target="_blank"
+                                       download="${d.file_name}">
+                                    <a href="${d.file_url}"
+                                       class="lnk-download-emp-document"
+                                       target="_blank"
                                        download="${d.name}">
                                         <i class="fa fa-download fs-7 text-primary"></i>
                                     </a>
-                                    <a href="javascript:void(0)" 
-                                       data-id="${d.id}" 
-                                       data-emp-id="${employeeId}" 
+                                    <a href="javascript:void(0)"
+                                       data-id="${d.id}"
+                                       data-emp-id="${employeeId}"
                                        class="lnk-delete-emp-document ms-2">
                                         <i class="fa fa-trash fs-7 text-danger"></i>
                                     </a>
@@ -1477,7 +1481,7 @@ var EmployeeComponent = new (function () {
                     ].join('');
                     cmt++;
                 });
-                
+
                 if(cmt === 0){
                     html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
 

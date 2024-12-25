@@ -251,6 +251,7 @@ const BdpDialog = (() => {
                         { value: 11, name: "Nov" },
                         { value: 12, name: "Dec" },
                     ];
+                    console.log(123, months.length);
 
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
