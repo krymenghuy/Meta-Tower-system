@@ -11,13 +11,13 @@ var BenefitComponent = new (function () {
     this.elSearch = this.self.querySelector("#_benefit_search");
 
     this.cols = [
-        {
-            title: "No",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data, index, i) => {
-                return index + 1;
-            },
-        },
+        // {
+        //     title: "No",
+        //     className: "align-middle text-capitalize text-nowrap text-left",
+        //     data: (data, index, i) => {
+        //         return index + 1;
+        //     },
+        // },
         {
             title: "Benefit",
             className: "align-middle text-capitalize text-nowrap text-left",
