@@ -183,6 +183,33 @@ class PublicStorage //extends Model
                 $result->mime_type = $mime_type;
                 return (object)$result;
     }
+    static function savefile($path,$ext,$file_content,$category ='image'){
+        $branch_id = $path->branch_id ?? 0;
+        $allowed_exts = [];
+        if ($category ==='document') $allowed_exts = self::$allowed_doc_extensions;
+        else if ($category ==='image')  $allowed_exts = self::$allowed_image_extensions;
+
+        $ext = self::getExtensionFromMIMEType($ext);
+        $mime_type = self::getMIMETypeFromExtension($ext);
+        if(!$mime_type) return DV::error("There is no matching MIME type for file .$ext");
+        
+        if (!in_array($ext,$allowed_exts)){
+            $file_exts = implode(',',$allowed_exts);
+            return DV::error("File type is not allowed. Allowed file types are $file_exts. The provided file type is ".($ext? $ext:"empty"));
+        }
+
+
+        if (!$ext) return DV::error("Invalid file type or mime type ");
+
+        $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".$ext";
+        $full_path = self::getDiskPath($path,$category).$file_name;
+        $mErr = self::makeFile($ext,$full_path,$file_content);
+        if($mErr->status =='Error')  {
+           return DV::error($mErr->error_message);
+        } else {
+            return DV::success(["file_name"=>$file_name,"file_type"=>$ext,"mime_type"=>$mime_type]);
+        }
+    }
 
     static function extension_contains_invalid_char($ext){
         $chars = array(",", "-", "/","?");
@@ -468,33 +495,7 @@ static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[])
             return in_array(strtolower($ext? $ext:""),self::$allowed_image_extensions);
         }
 
-     static function savefile($path,$ext,$file_content,$category ='image'){
-        $branch_id = $path->branch_id ?? 0;
-        $allowed_exts = [];
-        if ($category ==='document') $allowed_exts = self::$allowed_doc_extensions;
-        else if ($category ==='image')  $allowed_exts = self::$allowed_image_extensions;
-
-        $ext = self::getExtensionFromMIMEType($ext);
-        $mime_type = self::getMIMETypeFromExtension($ext);
-        if(!$mime_type) return DV::error("There is no matching MIME type for file .$ext");
-        
-        if (!in_array($ext,$allowed_exts)){
-            $file_exts = implode(',',$allowed_exts);
-            return DV::error("File type is not allowed. Allowed file types are $file_exts. The provided file type is ".($ext? $ext:"empty"));
-        }
-
-
-        if (!$ext) return DV::error("Invalid file type or mime type ");
-
-        $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".$ext";
-        $full_path = self::getDiskPath($path,$category).$file_name;
-        $mErr = self::makeFile($ext,$full_path,$file_content);
-        if($mErr->status =='Error')  {
-           return DV::error($mErr->error_message);
-        } else {
-            return DV::success(["file_name"=>$file_name,"file_type"=>$ext,"mime_type"=>$mime_type]);
-        }
-    }
+    
 
     static function mime_to_ext($mime) {
     $mime_map = [

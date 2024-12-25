@@ -67,6 +67,6 @@ class EmployeeDocumentController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->emp_doc->downloadDocument($req->id, $ss);
+        return JDV::result($this->emp_doc->downloadDocument($req->id, $ss));
     }
 }
