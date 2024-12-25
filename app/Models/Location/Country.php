@@ -9,6 +9,11 @@ use App\Models\Location\City;
 use DB;
 use App\Models\DBX;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Bhr\GeneralSettings;
+
+use App\Models\PublicStorage;
+use App\Models\Location\Country;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Country //extends Model
 {
@@ -16,6 +21,7 @@ class Country //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $table ="loc_countries";
+    protected static $img_dir = 'country';
 
     function __construct($id=null,$userInfo=null){
         $this->id = $id;
@@ -30,7 +36,18 @@ class Country //extends Model
     static function delete($country_id,$ss){
         if(!$country_id) $country_id =-1;
         City::deleteByParent($country_id);
+        $file_name = DB::table('loc_countries')->where('id', $country_id)->value('flag_file_name');
+        if ($file_name) {
+            // Delete the file from the storage
+            PublicStorage::delete([
+                'branch_id' => null,
+                'subs_id' => $ss->subs_id,
+                'dir' => self::$img_dir,
+            ], 'images', $file_name);
+        }
         $x = DB::table('loc_countries')->where('id',$country_id)->delete();
+
+
         return DV::success();
     }
 
@@ -92,30 +109,71 @@ class Country //extends Model
         return $founds->isEmpty() ? null : $founds->first()->nationality;
     }
 
-    static function list($arr,$ss){
-         $branch_id = $ss->branch_id;
-         $d = (object) $arr;
-         $search_value = $d->search_value ?? null;
+    static function list($arr, $ss) {
+        $branch_id = $ss->branch_id;
+        $d = (object) $arr;
+        $search_value = $d->search_value ?? null;
+        $id = $d->id ?? null;
 
-         $str_search = '2=2';
-         if($search_value){
-             $search_value = escape_like_str($search_value);
-             $str_search = '(c.name LIKE \'%'.$search_value.'%\')';
-         }
-         $create_date = DBX::$created_at;
-         $col_create_date = DBX::formatDate("c.$create_date",'create_date');
-         //return Cache::remember('countries',60,function(){
-            return DB::table('loc_countries AS c')
-            ->where('c.branch_id',$branch_id)
-            ->whereRaw($str_search)
-            ->selectRaw('c.id,c.name,c.name_kh,c.currency_code,c.region,c.nationality,c.nationality_kh,c.create_user,'.$col_create_date)
-            ->orderBy('c.name','ASC')->get();
+        $str_search = '2=2';
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_search = '(c.name LIKE \'%' . $search_value . '%\')';
+        }
 
-         //});
+        $create_date = DBX::$created_at;
+        $col_create_date = DBX::formatDate("c.$create_date", 'create_date');
 
-         //Cache::put('countries',$countries,15);
-         //return $countries;
-     }
+        $query = DB::table('loc_countries AS c')
+            ->where('c.branch_id', $branch_id)
+            ->whereRaw($str_search);
+
+        if ($id) {
+            $query->where('c.id', $id);
+        }
+
+        $query->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh, c.create_user, flag_file_name, ' . $col_create_date)
+            ->orderBy('c.name', 'ASC');
+
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->flag_file_name) {
+                $row->image_url = self::flagPicture($row->id);
+            }
+            unset($row->flag_file_name);
+        }
+
+        return $rows;
+    }
+
+    function getDetailCountry($id,$ss){
+        $branch_id = $ss->branch_id;
+        $row = DB::table('loc_countries as c')
+            ->where('c.id', $id)
+            ->where('c.branch_id', $branch_id)
+            ->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh, c.create_user, flag_file_name')
+            ->first();
+        $row->image_url = '';
+        if ($row->flag_file_name) {
+            $row->image_url = self::flagPicture($row->id);
+        }
+        unset($row->flag_file_name);
+        return $row;
+    }
+
+    function options_country($id, $ss)
+    {
+        $country = null;
+        if ($id) {
+            $country = self::getDetailCountry($id, $ss);
+        }
+        return (object) [
+            'country' => $country,
+        ];
+    }
+
 
 
     //  static function list($arr,$ss){
@@ -234,6 +292,8 @@ class Country //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+        $arr['flag_file_name'] = $arr['flag'] ?? null;
         $v_rule = [
             'name' => '1|string|0-100',
             'name_kh' => '0|string|0-100',
@@ -244,9 +304,77 @@ class Country //extends Model
             'flag_file_name' => '0|string|0-100',
         ];
         $check_unique = ["$branch_id|loc_countries|name|id=id"];
-        $res = validateObject($arr, $v_rule, true, ['flag_file_name' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+        $res = validateObject($arr, $v_rule, true, ['flag_file_name' => GeneralSettings::$image_chars,'lang_code'=>['-']], $ss->lang, false, isset($arr['id']) ? null : $check_unique);
         if ($res->error) {
             return DV::error($res->error);
         }
+
+        $inputs = $res->values;
+        $d = (object) $inputs;
+        $flag = $d->flag_file_name;
+
+        if (!$d->name_kh) {
+            $d->name_kh = $d->name;
+            $inputs['name_kh'] = $d->name_kh;
+        }
+        unset($inputs['flag_file_name']);
+        $country_created = !$id;
+        $delete_prev_flag = ($id >0 && (!$flag || isImage($flag)));
+
+        $id = saveData($ss, 'loc_countries', ['id' => $id], $inputs, [], 1, false);
+        if ($id > 0) {
+            if($delete_prev_flag){
+                $file_name = DB::table('loc_countries')->where('id', $id)->value('flag_file_name');
+                if($file_name){
+                    PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+                }
+                DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
+            }
+            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $flag, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
+            return DV::depends(1, ['loc_countries' => $inputs, 'id' => $id]);
+        }
+        return DV::error("Failed to save country");
+
+    }
+
+    static function saveFlag($photo_data, $file_type = null, $id = null, $ss = null)
+    {
+        $id = $id ?? $id;
+        $ss = $ss ?? $ss;
+        $col_subs_id = DBX::getHex('c.subs_id', 'subs_id');
+        $country = DB::table('loc_countries as c')->where('c.id', $id)->selectRaw($col_subs_id . ',c.id,c.branch_id,c.flag_file_name')->first();
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if (!$country) {
+            return DV::error('Country identity is not correct!');
+        }
+        if ($delete_image) {
+            PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
+            DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
+        }
+        $res = PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
+        if($res->status ==='Error') return $res;
+        $img = self::flagPicture($id);
+        return DV::depends(1,['image_url'=>$img]);
+    }
+
+    static function flagPicture($id)
+    {
+        $col_subs_id = DBX::getHex('c.subs_id', 'subs_id');
+        $row = DB::table('loc_countries as c')->where('c.id', $id)->selectRaw($col_subs_id . ',c.branch_id,c.flag_file_name')->first();
+        $url = '';
+        if ($row) {
+            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->flag_file_name;
+            return validateUrl($url);
+        }
+    }
+    function deleteFlag($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $country = DB::table('loc_countries')->where('id', $id)->selectRaw('id,flag_file_name')->first();
+        if (!$country) return DV::error('Country identity is not correct!');
+        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
+        DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
+        return DV::success();
     }
 }
