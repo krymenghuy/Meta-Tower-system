@@ -74,12 +74,12 @@ var CheckPointCategoryComponent = new (function () {
         };
         const pr_tbl = mThis.ExitCheckpointsListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 260) + 'px';
+        sh_parent.style.height = window.innerHeight - 240 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 260) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+        };
 
 
         mThis.initDropdownMenus(pr_tbl);

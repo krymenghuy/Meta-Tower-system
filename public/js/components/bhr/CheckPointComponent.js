@@ -82,10 +82,12 @@ var CheckPointComponent = new (function () {
         };
         const pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
-
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+        };
         mThis.initDropdownMenus(pr_tbl);
 
         mThis.divFilter.addEventListener("change", (e) => {

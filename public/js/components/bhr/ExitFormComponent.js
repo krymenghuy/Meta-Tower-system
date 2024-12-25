@@ -51,7 +51,7 @@ var ExitFormComponent = new (function () {
                 let settledText = "Not Yet";
                 let settledClass = "";
 
-                if (data.is_settled == 1) {
+                if (data.is_finished == 1) {
                     settledText = "Done";
                     settledClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
@@ -117,9 +117,12 @@ var ExitFormComponent = new (function () {
 
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 250 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
-
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+        };
         mThis.initDropdownMenus(pr_tbl);
 
         mThis.divFilter.addEventListener("change", (e) => {
@@ -177,7 +180,7 @@ var ExitFormComponent = new (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
-
+        
         ExitFormDialog.show(op);
     };
     this.delete_exit_form = (id, menulink) => {
@@ -187,7 +190,7 @@ var ExitFormComponent = new (function () {
             onClose: () => {
                 mThis.ExitFormListView.showPage();
             },
-        };
+        };  
         cv_interact.confirm(
             "Delete this Item Status?",
             {
@@ -264,12 +267,12 @@ const ExitFormDialog = (() => {
                                 <select name="employee" class="form-control data-input" data-field="emp_id"></select>
                             </div>
                             <div class="form-group col-12">
-                                <label for="name" class="form-label" vslang="titles.Form"></label>
-                                <input name="name" class="form-control data-input" data-field="name" />
+                                <label for="form_name" class="form-label" vslang="titles.Form"></label>
+                                <input name="form_name" class="form-control data-input" data-field="name" />
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="is_settled" class="form-label" vslang="titles.Is Settled"></label>
-                                <select name="is_settled" class="modal-select data-input" data-field="is_settled" id="is_settled">
+                                <label for="is_finished" class="form-label" vslang="titles.Is Finished"></label>
+                                <select name="is_finished" class="modal-select data-input" data-field="is_finished" id="is_finished">
                                     <option value="1">Done</option>
                                     <option value="2">Not Yet</option>
                                 </select>
