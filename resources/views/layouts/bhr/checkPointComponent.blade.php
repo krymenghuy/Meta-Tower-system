@@ -13,14 +13,6 @@
         </div>
 
     </div>
-    <div id="_check_point_list" class="px-4">
+    <div id="_check_point_list" class="p-4">
     </div>
 </div>
-<style>
-    #_check_point_list {
-        height: 520px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-</style>
