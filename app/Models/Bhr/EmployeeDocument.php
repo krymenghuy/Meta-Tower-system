@@ -45,7 +45,7 @@ class EmployeeDocument
         $data = $d->file_name;
         $ext = $d->ext;
         // $category = isImage($data) ? 'image' : 'document';
-        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
+        $extImage =  ['jpg','png','pdf','jpeg','heif','bmp','webp'];
         if (in_array($ext, $extImage)) {
             $category = 'image';
         }
@@ -74,7 +74,6 @@ class EmployeeDocument
         $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
         return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
 
-        return DV::error('Error saving data');
     }
 
     function listpaginate($arr, $ss)
@@ -99,13 +98,12 @@ class EmployeeDocument
             $count = $count_query->count('ed.id');
             $rows = $query->get();
 
-        // foreach ($rows as $row) {
-        //     $row->image_url = '';
-        //     if ($row->file_name) {
-        //         $row->image_url = self::getfile($row->id);
-        //     }
-        //     unset($row->image_file_name);
-        // }
+        foreach ($rows as $row) {
+            $row->file_url = '';
+            if ($row->file_name) {
+                 $row->file_url = self::getFile($row->id);
+            }
+        }
 
             return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
         }
@@ -176,27 +174,23 @@ class EmployeeDocument
 
     }
 
-    public static function getfile($id)
+    public static function getFile($id)
     {
-        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
-
+        $category = 'document';
         $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
         $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
-
         $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
-            if (in_array($extension, $extImage)) {
+        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp'];
+        if (in_array($extension, $extImage)) {
             $category = 'image';
-            }
-            else{
-                $category = 'document';
-            }
-            // return $category;
-        if ($row) {
-            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
-            return validateUrl($url);
-        } else {
-            return self::defaultImage($row ? $row->subs_id : null);
         }
+         else{
+            $category = 'document';
+         }
+        if ($row) {
+             return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+            // return validateUrl($url,null);
+        } else return null;
     }
 
     function downloadDocument($id, $ss)
@@ -211,7 +205,7 @@ class EmployeeDocument
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->file_name) {
-                $row->image_url = self::getfile($row->id);
+                $row->image_url = self::getFile($row->id);
             }
             unset($row->file_name);
         }

@@ -23,7 +23,7 @@
 }
 .listview-container{
     border-radius: 15px;
-    border: 1px solid #dee2e6 !important;
+    /* border: 1px solid #dee2e6 !important; */
 }
 .btn_search {
     padding: 15px;
