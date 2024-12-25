@@ -38,19 +38,21 @@ class ExitForm
             'emp_id' => '1|number',
             'is_finished' => '1|choice|1,2|default=1',
         ];
-        $remark = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $remark], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
+        $name = $inputs['name'];
 
         if (!$id) {
             $existingExitForm = DB::table('exit_forms')
                 ->where('emp_id', $emp_id)
+                ->where('name', $name)
                 ->first();
 
             if ($existingExitForm) {
@@ -111,6 +113,7 @@ class ExitForm
                 'ef.emp_id,
             ef.id,
             ef.is_finished,
+            ef.name,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -164,9 +167,9 @@ class ExitForm
             ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->where('emp.status_id', 20)
             ->selectRaw(
-                'ef.emp_id,
+            'ef.emp_id,
             ef.id,
-            
+            ef.name,
             ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
@@ -252,7 +255,7 @@ class ExitForm
             ->where('emp.status_id', 20)
             ->selectRaw("
             ef.id,
-            
+            ef.name,
             ef.emp_id,
             ef.is_finished,
             emp.id as emp_id,

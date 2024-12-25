@@ -36,8 +36,8 @@ class ExitFormItem
             'check_point_id' => '1|number',
             'amount' => '0|number',
             'remarks' => '0|string',
-            'is_finished' => '1|choice|1,2,3|default=1',
-            'item_type' => '1|choice|1,2,3|default=1'
+            'is_settled' => '1|choice|1,2,3|default=1',
+            'item_type' => '1|choice|1,2,3,4,5|default=1'
         ];
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
@@ -109,7 +109,7 @@ class ExitFormItem
             'efi.id,
             efi.check_point_id,
             efi.form_id,
-            
+            ef.name as form_name,
             efi.amount,
             efi.remarks,
             efi.item_type,
@@ -158,7 +158,7 @@ class ExitFormItem
                
                 efi.check_point_id,
                 efi.form_id,
-                
+                ef.name as form_name,
                 efi.amount,
                 efi.remarks,
                 efi.item_type,
@@ -198,7 +198,7 @@ class ExitFormItem
 
         return (object) [
             'check_points' => DB::table('check_points')->select('id', 'name')->get(),
-            // 'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
+            'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
             'check_point_categories' => DB::table('check_point_categories')->select('id', 'name')->get(),
             'exit_form_items' => $exit_form_items,
         ];
@@ -223,11 +223,10 @@ class ExitFormItem
             'efi.id,
            
             efi.check_point_id,
-            efi.form_id,
-            
+            efi.form_id,            
             efi.amount,
             efi.remarks,
-            is_settled,
+            efi.is_settled,
             cp.name as item_name,
             cp.check_point_cat_id'
             );
@@ -242,7 +241,7 @@ class ExitFormItem
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
         $form_item = DB::table('exit_form_items')->selectRaw('id, check_point_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, is_settled, emp_id')->where('emp_id', $emp_id)->first();
+        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
 
         $groupedData = [];
         $number_cat = [];
