@@ -706,7 +706,7 @@ var EmployeeComponent = new (function () {
                             <h6 class="mt-1">Skill</h6>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-skill">
-                                    <i class="fa fa-plus-circle fs-7 text-white"></i>
+                                    (<i class="fa fa-plus-circle fs-7"></i>)
                                 </a>
                             </div>
                         </div>
@@ -717,7 +717,7 @@ var EmployeeComponent = new (function () {
                                 <tr>
                                     <th style="color:#2b3991; font-size:12px;">Skill</th>
                                     <th style="color:#2b3991; font-size:12px;">Rate</th>
-                                    <th style="color:#2b3991; font-size:12px;" class="text-end">Actions</th>
+                                    <th style="color:#2b3991; font-size:12px;" class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -872,7 +872,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Education</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_education">
-                            <i class="fa fa-plus-circle fs-7 text-white"></i>
+                            (<i class="fa fa-plus-circle fs-7"></i>)
                         </a>
                     </div>
                 </div>
@@ -881,26 +881,31 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html =[html,`
-                <div class="row pt-2 border-bottom border-white">
-                    <div class="col-md-12">
+                <div class="row pt-2 border-bottom border-white education-item">
+                    <div class="col-md-12 pb-2">
                         <div class="d-flex justify-content-between">
                             <h6 style="color:#2b3991;">${d.period}</h6>
                             <span class="text-nowrap text-dark" style="color:#2b3991;">${d.school}</span>
                         </div>
-                        <span class="text-muted pb-1 d-block"><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/graduation.svg" /> ${d.edu_level}</span>
-                        <small class="text-primary" ><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/books.svg" />${d.major}</small>
-                        <div class="d-flex justify-content-end gap-3">
-                            <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
-                                <i class="fa-solid fa-pen text-warning tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
-                            </a>
-                            <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
-                                <i class="fa-solid text-danger fa-trash-can tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
-                            </a>
+                        <span class="text-muted pb-2 d-block">
+                            <img class="bhr-icons" src="${main_view.asset_url}/images/bhr/school_new.svg" /> ${d.edu_level}
+                        </span>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-primary">
+                                <img class="bhr-icons" src="${main_view.asset_url}/images/bhr/books.svg" /> ${d.major}
+                            </span>
+                            <div class="justify-content-end gap-2 action-buttons d-none">
+                                <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
+                                    <small><i class="fa-regular fa-pen-to-square fs-7 text-primary"></i></small>
+                                </a>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
+                                    <small><i class="fa-solid fa-x fs-7 text-danger"></i></small>
+                                </a>
+                            </div>
                         </div>
                     </div>
-
-
                 </div>
+
                 `].join('');
                 cmt++;
                 });
@@ -912,7 +917,26 @@ var EmployeeComponent = new (function () {
                 html += `</div></div>`;
                 this.profile_card_center.innerHTML = html;
 
-                // Add new education
+                document.querySelectorAll(".education-item").forEach((item) => {
+                    item.addEventListener("mouseover", () => {
+                        const actions = item.querySelector(".action-buttons");
+                        if (actions) {
+                            actions.classList.remove("d-none");
+                            actions.classList.add('d-flex');
+                        }
+                    });
+                
+                    item.addEventListener("mouseout", () => {
+                        const actions = item.querySelector(".action-buttons");
+                        if (actions) {
+                            actions.classList.add("d-none");
+                            actions.classList.remove('d-flex');
+
+                        }
+                    });
+                });
+                
+                
                 document
                     .getElementById("lnk_add_education")
                     .addEventListener("click", function (e) {
@@ -1067,7 +1091,7 @@ var EmployeeComponent = new (function () {
                     <h6 class="mt-1">Experience</h6>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_experience">
-                           <i class="fa fa-plus-circle fs-7 text-white"></i>
+                           (<i class="fa fa-plus-circle fs-7 "></i>)
                         </a>
                     </div>
                 </div>
@@ -1248,20 +1272,10 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h6 class="mt-1">Tax Allowance</h6>
-                            <div class="d-flex gap-2">
-                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
+                       
+                            <h6 class="mt-1">Tax Allowance </h6>
+                            <div class="d-flex"><a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">(<i class="fa fa-plus"></i>)</a></div>
 
-                                    <small class="text-warning border border-white px-1 rounded-2"> <i class="fa fa-plus fs-7 "></i> Add</small>
-                                </a>
-                            </div>
-                            <h6 class="mt-1">Tax Allowance
-                                <small>
-                                        <a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">
-                                            (<i class="text-success  fa fa-plus"></i>)
-                                        </a>
-                                </small>
-                            </h6>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                         <div class="">
@@ -1270,9 +1284,9 @@ var EmployeeComponent = new (function () {
                                 <tr>
                                     <th style="color:#2b3991; font-size:12px;">Id</th>
                                     <th style="color:#2b3991; font-size:12px;">Qty</th>
-                                    <th style="color:#2b3991; font-size:12px;">Amount</th>
+                                    <th style="color:#2b3991; font-size:12px;">Unit Amt</th>
                                     <th style="color:#2b3991; font-size:12px;">Allowance</th>
-                                    <th style="color:#2b3991; font-size:12px;">Actions</th>
+                                    <th style="color:#2b3991; font-size:12px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1423,12 +1437,9 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h6 class="mt-1">Document
-                               <small><a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
-                                        (<i class="text-white fa fa-plus"></i>)
-                                      </a>
-                                </small>
-                            </h6>
+                            <h6 class="mt-1">Document</h6>
+                            <div class="d-flex"><a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">(<i class="fa fa-plus"></i>)</a>
+                            </div>
                         </div>
                         <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                 `;
