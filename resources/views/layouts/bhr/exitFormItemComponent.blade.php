@@ -13,16 +13,8 @@
         </div>
 
     </div>
-    <div id="_exit_form_item_list" class="mt-4 p-4">
+    <div id="_exit_form_item_list" class="p-4">
     </div>
     <div class="d-none container mt-4" id="view_exit_form_item">
     </div>
 </div>
-<style>
-    #_exit_form_item_list {
-        height: 520px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-</style>

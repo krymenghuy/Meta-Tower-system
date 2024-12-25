@@ -13,7 +13,7 @@
         </div>
 
     </div>
-    <div id="_exit_form_list" class="mt-4 p-4">
+    <div id="_exit_form_list" class="p-4">
     </div>
     <div class="d-none container mt-4" id="view_exit_form_">
     </div>
@@ -37,11 +37,5 @@
 
     .ms-2 {
         margin-left: 8px;
-    }
-    #_exit_form_list {
-        height: 520px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
     }
 </style>

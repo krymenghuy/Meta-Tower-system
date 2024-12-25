@@ -12,7 +12,7 @@ var ExitFormItemComponent = new (function () {
     this.viewExitForm = this.self.querySelector("#view_exit_form_item");
     this.cols = [
         {
-            title: "Form Name",
+            title: "Name",
             className: "align-middl",
             data: (data) =>
                 `<span class="text-primary-custom">${
@@ -86,11 +86,11 @@ var ExitFormItemComponent = new (function () {
                 } else if (data.item_type == 3) {
                     ItemTypeText = "Document";
                     ItemTypeClass =
-                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                        "text-white text-center bg-primary-custom border border-success rounded-5 p-1";
                 } else if (data.item_type == 4) {
                     ItemTypeText = "General";
                     ItemTypeClass =
-                        "text-white text-center bg-success border border-info rounded-5 p-1";
+                        "text-primary text-center bg-secondary border border-success rounded-5 p-1";
                 } else {
                     ItemTypeClass =
                         "text-white text-center bg-warning border border-info rounded-5 p-1";
@@ -153,8 +153,12 @@ var ExitFormItemComponent = new (function () {
 
         const pr_tbl = mThis.ExitFormItemListView.getListContainer();
         const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 240 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+        };
 
         mThis.initDropdownMenus(pr_tbl);
 
