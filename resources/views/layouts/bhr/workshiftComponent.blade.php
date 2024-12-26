@@ -336,7 +336,7 @@
 
             <button type="button" class="btn_add" id="_btnAddShiftDetail">
                 <i class="fas fa-plus"></i>
-                <span>Add Shift Scan</span>
+                <span>Add Scan</span>
             </button>
         </div>
 

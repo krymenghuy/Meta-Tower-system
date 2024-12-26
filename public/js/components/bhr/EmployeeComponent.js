@@ -836,16 +836,14 @@ var EmployeeComponent = new (function () {
                             const id = e.target
                                 .closest("a")
                                 .getAttribute("data-id");
-                            console.log(123,id);
-
-
-                            let op = {
+                             
+                            const op = {
                                 id: id,
                                 emp_id: employeeId,
                                 btn: e.target,
                                 title: "Edit Skill",
                                 onClose: () => {
-                                    mThis.renderCardLeft.showPage();
+                                    mThis.renderCardLeft(employeeId);
                                 },
                             };
                             console.log("Edit operation:", op);
