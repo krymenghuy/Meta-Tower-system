@@ -44,7 +44,7 @@ var WorkshiftComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Save Shift Detail successfully");
+                    cv_interact.success("Scanpoint has been saved successfully!");
                     mThis.WorkshiftListView();
                 },
             };
@@ -197,7 +197,7 @@ var WorkshiftComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("update shift details successfully");
+                cv_interact.success("scanpoint is updated successfully!");
                 mThis.WorkshiftListView();
             },
         };
@@ -210,9 +210,9 @@ var WorkshiftComponent = new (function () {
             btn: menuLink,
         };
         cv_interact.confirm(
-            "Are you sure you want to delete this WorkShift?",
+            "Are you sure you want to delete this Scanpoint?",
             {
-                title: "Delete WorkShift",
+                title: "Delete Scanpoint",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -369,8 +369,8 @@ const ShiftDetailDialog = (() => {
             ],
 
             prepareFormOptions: {
-                createTitle: "Add Shift Details",
-                modifyTitle: "Edit Shift Details",
+                createTitle: "Add Scan",
+                modifyTitle: "Edit Scan",
                 targetProp: "shift_details",
                 api: {
                     endpoint: [

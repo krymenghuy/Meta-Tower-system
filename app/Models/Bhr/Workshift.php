@@ -6,9 +6,8 @@ use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
-
-
-class Workshift
+ 
+class WorkShift
 {
     protected $id = null;
     protected $userInfo = null;
