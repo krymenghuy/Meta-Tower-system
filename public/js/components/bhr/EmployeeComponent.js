@@ -412,19 +412,28 @@ var EmployeeComponent = new (function () {
     };
 
     this.renderProfile = (data) => {
-        let html = [`<div class="employee-card d-flex p-3 bg-primary-custom h-info-student mb-2" data-id="">`,
-                    `<div class="d-block ms-3 w-100">`,
-                        `<div class="row text-white mb-0">`,
-                            `<div class="col-md-2">
+        let html = [
+            `<div class="employee-card d-flex p-3 bg-primary-custom h-info-student mb-2" data-id="">`,
+            `<div class="d-block ms-3 w-100">`,
+            `<div class="row text-white mb-0">`,
+            `<div class="col-md-2">
                                 <div class="div-img ms-3 mt-4">
-                                    <img src="${data.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" alt="Employee Image">
+                                    <img src="${
+                                        data.image_url ||
+                                        main_view.asset_url +
+                                            "/images/default/default-staff.png"
+                                    }" alt="Employee Image">
                                 </div>
                                 <div class="d-flex mt-3  justify-content-center">
-                                    <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${data.code}</span></small>
+                                    <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${
+                                        data.code
+                                    }</span></small>
 
                                 </div>
                                 <div class="d-flex  justify-content-center">
-                                    <small class="text-nowrap" style="">${data.position}</small>
+                                    <small class="text-nowrap" style="color:#cab54a;">${
+                                        data.position
+                                    }</small>
                                 </div>
                                  <div class="d-flex social-icons mt-3 w-100 justify-content-center">
                                     <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
@@ -433,96 +442,123 @@ var EmployeeComponent = new (function () {
                                 </div>
 
                             </div>`,
-                            `<div class="col-md-10">`,
-                                `<div class="row">`,
-                                    `<div class="col-md-4 mt-3">
+            `<div class="col-md-10">`,
+            `<div class="row">`,
+            `<div class="col-md-4 mt-3">
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${data.name}</p>
+                                        <p class="text-white text-capitalize">${
+                                            data.name
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name KH</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${data.name_kh}</p>
+                                        <p class="text-white text-capitalize">${
+                                            data.name_kh
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Sex</p>
                                         <p class="px-2">:</p>
                                         <p class="text-white">
                                         ${data.sex == "M" ? "Male" : ""}${
-                                            data.sex == "F" ? "Female" : ""
-                                        }${data.sex == "O" ? "Other" : ""}</p>
+                data.sex == "F" ? "Female" : ""
+            }${data.sex == "O" ? "Other" : ""}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Nationality</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white">${data.nationality}</p>
+                                        <p class="text-white">${
+                                            data.nationality
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap text-white">${data.marital_status}</p>
+                                        <P class="text-nowrap text-white">${
+                                            data.marital_status
+                                        }</p>
                                     </div>
 
 
 
                                     </div>`,
 
-                                    `<div class="col-md-4 mt-3">
+            `<div class="col-md-4 mt-3">
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p">Staff Type</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-nowrap" style="color:#cab54a;">${data.type}</p>
+                                            <P class="text-nowrap" style="color:#cab54a;">${
+                                                data.type
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Position</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-nowrap" style="color:#cab54a;">${data.position}</p>
+                                            <P class="text-nowrap" style="color:#cab54a;">${
+                                                data.position
+                                            }</p>
                                         </div>
 
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Email</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-white" >${data.email}</p>
+                                            <P class="text-white" style="text-align:left; overflow:hidden; white-space:wrap; text-overflow:ellipsis; word-wrap:break-word; white-space:nowrap;" >${data.email}</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p">Phone Number</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-nowrap text-white">${data.phone_number}</p>
+                                            <P class="text-nowrap text-white">${
+                                                data.phone_number
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Husband/Wife Name</p>
                                             <P class="pl-5 pr-2">:</p>
-                                            <P class="text-white">${data.spouse_name ?? 'not yet'}</p>
+                                            <P class="text-white">${
+                                                data.spouse_name ?? "not yet"
+                                            }</p>
                                         </div>
                                     </div>`,
 
-                                    `<div class="col-md-4 mt-3">
+            `<div class="col-md-4 mt-3">
                                         <div class="d-flex">
                                             <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                             <p class="pl-5 pr-2">:</p>
-                                            <p class="text-nowrap text-white">${data.nid}</p>
+                                            <p class="text-nowrap text-white">${
+                                                data.nid
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
                                             <p class="pl-5 pr-2">:</p>
-                                            <p class="text-nowrap text-white">${data.passport_number}</p>
+                                            <p class="text-nowrap text-white">${
+                                                data.passport_number
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
                                             <p class="pl-5 pr-2">:</p>
-                                            <p class="text-nowrap text-white">${data.passport_expiry_date ?? 'not yet have'}</p>
+                                            <p class="text-nowrap text-white">${
+                                                data.passport_expiry_date ??
+                                                "not yet have"
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
                                             <P class="pl-5 pr-2">:</p>
-                                            <P class="text-nowrap text-white">${data.nssf_id}</p>
+                                            <P class="text-nowrap text-white">${
+                                                data.nssf_id
+                                            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>
                                             <P class="pl-5 pr-2">:</p>
-                                            <P class="text-white">${data.spouse_occ_code ?? 'ទទេ'}</p>
+                                            <P class="text-white">${
+                                                data.spouse_occ_code ?? "ទទេ"
+                                            }</p>
                                         </div>
 
                                     </div>
@@ -530,30 +566,43 @@ var EmployeeComponent = new (function () {
 
 
                                     </div>`,
-                                    `<hr class="bg-white fs-5">`,
-                                    `<div class="row row-cols-4 mt-2">
+            `<hr class="bg-white fs-5">`,
+            `<div class="row row-cols-4 mt-2">
                                         <div class="col">
                                             <div class="d-flex">
                                                 <p class="text-nowrap  width-p">Date of Birth</p>
                                                 <p class="px-2">:</p>
-                                                <p class="text-white">${data.date_of_birth}</p>
+                                                <p class="text-white">${
+                                                    data.date_of_birth
+                                                }</p>
                                             </div>
                                             <div class="d-flex">
                                                 <p class="text-nowrap width-p" vslang="titles.Joining Date">Joining Date</p>
                                                 <p class="px-2">:</p>
-                                                <p class="text-nowrap text-" style="color:#cab54a;">${data.joining_date}</p>
+                                                <p class="text-nowrap text-" style="color:#cab54a;">${
+                                                    data.joining_date
+                                                }</p>
                                             </div>
                                         </div>
                                         <div class="col">
                                             <div class="d-flex">
                                                 <P class="text-nowrap  width-p">Work Shift</p>
                                                 <P class="px-2">:</p>
-                                                <P class="text-white">${data.work_shift}</p>
+                                                <P class="text-white">${
+                                                    data.work_shift
+                                                }</p>
                                             </div>
                                             <div class="d-flex">
                                                 <P class="text-nowrap  width-p">Payroll Tax</p>
                                                 <P class="px-2">:</p>
-                                                <P class="text-nowrap" style="color:#cab54a;">${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
+                                                <P class="text-nowrap" style="color:#cab54a;">${
+                                                    data.apply_payroll_tax ==
+                                                    "0"
+                                                        ? "Have Tax"
+                                                        : ""
+                                                }${
+                data.apply_payroll_tax == "1" ? "Non Tax" : ""
+            }</p>
                                             </div>
 
 
@@ -563,34 +612,38 @@ var EmployeeComponent = new (function () {
                                             <div class="d-flex">
                                                 <P class="text-nowrap width-p">salary</p>
                                                 <P class="px-2">:</p>
-                                                <P class="text-white">​${data.salary || "0.00"}(KHR)</p>
+                                                <P class="text-white">​${
+                                                    data.salary || "0.00"
+                                                }(KHR)</p>
                                             </div>
                                             <div class="d-flex">
                                                 <P class="text-nowrap width-p" vslang="titles.Address">Address</p>
                                                 <P class="px-2">:</p>
-                                                <P class="text-nowrap" style="overflow: hidden; text-overflow: ellipsis;color:#cab54a;">${data.address}</p>
+                                                <P class="text-nowrap" style="overflow: hidden; text-overflow: ellipsis;color:#cab54a;">${
+                                                    data.address
+                                                }</p>
                                             </div>
                                         </div>
                                         <div class="col">
                                          <div class="d-flex justify-content-center gap-4 mt-5">
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
-                                                    data.id
-                                                }" data-status ="${data.status_id}">
+                                                data.id
+                                            }" data-status ="${data.status_id}">
                                                 <i class="fa-regular fa-pen-to-square  fs-5 tool-tip" style="color:#fff;"><span class="tool-tiptext fs-6">Edit Profile</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="delete_employee" data-id="${
-                                                    data.id
-                                                }" data-status ="${data.status_id}">
+                                                data.id
+                                            }" data-status ="${data.status_id}">
                                                 <i class="fa-solid fa-user-xmark fs-5 tool-tip" style="color:#e21f2c;"><span class="tool-tiptext fs-6">Delete</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="set_resign" data-id="${
-                                                    data.id
-                                                }" data-status ="${data.status_id}">
+                                                data.id
+                                            }" data-status ="${data.status_id}">
                                                 <i class="fa-solid fa-circle-exclamation tool-tip fs-5" style="color:#efc84a;"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="movement" data-id="${
-                                                    data.id
-                                                }" data-status ="${data.status_id}">
+                                                data.id
+                                            }" data-status ="${data.status_id}">
                                                 <i class="fa-brands fa-stack-exchange tool-tip fs-5" style="color:#05ff77"><span class="tool-tiptext fs-6">movement</span></i>
                                             </a>
 
@@ -598,15 +651,14 @@ var EmployeeComponent = new (function () {
 
                                         </div>`,
 
-                                    `</div>`,
-                                `</div>`,
-                             `</div>`,
+            `</div>`,
+            `</div>`,
+            `</div>`,
 
+            `</div>`,
 
-
-                    `</div>`,
-
-                    `</div>`].join('');
+            `</div>`,
+        ].join("");
 
         this.profile_info_emp.innerHTML = html;
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
