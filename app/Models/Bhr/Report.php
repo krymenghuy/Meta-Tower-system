@@ -381,8 +381,8 @@ class Report {
     function getWalletAccountList($filter,$ss=null) {
 
     
-        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
-        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+        $header_list = ['No','Employee','Account Type','Salary','Account Number','Balance','Last Balance Date','Currency'];
+        $key_list = ['no','emp_name','account_type','salary','account_number','balance','last_dalance_date','currency',];
 
         $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name',$header_list,$key_props);
@@ -398,9 +398,21 @@ class Report {
         if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
         // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
         if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
-        $query = DB::table('employees as emp')
-        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        $date = DBX::formatDate('t.created_at','created_at');
+
+        $query = DB::table('transactions as t')
+            ->join('employees as e', 'e.id', '=', 't.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('accounts as a', 'a.id', '=', 't.account_id')
+            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id') // Join for from_account_id
+            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')   // Join for to_account_id
+            ->selectRaw(
+                'hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount,
+                t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, ' . $date . ',
+                t.from_account_id, t.to_account_id, a.account_number,
+                fa.account_number as from_account_number, ta.account_number as to_account_number'
+            )
+            ->orderBy('t.created_at', 'desc')
         ->whereRaw($str_branch_id);
         $rows = $query->get();
 
