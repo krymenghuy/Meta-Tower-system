@@ -14,16 +14,13 @@ class EmployeeBenefitController extends Controller
     {
         $this->benefitModel = new EmployeeBenefit();
     }
-
-    public function saveBenefit(Request $req)
+    function saveBenefit(Request $req)
     {
-        $id = $req->emp_id ?? $req->id;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->benefitModel->save($req->benefit_type_id,$id,$ss,$req->all());
+        $res = $this->benefitModel->save($req->benefit_type_id, $ss, $req->all());
         return JDV::raw($res);
     }
-
     public function getAllBenefitList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);

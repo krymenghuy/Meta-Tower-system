@@ -26,14 +26,13 @@ class EmployeeBenefit
         return $row;
     }
 
-    public function save($benefit_type_id, $id = null, $ss = null, $arr = [])
+    public function save($benefit_type_id, $ss, $arr)
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
-
         $v_rule = [
+            'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
             'benefit_type_id' => '1|choice|1,2,3|default=1',
             'benefit_id' => '1|number',
@@ -41,76 +40,55 @@ class EmployeeBenefit
             'flat_tax_rate' => '0|number',
             'balance' => '0|number',
             'amount' => '1|number',
-            'remarks' => '0|string|1-255',
+            'remarks' => '0|string|1-250',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $remarks = $arr['remarks'] ?? null;
         $emp_id = $arr['emp_id'] ?? null;
+        $subs_id = $arr['subs_id'] ?? null;
+        $inputs['subs_id'] = $subs_id;
+        $inputs['branch_id'] = $branch_id;
 
-        if (!$emp_id) {
-            return DV::error('Employee is required for saving benefit!');
+        $existingItemQuery = DB::table('emp_benefits')
+        ->where('emp_id', $inputs['emp_id'])
+        ->where('benefit_type_id', $inputs['benefit_type_id']);
+
+        if ($id) {
+            $existingItemQuery->where('id', '!=', $id);
         }
 
-        // Check for existing benefit
-        // $existingBenefit = DB::table('emp_benefits')
-        //     ->where('emp_id', $emp_id)
-        //     ->where('benefit_type_id', $inputs['benefit_type_id'])
-        //     ->first();
+        $existingItem = $existingItemQuery->first();
 
-        // if ($existingBenefit && (!$id || $id !== $existingBenefit->id)) {
-        //     return DV::error('This employee already has a benefit of this type.');
-        // }
-
-        // Save benefit data
-        $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
-
-        if ($id > 0) {
-            $events = [
-                '1' => 'remuneration',
-                '2' => 'fringe benefit',
-                '3' => 'insurance',
-            ];
-
-            $benefit = $this->getProps($id, ['benefit_type_id']);
-            if (!$benefit) {
-                return DV::error('Benefit type ID not found!');
-            }
-
-            $event_name = $events[$benefit->benefit_type_id] ?? null;
-            if (!$event_name) {
-                return DV::error("No matching event name found for benefit type ID: {$benefit->benefit_type_id}");
-            }
-
-            $event_id = Employee::getEventId($event_name);
-            if (!$event_id) {
-                $event_res = Event::createEvent(['name' => $event_name], $ss);
-                if ($event_res->status_code === 200 && !empty($event_res->data['id'])) {
-                    $event_id = $event_res->data['id'];
-                } else {
-                    return DV::error("Failed to create or fetch event for: {$event_name}");
-                }
-            }
-            $event_inputs = [
-                'emp_id' => $emp_id,
-                'event_id' => $event_id,
-                'impact' => 'Positive',
-                'remarks' => $remarks ?? '',
-                'event_date' => date('Y-m-d'),
-            ];
-
-            $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
-            if (!$event_saved) {
-                return DV::error('Failed to log event.');
-            }
+        if ($existingItem) {
+            return DV::error('Duplicate benefit in benefit type is not allowed.');
         }
 
-        return DV::depends($id, ['id' => $id], 'Save failed');
+        if ($id) {
+            $updated = DB::table('emp_benefits')
+            ->where('id', $id)
+            ->update($inputs);
+
+            if ($updated) {
+                return DV::depends($id, ['id' => $id], 'Update successful');
+            } else {
+                return DV::error('Update failed. Record may not exist or data is unchanged.');
+            }
+        } else {
+            $newId = DB::table('emp_benefits')->insertGetId($inputs);
+
+            if ($newId) {
+                return DV::depends($newId, ['id' => $newId], 'Create successful');
+            } else {
+                return DV::error('Create failed.');
+            }
+        }
     }
 
     function getAllBenefitList($arr, $ss = null)
