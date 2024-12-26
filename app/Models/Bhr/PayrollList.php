@@ -56,7 +56,6 @@ class PayrollList
         return DV::error('Error saving payroll');
     }
 
-
     function getPayrollListPaginate($arr, $ss)
     {
         $d = (object) $arr;
@@ -568,9 +567,11 @@ class PayrollList
             }
             else
             {
+
                 $salary = $payroll->salary;
                 $salary_per_day = $salary / $payroll_days;
                 $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary;
+
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $tax_info = DB::table('tax_brackets')
@@ -590,11 +591,12 @@ class PayrollList
                         if ($payroll->tax_base < 0) {
                             $payroll->tax_base = 0;
                         }
-                        $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
-
-                } else {
+                        $benefit_tax = $benefit * (20/100);
+                        $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $benefit_tax + $deduction);
+                }
+                else {
                     $payroll->tax_base = 0;
-                    $payroll->total = $last_salary - $deduction;
+                    $payroll->total = $last_salary + $benefit - $deduction;
                 }
             }
 
@@ -653,12 +655,13 @@ class PayrollList
                 ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                 ->where('pl.id', $id)
                 ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
-        if (!$trx) {
-            return DV::error('This Employee does not have Payroll account');
-        }
         if(!$trx->authorized){
             return DV::error('Payroll '.$trx->remarks.' is not authorized ');
         }
+        if (!$trx) {
+            return DV::error('This Employee does not have Payroll account');
+        }
+
         $to_account = Employee::getPayrollAccount($trx->emp_id);
 
         if(!$to_account){

@@ -33,7 +33,7 @@ class Benefit //extends Model
         ];
         $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang , false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -46,8 +46,6 @@ class Benefit //extends Model
         }
         return DV::depends(0, ['sender' => $inputs]);
     }
-
-
 
     public function getBenefitPaginate($arr, $ss)
     {
