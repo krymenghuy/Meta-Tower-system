@@ -51,7 +51,7 @@ var LocationComponent = new function(){
                 mThis.displayCountries();
             },
         };
-        console.log(333, op);
+        // console.log(333, op);
 
         ZoneDialog1.show(op);
       });
@@ -321,7 +321,7 @@ var ZoneTabView = new function(){
                 {
                   VSUtil.setComboItems(mThis.elFilter_city,rows,'id','name',true,'(Select a city)',def.city_id);
                   VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','name',true,'(Select a city)',def.city_id);
-                  console.log(1111,rows);
+                //   console.log(1111,rows);
                   //mThis.elFilter_city.val(rows[0]?rows[0].city_id:0).trigger('change'); //error 429 Too many requests
                 }
               else if (zone_name ==='district')
@@ -730,7 +730,7 @@ const ZoneDialog1 = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(444,op);
+        // console.log(444,op);
 
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
@@ -846,6 +846,26 @@ const ZoneDialog1 = (() => {
 
 
             },
+            prepareFormOptions: {
+                createTitle: "Create Country",
+                modifyTitle: "Edit Country",
+                targetProp: "country",
+                api: {
+                    endpoint:[main_view.base_url,"/api/location/options-country"].join(""),
+                    params: (op) => {
+                        // console.log(666,op);
+
+                        return { id: op.id };
+                    },
+                },
+                onResponse: (me, res) => {
+                    console.log(777, res);
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
             configSelect: [
 
             ],
@@ -874,7 +894,7 @@ const ZoneDialog1 = (() => {
                         p.flag = me.flagImageBox
                             ? me.flagImageBox.getImage()
                             : '';
-                            console.log(1234,JSON.stringify(p));
+                            // console.log(1234,JSON.stringify(p));
                         vsapi
                             .call(
                                 [main_view.base_url, "/api/location/country/save"].join(""),
@@ -891,29 +911,10 @@ const ZoneDialog1 = (() => {
                     },
                 },
             ],
-            prepareFormOptions: {
-                createTitle: "Create Country",
-                modifyTitle: "Edit Country",
-                targetProp: "data",
-                api: {
-                    endpoint:[main_view.base_url,"/api/location/options-country"].join(""),
-                    params: (op) => {
-                        console.log(666,op);
 
-                        return { id: op.id };
-                    },
-                },
-                onResponse: (me, res) => {
-                    console.log('result from api "/form-options": ', res);
-                },
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            },
             //onClose: (canceled) => {},
         });
-        console.log(555,op);
+        // console.log(555,op);
 
         dialog.show(op);
     };
