@@ -16,15 +16,14 @@ var SkillsComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.SkillListView = new ListView('_skill_list', {
-            fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
-            perPage: 8,
-            paginationContainer: mThis.containerPagination,
+            fetchApi: `${main_view.base_url}/hr/skills/list`,
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
-                return res.data;
+                return res;
             },
             renderItems: (data,list_container) => {
                 mThis.renderSkillCard(list_container, data);
+
             },
             listContainerClass: null
         });
@@ -103,67 +102,45 @@ var SkillsComponent = new (function () {
         });
     }
     this.renderSkill = (data) => {
-        let html = `
-            <div class="card-row-skill">
-        `;
-    
+        let html = "";
+        html = [html,`<div class="row">`].join('');
+        let cmt = 0;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                html += `
-                    <div class="col-md-3 mt-3">
-                        <div class="card-container">
-                            <div class="w-100 d-flex flex-row justify-content-center align-items-center p-1 mb-2 shadow rounded-3" style="background-color: #ffffff;">
-                                <!-- <div class="position-relative ms-3" style="width: 120px; height: 100px;">
-                                    <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                        <path class="circle-bg" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                            fill="none" stroke="#2b3991" stroke-width="4" />
-                                        <path class="circle" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                            fill="none" stroke="#cab54a" stroke-width="4" 
-                                            stroke-dasharray="100, 100" stroke-linecap="round" />
-                                    </svg>
-                                    <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                        style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                        <p class="fs-6 m-0">${d.count_member}</p>
-                                        <small>Members</small>
-                                    </div>
-                                </div> -->
-                                <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
-                                    <div class="w-100">
+                html = [html,`<div class="col-md-3 mb-3 ">
+                        <div class="card-container-skill">
+                            <div class="w-100 d-flex flex-row justify-content-center align-items-center shadow rounded-3" style="background-color: #ffffff;">
+                                <div class="section-title m-3 fs-6 text-start w-100">
+                                    <div class="card-body bg-white rounded-3 text-center">
+                                        <div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 70px; height: 70px;"> 
+                                        <img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="h-100" alt="Profile Picture" >
+                                        </div>
                                         <p class="fs-6" style="color: #2b3991;">${d.title}</p>
-                                        <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                        <div class="d-flex">
-                                            <a href="javascript:void(0)" data-id="${d.id}" class="me-3 text-warning b-btn-edit text-decoration-none" >
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" data-id="${d.id}" class="text-danger b-btn-delete text-decoration-none">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </a>
+                                        <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 100%;">
+                                        <div class="d-flex justify-content-between">
+                                            <small class="fw-semibold  text-muted px-2">Count : ${d.count_member}</small>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-primary b-btn-edit text-decoration-none" >
+                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-danger b-btn-delete text-decoration-none">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                `;
+                `].join('');
+                cmt++;
             });
-        } else {
-            html += `
-                <div class="col-12 text-center">
-                    <div class="alert alert-info" role="alert">
-                        No skills available to display.
-                    </div>
-                </div>
-            `;
+        } 
+        if(cmt === 0 ){
+            html = [`<div class="w-100 rounded-4 text-center p-3">No Skills</div>`].join('');
         }
-    
-        html += `
-            </div>
-        `;
-    
+        html += `</div>`;
         div.innerHTML = html;
     };
     
