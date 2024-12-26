@@ -31,48 +31,60 @@ class Benefit //extends Model
 
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string|0-300',
+            'name' => '1|string|0-250',
         ];
-        $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $name_restrictions = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['name' => $name_restrictions], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
+        $inputs['branch_id'] = $branch_id;
+
         $name = $inputs['name'];
 
         if (!$id) {
-            $existingExitForm = DB::table('benefits')
-                ->where('name', $name)
+            $existingBenefit = DB::table('benefits')
+            ->where('name', $name)
                 ->first();
 
-            if ($existingExitForm) {
-                return DV::error('This name already exists. Please choose a different Name.');
+            if ($existingBenefit) {
+                return DV::error('This name already exists. Please choose a different name.');
+            }
+
+            try {
+                $newId = DB::table('benefits')->insertGetId($inputs);
+
+                if ($newId) {
+                    return DV::depends($newId, ['id' => $newId], 'Create successful');
+                } else {
+                    return DV::error('Failed to create a new benefit. Please check your input.');
+                }
+            } catch (\Exception $e) {
+                return DV::error('Create failed. An error occurred during the operation.');
             }
         }
 
         if ($id) {
-            $updated = DB::table('benefits')
-            ->where('id', $id)
-                ->update($inputs);
+            try {
+                $updated = DB::table('benefits')
+                ->where('id', $id)
+                    ->update($inputs);
 
-            if ($updated) {
-                return DV::depends($id, ['id' => $id], 'Update successful');
-            } else {
-                return DV::error('Update failed. Record may not exist or data is unchanged.');
-            }
-        } else {
-            $newId = DB::table('benefits')->insertGetId($inputs);
-
-            if ($newId) {
-                return DV::depends($newId, ['id' => $newId], 'Create successful');
-            } else {
-                return DV::error('Create failed.');
+                if ($updated) {
+                    return DV::depends($id, ['id' => $id], 'Update successful');
+                } else {
+                    return DV::error('Update failed. Record may not exist or data is unchanged.');
+                }
+            } catch (\Exception $e) {
+                return DV::error('Update failed. An error occurred during the operation.');
             }
         }
+
+        return DV::error('Invalid operation. Please provide valid data.');
     }
+
 
     public function getBenefitPaginate($arr, $ss)
     {

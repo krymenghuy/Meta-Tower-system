@@ -26,13 +26,13 @@ class EmployeeBenefit
         return $row;
     }
 
-    public function save($benefit_type_id, $id = null, $ss = null, $arr = [])
+    public function save($benefit_type_id, $ss, $arr)
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
         $v_rule = [
+            'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
             'benefit_type_id' => '1|choice|1,2,3|default=1',
             'benefit_id' => '1|number',
@@ -43,34 +43,37 @@ class EmployeeBenefit
             'remarks' => '0|string|1-250',
         ];
 
-        $sign = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $sign], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $emp_id = $inputs['emp_id'];
-        $benefit_type_id = $inputs['benefit_type_id'];
-        $benefit_id = $inputs['benefit_id'];
+        $emp_id = $arr['emp_id'] ?? null;
+        $subs_id = $arr['subs_id'] ?? null;
+        $inputs['subs_id'] = $subs_id;
+        $inputs['branch_id'] = $branch_id;
 
-        if (!$id) {
-            $existingBenefit = DB::table('emp_benefits')
-                ->where('emp_id', $emp_id)
-                ->where('benefit_type_id', $benefit_type_id)
-                ->where('benefit_id', $benefit_id )
-                ->first();
+        $existingItemQuery = DB::table('emp_benefits')
+        ->where('emp_id', $inputs['emp_id'])
+        ->where('benefit_type_id', $inputs['benefit_type_id']);
 
-            if ($existingBenefit) {
-                return DV::error('This benefit already exists for this benefit type. Please choose a different benefit.');
-            }
+        if ($id) {
+            $existingItemQuery->where('id', '!=', $id);
+        }
+
+        $existingItem = $existingItemQuery->first();
+
+        if ($existingItem) {
+            return DV::error('Duplicate benefit in benefit type is not allowed.');
         }
 
         if ($id) {
             $updated = DB::table('emp_benefits')
             ->where('id', $id)
-                ->update($inputs);
+            ->update($inputs);
 
             if ($updated) {
                 return DV::depends($id, ['id' => $id], 'Update successful');
