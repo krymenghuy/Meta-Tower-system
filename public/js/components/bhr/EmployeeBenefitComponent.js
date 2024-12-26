@@ -307,8 +307,8 @@ const EmployeeBenefitDialog = (() => {
                                 <label for="benefit_type_id" class="form-label" vslang="titles.Benefit Type"></label>
                                 <select name="benefit_type_id" class="modal-select data-input form_input" data-field="benefit_type_id">
                                     <option value="">(Select Benefit Type)</option>
-                                    <option value="1">Remuneration</option>
-                                    <option value="2">Fringe</option>
+                                    <option value="1">remuneration</option>
+                                    <option value="2">fringe benefit</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6">

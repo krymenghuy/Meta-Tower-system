@@ -45,7 +45,7 @@ class EmployeeDocument
         $data = $d->file_name;
         $ext = $d->ext;
         // $category = isImage($data) ? 'image' : 'document';
-        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
+        $extImage =  ['jpg','png','pdf','jpeg','heif','bmp','webp'];
         if (in_array($ext, $extImage)) {
             $category = 'image';
         }
@@ -176,11 +176,19 @@ class EmployeeDocument
 
     public static function getFile($id)
     {
+        $category = 'document';
         $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
-         $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
-
+        $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
+        $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
+        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp'];
+        if (in_array($extension, $extImage)) {
+            $category = 'image';
+        }
+         else{
+            $category = 'document';
+         }
         if ($row) {
-             return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], 'document') . $row->file_name;
+             return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
             // return validateUrl($url,null);
         } else return null;
     }

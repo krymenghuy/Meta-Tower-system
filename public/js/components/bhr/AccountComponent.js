@@ -632,6 +632,7 @@ const AccountDialog = (() => {
                     }
                 },
             });
+console.log(333,op);
 
         dialog.show(op);
     };
@@ -697,6 +698,8 @@ const TransferDialog = (() => {
                     api: {
                         endpoint: `${main_view.base_url}/hr/account/form-options`,
                         params: (op) => {
+                            console.log(1111,op);
+
                             return { id: op.id };
                         },
                     },

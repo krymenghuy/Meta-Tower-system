@@ -23,23 +23,23 @@ var BenefitComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "name",
         },
-        {
-            title: "Updated By",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "update_user",
-        },
+        // {
+        //     title: "Updated By",
+        //     className: "align-middle text-capitalize text-nowrap text-left",
+        //     data: "update_user",
+        // },
         {
             title: "Last Updated",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "updated_at",
         },
         {
-            title: "Action",
+            title: "",
             className: "col_action align-middle",
             data: (data) => {
                 return `
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
+                <div class="d-flex justify-content-start align-items-middle">
+                    <div class="text-middle gap-2 d-flex flex-wrap">
                         <button class="btn rounded-3 p-1 btn-primary-custom btn_edit_benefit" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>

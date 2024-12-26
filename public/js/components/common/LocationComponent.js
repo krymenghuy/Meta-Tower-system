@@ -42,6 +42,20 @@ var LocationComponent = new function(){
 
     });
 
+    mThis.tblCountries_body.on('click','a._sttn_loc_edit_country',function(e){
+        e.preventDefault();
+        let op = {
+            id: this.dataset.id,
+            onClose: () => {
+                cv_interact.success('Country Updated Successfully');
+                mThis.displayCountries();
+            },
+        };
+        // console.log(333, op);
+
+        ZoneDialog1.show(op);
+      });
+
     mThis.tblCountries_body.on('click','a._sttn_loc_delete_country',function(e){
       e.preventDefault();
 
@@ -94,29 +108,42 @@ var LocationComponent = new function(){
       mThis.tblCountries_body.html(null);
       vsapi.call([mThis.base_url,'/api/location/countries'].join(''),null,null).then((res)=>{
          if(res.status_code===200){
-            let rows = StringSanitizer.sanitizeObject(res.data);
+            let rows = res.data;
             let i=0,c;
             let html = ['<tr class=" color-text bg-info">',
-                        `<th>Zone</th>`,
+                        `<th>Flag</th>`,
                         `<th>Country </th>`,
-                        `<th>Country Code</th>`,
+                        `<th>Currency Code</th>`,
                         `<th>Action</th>`,
                       '<tr/>'].join('');
                         mThis.tblCountries_body.append(html);
-            do{
-                c = rows[i];
-                if(!c) break;
-                 let html2 = ['<tr  data-name="',c.name,'" data-id="',c.id,'">',
-                 '<td class="col_country_standard  ms-5 ">',c.standard_zone,'</td>',
-                 '<td class="col_country_name  text-uppercase">',c.name,'</td>',
-                 '<td class="col_country_code text-uppercase ">',c.currency_code,'</td>',
-                 '<td class="col_action"><a data-id="',c.id,'" data-name="',c.name,'" href="javascript:void(0)" class="_sttn_loc_delete_country btn btn-sm text-danger rounded-5"><i class="fa-solid fa-trash ms-1"></i></a></td>',
-                ,'</tr>'].join('');
+                        do {
+                            c = rows[i];
+                            if (!c) break;
+                            let html2 = [
+                                '<tr data-name="', c.name, '" data-id="', c.id, '">',
+                                '<td><img class="image-student-tbl border border-primary" src="', c.image_url, '" alt="" ',
+                                'style="width: 80px; height: 40px; margin-right: 10px; border-radius: 0;"/></td>',
+                                '<td class="col_country_name text-uppercase">', c.name, '</td>',
+                                '<td class="col_country_code text-uppercase">', c.currency_code, '</td>',
+                                '<td class="col_action">',
+                                '   <!-- Edit Button -->',
+                                '   <a data-id="', c.id, '" data-name="', c.name, '" href="javascript:void(0)" ',
+                                '      class="_sttn_loc_edit_country btn btn-sm text-primary rounded-5">',
+                                '      <i class="fa-solid fa-pen ms-1"></i>',
+                                '   </a>',
+                                '   <!-- Delete Button -->',
+                                '   <a data-id="', c.id, '" data-name="', c.name, '" href="javascript:void(0)" ',
+                                '      class="_sttn_loc_delete_country btn btn-sm text-danger rounded-5">',
+                                '      <i class="fa-solid fa-trash ms-1"></i>',
+                                '   </a>',
+                                '</td>',
+                                '</tr>'
+                            ].join('');
 
-                mThis.tblCountries_body.append(html2);
-                i++;
-            }while(c);
-
+                            mThis.tblCountries_body.append(html2);
+                            i++;
+                        } while (c);
          }
       });
     }
@@ -294,7 +321,7 @@ var ZoneTabView = new function(){
                 {
                   VSUtil.setComboItems(mThis.elFilter_city,rows,'id','name',true,'(Select a city)',def.city_id);
                   VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','name',true,'(Select a city)',def.city_id);
-                  console.log(1111,rows);
+                //   console.log(1111,rows);
                   //mThis.elFilter_city.val(rows[0]?rows[0].city_id:0).trigger('change'); //error 429 Too many requests
                 }
               else if (zone_name ==='district')
@@ -697,3 +724,200 @@ var ZoneTabView = new function(){
   //end::THIS CODE BLOCK IS NOT PART OF GENERAL SRCRIPT FOR TAB_VIEW OBJECT
 }
 //end::ZoneTabview
+
+const ZoneDialog1 = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        // console.log(444,op);
+
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row">`,
+                        `<div class="col-3">`,
+                            `<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">`,
+                                `<div name="div_flag_photo" data-field="flag" class="h-100"></div>`,
+                            `</div>`,
+                        `</div>`,
+                        `<div class="col-9">`,
+                            `<div class="row">`,
+                                `<div class="form-group col-6">
+                                    <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
+                                    <span class="text-danger">*</span>
+                                    <input name="name" class="form-control data-input" data-field="name" />
+                                </div>`,
+                                `<div class="form-group col-6">
+                                    <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
+                                    <span class="text-danger">*</span>
+                                    <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                </div>`,
+                                `<div class="form-group col-6">
+                                    <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
+                                    <span class="text-danger">*</span>
+                                    <input name="nationality" class="form-control data-input" data-field="nationality" />
+                                </div>`,
+                                `<div class="form-group col-6">
+                                    <label for="lang_code" class="form-label text-primary-custom" vslang="titles.Language Code"></label>
+                                    <span class="text-danger">*</span>
+                                    <input name="lang_code" class="form-control data-input" data-field="lang_code" />
+                                </div>`,
+
+                            `</div>`,
+
+                        `</div>`,
+
+                        `<div class="form-group col-6">
+                                <label for="currency_code" class="form-label text-primary-custom" vslang="titles.Currency Code"></label>
+                                <span class="text-danger">*</span>
+                                <input name="currency_code" class="form-control data-input" data-field="currency_code" />
+                        </div>`,
+                        `<div class="form-group col-6">
+                                <label for="region" class="form-label text-primary-custom" vslang="titles.Region"></label>
+                                <span class="text-danger">*</span>
+                                <input name="region" class="form-control data-input" data-field="region" />
+                        </div>`,
+
+                    `</div>`,
+                ].join("");
+            },
+            contentCreated: (me) => {
+
+                const div_flag_photo = me.controls.div_flag_photo;
+
+                me.flagImageBox = new ImageBox(div_flag_photo, {
+                    defaultPhotoName:'default-staff',
+                    containerClass: "emp-profile-container",
+                    imgClass: "data-input",
+                    dataset: { field: "flag" }, /** please set field: flag so that we can use for both Edit and Create easily */
+                    //dataset: { field: "image_url" },
+                    beforeDeleteImage: async ()=> {
+                       if(me.dataOptions.id > 0){
+                           const answer = await cv_interact.confirm('Are you sure to delete this Flag photo?', {title:'Delete Photo','context':'delete'});
+                           if(answer){
+                                me.deleteFlagPhoto(me.dataOptions.id);
+                                return true;
+                           } else return false;
+
+                       }
+                       return true;
+                    },
+                    //When user browse new image and loads it in
+                    onOpenImage: (img)=>{
+                        if(me.dataOptions.id > 0){
+                          me.saveFlagPhoto(img, me.dataOptions.id);
+                       }
+                    },
+                    // onImageLoaded: (img)=>{
+                    //    if(me.dataOptions.id > 0){
+                    //         const p = {"photo":me.flagImageBox.getImage(), "id" : me.dataOptions.id};
+                    //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
+                    //             if(res.status_code == 200){
+                    //             cv_interact.info('Profile photo was deleted!');
+                    //             }else cv_interact.error(res.error_message);
+                    //         });
+                    //    }
+                    // }
+                });
+
+                me.deleteFlagPhoto = (country_id)=>{
+                    const p = {"id":country_id};
+                    vsapi.call([main_view.base_url,'/api/location/country/delete-flag'].join(''),p,false,false).then(res =>{
+                        if(res.status_code == 200){
+                          me.flagImageBox.setImage(null);
+                          cv_interact.info('Flag photo was deleted!');
+                        }else cv_interact.error(res.error_message);
+                    });
+                };
+
+                me.saveFlagPhoto = (flag, country_id)=>{
+                    const p = {"flag": flag, "id" : country_id};
+                    vsapi.call([main_view.base_url,'/api/location/country/save-flag'].join(''), p,false).then(res =>{
+                        if(res.status_code == 200){
+                          me.flagImageBox.setImage(res.data.image_url);
+                          cv_interact.success('Flag photo was deleted!');
+                        }else cv_interact.error(res.error_message);
+                   });
+                };
+
+
+            },
+            prepareFormOptions: {
+                createTitle: "Create Country",
+                modifyTitle: "Edit Country",
+                targetProp: "country",
+                api: {
+                    endpoint:[main_view.base_url,"/api/location/options-country"].join(""),
+                    params: (op) => {
+                        // console.log(666,op);
+
+                        return { id: op.id };
+                    },
+                },
+                onResponse: (me, res) => {
+                    console.log(777, res);
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+            configSelect: [
+
+            ],
+            overrideMethod:{
+                "setData":(me, data)=> {
+                    const id = me.dataOptions.id;
+                    const fields = me.fields;
+                    //fields to be reasOnly or disabled when Editing employee
+                    me.flagImageBox.setImage(data.image_url);
+                },
+            },
+            buttons: [
+                {
+                    label: '<span class="text-white">Cancel</span>',
+                    cssClass: "btn btn-sm btn-danger",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-sm btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.flag = me.flagImageBox
+                            ? me.flagImageBox.getImage()
+                            : '';
+                            // console.log(1234,JSON.stringify(p));
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/api/location/country/save"].join(""),
+                                p,
+                                btn,
+                                false,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+
+            //onClose: (canceled) => {},
+        });
+        // console.log(555,op);
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
