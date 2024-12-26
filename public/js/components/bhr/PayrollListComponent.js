@@ -409,11 +409,10 @@ var PayrollListComponent = new (function () {
                         <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
                     </div>
                     <div class="payment-title">
-                        <h4>ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 : ${data.start_date} - ${data.end_date}</h4>
+                        <h4>Pay Slip : ${data.start_date} - ${data.end_date}</h4>
                     </div>
 
                 </div>
-
 
                 <div class="payment_profile">
                     <div class="row cols-2 mb-0">
@@ -739,7 +738,7 @@ const PayRollListDialog = (()=>{
                  </div>
                 <div class="form-group col-6">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
-                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" disabled/>
+                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
                 </div>
                 <div class="form-group col-6">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
