@@ -85,7 +85,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    //promote staff intern to probation and intern-probation to staff
     Route::post('/promote-intern', [EmployeeController::class, 'promoteIntern']);
+    //promote staff to change position salary branch
     Route::post('/promote-staff',[EmployeeController::class,'promoteStaff']);
     Route::post('/set-terminate-status', [EmployeeController::class, 'setTerminateStatus']);
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);

@@ -321,7 +321,7 @@ class Account
         $trx->from_account_id = $from_account_id;
         $trx->to_account_id = $to_account_id;
         $trx->account_id = $to_account_id;
-        $trx->remarks = "$d->account_type $d->account_number to $d->to_account_type $d->to_account_number";
+        $trx->remarks = " From $d->account_type $d->account_number";
         $trx->amount = $amount_in;
 
         $transfer = Transaction::createTransaction((array)$trx, $ss);
@@ -336,11 +336,13 @@ class Account
         $withdrawData = (array)$trx;
         unset($withdrawData['account_id']);
         unset($withdrawData['emp_id']);
+        unset($withdrawData['remarks']);
 
         $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
         $withdrawData['emp_id'] = $emp_id;
         $withdrawData['account_id'] = $from_account_id;
         $withdrawData['amount'] = $amount_out;
+        $withdrawData['remarks'] = " To $d->to_account_type $d->to_account_number";
 
         $res = Account::withdraw($withdrawData, $ss);
 

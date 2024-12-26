@@ -4,7 +4,7 @@ namespace App\Models\Location;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use App\Models\Location\District;
 use Illuminate\Support\Facades\Cache;
