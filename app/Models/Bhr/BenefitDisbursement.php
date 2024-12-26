@@ -25,14 +25,14 @@ class BenefitDisbursement
         return DB::table('benefit_disbursements')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save($benefit_id,$id = null, $ss = null, $arr = [], )
+    public function save($benefit_id, $ss, $arr )
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
 
         $v_rule = [
+            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'benefit_id' => '1|number',
             'target_month' => '0|number|min=1|max=12',
@@ -51,18 +51,18 @@ class BenefitDisbursement
         $inputs['target_year'] = intval($arr['target_year'] ?? date('Y'));
 
         $emp_id = $arr['emp_id'] ?? null;
-        // if (!$emp_id) {
-        //     return DV::error('Employee is required for saving benefit disbursement!');
-        // }
+        if (!$emp_id) {
+            return DV::error('Employee is required for saving benefit disbursement!');
+        }
 
         $existingBenefitDisbursement = DB::table('benefit_disbursements')
             ->where('emp_id', $emp_id)
             ->where('benefit_id', $inputs['benefit_id'])
             ->first();
 
-        // if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
-        //     return DV::error('This employee already has a benefit of this type.');
-        // }
+        if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
+            return DV::error('This employee already has a benefit of this type.');
+        }
 
         $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
 
