@@ -10,10 +10,10 @@ use Illuminate\Http\Request;
 
 class BenefitDisbursementController extends Controller
 {
-    protected $benefitDisubrsementModel;
+    protected $benefitDisubrsement;
     public function __construct()
     {
-        $this->benefitDisubrsementModel = new BenefitDisbursement();
+        $this->benefitDisubrsement = new BenefitDisbursement();
     }
 
     public function saveBenefitDisbursement(Request $req)
@@ -21,7 +21,7 @@ class BenefitDisbursementController extends Controller
         $id = $req->emp_id ?? $req->id;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->benefitDisubrsementModel->save($req->benefit_type_id, $id, $ss, $req->all());
+        $res = $this->benefitDisubrsement->save($req->benefit_id,$ss, $req->all());
         return JDV::raw($res);
     }
 
@@ -30,7 +30,7 @@ class BenefitDisbursementController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        return JDV::result($this->benefitDisubrsementModel->getBenefitDisbursementListPaginate($req->all(), $ss));
+        return JDV::result($this->benefitDisubrsement->getBenefitDisbursementListPaginate($req->all(), $ss));
     }
     public function getBenefitDisbursementList(Request $req)
     {
@@ -48,7 +48,7 @@ class BenefitDisbursementController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
         // $benefit_disbursement_type_id = $req->id;
 
-        return JDV::result($this->benefitDisubrsementModel->getDetails($id, $ss));
+        return JDV::result($this->benefitDisubrsement->getDetails($id, $ss));
     }
 
     public function deleteBenefitDisbursement(Request $req)
@@ -59,7 +59,7 @@ class BenefitDisbursementController extends Controller
         $id = $req->id ?: null;
         // $as = $req->as;
 
-        return JDV::result($this->benefitDisubrsementModel->deleteBenefitDisbursement($id, $ss));
+        return JDV::result($this->benefitDisubrsement->deleteBenefitDisbursement($id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -67,6 +67,6 @@ class BenefitDisbursementController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
-        return JDV::result($this->benefitDisubrsementModel->getFormOptions($id, $ss));
+        return JDV::result($this->benefitDisubrsement->getFormOptions($id, $ss));
     }
 }
