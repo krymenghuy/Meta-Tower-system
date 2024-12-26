@@ -13,6 +13,8 @@ class EmployeeDocument
 {
     protected $id = null;
     protected $userInfo = null;
+    protected static $allowed_image_extensions = ['jpg','png','jpeg','heif','bmp','webp'];
+    protected static $allowed_doc_extensions = ['docx','pdf','txt','xls','doc','xlsx','csv','dat'];
     protected static $img_dir = 'emp_documents';
 
     public function __construct($id = null, $userInfo = null)
@@ -44,12 +46,12 @@ class EmployeeDocument
         $d = (object) $inputs;
         $data = $d->file_name;
         $ext = $d->ext;
-        // $category = isImage($data) ? 'image' : 'document';
-        $extImage =  ['jpg','png','pdf','jpeg','heif','bmp','webp'];
-        if (in_array($ext, $extImage)) {
+        $allowed_exts = [];
+        $category = 'image';
+        if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
         }
-         else{
+         else if  (in_array($ext, self::$allowed_doc_extensions)){
             $category = 'document';
          }
 
@@ -176,23 +178,47 @@ class EmployeeDocument
 
     public static function getFile($id)
     {
-        $category = 'document';
         $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
-        $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
+        $row = DB::table('emp_documents as ed')
+            ->where('id', $id)
+            ->selectRaw("$col_subs_id, ed.branch_id, ed.file_name")
+            ->first();
+    
+        if (!$row) {
+            return null;
+        }
+    
         $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
-        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp'];
-        if (in_array($extension, $extImage)) {
+        $allowed_exts = [];
+        $category = 'image';
+        if (in_array($extension, self::$allowed_image_extensions)) {
             $category = 'image';
         }
-         else{
+         else if  (in_array($extension, self::$allowed_doc_extensions)){
             $category = 'document';
          }
-        if ($row) {
-             return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
-            // return validateUrl($url,null);
-        } else return null;
+        $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+    
+        return $url;
     }
-
+    // public static function getFile($id)
+    // {
+    //     $category = 'document';
+    //     $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
+    //     $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
+    //     $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
+    //     $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp'];
+    //     if (in_array($extension, $extImage)) {
+    //         $category = 'image';
+    //     }
+    //      else{
+    //         $category = 'document';
+    //      }
+    //     if ($row) {
+    //          return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+    //         // return validateUrl($url,null);
+    //     } else return null;
+    // }
     function downloadDocument($id, $ss)
     {
 
