@@ -143,7 +143,6 @@ class ScriptProvider
             ]
         ],
 
-
         'report-scripts' => [
             'attr' => 'defer',
             'single_file' => 1,
@@ -151,6 +150,21 @@ class ScriptProvider
             'files' => [
                 '/assets/material-js/jquery.min.js',
                 '/assets/material-js/bootstrap.min.js'
+            ]
+        ],
+
+        'attendance-script' => [
+            'attr' => 'defer',
+            'single_file' => 1,
+            'output_file' => '/dist/js/attendance.js',
+            'files' => [
+                '/assets/material-js/jquery.min.js',
+                '/assets/js/sweetalert2.all.min.js',
+               '/assets/js/datehelper.js',
+                '/assets/js/date.js',
+                '/assets/js/jquery.datepicker2.js',
+                '/assets/js/vsapi_bhr.js',
+                '/js/components/bhr/ScanAttendanceComponent.js'
             ]
         ]
     ];

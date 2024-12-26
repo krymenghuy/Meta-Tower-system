@@ -155,8 +155,7 @@ class Country //extends Model
             ->where('c.branch_id', $branch_id)
             ->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh, c.create_user, flag_file_name')
             ->first();
-        $row->image_url = '';
-        if ($row->flag_file_name) {
+        if (isset($row->flag_file_name)) {
             $row->image_url = self::flagPicture($row->id);
         }
         unset($row->flag_file_name);

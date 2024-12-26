@@ -55,6 +55,8 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
     Route::post('admin/login', [LoginController::class, 'apiLogin']);
 });
 //end:: api without Authentication
+Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
+Route::post('/employee/attendance/last-students-scan',[AttendanceController::class,'getLastStudentsScan']);
 
 //begin::CompanyProfileController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function () {
