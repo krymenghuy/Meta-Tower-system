@@ -1624,6 +1624,7 @@ var EmployeeComponent = new (function () {
                     });
             });
     };
+
     this.movement = (id, menuLink) => {
         let op = {
             id: id,
@@ -1632,13 +1633,13 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.MovementDialog = new GeneralDialog({
+        mThis.MovementDialog = mThis.MovementDialog || new GeneralDialog({
             title: LocaleManager.trans("Movement", "titles"),
             cssClass: "modal-lg",
             createContent: () => {
                 return `
                     <div id="movement-options">
-                        <div class="d-flex align-items-center gap-3 border-bottom">
+                        <div class="d-flex align-items-center gap-3 border-bottom ">
                             <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch" name="items" value="branch" />
                             <label for="branch" class="text-primary-custom">Change Branch</label>
 
@@ -1729,7 +1730,7 @@ var EmployeeComponent = new (function () {
                 DateTimePicker.init(me.controls.start_date);
 
                 me.setEvent = (div) => {
-                    div.querySelectorAll("input").forEach((input) => {
+                    div.querySelectorAll("input.change-option").forEach((input) => {
                         input.onchange = (e) => {
                             const divTarget = me.controls[input.dataset.target];
                             if (divTarget) {
@@ -1740,7 +1741,6 @@ var EmployeeComponent = new (function () {
                         };
                     });
                 };
-                me.setEvent(me.divModal);
             },
 
             configSelect: [
@@ -1833,7 +1833,7 @@ var EmployeeComponent = new (function () {
                     params: (op) => {
                         return { id: op.id };
                     },
-                    onResponse: (me, res) => {},
+                    // onResponse: (me, res) => {},
                 },
             },
 
@@ -1842,6 +1842,19 @@ var EmployeeComponent = new (function () {
                 me.controls.branch.value = data.employee.branch_id;
                 me.controls.position.value = data.employee.position_id;
                 me.controls.org_salary.value = data.employee.salary;
+                console.log(234,data);
+
+                me.divModal.querySelectorAll("input.change-option").forEach((input) => {
+                    input.checked = false;
+                    const divTarget = me.controls[input.dataset.target];
+                    if (divTarget) {
+                        divTarget.style.display = input.checked
+                            ? "block"
+                            : "none";
+                    }
+                });
+                me.setEvent(me.divModal);
+
             },
         });
         mThis.MovementDialog.show(op);
@@ -1855,7 +1868,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.ResignDialog = new GeneralDialog({
+        mThis.ResignDialog = mThis.ResignDialog || new GeneralDialog({
             title: LocaleManager.trans("Set Resign", "titles"),
             createContent: () => {
                 return [
@@ -1958,7 +1971,7 @@ var EmployeeComponent = new (function () {
         };
         console.log(909090, op);
 
-        mThis.PromoteDialog = new GeneralDialog({
+        mThis.PromoteDialog = mThis.PromoteDialog || new GeneralDialog({
             title: LocaleManager.trans("Promote Staff", "titles"),
             createContent: () => {
                 return [
@@ -2130,7 +2143,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.RejoinDialog = new GeneralDialog({
+        mThis.RejoinDialog = mThis.RejoinDialog || new GeneralDialog({
             title: LocaleManager.trans("Set Rejoin", "titles"),
             createContent: () => {
                 return [
@@ -2686,7 +2699,7 @@ const EmployeeDialog = (() => {
 
     self.show = (op) => {
 
-        dialog = new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg",
             backdrop: "static",
             keyboard: true,
@@ -3101,7 +3114,7 @@ const AddSkillDialog = (() => {
 
     self.show = (op) => {
 
-        dialog =  new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
                 title: op.id ? "Add Skill" : " Edit Skill ",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
@@ -3194,7 +3207,7 @@ const AddEmployeeDocumentDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
+        dialog = dialog ||
             new GeneralDialog({
                 title: op.id ? "Edit Employee Document" : "Add Employee Document",
                 cssClass: "modal-md d-flex justify-content-center",

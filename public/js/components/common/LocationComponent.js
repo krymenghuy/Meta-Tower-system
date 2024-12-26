@@ -600,7 +600,6 @@ var ZoneTabView = new function(){
               // mThis.setEvents($(mThis.container));
               // console.log(mThis.container.parentElement);
               const sh_parent = mThis.tblCities;
-              console.log(sh_parent.parentElement);
                   sh_parent[0].style.height = (window.innerHeight - 190)+'px';
                   sh_parent[0].classList.add('overflow-y-auto');
                   window.onresize = () => {
@@ -851,16 +850,17 @@ const ZoneDialog1 = (() => {
                 modifyTitle: "Edit Country",
                 targetProp: "country",
                 api: {
-                    endpoint:[main_view.base_url,"/api/location/options-country"].join(""),
+                  endpoint: [
+                    main_view.base_url,
+                    "/api/location/options-country",
+                  ].join(""),
                     params: (op) => {
-                        // console.log(666,op);
-
-                        return { id: op.id };
+                        return { id: 14 };
                     },
                 },
-                onResponse: (me, res) => {
-                    console.log(777, res);
-                },
+                // onResponse: (me, res) => {
+                //     console.log(777, res);
+                // },
             },
 
             onPrepareForm: (me, data) => {
@@ -869,14 +869,14 @@ const ZoneDialog1 = (() => {
             configSelect: [
 
             ],
-            overrideMethod:{
-                "setData":(me, data)=> {
-                    const id = me.dataOptions.id;
-                    const fields = me.fields;
-                    //fields to be reasOnly or disabled when Editing employee
-                    me.flagImageBox.setImage(data.image_url);
-                },
-            },
+            // overrideMethod:{
+            //     "setData":(me, data)=> {
+            //         const id = me.dataOptions.id;
+            //         const fields = me.fields;
+            //         //fields to be reasOnly or disabled when Editing employee
+            //         me.flagImageBox.setImage(data.image_url);
+            //     },
+            // },
             buttons: [
                 {
                     label: '<span class="text-white">Cancel</span>',
