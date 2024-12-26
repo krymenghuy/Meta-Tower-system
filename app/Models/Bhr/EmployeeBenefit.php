@@ -31,6 +31,7 @@ class EmployeeBenefit
         $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
@@ -51,29 +52,27 @@ class EmployeeBenefit
         }
 
         $inputs = $res->values;
-        $emp_id = $arr['emp_id'] ?? null;
-        $subs_id = $arr['subs_id'] ?? null;
-        $inputs['subs_id'] = $subs_id;
         $inputs['branch_id'] = $branch_id;
 
-        $existingItemQuery = DB::table('emp_benefits')
+        $existingBenefitQuery = DB::table('emp_benefits')
         ->where('emp_id', $inputs['emp_id'])
-        ->where('benefit_type_id', $inputs['benefit_type_id']);
+        ->where('benefit_type_id', $inputs['benefit_type_id'])
+        ->where('benefit_id', $inputs['benefit_id']);
 
         if ($id) {
-            $existingItemQuery->where('id', '!=', $id);
+            $existingBenefitQuery->where('id', '!=', $id);
         }
 
-        $existingItem = $existingItemQuery->first();
+        $existingBenefit = $existingBenefitQuery->first();
 
-        if ($existingItem) {
-            return DV::error('Duplicate benefit in benefit type is not allowed.');
+        if ($existingBenefit) {
+            return DV::error('Duplicate benefit is not allowed for the same employee and benefit type.');
         }
 
         if ($id) {
             $updated = DB::table('emp_benefits')
             ->where('id', $id)
-            ->update($inputs);
+                ->update($inputs);
 
             if ($updated) {
                 return DV::depends($id, ['id' => $id], 'Update successful');
@@ -90,6 +89,7 @@ class EmployeeBenefit
             }
         }
     }
+
 
     function getAllBenefitList($arr, $ss = null)
     {

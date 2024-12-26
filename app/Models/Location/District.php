@@ -4,7 +4,7 @@ namespace App\Models\Location;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
-use DB;
+use Illuminate\Support\Facades\DB;
  
 class District //extends Model
 {

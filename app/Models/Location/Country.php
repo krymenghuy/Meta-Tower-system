@@ -6,7 +6,7 @@ namespace App\Models\Location;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
 use App\Models\Location\City;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Bhr\GeneralSettings;
