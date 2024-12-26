@@ -645,18 +645,12 @@ class Employee //extends Model
             ], 'images', $file_name);
         }
 
-        // Update the profile to rempove the photo file name
-        DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
-
-        // Delete the profile
         $deleted = DB::table('employees')->where('id', $id)->delete();
 
-        // Check if the query was successful
         if (!$deleted) {
             return DV::error('employee not found or not deleted');
         }
 
-        // Return success response
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
     static function currentPosition($id)
@@ -669,7 +663,7 @@ class Employee //extends Model
         if ($id) {
             $employee = self::getDetails($id, $ss);
         }
-        
+
         //$firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
 
         $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);

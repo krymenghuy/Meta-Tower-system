@@ -23,7 +23,7 @@ class Benefit //extends Model
         $row = DB::table('benefits')->where('id', $id)->selectRaw($cols)->first();
         return $row;
     }
-    public function save($benefits, $ss, $arr)
+    public function save($arr = [],$id = null, $ss = null)
     {
         $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;

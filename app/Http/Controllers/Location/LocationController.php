@@ -14,18 +14,49 @@ use App\Services\UMt\AuthService;
 class LocationController extends Controller
 {
 
+    protected $country;
+    protected $city;
+    protected $district;
+    protected $commune;
+
+    public function __construct()
+    {
+        $this->country = new Country();
+        $this->city = new City();
+        $this->district = new District();
+        $this->commune = new Commune();
+    }
+
+    public function getDetailCountry(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        return JDV::result($this->country->getDetailCountry($req->id, $ss));
+    }
+
    function getComboItems_country(Request $req){
-        $ss =AuthService::verifyAuth($req,-1);
-        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        return JDV::result(Country::list($req->all(),$ss));
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->country->options_country($req->id, $ss));
     }
 
    function saveCountry(Request $req){
         $ss =AuthService::verifyAuth($req,-1);
-        if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        $res = Country::save($req->all(),$ss);
-        if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
-        return JDV::error($res->error_message);
+        if($ss->status_code !=200) return JDV::raw($ss);
+
+        $id = $req->country_id?$req->country_id:$req->id;
+        $country = new Country($id,$ss);
+        $res = $country->save($req->all());
+        return JDV::raw($res);
    }
 
   //create or Update City
@@ -132,4 +163,25 @@ class LocationController extends Controller
     $district_id = $req->district_id?$req->district_id:-1;
     return JDV::result(Commune::options_commune($district_id,$ss));
   }
+
+  function deleteFlag(Request $req){
+    $ss = AuthService::verifyAuth($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $req->country_id ?? $req->id;
+    $country = new Country($id,$ss);
+    $res = $country->deleteFlag($id);
+    return JDV::raw($res);
+}
+
+ function saveFlag(Request $req){
+        $ss = AuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+
+        $id = $req->country_id ?? $req->id;
+        $flag = $req->flag?? $req->img;
+        $res = Country::saveFlag($flag,null,$id,$ss);
+        return JDV::raw($res);
+     }
+
+
 }
