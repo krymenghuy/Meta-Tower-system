@@ -685,9 +685,10 @@ var EmployeeComponent = new (function () {
     };
 
     this.renderCardLeft = (employeeId) => {
-        let html = "";
+        let p = {
+            emp_id: employeeId,
+        };
         let cmt = 0;
-        let p = { emp_id: employeeId };
 
         vsapi
             .call(
@@ -898,7 +899,7 @@ var EmployeeComponent = new (function () {
                                 <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
                                     <small><i class="fa-regular fa-pen-to-square fs-7 text-primary"></i></small>
                                 </a>
-                                <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
+                                <a href="javascript:void(0)" data-id="${d.id}" data-empid="${employeeId}" class="btn-education-delete">
                                     <small><i class="fa-solid fa-x fs-7 text-danger"></i></small>
                                 </a>
                             </div>
@@ -986,11 +987,6 @@ var EmployeeComponent = new (function () {
                             const emp_id = e.target
                                 .closest("a")
                                 .getAttribute("data-empid");
-                            let op = {
-                                id: id,
-                                btn: e.target,
-                                onClose: () => {},
-                            };
                             cv_interact.confirm(
                                 "Delete this Education?",
                                 {
@@ -998,12 +994,12 @@ var EmployeeComponent = new (function () {
                                     context: "delete",
                                     confirmButtonText: "Delete",
                                 },
-                                function (e) {
-                                    if (e) {
+                                function (confirmDelete) {
+                                    if (confirmDelete) {
                                         vsapi
                                             .call(
                                                 `${main_view.base_url}/hr/education/delete`,
-                                                op,
+                                                { id: id },
                                                 false,
                                                 false,
                                                 false
@@ -1013,8 +1009,23 @@ var EmployeeComponent = new (function () {
                                                     cv_interact.success(
                                                         "Deleted Successfully"
                                                     );
-                                                        EmployeeComponent.renderCardCenter(emp_id);
+                                                    EmployeeComponent.renderCardCenter(
+                                                        emp_id
+                                                    );
+                                                } else {
+                                                    cv_interact.error(
+                                                        "Failed to delete the education."
+                                                    );
                                                 }
+                                            })
+                                            .catch((err) => {
+                                                console.error(
+                                                    "Error during deletion:",
+                                                    err
+                                                );
+                                                cv_interact.error(
+                                                    "An error occurred."
+                                                );
                                             });
                                     }
                                 }
