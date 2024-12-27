@@ -296,9 +296,7 @@ const HolidayDialog = (() => {
 
                         vsapi
                             .call(
-                                [main_view.base_url, "/hr/holiday/save"].join(
-                                    ""
-                                ),
+                                [main_view.base_url, "/hr/holiday/save"].join(""),
                                 p,
                                 btn,
                                 null
