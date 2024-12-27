@@ -17,8 +17,12 @@ class EmployeeBenefitController extends Controller
     function saveBenefit(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->benefitModel->save($req->benefit_type_id, $ss, $req->all());
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->emp_benefit_id ?? $req->id;
+        $emp_benefit = new EmployeeBenefit($id, $ss);
+        $res = $emp_benefit->save($req->all());
         return JDV::raw($res);
     }
     public function getAllBenefitList(Request $req)

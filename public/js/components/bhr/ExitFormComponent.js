@@ -48,7 +48,7 @@ var ExitFormComponent = new (function () {
             title: "Settled",
             className: "settled text-nowrap align-middle",
             data: (data) => {
-                let settledText = "Not Yet";
+                let settledText = "Panding";
                 let settledClass = "";
 
                 if (data.is_finished == 1) {
@@ -180,6 +180,7 @@ var ExitFormComponent = new (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
+
         
         ExitFormDialog.show(op);
     };
@@ -253,15 +254,13 @@ const ExitFormDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return [
-                        `<div class="row">
+        dialog = new GeneralDialog({
+            cssClass: "modal-md",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row">
                             <div class="form-group col-12">
                                 <label for="employee" class="form-label" vslang="titles.Employee"></label>
                                 <select name="employee" class="form-control data-input" data-field="emp_id"></select>
@@ -273,84 +272,83 @@ const ExitFormDialog = (() => {
                             <div class="form-group col-md-12">
                                 <label for="is_finished" class="form-label" vslang="titles.Is Finished"></label>
                                 <select name="is_finished" class="modal-select data-input" data-field="is_finished" id="is_finished">
+                                    <option value="0">Pending</option>
                                     <option value="1">Done</option>
-                                    <option value="2">Not Yet</option>
                                 </select>
                             </div>
                             
                         </div>`,
-                    ].join("");
+                ].join("");
+            },
+            configSelect: [
+                {
+                    name: "employee",
+                    data: "employees",
+                    textField: (me, d) =>
+                        `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
+                    valueField: "id",
                 },
-                configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
-                        valueField: "id",
+            ],
+            buttons: [
+                {
+                    label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
+                    cssClass: "btn btn-sm-outline rounded-3",
+                    click: (me, btn) => {
+                        me.hide(false);
                     },
-                ],
-                buttons: [
-                    {
-                        label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
-                        cssClass: "btn btn-sm-outline rounded-3",
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
-                        cssClass: "btn btn-sm-outline rounded-3",
-                        click: (me, btn) => {
-                            const p = me.getData();
+                },
+                {
+                    label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                    cssClass: "btn btn-sm-outline rounded-3",
+                    click: (me, btn) => {
+                        const p = me.getData();
 
-                            p.id = me.dataOptions.id;
+                        p.id = me.dataOptions.id;
 
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/exit-form/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
-                    },
-                ],
-                contentCreated: (me, divModal) => {
-                    me.saveBenefitDisburse = (bd) => {
-                        alert("Data saved.");
-                    };
-                },
-                prepareFormOptions: {
-                    createTitle: "Add Exit Form",
-                    modifyTitle: "Edit Exit Form",
-                    targetProp: "exit_forms",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/hr/exit-form/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                    onResponse: (me, res) => {
-                        console.log("API Response:", res);
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/hr/exit-form/save"].join(
+                                    ""
+                                ),
+                                p,
+                                btn,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
                     },
                 },
+            ],
+            contentCreated: (me, divModal) => {
+                me.saveBenefitDisburse = (bd) => {
+                    alert("Data saved.");
+                };
+            },
+            prepareFormOptions: {
+                createTitle: "Create Exit Form",
+                modifyTitle: "Edit Exit Form",
+                targetProp: "exit_forms",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/hr/exit-form/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                onResponse: (me, res) => {
+                    console.log("API Response:", res);
+                },
+            },
 
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
-            });
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
 
         dialog.show(op);
     };

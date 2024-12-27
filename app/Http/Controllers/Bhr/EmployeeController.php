@@ -136,6 +136,15 @@ class EmployeeController extends Controller
        $emp = new Employee();
        return JDV::result($emp->getFormOptions($req->id,$ss));
    }
+      public function getFormOptionPromotion(Request $req)
+   {
+       $ss = AuthService::verifyAuth($req, -1);
+       if ($ss->status_code !== 200) {
+           return JDV::raw($ss);
+       }
+       $emp = new Employee();
+       return JDV::result($emp->getFormOptionPromotion($req->id,$ss));
+   }
 
    public function setTerminateStatus(Request $req)
    {
@@ -172,12 +181,12 @@ class EmployeeController extends Controller
        $res = $employee->setRejoinStatus($req->all(),$id,$ss,$req->status_id);
        return JDV::raw($res);
    }
-   public function promoteIntern(Request $req){
+   public function promoteNonStaff(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
     $id = $req->id ?? $req->id;
     $employee = new Employee($id,$ss);
-    $res = $employee->promoteIntern($req->emp_type_id,$id,$ss,$req->all());
+    $res = $employee->promoteNonStaff($req->emp_type_id,$id,$ss,$req->all());
     return JDV::raw($res);
    }
 
