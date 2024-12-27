@@ -42,6 +42,16 @@ class Payroll
         }
 
         $inputs = $res->values;
+        $inputs['start_date'] = convertDate($inputs['start_date']);
+        $inputs['end_date'] = convertDate($inputs['end_date']);
+        $d = (object)$inputs; 
+
+
+        $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
+        if($err) return DV::error($err);
+        $err = self::checkDuplicateName($d->name,$id);
+        if($err) return DV::error($err);
+
         if(!$id)
         {
             $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
@@ -57,6 +67,37 @@ class Payroll
         }
 
         return DV::error('Error saving payroll');
+    }
+
+    static function validatePayrollDates($start_date,$end_date,$id){
+        $str_id = '1 = 1';
+        if($id){
+            $str_id = "p.id <> $id";
+        }
+
+        $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$start_date'")->whereRaw($str_id)->select('id')->first();
+        \Log::info(json_encode($test));
+        if($test)
+            return 'Start Date is not correct!';
+        
+        $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$end_date'")->whereRaw($str_id)->select('id')->first();
+        if($test)
+            return 'End Date is not correct!';
+
+        return null;
+    }
+
+    static function checkDuplicateName($name,$id){
+        $str_id = '1 = 1';
+        if($id){
+            $str_id = "p.id <> $id";
+        }
+        $test = DB::table('payrolls as p')->where('p.name',$name)->whereRaw($str_id)->select('id')->first();
+        if($test)
+            return 'Payrll name ?? already exist::'.$name;
+            // return DV::error('Payrll name ?? ??already exist::'.$name .';'.$name);
+
+        return null;
     }
 
     function getList($arr, $ss)
