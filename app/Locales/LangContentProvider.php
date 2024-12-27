@@ -9,6 +9,7 @@ class LangContentProvider {
             'name'=>'ខ្មែរ',
             'code'=>'km',
             'validation'=>[
+                 'Payrll name ?? already exist'=>'ឈ្មោះ ?? មានរួចហើយ',
                  'No matching price'=>'រកមិនឃើញតំលៃកំណត់',
                  'No matched price'=>'រកមិនឃើញតំលៃកំណត់',
                  'national id is required'=>'លេខអត្តសញ្ណាណបណមិនត្រឹមត្រូវ '  ,
