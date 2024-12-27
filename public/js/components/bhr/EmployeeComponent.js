@@ -836,14 +836,16 @@ var EmployeeComponent = new (function () {
                             const id = e.target
                                 .closest("a")
                                 .getAttribute("data-id");
-                             
-                            const op = {
+                            console.log(123,id);
+
+
+                            let op = {
                                 id: id,
                                 emp_id: employeeId,
                                 btn: e.target,
                                 title: "Edit Skill",
                                 onClose: () => {
-                                    mThis.renderCardLeft(employeeId);
+                                    mThis.renderCardLeft.showPage();
                                 },
                             };
                             console.log("Edit operation:", op);
@@ -2863,7 +2865,62 @@ const EmployeeDialog = (() => {
                 DateTimePicker.init(me.controls.nid_expiry_date);
                 DateTimePicker.init(me.controls.passport_expiry_date);
                 LocaleManager.translateZone(me.divModal);
-                
+                const div_emp_photo = me.controls.div_emp_photo;
+
+                me.empImageBox = new ImageBox(div_emp_photo, {
+                    defaultPhotoName:'default-staff',
+                    containerClass: "emp-profile-container",
+                    imgClass: "data-input",
+                    dataset: { field: "photo" }, /** please set field: photo so that we can use for both Edit and Create easily */
+                    //dataset: { field: "image_url" },
+                    beforeDeleteImage: async ()=> {
+                       if(me.dataOptions.id > 0){
+                           const answer = await cv_interact.confirm('Are you sure to delete this profile photo?', {title:'Delete Photo','context':'delete'});
+                           if(answer){
+                                me.deleteProfilePhoto(me.dataOptions.id);
+                                return true;
+                           } else return false;
+
+                       }
+                       return true;
+                    },
+                    //When user browse new photo and loads it in
+                    onOpenImage: (img)=>{
+                        if(me.dataOptions.id > 0){
+                          me.saveProfilePhoto(img, me.dataOptions.id);
+                       }
+                    },
+                    // onImageLoaded: (img)=>{
+                    //    if(me.dataOptions.id > 0){
+                    //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
+                    //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
+                    //             if(res.status_code == 200){
+                    //             cv_interact.info('Profile photo was deleted!');
+                    //             }else cv_interact.error(res.error_message);
+                    //         });
+                    //    }
+                    // }
+                });
+
+                me.deleteProfilePhoto = (emp_id)=>{
+                    const p = {"id":emp_id};
+                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/delete'].join(''),p,false,false).then(res =>{
+                        if(res.status_code == 200){
+                          me.empImageBox.setImage(null);
+                          cv_interact.info('Profile photo was deleted!');
+                        }else cv_interact.error(res.error_message);
+                    });
+                };
+
+                me.saveProfilePhoto = (photo, emp_id)=>{
+                    const p = {"photo": photo, "id" : emp_id};
+                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/save'].join(''), p,false).then(res =>{
+                        if(res.status_code == 200){
+                          me.empImageBox.setImage(res.data.image_url);
+                          cv_interact.success('Profile photo was deleted!');
+                        }else cv_interact.error(res.error_message);
+                   });
+                };
 
                 // me.showProfile = (code) => {
                 //     let fields = [];
@@ -3041,62 +3098,6 @@ const EmployeeDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                const div_emp_photo = me.controls.div_emp_photo;
-
-                me.empImageBox = new ImageBox(div_emp_photo, {
-                    defaultPhotoName:'default-staff',
-                    containerClass: "emp-profile-container",
-                    imgClass: "data-input",
-                    dataset: { field: "photo" }, /** please set field: photo so that we can use for both Edit and Create easily */
-                    //dataset: { field: "image_url" },
-                    beforeDeleteImage: async ()=> {
-                       if(me.dataOptions.id > 0){
-                           const answer = await cv_interact.confirm('Are you sure to delete this profile photo?', {title:'Delete Photo','context':'delete'});
-                           if(answer){
-                                me.deleteProfilePhoto(me.dataOptions.id);
-                                return true;
-                           } else return false;
-
-                       }
-                       return true;
-                    },
-                    //When user browse new photo and loads it in
-                    onOpenImage: (img)=>{
-                        if(me.dataOptions.id > 0){
-                          me.saveProfilePhoto(img, me.dataOptions.id);
-                       }
-                    },
-                    // onImageLoaded: (img)=>{
-                    //    if(me.dataOptions.id > 0){
-                    //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
-                    //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
-                    //             if(res.status_code == 200){
-                    //             cv_interact.info('Profile photo was deleted!');
-                    //             }else cv_interact.error(res.error_message);
-                    //         });
-                    //    }
-                    // }
-                });
-
-                me.deleteProfilePhoto = (emp_id)=>{
-                    const p = {"id":emp_id};
-                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/delete'].join(''),p,false,false).then(res =>{
-                        if(res.status_code == 200){
-                          me.empImageBox.setImage(null);
-                          cv_interact.info('Profile photo was deleted!');
-                        }else cv_interact.error(res.error_message);
-                    });
-                };
-
-                me.saveProfilePhoto = (photo, emp_id)=>{
-                    const p = {"photo": photo, "id" : emp_id};
-                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/save'].join(''), p,false).then(res =>{
-                        if(res.status_code == 200){
-                          me.empImageBox.setImage(res.data.image_url);
-                          cv_interact.success('Profile photo was deleted!');
-                        }else cv_interact.error(res.error_message);
-                   });
-                };
             },
             //onClose: (canceled) => {},
         });
