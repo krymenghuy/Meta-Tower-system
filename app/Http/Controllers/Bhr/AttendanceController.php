@@ -79,4 +79,13 @@ class AttendanceController extends Controller
         }
         return JDV::result($this->attendance->getFormOptions($req->id, $ss));
     }
+
+    function scanAttendance(Request $req){
+        $branch_id =null;
+        $subs_id = getCurrentSubsId(true);
+        $ss = (object)[''=>$subs_id,'branch_id'=>$branch_id,'lang'=>'en'];
+        $instance = new Attendance(null,$ss);
+        $save = $instance->scanAttendance($req->all(),$ss);
+        return JDV::raw($save);
+    }
 }

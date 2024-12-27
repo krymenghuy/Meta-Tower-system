@@ -381,14 +381,15 @@ class Report {
     function getWalletAccountList($filter,$ss=null) {
 
     
-        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
-        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+        $header_list = ['No','Employee','Account Type','Account Number','Balance','Last Balance Date','Currency'];
+        $key_list = ['no','emp_name','account_type','account_number','balance','last_balance_date','currency',];
 
         $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name',$header_list,$key_props);
 
         $d = (object)$filter;
         $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $employee_id = isset($d->employee_id)?$d->employee_id:null;
         $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
         $branch_ids = getAccessBranches($ss,$branch_id);
         $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
@@ -397,10 +398,26 @@ class Report {
         $str_branch_id = '2=2';
         if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
         // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
-        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
-        $query = DB::table('employees as emp')
-        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        if($branch_id) $str_branch_id = 'e.branch_id = ' . $branch_id;
+        if($employee_id) $str_branch_id = 'e.id = ' . $employee_id;
+        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+
+        $query = DB::table('accounts as a')
+           ->join('employees as e', 'e.id', '=', 'a.emp_id')
+           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+           ->selectRaw('
+               a.id,
+               a.emp_id,
+               e.name as emp_name,
+               pos.title as position,
+               a.account_type,
+               a.account_number,
+               a.balance,
+               a.currency,
+               ' . $balance_date . ',
+               e.photo_file_name as emp_photo
+           ')
+           ->where('a.account_type', 'Wallet')
         ->whereRaw($str_branch_id);
         $rows = $query->get();
 

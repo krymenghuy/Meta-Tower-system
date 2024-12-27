@@ -145,6 +145,10 @@ Route::post('processLogin', [LoginController::class, 'processLogin']);
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
 Route::get('login', [LoginController::class , 'login']);
 
+Route::get('attendance', function () { 
+    $data = [];
+    return view('attendance',$data);
+});
 // //Todo: set authentication and authorization
 // Route::get('/export-db031181', [DbExportController::class, 'exportDatabase']);
 // Route::get('/export-dbbydate031181/{date?}', [DbExportController::class, 'exportDataByDate']);

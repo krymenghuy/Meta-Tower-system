@@ -10,6 +10,16 @@ var ExitFormItemComponent = new (function () {
     this.elSearch = this.self.querySelector("#_exit_form_item_search");
     this.divFilter = this.self.querySelector("#container_exit_form_item");
     this.viewExitForm = this.self.querySelector("#view_exit_form_item");
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString("en-US", {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, " ");
+    };
     this.cols = [
         {
             title: "Name",
@@ -29,14 +39,18 @@ var ExitFormItemComponent = new (function () {
         },
         {
             title: "Amount",
-            className: "align-middl",
-            data: (data) =>
-                `<span class="text-primary-custom">
-                    ${
-                        main_view.currency.symbol +
-                        " " +
-                        (data.amount ?? "0.00")
-                    }</span>`,
+            className: "align-middle",
+            data: (data, index, tr) => {
+                let currencySymbol = "";
+                if (data.currency === "USD") {
+                    currencySymbol = "$";
+                } else if (data.currency === "KHR") {
+                    currencySymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currencySymbol} ${formattedNumber(
+                    data.amount ?? 0
+                )}</p>`;
+            },
         },
         {
             title: "Remarks",
@@ -58,8 +72,7 @@ var ExitFormItemComponent = new (function () {
                     IsSettledText = "Done";
                     IsSettledClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                }
-                else {
+                } else {
                     IsSettledClass =
                         "text-white text-center bg-warning border border-info rounded-5 p-1";
                 }
@@ -325,6 +338,13 @@ const FormItemDialog = (() => {
                                 <label for="amount" class="form-label" vslang="titles.amount"></label>
                                 <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
+                            <div class="form-group col-6">
+                                <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                <select class="modal-select data-input" name="currency" data-field="currency">
+                                    <option value="KHR">KHR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
                             <div class="form-group col-md-12">
                                 <label for="item_type" class="form-label" vslang="titles.item type"></label>
                                 <select name="item_type" class="modal-select data-input" data-field="item_type" id="item_type">
@@ -336,6 +356,12 @@ const FormItemDialog = (() => {
                             </div>
                         </div>`,
                     ].join("");
+                },
+                contentCreated: (me) => {
+                    const currencyField = me.controls.currency;
+                    if (currencyField && !currencyField.value) {
+                        currencyField.value = "KHR";
+                    }
                 },
                 configSelect: [
                     {

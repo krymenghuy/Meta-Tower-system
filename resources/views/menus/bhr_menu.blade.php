@@ -185,7 +185,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" />                    </span>
  
-                                <span class="kt-menu__link-text font-color " vslang="menus.Employee"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Employees"></span>
  
                             </a>
             </li>
@@ -280,7 +280,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                     src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color" vslang="menus.Attendance Tracks">
+                                <span class="kt-menu__link-text font-color" vslang="menus.Attendance Tracking">
                                     Attendance Tracks
                                 </span>
                             </a>
@@ -397,7 +397,7 @@ function v_display($mod_id, $module_ids = null)
                     <img class="icons opacity-icons"
                         src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
                 </span>
-                <span class="kt-menu__link-text font-color" vslang="menus.Exit Form"></span>
+                <span class="kt-menu__link-text font-color" vslang="menus.Exit Forms"></span>
             </a>
             </li>
 
@@ -411,7 +411,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/warning.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Warning"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Warnings"></span>
                             </a>
             </li>
 
@@ -547,7 +547,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/form.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Check Point Category"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Checkpoint Categories"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -556,7 +556,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/item.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Check Points"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Checkpoints"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -565,7 +565,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/exit_item.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Item"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Items"></span>
                             </a>
                         </li>
                         

@@ -23,68 +23,29 @@ class Benefit //extends Model
         $row = DB::table('benefits')->where('id', $id)->selectRaw($cols)->first();
         return $row;
     }
-    public function save($arr = [],$id = null, $ss = null)
+    public function save($arr = [], $id = null, $ss = null)
     {
-        $id = $this->id ?? ($arr['id'] ?? null);
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
         $v_rule = [
-            'id' => '0|identity=1',
-            'name' => '1|string|0-250',
+            'name' => '1|string',
         ];
-        $name_restrictions = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
 
-        $res = validateObject($arr, $v_rule, true, ['name' => $name_restrictions], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang , false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
+
         $inputs = $res->values;
-        $inputs['branch_id'] = $branch_id;
 
-        $name = $inputs['name'];
-
-        if (!$id) {
-            $existingBenefit = DB::table('benefits')
-            ->where('name', $name)
-                ->first();
-
-            if ($existingBenefit) {
-                return DV::error('This name already exists. Please choose a different name.');
-            }
-
-            try {
-                $newId = DB::table('benefits')->insertGetId($inputs);
-
-                if ($newId) {
-                    return DV::depends($newId, ['id' => $newId], 'Create successful');
-                } else {
-                    return DV::error('Failed to create a new benefit. Please check your input.');
-                }
-            } catch (\Exception $e) {
-                return DV::error('Create failed. An error occurred during the operation.');
-            }
+        $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
         }
-
-        if ($id) {
-            try {
-                $updated = DB::table('benefits')
-                ->where('id', $id)
-                    ->update($inputs);
-
-                if ($updated) {
-                    return DV::depends($id, ['id' => $id], 'Update successful');
-                } else {
-                    return DV::error('Update failed. Record may not exist or data is unchanged.');
-                }
-            } catch (\Exception $e) {
-                return DV::error('Update failed. An error occurred during the operation.');
-            }
-        }
-
-        return DV::error('Invalid operation. Please provide valid data.');
+        return DV::depends(0, ['sender' => $inputs]);
     }
-
 
     public function getBenefitPaginate($arr, $ss)
     {
