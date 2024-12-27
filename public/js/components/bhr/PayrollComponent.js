@@ -422,12 +422,13 @@ const AddPayRollListDailog = (() => {
     self.show = (op) => {
         console.log(999, op);
 
-        dialogAdd = new GeneralDialog({
+        dialogAdd = dialogAdd || new GeneralDialog({
             cssClass: 'modal-lg',
             backdrop: 'static',
             keyboard: true,
             createContent: () => {
                 const months = [
+                    { value: 0, name: "select month" },
                     { value: 1, name: "Jan" },
                     { value: 2, name: "Feb" },
                     { value: 3, name: "Mar" },
@@ -447,49 +448,53 @@ const AddPayRollListDailog = (() => {
 
                 return [
                     `<div class="row">
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <label for="name" class="form-label" vslang="titles.Name"></label>
-                            <input name="name" class="form-control data-input form_input" data-field="name" />
+                            <input name="name" class="form-control data-input form_input" data-field="name" placeholder="auto" readOnly/>
                         </div>
-                        <div class="form-group col-3">
+                        <div class="form-group col-4">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
                             <select name="month" class="form-control data-input" data-field="month">
                                 ${months.map(month => `<option value="${month.value}">${month.name}</option>`).join("")}
                             </select>
                         </div>
-                        <div class="form-group col-3">
+                        <div class="form-group col-4">
                             <label for="year" class="form-label" vslang="titles.Year"></label>
                             <select name="year" class="form-control data-input" data-field="year">
+                                <option value="0">select year</option>
                                 ${years.map(year => `<option value="${year}">${year}</option>`).join("")}
                             </select>
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
+                            <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
+                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
+                                <option value="0">select number</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4">
                             <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
                             <input name="start_date" class="form-control data-input form_input" data-field="start_date" />
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                            <input name="end_date" class="form-control data-input" data-field="end_date" />
+                            <input name="end_date" class="form-control data-input form_input" data-field="end_date" />
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                             <select name="currency_code" class="modal-select data-input form_input" data-field="currency_code">
+                                <option value="0">select currency</option>
                                 <option value="KHR">KHR</option>
                                 <option value="USD">USD</option>
                             </select>
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
                             <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                         </div>
-                        <div class="form-group col-6">
-                            <label for="p_number" class="form-label" vslang="titles.Payroll As"></label>
-                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
-                                <option value="1">One Time</option>
-                                <option value="2">Two Time</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-6">
+                        
+                        <div class="form-group col-4">
                             <label for="total" class="form-label" vslang="titles.Total"></label>
                             <input name="total" class="form-control data-input" data-field="total" />
                         </div>

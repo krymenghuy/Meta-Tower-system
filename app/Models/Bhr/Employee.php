@@ -527,7 +527,7 @@ class Employee //extends Model
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
 
-            $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';
@@ -735,6 +735,7 @@ class Employee //extends Model
 
         $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
+            
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
@@ -745,6 +746,18 @@ class Employee //extends Model
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
             'employees' => $emps,
+        ];
+    }
+    function getFormOptionPromotion($id, $ss)
+    {
+        $employee = null;
+        if ($id) {
+            $employee = self::getDetails($id, $ss);
+        }
+        return (object) [
+            'branches' => GeneralSettings::options_branch($ss),
+            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'employee' => $employee,
         ];
     }
     function setTerminateStatus($status_id, $id = null, $ss = null)
@@ -796,7 +809,7 @@ class Employee //extends Model
     {
         return DB::table('events')->where('name', $name)->value('id');
     }
-    function promoteIntern($emp_type_id, $id = null, $ss = null, $arr)
+    function promoteNonStaff($emp_type_id, $id = null, $ss = null, $arr)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;

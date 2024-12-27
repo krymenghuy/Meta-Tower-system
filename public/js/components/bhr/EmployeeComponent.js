@@ -836,14 +836,16 @@ var EmployeeComponent = new (function () {
                             const id = e.target
                                 .closest("a")
                                 .getAttribute("data-id");
-                             
-                            const op = {
+                            console.log(123,id);
+
+
+                            let op = {
                                 id: id,
                                 emp_id: employeeId,
                                 btn: e.target,
                                 title: "Edit Skill",
                                 onClose: () => {
-                                    mThis.renderCardLeft(employeeId);
+                                    mThis.renderCardLeft.showPage();
                                 },
                             };
                             console.log("Edit operation:", op);
@@ -1638,13 +1640,13 @@ var EmployeeComponent = new (function () {
                 return `
                     <div id="movement-options">
                         <div class="d-flex align-items-center gap-3 border-bottom ">
-                            <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch" name="items" value="branch" />
+                            <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch"  value="branch" />
                             <label for="branch" class="text-primary-custom">Change Branch</label>
 
-                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox" id="position" name="items" value="position" />
+                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox" id="position"  value="position" />
                             <label for="position" class="text-primary-custom">Change Position</label>
 
-                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary" name="items" value="salary" />
+                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary"  value="salary" />
                             <label for="salary" class="text-primary-custom">Change Salary</label>
                         </div>
                     </div>
@@ -1740,21 +1742,20 @@ var EmployeeComponent = new (function () {
                     });
                 };
             },
-
-            configSelect: [
-                {
-                    name: "branch",
-                    data: "branches",
-                    textField: "branch_name",
-                    valueField: "id",
-                },
-                {
-                    name: "position",
-                    data: "positions",
-                    textField: "title",
-                    valueField: "id",
-                },
-            ],
+            // configSelect: [
+                // {
+                //     name: "branch",
+                //     data: "branches",
+                //     textField: "branch_name",
+                //     valueField: "id",
+                // },
+                // {
+                //     name: "position",
+                //     data: "positions",
+                //     textField: "title",
+                //     valueField: "id",
+                // },
+            // ],
             buttons: [
                 {
                     label: "<span>Cancel</span>",
@@ -1804,7 +1805,7 @@ var EmployeeComponent = new (function () {
 
                         vsapi
                             .call(
-                                `${main_view.base_url}/hr/employee/promote-staff`,
+                                `${main_view.base_url}/hr/staff-promotion/promote`,
                                 d,
                                 btn,
                                 false
@@ -1821,27 +1822,37 @@ var EmployeeComponent = new (function () {
                     },
                 },
             ],
-            prepareFormOptions: {
-                createTitle: "Employee Movement",
-                modifyTitle: "Edit Movement",
-                targetProp: "Employee Movement",
-                api: {
-                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
+            // prepareFormOptions: {
+            //     createTitle: "Employee Movement",
+            //     modifyTitle: "Edit Movement",
+            //     targetProp: "employee",
+            //     api: {
+            //         endpoint: `${main_view.base_url}/hr/employee/form-options`,
 
-                    params: (op) => {
-                        return { id: op.id };
-                    },
-                    // onResponse: (me, res) => {},
-                },
-            },
+            //         params: (op) => {
+            //             return { id: op.id };
+            //         },
+            //         onResponse: (me, res) => {
+            //             console.log(123,me,321,res);
+                        
+            //         },
+            //     },
+            // },
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                me.controls.branch.value = data.employee.branch_id;
-                me.controls.position.value = data.employee.position_id;
-                me.controls.org_salary.value = data.employee.salary;
-                console.log(234,data);
+                let op = {id:me.dataOptions.id}; 
 
+                    vsapi.call(`${main_view.base_url}/hr/staff-promotion/form-options`,op,null,null).then((res) => {
+                    const d = res.status_code == 200 ? res.data : {};
+                        VSUtil.setComboItems(me.controls.branch,d.branches,"id","branch_name",null,null,d.employee.branch_id);
+                        VSUtil.setComboItems(me.controls.position,d.positions,"id","title",null,null,d.employee.position_id);
+                        me.controls.org_salary.value = d.employee.salary;
+                       
+                    });
+                // me.controls.branch.value = data.employee.branch_id;
+                // me.controls.position.value = data.employee.position_id;
+                // me.controls.org_salary.value = data.employee.salary;
                 me.divModal.querySelectorAll("input.change-option").forEach((input) => {
                     input.checked = false;
                     const divTarget = me.controls[input.dataset.target];
@@ -1967,7 +1978,6 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        console.log(909090, op);
 
         mThis.PromoteDialog = mThis.PromoteDialog || new GeneralDialog({
             title: LocaleManager.trans("Promote Staff", "titles"),
@@ -2009,7 +2019,7 @@ var EmployeeComponent = new (function () {
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
                     params: (op) => {
-                        return { id: op.id }; // Pass ID to fetch data for edit
+                        return { id: op.id }; 
                     },
                     onResponse: (me, res) => {
                         if (op.id) {
@@ -2039,7 +2049,7 @@ var EmployeeComponent = new (function () {
                         console.log(111, p);
                         vsapi
                             .call(
-                                `${main_view.base_url}/hr/employee/promote-intern`,
+                                `${main_view.base_url}/hr/non-staff-promotion/promote`,
                                 p,
                                 btn,
                                 false
@@ -2276,15 +2286,8 @@ var EmployeeComponent = new (function () {
         // mThis.def_filter = mThis.def_filter || {};
         // mThis.def_filter.id = 10;
         // mThis.allow_filter = false;
-        vsapi
-            .call(
-                `${main_view.base_url}/hr/employee/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
+        vsapi.call(`${main_view.base_url}/hr/employee/form-options`,null,null,null).then((res) => {
+            const d = res.status_code == 200 ? res.data : {};
 
                 VSUtil.setComboItems(
                     mThis.elEmployeeStatus,
