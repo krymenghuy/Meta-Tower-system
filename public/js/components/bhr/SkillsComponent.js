@@ -10,16 +10,20 @@ var SkillsComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter_skill");
     this.elSearch = this.self.querySelector("#_search_skill");
     let div = mThis.self.querySelector("#_skill_list");
+    this.paginationContainer = mThis.self.querySelector("#skill_container_pagination");
 
 
     this.init = () => {
         if (mThis.initAlready) return;
 
         mThis.SkillListView = new ListView('_skill_list', {
-            fetchApi: `${main_view.base_url}/hr/skills/list`,
+            fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
             apiCluster: main_view.apiCluster,
+            perPage:4,
+            paginationContainer: mThis.paginationContainer,
+
             processResponse: (res) => {
-                return res;
+                return res.data;
             },
             renderItems: (data,list_container) => {
                 mThis.renderSkillCard(list_container, data);
