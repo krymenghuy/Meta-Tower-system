@@ -323,18 +323,18 @@ const FormItemDialog = (() => {
                                 <label for="item_name" class="form-label" vslang="titles.check point"></label>
                                 <select name="item_name" class="form-control data-input" data-field="check_point_id"></select>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-12">
+                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control data-input" data-field="remarks" />
+                            </div>
+                            <div class="form-group col-md-6">
                                 <label for="is_settled" class="form-label" vslang="titles.settled"></label>
                                 <select name="is_settled" class="modal-select data-input" data-field="is_settled" id="is_settled">
                                     <option value="1">Done</option>
                                     <option value="2">Not Yet</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control data-input" data-field="remarks" />
-                            </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-6">
                                 <label for="amount" class="form-label" vslang="titles.amount"></label>
                                 <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
@@ -345,7 +345,7 @@ const FormItemDialog = (() => {
                                     <option value="USD">USD</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <label for="item_type" class="form-label" vslang="titles.item type"></label>
                                 <select name="item_type" class="modal-select data-input" data-field="item_type" id="item_type">
                                     <option value="1">item</option>

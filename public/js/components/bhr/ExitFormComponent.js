@@ -48,7 +48,7 @@ var ExitFormComponent = new (function () {
             title: "Settled",
             className: "settled text-nowrap align-middle",
             data: (data) => {
-                let settledText = "Not Yet";
+                let settledText = "Panding";
                 let settledClass = "";
 
                 if (data.is_finished == 1) {
@@ -180,6 +180,7 @@ var ExitFormComponent = new (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
+
         
         ExitFormDialog.show(op);
     };
@@ -253,9 +254,7 @@ const ExitFormDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = new GeneralDialog({
                 cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
@@ -273,8 +272,8 @@ const ExitFormDialog = (() => {
                             <div class="form-group col-md-12">
                                 <label for="is_finished" class="form-label" vslang="titles.Is Finished"></label>
                                 <select name="is_finished" class="modal-select data-input" data-field="is_finished" id="is_finished">
+                                    <option value="0">Pending</option>
                                     <option value="1">Done</option>
-                                    <option value="2">Not Yet</option>
                                 </select>
                             </div>
                             

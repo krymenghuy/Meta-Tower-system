@@ -19,16 +19,9 @@ class ExitForm
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    public function getProps($id, $props = [])
+    public function save($arr = [], $id = null, $ss = null)
     {
-        $cols = is_array($props) ? implode(',', $props) : $props;
-        return DB::table('exit_forms')->where('id', $id)->selectRaw($cols)->first();
-    }
-
-    public function save($exit_form, $ss, $arr)
-    {
-        $id = $this->id ?? ($arr['id'] ?? null);
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
@@ -36,49 +29,22 @@ class ExitForm
             'id' => '0|identity=1',
             'name' => '1|string|0-250',
             'emp_id' => '1|number',
-            'is_finished' => '1|choice|1,2|default=1',
+            'is_finished' => '1|choice|0,1|default=0',
         ];
         $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-
-        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false);
+        $checkUnique = ["$branch_id|exit_forms|name|id=id|text=Name already exists."];
+        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $emp_id = $inputs['emp_id'];
-        $name = $inputs['name'];
-
-        if (!$id) {
-            $existingExitForm = DB::table('exit_forms')
-                ->where('emp_id', $emp_id)
-                ->where('name', $name)
-                ->first();
-
-            if ($existingExitForm) {
-                return DV::error('This form name already exists for this employee. Please choose a different Form Name.');
-            }
+        $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
         }
+        return DV::error('Error saving exit form');
 
-        if ($id) {
-            $updated = DB::table('exit_forms')
-                ->where('id', $id)
-                ->update($inputs);
-
-            if ($updated) {
-                return DV::depends($id, ['id' => $id], 'Update successful');
-            } else {
-                return DV::error('Update failed. Record may not exist or data is unchanged.');
-            }
-        } else {
-            $newId = DB::table('exit_forms')->insertGetId($inputs);
-
-            if ($newId) {
-                return DV::depends($newId, ['id' => $newId], 'Create successful');
-            } else {
-                return DV::error('Create failed.');
-            }
-        }
     }
 
     public function getList($arr, $ss = null)
@@ -110,17 +76,17 @@ class ExitForm
             ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->where('emp.status_id', 20)
             ->selectRaw(
-                'ef.emp_id,
-            ef.id,
-            ef.is_finished,
-            ef.name,
-            emp.id as emp_id,
-            emp.name as emp_name,
-            br.name as branch_name,
-            emp.email,
-            emp.position_id,
-            pos.title as position,
-            emp.photo_file_name as emp_photo'
+                'ef.id,
+                ef.emp_id,
+                ef.name,
+                emp.id as emp_id,
+                ef.is_finished,
+                emp.name as emp_name,
+                br.name as branch_name,
+                emp.email,
+                emp.position_id,
+                pos.title as position,
+                emp.photo_file_name as emp_photo'
             )
             ->orderBy('ef.id', 'desc');
 
@@ -167,44 +133,20 @@ class ExitForm
             ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->where('emp.status_id', 20)
             ->selectRaw(
-            'ef.emp_id,
-            ef.id,
-            ef.name,
-            ef.is_finished,
-            emp.id as emp_id,
-            emp.name as emp_name,
-            br.name as branch_name,
-            emp.email,
-            emp.position_id,
-            pos.title as position,
-            emp.photo_file_name as emp_photo'
+            '
+                ef.id,
+                ef.emp_id,
+                ef.name,
+                ef.is_finished,
+                emp.id as emp_id,
+                emp.name as emp_name,
+                br.name as branch_name,
+                emp.email,
+                emp.position_id,
+                pos.title as position,
+                emp.photo_file_name as emp_photo'
             )
-            ->orderBy('ef.id', 'desc')
-            ->first();
-
-        if (!$details) {
-            return null;
-        }
-
-        $resignation = DB::table('resignations as res')
-            ->where('emp_id', $details->emp_id)
-            ->select('effective_date')
-            ->first();
-
-        $details->effective_date = $resignation->effective_date ?? null;
-
-        $details->image_url = '';
-        if (!empty($details->emp_id) && $details->emp_photo) {
-            $details->image_url = Employee::profilePicture($details->emp_id);
-        }
-
-        unset($details->emp_photo);
-        $currentDate = date('Y-m-d');
-        $details->can_edit_exit_item = true;
-        if ($resignation && $resignation->effective_date < $currentDate) {
-            $details->can_edit_exit_item = false;
-            $details->error_message = "Resignation effective date has expired.";
-        }
+            ->where('ef.id', $id)->get()->first();
 
         return $details;
     }
@@ -281,7 +223,7 @@ class ExitForm
         $exitFormItems = $query->get();
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
+        $forms = DB::table('exit_forms')->selectRaw('id, emp_id')->where('emp_id', $emp_id)->first();
 
         $form_items = [];
         if ($forms) {

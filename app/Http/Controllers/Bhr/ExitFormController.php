@@ -19,8 +19,10 @@ class ExitFormController extends Controller
     function saveExitForm(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->exit_form->save($req->exit_form, $ss, $req->all());
+
+        if ($ss->status_code != 200) return JDV::raw($ss);
+        $exit_form = new ExitForm($req->id, $ss);
+        $res = $exit_form->save($req->all());
         return JDV::raw($res);
     }
     public function getList(Request $req)
