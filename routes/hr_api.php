@@ -85,16 +85,20 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
-    //promote staff intern to probation and intern-probation to staff
-    Route::post('/promote-intern', [EmployeeController::class, 'promoteIntern']);
-    //promote staff to change position salary branch
-    Route::post('/promote-staff',[EmployeeController::class,'promoteStaff']);
+   
     Route::post('/set-terminate-status', [EmployeeController::class, 'setTerminateStatus']);
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);
     Route::post('/set-rejoin-status',[EmployeeController::class,'setRejoinStatus']);
     Route::post('/list', [EmployeeController::class, 'getEmployeeList']);
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-promotion')->group(function () {
+    Route::post('/promote',[EmployeeController::class,'promoteStaff']);
+    Route::post('/form-options',[EmployeeController::class,'getFormOptionPromotion']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff-promotion')->group(function () {
+    Route::post('/promote',[EmployeeController::class,'promoteNonStaff']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
