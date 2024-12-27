@@ -27,10 +27,10 @@ var EmployeeBenefitComponent = new (function () {
                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
+                            data.emp_name ?? ""
                         }</span><br/>
                         <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
+                            data.position ?? ""
                         }</span>
                     </div>
                 </div>`;
@@ -46,16 +46,7 @@ var EmployeeBenefitComponent = new (function () {
                 }</p>`;
             },
         },
-        {
-            title: "Balance",
-            className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    main_view.currency.symbol + data.balance ?? ""
-                }</p>`;
-            },
-        },
+
         {
             title: "Benefit Type",
             className: "align-middle",
@@ -73,6 +64,16 @@ var EmployeeBenefitComponent = new (function () {
                 return `
                 <p class="p-0 text-primary-custom m-0">${
                     main_view.currency.symbol + data.amount ?? ""
+                }</p>`;
+            },
+        },
+        {
+            title: "Balance",
+            className: "align-middle",
+            data: (data) => {
+                return `
+                <p class="p-0 text-primary-custom m-0">${
+                    main_view.currency.symbol + data.balance ?? ""
                 }</p>`;
             },
         },
@@ -293,57 +294,81 @@ const EmployeeBenefitDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
-                return `
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                                <select name="employee" class="data-input" data-field="emp_id"></select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
-                                <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="benefit_type_id" class="form-label" vslang="titles.Benefit Type"></label>
-                                <select name="benefit_type_id" class="modal-select data-input form_input" data-field="benefit_type_id">
-                                    <option value="">(Select Benefit Type)</option>
-                                    <option value="1">remuneration</option>
-                                    <option value="2">fringe benefit</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                                <input type="number" name="amount" class="form-control data-input" data-field="amount"></input>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="balance" class="form-label" vslang="titles.Balance"></label>
-                                <input type="number" name="balance" class="form-control data-input" data-field="balance"></input>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
-                                <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate"></input>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
-                                <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id">
-                                    <option value="">(Select Tax Option)</option>
-                                    <option value="1">Taxable</option>
-                                    <option value="2">Non Taxable</option>
-                                    <option value="3">Flat Rate</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="remarks" class="form-label" vslang="titles.Remark"></label>
-                                <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                            </div>
-                        </div>`;
+                return [
+                    `<div class="row">`,
+                    `    <div class="form-group col-md-12">
+                            <label for="employee" class="form-label" vslang="titles.Employee"></label>
+                            <select name="employee" class="data-input" data-field="emp_id"></select>
+                        </div>`,
+                    `    <div class="form-group col-md-6">
+                            <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
+                            <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
+                        </div>`,
+                    `    <div class="form-group col-md-6">
+                            <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
+                            <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
+                                <option value="">(Select Tax Option)</option>
+                                <option value="1">Taxable</option>
+                                <option value="2">Non Taxable</option>
+                                <option value="3">Flat Rate</option>
+                            </select>
+                        </div>`,
+                    `    <div class="form-group col-md-6">
+                            <label for="amount" class="form-label" vslang="titles.Amount"></label>
+                            <input type="number" name="amount" class="form-control data-input" data-field="amount" />
+                        </div>`,
+                    `    <div class="form-group col-md-6 flat_tax_rate d-none">
+                            <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
+                            <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" />
+                        </div>`,
+                    `    <div class="form-group col-md-12">
+                            <label for="remarks" class="form-label" vslang="titles.Remark"></label>
+                            <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                        </div>`,
+                    `</div>`
+                ].join("");
+            },
+            contentCreated: (me) => {
+                const taxOptionField = me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+
+                taxOptionField.addEventListener("change", () => {
+                    flatTaxRateField.classList.toggle("d-none", taxOptionField.value !== "3");
+                });
+            },
+            prepareFormOptions: {
+                createTitle: "New Employee Benefit",
+                modifyTitle: "Edit Employee Benefit",
+                targetProp: "emp_benefits",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                // const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+                // flatTaxRateField.classList.add("d-none");
+
+                Object.keys(data).forEach((key) => {
+                    const input = me.divModal.querySelector(`[data-field="${key}"]`);
+                    if (input) {
+                        input.value = data[key];
+                    }
+                });
             },
             configSelect: [
                 {
                     name: "employee",
                     data: "employees",
-                    textField: (me, d) =>
-                        `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span>${d.name}</span><span>${d.position}</span></div></div>`,
+                    textField: (me, d) => `
+                        <div class="d-flex gap-2">
+                            <img class="img_select" src="${d.image_url}" />
+                            <div class="d-flex flex-column">
+                                <span>${d.name}</span>
+                                <span>${d.position}</span>
+                            </div>
+                        </div>`,
                     valueField: "id",
                 },
                 {
@@ -367,45 +392,17 @@ const EmployeeBenefitDialog = (() => {
                         p.id = me.dataOptions.id;
 
                         vsapi
-                            .call(
-                                `${main_view.base_url}/hr/employee/benefit/save`,
-                                p,
-                                btn
-                            )
+                            .call(`${main_view.base_url}/hr/employee/benefit/save`, p, btn)
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.error(res.error_message || "An error occurred.");
                                 }
                             });
                     },
                 },
             ],
-            prepareFormOptions: {
-                createTitle: "New Employee Benefit",
-                modifyTitle: "Edit Employee Benefit",
-                targetProp: "emp_benefits",
-                api: {
-                    endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
-                    params: (op) => ({ id: op.id }),
-                },
-            },
-            onPrepareForm: (me, data) => {
-                Object.keys(data).forEach((key) => {
-                    const input = me.divModal.querySelector(
-                        `[data-field="${key}"]`
-                    );
-                    if (input) {
-                        if (input.tagName === "SELECT") {
-                            input.value = data[key];
-                        } else {
-                            input.value = data[key];
-                        }
-                    }
-                });
-                LocaleManager.translateZone(me.divModal);
-            },
         });
 
         dialog.show(op);
@@ -413,3 +410,5 @@ const EmployeeBenefitDialog = (() => {
 
     return self;
 })();
+
+
