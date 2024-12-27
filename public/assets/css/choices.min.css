@@ -144,7 +144,7 @@
     overflow-y: hidden;
     overflow-x: hidden;
     scrollbar-width: none;
-    padding-bottom: 40px;
+    /* padding-bottom: 40px; */
 }
 .choices__list--single {
     display: inline-block;
@@ -157,7 +157,7 @@
 }
 .choices__list--single .choices__item {
     width: 100%;
-    color: #2b3991;
+    /* color: #2b3991; */
 }
 .choices__list--multiple {
     display: inline;

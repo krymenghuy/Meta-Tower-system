@@ -38,7 +38,7 @@ class ExitFormItem
             'remarks' => '0|string',
             'is_settled' => '1|choice|1,2,3|default=1',
             'item_type' => '1|choice|1,2,3,4,5|default=1',
-            'currency' => '1|choice|KHR,USD'
+            'currency' => '1|choice|KHR,USD}'
         ];
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
