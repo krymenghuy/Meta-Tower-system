@@ -1967,7 +1967,6 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        console.log(909090, op);
 
         mThis.PromoteDialog = mThis.PromoteDialog || new GeneralDialog({
             title: LocaleManager.trans("Promote Staff", "titles"),
@@ -2009,7 +2008,7 @@ var EmployeeComponent = new (function () {
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
                     params: (op) => {
-                        return { id: op.id }; // Pass ID to fetch data for edit
+                        return { id: op.id }; 
                     },
                     onResponse: (me, res) => {
                         if (op.id) {

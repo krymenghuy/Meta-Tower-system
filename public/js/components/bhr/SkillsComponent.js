@@ -19,7 +19,7 @@ var SkillsComponent = new (function () {
         mThis.SkillListView = new ListView('_skill_list', {
             fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
             apiCluster: main_view.apiCluster,
-            perPage:4,
+            perPage:12,
             paginationContainer: mThis.paginationContainer,
 
             processResponse: (res) => {
@@ -57,13 +57,16 @@ var SkillsComponent = new (function () {
         });
         this.listContainer = mThis.SkillListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 230) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
+        }
         mThis.setAction(sh_parent);
 
         
-
+   
         mThis.initAlready = true;
     };
     this.getFilterData = () => {
@@ -113,8 +116,8 @@ var SkillsComponent = new (function () {
             data.forEach(d => {
                 html = [html,`<div class="col-md-3 mb-3 ">
                         <div class="card-container-skill">
-                            <div class="w-100 d-flex flex-row justify-content-center align-items-center shadow rounded-3" style="background-color: #ffffff;">
-                                <div class="section-title m-3 fs-6 text-start w-100">
+                            <div class="w-100 d-flex flex-row justify-content-center align-items-center shadow rounded-3" style="background-color: #2b3991;">
+                                <div class="section-title fs-6 text-start w-100">
                                     <div class="card-body bg-white rounded-3 text-center">
                                         <div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 70px; height: 70px;"> 
                                         <img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="h-100" alt="Profile Picture" >

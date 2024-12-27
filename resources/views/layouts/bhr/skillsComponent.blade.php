@@ -15,8 +15,9 @@
             </div>
         </div>
     </div>
-    <div id="_skill_list" class="m-4">
-    </div>
+    <div id="_skill_list" class="mt-3 px-3"></div>
+    <div id="skill_container_pagination" style="background:#f5f5f5" class="px-3 d-flex justify-content-start"></div>
+
 </div>
 <style>
   .card-row-skill{
@@ -30,7 +31,7 @@
     flex-direction: column;
     align-items: center;
     background-color: #dce5e5;
-    padding: 14px;
+    padding: 10px;
     border-radius: 8px;
     height: 100%; /* Prevents overflow */
 
