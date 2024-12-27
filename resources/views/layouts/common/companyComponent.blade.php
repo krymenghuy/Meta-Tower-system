@@ -11,8 +11,8 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="d-flex flex-column">
-                    <div class="w-100 border rounded-3" style="height:160px;overflow:hidden">
-                        <img id="com_imgLogo" class="data-input w-100 thumnail" style="max-height:160px" class="data-input" data-field="logo" alt="Logo" />
+                    <div class="w-100 d-flex justify-content-center border rounded-4" style="height:160px;overflow:hidden">
+                        <img id="com_imgLogo" class="data-input thumnail" style="max-height:160px" class="data-input" data-field="logo" alt="Logo" />
                     </div>
                     <div class="d-flex flex-row gap-2 mt-1">
                         <button id="com_btnChooseLogo" class="btn btn-sm btn-outline-primary-custom">
