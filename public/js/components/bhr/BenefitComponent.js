@@ -13,25 +13,47 @@ var BenefitComponent = new (function () {
     this.cols = [
         {
             title: "No",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap ",
             data: (data, index, i) => {
                 return index + 1;
             },
         },
         {
             title: "Benefit",
-            className: "align-middle text-capitalize text-nowrap text-left",
+            className: "align-middle text-capitalize text-nowrap",
             data: "name",
         },
-        // {
-        //     title: "Updated By",
-        //     className: "align-middle text-capitalize text-nowrap text-left",
-        //     data: "update_user",
-        // },
+        {
+            title: "Type",
+            className: 'type text-nowrap align-middle w-15',
+            data: function (data, index, tr) {
+                let cls_class = "text-white text-center border rounded-5";
+                let bg_color = '';
+
+                if (data.type_id === 1) {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745';
+                } else if (data.type_id === 2) {
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#4CC9FE';
+                }
+
+                return `<div><a class="d-block" data-type_id="${data.type_id}" data-id="${data.id}" href="javascript:void(0)">
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${data.type_id == 1 ? 'Remuneration' : 'Fringe'}
+                            </span>
+                        </a></div>`;
+            }
+        },
         {
             title: "Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "updated_at",
+            className: "align-middle justify-content-center text-capitalize text-nowrap ",
+            data: "update_date",
+        },
+        {
+            title: "Updated By",
+            className: "align-middle text-capitalize text-nowrap ",
+            data: "update_user",
         },
         {
             title: "",
@@ -205,11 +227,19 @@ const BenefitDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                <div class="form-group col-12">
-                  <label for="name" class="form-label" vslang="titles.Benefit Name"></label>
-                  <input name="name" class="form-control data-input" data-field="name" />
-                </div>
-              </div>`,
+                            <div class="form-group col-6">
+                                <label for="name" class="form-label" vslang="titles.Benefit Name"></label>
+                                <input name="name" class="form-control data-input" data-field="name" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="type_id" class="form-label" vslang="titles.Type"></label>
+                                <select class="modal-select data-input" name="type_id" data-field="type_id">
+                                    <option value="">(Select Type)</option>
+                                    <option value="1">Remuneration</option>
+                                    <option value="2">Fringe</option>
+                                </select>
+                            </div>
+                        </div>`,
                     ].join("");
                 },
 

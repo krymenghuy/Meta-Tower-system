@@ -212,58 +212,125 @@ class Employee //extends Model
         return DB::table('leaves as l')->join('leave_types as t', 't.id', '=', 'l.leave_type_id')->where('l.id', $id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
     }
 
-    static function getPayrollListBenefit($payroll_id, $emp_id)
+    static function getPayrollListBenefit($payroll_id, $emp_id ,$ss)
     {
         $withdraw_rate = 0;
-        $benefit_id = 0;
+        $last_benefit_id = 0;
         $full_amount = 0;
         $tax_option_id = 0;
         $used_amount = 0;
-
+        $benefit_count = 0;
+        // Fetch payroll details
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
             ->selectRaw('p.month, p.year')
             ->first();
 
         if ($payroll) {
-            $bdp = DB::table('benefit_disburse_policies')
+            // Get benefit disburse policies
+            $bdps = DB::table('benefit_disburse_policies')
                 ->where('target_month', $payroll->month)
                 ->where('target_year', $payroll->year)
-                ->selectRaw('id,withdraw_rate, benefit_id')
-                ->first();
+                ->selectRaw('id, withdraw_rate, benefit_id')
+                ->get();
+            foreach ($bdps as $bdp) {
+                $withdraw_rate = $bdp->withdraw_rate ?? 0;
+                $benefit_id = $bdp->benefit_id;
+
+                // Fetch benefit disbursements
+                $bd = DB::table('benefit_disbursements')
+                    ->where('target_month', $payroll->month)
+                    ->where('target_year', $payroll->year)
+                    ->where('emp_id', $emp_id)
+                    ->selectRaw('id, withdraw_rate, emp_id, target_month, target_year, benefit_id')
+                    ->first();
+
+                if ($bd) {
+                    $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate; // Use `withdraw_rate` from `benefit_disbursements` if available
+                    // $last_benefit_id = $bd->benefit_id;
+                    $emp_benefit = DB::table('emp_benefits')
+                    ->where('emp_id', $emp_id)
+                    ->where('benefit_id', $benefit_id)
+                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id');
+
+                    $benefit_count = DB::table('emp_benefits')
+                    ->where('emp_id', $emp_id)
+                    ->count('id');
+                    \Log::info('benefit_count: ' . $benefit_count );
+
+                    if($benefit_count > 1){
+                        $rows = $emp_benefit->get();
+                        if ($emp_benefit) {
+                            foreach($rows as $emp_benefit){
+                                $full_amount = $emp_benefit->amount ?? 0;
+                                $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+                                $used_amount = $full_amount * ($withdraw_rate / 100);
+                                $last_benefit_id = $emp_benefit->benefit_id;
+                                $result =  [
+                                    "emp_id" => $emp_id,
+                                    "payroll_id" => $payroll_id,
+                                    "withdraw_rate" => $withdraw_rate,
+                                    "benefit_id" => $last_benefit_id,
+                                    "full_amount" => $full_amount,
+                                    "tax_option_id" => $tax_option_id,
+                                    "used_amount" => $used_amount,
+                                ];
+                                $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
+                            }
+                        }
+                    }else{
+                        $emp_benefit = $emp_benefit->first();
+                        if ($emp_benefit) {
+                            $full_amount = $emp_benefit->amount ?? 0;
+                            $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+                            $used_amount = $full_amount * ($withdraw_rate / 100);
+                            $last_benefit_id = $emp_benefit->benefit_id;
+                        }
+                    }
+                }
+                else{
+
+                    $emp_benefit = DB::table('emp_benefits')
+                    ->where('emp_id', $emp_id)
+                    ->where('benefit_id', $benefit_id)
+                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id')
+                    ->first();
+                    \Log::info('emp_id: ' . $emp_id .' benefit_id' .$benefit_id);
+
+                    if ($emp_benefit) {
+                        if($emp_benefit->emp_id != $emp_id) break;
+                        $full_amount = $emp_benefit->amount ?? 0;
+                        $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+                        $used_amount = $full_amount * ($withdraw_rate / 100);
+                        $last_benefit_id = $emp_benefit->benefit_id;
+                    }
+
+                }
+
+                // Fetch employee benefit details
+
+            }
+
         }
-        $withdraw_rate = $bdp->withdraw_rate ?? 0;
-        $benefit_id = $bdp->benefit_id ?? 0;
 
-        $bd = DB::table('benefit_disbursements')
-            ->where('benefit_id', $benefit_id)
-            ->where('emp_id', $emp_id)
-            ->selectRaw('id,withdraw_rate,target_month,target_year')
-            ->first();
 
-        if ($bd) $withdraw_rate = $bd->withdraw_rate;
 
-        $emp_benefit = DB::table('emp_benefits')
-            ->where('emp_id', $emp_id)
-            ->where('benefit_id', $benefit_id)
-            ->selectRaw('id,amount, tax_option_id,flat_tax_rate')
-            ->first();
-
-        $full_amount = $emp_benefit->amount ?? 0;
-        $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-        $used_amount = $full_amount * ($withdraw_rate / 100);
-
-        $result = (object) [
+        // Prepare result object
+        $result =  [
             "emp_id" => $emp_id,
             "payroll_id" => $payroll_id,
             "withdraw_rate" => $withdraw_rate,
-            "benefit_id" => $benefit_id,
+            "benefit_id" => $last_benefit_id,
             "full_amount" => $full_amount,
             "tax_option_id" => $tax_option_id,
             "used_amount" => $used_amount,
-
         ];
-        return $result;
+        if($benefit_count <=1)
+        $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
+
+
+
+        return (object)$result;
     }
     static function savePayrollListBenefit($arr, $ss)
     {

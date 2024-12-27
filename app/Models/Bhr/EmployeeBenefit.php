@@ -19,23 +19,15 @@ class EmployeeBenefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function getProps($id, $props = [])
-    {
-        $cols = is_array($props) ? implode(',', $props) : $props;
-        $row = DB::table('emp_benefits')->where('id', $id)->selectRaw($cols)->first();
-        return $row;
-    }
 
-    public function save($benefit_type_id, $ss, $arr)
+    public function save($arr = [], $id = null, $ss = null)
     {
-        $id = $this->id ?? ($arr['id'] ?? null);
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
+
             'emp_id' => '1|number|exists=employees.id',
-            'benefit_type_id' => '1|choice|1,2,3|default=1',
             'benefit_id' => '1|number',
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
@@ -46,48 +38,25 @@ class EmployeeBenefit
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $inputs['branch_id'] = $branch_id;
 
-        $existingBenefitQuery = DB::table('emp_benefits')
-        ->where('emp_id', $inputs['emp_id'])
-        ->where('benefit_type_id', $inputs['benefit_type_id'])
-        ->where('benefit_id', $inputs['benefit_id']);
-
-        if ($id) {
-            $existingBenefitQuery->where('id', '!=', $id);
-        }
-
-        $existingBenefit = $existingBenefitQuery->first();
-
-        if ($existingBenefit) {
-            return DV::error('Duplicate benefit is not allowed for the same employee and benefit type.');
-        }
-
-        if ($id) {
-            $updated = DB::table('emp_benefits')
-            ->where('id', $id)
-                ->update($inputs);
-
-            if ($updated) {
-                return DV::depends($id, ['id' => $id], 'Update successful');
-            } else {
-                return DV::error('Update failed. Record may not exist or data is unchanged.');
-            }
-        } else {
-            $newId = DB::table('emp_benefits')->insertGetId($inputs);
-
-            if ($newId) {
-                return DV::depends($newId, ['id' => $newId], 'Create successful');
-            } else {
-                return DV::error('Create failed.');
+        if (!$id) {
+            $checkExist = DB::table('emp_benefits')->where('emp_id', $inputs['emp_id'])->where('benefit_id', $inputs['benefit_id'])->take(1)->value('id');
+            if ($checkExist) {
+                return DV::error('Benefit already exists');
             }
         }
+
+        $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
+        }
+        return DV::error('Error Saving Employee Benefit');
     }
 
 
@@ -107,27 +76,36 @@ class EmployeeBenefit
             $skip_rows = 0;
             $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR b.remarks LIKE '%" . $search_value . "%' OR b.amount LIKE '%" . $search_value . "%')";
         }
-        $benefitsQuery = DB::table('emp_benefits as b')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
-            ->whereRaw($str_srch)
-            ->whereRaw($str_where)
-
-            ->selectRaw(
-                'b.id, emp.id as emp_id, emp.name as name, emp.email as email, bc.name as benefit_name,
-                b.benefit_type_id,b.benefit_id,b.tax_option_id,b.flat_tax_rate,b.balance, b.amount, b.remarks, b.update_user,b.updated_at, b.create_date, emp.photo_file_name as emp_photo'
-            )
-
-            ->orderBy('b.id', 'desc');
+        $query = DB::table('emp_benefits as eb')
+            ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
+            ->join('benefits as b', 'b.id', '=', 'eb.benefit_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->selectRaw('
+                eb.id,
+                emp.id as emp_id,
+                emp.name as emp_name,
+                p.title as position,
+                b.name as benefit_name,
+                b.type_id as benefit_type_id,
+                eb.benefit_id,
+                eb.tax_option_id,
+                eb.flat_tax_rate,
+                eb.balance,
+                eb.amount,
+                eb.remarks,
+                emp.photo_file_name as emp_photo
+            ')
+            ->where('eb.branch_id', $branch_id)
+            ->whereRaw($str_srch);
 
         if ($search_benefit_id) {
-            $benefitsQuery->where('b.benefit_id', $search_benefit_id);
+            $query->where('eb.benefit_id', $search_benefit_id);
         }
-        $clone_query = clone $benefitsQuery;
+        $clone_query = clone $query;
 
-        $count = $clone_query->count('b.id');
+        $count = $clone_query->count('eb.id');
 
-        $rows = $benefitsQuery->skip($skip_rows)
+        $rows = $query->skip($skip_rows)
             ->take($per_page)
             ->get();
 
@@ -142,31 +120,30 @@ class EmployeeBenefit
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $query = DB::table('emp_benefits as b')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
-            ->selectRaw(
-                'b.id,
-                emp.id as emp_id,
-                emp.name as name,
-                emp.email as email,
-                bc.name as benefit_name,
-                b.benefit_type_id,
-                b.benefit_id,
-                b.tax_option_id,
-                b.flat_tax_rate,
-                b.balance,
-                b.amount,
-                b.remarks,
-                b.update_user,
-                b.updated_at,
-                b.create_date,
-                emp.photo_file_name as emp_photo'
-            )
-            ->where('b.branch_id', $branch_id)->where('b.id', $id)->take(1)->first();
+        $query =DB::table('emp_benefits as eb')
+        ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
+        ->join('benefits as b', 'b.id', '=', 'eb.benefit_id')
+        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->selectRaw('
+            eb.id,
+            emp.id as emp_id,
+            emp.name as emp_name,
+            p.title as position,
+            b.name as benefit_name,
+            b.type_id as benefit_type_id,
+            eb.benefit_id,
+            eb.tax_option_id,
+            eb.flat_tax_rate,
+            eb.balance,
+            eb.amount,
+            eb.remarks,
+            emp.photo_file_name as emp_photo
+        ')
+            ->where('eb.branch_id', $branch_id)->where('eb.id', $id)->take(1)->first();
         return $query;
     }
 

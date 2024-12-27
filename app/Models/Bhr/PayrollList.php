@@ -246,7 +246,7 @@ class PayrollList
         $start_date = $payroll->start_date;
         $end_date = $payroll->end_date;
 
-        $get_employee = DB::table('employees as e')
+         $get_employee = DB::table('employees as e')
             ->where(function ($query) use ($start_date, $end_date) {
                 $query->where('e.status_id', 10) // Active employees
                     ->orWhere(function ($query) use ($start_date, $end_date) {
@@ -339,8 +339,8 @@ class PayrollList
             $payroll_id = $inputs['payroll_id'];
             $emp_id = $inputs['emp_id'];
 
-            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id);
-            $save_payroll_list_benefit = Employee::savePayrollListBenefit((array)$payroll_list_benefit, $ss);
+            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id,$ss);
+            \Log::info((array)$payroll_list_benefit);
             $inputs['benefit'] = $payroll_list_benefit->used_amount;
 
             $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1);
