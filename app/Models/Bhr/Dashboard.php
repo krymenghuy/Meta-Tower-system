@@ -230,10 +230,10 @@ static function countEmployee($arr, $ss)
             ->selectRaw('
                 b.name AS benefit_name,
                 eb.update_user AS updated_by,
-                eb.benefit_type_id AS benefit_type,
+                b.type_id AS benefit_type,
                 SUM(eb.amount) AS total_amount
             ')
-            ->groupBy('b.name', 'eb.benefit_type_id', 'eb.update_user')
+            ->groupBy('b.name', 'b.type_id', 'eb.update_user')
             ->orderBy('b.name')
             ->get();
     

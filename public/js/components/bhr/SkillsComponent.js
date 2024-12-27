@@ -57,11 +57,11 @@ var SkillsComponent = new (function () {
         });
         this.listContainer = mThis.SkillListView.getListContainer();
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 230) + 'px';
+        sh_parent.style.height = (window.innerHeight - 220) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
         }
         mThis.setAction(sh_parent);
 
@@ -125,7 +125,7 @@ var SkillsComponent = new (function () {
                                         <p class="fs-6" style="color: #2b3991;">${d.title}</p>
                                         <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 100%;">
                                         <div class="d-flex justify-content-between">
-                                            <small class="fw-semibold  text-muted px-2">Count : ${d.count_member}</small>
+                                        
                                             <div class="d-flex justify-content-end gap-2">
                                                 <a href="javascript:void(0)" data-id="${d.id}" class="text-primary b-btn-edit text-decoration-none" >
                                                     <i class="fa-regular fa-pen-to-square"></i>

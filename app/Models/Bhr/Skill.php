@@ -27,16 +27,15 @@ class Skill
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'title' => 'required|string|max:100',
-            'description' => 'nullable|string|max:250',
-            'image' => 'nullable|image',
+            'title' => '1|string|0-150',
+            'description' => '0|string|1-250',
+            'image' => '0|image',
         ];
         $checkUnique = [
             "$branch_id|skills|title|id=id|text=Skill already exists by title",
         ];
-        $res = validateObject($arr, $v_rule, true, ['image' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+        $res = validateObject($arr, $v_rule, true, ['image' => GeneralSettings::$image_chars], $ss->lang, false,$checkUnique);
         if ($res->error) {
-            error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
         $inputs = $res->values;
@@ -47,16 +46,12 @@ class Skill
         $skill_create = !$id;
 
         $delete_prev_image = ($id > 0 && (!$image || isImage($image)));
-        error_log('Saving data: ' . json_encode($inputs));
+        // error_log('Saving data: ' . json_encode($inputs));
         $id = saveData($ss, 'skills', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
-            $count_member = DB::table('skills')->count('id');
-            if ($count_member > 0) {
-                DB::table('skills')->update(['count_member' => $count_member]);
-            }
             if ($delete_prev_image) {
-                $file_name = DB::table('skills')->where('id', $id)->value('image_file_name');
+                $file_name = DB::table('skills')->where('id', $id)->take(1)->value('image_file_name');
                 if ($file_name) {
                     PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
@@ -77,7 +72,7 @@ class Skill
         $search_value = $d->search_value ?? null;
     
         $query = DB::table('skills as s')
-            ->selectRaw('s.id, s.title, s.description, s.image_file_name, s.count_member')
+            ->selectRaw('s.id, s.title, s.description, s.image_file_name')
             ->where('s.branch_id', $ss->branch_id);
     
         if ($search_value) {
@@ -95,52 +90,53 @@ class Skill
     
         return $rows;
     }
-    
     function getSkillsPaginate($arr, $ss)
-    {
-        $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-
-        $skip_rows = ($current_page - 1) * $per_page;
-
-        $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-
-        $str_search = '1=1';
-
-        $query = DB::table('skills as s')
-            ->selectRaw('s.id, s.title, s.description, s.image_file_name, s.count_member');
-            // ->whereRaw('s.branch_id =' . $branch_id);
-        if ($search_id) {
-            $query->whereRaw('s.id =' . $search_id);
-        }
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("s.title like '%" . $search_value . "%'" . " or s.description like '%" . $search_value . "%'");
-            $query->whereRaw($str_search);
-        }
-
-        $query->orderBy('s.id', 'asc');
-        $count_query = clone $query;
-        $count = $count_query->count('s.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        foreach ($rows as $row) {
-            $row->image_url = '';
-            if ($row->image_file_name) {
-                $row->image_url = self::getProfilePicture($row->id);
-            }
-            unset($row->image_file_name);
-        }
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+{
+    $subs_id = $ss->subs_id;
+    $d = (object) $arr;
+    $branch_id = $ss->branch_id;
+    $current_page = $d->current_page ?? 1;
+    $per_page = $d->per_page ?? 12;
+    if (!is_numeric($current_page)) {
+        $current_page = 1;
     }
+    $skip_rows = ($current_page - 1) * $per_page;
+    $search_value = $d->search_value ?? null;
+    $str_search = '1=1';
+    if ($search_value) {
+        $search_value = escape_like_str($search_value);
+        $str_search = "(s.title LIKE '%" . $search_value . "%')";
+    }
+
+    $query = DB::table('skills as s')
+        ->leftJoin('emp_skills as es', 's.id', '=', 'es.skill_id')
+        ->whereRaw($str_search)
+        ->selectRaw('
+            s.id, 
+            s.title, 
+            s.description, 
+            s.image_file_name, 
+            COUNT(es.emp_id) as count_member
+        ')
+        ->groupBy('s.id', 's.title', 's.description', 's.image_file_name')
+        ->orderBy('s.id', 'DESC');
+
+    $count_query = clone $query;
+    $count = $count_query->count('s.id');
+    $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+    foreach ($rows as $row) {
+        $row->image_url = '';
+        if ($row->image_file_name) {
+            $row->image_url = self::getProfilePicture($row->id);
+        }
+        unset($row->image_file_name);
+    }
+
+    return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+}
+
+
 
     public static function getProfilePicture($id)
     {
