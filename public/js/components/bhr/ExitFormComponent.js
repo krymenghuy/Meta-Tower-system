@@ -453,15 +453,15 @@ const ViewExitFormDialog = (() => {
                                     <span>គោលបំណង៖</span>
                                     <div class="d-flex disabled">
                                         <div class="form-check me-3">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
+                                            <input type="checkbox" value="checked" checked >
                                             <label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>
                                         </div>
                                         <div class="form-check me-3">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>
+                                            <input type="checkbox" value="checked" >
                                             <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
                                         </div>
                                         <div class="form-check">
-                                            <svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>
+                                            <input type="checkbox" value="checked" >
                                             <label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
                                         </div>
                                     </div>
@@ -578,6 +578,34 @@ const ViewExitFormDialog = (() => {
                                 label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
                                 cssClass: "btn btn-sm-outline rounded-3",
                                 click: (me) => me.hide(true, null),
+                            },
+                            {
+                                label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                                cssClass: "btn btn-sm-outline rounded-3",
+                                click: (me, btn) => {
+                                    const p = me.getData();
+
+                                    p.id = me.dataOptions.id;
+
+                                    vsapi
+                                        .call(
+                                            [
+                                                main_view.base_url,
+                                                "/hr/exit-form-item/save",
+                                            ].join(""),
+                                            p,
+                                            btn,
+                                            null
+                                        )
+                                        .then((res) => {
+                                            if (res.status_code == 200) {
+                                                me.hide(true, p);
+                                            } else
+                                                cv_interact.error(
+                                                    res.error_message
+                                                );
+                                        });
+                                },
                             },
                             {
                                 label: '<span id="_btnPrintExitForm"><i class="fa-solid text-success fa-print"></i></span>',
