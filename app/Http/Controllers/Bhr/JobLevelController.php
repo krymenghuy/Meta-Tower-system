@@ -24,14 +24,15 @@ class JobLevelController extends Controller
         return JDV::raw($res);
     }
 
-    function getJobLevelList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200) return JDV::raw($ss);
-        $job_level = new Job_Level($req->id, $ss);
-        $data = $job_level->getList($ss);
-        return JDV::result($data);
-    }
+    // function getJobLevelList(Request $req)
+    // {
+    //     $ss = AuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code != 200) return JDV::raw($ss);
+    //     $job_level = new Job_Level($req->id, $ss);
+    //     $data = $job_level->getList($req->all(),$ss);
+    //     return JDV::result($data);
+    // }
+
     public function getFormOptions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -61,12 +62,12 @@ class JobLevelController extends Controller
 
         return JDV::result($this->job_level->deleteJobLevel($req->id, $ss));
     }
-    public function getJobLevelListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code != 200) return JDV::raw($ss);
         $job_level = new Job_Level($req->id, $ss);
-        $data = $job_level->getJobLevelListPaginate($req->all(), $ss);
+        $data = $job_level->getList($req->all(), $ss);
         return JDV::result($data);
     }
 }

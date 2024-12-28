@@ -221,9 +221,9 @@ var PositionComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("The position was deleted!");
                                 mThis.PositionListView.showPage();
-                            }
+                            }else cv_interact.error(res.error_message);
                         });
                 }
             }

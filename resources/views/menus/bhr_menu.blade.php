@@ -551,7 +551,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Checkpoints"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                        <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="ExitFormItemComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
@@ -559,7 +559,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Items"></span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                             <a href="HolidayComponent" modid="-1" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -587,8 +587,8 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/paycard.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color" vslang="menus.System Managements">
-                        System Managements
+                    <span class="kt-menu__link-text font-color" vslang="menus.System Administration">
+                        System Administration
                     </span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>

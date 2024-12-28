@@ -48,7 +48,7 @@ var DepartmentComponent = new (function () {
         },
 
         {
-            title: "Actions",
+            title: "Action",
             className: "col_action align-middle",
             data: (data) => `
            <div class="d-flex align-items-center gap-2">

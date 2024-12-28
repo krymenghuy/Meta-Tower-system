@@ -5,12 +5,16 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use App\Models\DBX;
 
 class Department
 {
     protected $id = null;
     protected $userInfo = null;
+
+    protected $fk_tables = [
+       'positions'=>'department_id'
+    ];
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -48,11 +52,9 @@ class Department
 
     }
 
-    function getDepartmentListPaginate($arr, $ss) {
-        $branch_id = $ss->branch_id;
+    function getList($arr, $ss) {
+        //$branch_id = $ss->branch_id;
         $d = (object) $arr;
-
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -67,33 +69,35 @@ class Department
             $str_search = "(d.name LIKE '%" . $search_value . "%' OR d.shortcut ='" . $search_value . "')";
         }
 
+        $update_date = DBX::$updated_at;
+        $col_update_date = DBX::formatTime("d.$update_date",'updated_at');
         $query = DB::table('departments as d')
             ->where('d.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,d.updated_at,d.update_user')->orderBy('d.id','ASC');
+            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,'.$col_update_date.',d.update_user')->orderBy('d.name','ASC');
         $clone_query = clone  $query;
         $count = $clone_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id,$ss) {
-        $branch_id = $ss->branch_id;
-
+    function getDetails($id) {
         $row  = DB::table('departments as d')
-            ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.branch_id',$branch_id)->where('d.id',$id)->take(1)->first();
-
+            ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.id',$id)->first();
         return $row;
     }
-
+     static function getProps($id,$cols){
+       return DB::table('departments')->where('id',$id)->selectRaw($cols)->first();
+     }
 
     function deleteDepartment($id = null) {
         $id = $id ?? $this->id;
-
+        $d = self::getProps($id,'name');
+        if(!$d) return DV::error('Department ID is not valid');
+        $cnt = DBX::count_fk_items($id,self::$fk_tables,'position');
+        if($cnt > 0) return DV::error('Cannot delete ?? because it is already in use::'. $d->name);
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
-        return DV::depends($delete, ['action', 'deleted']);
+        return DV::depends($delete,null,'Failed to delete department');
     }
 
     function getFormOptions($id, $ss)
