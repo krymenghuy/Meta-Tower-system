@@ -945,7 +945,7 @@ var EmployeeComponent = new (function () {
                         </p>
                         <div class="d-flex justify-content-between mt-1">
                             <span style="color:#cab54a;">
-                                <img class="bhr-icons" src="${main_view.asset_url}/images/bhr/baggage-claim.svg" /><small> ${d.major} </small> 
+                                <img class="bhr-icons" src="${main_view.asset_url}/images/bhr/baggage-claim.svg" /><small> ${d.major} </small>
                             </span>
                             <div class="justify-content-end gap-2 action-buttons d-none">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
@@ -1181,8 +1181,8 @@ var EmployeeComponent = new (function () {
                             <small class="text-muted" style="color:#3b3a36;">(${d.start_date} ~ ${d.end_date})</small>
                         </div>
                         <small class="pb-1 d-block" style="color:#293536;"> ${d.description} </small>
-                        
-                        
+
+
                     </div>
                 </div>
                     `].join('');
@@ -1212,7 +1212,7 @@ var EmployeeComponent = new (function () {
 
                         }
                     });
-                }); 
+                });
                 document
                     .getElementById("lnk_add_experience")
                     .addEventListener("click", function (e) {
@@ -1834,21 +1834,21 @@ var EmployeeComponent = new (function () {
             //         },
             //         onResponse: (me, res) => {
             //             console.log(123,me,321,res);
-                        
+
             //         },
             //     },
             // },
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                let op = {id:me.dataOptions.id}; 
+                let op = {id:me.dataOptions.id};
 
                     vsapi.call(`${main_view.base_url}/hr/staff-promotion/form-options`,op,null,null).then((res) => {
                     const d = res.status_code == 200 ? res.data : {};
                         VSUtil.setComboItems(me.controls.branch,d.branches,"id","branch_name",null,null,d.employee.branch_id);
                         VSUtil.setComboItems(me.controls.position,d.positions,"id","title",null,null,d.employee.position_id);
                         me.controls.org_salary.value = d.employee.salary;
-                       
+
                     });
                 // me.controls.branch.value = data.employee.branch_id;
                 // me.controls.position.value = data.employee.position_id;
@@ -2019,7 +2019,7 @@ var EmployeeComponent = new (function () {
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
                     params: (op) => {
-                        return { id: op.id }; 
+                        return { id: op.id };
                     },
                     onResponse: (me, res) => {
                         if (op.id) {

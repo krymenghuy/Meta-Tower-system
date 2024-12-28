@@ -38,6 +38,22 @@ var PayrollListComponent = new (function () {
 
         },
         {
+            className: "col_action align-middle",
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="text-center gap-2 d-flex flex-wrap">
+                        <a href="javascript:void(0)"
+                           class="btn_payroll_list_action"
+                           data-id="${data.id}"
+                           data-disburse="${data.disburse}"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                        </a>
+                    </div>
+                </div>`,
+        },
+        {
             title: "Employee",
             className: "align-middle text-start w-15",
             data: (data, index, tr) => {
@@ -55,29 +71,43 @@ var PayrollListComponent = new (function () {
 
         {
             title: "Salary",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Benefit",
-            className: "align-middle",
+            title: "Benefit Taxable",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxible ?? '0.00')}</p>`;
+            }
+        },
+        {
+            title: "Benefit None Tax",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_non_tax ?? '0.00')}</p>`;
+            }
+        },
+        {
+            title: "Benefit Flat Rate",
+            className: "align-middle text-nowrap",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_flat_rate ?? '0.00')} (${data.flat_tax_rate ?? '0.00'}%)</p>`;
             }
         },
 
         {
             title: "Deduction",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.deduction ?? '0.00')}</p>`;
             }
         },
         {
             title: "Allowance",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.allowance ?? '0.00')}</p>`;
             }
@@ -85,14 +115,14 @@ var PayrollListComponent = new (function () {
 
         {
             title: "Tax Rate",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
             }
         },
         {
             title: "Bias",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias ?? '0.00')}</p>`;
             }
@@ -101,41 +131,33 @@ var PayrollListComponent = new (function () {
 
         {
             title: "Tax Base",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.tax_base ?? '0.00')}</p>`;
             }
         },
+        // {
+        //     title: "Benefit Tax Flat Rate",
+        //     className: "align-middle text-nowrap",
+        //     data: (data, index, tr) => {
+        //         return `<p class="p-0 m-0">${data.flat_tax_rate ?? ''} %</p>`;
+        //     }
+        // },
         {
             title: "Benefit Tax",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_tax ?? '0.00')}</p>`;
             }
         },
         {
             title: "Total",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
             }
         },
-        {
-            className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <a href="javascript:void(0)"
-                           class="btn_payroll_list_action"
-                           data-id="${data.id}"
-                           data-disburse="${data.disburse}"
-                           aria-haspopup="true"
-                           aria-expanded="false">
-                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                        </a>
-                    </div>
-                </div>`,
-        },
+
 
     ];
 
@@ -242,7 +264,7 @@ var PayrollListComponent = new (function () {
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 205) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
@@ -284,10 +306,10 @@ var PayrollListComponent = new (function () {
                     name:"disburse_payroll_list"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Payroll List">Modify Payroll List</span>',
+                    html:'<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_payroll_list"
+                    name:"add_deduction"
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Delete Payroll List">Delete Payroll List</span>',
@@ -306,7 +328,7 @@ var PayrollListComponent = new (function () {
                 if (disburse == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = (menu[item].dataset.mnuaction === 'delete_payroll_list' || menu[item].dataset.mnuaction === 'edit_payroll_list' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'delete_payroll_list' || menu[item].dataset.mnuaction === 'add_deduction' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
                         }
 
                     }
@@ -319,8 +341,8 @@ var PayrollListComponent = new (function () {
                       mThis.viewPayment(id, menuLink);
                       break;
                     }
-                    case 'edit_payroll_list':{
-                      mThis.editPayrollList(id, menuLink);
+                    case 'add_deduction':{
+                      mThis.addDeduction(id, menuLink);
                       break;
                     }
 
@@ -352,7 +374,7 @@ var PayrollListComponent = new (function () {
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 10px;
-            width: 1000px;
+            width: 98%;
 
 
             }
@@ -403,7 +425,7 @@ var PayrollListComponent = new (function () {
             }
 
         </style>
-            <div class="payment_card">
+            <div class="payment_card overflow-y-auto overflow-x-hidden">
                 <div class="payment-header">
                     <div class="payment-logo">
                         <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
@@ -425,8 +447,9 @@ var PayrollListComponent = new (function () {
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Employee Name</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
+                                <p class="text-nowrap text-capitalize data-get">${data.emp_name} (${data.apply_payroll_tax == 0 ? 'Have Tax' : 'Non-Tax'})</p>
                             </div>
+
                            <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Sex</p>
                                 <p class="px-3">:</p>
@@ -489,12 +512,12 @@ var PayrollListComponent = new (function () {
                                 <td>${data.count_day}</td>
                             </tr>
                             <tr>
-                                <td>Benefit ${data.tax_option_id === 1 ? 'Taxible' :
-                                    data.tax_option_id === 2 ? 'None Tax' :
-                                    data.tax_option_id === 3 ? 'Flat Rate' :
-                                    ''}
-                                </td>
-                                <td class="text-success">${formattedNumber(data.benefit || 0.00)}</td>
+                                <td>Benefit Taxible</td>
+                                <td class="text-success">${formattedNumber(data.benefit_taxible || 0.00)}</td>
+                            </tr>
+                            <tr>
+                                <td>Benefit Flat Rate ( ${data.flat_tax_rate} %)</td>
+                                <td class="text-success">${formattedNumber(data.benefit_flat_rate || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
@@ -531,7 +554,11 @@ var PayrollListComponent = new (function () {
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Benefit Tax</td>
+                                <td>Benefit None Tax</td>
+                                <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
+                            </tr>
+                            <tr>
+                                <td>Benefit Tax Flat Rate</td>
                                 <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
                             </tr>
                             <tr>
@@ -584,7 +611,7 @@ var PayrollListComponent = new (function () {
         })
 
     }
-    this.editPayrollList = (id, menuLink) => {
+    this.addDeduction = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -714,107 +741,107 @@ var PayrollListComponent = new (function () {
 
 });
 
-const PayRollListDialog = (()=>{
-
+const PayRollListDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
 
+    self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [
-                     `<div class="row">
-                 <div class="form-group col-6">
-                     <label for="employee" class="form-label" vslang="titles.Name"></label>
-                     <select name="employee" class=" data-input"  data-field="emp_id"></select>
-                 </div>
-
-                <div class="form-group col-6">
-                     <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
-                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
-                 </div>
-                <div class="form-group col-6">
-                  <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
-                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
-                  <input name="desuction" class="form-control data-input" data-field="deduction" />
-                </div>
-              </div>`,
-                 ].join("");
+            cssClass: 'modal-lg',
+            backdrop: 'static', // User click outside form, do not close form
+            keyboard: true, // Prevent user from using ESC key
+            createContent: () => {
+                return [
+                    `<div class="row">`,
+                    `<div class="form-group col-6">
+                        <label for="employee" class="form-label" vslang="titles.Name"></label>
+                        <select name="employee" class="data-input" data-field="emp_id" disabled></select >
+                    </div>`,
+                    `<div class="form-group col-6">
+                        <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
+                        <select name="payroll_name" class="data-input" data-field="payroll_id" disabled></select>
+                    </div>`,
+                    // `<div class="form-group col-6">
+                    //     <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
+                    //     <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
+                    // </div>`,
+                    `<div class="form-group col-6">
+                        <label for="deduction" class="form-label" vslang="titles.Deduction"></label>
+                        <input name="deduction" class="form-control data-input" data-field="deduction" />
+                    </div>`,
+                    `</div>`,
+                ].join("");
             },
-
-            configSelect:[
-               {
-                 name:"employee",
-                 data:'employees',
-                 textField: (me, d) => {
-                    return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+            contentCreated: (me) => {
+            },
+            prepareFormOptions: {
+                createTitle: 'Insert Payroll ',
+                modifyTitle: 'Add Deduction ',
+                targetProp: 'payroll_list',
+                api: {
+                    endpoint: [main_view.base_url, '/hr/payroll-list/form-options'].join(''),
+                    params: (op) => {
+                        return { 'id': op.id };
+                    }
                 },
-                 valueField:'id'
-               },
-               {
-                 name:"payroll_name",
-                 data:'payrolls',
-                 textField:"payroll_name",
-                 valueField:'id'
-               }
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
-
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/payroll-list/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Insert Payroll ',
-               modifyTitle:'Edit Payroll',
-               targetProp: 'payroll_list',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
             },
 
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+            },
+
+            configSelect: [
+                {
+                    name: "employee",
+                    data: 'employees',
+                    textField: "name",
+                    valueField: 'id'
+                },
+                {
+                    name: "payroll_name",
+                    data: 'payrolls',
+                    textField: "payroll_name",
+                    valueField: 'id'
+                }
+            ],
+
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: 'btn btn-default',
+                    click: (me, btn) => {
+                        // Close with Cancel button
+                        me.hide(false);
+                    }
+                },
+                {
+                    label: '<span>Save</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.id = me.dataOptions.id; // Get "id" from op
+
+                        vsapi.call([main_view.base_url, '/hr/payroll-list/save'].join(''), p, btn, null)
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, p);
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    }
+                }
+            ],
+
 
         });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();
+
 
 const PayRollImportDailog = (()=>{
 

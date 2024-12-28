@@ -34,21 +34,23 @@
         <div id="_payrollList_list" class="m-4"></div>
     </div>
 
-    <div class="d-none row" id="pay_slip">
-        <div class="d-flex justify-content-between">
-            <div class="d-flex px-3 pt-3 w-50" id="btn_back">
-                <button id="_btn_backTo_payrollList" style="background-color:#2b3991; width:100px; height:40px"
-                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+    <div class="d-none row px-3 bg-white" id="pay_slip">
+        <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
+            <div class="d-flex justify-content-start  px-3 w-25" id="btn_back">
+                <button id="_btn_backTo_payrollList" style="background-color:#2b3991;"
+                    class="btn text-white shadow rounded-4" type="button">
                     <i class="fa-solid fa-angles-left "></i>
                     <span class="" vslang="buttons.Back">Back</span>
                 </button>
             </div>
-            <div class="payment_footer width-50">
-                <button class="btn text-white shadow rounded-4 m-2 p-2"style="background-color:#2b3991; width:100px; height:40px" id="_btnPrint">Print</button>
+            <div class="d-flex justify-content-end w-25 px-3">
+                <button class="btn text-white shadow rounded-4"style="background-color:#2b3991;" id="_btnPrint">
+                    <i class="fa-solid fa-print"></i>Print
+                </button>
             </div>
         </div>
 
-        <div id="payment_info" class="payment_details">
+        <div id="payment_info" class="payment_details p-2" style="height:550px;">
         </div>
 
     </div>
@@ -56,12 +58,4 @@
 
 </div>
 
-<style>
-    .payment_footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 20px;
 
-
-    }
-</style>
