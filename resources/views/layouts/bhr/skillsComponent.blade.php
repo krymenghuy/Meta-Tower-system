@@ -25,6 +25,10 @@
     gap: 5px;
 
   }
+  .card-container-skill:hover .action-buttons {
+    display: flex !important; 
+}
+
   .card-container-skill {
     flex: 1;
     display: flex;
@@ -36,4 +40,13 @@
     height: 100%; /* Prevents overflow */
 
     }
+    .card-skill-hover {
+    transition: transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.card-skill-hover:hover {
+    transform: scale(1.10);
+    cursor: pointer;
+    border:1px solid #2b3991 !important;
+}
 </style>

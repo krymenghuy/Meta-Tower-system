@@ -297,9 +297,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->gro
     Route::post('/details', [SkillController::class, 'getDetails']);
     Route::post('/delete', [SkillController::class, 'deleteSkill']);
     Route::post('/form-options', [SkillController::class, 'getFormOptions']);
-    Route::post('/save-logo', [SkillController::class, 'saveSkillLogo']);
-    Route::post('/logo-url', [SkillController::class, 'getSkillLogo']);
-    Route::post('/delete-logo', [SkillController::class, 'deleteSkillLogo']);
+    Route::post('/save/skill/photo', [SkillController::class, 'saveSkillPhoto']);
+    Route::post('/skill/photo', [SkillController::class, 'getSkillPhoto']);
+    Route::post('/delete/skill/photo', [SkillController::class, 'deleteSkillPhoto']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->group(function () {
     Route::post('/save', [JobLevelController::class, 'saveJobLevel']);
