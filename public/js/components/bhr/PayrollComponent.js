@@ -111,7 +111,7 @@ var PayrollComponent = new (function () {
 
                 return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.disbursed == 0 ? 'Pending' : 'Success'}
+                                ${data.disbursed == 0 ? 'Pending' : 'Disbursed'}
                             </span>
                         </a></div>`;
             }

@@ -2,7 +2,7 @@
     <div class="d-flex  px-3 mt-3 justify-content-between w-100 " id="_warning_component">
         <div class="d-flex align-items-center w-100 gap-2">
         <button type="button" class="btn_add" id="_btnAddWarning">
-                <span>Employee Warning</span>
+                <span>Add Warning</span>
             </button>
 
         </div>

@@ -1,7 +1,6 @@
 "use strict";
-
 var PayrollListComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_payrollListComponent");
     this.self = this.jm[0];
@@ -31,27 +30,30 @@ var PayrollListComponent = new (function () {
 
     this.cols = [
 
-        {
-            title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index, i) => { return (index + 1) },
+        // {
+        //     title: "No",
+        //     className: 'align-middle text-capitalize text-nowrap',
+        //     data: (data, index, i) => { return (index + 1) },
 
-        },
+        // },
         {
             className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <a href="javascript:void(0)"
-                           class="btn_payroll_list_action"
-                           data-id="${data.id}"
-                           data-disburse="${data.disburse}"
-                           aria-haspopup="true"
-                           aria-expanded="false">
-                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                        </a>
-                    </div>
-                </div>`,
+            data: (data,index,tr) => {
+                return [
+                `<div class="d-flex justify-content-center align-items-center">`,
+                    `<div class="text-center gap-2 d-flex flex-wrap">`,
+                        `<a href="javascript:void(0)"`,
+                           `class="btn_payroll_list_action"`,
+                           `data-id="${data.id}"`,
+                           `data-disburse="${data.disburse}"`,
+                           `aria-haspopup="true"`,
+                           `aria-expanded="false">`,
+                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
+                            `<img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />`,
+                        `</a>`,
+                    `</div>`,
+                `</div>`].join('');
+            }
         },
         {
             title: "Employee",
@@ -80,7 +82,7 @@ var PayrollListComponent = new (function () {
             title: "Benefit Taxable",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxible ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxable ?? '0.00')}</p>`;
             }
         },
         {
@@ -312,7 +314,7 @@ var PayrollListComponent = new (function () {
                     name:"add_deduction"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Payroll List">Delete Payroll List</span>',
+                    html:'<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_payroll_list"
@@ -512,8 +514,8 @@ var PayrollListComponent = new (function () {
                                 <td>${data.count_day}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Taxible</td>
-                                <td class="text-success">${formattedNumber(data.benefit_taxible || 0.00)}</td>
+                                <td>Benefit Taxable</td>
+                                <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Benefit Flat Rate ( ${data.flat_tax_rate} %)</td>
