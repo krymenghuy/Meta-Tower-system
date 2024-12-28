@@ -28,13 +28,13 @@ class DepartmentController extends Controller
         return JDV::raw($res);
     }
 
-    public function getDepartmentListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->departmentModel->getDepartmentListPaginate($req->all(), $ss));
+        return JDV::result($this->departmentModel->getList($req->all(), $ss));
     }
 
 

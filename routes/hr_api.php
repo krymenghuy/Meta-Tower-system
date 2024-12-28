@@ -271,7 +271,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('transaction')
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
     Route::post('/save', [DepartmentController::class, 'saveDepartment']);
-    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getList']);
     Route::post('/details', [DepartmentController::class, 'getDetails']);
     Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
     Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
