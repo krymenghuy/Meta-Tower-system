@@ -11,13 +11,13 @@ var ScanAttendanceComponent = new function () {
     this.base_url = window.location.origin;
     // const main_view =this.base_url;
     this.self = document.querySelector('#_main_attendanceScanComponent');
-    // this.elInput = mThis.self.querySelector('#_scan_student_code');
-    this.elInput = mThis.self.querySelector('#_scan_card_number');
+    this.elInput = mThis.self.querySelector('#_scan_employee_code');
+    // this.elInput = mThis.self.querySelector('#_scan_card_number');
     this.elCurrentTime = mThis.self.querySelector('#_scan_current_time');
     this.elCurrentDate = mThis.self.querySelector('#_scan_current_date');
     this.elOption = mThis.self.querySelector('#_scan_option');
-    this.studentTable = mThis.self.querySelector('#student_Info_container');
-    this.studentImgBox = mThis.self.querySelector('#student_img_box');
+    this.studentTable = mThis.self.querySelector('#employee_Info_container');
+    this.studentImgBox = mThis.self.querySelector('#employee_img_box');
 
 
     this.init = () => {
@@ -36,7 +36,7 @@ var ScanAttendanceComponent = new function () {
                 //present_time = today.getHours() + ":" + today.getMinutes();
 
                 const op = {
-                    student_card_number: this.value,
+                    employee_code: this.value,
                     current_date: mThis.elCurrentDate.value || null,
                     present_time: mThis.elCurrentTime.value || null,
                 };
@@ -57,7 +57,7 @@ var ScanAttendanceComponent = new function () {
         elInput.value = '';
         console.log(op);
         vsapi.call(`${mThis.base_url}/hr/employee/attendance/scan`, {
-            student_card_number: op.student_card_number,
+            employee_code: op.employee_code,
             current_date: op.current_date,
             present_time: op.present_time,
             force_checkin: op.force_checkin ?? 0,
@@ -126,12 +126,12 @@ var ScanAttendanceComponent = new function () {
                         <div class="container-image-student rounded-circle overflow-hidden">
                             <img class="w-100 h-100 object-fit-scale" src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_student.avif`}" alt="student-profile"/>
                         </div>
-                        <p class="fs-5 fw-semibold">${d.student_name ?? ''}</p>
+                        <p class="fs-5 fw-semibold">${d.employee_name ?? ''}</p>
                     </div>
                     <div class="d-flex align-items-start flex-column gap-3">
                         <div class="d-flex">
                             <p class="text-start p-0 m-0 width-p-in-popup">Student ID</p>
-                            <p class="p-0 m-0">${d.student_code ?? ''}</p>
+                            <p class="p-0 m-0">${d.employee_code ?? ''}</p>
                         </div>
                         <div class="d-flex">
                             <p class="text-start p-0 m-0 width-p-in-popup">Grade</p>
