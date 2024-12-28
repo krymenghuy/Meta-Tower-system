@@ -61,7 +61,9 @@ class DepartmentController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->departmentModel->deleteDepartment($req->id, $ss));
+        $res =  $this->departmentModel->deleteDepartment($req->id, $ss);
+        return JDV::raw($res);
+        return JDV::raw($this->departmentModel->deleteDepartment($req->id, $ss)); //THIS IS WRONG. DO not use ::result() for DELETE or UPDATE
     }
 
     public function getFormOptions(Request $req)

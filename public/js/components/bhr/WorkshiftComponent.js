@@ -240,11 +240,11 @@ var WorkshiftComponent = new (function () {
 
     this.prepareFormOptions = () => {
         vsapi.call(`${main_view.base_url}/hr/shift-details/form-options`,null,null,null).then((res) => {
-                if (res.status_code === 200) {
+                if (res.status_code === 200){
                     const d = res.data;
                     VSUtil.setComboItems(mThis.elFilter_status,d.shifts,"id","name",false,null,1);
                 }
-            });
+        });
     };
 
     this.show = function () {

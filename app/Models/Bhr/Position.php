@@ -5,11 +5,15 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\DBX;
 
 class Position
 {
     protected $id = null;
     protected $userInfo = null;
+    protected static $fk_tables = [
+        'employees'=>'position_id'
+    ];
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -47,7 +51,7 @@ class Position
 
     }
 
-    function getPositionListPaginate($arr, $ss) {
+    function getList($arr, $ss) {
         $branch_id = $ss->branch_id;
         $d = (object) $arr;
 
@@ -66,17 +70,26 @@ class Position
             $str_search = "(p.title LIKE '%" .$search_value."%' OR d.name = '" . $search_value . "')";
         }
 
+        $update_date =DBX::$updated_at;
+        $col_update_date = DBX::formatTime("p.$update_date",'updated_at'); 
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->join('job_levels as job','job.id','=','p.job_level_id')
             ->where('p.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.title, p.department_id,p.job_level_id,job.name as level,p.salary, d.name as department,p.updated_at,p.update_user')->orderBy('p.id','ASC');
+            ->selectRaw('p.id, p.title, p.department_id,p.job_level_id,job.name as level,p.salary, d.name as department,'.$col_update_date.',p.update_user')->orderByRaw('job.rank ASC, d.name ASC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+    static function isDuplidateName($title, $id){
+        $q = DB::table('position')->where('title',$title)->selectRaw('id');
+        if($id > 0) $q->where('id','<>',$id);
+        if($q->first()) return true; 
+        return false; 
     }
 
     function getDetails($id,$ss){
@@ -87,18 +100,24 @@ class Position
             ->join('job_levels as job','job.id','=','p.job_level_id')
             ->selectRaw('p.id, p.title,p.job_level_id, p.department_id,p.salary, d.name as department,job.name as level')
             ->where('p.inactive',0)
-            ->where('p.branch_id',$branch_id)
-            ->where('p.id',$id)->take(1)
+            ->where('p.id',$id)
             ->first();
         return $rows;
+    }
+
+    static function getProps($id, $cols){
+         return DB::table('positions')->where('id',$id)->selectRaw($cols)->first();
     }
 
     function deletePosition($id = null)
     {
         $id = $id ?? $this->id;
-
+        $d = self::getProps($id,'title');
+        if(!$d) return DV::error('Position ID does not exist');
+        $cnt = DBX::count_fk_items($id,self::$fk_tables,'employees');
+        if($cnt > 0) return DV::error('Cannot delete this position because it is already in use');
         $delete = DB::table('positions')->where('id', $id)->update(['inactive'=>1]);
-        return DV::depends($delete, ['action','deleted']);
+        return DV::depends($delete,null,'Failed to delete position');
     }
 
     function getFormOptions($id, $ss)

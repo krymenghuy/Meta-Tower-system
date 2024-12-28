@@ -5,12 +5,12 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\DBX;
 
 class Job_Level //extends Model
 {
     protected $table = 'job_levels';
-    protected $fillable = ['name', 'description','rank','branch_id','subs_id','created_at', 'updated_at'];
-
+   
     protected $id = null;
     protected $userInfo = null;
 
@@ -48,22 +48,21 @@ class Job_Level //extends Model
         return DV::error('error save job level');
     }
 
-    public function getList($arr,$ss)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $d = (object)$arr;
-        $branch_id = $d->branch_id ?? null;
-        $query = DB::table('job_levels as j')->where('j.branch_id',$branch_id)->selectRaw('j.id,j.name,j.description,j.rank')->orderBy('j.id','DESC');
+    // public function getList($arr,$ss)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $d = (object)$arr;
+    //     $query = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->orderBy('j.rank','ASC');
 
-        $rows = $query->get();
-        return $rows;
+    //     $rows = $query->get();
+    //     return $rows;
 
-    }
+    // }
 
     public static function getDetails($id, $ss = null)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->where('j.branch_id',$branch_id)->where('j.id',$id)->take(1)->first();
+        $row = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->where('j.id',$id)->first();
         return $row;
 
 
@@ -88,7 +87,8 @@ class Job_Level //extends Model
 
         return DV::depends($delete,['action','deleted']);
     }
-    function getJobLevelListPaginate($arr, $ss)
+
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -101,10 +101,13 @@ class Job_Level //extends Model
         $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
-
+        $update_date = DBX::$updated_at;
+        //$create_date = DBX::$created_at;
+        $col_update_date = DBX::formatTime($update_date,'update_date');
+        //$col_create_date = DBX::formatTime($create_date,'create_date');
         $query = DB::table('job_levels as j')
         ->whereRaw($str_search)
-        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at, j.update_user')
+        ->selectRaw('j.id, j.name, j.description, j.rank,'.$col_update_date.', j.update_user')
         ->orderBy('j.rank', 'ASC'); // Sort by rank in ascending order
 
         if ($search_id) {

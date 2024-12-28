@@ -19,7 +19,7 @@ class Education //extends Model
 
     function save($arr ,$ss = null, $id = null){
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+       // $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
