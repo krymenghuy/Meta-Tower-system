@@ -64,7 +64,7 @@ var ExitFormItemComponent = new (function () {
             title: "Settled",
             className: "IsSettled text-nowrap align-middle",
             data: (data) => {
-                let IsSettledText = "Not Yet";
+                let IsSettledText = "Pending";
                 let IsSettledClass =
                     "text-white text-center bg-warning border border-info rounded-5 p-1";
 
@@ -326,8 +326,8 @@ const FormItemDialog = (() => {
                             <div class="form-group col-md-12">
                                 <label for="is_settled" class="form-label" vslang="titles.settled"></label>
                                 <select name="is_settled" class="modal-select data-input" data-field="is_settled" id="is_settled">
+                                    <option value="0">Pending</option>
                                     <option value="1">Done</option>
-                                    <option value="2">Not Yet</option>
                                 </select>
                             </div>
                             <div class="form-group col-12">

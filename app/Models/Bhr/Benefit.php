@@ -6,6 +6,7 @@ use App\Models\DV;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use App\Models\DBX;
 
 class Benefit //extends Model
 {
@@ -17,12 +18,7 @@ class Benefit //extends Model
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function getProps($id, $props = [])
-    {
-        $cols = is_array($props) ? implode(',', $props) : $props;
-        $row = DB::table('benefits')->where('id', $id)->selectRaw($cols)->first();
-        return $row;
-    }
+
     public function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -30,6 +26,7 @@ class Benefit //extends Model
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string',
+            'type_id' => '1|choice|1,2|default=1',
         ];
         $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
 
@@ -42,9 +39,9 @@ class Benefit //extends Model
 
         $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['benefits' => $inputs, 'id' => $id]);
         }
-        return DV::depends(0, ['sender' => $inputs]);
+        return DV::error('Error saving Benefit');
     }
 
     public function getBenefitPaginate($arr, $ss)
@@ -54,12 +51,13 @@ class Benefit //extends Model
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
+        $last_update = DBX::formatDate('b.update_date', 'update_date');
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
 
         $query = DB::table('benefits as b')
-            ->selectRaw('b.id, b.name,b.updated_at,b.update_user')
+            ->selectRaw('b.id, b.name,b.type_id,' . $last_update . ',b.update_user')
             ->where('b.branch_id', $branch_id);
 
         if ($search_id) {
@@ -77,15 +75,16 @@ class Benefit //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function getDetails($id, $ss)
+    public function getDetails($id, $ss=null)
     {
         $branch_id = $ss->branch_id;
         $row = DB::table('benefits as b')
             ->selectRaw('
                 b.id,
-                b.name
+                b.name,
+                b.type_id
             ')
-        ->where('b.branch_id', $branch_id)->where('b.id', $id)->take(1)->first();
+        ->where('b.id', $id)->where('b.branch_id', $branch_id)->first();
         return $row;
     }
 

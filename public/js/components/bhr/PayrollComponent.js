@@ -161,8 +161,9 @@ var PayrollComponent = new (function () {
                 id: null,
                 // id: 1,
                 btn: e.target,
-                onClose: () => {
-                    cv_interact.success('Added Payroll Successfully');
+                onClose: (p) => {
+                    if(!p) return;
+                   
                     mThis.PayrollListView.showPage();
                 }
             };
@@ -448,10 +449,7 @@ const AddPayRollListDailog = (() => {
 
                 return [
                     `<div class="row">
-                        <div class="form-group col-4">
-                            <label for="name" class="form-label" vslang="titles.Name"></label>
-                            <input name="name" class="form-control data-input form_input" data-field="name" placeholder="auto" readOnly/>
-                        </div>
+                        
                         <div class="form-group col-4">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
                             <select name="month" class="form-control data-input" data-field="month">
@@ -465,6 +463,7 @@ const AddPayRollListDailog = (() => {
                                 ${years.map(year => `<option value="${year}">${year}</option>`).join("")}
                             </select>
                         </div>
+                        
                         <div class="form-group col-4">
                             <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
                             <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
@@ -472,6 +471,10 @@ const AddPayRollListDailog = (() => {
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                             </select>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="name" class="form-label" vslang="titles.Name"></label>
+                            <input name="name" class="form-control data-input form_input" data-field="name" placeholder="auto" />
                         </div>
                         <div class="form-group col-4">
                             <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
@@ -529,6 +532,7 @@ const AddPayRollListDailog = (() => {
                         vsapi.call([main_view.base_url, '/hr/payroll/save'].join(''), p, btn, null).then(res => {
                             if (res.status_code == 200) {
                                 me.hide(true, p);
+                                cv_interact.success('Added Payroll Successfully');
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -566,6 +570,21 @@ const AddPayRollListDailog = (() => {
                     me.controls.exchange_rate.value = payrolls.exchange_rate;
                     me.controls.p_number.value = payrolls.p_number;
                     me.controls.total.value = payrolls.total;
+                }
+
+                me.payroll_name = '';
+                me.controls.month.onchange = (e)=>{
+                    me.payroll_name += e.target.textContent;
+                    me.controls.name.value = me.payroll_name;
+                    console.log(1234,me.controls.name.value);
+                }
+                me.controls.year.onchange = (e)=>{
+                    me.payroll_name += '-'+e.target.textContent;
+                    me.controls.name.value = me.payroll_name;
+                }
+                me.controls.p_number.onchange = (e)=>{
+                    me.payroll_name += '-'+e.target.textContent;
+                    me.controls.name.value = me.payroll_name;
                 }
 
                 LocaleManager.translateZone(me.divModal);
