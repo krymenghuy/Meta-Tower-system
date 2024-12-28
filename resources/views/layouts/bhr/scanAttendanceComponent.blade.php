@@ -11,7 +11,7 @@
                 </div>
                 <div class="row d-none">
                     <div class="form-group col-lg-12">
-                        <label for="student_code" class="form-label text-center ">Options</label>
+                        <label for="employee_code" class="form-label text-center ">Options</label>
                         <select id="_scan_option" class="modal-select2" data-field="force_scan">
                             <option value="regular">Regular</option>
                             <option value="force_checkin">Force Checkin</option>
@@ -19,24 +19,24 @@
                         </select>
                     </div>
                     <div class="form-group col-lg-12">
-                        <label for="student_code" class="form-label text-center ">Current Date</label>
+                        <label for="employee_code" class="form-label text-center ">Current Date</label>
                         <input id="_scan_current_date" class="form-control" data-field="current_date"
                             data-select="datepicker" />
                     </div>
                     <div class="form-group col-lg-12">
-                        <label for="student_code" class="form-label text-center ">Current Time</label>
+                        <label for="employee_code" class="form-label text-center ">Current Time</label>
                         <input id="_scan_current_time" type="text" class="form-control" data-field="current_time"
                             placeholder="<?php echo date('H:i') ?>" />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="form-group col-lg-12 d-none">
-                        <label for="student_code" class="form-label text-center " vslang="titles.Enter Student ID">Enter
+                    <div class="form-group mx-auto " style="max-width: 300px;">
+                        <label for="employee_code" class="form-label text-center " vslang="titles.Enter Student ID">Enter
                             Student ID</label>
-                        <input id="_scan_student_code" type="text" class="form-control" data-field="student_code"
+                        <input id="_scan_employee_code" type="text" class="form-control" data-field="employee_code"
                             plaeholder="Student ID" />
                     </div>
-                    <div class="form-group mx-auto " style="max-width: 300px;">
+                    <div class="form-group mx-auto d-none" style="max-width: 300px;">
                         <label for="card_number" class="form-label text-center "
                             vslang="titles.Enter Enter Student Card Number">Please scan your card in this box</label>
                         <input id="_scan_card_number" type="text" class="form-control" data-field="card_number"

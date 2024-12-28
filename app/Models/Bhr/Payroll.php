@@ -6,6 +6,7 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
+use DateTime;
 
 class Payroll
 {
@@ -28,7 +29,7 @@ class Payroll
             'start_date' => '1|date',
             'end_date' => '1|date',
             'p_number' => '1|number',
-            'total' => '1|number',
+            'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
             'currency_code' => '0|number',
@@ -76,13 +77,22 @@ class Payroll
         }
 
         $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$start_date'")->whereRaw($str_id)->select('id')->first();
-        \Log::info(json_encode($test));
         if($test)
             return 'Start Date is not correct!';
         
         $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$end_date'")->whereRaw($str_id)->select('id')->first();
         if($test)
             return 'End Date is not correct!';
+
+        $start = new DateTime($start_date);
+        $end = new DateTime($end_date);
+        $interval = $start->diff($end);
+        
+        $test = $interval->days;
+        
+        if ($test > 31) {
+            return 'The difference between start date and end date cannot be longer than 31 days!';
+        }
 
         return null;
     }

@@ -74,7 +74,7 @@
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 6);
     ScriptManager::render('bhr-primary-defer', 1, 6);
-    ScriptManager::render('bhr-components', 1, 14);
+    ScriptManager::render('bhr-components', 1, 15);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -269,8 +269,6 @@
                             @include('layouts.bhr.positionComponent')
                             @include('layouts.bhr.leaveComponent')
                             @include('layouts.bhr.warningComponent')
-                            @include('layouts.bhr.employeebonusComponent')
-                            @include('layouts.bhr.employeeseniorityComponent')
                             @include('layouts.bhr.attendanceComponent')
                             @include('layouts.bhr.staffAttendanceComponent')
                             @include(' layouts.bhr.employeemovementComponent')

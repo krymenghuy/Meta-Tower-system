@@ -6,7 +6,7 @@ var JobsLevelComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_jobsLevelComponent");
     this.self = this.jm[0];
     this.initAlready = false;
-    this.title_prop = "Job Level";
+    this.title_prop = "Job Levels";
     this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
     this.elSearch = this.self.querySelector("#_job_level_search");
     this.elCard = this.self.querySelector(".top_level_card");
@@ -35,21 +35,20 @@ var JobsLevelComponent = new (function () {
 
         },
         {
-            title: "Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
-            </div>`,
-        },
-        {
             title: "Description",
             className: "align-middle",
             data: (data)=>
                 `<div  class="text-remark" >${data.description}</div>`,
         },
-
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.update_date ?? ""}</span>
+            </div>`,
+        },
         {
             title: "Action",
             className: "col_action align-middle",
@@ -214,14 +213,14 @@ var JobsLevelComponent = new (function () {
             });
     };
     // Show component
-    this.show = function () {
-        this.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.JobLevelListView.showPage(null, null, () => {
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
-        });
-    };
+    // this.show = function () {
+    //     this.init();
+    //     main_view.setTitle(mThis.title_prop);
+    //     mThis.JobLevelListView.showPage(null, null, () => {
+    //         $(mThis.self).siblings().hide();
+    //         $(mThis.self).fadeIn(200);
+    //     });
+    // };
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);

@@ -111,7 +111,7 @@ var PayrollComponent = new (function () {
 
                 return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.disbursed == 0 ? 'Pending' : 'Success'}
+                                ${data.disbursed == 0 ? 'Pending' : 'Disbursed'}
                             </span>
                         </a></div>`;
             }
@@ -497,10 +497,7 @@ const AddPayRollListDailog = (() => {
                             <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                         </div>
                         
-                        <div class="form-group col-4">
-                            <label for="total" class="form-label" vslang="titles.Total"></label>
-                            <input name="total" class="form-control data-input" data-field="total" />
-                        </div>
+                        
                     </div>`
                 ].join("");
             },
@@ -573,21 +570,28 @@ const AddPayRollListDailog = (() => {
                 }
 
                 me.payroll_name = '';
+                me.month = '';
+                me.year = '';
+                me.p_number = '';
                 me.controls.month.onchange = (e)=>{
-                    me.payroll_name += e.target.textContent;
+                    me.month = e.target.textContent;
+                    me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
-                    console.log(1234,me.controls.name.value);
                 }
                 me.controls.year.onchange = (e)=>{
-                    me.payroll_name += '-'+e.target.textContent;
+                    me.year = '-'+e.target.textContent;
+                    me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
                 }
                 me.controls.p_number.onchange = (e)=>{
-                    me.payroll_name += '-'+e.target.textContent;
+                    me.p_number = '-'+e.target.value;
+                    me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
                 }
 
                 LocaleManager.translateZone(me.divModal);
+
+                
             }
         });
 

@@ -31,7 +31,7 @@ class PayrollList
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
             // 'salary' => '0|number',
-            'benefit' => '0|number',
+            // 'benefit' => '0|number',
             'deduction' => '0|number',
             'disburse' => '0|number|default = 0',
             // 'tax_base' => '0|number',
@@ -91,7 +91,6 @@ class PayrollList
                         b.name as branch_name,
                         pl.salary,
                         e.apply_payroll_tax,
-                        pl.benefit,
                         pl.deduction,
                         pl.tax_rate,
                         pl.bias,
@@ -142,11 +141,37 @@ class PayrollList
                 ->where('emp_id', $row->emp_id)
                 ->value('allowance');
 
+            $row->benefit_taxible = DB::table('payroll_list_benefits')
+                ->where('emp_id', $row->emp_id)
+                ->where('payroll_id', $row->payroll_id)
+                ->where('tax_option_id', 1)
+                ->value('used_amount');
+
+            $row->benefit_non_tax = DB::table('payroll_list_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('payroll_id', $row->payroll_id)
+            ->where('tax_option_id', 2)
+            ->value('used_amount');
+
+            $row->benefit_flat_rate = DB::table('payroll_list_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('payroll_id', $row->payroll_id)
+            ->where('tax_option_id', 3)
+            ->value('used_amount');
+
+            $row->flat_tax_rate = DB::table('emp_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('tax_option_id', 3)
+            ->value('flat_tax_rate');
+
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
-            $row->benefit = ($row->benefit ?? 0);
             $row->deduction = ($row->deduction ?? 0);
             $row->allowance = ($row->allowance ?? 0);
+            $row->benefit_taxible = ($row->benefit_taxible ?? 0);
+            $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
+            $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
+            $row->flat_tax_rate = ($row->flat_tax_rate ?? 0);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -175,7 +200,6 @@ class PayrollList
                     b.name as branch_name,
                     pl.salary,
                     e.apply_payroll_tax,
-                    pl.benefit,
                     pl.deduction,
                     pl.tax_rate,
                     pl.bias,
@@ -191,6 +215,35 @@ class PayrollList
             $row->allowance = DB::table('tax_allowances')
             ->where('emp_id', $row->emp_id)
             ->value('allowance');
+
+            $row->benefit_taxible = DB::table('payroll_list_benefits')
+                ->where('emp_id', $row->emp_id)
+                ->where('payroll_id', $row->payroll_id)
+                ->where('tax_option_id', 1)
+                ->value('used_amount');
+
+            $row->benefit_non_tax = DB::table('payroll_list_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('payroll_id', $row->payroll_id)
+            ->where('tax_option_id', 2)
+            ->value('used_amount');
+
+            $row->benefit_flat_rate = DB::table('payroll_list_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('payroll_id', $row->payroll_id)
+            ->where('tax_option_id', 3)
+            ->value('used_amount');
+
+            $row->flat_tax_rate = DB::table('emp_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('tax_option_id', 3)
+            ->value('flat_tax_rate');
+
+            $row->allowance = ($row->allowance ?? 0);
+            $row->benefit_taxible = ($row->benefit_taxible ?? 0);
+            $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
+            $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
+            $row->flat_tax_rate = ($row->flat_tax_rate ?? 0);
         }
         return $row;
     }
@@ -305,10 +358,8 @@ class PayrollList
             $emp->payroll_id = $payroll_id;
 
             $v_rule = [
-                'id' => '0|identity=1',
                 'payroll_id' => '1|number',
                 'emp_id' => '1|number',
-                'benefit' => '0|number',
                 'deduction' => '0|number',
                 'tax_rate' => '0|number',
                 'tax_base' => '0|number',
@@ -339,7 +390,7 @@ class PayrollList
             $emp_id = $inputs['emp_id'];
 
             $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id,$ss);
-            $inputs['benefit'] = $payroll_list_benefit->used_amount;
+            // \Log::info((array)$payroll_list_benefit);
 
             $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1);
 
@@ -383,7 +434,7 @@ class PayrollList
                         pos.title as emp_position,
                         el.name as emp_role,
                         pl.salary,
-                        pl.benefit, pl.deduction,
+                        pl.deduction,
                         e.photo_file_name as emp_photo,
                         e.status_id,
                         e.joining_date,
@@ -401,6 +452,11 @@ class PayrollList
         {
             $payroll->tax_base = 0;
             $payroll->total = 0;
+            $benefit_taxible = 0;
+            $benefit_non_tax = 0;
+            $benefit_flat_rate = 0;
+            $benefit_tax = 0;
+
             $payroll_start_date = new \DateTime($payroll->start_date);
             $payroll_end_date = new \DateTime($payroll->end_date);
 
@@ -457,17 +513,31 @@ class PayrollList
             $allowance = $payroll->allowance;
             $allowance_per_day = $allowance / $payroll_days;
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_date : $allowance;
+            $deduction = $payroll->deduction;
 
             $payroll->apply_payroll_tax = DB::table('employees')
                 ->where('id', $payroll->emp_id)
                 ->value('apply_payroll_tax');
-            $benefit = $payroll->benefit ?? 0;
-            $deduction = $payroll->deduction;
-            $benefit_tax = 0;
+
+
+            $benefit_taxible = DB::table('payroll_list_benefits')
+                ->where('emp_id', $payroll->emp_id)
+                ->where('tax_option_id', 1)
+                ->value('used_amount');
+
+            $benefit_non_tax = DB::table('payroll_list_benefits')
+            ->where('emp_id', $payroll->emp_id)
+            ->where('tax_option_id', 2)
+            ->value('used_amount');
+
+            $benefit_flat_rate = DB::table('payroll_list_benefits')
+            ->where('emp_id', $payroll->emp_id)
+            ->where('tax_option_id', 3)
+            ->value('used_amount');
 
             if ($check_benefit && $check_benefit->tax_option_id == 1)
             {
-                $salary = $payroll->salary + $benefit;
+                $salary = $payroll->salary + $benefit_taxible;
                 $salary_per_day = $salary / $payroll_days;
                 $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary;
 
@@ -521,11 +591,11 @@ class PayrollList
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     isset($payroll->tax_base) ? $payroll->tax_base : $payroll->tax_base = 0;
 
-                    $payroll->total = $last_salary + $benefit - ($payroll->tax_base + $deduction);
+                    $payroll->total = $last_salary + $benefit_non_tax - ($payroll->tax_base + $deduction);
 
                 } else {
                     $payroll->tax_base = 0;
-                    $payroll->total = $last_salary + $benefit - $deduction;
+                    $payroll->total = $last_salary + $benefit_non_tax - $deduction;
                 }
             }
 
@@ -555,12 +625,12 @@ class PayrollList
                         if ($payroll->tax_base < 0) {
                             $payroll->tax_base = 0;
                         }
-                        $benefit_tax = $benefit * ($benefit_flat_tax_rate / 100);
-                        $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $benefit_tax + $deduction);
+                        $benefit_tax = $benefit_flat_rate * ($benefit_flat_tax_rate / 100);
+                        $payroll->total = ($last_salary + $benefit_flat_rate) - ($payroll->tax_base + $benefit_tax + $deduction);
                 }
                 else {
                     $payroll->tax_base = 0;
-                    $payroll->total = $last_salary + $benefit - $deduction;
+                    $payroll->total = $last_salary + $benefit_flat_rate - $deduction;
                 }
             }
             else
@@ -589,12 +659,12 @@ class PayrollList
                         if ($payroll->tax_base < 0) {
                             $payroll->tax_base = 0;
                         }
-                        $benefit_tax = $benefit * (20/100);
-                        $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $benefit_tax + $deduction);
+
+                        $payroll->total = $last_salary- ($payroll->tax_base + $deduction);
                 }
                 else {
                     $payroll->tax_base = 0;
-                    $payroll->total = $last_salary + $benefit - $deduction;
+                    $payroll->total = $last_salary - $deduction;
                 }
             }
 
@@ -878,6 +948,7 @@ class PayrollList
                         e.code as emp_code,
                         e.name as emp_name,
                         e.sex,
+                        e.apply_payroll_tax,
                         pos.title as emp_position,
                         b.name as branch_name,
                         pl.salary,
@@ -885,7 +956,6 @@ class PayrollList
                         pl.count_day,
                         e.apply_payroll_tax,
                         plb.tax_option_id,
-                        pl.benefit,
                         pl.deduction,
                         pl.tax_rate,
                         pl.bias,
@@ -905,17 +975,49 @@ class PayrollList
                 ->value('allowance');
 
 
-            $row->benefit = $row->benefit ?? 0.00;
             $row->deduction = $row->deduction ?? 0.00;
             $row->tax_base = $row->tax_base ?? 0.00;
             $row->total_salary = $row->total_salary ?? 0.00;
 
+
+            $row->benefit_taxible = DB::table('payroll_list_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('payroll_id', $row->payroll_id)
+            ->where('tax_option_id', 1)
+            ->value('used_amount');
+
+        $row->benefit_non_tax = DB::table('payroll_list_benefits')
+        ->where('emp_id', $row->emp_id)
+        ->where('payroll_id', $row->payroll_id)
+        ->where('tax_option_id', 2)
+        ->value('used_amount');
+
+        $row->benefit_flat_rate = DB::table('payroll_list_benefits')
+        ->where('emp_id', $row->emp_id)
+        ->where('payroll_id', $row->payroll_id)
+        ->where('tax_option_id', 3)
+        ->value('used_amount');
+
+        $row->flat_tax_rate = DB::table('emp_benefits')
+        ->where('emp_id', $row->emp_id)
+        ->where('tax_option_id', 3)
+        ->value('flat_tax_rate');
+
+        $row->flat_tax_rate = DB::table('emp_benefits')
+            ->where('emp_id', $row->emp_id)
+            ->where('tax_option_id', 3)
+            ->value('flat_tax_rate');
 
             $row->image_url = $row->emp_photo
                 ? Employee::profilePicture($row->emp_id)
                 : '';
             unset($row->emp_photo);
         }
+
+        $row->benefit_taxible = $row->benefit_taxible ?? 0.00;
+        $row->benefit_non_tax = $row->benefit_non_tax ?? 0.00;
+        $row->benefit_flat_rate = $row->benefit_flat_rate ?? 0.00;
+        $row->flat_tax_rate = $row->flat_tax_rate ?? 0.00;
 
         return $row;
     }

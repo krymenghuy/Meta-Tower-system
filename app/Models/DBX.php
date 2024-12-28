@@ -302,5 +302,17 @@ public static function formatTimeOnly($column, $alias_name = null)
             }
         }
 
- 
+        /** Count foreign_key table items */
+        static function count_fk_items($value, $fk_tables,$table =null){
+            $cnt = 0 ;
+            foreach($fk_tables  as $table_name =>$fk_field){
+                if ($table && $table === $table_name){
+                     return DB::table($table_name)->where($fk_field,$value)->count($fk_field);
+                }else{
+                    $cnt += DB::table($table_name)->where($fk_field,$value)->count($fk_field);
+                }
+            }
+            return $cnt;
+        }
+
 }

@@ -62,8 +62,6 @@ class Skill
 
         return DV::error('Error saving data');
     }
-
-   
     function getSkills($arr, $ss)
     {
         $d = (object) $arr;
@@ -127,28 +125,15 @@ class Skill
     foreach ($rows as $row) {
         $row->image_url = '';
         if ($row->image_file_name) {
-            $row->image_url = self::getProfilePicture($row->id);
+            $row->image_url = self::getSkillPhoto($row->id);
         }
         unset($row->image_file_name);
     }
 
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-}
-
-
-
-    public static function getProfilePicture($id)
-    {
-        $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
-        $row = DB::table('skills as s')->where('id', $id)->selectRaw($col_subs_id . ',s.branch_id,s.image_file_name')->first();
-        $url = '';
-        if ($row) {
-            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'skills'], 'images') . $row->image_file_name;
-            return validateUrl($url);
-        } else {
-            return self::defaultImage($row ? $row->subs_id : null);
-        }
     }
+
+   
 
     function getDetails($id)
     {
@@ -157,7 +142,7 @@ class Skill
             ->where('id', $id)
             ->first();
             if ($row) {
-                $row->image_url = self::getProfilePicture($id);
+                $row->image_url = self::getSkillPhoto($id);
             } else {
                 $row = null; // Or handle the case where employee is not found
             }
@@ -168,14 +153,7 @@ class Skill
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
-
-        if (!isset($ss->branch_id) || !isset($ss->subs_id)) {
-            return DV::error('Invalid session data');
-        }
-
+       
         $file_name = DB::table('skills as s')
             ->where('s.id', $id)
             ->take(1)
@@ -183,19 +161,15 @@ class Skill
         if ($file_name) {
             PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
         }
-        DB::table('skills as s')->where('s.id', $id)->update(['image_file_name' => null]);
-
+        $deleted = DB::table('skills')->where('id', $id)->delete();
+        if (!$deleted) {
+            return DV::error('skill not found or not deleted');
+        }
         $query = DB::table('skills')
             ->where('id', $id)
             ->where('branch_id', $ss->branch_id)
             ->delete();
-        $count_member = DB::table('skills')->count('id');
-        if ($count_member > 0) {
-            DB::table('skills')->update(['count_member' => $count_member]);
-        }
-        if (!$query) {
-            return DV::error('Skill not found or not deleted');
-        }
+       
 
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
@@ -215,7 +189,7 @@ class Skill
     }
 
 
-    static function saveLogo($d,$ss)
+    static function saveSkillPhoto($d,$ss)
   {
     $skill_id = $d->id;
     if(!$skill_id) return DV::error('Invalid skill ID');
@@ -226,12 +200,40 @@ class Skill
     $logo_file_name = DB::table('skills')->where('id',$skill_id)->selectRaw('image_file_name')->value('image_file_name');
     if ($delete_photo){
       PublicStorage::delete (['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$img_dir],'image',$logo_file_name);
+      DB::table('skills')->where('id', $skill_id)->update(['image_file_name' => null]);
     }
     $maxSize =500;
 	  $res = PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>null,'dir'=>self::$img_dir],$file_type,$photo,$maxSize,['id'=>$skill_id,'store'=>'skills.image_file_name']);
     if($res->status ==='Error') return DV::error($res->error_message);
-    return DV::depends(1);
-  }
+    $img = self::getSkillPhoto($skill_id);
+    return DV::depends(1, ['image_url'=>$img]);
+    }
+    static function defaultPhoto($subs_id)
+    {
+        return url('') . '/assets/images/default/default-skill.svg';
+    }
+    public static function getSkillPhoto($id)
+    {
+       
+        $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
+        $row = DB::table('skills as s')->where('id', $id)->selectRaw($col_subs_id . ',s.branch_id,s.image_file_name')->first();
+        $def_image = self::defaultPhoto($row ? $row->subs_id : null);
+        $url = '';
+        if ($row) {
+            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'skills'], 'images') . $row->image_file_name;
+            return validateUrl($url,$def_image);
+        } else return $def_image;
+    }
+    function deleteSkillPhoto($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $skill = DB::table('skills as s')->where('id', $id)->selectRaw('id,image_file_name')->first();
+        if (!$skill) return DV::error('Skill identity is not correct!');
+        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $skill->image_file_name);
+        DB::table('skills')->where('id', $id)->update(['image_file_name' => null]);
+        return DV::success();
+    }
 
 }
 

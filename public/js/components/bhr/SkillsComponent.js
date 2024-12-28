@@ -56,6 +56,7 @@ var SkillsComponent = new (function () {
             }, 200);
         });
         this.listContainer = mThis.SkillListView.getListContainer();
+        mThis.setAction(div);
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = (window.innerHeight - 220) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -63,7 +64,6 @@ var SkillsComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
         }
-        mThis.setAction(sh_parent);
 
         
    
@@ -83,13 +83,11 @@ var SkillsComponent = new (function () {
     this.setAction = (tbl)=>{
         tbl.addEventListener('click', (e) => {
 
-            let btn = VSUtil.closestLimited(e.target,'button.b-btn-delete');
+            let btn = VSUtil.closestLimited(e.target,'.btn-delete-skill');
             if (btn) {
                 mThis.deleteSkill(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target,'button.b-btn-edit');
-            console.log(3344,btn);
-
+            btn = VSUtil.closestLimited(e.target,'.btn-edit-skill');
             if (btn) {
                 mThis.editSkill(btn.dataset.id, btn);
             }
@@ -109,29 +107,30 @@ var SkillsComponent = new (function () {
         });
     }
     this.renderSkill = (data) => {
-        let html = "";
-        html = [html,`<div class="row">`].join('');
+        let html = `<div class="row ">`;
         let cmt = 0;
+    
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                html = [html,`<div class="col-md-3 mb-3 ">
+                html += `
+                    <div class="col-md-3 container-skill-item mb-3">
                         <div class="card-container-skill">
-                            <div class="w-100 d-flex flex-row justify-content-center align-items-center shadow rounded-3" style="background-color: #2b3991;">
+                            <div class="w-100 d-flex flex-row justify-content-center align-items-center shadow rounded-3 card-skill-hover" style="background-color: #2b3991;">
                                 <div class="section-title fs-6 text-start w-100">
                                     <div class="card-body bg-white rounded-3 text-center">
-                                        <div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 70px; height: 70px;"> 
-                                        <img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="h-100" alt="Profile Picture" >
+                                        <div class="overflow-hidden rounded-circle mx-auto d-flex justify-content-center border bg-white border-4 mb-3" style="width: 70px; height: 70px;"> 
+                                            <img src="${d.image_url || (main_view.asset_url + "/images/default/default-skill.svg")}" class="h-100" alt="Profile Picture">
                                         </div>
                                         <p class="fs-6" style="color: #2b3991;">${d.title}</p>
                                         <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 100%;">
-                                        <div class="d-flex justify-content-between">
-                                        
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-primary b-btn-edit text-decoration-none" >
-                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                        <div class="d-flex justify-content-between px-2">
+                                            <small class="fw-semibold text-muted px-2">Count: <span class="text-primary">${d.count_member}</span></small>
+                                            <div class="justify-content-end action-buttons d-none gap-2">
+                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-primary btn-edit-skill text-decoration-none">
+                                                    <small><i class="fa-regular fa-pen-to-square fs-7"></i></small>
                                                 </a>
-                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-danger b-btn-delete text-decoration-none">
-                                                    <i class="fa-regular fa-trash-can"></i>
+                                                <a href="javascript:void(0)" data-id="${d.id}" class="text-danger btn-delete-skill text-decoration-none">
+                                                    <small><i class="fa-regular fa-trash-can fs-7"></i></small>
                                                 </a>
                                             </div>
                                         </div>
@@ -140,66 +139,96 @@ var SkillsComponent = new (function () {
                             </div>
                         </div>
                     </div>
-                `].join('');
+                `;
                 cmt++;
             });
         } 
-        if(cmt === 0 ){
-            html = [`<div class="w-100 rounded-4 text-center p-3">No Skills</div>`].join('');
+    
+        if (cmt === 0) {
+            html = `
+                <div class="w-100 rounded-4 h-25 bg-white d-flex flex-column justify-content-end align-items-center">
+                    <div class="text-info pb-1">No Skill Available!</div>
+                </div>`;
         }
+        
+    
         html += `</div>`;
         div.innerHTML = html;
     };
     
     
+    document.querySelectorAll(".container-skill-item").forEach((item) => {
+        item.addEventListener("mouseover", () => {
+            const actions = item.querySelector(".action-buttons");
+            if (actions) {
+                actions.classList.remove("d-none");
+                actions.classList.add('d-flex');
+            }
+        });
+
+        item.addEventListener("mouseout", () => {
+            const actions = item.querySelector(".action-buttons");
+            if (actions) {
+                actions.classList.add("d-none");
+                actions.classList.remove('d-flex');
+
+            }
+        });
+    }); 
    
   
-    // this.editSkill = (id, menuLink) => {
+    this.editSkill = (id, menuLink) => {
 
-    //     let op = {
-    //         id: id,
-    //         btn: menuLink,
-    //         onClose: () => {
-    //             mThis.SkillListView.showPage();
-    //         }
-    //     };
-    //     console.log(333,op);
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.SkillListView.showPage();
+            }
+        };
+        SkillDialog.show(op);
+    }
 
-    //     SkillDialog.show(op);
-    // }
-
-    // this.deleteSkill = (id, menuLink) => {
-    //     let op = {
-    //         id: id,
-    //         btn: menuLink,
-    //         onClose: () => {
-    //             mThis.SkillListView.showPage();
-    //         }
-    //     };
-    //     cv_interact.confirm('Delete this Skill?',{
-    //         title: 'Delete Skill',
-    //         context: 'delete',
-    //         confirmButtonText:"Delete"
-    //     },function(e){
-    //         if(e){
-    //             vsapi.call(`${main_view.base_url}/hr/skills/delete`,op,false,false,false).then(res => {
-    //                 if(res.status_code == 200){
-    //                     cv_interact.success('Deleted Successfully');
-    //                     mThis.SkillListView.showPage();
-    //                 }
-    //             })
-    //         }
-    //     });
-
-    // }
+    this.deleteSkill = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.SkillListView.showPage(mThis.getFilterData());
+            }
+        };
+    
+        cv_interact.confirm(
+            'Delete this Skill?', 
+            {
+                title: 'Delete Skill',
+                context: 'delete',
+                confirmButtonText: "Delete"
+            }, 
+            function(e) {
+                if (e) {
+                    vsapi.call(`${main_view.base_url}/hr/skills/delete`, op, false, false, false)
+                        .then(res => {
+                            if (res.status_code === 200) {
+                                cv_interact.success('Deleted Successfully');
+                                mThis.SkillListView.showPage(mThis.getFilterData());
+                            } else {
+                                cv_interact.error('Failed to delete the skill.');
+                            }
+                        })
+                       
+                }
+            }
+        );
+    };
+    
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.SkillListView.showPage(null, null, () => {
+        mThis.SkillListView.showPage();
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
-        });
     };
 })();
 const SkillDialog = (() => {
@@ -208,92 +237,109 @@ const SkillDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-    cssClass: "",
-    createContent: () => {
+        cssClass: 'modal-md',
+        backdrop: 'static',
+        keyboard:true,
+        createContent: () => {
         return [
-            `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
-                 <div name="div_skill_photo" class="data-input" data-field="image_url" role="button"></div>
-            </div>`,
-
-            `<div class="form-group col-md-12">`,
-            `<label class="form-label" vslang="titles.title"> Title </label>`,
-            `<div><input name="title" class="form-control data-input" data-field="title"/></div>`,
-            `</div>`,
-
-            `<div class="form-group col-md-12">`,
-            `<label class="form-label" vslang="titles.Description"> Description </label>`,
-            `<div><input name="description" class="form-control data-input" data-field="description"/></div>`,
-            `</div>`,
-
-        ].join('');
+            `<div class="row">`,
+                `<div class="col-md-3">`,
+                    `<div style="height:130px;" class="data-input border border-warning rounded-3 justify-content-center align-items-center">`,
+                        `<div name="div_skill_photo" class="data-input" data-field="image_url"></div>`,
+                    `</div>`,
+                `</div>`,
+                `<div class="col-md-9">`,
+                    `<div class="form-group col-md-12">`,
+                        `<label class="form-label" vslang="titles.Title"> Title </label>`,
+                        `<div><input name="title" class="form-control data-input" data-field="title"/></div>`,
+                    `</div>`,
+                    `<div class="form-group col-md-12">`,
+                        `<label class="form-label" vslang="titles.Description"> Description </label>`,
+                        `<div><input name="description" class="form-control data-input" data-field="description"/></div>`,
+                        `</div>`,
+                    `</div>`,
+                `</div>`,
+            `</div>`,].join('');
     },
-    onPrepareForm:(me)=>{
-        LocaleManager.translateZone(me.divModal);
-        let div_skill_photo = me.divModal.querySelector('[name="div_skill_photo"]');
-        console.log(444,div_skill_photo);
-        me.userImageBox = new ImageBox(div_skill_photo,{containerclass:'skill-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
-        console.log(999,op);
+    contentCreated: (me) =>{
+        const div_skill_photo = me.controls.div_skill_photo;
+        me.userImageBox = new ImageBox(div_skill_photo,{
+            defaultPhotoName:'default-skill',
+            containerClass:'skill-profile-container',
+            imgClass:"data-input",
+            dataset:{"field" :"image_url"},
+            beforeDeleteImage: async ()=> {
+                if(me.dataOptions.id > 0){
+                    const answer = await cv_interact.confirm('Are you sure to delete this skill photo?', {title:'Delete Photo','context':'delete'});
+                    if(answer){
+                         me.deleteSkillPhoto(me.dataOptions.id);
+                         return true;
+                    } else return false;
 
-        me.showProfile =  (code) =>{
-           let fields = [];
-           let p = {'id':code};
-           console.log(4545,me);
-
-           vsapi.call([main_view.base_url,'/hr/skills/form-options'].join(''),p,false,false).then(res =>{
-              let d = res.status_code ==200? res.data: {};
-              d = d.skill || {};
-
-              me.divModal.querySelectorAll('.data-input').forEach(el =>{
-                 const f =el.dataset.field;
-                 console.log(7788899,d);
-
-                 if(fields.indexOf(f)>=0){
-                       el.value = d[f] || "";
-                 }
-                else if(f ==='image_url'){
-                    if (me.dataOptions.id)
-                    el.innerHTML = `<img name="div_skill_photo" class="w-100" src="${d[f] || ''}"/>`;
                 }
-              });
-           });
-        };
-        me.deleteImage = (div) => {
-            const btnDelete = div;//.querySelector('[role=\'button\']');
-            btnDelete.onclick = function(e){
-                e.preventDefault();
-                const html = `<div id="dlg_image_chooser"
-                                    class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                    <i class="fa-regular fa-image fs-4 text-muted"></i>
-                                </div>`;
-                div.innerHTML = html;
-                // mThis.chooseImage(div);
-                // let div_skill_photo = div.querySelector('[name="div_skill_photo"]');
-                me.userImageBox = new ImageBox(div,{containerclass:'skill-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
-            }
+                return true;
+             },
+             onOpenImage: (img)=>{
+                if(me.dataOptions.id > 0){
+                  me.saveSkillPhoto(img, me.dataOptions.id);
+               }
+            },
+        });
+        me.deleteSkillPhoto = (id) => {
+            const p = {"id":id};
+            console.log(12,p);
+            
+            vsapi.call([main_view.base_url,'/hr/skills/delete/skill/photo'].join(''),p,false,false).then(res =>{
+                if(res.status_code == 200){
+                  me.userImageBox.setImage(null);
+                  cv_interact.info('Profile photo was deleted!');
+                }else cv_interact.error(res.error_message);
+            });
         }
+        me.saveSkillPhoto =  (photo,id) =>{
+            let p = {'photo':photo,'id':id};
+            vsapi.call([main_view.base_url,'/hr/skills/save/skill/photo'].join(''),p,false).then(res =>{
+               if(res.status_code ==200){
+                me.userImageBox.setImage(res.data.image_url);
+               cv_interact.success('Profile photo was deleted!');
+             }else cv_interact.error(res.error_message);
+            });
+         };
+        
+ 
+ 
+ 
+ 
 
-        me.deleteImage(div_skill_photo);
-
-
-        me.showProfile(me.dataOptions.id);
-
-
-     },
+    },
+    overrideMethod:{
+        "setData":(me, data)=> {
+            const id = me.dataOptions.id;
+                    const fields = me.fields;
+                    //fields to be reasOnly or disabled when Editing employee
+                    for(const name in fields){
+                        const el = fields[name];
+                        
+                        el.value = data[name] ?? '';
+                    }
+            me.userImageBox.setImage(data.image_url);
+        },
+    },
+    
     buttons:[
         {
-           label:"<span>Cancel</span>",
-           cssClass:"btn btn-warning",
+           label:'<span><i class="fa-solid text-danger fa-xmark"></i></span>',
+           cssClass:"btn btn-sm-outline rounded-3",
            click:(me)=>{
               me.hide(false);
            }
         },
         {
-           label:"<span>Save</span>",
-           cssClass:"btn btn-primary",
+           label:'<span><i class="fa-solid text-success fa-check"></i></span>',
+           cssClass:"btn btn-sm-outline rounded-3",
            click:(me)=>{
               let p = me.getData();
               p.image = me.userImageBox? me.userImageBox.getImage(): '';
-              console.log(222,p);
               vsapi.call([main_view.base_url,'/hr/skills/save'].join(''),p,false,false).then(res =>{
                   if(res.status_code ==200){
                       me.modal.hide(true,p);
@@ -337,6 +383,7 @@ const SkillDialog = (() => {
     //         }
     //     }
     // ],
+
     prepareFormOptions: {
         createTitle: "New Employee Skill",
         modifyTitle: "Edit Employee Skill",
@@ -347,17 +394,15 @@ const SkillDialog = (() => {
                 return { id: op.id };
             },
             onResponse: (me, res) => {
-                console.log(111, res);
             }
         }
     },
-    onShow: (me) => {
-        // me.controls.emp.focus();
-        // me.controls.emp.select();
-    }
+    onPrepareForm:(me)=>{
+        LocaleManager.translateZone(me.divModal);
+     },
+   
 
 });
-console.log(888,op);
 
 dialog.show(op);
     }
