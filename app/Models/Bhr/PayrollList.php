@@ -4,7 +4,6 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\JDV;
-use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;

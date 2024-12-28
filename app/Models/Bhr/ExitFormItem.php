@@ -2,7 +2,6 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -36,9 +35,9 @@ class ExitFormItem
             'check_point_id' => '1|number',
             'amount' => '0|number',
             'remarks' => '0|string',
-            'is_settled' => '1|choice|1,2,3|default=1',
+            'is_settled' => '1|choice|0,1|default=0',
             'item_type' => '1|choice|1,2,3,4,5|default=1',
-            'currency' => '1|choice|KHR,USD}'
+            'currency' => '1|choice|KHR,USD|default=KHR'
         ];
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
