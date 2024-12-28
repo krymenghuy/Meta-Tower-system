@@ -91,8 +91,8 @@ var EmployeeBenefitComponent = new (function () {
             data: (data) => {
                 return `
                 <p class="p-0 text-primary-custom m-0">${
-                    data.tax_option_id == "1" ? "Taxable" : ""
-                }${data.tax_option_id == "2" ? "Non Taxable" : ""}${
+                    data.tax_option_id == "1" ? "Taxible" : ""
+                }${data.tax_option_id == "2" ? "Non Tax" : ""}${
                     data.tax_option_id == "3" ? "Flat Rate" : ""
                 }`;
             },
@@ -308,8 +308,8 @@ const EmployeeBenefitDialog = (() => {
                             <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
                             <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
                                 <option value="">(Select Tax Option)</option>
-                                <option value="1">Taxable</option>
-                                <option value="2">Non Taxable</option>
+                                <option value="1">Taxible</option>
+                                <option value="2">Non Tax</option>
                                 <option value="3">Flat Rate</option>
                             </select>
                         </div>`,
