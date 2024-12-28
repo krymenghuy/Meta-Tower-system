@@ -220,14 +220,14 @@ class Employee //extends Model
         $tax_option_id = 0;
         $used_amount = 0;
         $benefit_count = 0;
-        // Fetch payroll details
+
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
             ->selectRaw('p.month, p.year')
             ->first();
 
         if ($payroll) {
-            // Get benefit disburse policies
+
             $bdps = DB::table('benefit_disburse_policies')
                 ->where('target_month', $payroll->month)
                 ->where('target_year', $payroll->year)
@@ -237,7 +237,6 @@ class Employee //extends Model
                 $withdraw_rate = $bdp->withdraw_rate ?? 0;
                 $benefit_id = $bdp->benefit_id;
 
-                // Fetch benefit disbursements
                 $bd = DB::table('benefit_disbursements')
                     ->where('target_month', $payroll->month)
                     ->where('target_year', $payroll->year)
@@ -256,7 +255,7 @@ class Employee //extends Model
                     $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->count('id');
-                    \Log::info('benefit_count: ' . $benefit_count );
+                    // \Log::info('benefit_count: ' . $benefit_count );
 
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
@@ -295,7 +294,7 @@ class Employee //extends Model
                     ->where('benefit_id', $benefit_id)
                     ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id')
                     ->first();
-                    \Log::info('emp_id: ' . $emp_id .' benefit_id' .$benefit_id);
+                    // \Log::info('emp_id: ' . $emp_id .' benefit_id' .$benefit_id);
 
                     if ($emp_benefit) {
                         if($emp_benefit->emp_id != $emp_id) break;
@@ -306,16 +305,9 @@ class Employee //extends Model
                     }
 
                 }
-
-                // Fetch employee benefit details
-
             }
 
         }
-
-
-
-        // Prepare result object
         $result =  [
             "emp_id" => $emp_id,
             "payroll_id" => $payroll_id,
@@ -735,7 +727,7 @@ class Employee //extends Model
 
         $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
-            
+
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
