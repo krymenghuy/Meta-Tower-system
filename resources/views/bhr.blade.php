@@ -269,8 +269,6 @@
                             @include('layouts.bhr.positionComponent')
                             @include('layouts.bhr.leaveComponent')
                             @include('layouts.bhr.warningComponent')
-                            @include('layouts.bhr.employeebonusComponent')
-                            @include('layouts.bhr.employeeseniorityComponent')
                             @include('layouts.bhr.attendanceComponent')
                             @include('layouts.bhr.staffAttendanceComponent')
                             @include(' layouts.bhr.employeemovementComponent')

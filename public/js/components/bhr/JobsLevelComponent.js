@@ -214,14 +214,14 @@ var JobsLevelComponent = new (function () {
             });
     };
     // Show component
-    this.show = function () {
-        this.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.JobLevelListView.showPage(null, null, () => {
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
-        });
-    };
+    // this.show = function () {
+    //     this.init();
+    //     main_view.setTitle(mThis.title_prop);
+    //     mThis.JobLevelListView.showPage(null, null, () => {
+    //         $(mThis.self).siblings().hide();
+    //         $(mThis.self).fadeIn(200);
+    //     });
+    // };
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
