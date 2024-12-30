@@ -399,7 +399,7 @@ class PayrollList
                 $success++;
             }
         }
-
+        DB::statement(DB::raw('UPDATE `payrolls` SET `head_count` = (Select Count(l.id) FROM  payroll_list as l Where l.payroll_id = '.($payroll_id ?? 0).')'));
         return DV::depends(1, ['success' => $success, 'error' => $error]);
     }
 
