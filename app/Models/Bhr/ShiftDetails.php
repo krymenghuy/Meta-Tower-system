@@ -29,6 +29,10 @@ class ShiftDetails
             'day' => '0|string|0-250', // Allows comma-separated days
             'time' => '1|string|0-100',
             'action' => '1|string|0-100',
+            'start_time' => '1|string|0-100',
+            'session' => '1|string|0-10',
+            'end_time' => '1|string|0-100',
+            'shift_order_number' => '1|number|0-100',
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '|'];
         $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
@@ -83,13 +87,16 @@ class ShiftDetails
         $rows = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
             ->whereRaw($str_where)
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action')
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action, sd.shift_order_number')
             // ->where('ws.id', $work_shift_id)
             ->get();
 
         $data = [];
         foreach ($days as $day) {
             $ds = self::getScanTimes($rows, $day);
+            usort($ds, function ($a, $b) {
+                return $a->shift_order_number <=> $b->shift_order_number;
+            });
             $data[$day] = $ds;
         }
 

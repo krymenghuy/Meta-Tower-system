@@ -256,7 +256,7 @@ class Attendance
         $employee_id =  $inputs['employee_id'] ?? null;
         $employee_code = $inputs['employee_code'] ??  null;
         $employee_card_number = $inputs['employee_card_number'] ??  null;
-        $current_date = convertDate($arr['current_date'] ?? date('Y-m-d'));
+        $current_date = convertDate($arr['attendance_date'] ?? date('Y-m-d'));
         $present_time =  $arr['scan_time'] ??  date('H:i');
         // $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
         // $group = null;
@@ -384,11 +384,14 @@ class Attendance
             $has_checked_out = DB::table('emp_attendances')->where('action_type',$action)->where('session',$work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
             if($has_checked_out) return DV::error('You already checked out this session!');
             else{
-                $shift_order_number = $work_shift_detail->shift_order_number;
+                $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
+                \Log::info($shift_order_number);
+                $message = null;
                 if($shift_order_number >1) {
                     foreach($work_shifts as $work_shift){
-                        if($shift_order_number == (int)$work_shift->shift_order_number - 1){
-                            $message = "$work_shift->action-$work_shift->session not yet scan!";
+                        if($shift_order_number == $work_shift->shift_order_number){
+                            $session = self::getTranslateSession($work_shift->session);
+                            $message = "$work_shift->action $session not yet scan!";
                             break;
                         }
                     }
@@ -465,7 +468,7 @@ class Attendance
         $d = (object)['subs_id'=>$subs_id,'branch_id' =>$branch_id,'sender_id' =>$employee_id,'scan_status'=>$scan_status,'check_time'=>date('H:i'),'diff_time'=>$scan_status=='out'? $out_diff_time: $in_diff_time,'employee'=>$employee,'persist'=>0];
         // Notifier::notify_admin('attendance_scanned', $d);
         
-        $res = (object)[
+        $res = (object)[         
             'scan_status'=>$scan_status,
             'employee_id'=>$employee_id,
             'employee_name' => $employee_name,
@@ -483,5 +486,16 @@ class Attendance
         $col_start_date = DBX::formatDate('t.start_date','start_date');
         $col_end_date = DBX::formatDate('t.end_date','end_date');
         return DB::table('terms as t')->whereRaw($str_dates)->selectRaw("t.id,t.name,$col_start_date,$col_end_date, t.status_id")->first();
-   }
+    }
+
+    static function getTranslateSession ($key_session){
+        if(!$key_session) return null;
+        $arr_session = [
+            'm' => 'Morning',
+            'a' => 'Afternoon',
+            'e' => 'Evening',
+            'n' => 'Night'
+        ];
+        return $arr_session[$key_session];
+    } 
 }
