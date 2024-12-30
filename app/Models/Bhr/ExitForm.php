@@ -38,6 +38,8 @@ class ExitForm
         }
 
         $inputs = $res->values;
+        $d = (object)$inputs;
+
         $existingData = DB::table('exit_forms')->where('id', $id)->first();
         if ($existingData) {
             $existingDataArray = (array) $existingData;
@@ -57,9 +59,73 @@ class ExitForm
 
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
+            if($d->is_finished== 1){
+                $check_points = DB::table('check_points')->selectRaw('id,name')->get(); 
+                foreach($check_points as $check_point){
+                    self::saveExitItem(['form_id' => $id, 'check_point_id' => $check_point->id, 'status_id' => 1, 'check_id' => 1], $ss);
+                    // DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>1]);
+                }
+            } else{
+                $check_points = DB::table('check_points')->selectRaw('id,name')->get();
+                foreach ($check_points as $check_point) {
+                    DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>0]);
+                }
+            }
             return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving exit form');
+    }
+    
+    static function saveExitItem($arr = [], $ss = null)
+    {
+        $branch_id = $ss->branch_id;
+
+        $v_rule = [
+            'id' => '0|identity=1',
+            'form_id' => '1|number',
+            'check_point_id' => '1|number',
+            'check_id' => '0|number',
+            'status_id' => '0|number|default=1',
+        ];
+
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        // $checkUnique = [
+        //     "$branch_id|exit_form_items|check_point_id|form_id=form_id|id=id|text=Duplicate check_point_id in the same form is not allowed."
+        // ];
+
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $pos_char], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['branch_id'] = $branch_id;
+        $d = (object)$inputs;
+        $isExist = DB::table('exit_form_items')->where('check_point_id', $d->check_point_id)->where('form_id', $d->form_id)->take(1)->value('id');
+        if($isExist){
+            $id = $isExist;
+        }
+        //  return DV::error(' exit_form_items is already exist!');
+
+        unset($inputs['check_id']);
+
+        if ($id) {
+            $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' =>$d->check_id]);
+            // if ($updated > 0) {
+                return DV::depends(1, ['id' => $id], 'Update successful');
+            // } else {
+            //     return DV::error('Update failed. Record may not exist or data is unchanged.');
+            // }
+        } else {
+            $newId = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
+            if ($newId > 0) {
+                return DV::depends(1, ['id' => $newId], 'Create successful');
+            } else {
+                return DV::error('Create failed.');
+            }
+        }
     }
 
 
@@ -206,28 +272,28 @@ class ExitForm
         $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
 
         $query = DB::table('exit_forms as ef')
-            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-            ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
-            ->where('emp.status_id', 20)
-            ->selectRaw("
-            ef.id,
-            ef.name,
-            ef.emp_id,
-            ef.is_finished,
-            emp.id as emp_id,
-            emp.name as employee_name,
-            emp.code,
-            $col_start_date,
-            emp.position_id,
-            emp.branch_id,
-            br.name as branch_name,
-            pos.title as position,
-            emp.photo_file_name as emp_photo,
-            $col_effective_date
-        ")
-            ->where('ef.emp_id', $emp_id);
+        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+        ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
+        ->where('emp.status_id', 20)
+        ->selectRaw("
+        ef.id,
+        ef.name,
+        ef.emp_id,
+        ef.is_finished,
+        emp.id as emp_id,
+        emp.name as employee_name,
+        emp.code,
+        $col_start_date,
+        emp.position_id,
+        emp.branch_id,
+        br.name as branch_name,
+        pos.title as position,
+        emp.photo_file_name as emp_photo,
+        $col_effective_date
+    ")
+        ->where('ef.emp_id', $emp_id);
 
         if (!empty($data->search_value)) {
             $query->where(function ($q) use ($data) {
@@ -244,8 +310,9 @@ class ExitForm
         $form_items = [];
         if ($forms) {
             $form_items = DB::table('exit_form_items')
-                ->selectRaw('id, form_id, check_point_id as item_id')
-                ->where('form_id', $forms->id)
+            ->selectRaw('id, form_id, check_point_id as item_id')
+            ->where('form_id', $forms->id)
+            ->where('status_id', 1)
                 ->get();
         }
 
@@ -255,10 +322,10 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $check = '<input name="check_point_id" type="checkbox" value="check_point_id" >';
+                    $check = '<input data-id="'.$item->id.'" type="checkbox" value="check_point_id" onclick="check_box(event)" >';
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $check = '<input name="check_point_id" type="checkbox" value="check_point_id" checked >';
+                            $check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="check_box(event)" >';
                             break;
                         }
                     }
@@ -286,7 +353,6 @@ class ExitForm
         });
 
         $title = 'ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ';
-
         return (object) [
             'title' => $title,
             'header' => $headers,
@@ -295,6 +361,7 @@ class ExitForm
             'employee' => $employeeData,
         ];
     }
+
     function createKeyValue($key_name, $arr)
     {
         $result = [];

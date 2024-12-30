@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\ExitForm;
+use App\Models\Bhr\ExitFormItem;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
@@ -23,6 +24,13 @@ class ExitFormController extends Controller
         if ($ss->status_code != 200) return JDV::raw($ss);
         $exit_form = new ExitForm($req->id, $ss);
         $res = $exit_form->save($req->all());
+        return JDV::raw($res);
+    }
+    function saveExitItem(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $res = ExitForm::saveExitItem($req->all(), $ss);
         return JDV::raw($res);
     }
     public function getList(Request $req)
