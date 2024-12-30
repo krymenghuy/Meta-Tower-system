@@ -286,17 +286,39 @@ const ShiftDetailDialog = (() => {
                                 </div>
                                 
                             </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-6">
                                 <label for="time" class="form-label" vslang="titles.Time">Time</label>
                                 <input type="time" class="form-control data-input" data-field="time" />
-                            </div>                                                                     
-                            <div class="form-group col-12">
+                            </div>  
+                            <div class="form-group col-6">
+                                <label for="time" class="form-label" vslang="titles.Sesion">Session</label>
+                                <input class="form-control data-input" data-field="session" placeholder="m, a or e"/>
+                            </div>                                                                       
+                            <div class="form-group col-6">
                                 <label for="action" class="form-label" vslang="titles.Action">Action</label>
                                 <select class="modal-select data-input form_input" data-field="action">
+                                    <option value="0">select action</option>
                                     <option value="Check In">Check In</option>
                                     <option value="Check Out">Check Out</option>
                                 </select>
-                            </div>                                                                     
+                            </div> 
+                            <div class="form-group col-6">
+                            <label for="action" class="form-label" vslang="titles.Scan Order Number">Scan Order Number</label>
+                            <input type="number" class="form-control data-input" placeholder="1, 2, 3 or 4" data-field="shift_order_number" />
+                           
+                        </div> 
+                            <div class="form-group col-12">      
+                                <label for="time" class="form-label" vslang="titles.Allow Scan">Allow Scan</label>
+                            </div> 
+                            <div class="form-group col-6 d-flex">
+                                <label for="time" class="form-label w-25 my-auto" vslang="titles.From">From</label>
+                                <input type="time" class="form-control w-75 data-input" data-field="start_time" />
+                            </div>  
+                            <div class="form-group col-6 d-flex ">
+                                <label for="time" class="form-label w-25 my-auto" vslang="titles.To">To</label>
+                                <input type="time" class="form-control w-75 data-input" data-field="end_time" />
+                            </div>    
+                                                                                       
                          </div>`,
                 ].join("");
             },
@@ -349,21 +371,14 @@ const ShiftDetailDialog = (() => {
                             selectedDays.push(day.dataset.value);
                         });
                         p.days = selectedDays.join("|");
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/hr/shift-details/save",
-                                ].join(""),
-                                p,
-                                btn,
-                                null
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.hide(true, p);
-                                } else cv_interact.error(res.error_message);
-                            });
+                        console.log(2222,p);
+                        vsapi.call([ main_view.base_url,"/hr/shift-details/save"].join(""),p,btn,null).then((res) => {
+                            if (res.status_code == 200) {
+                                me.hide(true, p);
+                            } else cv_interact.error(res.error_message);
+                        });
+                            
+                                
                     },
                 },
             ],
