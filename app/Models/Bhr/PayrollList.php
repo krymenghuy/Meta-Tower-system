@@ -687,13 +687,20 @@ class PayrollList
                 $error_ids[] = $payroll->id;
             }
         }
-
         return DV::depends(1, [
-            'On Calculate', $success,
-            'On Calculate ids', $success_ids,
-            'Calculated', $error,
-            'Calculated ids', $error_ids
+            'success_count', $success,
+            'ids', $success_ids,
+            'error_count', $error,
+            'error_ids', $error_ids
         ]);
+        //  //Darith: Please DO NOT use space in such important keys . and makesure the structure is correct 
+        // return DV::depends(1, [
+        //     'On Calculate', $success,
+        //     'On Calculate ids', $success_ids,
+        //     'Calculated', $error,
+        //     'Calculated ids', $error_ids
+        // ]);
+
     }
 
     function disbursePayrollList($id, $ss = null)

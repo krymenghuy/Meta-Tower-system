@@ -190,18 +190,23 @@ var PayrollListComponent = new (function () {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
-                            if (res.data && res.data.message === 'Payroll List Already Calculated') {
-                                cv_interact.error('Payroll List Already Disbursed');
-                            } else {
-                                let formattedData = `
-                                    On Calculate: ${res.data[1]}
-                                    Calculated: ${res.data[5]}
-                                `;
-                                cv_interact.success(formattedData);
-                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            }
+                            const d = res.data || {};
+                            const failed_count = d.error_count || 0;
+                            const error_message = error_count > 0 ? `${error_count} cases failed`:'';
+                            cv_interact.success([`Payroll has been calculated. ${d.success_count} cases affected! `, error_message].join(''));
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            // if (res.data) {
+                               
+                            // } else {
+                            //     let formattedData = `
+                            //         On Calculate: ${res.data[1]}
+                            //         Calculated: ${res.data[5]}
+                            //     `;
+                            //     cv_interact.success(formattedData);
+                            //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            // }
                         } else {
-                            cv_interact.error(res.error_message);
+                            cv_interact.warning(res.error_message);
                         }
                     });
                 }
