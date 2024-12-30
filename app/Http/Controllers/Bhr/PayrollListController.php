@@ -72,13 +72,17 @@ class PayrollListController extends Controller
         }
         return JDV::result($this->payrollListModel->getFormOptions($req->id, $ss));
     }
+
     public function importPayrollList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->payrollListModel->importPayrollList($req->all(), $ss));
+        $res = $this->payrollListModel->importPayrollList($req->all(), $ss);
+        return JDV::raw($res); 
+        //Please DO NOT use JDV::result() for UPDATE or DELETE
+        //return JDV::result($this->payrollListModel->importPayrollList($req->all(), $ss));
     }
 
     public function calculatePayrollList(Request $req)
