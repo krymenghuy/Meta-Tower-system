@@ -91,7 +91,8 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->payrollListModel->calculatePayrollList($req->all(), $ss);
+        $res =  $this->payrollListModel->calculatePayrollList($req->all(), $ss);
+        return JDV::raw($res);
     }
 
     public function disbursePayrollList(Request $req)
@@ -100,7 +101,8 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return ($this->payrollListModel->disbursePayrollList($req->all(), $ss));
+        $res = ($this->payrollListModel->disbursePayrollList($req->all(), $ss));
+        return JDV::raw($res);
     }
 
     public function disburseAllPayrollList(Request $req)
@@ -109,7 +111,8 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return ($this->payrollListModel->disburseAllPayrollList($req->all(), $ss));
+        $res = ($this->payrollListModel->disburseAllPayrollList($req->all(), $ss));
+        return JDV::raw($res);
     }
     public function paySlip(Request $req)
     {

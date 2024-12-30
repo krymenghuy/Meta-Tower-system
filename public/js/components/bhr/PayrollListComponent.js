@@ -191,9 +191,9 @@ var PayrollListComponent = new (function () {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
                             const d = res.data || {};
-                            const failed_count = d.error_count || 0;
+                            const error_count = d.error_count || 0;
                             const error_message = error_count > 0 ? `${error_count} cases failed`:'';
-                            cv_interact.success([`Payroll has been calculated. ${d.success_count} cases affected! `, error_message].join(''));
+                            cv_interact.success([`Payroll has been calculated. ${d.success_count || 0 } cases affected! `, error_message].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                             // if (res.data) {
                                
