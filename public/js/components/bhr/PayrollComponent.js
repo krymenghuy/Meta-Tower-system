@@ -185,9 +185,7 @@ var PayrollComponent = new (function () {
 
             AddPayRollListDailog.show(op);
         };
-
-        console.log(555, mThis.self.querySelectorAll('.table-test tr td'));
-
+  
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 205) + 'px';

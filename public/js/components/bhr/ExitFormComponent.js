@@ -339,7 +339,7 @@ const ExitFormDialog = (() => {
             ],
             contentCreated: (me, divModal) => {
                 me.saveBenefitDisburse = (bd) => {
-                    alert("Data saved.");
+                    //alert("Data saved.");
                 };
             },
             prepareFormOptions: {
@@ -713,7 +713,8 @@ function check_box(event) {
             )
             .then((res) => {
                 if (res.status_code == 200) {
-                    cv_interact.success('saved!')
+                    //cv_interact.success('saved!')
+                    return;
                 } else cv_interact.error(res.error_message);
             });
         

@@ -57,8 +57,7 @@ class Benefit //extends Model
         $search_id = $d->id ?? null;
 
         $query = DB::table('benefits as b')
-            ->selectRaw('b.id, b.name,b.type_id,' . $last_update . ',b.update_user')
-            ->where('b.branch_id', $branch_id);
+            ->selectRaw('b.id, b.name,b.type_id,' . $last_update . ',b.update_user');
 
         if ($search_id) {
             $query->where('b.id', $search_id);
@@ -68,7 +67,7 @@ class Benefit //extends Model
         }
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
-        // $allRows = $query->get();
+        //$allRows = $query->get();
         $rows = $query->skip($skip_rows)
             ->take($per_page)
             ->get();
