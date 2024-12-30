@@ -1,5 +1,6 @@
 "use strict";
 
+
 var ExitFormComponent = new (function () {
     const mThis = this;
     this.base_url = main_view.base_url;
@@ -124,7 +125,7 @@ var ExitFormComponent = new (function () {
                     mThis.ExitFormListView.showPage();
                 },
             };
-            ExitFormItemDialog.show(op);
+            ExitItemDialog.show(op);
         };
 
         const pr_tbl = mThis.ExitFormListView.getListContainer();
@@ -180,6 +181,7 @@ var ExitFormComponent = new (function () {
             }
             btn = VSUtil.closestLimited(e.target, ".btn-exit_form-view");
             if (btn) {
+                form_id = btn.dataset.id;
                 mThis.view_exit_form(btn.dataset.emp_id, btn);
             }
         });
@@ -193,7 +195,6 @@ var ExitFormComponent = new (function () {
             },
         };
 
-        
         ExitFormDialog.show(op);
     };
     this.delete_exit_form = (id, menulink) => {
@@ -203,7 +204,7 @@ var ExitFormComponent = new (function () {
             onClose: () => {
                 mThis.ExitFormListView.showPage();
             },
-        };  
+        };
         cv_interact.confirm(
             "Delete this Item Status?",
             {
@@ -261,6 +262,8 @@ var ExitFormComponent = new (function () {
         $(mThis.self).fadeIn(200);
     };
 })();
+
+let form_id = null; 
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -410,14 +413,14 @@ const ViewExitFormDialog = (() => {
                                         item !== null
                                             ? item.name ?? ""
                                             : item;
-
+                                        
                                     return `
                                     <div class="d-flex ml-1">
-                                        <div>${item.check}</div>
+                                        <div data_id="items" class=" ">${item.check}</div>
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
                                 })
-                                
+
                                 .join("");
 
                             return `<td class="text-start">${divContent}</td>`;
@@ -429,7 +432,6 @@ const ViewExitFormDialog = (() => {
                 return `<tr class="table-row">${rowData}</tr>`;
             })
             .join("");
-        
     };
     const generateEmployeeInfo = (employeeInfo) => {
         const {
@@ -580,11 +582,29 @@ const ViewExitFormDialog = (() => {
                         </div>
                     `;
 
+                    
+
                     dialog = new GeneralDialog({
                         cssClass: "modal-lg custom-modal-size",
                         backdrop: "static",
                         keyboard: true,
                         createContent: () => htmlString,
+                        contentCreated: (me) => {
+                            me.getCheckPointItems = (htmlString) => {
+                                htmlString
+                                    .querySelectorAll(".check-point-id")
+                                    .forEach((el) => {
+                                            console.log(el);
+
+                                        // el.onchange((e) => {
+                                        //     console.log(123);
+                                        // });
+                                    });
+                            };
+                            
+                            me.getCheckPointItems(me.divModal);
+
+                        },
                         buttons: [
                             {
                                 label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
@@ -592,18 +612,19 @@ const ViewExitFormDialog = (() => {
                                 click: (me) => me.hide(true, null),
                             },
                             {
-                                label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                                label: '<span id="_btnAddExitItem"><i class="fa-solid text-success fa-check"></i></span>',
                                 cssClass: "btn btn-sm-outline rounded-3",
                                 click: (me, btn) => {
                                     const p = me.getData();
 
                                     p.id = me.dataOptions.id;
+                                    console.log(p);
 
                                     vsapi
                                         .call(
                                             [
                                                 main_view.base_url,
-                                                "/hr/exit-form-item/save",
+                                                "/hr/exit-form/save-item",
                                             ].join(""),
                                             p,
                                             btn,
@@ -674,7 +695,49 @@ const ViewExitFormDialog = (() => {
 
     return self;
 })();
-const ExitFormItemDialog = (() => {
+function check_box(event) {
+    if (event.target.checked) {
+        console.log("checked");
+        let op = {};
+        op.check_point_id = event.target.dataset.id;
+        op.form_id = form_id;
+        op.check_id = 1;
+
+        console.log(8888, op);
+        vsapi
+            .call(
+                [main_view.base_url, "/hr/exit-form/save-item"].join(""),
+                op,
+                null,
+                null
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                    cv_interact.success('saved!')
+                } else cv_interact.error(res.error_message);
+            });
+        
+
+    } else {
+       let op = {};
+       op.check_point_id = event.target.dataset.id;
+       op.form_id = form_id;
+       op.check_id = 0;
+       console.log(8888, op);
+       vsapi
+           .call(
+               [main_view.base_url, "/hr/exit-form/save-item"].join(""),
+               op,
+               null,
+               null
+           )
+           .then((res) => {
+               if (res.status_code == 200) {
+               } else cv_interact.error(res.error_message);
+           });
+    }
+}
+const ExitItemDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -710,7 +773,7 @@ const ExitFormItemDialog = (() => {
                                 <label for="amount" class="form-label" vslang="titles.amount"></label>
                                 <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-12">
                                 <label for="currency" class="form-label" vslang="titles.Currency"></label>
                                 <select class="modal-select data-input" name="currency" data-field="currency">
                                     <option value="KHR">KHR</option>
