@@ -271,7 +271,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('transaction')
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
     Route::post('/save', [DepartmentController::class, 'saveDepartment']);
-    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getList']);
     Route::post('/details', [DepartmentController::class, 'getDetails']);
     Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
     Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
@@ -303,15 +303,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->gro
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->group(function () {
     Route::post('/save', [JobLevelController::class, 'saveJobLevel']);
-    Route::post('/list', [JobLevelController::class, 'getJobLevelList']);
-    Route::post('/list-paginate', [JobLevelController::class, 'getJobLevelListPaginate']);
+    Route::post('/list', [JobLevelController::class, 'getList']);
+    Route::post('/list-paginate', [JobLevelController::class, 'getList']);
     Route::post('/detail', [JobLevelController::class, 'getDetails']);
     Route::post('/form-options', [JobLevelController::class, 'getFormOptions']);
     Route::post('/delete', [JobLevelController::class, 'deleteJobLevel']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('position')->group(function () {
     Route::post('/save', [PositionController::class, 'savePosition']);
-    Route::post('/list-paginate', [PositionController::class, 'getPositionListPaginate']);
+    Route::post('/list-paginate', [PositionController::class, 'getList']);
     Route::post('/details', [PositionController::class, 'getDetails']);
     Route::post('/delete', [PositionController::class, 'deletePosition']);
     Route::post('/form-options', [PositionController::class, 'getFormOptions']);

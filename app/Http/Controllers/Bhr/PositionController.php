@@ -17,8 +17,7 @@ class PositionController extends Controller
     {
         $this->positionModel = new Position();
     }
-
-
+ 
     public function savePosition(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -31,13 +30,13 @@ class PositionController extends Controller
         return JDV::raw($res);
     }
 
-    public function getPositionListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->positionModel->getPositionListPaginate($req->all(), $ss));
+        return JDV::result($this->positionModel->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -62,7 +61,9 @@ class PositionController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->positionModel->deletePosition($req->id, $ss));
+        $res = $this->positionModel->deletePosition($req->id, $ss);
+        return JDV::raw($res);
+        //return JDV::result($this->positionModel->deletePosition($req->id, $ss)); THIS IS WRONG for Delete or Update. DO NOT USE ::result()
     }
 
     public function getFormOptions(Request $req)

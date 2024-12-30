@@ -4,8 +4,6 @@ namespace App\Models\Bhr;
 
 use App\Models\DBX;
 use App\Models\DV;
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -34,18 +32,36 @@ class ExitForm
         $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
         $checkUnique = ["$branch_id|exit_forms|name|id=id|text=Name already exists."];
         $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false, $checkUnique);
+
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
+        $existingData = DB::table('exit_forms')->where('id', $id)->first();
+        if ($existingData) {
+            $existingDataArray = (array) $existingData;
+
+            $unchanged = true;
+            foreach ($inputs as $key => $value) {
+                if (array_key_exists($key, $existingDataArray) && $existingDataArray[$key] != $value) {
+                    $unchanged = false;
+                    break;
+                }
+            }
+
+            if ($unchanged) {
+                return DV::error('No changes were made to the exit form.');
+            }
+        }
+
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving exit form');
-
     }
+
 
     public function getList($arr, $ss = null)
     {
@@ -133,7 +149,7 @@ class ExitForm
             ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->where('emp.status_id', 20)
             ->selectRaw(
-            '
+                '
                 ef.id,
                 ef.emp_id,
                 ef.name,
@@ -239,11 +255,10 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>';
-
+                    $check = '<input name="check_point_id" type="checkbox" value="check_point_id" >';
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>';
+                            $check = '<input name="check_point_id" type="checkbox" value="check_point_id" checked >';
                             break;
                         }
                     }

@@ -46,7 +46,6 @@ class Skill
         $skill_create = !$id;
 
         $delete_prev_image = ($id > 0 && (!$image || isImage($image)));
-        // error_log('Saving data: ' . json_encode($inputs));
         $id = saveData($ss, 'skills', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
@@ -192,7 +191,6 @@ class Skill
 
     static function saveSkillPhoto($d,$ss)
   {
-    //$branch_id = null; // $ss->branch_id;
     $skill_id = $d->id;
     if(!$skill_id) return DV::error('Invalid skill ID');
 
