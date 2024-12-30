@@ -159,9 +159,9 @@
 
 
 
-<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content" class="pt-3">
-        <div class="d-flex justify-content-between bg-white p-3 rounded-3 w-100" id="div_filter_filed">
+<div id="_main_employeeComponent" style="display:none;padding:20px 0 0;">
+    <div id="sub_content" class="">
+        <div class="d-flex justify-content-between shadow p-3 mt-2 rounded-2 w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
                     <span>Add Employee </span>
@@ -171,7 +171,7 @@
                 <div class="d-flex w-25 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control filter-field btn_search" id="_search_employee"
-                            placeholder="Search Employee">
+                            placeholder="Search">
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
@@ -193,11 +193,11 @@
             </div>
         </div>
         <div id="_employee_list" class="mt-3 px-3" style="height:70vh"></div>
-        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-start"></div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3  d-flex justify-content-start"></div>
     </div>
 
     <div class="d-none" id="view_see_info__">
-        <div class="d-flex px-3 pt-3" id="btn_back">
+        <div class="d-flex shadow rounded-2 px-3 mt-2" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
                 class="btn text-white shadow rounded-4 m-2 p-2" type="button">
                 <i class="fa-solid fa-angles-left "></i>
@@ -205,7 +205,7 @@
             </button>
         </div>
         <div id="_view_profile_container">
-            <div class="px-2 overflow-y-auto overflow-x-hidden mb-5" style="height:550px;" id="sub_view_profile">
+            <div class="overflow-y-auto overflow-x-hidden mb-5" style="height:550px;" id="sub_view_profile">
                 <div id="profile_info_emp">
 
                 </div>

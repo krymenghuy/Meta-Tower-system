@@ -21,7 +21,6 @@ var SkillsComponent = new (function () {
             apiCluster: main_view.apiCluster,
             perPage:12,
             paginationContainer: mThis.paginationContainer,
-
             processResponse: (res) => {
                 return res.data;
             },
@@ -244,8 +243,10 @@ const SkillDialog = (() => {
         return [
             `<div class="row">`,
                 `<div class="col-md-3">`,
-                    `<div style="height:130px;" class="data-input border border-warning rounded-3 justify-content-center align-items-center">`,
-                        `<div name="div_skill_photo" class="data-input" data-field="image_url"></div>`,
+                    `<div style="height:130px;" class="data-input border border-SECONDARY rounded-3 justify-content-center align-items-center">`,
+                        `<div name="div_skill_photo" class="data-input h-100" data-field="image_url">
+                           
+                        </div>`,
                     `</div>`,
                 `</div>`,
                 `<div class="col-md-9">`,

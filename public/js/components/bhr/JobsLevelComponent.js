@@ -10,7 +10,6 @@ var JobsLevelComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
     this.elSearch = this.self.querySelector("#_job_level_search");
     this.elCard = this.self.querySelector(".top_level_card");
-    this._searchJobLevel = this.self.querySelector("#container_jobLevel");
     this.cols = [
         {
             title: "",
@@ -21,6 +20,13 @@ var JobsLevelComponent = new (function () {
         },
 
         {
+            title: "Ranking",
+            className: "align-middle",
+            data: (data)=>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991;width:30px; height:30px;"><span class="">${data.rank}</span></div>`,
+
+        },
+        {
             title: "Job Level",
             className: "align-middle ",
             data: (data)=>
@@ -28,17 +34,10 @@ var JobsLevelComponent = new (function () {
         },
 
         {
-            title: "Ranking",
-            className: "align-middle",
-            data: (data)=>
-                `<span class="text-primary-custom">${data.rank}</span>`,
-
-        },
-        {
             title: "Description",
             className: "align-middle",
             data: (data)=>
-                `<div  class="text-remark" >${data.description}</div>`,
+                `<div  class="text-remark text-muted" >${data.description}</div>`,
         },
         {
             title: "Last Updated",
@@ -98,27 +97,24 @@ var JobsLevelComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
         }
-
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.JobLevelListView) {
+                    mThis.JobLevelListView.showPage(mThis.getFilterData());
+                } else {
+                    console.error("jobLevel is not defined");
+                }
+            }, 200);
+        });
 
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis._searchJobLevel.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.JobLevelListView.showPage(mThis.getFilterData());
-        });
+        
         mThis.initAlready = true;
     };
-    mThis.elSearch.addEventListener("keyup", (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.JobLevelListView) {
-                mThis.JobLevelListView.showPage(mThis.getFilterData());
-            } else {
-                console.error("jobLevel is not defined");
-            }
-        }, 200);
-    });
+   
 
 
     this.setFilterPeriod = (p, name, start_date, end_date) => {
@@ -128,14 +124,6 @@ var JobsLevelComponent = new (function () {
     this.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
-        let main_filters =
-            mThis._searchJobLevel.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-        console.log(222, p.search_value, main_filters);
-
         return p;
     };
     this.initDropdownMenus = () => {

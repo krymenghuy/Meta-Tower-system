@@ -9,7 +9,7 @@ var PayrollListComponent = new (function () {
     this.elFilterBranch = this.self.querySelector('#el_filter_branch');
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
-    // this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.elSearch = this.self.querySelector("#_search_payroll_list");
     this.elFilterDisburse = this.self.querySelector("#el_filter_disburse");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
     this.btnDisburse = this.self.querySelector("#_btnDisburse");
@@ -30,31 +30,13 @@ var PayrollListComponent = new (function () {
 
     this.cols = [
 
-        // {
-        //     title: "No",
-        //     className: 'align-middle text-capitalize text-nowrap',
-        //     data: (data, index, i) => { return (index + 1) },
-
-        // },
         {
-            className: "col_action align-middle",
-            data: (data,index,tr) => {
-                return [
-                `<div class="d-flex justify-content-center align-items-center">`,
-                    `<div class="text-center gap-2 d-flex flex-wrap">`,
-                        `<a href="javascript:void(0)"`,
-                           `class="btn_payroll_list_action"`,
-                           `data-id="${data.id}"`,
-                           `data-disburse="${data.disburse}"`,
-                           `aria-haspopup="true"`,
-                           `aria-expanded="false">`,
-                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
-                            `<img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />`,
-                        `</a>`,
-                    `</div>`,
-                `</div>`].join('');
-            }
+            title: "",
+            className: 'align-middle text-capitalize text-nowrap',
+            // data: (data, index, i) => { return (index + 1) },
+
         },
+       
         {
             title: "Employee",
             className: "align-middle text-start w-15",
@@ -157,6 +139,26 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
+            }
+        },
+        {
+            title:"Action",
+            className: "col_action align-middle",
+            data: (data,index,tr) => {
+                return [
+                `<div class="d-flex justify-content-center align-items-center">`,
+                    `<div class="text-center gap-2 d-flex flex-wrap">`,
+                        `<a href="javascript:void(0)"`,
+                           `class="btn_payroll_list_action"`,
+                           `data-id="${data.id}"`,
+                           `data-disburse="${data.disburse}"`,
+                           `aria-haspopup="true"`,
+                           `aria-expanded="false">`,
+                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
+                            `<i class="fa-solid fa-ellipsis-vertical tool-tip fs-3 " style="color:#2b3991;"><span class="tool-tiptext fs-6 ">Action</span></i>`,
+                        `</a>`,
+                    `</div>`,
+                `</div>`].join('');
             }
         },
 
@@ -275,14 +277,19 @@ var PayrollListComponent = new (function () {
         mThis.initDropdownMenus(pr_tbl);///
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
-
             el.onchange =  (e) => {
            e.preventDefault();
            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-           console.log(777777, mThis.getFilterData());
             }
        });
+       let timeOut = null;
+       mThis.elSearch.onkeyup = function (e) {
+        e.preventDefault();
+        clearTimeout(timeOut);
+        timeOut = setTimeout(() => {
+            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+        }, 250);
+    };
 
         mThis.initAlready = true;
 
@@ -690,13 +697,12 @@ var PayrollListComponent = new (function () {
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
         p.disburse = mThis.elFilterDisburse.value;
-
+        p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
 
         return p;
     };
@@ -715,7 +721,6 @@ var PayrollListComponent = new (function () {
                     payroll_id = payroll.id;
                 }
             });
-            console.log(333, payroll_id);
 
 
 
@@ -732,8 +737,6 @@ var PayrollListComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
-            console.log(444,mThis.getFilterData());
-
             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
@@ -850,7 +853,6 @@ const PayRollImportDailog = (()=>{
     const self = {};
     let dialogImport = null;
      self.show = (op)=>{
-console.log(999,op);
 
         dialogImport = dialogImport || new GeneralDialog({
             cssClass:'modal-md',

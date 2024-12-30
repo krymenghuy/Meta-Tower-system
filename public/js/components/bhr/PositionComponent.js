@@ -8,7 +8,7 @@ var PositionComponent = new (function () {
     this.title_prop = "Positions";
     this.btnAdd = this.self.querySelector("#_btnAddPosition");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_position");
+    this.elSearch = this.self.querySelector("#_search_position");
 
     this.cols = [
         {

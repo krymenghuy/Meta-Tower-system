@@ -130,12 +130,14 @@ class Payroll
 
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
+        $updated_date = DBX::formatTime('p.update_date', 'update_date');
+
 
         $query = DB::table('payrolls as p')
             ->selectRaw('p.id, p.name, p.month, p.year,
                         ' . $start_date . ', ' . $end_date . ',
-                         p.p_number, p.total, p.authorized, p.disbursed,
-                         p.currency_code, p.exchange_rate')
+                         p.p_number,p.head_count ,p.total, p.authorized, p.disbursed,
+                         p.currency_code, p.exchange_rate,'.$updated_date.',p.update_user')
             ->where('p.branch_id', $branch_id);
 
         if ($search_id) {
@@ -164,7 +166,7 @@ class Payroll
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
         $row = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month, p.year,' . $start_date . ', ' . $end_date . ', p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month, p.year,' . $start_date . ', ' . $end_date . ', p.p_number, p.head_count,p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
             ->first();

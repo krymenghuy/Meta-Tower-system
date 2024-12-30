@@ -1,37 +1,47 @@
 <div id="_main_payrollListComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content" class="p-0">
-        <div class="d-flex justify-content-between w-100 p-2" id="_divFilter">
-            <div class="d-flex align-items-center w-50 gap-2">
-                <div class="d-flex align-items-center justify-content-end gap-2 w-50 pl-2">
+        <div class="d-flex justify-content-between p-2 w-100 " id="_divFilter">
+            <div class="d-flex align-items-center w-50 px-3 gap-2">
+                <div class="d-flex align-items-center justify-content-end  w-50 ">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
                 </div>
-                <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
+                <div class="d-flex align-items-center justify-content-end w-25 ">
                     <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
                 </div>
-                {{-- <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
-                    <select type="id" id="el_sort_by" class="data-input filter-field"></select>
-                </div> --}}
-                <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
+             
+                <div class="d-flex align-items-center justify-content-end w-25 ">
                     <select type="id" id="el_filter_disburse" class="data-input filter-field"></select>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center justify-content-end w-50 gap-2 pr-3">
-                <button type="button" class="btn btn-primary" id="_btnImport" title="Import">
-                    <i class="fa-solid fa-file-import" style="color: white;"></i>
-                    <span></span>
-                </button>
-                <button type="button" class="btn btn-primary" id="_btnCalculate" title="Calculate">
-                    <i class="fas fa-calculator"></i>
-                    <span></span>
-                </button>
-                <button type="button" class="btn btn-primary" id="_btnDisburse" title="Disburse">
-                    <i class="fa-solid fa-square-check"></i>
-                    <span></span>
-                </button>
+            <div class="d-flex align-items-center justify-content-end w-50 px-3 gap-3">
+                <div class="d-flex justify-content-center w-50">
+                    <input type="text" class=" rounded-5 form-control filter-field" id="_search_payroll_list" placeholder="search payroll ">
+
+                </div>
+                <div class="d-flex gap-2">
+                  
+                    <button class="d-flex justify-content-center align-items-center border-0 rounded-circle" style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnImport"> 
+                        <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext fs-6 ">Import Staff List</span></i>
+
+                    </button>
+                   
+                    <button  class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-circle " 
+                        style="width: 40px; height: 40px;" 
+                        id="_btnCalculate">
+                        <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext fs-6">Calculate</span></i>
+                    </button>
+                    <button  class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 " 
+                        style="width: 40px; height: 40px;" 
+                        id="_btnDisburse">
+                        <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"> <span class="tool-tiptext fs-6">Disburse</span></i>
+                    </button>
+                </div>
+
+                
             </div>
         </div>
-        <div id="_payrollList_list" class="m-4"></div>
+        <div id="_payrollList_list" class="px-3 mt-3"></div>
     </div>
 
     <div class="d-none row px-3 bg-white" id="pay_slip">
