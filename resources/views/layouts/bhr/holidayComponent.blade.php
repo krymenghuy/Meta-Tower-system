@@ -5,7 +5,7 @@
                 <button type="button" class="btn text-white rounded-5" style="background-color:#2b3991;"
                     id="_btnAddHoliday">
                     <i class="fa-solid fa-snowman px-1"></i>
-                    <span>Create New</span>
+                    <span>Add Holiday</span>
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-75 gap-3">

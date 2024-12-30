@@ -61,21 +61,21 @@ var PayrollListComponent = new (function () {
             }
         },
         {
-            title: "Benefit Taxable",
+            title: "Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxable ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Benefit None Tax",
+            title: "Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_non_tax ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Benefit Flat Rate",
+            title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_flat_rate ?? '0.00')} (${data.flat_tax_rate ?? '0.00'}%)</p>`;
@@ -246,10 +246,10 @@ var PayrollListComponent = new (function () {
 
             let op = {
                 id: null,
-                // id: 1,
+                payroll_id: PayrollListComponent.elFilter.value,
                 // btn: e.target,
                 onClose: () => {
-                    cv_interact.success('Import Payroll Successfully');
+                    //cv_interact.success('Import Payroll Successfully');  // **** Darith: Please do use this message in onClose(). Please try to understand the callback better
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
@@ -505,15 +505,15 @@ var PayrollListComponent = new (function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Bese Salary</td>
+                                <td>Base Salary</td>
                                 <td>${formattedNumber(data.salary || 0.00)}</td>
                             </tr>
                             <tr>
-                                <td>Base Allowance</td>
+                                <td>Allowance</td>
                                 <td>${formattedNumber(data.allowance || 0.00)} </td>
                             </tr>
                             <tr>
-                                <td>Base Bias</td>
+                                <td>Bias</td>
                                 <td>${formattedNumber(data.bias || 0.00)}</td>
                             </tr>
                              <tr>
@@ -521,11 +521,11 @@ var PayrollListComponent = new (function () {
                                 <td>${data.count_day}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Taxable</td>
+                                <td>Taxable BFT</td>
                                 <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Flat Rate ( ${data.flat_tax_rate} %)</td>
+                                <td>BFT (${data.flat_tax_rate} % tax)</td>
                                 <td class="text-success">${formattedNumber(data.benefit_flat_rate || 0.00)}</td>
                             </tr>
                             <tr>
@@ -563,7 +563,7 @@ var PayrollListComponent = new (function () {
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Benefit None Tax</td>
+                                <td>Nontax BFT</td>
                                 <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
                             </tr>
                             <tr>
@@ -675,15 +675,15 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
-        cv_interact.confirm('Delete this Payroll List?',{
-            title: 'Delete Payroll List',
+        cv_interact.confirm('Remove this staff from payroll?',{
+            title: 'Remove Staff from Payroll',
             context: 'delete',
-            confirmButtonText:"Delete"
+            confirmButtonText:"Remove"
         },function(e){
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.info('The staff has been removed from payroll!');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                 })
@@ -710,22 +710,19 @@ var PayrollListComponent = new (function () {
     this.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
+            let payroll_id = null;
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear();
-            let payroll_id = null;
-
-
+             
             d.payrolls.forEach(payroll => {
                 if (payroll.month === currentMonth && payroll.year === currentYear) {
                     payroll_id = payroll.id;
                 }
             });
-
-
-
+ 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
-            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branch', null);
+            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
             VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
@@ -885,7 +882,7 @@ const PayRollImportDailog = (()=>{
                 }
                },
                {
-                label:'<span>Save</span>',
+                label:'<span>Import</span>',
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
@@ -894,6 +891,9 @@ const PayRollImportDailog = (()=>{
 
                     vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
+                         const successCount = res.data.success_count ?? 0;
+                          if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
+                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles'); 
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
                     });
@@ -901,8 +901,8 @@ const PayRollImportDailog = (()=>{
                }
             ],
             prepareFormOptions:{
-               createTitle:'Add Payroll By Import Employee',
-               modifyTitle:'Edit Payroll By Import Payroll',
+               createTitle:'Import Staff List',
+               modifyTitle:'Edit',
                targetProp: 'payroll_list',
                api:{
                  endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
@@ -917,6 +917,8 @@ const PayRollImportDailog = (()=>{
 
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
+                 me.controls.payroll_name.value = me.dataOptions.payroll_id; //here
+                 me.controls.payroll_name.setAttribute('disbaled',true);
             }
 
         });
