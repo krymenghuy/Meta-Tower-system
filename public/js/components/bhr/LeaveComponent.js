@@ -194,6 +194,8 @@ var LeaveComponent = new function () {
     this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
+            // leave_type_id: mThis.elFilter_leaveType.value,
+
             search_value: mThis.elSearch.value,
 
 
@@ -367,6 +369,7 @@ var LeaveComponent = new function () {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
+            // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
         })
     }
 

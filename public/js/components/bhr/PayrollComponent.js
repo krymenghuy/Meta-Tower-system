@@ -10,7 +10,7 @@ var PayrollComponent = new (function () {
     this.elDisbursed = this.self.querySelector('#el_disbursed');
     this.btnAdd = this.self.querySelector("#_btnAddpayroll");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_payroll");
+    this.elSearch = this.self.querySelector("#_search_payroll");
     let cloneTable = null;
 
     const formattedNumber = (number) => {
@@ -36,21 +36,21 @@ var PayrollComponent = new (function () {
         {
             title: "Name",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0" style="color:#2b3991;">${data.name}</p>`
         },
-        {
-            title: "Month Year",
-            className: "align-middle",
-            data: (data) => {
-                const month = monthNames[data.month - 1] ?? '';
-                const year = data.year ?? '';
-                return `<p class="p-0 m-0">${month} ${year}</p>`;
-            }
-        },
+        // {
+        //     title: "Month",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const month = monthNames[data.month - 1] ?? '';
+        //         const year = data.year ?? '';
+        //         return `<p class="p-0 m-0">${month}${year}</p>`;
+        //     }
+        // },
         {
             title: "Duration",
             className: "align-middle w-15",
-            data: (data) => `<p class="p-0 m-0">${data.start_date ?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
+            data: (data) => `<span class="text-dark">(<small class="text-dark">${data.start_date ?? ''}​ <small class="text-warning">~</small> ${data.end_date ?? ''}</small>)</span>`
         },
         {
             title: "Payroll Number",

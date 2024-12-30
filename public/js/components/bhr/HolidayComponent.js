@@ -8,7 +8,7 @@ var HolidayComponent = new (function () {
     this.title_prop = "Manage Holiday";
     this.btnAdd = this.self.querySelector("#_btnAddHoliday");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_holiday");
+    this.elSearch = this.self.querySelector("#_search_holiday");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     this.cols = [
         {
