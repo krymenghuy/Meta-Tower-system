@@ -408,6 +408,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->group(function(){
     Route::post('/save', [ExitFormController::class, 'saveExitForm']);
+    Route::post('/save-item', [ExitFormController::class, 'saveExitItem']);
     Route::post('/list-paginate', [ExitFormController::class, 'getList']);
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
