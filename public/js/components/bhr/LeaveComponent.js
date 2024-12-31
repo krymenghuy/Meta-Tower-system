@@ -10,6 +10,7 @@ var LeaveComponent = new function () {
     this.divFilter = this.self.querySelector("#_divFilter_leave");
     // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
     this.elFilter_status = this.self.querySelector('#el_status');
+    this.elFilter_session = this.self.querySelector('#el_leave_session');
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
 
     this.cols = [
@@ -20,7 +21,6 @@ var LeaveComponent = new function () {
             data: (data, index, tr) => {
                 return `<span style="font-size: 12px; class=""><span class="text-primary-custom">${data.emp_code ?? 'null'}</span></span>`;
              }
-
         },
 
         {
@@ -55,7 +55,6 @@ var LeaveComponent = new function () {
                             <small class="p-0 m-0 text-primary" style="font-size:11px;">${data.start_date} - ${data.end_date}</small>
                             <span class="text-success" style="font-size:11px;">(${data.leave_days} day)</span>
                         </div>`;
-
             }
         },
         {
@@ -79,13 +78,12 @@ var LeaveComponent = new function () {
 
             }
         },
-
         {
             title: "Status",
             className: 'status text-nowrap text-center align-start',
             data: function (data, index, tr) {
                 let cls_class = 'text-danger text-center';
-                let bg_color = ''; // Default background color
+                let bg_color = ''; // Default background color 
 
                 if ((data.status || '').toLowerCase() === 'approved') {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
@@ -122,9 +120,7 @@ var LeaveComponent = new function () {
             }
         },
 
-
     ];
-
 
     this.init = () => {
         if (mThis.initAlready) return;
@@ -152,18 +148,17 @@ var LeaveComponent = new function () {
             LeaveRequestDialog.show(op);
         };
 
-
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
         console.log(122,mThis.tblLeaves);
 
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 230) + 'px';
+        sh_parent.style.height = (window.innerHeight - 240) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
         }
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
@@ -179,26 +174,17 @@ var LeaveComponent = new function () {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-
             }, 250);
         });
 
         mThis.initAlready = true;
-
-
     };
-
-
-
 
     this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
-
             search_value: mThis.elSearch.value,
-
-
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -206,10 +192,8 @@ var LeaveComponent = new function () {
                 p[f] = el.value;
         });
 
-
         return p;
     };
-
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
@@ -218,7 +202,6 @@ var LeaveComponent = new function () {
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
-
                 {
                     html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
                     icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
@@ -238,7 +221,6 @@ var LeaveComponent = new function () {
                     cssClass:"border-bottom pb-2",
                     name:"delete_leave_request"
                 },
-
             ],
             adjustPosition:{
                 top:-200 ,
@@ -247,7 +229,6 @@ var LeaveComponent = new function () {
 
             onClick:(menuLink, id, name)=>{
                 console.log(90,menuLink,80,id,70,name);
-
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -361,7 +342,6 @@ var LeaveComponent = new function () {
                 cv_interact.error(res.message);
             }
         });
-
     }
 
     this.prepareFormOptions = () => {
@@ -370,22 +350,20 @@ var LeaveComponent = new function () {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
+            VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
             // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
         })
     }
-
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
-                mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(250);
-            });
-
+        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
+            mThis.jm.siblings().hide();
+            mThis.jm.hide().fadeIn(250);
+        });
     }
-
 
 };
 

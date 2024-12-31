@@ -200,7 +200,7 @@ const StaffAttendanceDialog = (() => {
     let dialog = null;
     self.show = (op) => {
         dialog = new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {

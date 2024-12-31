@@ -31,8 +31,8 @@
                 </div>
                 <div class="row">
                     <div class="form-group mx-auto " style="max-width: 300px;">
-                        <label for="employee_code" class="form-label text-center " vslang="titles.Enter Student ID">Enter
-                            Student ID</label>
+                        <label for="employee_code" class="form-label text-center " vslang="titles.Enter Employee ID">Enter
+                            Employee ID</label>
                         <input id="_scan_employee_code" type="text" class="form-control" data-field="employee_code"
                             plaeholder="Student ID" />
                     </div>

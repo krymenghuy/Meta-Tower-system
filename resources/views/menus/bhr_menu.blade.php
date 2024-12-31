@@ -234,7 +234,17 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Leave Management"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Uninformed Leaves"></span>
+                </a>
+            </li>
+
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                <a href="LeaveUnFormComponent" modid="105" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Leave Unform"></span>
                 </a>
             </li>
  

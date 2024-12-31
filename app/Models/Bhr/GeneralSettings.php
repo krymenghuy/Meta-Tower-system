@@ -191,6 +191,13 @@ class GeneralSettings //extends Model
         return DB::table('leave_statuses')->selectRaw('id,name as leave_status')->get();
     }
 
+    static function options_session($ss){
+        return [
+            (object)['id'=>'m','session'=>'Morning'],
+            (object)['id'=>'a','session'=>'Afternoon'],
+        ];
+    }
+
     static function options_leave_type($ss){
         return DB::table('leave_types')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
     }

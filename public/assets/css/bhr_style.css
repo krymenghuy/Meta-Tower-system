@@ -58,15 +58,16 @@
 }
 
 .filter-dete-custom .form-label{
-    margin: 0 -90px 0 30px;
+    margin: 0 -100px 0 30px;
     padding: 0.65rem 0;
     font-size: 110%;
+    line-height: 1.7;
     height: 100%;
     white-space: nowrap;
     z-index: 9;
 }
 .filter-dete-custom .form-control{
-    padding-left: 100px;
+    padding-left: 110px;
 }
 
 
