@@ -1,6 +1,5 @@
 "use strict";
 
-
 var ExitFormComponent = new (function () {
     const mThis = this;
     this.base_url = main_view.base_url;
@@ -251,7 +250,7 @@ var ExitFormComponent = new (function () {
     };
 })();
 
-let form_id = null; 
+let form_id = null;
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -401,14 +400,13 @@ const ViewExitFormDialog = (() => {
                                         item !== null
                                             ? item.name ?? ""
                                             : item;
-                                    console.log(1010,item);
-                                    
+                                    console.log(1010, item);
+
                                     return `
                                     <div class="d-flex ml-1">
                                         <div data_id="items" class=" ">${item.check}</div>
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
-
                                 })
 
                                 .join("");
@@ -572,8 +570,6 @@ const ViewExitFormDialog = (() => {
                         </div>
                     `;
 
-                    
-
                     dialog = new GeneralDialog({
                         cssClass: "modal-lg custom-modal-size",
                         backdrop: "static",
@@ -600,7 +596,6 @@ const ViewExitFormDialog = (() => {
                                 label: '<span id="_btnAddExitItem" class="bg bg-success rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-check"></i></span>',
                                 cssClass: "btn btn-sm-outline rounded-3",
                                 click: (me) => me.hide(true, null),
-                                
                             },
                             {
                                 label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-print"></i></span>',
@@ -660,7 +655,7 @@ const ViewExitFormDialog = (() => {
 function check_box(event) {
     if (event.target.checked) {
         console.log("checked");
-        let op = {};
+        let op = {};        
         op.check_point_id = event.target.dataset.id;
         op.form_id = form_id;
         op.check_id = 1;
@@ -680,23 +675,22 @@ function check_box(event) {
                 } else cv_interact.error(res.error_message);
             });
         
-
     } else {
-       let op = {};
-       op.check_point_id = event.target.dataset.id;
-       op.form_id = form_id;
+        let op = {};
+        op.check_point_id = event.target.dataset.id;
+        op.form_id = form_id;
         op.check_id = 0;
         console.log("uncheck");
-       vsapi
-           .call(
-               [main_view.base_url, "/hr/exit-form/save-item"].join(""),
-               op,
-               null,
-               null
-           )
-           .then((res) => {
-               if (res.status_code == 200) {
-               } else cv_interact.error(res.error_message);
-           });
+        vsapi
+            .call(
+                [main_view.base_url, "/hr/exit-form/save-item"].join(""),
+                op,
+                null,
+                null
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                } else cv_interact.error(res.error_message);
+            });
     }
 }
