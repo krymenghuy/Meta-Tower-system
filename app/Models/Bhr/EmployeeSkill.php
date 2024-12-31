@@ -103,7 +103,7 @@ class EmployeeSkill
         $query = DB::table('emp_skills')
             ->where('id', $id)
             ->delete();
-        return DV::depends($query, ['action', 'deleted']);
+        return DV::depends($query, null, 'Error deleting employee skill');
     }
 
     function getFormOptions($id, $ss) {

@@ -57,6 +57,11 @@ class ExperienceController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        return JDV::result($this->experience->delete($req->id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $res = $this->experience->delete($req->id, $ss);
+        return JDV::raw($res);
     }
 }

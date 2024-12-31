@@ -64,7 +64,6 @@ var EmployeeComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Employee Added Successfully");
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
@@ -850,6 +849,9 @@ var EmployeeComponent = new (function () {
                                                     EmployeeComponent.renderCardLeft(
                                                         emp_id
                                                     );
+                                                }
+                                                else {
+                                                    cv_interact.error(res.message);
                                                 }
                                             });
                                     }
@@ -2200,17 +2202,6 @@ var EmployeeComponent = new (function () {
         };
         EmployeeDialog.show(op);
     };
-    this.CreateContract = (id) => {
-        let op = {
-            emp_id: id,
-            branch_id: mThis.el_branch.value,
-        };
-    
-        console.log("Creating contract with parameters:", op);
-    
-        vsapi.call(`${main_view.base_url}/hr/create-contract`, op, false, false, false);
-    };
-    
 
     this.deleteEmployee = (id, menuLink) => {
         let op = {
@@ -2242,6 +2233,10 @@ var EmployeeComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.EmployeeListView.showPage();
                             }else cv_interact.error(res.error_message);
+                            }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -3034,6 +3029,13 @@ const EmployeeDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
+                                    if(me.dataOptions.id > 0)
+                                    {
+                                        cv_interact.success("Updated Employee Successfully");
+                                    }
+                                    else{
+                                        cv_interact.success("Added Employee Successfully");
+                                    }
                                     //EmployeeComponent.btnBack.click();
                                     // EmployeeDialog.show(me.dataOptions);
                                 } else cv_interact.error(res.error_message);

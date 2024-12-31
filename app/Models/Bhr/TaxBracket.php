@@ -92,7 +92,7 @@ class TaxBracket
     }
 
 
-    function deleteTaxBracket($id = null, $ss = null)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -100,7 +100,7 @@ class TaxBracket
         $query = DB::table('tax_brackets')
             ->where('id', $id)
             ->delete();
-        return DV::depends($query, ['action', 'deleted']);
+        return DV::depends($query, null, 'Error deleting tax bracket');
     }
 
     function getFormOptions($id, $ss){

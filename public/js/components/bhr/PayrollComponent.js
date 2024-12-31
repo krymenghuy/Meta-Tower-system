@@ -66,7 +66,7 @@ var PayrollComponent = new (function () {
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total ?? '0.00')}</p>`
         },
-       
+
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
@@ -177,7 +177,7 @@ var PayrollComponent = new (function () {
                 btn: e.target,
                 onClose: (p) => {
                     if(!p) return;
-                   
+
                     mThis.PayrollListView.showPage();
                 }
             };
@@ -185,7 +185,7 @@ var PayrollComponent = new (function () {
 
             AddPayRollListDailog.show(op);
         };
-  
+
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 205) + 'px';
@@ -362,7 +362,6 @@ var PayrollComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Updated Successfully');
                 mThis.PayrollListView.showPage();
             }
         };
@@ -388,6 +387,9 @@ var PayrollComponent = new (function () {
                         mThis.PayrollListView.showPage();
                     }
                 })
+            }
+            else {
+                cv_interact.error(res.message);
             }
         });
 
@@ -434,34 +436,35 @@ const AddPayRollListDailog = (() => {
     let dialogAdd = null;
     self.show = (op) => {
         console.log(999, op);
+        const months = [
+            { value: 0, name: "select month" },
+            { value: 1, name: "Jan" },
+            { value: 2, name: "Feb" },
+            { value: 3, name: "Mar" },
+            { value: 4, name: "Apr" },
+            { value: 5, name: "May" },
+            { value: 6, name: "Jun" },
+            { value: 7, name: "Jul" },
+            { value: 8, name: "Aug" },
+            { value: 9, name: "Sep" },
+            { value: 10, name: "Oct" },
+            { value: 11, name: "Nov" },
+            { value: 12, name: "Dec" },
+        ];
 
         dialogAdd = dialogAdd || new GeneralDialog({
             cssClass: 'modal-lg',
             backdrop: 'static',
             keyboard: true,
             createContent: () => {
-                const months = [
-                    { value: 0, name: "select month" },
-                    { value: 1, name: "Jan" },
-                    { value: 2, name: "Feb" },
-                    { value: 3, name: "Mar" },
-                    { value: 4, name: "Apr" },
-                    { value: 5, name: "May" },
-                    { value: 6, name: "Jun" },
-                    { value: 7, name: "Jul" },
-                    { value: 8, name: "Aug" },
-                    { value: 9, name: "Sep" },
-                    { value: 10, name: "Oct" },
-                    { value: 11, name: "Nov" },
-                    { value: 12, name: "Dec" },
-                ];
+
 
                 const currentYear = new Date().getFullYear();
                 const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
 
                 return [
                     `<div class="row">
-                        
+
                         <div class="form-group col-4">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
                             <select name="month" class="form-control data-input" data-field="month">
@@ -475,7 +478,7 @@ const AddPayRollListDailog = (() => {
                                 ${years.map(year => `<option value="${year}">${year}</option>`).join("")}
                             </select>
                         </div>
-                        
+
                         <div class="form-group col-4">
                             <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
                             <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
@@ -508,8 +511,8 @@ const AddPayRollListDailog = (() => {
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
                             <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                         </div>
-                        
-                        
+
+
                     </div>`
                 ].join("");
             },
@@ -541,7 +544,13 @@ const AddPayRollListDailog = (() => {
                         vsapi.call([main_view.base_url, '/hr/payroll/save'].join(''), p, btn, null).then(res => {
                             if (res.status_code == 200) {
                                 me.hide(true, p);
+                                if(me.dataOptions.id > 0)
+                                {
+                                    cv_interact.success('Updated Payroll Successfully');
+                                }
+                                else{
                                 cv_interact.success('Added Payroll Successfully');
+                                }
                             } else {
                                 cv_interact.error(res.error_message);
                             }
@@ -578,32 +587,33 @@ const AddPayRollListDailog = (() => {
                     me.controls.currency_code.value = payrolls.currency_code;
                     me.controls.exchange_rate.value = payrolls.exchange_rate;
                     me.controls.p_number.value = payrolls.p_number;
-                    me.controls.total.value = payrolls.total;
+                    // me.controls.total.value = payrolls.total;
                 }
 
-                me.payroll_name = '';
-                me.month = '';
-                me.year = '';
-                me.p_number = '';
+
+                me.payroll_name ='';
+                me.month =  payrolls? months[payrolls.month ].name :'';
+                me.year =  payrolls? '-'+payrolls.year:'-';
+                me.p_number =  payrolls? '-'+payrolls.p_number:'-';
                 me.controls.month.onchange = (e)=>{
                     me.month = e.target.textContent;
                     me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
                 }
                 me.controls.year.onchange = (e)=>{
-                    me.year = '-'+e.target.textContent;
+                    me.year = '-'+ e.target.textContent;
                     me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
                 }
                 me.controls.p_number.onchange = (e)=>{
-                    me.p_number = '-'+e.target.value;
+                    me.p_number = '-'+ e.target.value;
                     me.payroll_name = me.month + me.year + me.p_number;
                     me.controls.name.value = me.payroll_name;
                 }
 
                 LocaleManager.translateZone(me.divModal);
 
-                
+
             }
         });
 

@@ -151,7 +151,7 @@ class BenefitDisbursement
         $id = $id ?? $this->id;
         $deleted = DB::table('benefit_disbursements')->where('id', $id)->delete();
 
-        return DV::depends($deleted, ['action' => 'deleted']);
+        return DV::depends($deleted,null,'Error deleting the benefit disbursement');
     }
 
     public static function getFormOptions($id, $ss)

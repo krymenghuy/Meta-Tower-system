@@ -98,7 +98,7 @@ class ScanPlan
         if (!$query) {
             return DV::error('Scan Plan not found');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting scan plan');
     }
 
     function getFormOptions($id, $ss){

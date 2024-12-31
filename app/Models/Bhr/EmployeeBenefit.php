@@ -155,7 +155,7 @@ class EmployeeBenefit
         $branch_id = $ss->branch_id;
 
         $delete = DB::table('emp_benefits')->where('id', $id)->delete();
-        return DV::depends($delete, ['action', 'deleted']);
+        return DV::depends($delete, null, 'Error deleting employee benefit');
     }
 
     static function getFormOptions($id, $ss)

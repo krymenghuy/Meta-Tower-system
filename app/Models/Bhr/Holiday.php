@@ -96,7 +96,7 @@ class Holiday
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $delete = DB::table('holidays')->where('id', $id)->delete();
-        return DV::depends($delete, ['action', 'deleted']);
+        return DV::depends($delete, null, 'Error deleting holiday');
     }
 
     public function getFormOptions($id, $ss)

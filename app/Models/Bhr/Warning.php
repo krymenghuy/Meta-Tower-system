@@ -150,7 +150,7 @@ class Warning
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function deleteWarning($id = null, $ss = null)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -158,16 +158,13 @@ class Warning
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Check if the warning exists before attempting to delete
         $warningExists = DB::table('emp_warnings')->where('id', $id)->exists();
         if (!$warningExists) {
             return DV::error('Warning not found');
         }
 
-        // Attempt to delete the warning
         $deleted = DB::table('emp_warnings')->where('id', $id)->delete();
 
         if ($deleted) {

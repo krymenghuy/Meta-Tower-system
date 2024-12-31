@@ -56,14 +56,14 @@ var WorkshiftComponent = new (function () {
                 mThis.WorkshiftListView(mThis.getFilterData());
             };
         });
-        
+
 
         mThis.initDropdownMenus(list_container);
         mThis.initAlready = true;
     };
-   
-    
-   
+
+
+
 
     this.renderWorkShift = (div, data) => {
         data = data ?? [];
@@ -230,9 +230,12 @@ var WorkshiftComponent = new (function () {
                             if (res.status_code === 200) {
                                 cv_interact.success("deleted !");
                                 mThis.WorkshiftListView();
-                            } 
+                            }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
-                       
+
                 }
             }
         );
@@ -284,16 +287,16 @@ const ShiftDetailDialog = (() => {
                                     <div class="days" data-value="Sat">Sat</div>
                                     <div class="days" data-value="Sun">Sun</div>
                                 </div>
-                                
+
                             </div>
                             <div class="form-group col-6">
                                 <label for="time" class="form-label" vslang="titles.Time">Time</label>
                                 <input type="time" class="form-control data-input" data-field="time" />
-                            </div>  
+                            </div>
                             <div class="form-group col-6">
                                 <label for="time" class="form-label" vslang="titles.Sesion">Session</label>
                                 <input class="form-control data-input" data-field="session" placeholder="m, a or e"/>
-                            </div>                                                                       
+                            </div>
                             <div class="form-group col-6">
                                 <label for="action" class="form-label" vslang="titles.Action">Action</label>
                                 <select class="modal-select data-input form_input" data-field="action">
@@ -301,24 +304,24 @@ const ShiftDetailDialog = (() => {
                                     <option value="Check In">Check In</option>
                                     <option value="Check Out">Check Out</option>
                                 </select>
-                            </div> 
+                            </div>
                             <div class="form-group col-6">
                             <label for="action" class="form-label" vslang="titles.Scan Order Number">Scan Order Number</label>
                             <input type="number" class="form-control data-input" placeholder="1, 2, 3 or 4" data-field="shift_order_number" />
-                           
-                        </div> 
-                            <div class="form-group col-12">      
+
+                        </div>
+                            <div class="form-group col-12">
                                 <label for="time" class="form-label" vslang="titles.Allow Scan">Allow Scan</label>
-                            </div> 
+                            </div>
                             <div class="form-group col-6 d-flex">
                                 <label for="time" class="form-label w-25 my-auto" vslang="titles.From">From</label>
                                 <input type="time" class="form-control w-75 data-input" data-field="start_time" />
-                            </div>  
+                            </div>
                             <div class="form-group col-6 d-flex ">
                                 <label for="time" class="form-label w-25 my-auto" vslang="titles.To">To</label>
                                 <input type="time" class="form-control w-75 data-input" data-field="end_time" />
-                            </div>    
-                                                                                       
+                            </div>
+
                          </div>`,
                 ].join("");
             },
@@ -377,8 +380,8 @@ const ShiftDetailDialog = (() => {
                                 me.hide(true, p);
                             } else cv_interact.error(res.error_message);
                         });
-                            
-                                
+
+
                     },
                 },
             ],
@@ -432,7 +435,7 @@ const ShiftDetailDialog = (() => {
                         });
                     }
                     const shift = WorkshiftComponent.getFilterData().work_shift_id;
-                    
+
                     if(shift) {
                         me.controls.shifts.value = shift;
                     }

@@ -252,7 +252,6 @@ var AccountMenagmentComponent = new (function () {
             let op = {
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success('Account Added Successfully');
                     mThis.AccountListView.showPage();
                 },
             };
@@ -402,7 +401,6 @@ var AccountMenagmentComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Account Updated Successfully');
                 mThis.AccountListView.showPage();
             },
         };
@@ -441,6 +439,7 @@ var AccountMenagmentComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.AccountListView.showPage();
                             }
+                            else cv_interact.error(res.error_message);
                         });
                 }
             }
@@ -594,6 +593,13 @@ const AccountDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success('Updated Payroll Account Successfully');
+                                        }
+                                        else{
+                                        cv_interact.success('Added Payroll Account Successfully');
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

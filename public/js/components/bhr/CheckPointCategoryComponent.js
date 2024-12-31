@@ -74,9 +74,6 @@ var CheckPointCategoryComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success(
-                        "Added Exit exit check point successfully"
-                    );
                     mThis.ExitCheckpointsListView.showPage();
                 },
             });
@@ -183,6 +180,9 @@ var CheckPointCategoryComponent = new (function () {
                                 );
                                 mThis.ExitCheckpointsListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -259,6 +259,14 @@ const ExitCheckpointsDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                        }
+                                        else
+                                        {
+                                            cv_interact.success('Added Checkpoints Category Successfully');
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

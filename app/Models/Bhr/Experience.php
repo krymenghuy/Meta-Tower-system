@@ -125,12 +125,12 @@ class Experience //extends Model
         ];
     }
 
-    function delete($id, $ss)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $delete = DB::table('emp_experiences')->where('id', $id)->delete();
-        return DV::depends($delete, ['action' => 'deleted']);
+        return DV::depends($delete, null, 'Error deleting experience');
     }
 }

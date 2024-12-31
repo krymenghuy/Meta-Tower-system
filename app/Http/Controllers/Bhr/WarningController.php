@@ -48,16 +48,17 @@ class WarningController extends Controller
     }
     public function deleteWarning(Request $req)
     {
-        // Verify the user's authentication status
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
-            return JDV::raw($ss); // Return error response if not authenticated
+            return JDV::raw($ss);
         }
 
-        // Call the delete method on the model
-        $result = $this->warnings->deleteWarning($req->id, $ss);
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->warnings->delete($req->id, $ss);
+        return JDV::raw($res);
 
-        return $result; // Return the result from the model
     }
     public function getDetails(Request $req)
     {

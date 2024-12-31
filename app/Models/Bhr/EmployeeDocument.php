@@ -159,7 +159,7 @@ class EmployeeDocument
             return DV::error('Data not found or not deleted');
         }
 
-        return DV::depends(1, ['id' => $id, 'deleted' => $data ?? 'No file found']);
+        return DV::depends($query, null, 'Error deleting data');
     }
 
     function getFormOptions($id, $ss)
@@ -183,11 +183,11 @@ class EmployeeDocument
             ->where('id', $id)
             ->selectRaw("$col_subs_id, ed.branch_id, ed.file_name")
             ->first();
-    
+
         if (!$row) {
             return null;
         }
-    
+
         $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
         $allowed_exts = [];
         $category = 'image';
@@ -198,7 +198,7 @@ class EmployeeDocument
             $category = 'document';
          }
         $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
-    
+
         return $url;
     }
     // public static function getFile($id)

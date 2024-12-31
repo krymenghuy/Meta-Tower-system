@@ -111,7 +111,7 @@ class Seniority
         return $row;
     }
 
-    function deleteSeniority($id = null) {
+    function delete($id = null) {
         $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
@@ -125,7 +125,7 @@ class Seniority
         if (!$query) {
             return DV::error('Seniority not found');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting seniority');
 
     }
 

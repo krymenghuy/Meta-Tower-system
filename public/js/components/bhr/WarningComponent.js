@@ -238,6 +238,9 @@ var WarningComponent = new (function () {
                                 );
                                 mThis.WarningListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }

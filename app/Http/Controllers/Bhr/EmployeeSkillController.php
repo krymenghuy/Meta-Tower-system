@@ -64,7 +64,8 @@ class EmployeeSkillController extends Controller
             return JDV::error('Invalid ID');
         }
 
-        return JDV::result($this->employee_skill->delete($req->id, $ss));
+        $res = $this->employee_skill->delete($req->id, $ss);
+        return JDV::raw($res);
     }
 
     public function getFormOptions(Request $req)

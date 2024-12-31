@@ -120,14 +120,14 @@ class TaxAllowance
 
     }
 
-    function deleteTaxAllowance($id = null, $ss = null)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $query = DB::table('tax_allowances')
             ->where('id', $id)
             ->delete();
-        return DV::depends($query, ['action', 'deleted']);
+        return DV::depends($query, null, 'Error deleting tax allowance');
     }
 
 }
