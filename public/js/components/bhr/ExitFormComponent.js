@@ -401,12 +401,14 @@ const ViewExitFormDialog = (() => {
                                         item !== null
                                             ? item.name ?? ""
                                             : item;
-                                        
+                                    console.log(1010,item);
+                                    
                                     return `
                                     <div class="d-flex ml-1">
                                         <div data_id="items" class=" ">${item.check}</div>
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
+
                                 })
 
                                 .join("");
@@ -683,7 +685,8 @@ function check_box(event) {
        let op = {};
        op.check_point_id = event.target.dataset.id;
        op.form_id = form_id;
-       op.check_id = 0;
+        op.check_id = 0;
+        console.log("uncheck");
        vsapi
            .call(
                [main_view.base_url, "/hr/exit-form/save-item"].join(""),

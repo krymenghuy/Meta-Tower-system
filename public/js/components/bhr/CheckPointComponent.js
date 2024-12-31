@@ -12,9 +12,13 @@ var CheckPointComponent = new (function () {
     this.elCheckPoint = this.self.querySelector("#el_checkPoint");
     this.cols = [
         {
-            title: "",
-            className: "align-middle ",
-            data: ''
+            title: "#",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
             title: "Item",

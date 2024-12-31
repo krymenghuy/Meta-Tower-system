@@ -72,9 +72,9 @@ class Department
         $update_date = DBX::$updated_at;
         $col_update_date = DBX::formatTime("d.$update_date",'updated_at');
         $query = DB::table('departments as d')
-            ->where('d.inactive',0)
+            ->where('d.inactive', 0)
             ->whereRaw($str_search)
-            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,'.$col_update_date.',d.update_user')->orderBy('d.name','ASC');
+            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,' . $col_update_date . ',d.update_user');
         $clone_query = clone  $query;
         $count = $clone_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

@@ -33,7 +33,7 @@
             <div class="d-flex justify-content-end gap-3 w-50">
             
             </div>
-            <div class="d-flex justify-content-end w-50 gap-3">
+            <div class="d-flex justify-content-end w-50">
                 <div class="d-flex filter-dete-custom w-50">
                     <label for="_leave_filter_start_date" class="form-label text-nowrap" style="color:#d1b54a;">Start Date :</label>
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="start_date"
