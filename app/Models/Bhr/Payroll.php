@@ -182,6 +182,7 @@ class Payroll
         if(!is_numeric($id)){
             return DV::error('Invalid ID');
         }
+        
         $branch_id = $ss->branch_id;
         $query = DB::table('payrolls')
             ->where('id', $id)

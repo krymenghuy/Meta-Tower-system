@@ -144,6 +144,12 @@ var EmployeeComponent = new (function () {
                     name: "edit_employee",
                 },
                 {
+                    html: '<span class="ps-2  " vslang="titles.Contract">Contract</span>',
+                    icon: `<i class="fa-solid text-dark fa-download"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract",
+                },
+                {
                     html: '<span class="ps-2  " vslang="titles.Delete Employee">Delete Employee</span>',
                     icon: `<i class="fa-solid text-danger fa-user-xmark"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -190,7 +196,8 @@ var EmployeeComponent = new (function () {
                         if (menu[item] && menu[item].style) {
                             menu[item].style.display =
                                 menu[item].dataset.mnuaction === "set_resign" ||
-                                menu[item].dataset.mnuaction === "edit_employee"
+                                menu[item].dataset.mnuaction === "edit_employee" ||
+                                menu[item].dataset.mnuaction === "create_contract"
                                     ? "block"
                                     : "none";
                         }
@@ -235,6 +242,10 @@ var EmployeeComponent = new (function () {
                 switch (name) {
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
+                        break;
+                    }
+                    case "create_contract": {
+                        mThis.CreateContract(id, menuLink);
                         break;
                     }
                     case "delete_employee": {
@@ -2189,6 +2200,17 @@ var EmployeeComponent = new (function () {
         };
         EmployeeDialog.show(op);
     };
+    this.CreateContract = (id) => {
+        let op = {
+            emp_id: id,
+            branch_id: mThis.el_branch.value,
+        };
+    
+        console.log("Creating contract with parameters:", op);
+    
+        vsapi.call(`${main_view.base_url}/hr/create-contract`, op, false, false, false);
+    };
+    
 
     this.deleteEmployee = (id, menuLink) => {
         let op = {
@@ -2219,7 +2241,7 @@ var EmployeeComponent = new (function () {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.EmployeeListView.showPage();
-                            }
+                            }else cv_interact.error(res.error_message);
                         });
                 }
             }
@@ -2784,13 +2806,6 @@ const EmployeeDialog = (() => {
                                 <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
                                 <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />
                             </div>`,
-
-
-
-
-
-
-
                             `<div class="form-group col-12">
                                 <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
                                 <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>

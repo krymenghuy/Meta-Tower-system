@@ -3,7 +3,8 @@
 namespace App\Models\Bhr;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
+Use App\Models\DV;
 class Contract
 {
     static function getBranchInfo($branch_id){
@@ -15,7 +16,7 @@ class Contract
 
     static function getBranchDirector($director_id){
         if(!$director_id) return null;
-      return DB::table('employees as e')->where('e.id',$director_id)->selectRaw('e.id,e.name,e.name_kh,sex, phone_number,nid')->first();
+      return DB::table('employees as e')->where('e.id',$director_id)->selectRaw('e.id,e.name,e.name_kh,sex,date_of_birth,phone_number,nid')->first();
     }
 
     static function getSex($sex){
@@ -23,30 +24,47 @@ class Contract
        else if ($sex ==='F') return 'ស្រី';
        else 'មិនប្រាប់';  
     }
+    static function calculateEndDate($startDate)
+    {
+        if (!$startDate) {
+            return null;
+        }
+        return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
+    }
+    
     static function createContract($branch_id,$emp_id)
     {
         $branch = self::getBranchInfo($branch_id);
-        if(!$branch) return;
+        if(!$branch) return DV::error('Pleases, Select branch.');
+        if(!$emp_id) return DV::error('Pleases, Select Employee.');
         $director = $branch->director;
-
         // Fetch employee data from the database
+        
         $emp = DB::table('employees as e')
+            ->join('positions as p','p.id','=','e.position_id')
             ->where('e.id', $emp_id)
-            ->selectRaw('e.id, e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address')
+            ->selectRaw('e.id,e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,e.joining_date ')
             ->first();
-
+        
         // Define placeholders and default values
         $data = [
             'com_address' => $branch->address_kh,
+            'com_rep_branch' => $branch->name,
             'com_rep_name'=> $director->name ?? '<Director Name>',
             'com_rep_sex' => self::getSex($director->sex),
             'com_rep_dob' => getKhmerDate($director->date_of_birth),
-            'com_rep_nid' =>$director->nid,
+            'com_rep_nid' => $director->nid,
             'com_rep_phone' => $director->phone_number,
             'emp_name' => $emp->name_kh ?? $emp->name,
             'emp_code' => $emp->code,
             'emp_sex' => self::getSex($emp->sex),
+            'emp_phone' => $emp->phone_number ?? '',
             'emp_nid' => $emp->nid ?? '',
+            'start_date' => getKhmerDate($emp->joining_date),
+            'end_date' => getKhmerDate(self::calculateEndDate($emp->joining_date)),
+            'position' => $emp->position ?? '',
+            'emp_address' => $emp->address ?? '',
+            'branch' => $branch->name,
             'emp_dob' => getKhmerDate($emp->date_of_birth),
             'signature_date'=>getKhmerDate(null)
         ];
