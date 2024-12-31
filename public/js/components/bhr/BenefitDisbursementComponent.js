@@ -407,8 +407,8 @@ const BenefitDisburseDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Benefit Disbursement",
-                    modifyTitle: "Edit Benefit Disbursement",
+                    createTitle: "Create Benefit Disburse",
+                    modifyTitle: "Edit Benefit Disburse",
                     targetProp: "benefit_disbursements",
                     api: {
                         endpoint: [

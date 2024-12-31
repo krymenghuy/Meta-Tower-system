@@ -289,7 +289,7 @@ const BenefitDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Benefit",
+                    createTitle: "Create Benefit",
                     modifyTitle: "Edit Benefit",
                     targetProp: "benefits",
                     api: {

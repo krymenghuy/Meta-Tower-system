@@ -131,7 +131,7 @@ class Country //extends Model
             $query->where('c.id', $id);
         }
 
-        $query->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh, c.create_user, flag_file_name, ' . $col_create_date)
+        $query->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh,c.lang_code, c.create_user, flag_file_name, ' . $col_create_date)
             ->orderBy('c.name', 'ASC');
 
         $rows = $query->get();
@@ -152,7 +152,7 @@ class Country //extends Model
         $row = DB::table('loc_countries as c')
             ->where('c.id', $id)
             ->where('c.branch_id', $branch_id)
-            ->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh, c.create_user, flag_file_name')
+            ->selectRaw('c.id, c.name, c.name_kh, c.currency_code, c.region, c.nationality, c.nationality_kh,c.lang_code, c.create_user, flag_file_name')
             ->first();
         if (isset($row->flag_file_name)) {
             $row->image_url = self::flagPicture($row->id);

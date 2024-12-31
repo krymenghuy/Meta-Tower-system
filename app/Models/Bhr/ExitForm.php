@@ -89,9 +89,6 @@ class ExitForm
         ];
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-        // $checkUnique = [
-        //     "$branch_id|exit_form_items|check_point_id|form_id=form_id|id=id|text=Duplicate check_point_id in the same form is not allowed."
-        // ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks' => $pos_char], $ss->lang);
         if ($res->error) {
@@ -107,17 +104,12 @@ class ExitForm
         if($isExist){
             $id = $isExist;
         }
-        //  return DV::error(' exit_form_items is already exist!');
 
         unset($inputs['check_id']);
 
         if ($id) {
             $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' =>$d->check_id]);
-            // if ($updated > 0) {
                 return DV::depends(1, ['id' => $id], 'Update successful');
-            // } else {
-            //     return DV::error('Update failed. Record may not exist or data is unchanged.');
-            // }
         } else {
             $newId = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
             if ($newId > 0) {
