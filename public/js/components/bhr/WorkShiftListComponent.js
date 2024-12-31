@@ -10,13 +10,15 @@ var WorkShiftListComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_work_shift_list_search");
     this.cols = [
-        // {
-        //     title: "No",
-        //     className: "align-middle text-capitalize text-nowrap text-left",
-        //     data: (data, index, i) => {
-        //         return index + 1;
-        //     },
-        // },
+        {
+            title: "#",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
+        },
         {
             title: "Name",
             className: "align-middle fw-bold",

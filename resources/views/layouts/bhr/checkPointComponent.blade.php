@@ -7,6 +7,9 @@
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
+            <div class="d-flex align-center justify-content-end gap-2 w-50">
+                <select type="id" id="el_checkPoint" class="data-input filter-field" data-field="check_point_cat_id"></select>
+            </div>
             <button type="button" class="btn_add" id="_btnAddCheckPoint">
                 <span vslang="titles.Create Check Point"></span>
             </button>
