@@ -179,6 +179,9 @@ var CheckPointComponent = new (function () {
                                 );
                                 mThis.CheckPointListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -223,7 +226,7 @@ const ExitFormItemDialog = (() => {
                             <div class="form-group col-md-12">
                                 <label for="name" class="form-label" vslang="titles.name"></label>
                                 <input name="name" class="form-control data-input" data-field="name" id="remarks">
-                            </div>                           
+                            </div>
                         </div>`,
                     ].join("");
                 },
@@ -264,6 +267,13 @@ const ExitFormItemDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                        }
+                                        else{
+                                        cv_interact.success('Added Checkpoints Category Successfully');
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

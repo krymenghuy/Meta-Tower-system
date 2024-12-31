@@ -181,6 +181,9 @@ var BenefitDisbursePolicyComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.BdpListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -333,6 +336,13 @@ const BdpDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated Benefit Disburse Policy Successfully");
+                                        }
+                                        else{
+                                            cv_interact.success("Added Benefit Disburse Policy Successfully");
+                                        }
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }

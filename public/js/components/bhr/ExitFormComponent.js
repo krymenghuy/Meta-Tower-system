@@ -231,6 +231,9 @@ var ExitFormComponent = new (function () {
                             }
                         });
                 }
+                else {
+                    cv_interact.error(res.message);
+                }
             }
         );
     };
@@ -263,7 +266,7 @@ var ExitFormComponent = new (function () {
     };
 })();
 
-let form_id = null; 
+let form_id = null;
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -291,7 +294,7 @@ const ExitFormDialog = (() => {
                                     <option value="1">Done</option>
                                 </select>
                             </div>
-                            
+
                         </div>`,
                 ].join("");
             },
@@ -413,7 +416,7 @@ const ViewExitFormDialog = (() => {
                                         item !== null
                                             ? item.name ?? ""
                                             : item;
-                                        
+
                                     return `
                                     <div class="d-flex ml-1">
                                         <div data_id="items" class=" ">${item.check}</div>
@@ -576,13 +579,13 @@ const ViewExitFormDialog = (() => {
                             </table>
 
                         </div>
-                        <div class="d-flex flex-column"> 
+                        <div class="d-flex flex-column">
                             <span><strong>ចំណាំ៖</strong></span>
                             <span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>
                         </div>
                     `;
 
-                    
+
 
                     dialog = new GeneralDialog({
                         cssClass: "modal-lg custom-modal-size",
@@ -601,7 +604,7 @@ const ViewExitFormDialog = (() => {
                                         // });
                                     });
                             };
-                            
+
                             me.getCheckPointItems(me.divModal);
 
                         },
@@ -717,7 +720,7 @@ function check_box(event) {
                     return;
                 } else cv_interact.error(res.error_message);
             });
-        
+
 
     } else {
        let op = {};
@@ -842,6 +845,13 @@ const ExitItemDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated Exit Form Item Successfully");
+                                        }
+                                        else{
+                                            cv_interact.success("Added Exit Form Item Successfully");
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

@@ -13,7 +13,7 @@ use App\Models\PublicStorage;
 use DateTime;
 
 class Attendance
-{   
+{
 
     protected $id = null;
     protected $userInfo = null, $mins = 40;
@@ -200,18 +200,15 @@ class Attendance
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
         $query = DB::table('attendances')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('attendances not found');
         }
-        // Return the query result
-        return $query;
+        return DV::depends($query, null, 'Error deleting attendances');
     }
     // Other functions...
     function getFormOptions($id, $ss)
@@ -287,7 +284,7 @@ class Attendance
         $work_shift_detail = null;
         $work_shift_id = $employee->work_shift_id;
         $str_work_shift = 'sd.work_shift_id=\'' .$work_shift_id. '\'';
-        
+
 
         $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
         $has_checked_out_m = DB::table('emp_attendances')->where('session','m')->whereRaw($str_where)->where('action_type','Check Out')->whereRaw($strsearch_date)->value('id');
@@ -305,7 +302,7 @@ class Attendance
             ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
             // ->where('ws.id', $work_shift_id)
             ->get();
-        $date = new DateTime($current_date); 
+        $date = new DateTime($current_date);
         $day = $date->format('D');
         $ds = ShiftDetails::getScanTimes($rows, $day);
         $work_shifts = $ds;
@@ -318,13 +315,13 @@ class Attendance
                 $start_time = $time->format('H:i');
                 $time = new DateTime($work_shift->end_time);
                 $end_time = $time->format('H:i');
-                
+
                 if($present_time >= $start_time && $present_time <= $end_time){
                     $work_shift_detail = $work_shift;
                     $action = $work_shift->action;
                     break;
                 }
-                
+
         }
 
         // return$work_shift_detail;
@@ -345,25 +342,25 @@ class Attendance
         // }
         // else{
         //     // save checked_in_m
-            
-            
+
+
         //     if (!$work_shifts) return DV::error();
         // }
         // return $;
-        
+
          //\Log::info(json_encode($group));  // {"checkout_time":"04:30:00","checkin_time":"07:30:00"}
 
         if(!$work_shift_detail && !$force_checkout){
             if($has_checked_in_m)
             {
                 return DV::error("No work shift found at this time ($present_time)!");
-            } 
+            }
             else if($has_checked_in_a){
                 DB::table('emp_attendances')->where('session','a')->whereRaw($str_where)->where('action_type','Check Out')->whereRaw($strsearch_date)->value('id');
                 if($has_checked_out)  return DV::error('You already checked out today');
             }
             return DV::error('No work shift found for checking in at '.$present_time);
-        } else if (!$work_shift_detail) return DV::error('No work shift found based on the scan date ??::'.$current_date); 
+        } else if (!$work_shift_detail) return DV::error('No work shift found based on the scan date ??::'.$current_date);
 
         if(strtolower($action) == 'check in'){
             $has_checked_in = DB::table('emp_attendances')->where('action_type',$action)->where('session',$work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
@@ -409,24 +406,24 @@ class Attendance
         $image_url = validateUrl($image,$defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
         $scan_status = null;
-        
+
         // $check_in_out = DB::table('emp_attendances as att')->where('att.employee_id',$employee_id)->whereDate('att.session_date', '=', $current_date)->selectRaw('att.id,att.is_finished,id,session_date,att.pickup_status, att.pickup_id')->first();//->whereDate('session_date', '=', $current_date)
         // return $check_in_out;
-        
+
         $status =  null; // status % Present, Absent,Permission %
-        
+
         $in_diff_time = 0;
         $out_diff_time = 0;
         $remarks = "";
         $id = null;
         $today = date('Y-m-d');
         $day_name = date('D',strtotime($current_date));
-        
+
         if($current_date > $today){
             return DV::error('It seems you are trying to scan ahead of time');
         }
 
-        
+
         $nowTime = getNowTime();
         $arr_attenance = [
             "subs_id"=> $bin_subs_id,
@@ -444,7 +441,7 @@ class Attendance
         //$str_msg = $in_remarks;
         // if($id){
         //     $update = [
-        //         'subs_id'=>$bin_subs_id, 
+        //         'subs_id'=>$bin_subs_id,
         //         "is_finished" => $is_finished,
         //         "checkout_time" =>$present_time,
         //         'pickup_status'=> $pickup_id? 'success':null,
@@ -459,16 +456,16 @@ class Attendance
         //     //$str_msg =$employee_name.' now checked out!';
         // }else{
             DB::table('emp_attendances')->insert($arr_attenance);
-           
+
         //     $success +=1;
         // }
 
-        
+
         $employee = (object)['employee_id'=>$employee_id,'id'=>$employee_id,'name'=>$employee_name,'code'=>$employee_code];
         $d = (object)['subs_id'=>$subs_id,'branch_id' =>$branch_id,'sender_id' =>$employee_id,'scan_status'=>$scan_status,'check_time'=>date('H:i'),'diff_time'=>$scan_status=='out'? $out_diff_time: $in_diff_time,'employee'=>$employee,'persist'=>0];
         // Notifier::notify_admin('attendance_scanned', $d);
-        
-        $res = (object)[         
+
+        $res = (object)[
             'scan_status'=>$scan_status,
             'employee_id'=>$employee_id,
             'employee_name' => $employee_name,
@@ -497,5 +494,5 @@ class Attendance
             'n' => 'Night'
         ];
         return $arr_session[$key_session];
-    } 
+    }
 }

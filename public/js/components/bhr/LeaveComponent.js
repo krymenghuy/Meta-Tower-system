@@ -357,11 +357,12 @@ var LeaveComponent = new function () {
                     }
                 })
             }
+            else {
+                cv_interact.error(res.message);
+            }
         });
 
     }
-
-
 
     this.prepareFormOptions = () => {
 
@@ -480,6 +481,14 @@ const LeaveRequestDialog = (()=>{
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated Leave Request Successfully");
+                                        }
+                                        else
+                                        {
+                                            cv_interact.success("Added Leave Request Successfully");
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

@@ -57,11 +57,11 @@ class BenefitDisbursePolicyController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        // Assuming id is passed in the request (POST body), access it like this
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->bdp->deleteBenefitDisbursePolicy($req->id, $ss));
+        $res = $this->bdp->deleteBenefitDisbursePolicy($req->id, $ss);
+        return JDV::raw($res);
     }
 
     public function getFormOptions(Request $req)

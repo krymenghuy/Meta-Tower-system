@@ -96,7 +96,7 @@ class Event
         if (!$query) {
             return DV::error('Invalid ID');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting event');
     }
     function getFormOptions($id, $ss){
         if($id)

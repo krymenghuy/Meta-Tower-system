@@ -235,6 +235,9 @@ var BenefitDisbursementComponent = new (function () {
                                 );
                                 mThis.BenefitDisburseListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -386,6 +389,13 @@ const BenefitDisburseDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success("Updated Benefit Disbursement Successfully");
+                                        }
+                                        else{
+                                        cv_interact.success("Added Benefit Disbursement Successfully");
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

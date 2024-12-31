@@ -45,9 +45,6 @@ class SkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        // Assuming 'perPage' is the second argument
-        // $perPage = $req->input('perPage', 10);  // Default to 10 if not provided
         return JDV::result($this->skillModel->getSkillsPaginate($req->all(), $ss));
     }
 
@@ -57,8 +54,11 @@ class SkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::result($this->skillModel->delete($req->id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->skillModel->delete($req->id, $ss);
+        return JDV::raw($res);
     }
 
     public function getDetails(Request $req)

@@ -144,7 +144,7 @@ class EmployeeEvent
         if (!$query) {
             return DV::error('Invalid ID');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting employee event');
     }
 
     function getFormOptions($id, $ss){

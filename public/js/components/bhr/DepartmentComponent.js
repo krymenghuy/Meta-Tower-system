@@ -185,6 +185,9 @@ var DepartmentComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.DepartmentListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -274,6 +277,14 @@ const DepartmentDialog = (()=>{
                     vsapi.call( [main_view.base_url,'/hr/department/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
+                         if(me.dataOptions.id > 0)
+                         {
+                            cv_interact.success('Updated Department Successfully');
+                         }
+                         else
+                         {
+                            cv_interact.success('Added Department Successfully');
+                         }
                        }else cv_interact.error(res.error_message);
                     });
                 }

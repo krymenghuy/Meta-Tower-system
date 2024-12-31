@@ -56,10 +56,12 @@ class BenefitDisbursementController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        $id = $req->id ?: null;
-        // $as = $req->as;
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->benefitDisubrsement->deleteBenefitDisbursement($req->id, $ss);
+        return JDV::raw($res);
 
-        return JDV::result($this->benefitDisubrsement->deleteBenefitDisbursement($id, $ss));
     }
 
     public function getFormOptions(Request $req)

@@ -104,21 +104,22 @@ class SalaryHistory
         return DV::error('Invalid ID');
     }
 
-    function deleteSalaryHistory($id = null) {
+    function delete($id = null, $ss = null) {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
         $branch_id = $ss->branch_id;
 
-        $query = DB::table('salary_histories')
+        $query = DB::table('emp_salary_histories')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('Invalid ID');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting salary history');
     }
     function getFormOptions($id, $ss)
     {

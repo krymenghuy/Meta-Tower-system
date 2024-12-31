@@ -60,7 +60,7 @@ class ExitForm
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             if($d->is_finished== 1){
-                $check_points = DB::table('check_points')->selectRaw('id,name')->get(); 
+                $check_points = DB::table('check_points')->selectRaw('id,name')->get();
                 foreach($check_points as $check_point){
                     self::saveExitItem(['form_id' => $id, 'check_point_id' => $check_point->id, 'status_id' => 1, 'check_id' => 1], $ss);
                     // DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>1]);
@@ -75,7 +75,7 @@ class ExitForm
         }
         return DV::error('Error saving exit form');
     }
-    
+
     static function saveExitItem($arr = [], $ss = null)
     {
         $branch_id = $ss->branch_id;
@@ -234,12 +234,13 @@ class ExitForm
     }
 
 
-    public function delete($id = null)
+    public function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();
 
-        return DV::depends($deleted, ['action' => 'deleted']);
+        return DV::depends($deleted,null,'Error deleting the exit form');
     }
 
     public static function getFormOptions($id, $ss)

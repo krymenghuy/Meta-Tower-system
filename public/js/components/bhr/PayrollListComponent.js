@@ -36,7 +36,7 @@ var PayrollListComponent = new (function () {
             // data: (data, index, i) => { return (index + 1) },
 
         },
-       
+
         {
             title: "Employee",
             className: "align-middle text-start w-15",
@@ -196,7 +196,7 @@ var PayrollListComponent = new (function () {
                             cv_interact.success([`Payroll has been calculated. ${d.success_count || 0 } cases affected! `, error_message].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                             // if (res.data) {
-                               
+
                             // } else {
                             //     let formattedData = `
                             //         On Calculate: ${res.data[1]}
@@ -254,7 +254,6 @@ var PayrollListComponent = new (function () {
                 payroll_id: PayrollListComponent.elFilter.value,
                 // btn: e.target,
                 onClose: () => {
-                    //cv_interact.success('Import Payroll Successfully');  // **** Darith: Please do use this message in onClose(). Please try to understand the callback better
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
@@ -461,7 +460,7 @@ var PayrollListComponent = new (function () {
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Employee Name</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize data-get">${data.emp_name} (${data.apply_payroll_tax == 0 ? 'Have Tax' : 'Non-Tax'})</p>
+                                <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
                             </div>
 
                            <div class="d-flex">
@@ -510,16 +509,8 @@ var PayrollListComponent = new (function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Base Salary</td>
-                                <td>${formattedNumber(data.salary || 0.00)}</td>
-                            </tr>
-                            <tr>
-                                <td>Allowance</td>
-                                <td>${formattedNumber(data.allowance || 0.00)} </td>
-                            </tr>
-                            <tr>
-                                <td>Bias</td>
-                                <td>${formattedNumber(data.bias || 0.00)}</td>
+                                <td> Salary </td>
+                                <td>${formattedNumber(data.p_salary || 0.00)}</td>
                             </tr>
                              <tr>
                                 <td>Days</td>
@@ -551,18 +542,12 @@ var PayrollListComponent = new (function () {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td> Salary </td>
-                                <td>${formattedNumber(data.p_salary || 0.00)}</td>
-                            </tr>
+
                             <tr>
                                 <td>Allowance</td>
                                 <td>${formattedNumber(data.p_allowance || 0.00)}</td>
                             </tr>
-                            <tr>
-                                <td>Bias</td>
-                                <td>${formattedNumber(data.p_bias || 0.00)}</td>
-                            </tr>
+
                              <tr>
                                 <td>Tax Rate</td>
                                 <td>${data.tax_rate }%</td>
@@ -631,13 +616,12 @@ var PayrollListComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Updated Successfully');
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
 
             }
         };
 
-        PayRollListDialog.show(op);
+        AddDeductionDialog.show(op);
     }
 
     this.disbursePayrollList = (id, menuLink) => {
@@ -693,6 +677,9 @@ var PayrollListComponent = new (function () {
                     }
                 })
             }
+            else {
+                cv_interact.error(res.message);
+            }
         });
 
     }
@@ -719,13 +706,13 @@ var PayrollListComponent = new (function () {
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear();
-             
+
             d.payrolls.forEach(payroll => {
                 if (payroll.month === currentMonth && payroll.year === currentYear) {
                     payroll_id = payroll.id;
                 }
             });
- 
+
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
             VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
@@ -748,7 +735,7 @@ var PayrollListComponent = new (function () {
 
 });
 
-const PayRollListDialog = (() => {
+const AddDeductionDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -832,6 +819,11 @@ const PayRollListDialog = (() => {
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success("Added Deduction Successfully");
+                                    } else {
+                                        cv_interact.success("Added Deduction Successfully");
+                                    }
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
@@ -898,7 +890,7 @@ const PayRollImportDailog = (()=>{
                        if(res.status_code ==200){
                          const successCount = res.data.success_count ?? 0;
                           if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
-                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles'); 
+                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles');
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
                     });

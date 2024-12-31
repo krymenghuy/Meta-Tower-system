@@ -10,7 +10,7 @@ use App\Models\DBX;
 class Job_Level //extends Model
 {
     protected $table = 'job_levels';
-   
+
     protected $id = null;
     protected $userInfo = null;
 
@@ -78,14 +78,13 @@ class Job_Level //extends Model
             'job_levels' => $job_level
         ];
     }
-    public function deleteJobLevel($id = null)
+    public function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
         $delete = DB::table('job_levels')->where('id', $id)->delete();
-
-
-        return DV::depends($delete,['action','deleted']);
+        return DV::depends($delete, null, 'Error deleting job level');
     }
 
     function getList($arr, $ss)

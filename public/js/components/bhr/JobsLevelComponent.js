@@ -111,10 +111,10 @@ var JobsLevelComponent = new (function () {
 
         mThis.initDropdownMenus(pr_tbl);
 
-        
+
         mThis.initAlready = true;
     };
-   
+
 
 
     this.setFilterPeriod = (p, name, start_date, end_date) => {
@@ -180,6 +180,9 @@ var JobsLevelComponent = new (function () {
                                     "Job level Delete Successfully"
                                 );
                                 mThis.JobLevelListView.showPage();
+                            }
+                            else {
+                                cv_interact.error(res.message);
                             }
                         });
                 }
@@ -282,6 +285,14 @@ const JobLevelDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success('Updated Job Level Successfully');
+                                        }
+                                        else
+                                        {
+                                            cv_interact.success('Added Job Level Successfully');
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

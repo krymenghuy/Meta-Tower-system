@@ -104,17 +104,12 @@ class Education //extends Model
     }
 
     function delete($id = null){
-        
+
         $id = $id ?? $this->id;
 
         $delete = DB::table('emp_educations')->where('id',$id)->delete();
-        return DV::depends($delete,['action'=>'deleted']);
+        return DV::depends($delete,null,'Error deleting employee education');
 
     }
-
-
-
-
-
 
 }

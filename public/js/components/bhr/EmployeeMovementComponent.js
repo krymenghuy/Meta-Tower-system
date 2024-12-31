@@ -245,6 +245,9 @@ var EmployeeMovementComponent = new (function () {
                     }
                 })
             }
+            else {
+                cv_interact.error(res.message);
+            }
         });
 
     }
