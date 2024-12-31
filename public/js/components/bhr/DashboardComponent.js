@@ -1,105 +1,112 @@
 "use strict";
 
-
 var DashboardComponent = new (function () {
     const mThis = this;
     this.title_prop = "Dashboard";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_dashboardComponent");
     this.self = this.jm[0];
-    this.dbChartAll = mThis.self.querySelector('#dbChart_all_top');
-    this.dbCards = this.self.querySelector('#db_cards');
-    this.db_card_bottom = mThis.self.querySelector('#_db_card_bottom');
-    this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
-    this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
+    this.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
+    this.dbCards = this.self.querySelector("#db_cards");
+    this.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
+    this.dashboard_Bottom_left = mThis.self.querySelector(
+        "#_dashboard_bottom_left"
+    );
+    this.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
         return number
-            .toLocaleString('en-US', {
+            .toLocaleString("en-US", {
                 useGrouping: true,
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             })
-            .replace(/,/g, ' ');
+            .replace(/,/g, " ");
     };
 
-    // *** When DashboardComponent is showing, create Dashboard Filter button near page title 
+    // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     this.onShow = (options) => {
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
-        let btn = divTitle.querySelector('.btn-db-fitler');
+        let btn = divTitle.querySelector(".btn-db-fitler");
         if (btn) return;
-        divTitle.insertAdjacentHTML('beforeend', '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
-        btn = divTitle.querySelector('.btn-db-fitler');
+        divTitle.insertAdjacentHTML(
+            "beforeend",
+            '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>'
+        );
+        btn = divTitle.querySelector(".btn-db-fitler");
         mThis.createFilterButton(btn);
     };
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     this.onHide = (options) => {
         mThis.removeFilterButton();
-    }
+    };
 
     this.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
-    }
+    };
 
     this.removeFilterButton = () => {
         const divTitle = main_view.divTitle;
-        const div = divTitle.querySelector('div.div-db-filter');
+        const div = divTitle.querySelector("div.div-db-filter");
         if (div) div.remove();
     };
 
     this.createFilterButton = (btn) => {
         mThis.filterConfig = null;
-        mThis.filterConfig = new FilterPanel(
-            {
-                "triggerButton": btn,
-                fields: [
-                    {
-                        "name": "year",
-                        "label": "Year",
-                        "valueField": "year",
-                        "textField": "year",
-                        "defaultValue": 2024,
-                        "data": [{ "year": 2024 }, { "year": 2025 }]
-                    },
-                    {
-                        "name": "month",
-                        "label": "Month",
-                        // "valueField":"value",
-                        // "textField":"label",
-                        "data": [{ "value": "this_month", "label": "This month" }, { "value": "last_month", "label": "Last month" }],
-                    }
-                ],
-                // "createContent":()=>{
-                //     return [
-                //         '<div class="d-flex flex-column p-3">',
-                //            '<div>',
-                //                 '<label class="form-label" vs-lang="titles.Date">Date</label>',
-                //                 '<div><input class="form-control" /></div>',
-                //            '</div>',
-                //            '<div>',
-                //               '<label class="form-label" vs-lang="titles.Branch">Branch</label>',
-                //               '<div><select class="form-control"> </select></div>',
-                //            '</div>',
-                //         '</div>',
-                //     ].join('');
-                // },
-                contentCreated: (me) => {
-                    console.log('Filter Content created! ', me.controls);
+        mThis.filterConfig = new FilterPanel({
+            triggerButton: btn,
+            fields: [
+                {
+                    name: "year",
+                    label: "Year",
+                    valueField: "year",
+                    textField: "year",
+                    defaultValue: 2024,
+                    data: [{ year: 2024 }, { year: 2025 }],
                 },
-                onSelect: (me, data) => {
-                    console.log('selected data is  : ', data);
-                }
-            });
-    }
+                {
+                    name: "month",
+                    label: "Month",
+                    // "valueField":"value",
+                    // "textField":"label",
+                    data: [
+                        { value: "this_month", label: "This month" },
+                        { value: "last_month", label: "Last month" },
+                    ],
+                },
+            ],
+            // "createContent":()=>{
+            //     return [
+            //         '<div class="d-flex flex-column p-3">',
+            //            '<div>',
+            //                 '<label class="form-label" vs-lang="titles.Date">Date</label>',
+            //                 '<div><input class="form-control" /></div>',
+            //            '</div>',
+            //            '<div>',
+            //               '<label class="form-label" vs-lang="titles.Branch">Branch</label>',
+            //               '<div><select class="form-control"> </select></div>',
+            //            '</div>',
+            //         '</div>',
+            //     ].join('');
+            // },
+            contentCreated: (me) => {
+                console.log("Filter Content created! ", me.controls);
+            },
+            onSelect: (me, data) => {
+                console.log("selected data is  : ", data);
+            },
+        });
+    };
 
     this.renderDBChartAllTop = (data) => {
         data = data ? data : {};
-        let html = [`<div class="chart-row py-3">`,
-               `<div class="col-md-3">
+        let html = [
+            `<div class="chart-row py-3">`,
+            `<div class="col-md-3">
                     <div class="chart-container dashboard_chart ">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
                             ${data.doughnutChart.title}
@@ -107,7 +114,7 @@ var DashboardComponent = new (function () {
                         <canvas id="doughnutChart"></canvas>
                     </div>
                 </div>`,
-                `<div class="col-md-6">
+            `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
                             Monthly Payroll Expenses (last 12 months)
@@ -115,128 +122,134 @@ var DashboardComponent = new (function () {
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
                 </div>`,
-                `<div class="col-md-3">`,
-                `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
-                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
-                        `<div class="d-flex align-items-center p-2 mb-1">`,
-                       
-                        `<div class="bg--icon">`,
-                            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
-                        `</div>`,
-                            `<div class="ms-3 text-center flex-fill">`,
-                                `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count}</span>`,
-                                `<div class="text-primary mt-1" style="">${data.cards.new_staff_count.title}</div>`,
-                            `</div>`,
-                        `</div>`,
-                        `<hr style="border:1px solid #fff; margin:0;">`,
-                        `<div class="text-center">`,
-                            `<small class="text-muted">Last 90 days</small>`,
-                        `</div>`,
-                    `</div>`,
+            `<div class="col-md-3">`,
+            `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
+            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
+            `<div class="d-flex align-items-center p-2 mb-1">`,
 
-                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
-                        `<div class="d-flex align-items-center p-2 mb-1">`,
-                            `<div class="bg--icon">`,
-                                `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/letter.svg" alt="Icon">`,
-                            `</div>`,
-                            `<div class="ms-3 text-center flex-fill">`,
-                                `<span class="fw-semibold fs-5  text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.resigning_staff_count.count}</span>`,
-                                `<div class="text-primary mt-1">${data.cards.resigning_staff_count.title}</div>`,
-                            `</div>`,
-                        `</div>`,
-                        `<hr style="border:1px solid #fff; margin:0;">`,
-                        `<div class="text-center">`,
-                            `<small class="text-muted">Last 90 days</small>`,
-                        `</div>`,
-                    `</div>`,
+            `<div class="bg--icon">`,
+            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
+            `</div>`,
+            `<div class="ms-3 text-center flex-fill">`,
+            `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count}</span>`,
+            `<div class="text-primary mt-1" style="">${data.cards.new_staff_count.title}</div>`,
+            `</div>`,
+            `</div>`,
+            `<hr style="border:1px solid #fff; margin:0;">`,
+            `<div class="text-center">`,
+            `<small class="text-muted">Last 90 days</small>`,
+            `</div>`,
+            `</div>`,
 
-                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">`,
-                        `<div class="d-flex align-items-center p-2 mb-1">`,
-                            `<div class="bg--icon">`,
-                                `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop-work.svg" alt="Icon">`,
-                            `</div>`,
-                            `<div class="ms-3 text-center flex-fill">`,
-                                `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.resigned_staff_count.count}</span>`,
-                                `<div class="text-primary mt-1">${data.cards.resigned_staff_count.title}</div>`,
-                            `</div>`,
-                        `</div>`,
-                        `<hr style="border:1px solid #fff; margin:0;">`,
-                        `<div class="text-center">`,
-                            `<small class="text-muted">Last 90 days</small>`,
-                        `</div>`,
-                    `</div>`,
+            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
+            `<div class="d-flex align-items-center p-2 mb-1">`,
+            `<div class="bg--icon">`,
+            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/letter.svg" alt="Icon">`,
+            `</div>`,
+            `<div class="ms-3 text-center flex-fill">`,
+            `<span class="fw-semibold fs-5  text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.resigning_staff_count.count}</span>`,
+            `<div class="text-primary mt-1">${data.cards.resigning_staff_count.title}</div>`,
+            `</div>`,
+            `</div>`,
+            `<hr style="border:1px solid #fff; margin:0;">`,
+            `<div class="text-center">`,
+            `<small class="text-muted">Last 90 days</small>`,
+            `</div>`,
+            `</div>`,
 
-                `</div>`,
-                `</div>`,
-              
-            `</div>`].join('');
+            `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">`,
+            `<div class="d-flex align-items-center p-2 mb-1">`,
+            `<div class="bg--icon">`,
+            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop-work.svg" alt="Icon">`,
+            `</div>`,
+            `<div class="ms-3 text-center flex-fill">`,
+            `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.resigned_staff_count.count}</span>`,
+            `<div class="text-primary mt-1">${data.cards.resigned_staff_count.title}</div>`,
+            `</div>`,
+            `</div>`,
+            `<hr style="border:1px solid #fff; margin:0;">`,
+            `<div class="text-center">`,
+            `<small class="text-muted">Last 90 days</small>`,
+            `</div>`,
+            `</div>`,
+
+            `</div>`,
+            `</div>`,
+
+            `</div>`,
+        ].join("");
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
         mThis.employeeSalaryChart(data.barCharts);
         // mThis.renderCompareChart(data.pieCharts);
     };
-    
-
 
     this.renderChartEmployee = (data) => {
         data = data ? data : {};
 
-        const ctx = document.getElementById('doughnutChart').getContext('2d');
+        const ctx = document.getElementById("doughnutChart").getContext("2d");
 
         new Chart(ctx, {
-            type: 'doughnut',
+            type: "doughnut",
             data: {
                 labels: data.labels,
-                datasets: [{
-                    data: data.values,
-                    backgroundColor: data.colors,
-                    borderColor: ['#fff', '#fff', '#fff'],
-                    borderWidth: 1
-                }]
+                datasets: [
+                    {
+                        data: data.values,
+                        backgroundColor: data.colors,
+                        borderColor: ["#fff", "#fff", "#fff"],
+                        borderWidth: 1,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: "top",
                     },
-               
+
                     tooltip: {
                         enabled: true,
                         callbacks: {
-                            label: function (tooltipItem){
-                                const label = tooltipItem.label || '';
+                            label: function (tooltipItem) {
+                                const label = tooltipItem.label || "";
                                 const value = tooltipItem.raw;
                                 return `${label} : ${value} នាក់`;
-                            }
-                        }
+                            },
+                        },
                     },
                     datalabels: {
-                        color: '#000',
+                        color: "#000",
                         font: {
                             size: 12,
-                            weight: 'bold'
+                            weight: "bold",
                         },
                         formatter: function (value, context) {
-                            return `${context.chart.data.labels[context.dataIndex]}\n${value} នាក់`;
-                        }
-                    }
-                }
-            }
+                            return `${
+                                context.chart.data.labels[context.dataIndex]
+                            }\n${value} នាក់`;
+                        },
+                    },
+                },
+            },
         });
     };
     this.employeeSalaryChart = (data) => {
-        const ctx = document.getElementById('employeeSalaryChart').getContext('2d');
-    
-       
+        const ctx = document
+            .getElementById("employeeSalaryChart")
+            .getContext("2d");
+
         if (!data.labels || data.labels.length < 12) {
             const defaultCount = 12 - (data.labels ? data.labels.length : 0);
-            const placeholders = Array(defaultCount).fill('N/A');
+            const placeholders = Array(defaultCount).fill("N/A");
             const placeholderEmployeeCounts = Array(defaultCount).fill(0);
             const placeholderSalaries = Array(defaultCount).fill(0);
-    
-            data.labels = data.labels ? [...data.labels, ...placeholders] : placeholders;
+
+            data.labels = data.labels
+                ? [...data.labels, ...placeholders]
+                : placeholders;
             data.employee_counts = data.employee_counts
                 ? [...data.employee_counts, ...placeholderEmployeeCounts]
                 : placeholderEmployeeCounts;
@@ -244,37 +257,37 @@ var DashboardComponent = new (function () {
                 ? [...data.total_salaries, ...placeholderSalaries]
                 : placeholderSalaries;
         }
-    
+
         const employeeSalaryData = {
             labels: data.labels,
             datasets: [
                 {
-                    label: 'Total Employees',
+                    label: "Total Employees",
                     data: data.employee_counts,
-                    backgroundColor: '#2b3991',
-                    borderColor: '#fff',
+                    backgroundColor: "#2b3991",
+                    borderColor: "#fff",
                     borderWidth: 1,
-                    yAxisID: 'y',
+                    yAxisID: "y",
                 },
                 {
-                    label: 'Total Salary Paid ($)',
+                    label: "Total Salary Paid ($)",
                     data: data.total_salaries,
-                    backgroundColor: '#cab54a',
-                    borderColor: '#fff',
+                    backgroundColor: "#cab54a",
+                    borderColor: "#fff",
                     borderWidth: 1,
-                    yAxisID: 'y1',
+                    yAxisID: "y1",
                 },
             ],
         };
-    
+
         const config = {
-            type: 'bar',
+            type: "bar",
             data: employeeSalaryData,
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: "top",
                     },
                     // title: {
                     //     display: true,
@@ -283,23 +296,23 @@ var DashboardComponent = new (function () {
                 },
                 scales: {
                     y: {
-                        type: 'linear',
-                        position: 'left',
+                        type: "linear",
+                        position: "left",
                         title: {
                             display: true,
-                            text: 'Number of Employees',
+                            text: "Number of Employees",
                         },
                     },
                     y1: {
-                        type: 'linear',
-                        position: 'right',
+                        type: "linear",
+                        position: "right",
                         title: {
                             display: true,
-                            text: 'Salary in KHR (រៀល)',
-                            color: '#cab54a',
+                            text: "Salary in KHR (រៀល)",
+                            color: "#cab54a",
                         },
                         ticks: {
-                            color: '#2b3991',
+                            color: "#2b3991",
                         },
                         grid: {
                             drawOnChartArea: false,
@@ -308,18 +321,13 @@ var DashboardComponent = new (function () {
                 },
             },
         };
-    
+
         new Chart(ctx, config);
     };
-    
 
-
-
-
-    
     this.renderDBCards = (data) => {
-        let html =
-            [`<div class="col-md-3">
+        let html = [
+            `<div class="col-md-3">
                  <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
                         <div class="position-relative m-3" style="width: 60px; height: 60px;">
                             <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
@@ -417,17 +425,18 @@ var DashboardComponent = new (function () {
                   style="color: #2b3991; font-size: 1.2rem;">${data.cards.probation_staff_count.title}</span>
           </div>
 
-            </div>`,].join('');
+            </div>`,
+        ].join("");
         this.dbCards.innerHTML = html;
-     
     };
 
     this.renderDBCardBottom = (data) => {
         data = data ? data : {};
-        
+
         const tableLeave = this.renderDBCardOnLeave(data.onLeave);
         const tableBenefit = this.renderDBCardBenefit(data.benefits);
-        let html = [`<div class="card-row  py-3">`,
+        let html = [
+            `<div class="card-row  py-2 p-1">`,
             `<div class="col-md-3">
                     <div class="card-container dashboard_chart">
                         <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
@@ -436,8 +445,8 @@ var DashboardComponent = new (function () {
                         ${tableLeave}
                     </div>
             </div>`,
-      
-                `<div class="col-md-3">
+
+            `<div class="col-md-3">
                     <div class="card-container dashboard_chart">
                       <div class="w-100 d-flex flex-row justify-content-center align-items-center p-1 mb-2 shadow rounded-3" style="background-color: #ffffff;">
                             <div class="position-relative ms-3" style="width: 120px; height: 100px;">
@@ -454,7 +463,9 @@ var DashboardComponent = new (function () {
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${data.accounts.payrolls.total_count || 0}</p>
+                                    <p class="fs-6 m-0">${
+                                        data.accounts.payrolls.total_count || 0
+                                    }</p>
                                     <small>Payrolls</small>
                                 </div>
                             </div>
@@ -462,7 +473,9 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.payrolls.total_count || 0}</p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${
+                                        data.accounts.payrolls.total_count || 0
+                                    }</p>
                                 </div>
                             </div>
 
@@ -482,7 +495,9 @@ var DashboardComponent = new (function () {
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${data.accounts.wallets.total_count || 0}</p>
+                                    <p class="fs-6 m-0">${
+                                        data.accounts.wallets.total_count || 0
+                                    }</p>
                                     <small>Wallets</small>
                                 </div>
                             </div>
@@ -490,7 +505,10 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.wallets.total_balance || 0.00}</p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${
+                                        data.accounts.wallets.total_balance ||
+                                        0.0
+                                    }</p>
                                 </div>
                             </div>
                         </div>
@@ -501,31 +519,30 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
             </div>`,
-    
 
-            `<div class="col-md-6">
-                <div class="card-container dashboard_chart">
+            `<div class="col-md-6 p-0">
+                <div class="card-container dashboard_chart mr-4">
                     <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
                         Benefit Overview As of Now
                     </span>
                     ${tableBenefit}
                 </div>
             </div>`,
-           
-            `</div>`].join('');
-    
-      
+
+            `</div>`,
+        ].join("");
+
         mThis.db_card_bottom.innerHTML = html;
     };
-    
-   this.renderDBCardOnLeave = (data) => {
-    const rowsHtml = (data || [])
-        .map(
-            (item) => `
+
+    this.renderDBCardOnLeave = (data) => {
+        const rowsHtml = (data || [])
+            .map(
+                (item) => `
                 <tr>
                     <td class="align-middle">
                         <div class="text-primary-custom text-center border rounded-5 d-block p-1" style="width: 100px; background: #d1b54a;font-size: 0.75rem; font-weight: bold;">
-                            ${item.formatted_date || ''}
+                            ${item.formatted_date || ""}
                         </div>
                     </td>
                     <td class="align-middle" style="font-size: 0.75rem;">
@@ -535,7 +552,8 @@ var DashboardComponent = new (function () {
                     </td>
                 </tr>
             `
-        ).join(""); 
+            )
+            .join("");
 
         return `
         <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
@@ -552,14 +570,13 @@ var DashboardComponent = new (function () {
             </table>
         </div>
     `;
-    
-   };
-   this.renderDBCardBenefit = (data) => {
-    console.log(123456,data);
-    
-    const rowsHtml = (data || [])
-        .map(
-            (item) => `
+    };
+    this.renderDBCardBenefit = (data) => {
+        console.log(123456, data);
+
+        const rowsHtml = (data || [])
+            .map(
+                (item) => `
                 <tr>
                    <td class="align-middle">
                         <div class="text-primary-custom " style="width: 20px;font-size: 0.75rem; font-weight: bold;">
@@ -572,24 +589,29 @@ var DashboardComponent = new (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.benefit_type ==1 ? 'Remuneration' : ''} ${item.benefit_type ==2 ? 'Fringe' : ''}
+                            ${item.benefit_type == 1 ? "Remuneration" : ""} ${
+                    item.benefit_type == 2 ? "Fringe" : ""
+                }
                         </span>
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.total_amount || 0.00} <span class="text-danger">KHR</span>
+                            ${
+                                item.total_amount || 0.0
+                            } <span class="text-danger">KHR</span>
                         </span>
                     </td>
                     <td class="align-middle">
                         <span class="text-primary " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.update_date || ''}
+                            ${item.update_date || ""}
                         </span>
                     </td>
                 </tr>
             `
-        ).join(""); 
+            )
+            .join("");
 
-    return `
+        return `
         <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
             <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
                 <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
@@ -608,37 +630,41 @@ var DashboardComponent = new (function () {
             </table>
         </div>
     `;
-};
+    };
 
-
-    
     this.loadCards = (onFinish) => {
         const p = {};
 
-        vsapi.call(`${main_view.base_url}/hr/dashboard/data`, p, null, false, false).then(res => {
-            const data = (res.status_code === 200) ? res.data : {};
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/dashboard/data`,
+                p,
+                null,
+                false,
+                false
+            )
+            .then((res) => {
+                const data = res.status_code === 200 ? res.data : {};
 
-            mThis.renderDBChartAllTop(data);
-            mThis.renderDBCards(data);
-            mThis.renderDBCardBottom(data);
+                mThis.renderDBChartAllTop(data);
+                mThis.renderDBCards(data);
+                mThis.renderDBCardBottom(data);
 
-            onFinish();
-        });
-    }
+                onFinish();
+            });
+    };
     this.prepareFormOptions = (data, onFinish) => {
-
         mThis.loadCards(onFinish);
-
-    }
+    };
     this.setDashboardScroll = () => {
         const parent = mThis.self;
-        parent.style.height = (window.innerHeight - 100) + 'px';
-        parent.classList.add('overflow-y-auto');
-        parent.classList.add('overflow-x-hidden');
+        parent.style.height = window.innerHeight - 100 + "px";
+        parent.classList.add("overflow-y-auto");
+        parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            parent.style.height = (window.innerHeight - 100) + 'px';
-        }
-    }
+            parent.style.height = window.innerHeight - 100 + "px";
+        };
+    };
     this.show = (options) => {
         mThis.setDashboardScroll();
         mThis.init();
