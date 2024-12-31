@@ -1,9 +1,9 @@
-<div id="_main_leave_component" style="display:none;padding:20px 0 0;">
+<div id="_main_leave_unform_component" style="display:none;padding:20px 0 0;">
     <div id="_divFilter_leave" class="px-3">
         <div class="d-flex w-100 gap-2 mt-3">
             <div class="d-flex justify-content-end gap-3 w-50">
                 <div class="d-flex align-items-center w-50">
-                    <select id="el_status" class="data-input filter-field " data-field="status"></select>
+                    <select id="el_wark_shift" class="data-input filter-field " data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center w-50">
                     <select id="el_leave_session" class="data-input filter-field " data-field="session"></select>
@@ -29,17 +29,17 @@
         </div>
         <div class="d-block w-100 mt-3">
             <div class="d-flex justify-content-between w-100">
-                <button type="button"  class="btn_add d-flex gap-2" id="_btnAddLeave">
+                <!-- <button type="button"  class="btn_add d-flex gap-2" id="_btnAddLeave">
                     <i class="fa-solid fa-person-walking-arrow-right fs-5 text-white"></i>
                     <span>Leave Request</span>
-                </button>
+                </button> -->
                 <div class="d-flex align-items-center" style="min-width: 300px;">
                     <input type="text" class="form-control filter-field btn_search" id="_sdl_search_leave"  placeholder="Search here....">
                 </div>
             </div>
         </div>
     </div>
-    <div id="_leave_request_list" class="mt-3 px-3"></div>
+    <div id="_leave_unform_list" class="mt-3 px-3"></div>
 </div>
 
 <style>

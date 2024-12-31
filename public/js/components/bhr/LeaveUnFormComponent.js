@@ -1,15 +1,15 @@
 "use strict";
 
-var LeaveComponent = new function () {
+var LeaveUnFormComponent = new function () {
     let mThis = this;
-    this.title_prop = "Leave Requests";
+    this.title_prop = "Uninformed Leaves";
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_leave_component");
+    this.jm = main_view.appContent.children("#_main_leave_unform_component");
     this.self = this.jm[0];
-    this.btnAdd = this.self.querySelector("#_btnAddLeave");
+    // this.btnAdd = this.self.querySelector("#_btnAddLeave");
     this.divFilter = this.self.querySelector("#_divFilter_leave");
     // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
-    this.elFilter_status = this.self.querySelector('#el_status');
+    this.elFilter_wark_shift = this.self.querySelector('#el_wark_shift');
     this.elFilter_session = this.self.querySelector('#el_leave_session');
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
 
@@ -57,76 +57,29 @@ var LeaveComponent = new function () {
                         </div>`;
             }
         },
-        {
-            title: "Remarks",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</span>`;
-            }
-        },
-        {
-            title: "Created By",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                    <span class="fw-semibold">${data.update_user}</span>
-                    <span>
-                        <small class="text-muted">${data.update_date}</small>
-                    </span>
-                </div>`;
-
-            }
-        },
-        {
-            title: "Status",
-            className: 'status text-nowrap text-center align-start',
-            data: function (data, index, tr) {
-                let cls_class = 'text-danger text-center';
-                let bg_color = ''; // Default background color 
-
-                if ((data.status || '').toLowerCase() === 'approved') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745'; // Green background for success
-                } else if ((data.status || '').toLowerCase() === 'pending') {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107'; // Yellow background for pending
-                } else if ((data.status || '').toLowerCase() === 'rejected') {
-                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#dc3545'; // Red background for in progress
-                } else {
-                    bg_color = '#6c757d'; // Default gray background for other statuses
-                }
-
-                return `<a class="d-flex justify-content-start" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.status}
-                            </span>
-                        </a>`;
-            }
-        },
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        },
+        
+        // {
+        //     className: 'col_action align-middle',
+        //     data: function (data, row, display) {
+        //         return `
+        //            <div class="d-flex justify-content-center align-items-center">
+        //                 <div class="text-center gap-2 d-flex flex-wrap">
+        //                         <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+        //                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+        //                     </a>
+        //                 </div>
+        //             </div>
+        //         `;
+        //     }
+        // },
 
     ];
 
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.LeaveRequestListView = new ListView('_leave_request_list',{
-            fetchApi : `${main_view.base_url}/hr/leave/list-paginate`,
+        mThis.LeaveRequestListView = new ListView('_leave_unform_list',{
+            fetchApi : `${main_view.base_url}/hr/leave/unform-list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -134,19 +87,19 @@ var LeaveComponent = new function () {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
+        // mThis.btnAdd.onclick = function (e) {
+        //     e.preventDefault();
 
-            let op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.LeaveRequestListView.showPage();
-                }
-            };
+        //     let op = {
+        //         id: null,
+        //         btn: e.target,
+        //         onClose: () => {
+        //             mThis.LeaveRequestListView.showPage();
+        //         }
+        //     };
 
-            LeaveRequestDialog.show(op);
-        };
+        //     LeaveRequestDialog.show(op);
+        // };
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
         console.log(122,mThis.tblLeaves);
@@ -182,7 +135,7 @@ var LeaveComponent = new function () {
 
     this.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
+            work_shift_id: mThis.elFilter_wark_shift.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
             search_value: mThis.elSearch.value,
         };
@@ -346,7 +299,7 @@ var LeaveComponent = new function () {
         vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
 
-            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
+            VSUtil.setComboItems(mThis.elFilter_wark_shift,d.work_shifts,'id','name',true,'All Work Shifts',d.work_shifts[0].id);
             VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
             // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
         })
@@ -364,129 +317,4 @@ var LeaveComponent = new function () {
 
 };
 
-//begin::LeaveRequestDialog using GeneralDialog
-const LeaveRequestDialog = (()=>{
 
-    const self = {};
-    let dialog = null;
-     self.show = (op)=>{
-
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
-                createContent: () => {
-                    return [
-                        `<div class="row">
-                    <div class="form-group col-12">
-                        <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                        <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
-                    </div>
-                    <div class="form-group  col-12 d.none">
-                        <div id="info"></div>
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                        <input name="start_date" class="form-control data-input" data-field="start_date" />
-                    </div>
-                    <div class="form-group col-6">
-                      <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                      <input name="end_date" class="form-control data-input" data-field="end_date" />
-                    </div>
-                    <div class="form-group col-12">
-                      <label for="remarks" class="form-label" vslang="titles.remarks"></label>
-                      <input name="remarks" class="form-control data-input" data-field="remarks" />
-                    </div>
-                    <div class="form-group col-12">
-                        <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
-                        <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
-                    </div>
-              </div>`,
-                    ].join("");
-                },
-                contentCreated: (me) => {
-                    //Convert field to be DatePicker : start_date and end_date
-                    DateTimePicker.init(me.controls.start_date);
-                    DateTimePicker.init(me.controls.end_date);
-                },
-                configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
-                        // textField:"name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "leave_type",
-                        data: "leave_types",
-                        textField: "leave_type",
-                        valueField: "id",
-                    },
-                ],
-                buttons: [
-                    {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => {
-                            //Close with Cancel button
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const p = me.getData();
-
-                            p.id = me.dataOptions.id; //get "id" from op
-
-                            vsapi
-                                .call(
-                                    [main_view.base_url, "/hr/leave/save"].join(
-                                        ""
-                                    ),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: "Add Leave Request",
-                    modifyTitle: "Edit Leave Request",
-                    targetProp: "leave_request",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/hr/leave/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
-                },
-
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
-            });
-
-        dialog.show(op);
-     }
-
-    return self;
-})();
-//end:: LeaveRequestDialog

@@ -7,6 +7,7 @@ use App\Models\Bhr\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use DateTime;
 
 class Leave
 {
@@ -201,7 +202,108 @@ class Leave
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    function getLeaveUnFormList($arr, $ss)
+    {
+        $subs_id = $ss->subs_id;
+        $d = (object) $arr;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
 
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        } 
+        $search_value = $d->search_value ?? null;
+        $status_id = $d->status_id ?? null;
+        $leave_type_id = $d->leave_type_id ?? null;
+        $work_shift_id = $d->work_shift_id ?? null;
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
+
+        $str_search = '1=1';
+        $str_status = '2=2';
+        $str_work_shift = '5=5';
+        $str_dates = '3=3';
+        $str_leave_type_id = '4=4';
+
+        if ($search_value) {
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
+        }
+        if ($status_id) {
+            $str_status = 'l.status_id = \'' . $status_id . '\'';
+        }
+        if ($work_shift_id) {
+            $str_work_shift = 'ws.id = \'' . $work_shift_id . '\'';
+        }
+        if ($leave_type_id) {
+           $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
+        } 
+
+        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
+        $today = date('Y-m-d');
+        if ($start_date && $end_date) {
+            $end_date = convertDate($end_date);
+            $start_date = convertDate($start_date);
+            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
+                // Check if there is any overlap between the leave period and the given date range
+                $str_dates = "(
+                (l.start_date BETWEEN '$start_date' AND '$end_date') OR
+                (l.end_date BETWEEN '$start_date' AND '$end_date') OR
+                (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+            )";
+            }
+        } else {
+            // Default to today's date if no start_date and end_date are provided
+            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
+        }
+
+        $skip_rows = ($current_page - 1) * $per_page;
+        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+
+        $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
+
+        $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+
+        $work_shifts = null;// self::getWorkShift($current_date);
+        $rows = DB::table('shift_details as sd')
+            ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+            ->whereRaw($str_work_shift)
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
+            // ->where('ws.id', $work_shift_id)
+            ->get();
+        $date = new DateTime($today); 
+        $day = $date->format('D');
+        $ds = ShiftDetails::getScanTimes($rows, $day);
+        $work_shifts = $ds;
+        $q_session_date = DBX::convertToDate('attendance_date');
+        $strsearch_date = "$q_session_date = '$today'";
+        // return $work_shifts[0];
+        $emp_leav_unform = [];
+        $count = 0;
+        foreach($employees as $emp){
+            $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
+            if(!$has_checked_in_m){
+                $emp_leav_unform [] = $emp;
+                $count += 1;
+            }
+        }
+        // return$emp_leav_unform;
+        // $clone_query = clone $query;
+        // $count = $clone_query->count('l.id');
+
+        // $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        // foreach ($rows as $row) {
+        //     $row->image_url = '';
+        //     if (isset($row->emp_id) && $row->emp_photo) {
+        //         $row->image_url = Employee::profilePicture($row->emp_id);
+        //     }
+        //     unset($row->emp_photo);
+        // }
+
+        return new LengthAwarePaginator($emp_leav_unform, $count, $per_page, $current_page);
+    }
 
 
 
@@ -240,6 +342,8 @@ class Leave
         return (object) [
             'employees' => GeneralSettings::options_employee(10,$ss),
             'leave_types' =>GeneralSettings::options_leave_type($ss),
+            'work_shifts' =>DB::table('work_shifts')->selectRaw('id,name')->get(),
+            'sessions' =>GeneralSettings::options_session($ss),
             'status' =>GeneralSettings::options_leave_status($ss),
             'leave_request' => $leave,
 

@@ -94,9 +94,7 @@ class ShiftDetails
         $data = [];
         foreach ($days as $day) {
             $ds = self::getScanTimes($rows, $day);
-            usort($ds, function ($a, $b) {
-                return $a->shift_order_number <=> $b->shift_order_number;
-            });
+            
             $data[$day] = $ds;
         }
 
@@ -113,6 +111,9 @@ class ShiftDetails
         foreach ($founds as $row) {
             $xs[] = $row;
         }
+        usort($xs, function ($a, $b) {
+            return $a->shift_order_number <=> $b->shift_order_number;
+        });
         return $xs;
     }
 

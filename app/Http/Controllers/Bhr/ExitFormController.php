@@ -23,7 +23,7 @@ class ExitFormController extends Controller
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $exit_form = new ExitForm($req->id, $ss);
-        $res = $exit_form->save($req->all());
+        $res = $exit_form->save($req->all(), $ss);
         return JDV::raw($res);
     }
     function saveExitItem(Request $req)

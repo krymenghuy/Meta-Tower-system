@@ -119,6 +119,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
 
     Route::post('/save', [LeaveController::class, 'save']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
+    Route::post('/unform-list', [LeaveController::class, 'getLeaveUnFormList']);
     Route::post('/details', [LeaveController::class, 'getDetails']);
     Route::post('/delete', [LeaveController::class, 'delete']);
     Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
