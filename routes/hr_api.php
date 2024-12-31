@@ -47,7 +47,7 @@ use App\Http\Controllers\Bhr\ExitStatusController;
 use App\Http\Controllers\Bhr\EmployeeDocumentController;
 use App\Http\Controllers\Bhr\ExitItemController;
 use App\Http\Controllers\Bhr\FormController;
-
+use App\Http\Controllers\Bhr\ContractController;
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -57,7 +57,7 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 //end:: api without Authentication
 Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
 Route::post('/employee/attendance/last-students-scan',[AttendanceController::class,'getLastStudentsScan']);
-
+Route::post('/create-contract', [ContractController::class, 'createContract']);
 //begin::CompanyProfileController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function () {
     Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
