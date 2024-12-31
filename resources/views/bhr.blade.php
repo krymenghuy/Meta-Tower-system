@@ -167,7 +167,7 @@
                                     <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">Notifications</span></i>
+                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#2b3991;"><span class="tool-tiptext fs-6">Notifications</span></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -181,8 +181,8 @@
                                     </div>
 
                                     <div class="dropdown shadow-lg rounded-5 bg-white app--list">
-                                        <button class="btn-dropdown main-menu-button " data-menu="app">
-                                        <i class="fa-solid fa-table tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">Menu System</span></i>
+                                        <button class="btn-dropdown main-menu-button" data-menu="app">
+                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#2b3991;"><span class="tool-tiptext fs-6">Menu System</span></i>
                                             <span></span>
                                         </button>
 

@@ -143,6 +143,9 @@ class Leave
         if ($status_id) {
             $str_status = 'l.status_id = \'' . $status_id . '\'';
         }
+        if ($leave_type_id) {
+           $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
+        } 
 
         // Determine date filter: use today's date if no date range is provided, otherwise use specified range
         $today = date('Y-m-d');
@@ -174,18 +177,17 @@ class Leave
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->whereRaw($str_search)
             ->whereRaw($str_status)
+            ->whereRaw($str_leave_type_id)
             ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.title, l.leave_type_id, lt.name as leave_type,'
             . $col_dates
                 . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo,'
-                . $leave_days_calc)  // Include leave days in the result
+                . $leave_days_calc)
             ->orderBy('l.id', 'DESC');
 
-        // Clone the query to get the total count
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
 
-        // Paginate the results
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
@@ -193,7 +195,7 @@ class Leave
             if (isset($row->emp_id) && $row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
-            unset($row->emp_photo);  // Clean up unnecessary data
+            unset($row->emp_photo);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);

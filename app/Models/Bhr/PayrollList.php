@@ -87,6 +87,7 @@ class PayrollList
                         p.name as payroll_name,
                         e.id as emp_id,
                         e.name as emp_name,
+                        e.phone_number,
                         pos.title as emp_position,
                         b.name as branch_name,
                         pl.salary,
@@ -106,7 +107,7 @@ class PayrollList
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%'");
+            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or e.phone_number like '%{$search_value}%'");
         }
         if ($filter_by) {
             $query->where('pl.payroll_id', $filter_by);
@@ -266,18 +267,18 @@ class PayrollList
 
             'sort_by' => [
                 ['id' => 'e.name', 'name' => 'By Name'],
-                ['id' => 'e.salary', 'name' => 'By Salary Base'],
+                ['id' => 'e.salary', 'name' => 'By Salary'],
 
             ],
             'disburse' => [
-                ['id' => 0, 'name' => 'Not Disburse'],
+                ['id' => 0, 'name' => 'Pending'],
                 ['id' => 1, 'name' => 'Disbursed'],
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
           'payrolls' => GeneralSettings::options_payroll($ss),
           'branches' => GeneralSettings::options_branch($ss),
-            'payroll_list' => $payroll_list,
+          'payroll_list' => $payroll_list,
         ];
 
     }
@@ -398,8 +399,8 @@ class PayrollList
                 $success++;
             }
         }
-
-        return DV::depends(1, ['success' => $success, 'error' => $error]);
+        DB::statement(DB::raw('UPDATE `payrolls` SET `head_count` = (Select Count(l.id) FROM  payroll_list as l Where l.payroll_id = '.($payroll_id ?? 0).')'));
+        return DV::depends(1, ['success_count' => $success, 'error' => $error]);
     }
 
 
@@ -686,13 +687,20 @@ class PayrollList
                 $error_ids[] = $payroll->id;
             }
         }
-
         return DV::depends(1, [
-            'On Calculate', $success,
-            'On Calculate ids', $success_ids,
-            'Calculated', $error,
-            'Calculated ids', $error_ids
+            'success_count', $success,
+            'ids', $success_ids,
+            'error_count', $error,
+            'error_ids', $error_ids
         ]);
+        //  //Darith: Please DO NOT use space in such important keys . and makesure the structure is correct 
+        // return DV::depends(1, [
+        //     'On Calculate', $success,
+        //     'On Calculate ids', $success_ids,
+        //     'Calculated', $error,
+        //     'Calculated ids', $error_ids
+        // ]);
+
     }
 
     function disbursePayrollList($id, $ss = null)
@@ -723,8 +731,10 @@ class PayrollList
                 ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                 ->where('pl.id', $id)
                 ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
+        if(!$trx) return DV::error('It seems that no staff is selected within the payroll!');  
+        $payroll_name = $trx->name ?? 'This payroll'; 
         if(!$trx->authorized){
-            return DV::error('Payroll '.$trx->remarks.' is not authorized ');
+            return DV::error('?? is not yet authorized::'. $payroll_name);
         }
         if (!$trx) {
             return DV::error('This Employee does not have Payroll account');
@@ -739,9 +749,9 @@ class PayrollList
         $trx->account_id = $to_account->account_id;
         $trx->from_account_id = $master_account_id;
         $trx->to_account_id = $to_account->account_id;
-
+        $payroll_name = $trx->remarks ?? 'This payroll'; 
         if(!$trx->authorized){
-            return DV::error($trx->remarks.' is not authorized ');
+            return DV::error('??is not yet authorized::'. $payroll_name);
         }
         if($master_account_balance < $trx->amount){
             return DV::error('Insufficient balance');

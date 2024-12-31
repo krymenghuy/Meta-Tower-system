@@ -10,7 +10,7 @@ var PayrollComponent = new (function () {
     this.elDisbursed = this.self.querySelector('#el_disbursed');
     this.btnAdd = this.self.querySelector("#_btnAddpayroll");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_payroll");
+    this.elSearch = this.self.querySelector("#_search_payroll");
     let cloneTable = null;
 
     const formattedNumber = (number) => {
@@ -36,41 +36,55 @@ var PayrollComponent = new (function () {
         {
             title: "Name",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
+            data: (data) => `<div class="d-block">
+                            <p class="p-0 m-0" style="color:#2b3991;">${data.name}</p>
+                            <small class="text-success">${data.p_number ? data.p_number == 1 ? '(First)' : (data.p_number == 2 ? '(Second)' : 'Other' ) : ''}</small>
+
+                        </div>`
         },
-        {
-            title: "Month Year",
-            className: "align-middle",
-            data: (data) => {
-                const month = monthNames[data.month - 1] ?? '';
-                const year = data.year ?? '';
-                return `<p class="p-0 m-0">${month} ${year}</p>`;
-            }
-        },
+        // {
+        //     title: "Month",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const month = monthNames[data.month - 1] ?? '';
+        //         const year = data.year ?? '';
+        //         return `<p class="p-0 m-0">${month}${year}</p>`;
+        //     }
+        // },
         {
             title: "Duration",
             className: "align-middle w-15",
-            data: (data) => `<p class="p-0 m-0">${data.start_date ?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
+            data: (data) => `<span class="text-dark">(<small class="text-dark">${data.start_date ?? ''}​ <small class="text-warning">~</small> ${data.end_date ?? ''}</small>)</span>`
         },
         {
-            title: "Payroll Number",
+            title: "Staff Count",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_number ? data.p_number == 1 ? 'One Time' : 'Two Time' : ''}</p>`
+            data: (data) => `<span class="text-success">${data.head_count}</span>`
         },
         {
             title: "Total",
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total ?? '0.00')}</p>`
         },
-        {
-            title: "Currency",
-            className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
-        },
+       
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
             data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + data.exchange_rate ?? ''}</p>`
+        },
+         {
+            title: "Last Updated",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-warning fw-semibold">${data.update_user}</span>
+                    <span>
+                        <small class="text-nowrap">${data.update_date}</small>
+                    </span>
+                </div>`;
+
+            }
         },
         {
             title: "Authorize",
@@ -88,9 +102,9 @@ var PayrollComponent = new (function () {
                 }
 
                 return `<div><a class="d-block" data-authorized="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.authorized == 0 ? 'Pending' : 'Approved'}
-                            </span>
+                            </small>
                         </a></div>`;
             }
         },
@@ -110,9 +124,9 @@ var PayrollComponent = new (function () {
                 }
 
                 return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.disbursed == 0 ? 'Pending' : 'Disbursed'}
-                            </span>
+                            </small>
                         </a></div>`;
             }
         },
@@ -171,9 +185,7 @@ var PayrollComponent = new (function () {
 
             AddPayRollListDailog.show(op);
         };
-
-        console.log(555, mThis.self.querySelectorAll('.table-test tr td'));
-
+  
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 205) + 'px';

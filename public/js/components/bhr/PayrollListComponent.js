@@ -9,7 +9,7 @@ var PayrollListComponent = new (function () {
     this.elFilterBranch = this.self.querySelector('#el_filter_branch');
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
-    // this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.elSearch = this.self.querySelector("#_search_payroll_list");
     this.elFilterDisburse = this.self.querySelector("#el_filter_disburse");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
     this.btnDisburse = this.self.querySelector("#_btnDisburse");
@@ -30,31 +30,13 @@ var PayrollListComponent = new (function () {
 
     this.cols = [
 
-        // {
-        //     title: "No",
-        //     className: 'align-middle text-capitalize text-nowrap',
-        //     data: (data, index, i) => { return (index + 1) },
-
-        // },
         {
-            className: "col_action align-middle",
-            data: (data,index,tr) => {
-                return [
-                `<div class="d-flex justify-content-center align-items-center">`,
-                    `<div class="text-center gap-2 d-flex flex-wrap">`,
-                        `<a href="javascript:void(0)"`,
-                           `class="btn_payroll_list_action"`,
-                           `data-id="${data.id}"`,
-                           `data-disburse="${data.disburse}"`,
-                           `aria-haspopup="true"`,
-                           `aria-expanded="false">`,
-                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
-                            `<img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />`,
-                        `</a>`,
-                    `</div>`,
-                `</div>`].join('');
-            }
+            title: "",
+            className: 'align-middle text-capitalize text-nowrap',
+            // data: (data, index, i) => { return (index + 1) },
+
         },
+       
         {
             title: "Employee",
             className: "align-middle text-start w-15",
@@ -79,21 +61,21 @@ var PayrollListComponent = new (function () {
             }
         },
         {
-            title: "Benefit Taxable",
+            title: "Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxable ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Benefit None Tax",
+            title: "Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_non_tax ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Benefit Flat Rate",
+            title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_flat_rate ?? '0.00')} (${data.flat_tax_rate ?? '0.00'}%)</p>`;
@@ -159,6 +141,26 @@ var PayrollListComponent = new (function () {
                 return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
             }
         },
+        {
+            title:"Action",
+            className: "col_action align-middle",
+            data: (data,index,tr) => {
+                return [
+                `<div class="d-flex justify-content-center align-items-center">`,
+                    `<div class="text-center gap-2 d-flex flex-wrap">`,
+                        `<a href="javascript:void(0)"`,
+                           `class="btn_payroll_list_action"`,
+                           `data-id="${data.id}"`,
+                           `data-disburse="${data.disburse}"`,
+                           `aria-haspopup="true"`,
+                           `aria-expanded="false">`,
+                           //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
+                            `<i class="fa-solid fa-ellipsis-vertical tool-tip fs-3 " style="color:#2b3991;"><span class="tool-tiptext fs-6 ">Action</span></i>`,
+                        `</a>`,
+                    `</div>`,
+                `</div>`].join('');
+            }
+        },
 
 
     ];
@@ -188,18 +190,23 @@ var PayrollListComponent = new (function () {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
-                            if (res.data && res.data.message === 'Payroll List Already Calculated') {
-                                cv_interact.error('Payroll List Already Disbursed');
-                            } else {
-                                let formattedData = `
-                                    On Calculate: ${res.data[1]}
-                                    Calculated: ${res.data[5]}
-                                `;
-                                cv_interact.success(formattedData);
-                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            }
+                            const d = res.data || {};
+                            const error_count = d.error_count || 0;
+                            const error_message = error_count > 0 ? `${error_count} cases failed`:'';
+                            cv_interact.success([`Payroll has been calculated. ${d.success_count || 0 } cases affected! `, error_message].join(''));
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            // if (res.data) {
+                               
+                            // } else {
+                            //     let formattedData = `
+                            //         On Calculate: ${res.data[1]}
+                            //         Calculated: ${res.data[5]}
+                            //     `;
+                            //     cv_interact.success(formattedData);
+                            //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            // }
                         } else {
-                            cv_interact.error(res.error_message);
+                            cv_interact.warning(res.error_message);
                         }
                     });
                 }
@@ -244,10 +251,10 @@ var PayrollListComponent = new (function () {
 
             let op = {
                 id: null,
-                // id: 1,
+                payroll_id: PayrollListComponent.elFilter.value,
                 // btn: e.target,
                 onClose: () => {
-                    cv_interact.success('Import Payroll Successfully');
+                    //cv_interact.success('Import Payroll Successfully');  // **** Darith: Please do use this message in onClose(). Please try to understand the callback better
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
@@ -275,14 +282,19 @@ var PayrollListComponent = new (function () {
         mThis.initDropdownMenus(pr_tbl);///
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
-
             el.onchange =  (e) => {
            e.preventDefault();
            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-           console.log(777777, mThis.getFilterData());
             }
        });
+       let timeOut = null;
+       mThis.elSearch.onkeyup = function (e) {
+        e.preventDefault();
+        clearTimeout(timeOut);
+        timeOut = setTimeout(() => {
+            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+        }, 250);
+    };
 
         mThis.initAlready = true;
 
@@ -498,15 +510,15 @@ var PayrollListComponent = new (function () {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Bese Salary</td>
+                                <td>Base Salary</td>
                                 <td>${formattedNumber(data.salary || 0.00)}</td>
                             </tr>
                             <tr>
-                                <td>Base Allowance</td>
+                                <td>Allowance</td>
                                 <td>${formattedNumber(data.allowance || 0.00)} </td>
                             </tr>
                             <tr>
-                                <td>Base Bias</td>
+                                <td>Bias</td>
                                 <td>${formattedNumber(data.bias || 0.00)}</td>
                             </tr>
                              <tr>
@@ -514,11 +526,11 @@ var PayrollListComponent = new (function () {
                                 <td>${data.count_day}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Taxable</td>
+                                <td>Taxable BFT</td>
                                 <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Flat Rate ( ${data.flat_tax_rate} %)</td>
+                                <td>BFT (${data.flat_tax_rate} % tax)</td>
                                 <td class="text-success">${formattedNumber(data.benefit_flat_rate || 0.00)}</td>
                             </tr>
                             <tr>
@@ -556,7 +568,7 @@ var PayrollListComponent = new (function () {
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Benefit None Tax</td>
+                                <td>Nontax BFT</td>
                                 <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
                             </tr>
                             <tr>
@@ -668,15 +680,15 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
-        cv_interact.confirm('Delete this Payroll List?',{
-            title: 'Delete Payroll List',
+        cv_interact.confirm('Remove this staff from payroll?',{
+            title: 'Remove Staff from Payroll',
             context: 'delete',
-            confirmButtonText:"Delete"
+            confirmButtonText:"Remove"
         },function(e){
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.info('The staff has been removed from payroll!');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                 })
@@ -690,13 +702,12 @@ var PayrollListComponent = new (function () {
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
         p.disburse = mThis.elFilterDisburse.value;
-
+        p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
 
         return p;
     };
@@ -704,23 +715,19 @@ var PayrollListComponent = new (function () {
     this.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
+            let payroll_id = null;
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear();
-            let payroll_id = null;
-
-
+             
             d.payrolls.forEach(payroll => {
                 if (payroll.month === currentMonth && payroll.year === currentYear) {
                     payroll_id = payroll.id;
                 }
             });
-            console.log(333, payroll_id);
-
-
-
+ 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
-            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branch', null);
+            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
             VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
@@ -732,8 +739,6 @@ var PayrollListComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
-            console.log(444,mThis.getFilterData());
-
             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
@@ -850,7 +855,6 @@ const PayRollImportDailog = (()=>{
     const self = {};
     let dialogImport = null;
      self.show = (op)=>{
-console.log(999,op);
 
         dialogImport = dialogImport || new GeneralDialog({
             cssClass:'modal-md',
@@ -883,7 +887,7 @@ console.log(999,op);
                 }
                },
                {
-                label:'<span>Save</span>',
+                label:'<span>Import</span>',
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
@@ -892,6 +896,9 @@ console.log(999,op);
 
                     vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
+                         const successCount = res.data.success_count ?? 0;
+                          if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
+                          else cv_interact.warning('No staff imported! This may be because all of them are already in the payroll, or there are no staff profiles'); 
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
                     });
@@ -899,8 +906,8 @@ console.log(999,op);
                }
             ],
             prepareFormOptions:{
-               createTitle:'Add Payroll By Import Employee',
-               modifyTitle:'Edit Payroll By Import Payroll',
+               createTitle:'Import Staff List',
+               modifyTitle:'Edit',
                targetProp: 'payroll_list',
                api:{
                  endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
@@ -915,6 +922,8 @@ console.log(999,op);
 
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
+                 me.controls.payroll_name.value = me.dataOptions.payroll_id; //here
+                 me.controls.payroll_name.setAttribute('disbaled',true);
             }
 
         });
