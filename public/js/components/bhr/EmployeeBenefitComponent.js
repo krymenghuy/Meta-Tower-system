@@ -337,8 +337,8 @@ const EmployeeBenefitDialog = (() => {
                 });
             },
             prepareFormOptions: {
-                createTitle: "New Employee Benefit",
-                modifyTitle: "Edit Employee Benefit",
+                createTitle: "Add Benefit",
+                modifyTitle: "Edit Benefit",
                 targetProp: "emp_benefits",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
