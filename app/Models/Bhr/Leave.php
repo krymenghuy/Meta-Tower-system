@@ -146,7 +146,7 @@ class Leave
         }
         if ($leave_type_id) {
            $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
-        } 
+        }
 
         // Determine date filter: use today's date if no date range is provided, otherwise use specified range
         $today = date('Y-m-d');
@@ -327,12 +327,13 @@ class Leave
         return $leave;
     }
 
-    function delete($id = null)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
         $delete = DB::table('leaves')->where('id',$id)->delete();
-        return DV::depends($delete,['action','deleted']);
+        return DV::depends($delete, null, 'Error deleting leave');
     }
 
     function getFormOptions($id, $ss)

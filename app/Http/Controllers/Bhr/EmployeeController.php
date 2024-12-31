@@ -24,7 +24,7 @@ class EmployeeController extends Controller
     function saveProfilePhoto(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
- 
+
         $id = $req->employee_id ?? $req->id;
         $photo = $req->photo?? $req->img;
         $res = Employee::saveProfilePicture($photo,null,$id,$ss);
@@ -47,7 +47,7 @@ class EmployeeController extends Controller
         $img = Employee::profilePicture($id,$ss);
         return JDV::result($img);
      }
-  
+
     function findEmployee(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -65,7 +65,8 @@ class EmployeeController extends Controller
         }
         $id = $req->id ?? $req->emp_id;
         $emp = new Employee($id,$ss);
-        return JDV::result($emp->delete($req->id, $ss));
+        $res = $emp->delete($id,$ss);
+        return JDV::raw($res);
     }
 
    function deleteSenderSpecial(Request $req){

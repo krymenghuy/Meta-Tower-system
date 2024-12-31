@@ -92,7 +92,7 @@ class Benefit //extends Model
         $id = $id ?? $this->id;
 
         $delete = DB::table('benefits')->where('id', $id)->delete();
-        return DV::depends($delete, ['action', 'deleted']);
+        return DV::depends($delete,null,'Failed to delete benefit!');
     }
 
     public function getFormOptions($id, $ss)

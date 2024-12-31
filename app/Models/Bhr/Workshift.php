@@ -6,7 +6,7 @@ use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
- 
+
 class WorkShift
 {
     protected $id = null;
@@ -79,8 +79,10 @@ class WorkShift
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    function deleteWorkShift($id, $ss)
+    function delete($id=null, $ss=null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
@@ -91,10 +93,7 @@ class WorkShift
         }
         $deleted = DB::table('work_shifts')->where('id', $id)->delete();
 
-        if ($deleted) {
-            return DV::result(['message' => 'Work Shift ' . $id . ' deleted successfully']);
-        }
-        return DV::error('Error deleting the work_shfits');
+        return DV::depends($deleted, null, 'Error deleting work shift');
     }
     static function getDetails($id, $ss)
     {

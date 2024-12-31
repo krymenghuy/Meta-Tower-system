@@ -45,7 +45,6 @@ class ExitFormItemController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        // Assuming id is passed in the request (POST body), access it like this
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
@@ -66,7 +65,10 @@ class ExitFormItemController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::result($this->emp_exit_items->deleteExitFormItem($req->id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->emp_exit_items->delete($req->id, $ss);
+        return JDV::raw($res);
     }
 }

@@ -9,12 +9,16 @@ var CheckPointComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddCheckPoint");
     this.elSearch = this.self.querySelector("#_check_point_search");
     this.divFilter = this.self.querySelector("#container_check_point");
-
+    this.elCheckPoint = this.self.querySelector("#el_checkPoint");
     this.cols = [
         {
-            title: "",
-            className: "align-middle ",
-            data: ''
+            title: "#",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
             title: "Item",
@@ -114,6 +118,7 @@ var CheckPointComponent = new (function () {
     this.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
+            check_point_cat_id: mThis.elCheckPoint.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const field = el.dataset.field;
@@ -179,6 +184,9 @@ var CheckPointComponent = new (function () {
                                 );
                                 mThis.CheckPointListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -191,7 +199,21 @@ var CheckPointComponent = new (function () {
             null,
             null,
             null
-        );
+        )
+        .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+
+                VSUtil.setComboItems(
+                    mThis.elCheckPoint,
+                    d.check_point_categories,
+                    "id",
+                    "name",
+                    true,
+                    "All Check Point Category",
+                    null
+                );
+                console.log(1111, mThis.elCheckPoint);
+            });
     };
     this.show = function () {
         mThis.init();
@@ -218,12 +240,12 @@ const ExitFormItemDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-md-12">
                                 <label for="category_name" class="form-label" vslang="titles.Category"></label>
-                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id" id="category_name"></select>
+                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id"></select>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="name" class="form-label" vslang="titles.name"></label>
                                 <input name="name" class="form-control data-input" data-field="name" id="remarks">
-                            </div>                           
+                            </div>
                         </div>`,
                     ].join("");
                 },
@@ -264,6 +286,13 @@ const ExitFormItemDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, jl);
+                                        if(me.dataOptions.id > 0)
+                                        {
+                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                        }
+                                        else{
+                                        cv_interact.success('Added Checkpoints Category Successfully');
+                                        }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },

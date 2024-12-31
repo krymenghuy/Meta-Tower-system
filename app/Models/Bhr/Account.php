@@ -243,7 +243,8 @@ class Account
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        return DB::table('accounts')->where('id', $id)->delete();
+        $delete = DB::table('accounts')->where('id', $id)->delete();
+        return DV::depends($delete,null,'Error deleting account');
     }
 
     function getFormOptions($id, $ss)

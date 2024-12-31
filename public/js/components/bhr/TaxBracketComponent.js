@@ -207,6 +207,9 @@ var TaxBracketComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.TaxBracketListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }

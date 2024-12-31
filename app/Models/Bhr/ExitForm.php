@@ -60,7 +60,7 @@ class ExitForm
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             if($d->is_finished== 1){
-                $check_points = DB::table('check_points')->selectRaw('id,name')->get(); 
+                $check_points = DB::table('check_points')->selectRaw('id,name')->get();
                 foreach($check_points as $check_point){
                     self::saveExitItem(['form_id' => $id, 'check_point_id' => $check_point->id, 'status_id' => 1, 'check_id' => 1], $ss);
                     // DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>1]);
@@ -75,7 +75,7 @@ class ExitForm
         }
         return DV::error('Error saving exit form');
     }
-    
+
     static function saveExitItem($arr = [], $ss = null)
     {
         $branch_id = $ss->branch_id;
@@ -89,9 +89,6 @@ class ExitForm
         ];
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-        // $checkUnique = [
-        //     "$branch_id|exit_form_items|check_point_id|form_id=form_id|id=id|text=Duplicate check_point_id in the same form is not allowed."
-        // ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks' => $pos_char], $ss->lang);
         if ($res->error) {
@@ -107,17 +104,12 @@ class ExitForm
         if($isExist){
             $id = $isExist;
         }
-        //  return DV::error(' exit_form_items is already exist!');
 
         unset($inputs['check_id']);
 
         if ($id) {
             $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' =>$d->check_id]);
-            // if ($updated > 0) {
                 return DV::depends(1, ['id' => $id], 'Update successful');
-            // } else {
-            //     return DV::error('Update failed. Record may not exist or data is unchanged.');
-            // }
         } else {
             $newId = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
             if ($newId > 0) {
@@ -234,12 +226,13 @@ class ExitForm
     }
 
 
-    public function delete($id = null)
+    public function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();
 
-        return DV::depends($deleted, ['action' => 'deleted']);
+        return DV::depends($deleted,null,'Error deleting the exit form');
     }
 
     public static function getFormOptions($id, $ss)

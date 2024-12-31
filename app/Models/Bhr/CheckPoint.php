@@ -85,20 +85,20 @@ class CheckPoint
         $perPage = $params->per_page ?? 10;
         $offset = ($currentPage - 1) * $perPage;
 
-        $query = DB::table('check_points as ei')
-            ->join('check_point_categories as cpc', 'cpc.id', '=', 'ei.check_point_cat_id')
-            ->selectRaw('ei.id, ei.name, cpc.name as category_name')
-            // ->orderBy('ei.id', 'desc');
+        $query = DB::table('check_points as cp')
+            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.check_point_cat_id')
+            ->selectRaw('cp.id, cp.name, cpc.name as category_name')
+            // ->orderBy('cp.id', 'desc');
             ->orderBy('cpc.id', 'asc');
 
         if (!empty($params->check_point_cat_id)) {
-            $query->where('ei.check_point_cat_id', $params->check_point_cat_id);
+            $query->where('cp.check_point_cat_id', $params->check_point_cat_id);
         }
 
         if (!empty($params->search_value)) {
             $searchValue = $params->search_value;
             $query->where(function ($q) use ($searchValue) {
-                $q->where('ei.name', 'LIKE', "%{$searchValue}%")
+                $q->where('cp.name', 'LIKE', "%{$searchValue}%")
                     ->orWhere('cpc.name', 'LIKE', "%{$searchValue}%");
             });
         }
@@ -111,10 +111,10 @@ class CheckPoint
 
     public static function getDetails($id)
     {
-        return DB::table('check_points as ei')
-            ->join('check_point_categories as cpc', 'cpc.id', '=', 'ei.check_point_cat_id')
-            ->selectRaw('ei.id, ei.name, cpc.id as category_id, cpc.name as category_name')
-            ->where('ei.id', $id)
+        return DB::table('check_points as cp')
+            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.check_point_cat_id')
+            ->selectRaw('cp.id, cp.name, cp.check_point_cat_id, cpc.name as category_name')
+            ->where('cp.id', $id)->get()
             ->first();
     }
 
@@ -143,12 +143,12 @@ class CheckPoint
         $params = (object) $arr;
         $branch_id = $ss->branch_id;
 
-        $query = DB::table('check_points as ei')
-            ->where('ei.branch_id', $branch_id)
-            ->selectRaw('ei.id, ei.name');
+        $query = DB::table('check_points as cp')
+            ->where('cp.branch_id', $branch_id)
+            ->selectRaw('cp.id, cp.name');
 
         if (!empty($params->search_value)) {
-            $query->where('ei.name', 'LIKE', "%{$params->search_value}%");
+            $query->where('cp.name', 'LIKE', "%{$params->search_value}%");
         }
 
         return $query->get();

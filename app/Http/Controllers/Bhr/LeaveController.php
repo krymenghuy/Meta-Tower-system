@@ -62,7 +62,12 @@ class LeaveController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->leave->delete($req->id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $res = $this->leave->delete($req->id, $ss);
+        return JDV::raw($res);
     }
 
     public function getFormOptions(Request $req)

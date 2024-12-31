@@ -104,7 +104,7 @@ class BenefitDisbursePolicy
             ->where('id', $id)
             ->where('branch_id', $ss->branch_id)
             ->delete();
-        return $query;
+        return DV::depends($query,null,'Error deleting benefit disburse policy');
     }
 
     function getFormOptions($id, $ss)

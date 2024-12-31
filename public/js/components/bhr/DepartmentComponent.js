@@ -12,30 +12,34 @@ var DepartmentComponent = new (function () {
     this.elSearch = this.self.querySelector("#_search_department");
     this.cols = [
         {
-            title: "",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "",
+            title: "#",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
             title: "Department",
             className: "align-middle text-capitalize p-3  text-left",
-            data: (data)=>`
+            data: (data) => `
                 <span class="text-primary-custom">${data.name}</span>`,
-
         },
         {
             title: "Short Name",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data)=>
+            data: (data) =>
                 `<span class="text-warning ">${data.shortcut}</span>`,
-
         },
         {
             title: "Updated By",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span class="text-muted" style="font-size: 14px;">${data.update_user ?? ""}</span><br/>
+                <span class="text-muted" style="font-size: 14px;">${
+                    data.update_user ?? ""
+                }</span><br/>
             </div>`,
         },
         {
@@ -43,7 +47,9 @@ var DepartmentComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span class="text-primary-custom" style="font-size: 12px;">${data.updated_at ??""}</span>
+                <span class="text-primary-custom" style="font-size: 12px;">${
+                    data.updated_at ?? ""
+                }</span>
             </div>`,
         },
 
@@ -185,6 +191,9 @@ var DepartmentComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.DepartmentListView.showPage();
                             }
+                            else {
+                                cv_interact.error(res.message);
+                            }
                         });
                 }
             }
@@ -274,6 +283,14 @@ const DepartmentDialog = (()=>{
                     vsapi.call( [main_view.base_url,'/hr/department/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
+                         if(me.dataOptions.id > 0)
+                         {
+                            cv_interact.success('Updated Department Successfully');
+                         }
+                         else
+                         {
+                            cv_interact.success('Added Department Successfully');
+                         }
                        }else cv_interact.error(res.error_message);
                     });
                 }

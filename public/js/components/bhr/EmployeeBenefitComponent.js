@@ -144,7 +144,6 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Added benefit successfully");
                     mThis.EmployeeBenefitListView.showPage();
                 },
             });
@@ -237,6 +236,9 @@ var EmployeeBenefitComponent = new (function () {
                                 mThis.EmployeeBenefitListView.showPage(
                                     mThis.getFilterData()
                                 );
+                            }
+                            else {
+                                cv_interact.error(res.message);
                             }
                         });
                 }
@@ -337,8 +339,8 @@ const EmployeeBenefitDialog = (() => {
                 });
             },
             prepareFormOptions: {
-                createTitle: "New Employee Benefit",
-                modifyTitle: "Edit Employee Benefit",
+                createTitle: "Add Benefit",
+                modifyTitle: "Edit Benefit",
                 targetProp: "emp_benefits",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
@@ -396,6 +398,13 @@ const EmployeeBenefitDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
+                                    if(me.dataOptions.id > 0)
+                                    {
+                                        cv_interact.success("Updated Employee Benefit Successfully");
+                                    }
+                                    else{
+                                        cv_interact.success("Added Employee Benefit Successfully");
+                                    }
                                 } else {
                                     cv_interact.error(res.error_message || "An error occurred.");
                                 }

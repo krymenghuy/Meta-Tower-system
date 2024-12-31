@@ -153,7 +153,7 @@ class ShiftDetails
         if (!$query) {
             return DV::error('Shift Details not found');
         }
-        return $query;
+        return DV::depends($query, null, 'Error deleting shift details');
     }
 
     function getFormOptions($id, $ss)

@@ -47,10 +47,11 @@ class EmployeeBenefitController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        $id = $req->id ? :null;
-        // $as = $req->as;
-
-        return JDV::result($this->benefitModel->deleteBenefit($id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->benefitModel->deleteBenefit($req->id, $ss);
+        return JDV::raw($res);
     }
 
     public function getFormOptions(Request $req)

@@ -8,7 +8,7 @@
                 <div class="d-flex align-items-center justify-content-end w-25 ">
                     <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
                 </div>
-             
+
                 <div class="d-flex align-items-center justify-content-end w-25 ">
                     <select type="id" id="el_filter_disburse" class="data-input filter-field"></select>
                 </div>
@@ -20,25 +20,25 @@
 
                 </div>
                 <div class="d-flex gap-2">
-                  
-                    <button class="d-flex justify-content-center align-items-center border-0 rounded-circle" style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnImport"> 
+
+                    <button class="d-flex justify-content-center align-items-center border-0 rounded-circle" style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnImport">
                         <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext fs-6 ">Import Staff List</span></i>
 
                     </button>
-                   
-                    <button  class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-circle " 
-                        style="width: 40px; height: 40px;" 
+
+                    <button  class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-circle "
+                        style="width: 40px; height: 40px;"
                         id="_btnCalculate">
                         <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext fs-6">Calculate</span></i>
                     </button>
-                    <button  class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 " 
-                        style="width: 40px; height: 40px;" 
+                    <button  class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 "
+                        style="width: 40px; height: 40px;"
                         id="_btnDisburse">
                         <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"> <span class="tool-tiptext fs-6">Disburse</span></i>
                     </button>
                 </div>
 
-                
+
             </div>
         </div>
         <div id="_payrollList_list" class="px-3 mt-3"></div>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div id="payment_info" class="payment_details p-2" style="height:550px;">
+        <div id="payment_info" class="payment_details p-2" style="height:520px;">
         </div>
 
     </div>

@@ -61,7 +61,11 @@ class BenefitController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->benefits->deleteBenefit($req->id, $ss));
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->benefits->deleteBenefit($req->id, $ss);
+        return JDV::raw($res);
     }
 
 

@@ -45,16 +45,18 @@ class Payroll
         $inputs = $res->values;
         $inputs['start_date'] = convertDate($inputs['start_date']);
         $inputs['end_date'] = convertDate($inputs['end_date']);
-        $d = (object)$inputs; 
+        $d = (object)$inputs;
 
 
-        $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
-        if($err) return DV::error($err);
+
         $err = self::checkDuplicateName($d->name,$id);
         if($err) return DV::error($err);
 
         if(!$id)
         {
+            $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
+            if($err) return DV::error($err);
+            
             $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
             if($checkExist){
                 return DV::error($inputs['name'].' is already exist!');
@@ -76,10 +78,10 @@ class Payroll
             $str_id = "p.id <> $id";
         }
 
-        $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$start_date'")->whereRaw($str_id)->select('id')->first();
+        $test = DB::table('payrolls as p')->whereRaw("date(p.start_date) >= '$start_date'")->whereRaw($str_id)->select('id')->first();
         if($test)
             return 'Start Date is not correct!';
-        
+
         $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$end_date'")->whereRaw($str_id)->select('id')->first();
         if($test)
             return 'End Date is not correct!';
@@ -87,9 +89,9 @@ class Payroll
         $start = new DateTime($start_date);
         $end = new DateTime($end_date);
         $interval = $start->diff($end);
-        
+
         $test = $interval->days;
-        
+
         if ($test > 31) {
             return 'The difference between start date and end date cannot be longer than 31 days!';
         }
@@ -175,13 +177,14 @@ class Payroll
     }
 
 
-    function deletePayroll($id = null, $ss = null)
+    function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         if(!is_numeric($id)){
             return DV::error('Invalid ID');
         }
+        
         $branch_id = $ss->branch_id;
         $query = DB::table('payrolls')
             ->where('id', $id)
@@ -189,8 +192,7 @@ class Payroll
         if(!$query){
             return DV::error('Payroll not found');
         }
-        // Return the query result
-        return $query;
+        return DV::depends($query, null, 'Error deleting payroll');
     }
 
     function getFormOptions($id, $ss)
@@ -231,7 +233,13 @@ class Payroll
 
             $total = DB::table('payrolls as p')
                 ->where('id', $id)
-                ->selectRaw('total as amount')->first();
+                ->selectRaw('total as amount')
+                ->first();
+
+            if (!$total || $total->amount <= 0) {
+                return DV::error('Invalid Total');
+            }
+
             $default_account = DB::table('accounts as a')
                 ->where('a.id', 1)
                 ->selectRaw('balance as amount, a.id as account_id')->first();

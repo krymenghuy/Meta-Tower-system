@@ -304,6 +304,15 @@ const HolidayDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Updated Holiday Successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "Added Holiday Successfully"
+                                        );
+                                    }
                                 } else cv_interact.error(res.error_message);
                             });
                     },
