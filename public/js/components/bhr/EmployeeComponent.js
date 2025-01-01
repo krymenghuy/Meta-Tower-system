@@ -143,7 +143,7 @@ var EmployeeComponent = new (function () {
                     name: "edit_employee",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Contract">Contract</span>',
+                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
                     icon: `<i class="fa-solid text-dark fa-download"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract",
@@ -2202,6 +2202,16 @@ var EmployeeComponent = new (function () {
         };
         EmployeeDialog.show(op);
     };
+    this.CreateContract = (id) => {
+        let op = {
+            emp_id: id,
+            branch_id: mThis.el_branch.value,
+        };
+    
+        console.log("Creating contract with parameters:", op);
+    
+        vsapi.call(`${main_view.base_url}/hr/create-contract`, op, false, false, false);
+    };
 
     this.deleteEmployee = (id, menuLink) => {
         let op = {
@@ -2233,10 +2243,7 @@ var EmployeeComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.EmployeeListView.showPage();
                             }else cv_interact.error(res.error_message);
-                            }
-                            else {
-                                cv_interact.error(res.message);
-                            }
+                            
                         });
                 }
             }
