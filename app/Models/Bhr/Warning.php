@@ -48,7 +48,8 @@ class Warning
         ];
 
         // Validate input
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $sign = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $sign, 'reason' => $sign], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }

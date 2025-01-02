@@ -38,7 +38,7 @@
     ._work_shift_body .row {
         display: flex;
         justify-content: space-between;
-        
+
     }
 
     .time_cards {
@@ -47,7 +47,7 @@
         align-items: center;
         text-align: center;
         flex: 1;
-        margin-left:15px;
+        margin-left: 15px;
         padding: 5px;
     }
 
@@ -101,7 +101,7 @@
         color: #555;
     }
 
- 
+
 
     .shift_header:hover,
     .shift_date:hover {
@@ -330,28 +330,25 @@
     }
 </style>
 
-<div id="_main_workshiftComponent" style="display:none;padding:20px">
-    <div class="d-flex py-4  justify-content-between w-100" id="_divFilter">
-        <div class="d-flex justify-content-start gap-3 w-50">
-
+<div id="_main_workshiftComponent" style="display:none;padding:20px 0 0">
+    <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
+        <div class="d-flex justify-content-start gap-3 w-100">
             <button type="button" class="btn_add" id="_btnAddShiftDetail">
                 <i class="fas fa-plus"></i>
                 <span>Add Scan</span>
             </button>
         </div>
-
         <div class="d-flex align-items-center justify-content-end  w-50">
-            <div class="d-flex align-items-center w-25">
+            <div class="d-flex align-items-center w-50">
                 <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
             </div>
-           
         </div>
     </div>
 
-    <div id="_work_shift_header">
+    <div id="_work_shift_header" class="mt-4 p-3"> 
     </div>
 
-    <div id="_work_shift_body">
+    <div id="_work_shift_body" class="p-2">
 
     </div>
 </div>

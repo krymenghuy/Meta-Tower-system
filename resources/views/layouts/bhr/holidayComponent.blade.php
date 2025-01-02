@@ -4,7 +4,7 @@
             <div class="d-flex w-50">
                 <button type="button" class="btn text-white rounded-5" style="background-color:#2b3991;"
                     id="_btnAddHoliday">
-                    <i class="fa-solid fa-snowman px-1"></i>
+                    <i class="fa-solid fa-plus px-1"></i>
                     <span>Add Holiday</span>
                 </button>
             </div>

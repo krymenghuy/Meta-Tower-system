@@ -114,8 +114,9 @@
     }
 </style>
 
-<div id="_main_workShiftListComponent" style="display:none;padding:20px ">
-    <div class="d-flex py-3 mt-3 justify-content-between bg-white rounded-3 shadow w-100" id="_divFilter">
+<div id="_main_workShiftListComponent" style="display:none;padding:20px 0 0 ">
+    <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
+
         <div class="d-flex align-items-center justify-content-start w-100 px-3">
             <button type="button" class="btn_add" id="_btnAddWorkShift">
                 <span>Add Shift</span>
@@ -126,5 +127,5 @@
                 placeholder="Search Work Shift....">
         </div>
     </div>
-    <div id="_work_shift_lists" class="mt-4"></div>
+    <div id="_work_shift_lists" class="mt-4 p-3"></div>
 </div>
