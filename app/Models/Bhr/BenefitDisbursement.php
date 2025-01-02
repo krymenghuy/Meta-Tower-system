@@ -55,13 +55,15 @@ class BenefitDisbursement
             return DV::error('Employee is required for saving benefit disbursement!');
         }
 
-        $existingBenefitDisbursement = DB::table('benefit_disbursements')
+        if(!$id) {
+            $existingBenefitDisbursement = DB::table('benefit_disbursements')
             ->where('emp_id', $emp_id)
             ->where('benefit_id', $inputs['benefit_id'])
             ->first();
 
-        if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
-            return DV::error('This employee already has a benefit of this type.');
+            if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
+                return DV::error('This employee already has a benefit of this type.');
+            }
         }
 
         $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
