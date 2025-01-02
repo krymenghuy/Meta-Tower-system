@@ -1202,16 +1202,60 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
-    static function contractFormOptions($id,$director_id=0,$ss){
-        $employee = null;
+    static function contractFormOptions($id, $director_id = 0, $ss)
+    {
+        $emp = null;
+        $director = null;
+    
         if ($id) {
-          $employee = Employee::getDetails($id,$ss);
-         }
-        $branch= Branch::details($employee->branch_id,$ss);
-        $employee->branch_name = $branch->name;
-        $employee->branch_address = $branch->address; 
-       return (object)[
-         'contractInfo' => $employee,
-       ];
-     }
+            $emp = Employee::getDetails($id, $ss);
+        }
+    
+        $branch = self::getBranchInfo($emp->branch_id);
+        $emp->branch_name = $branch->name;
+        $emp->branch_address = $branch->address_kh;
+        $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
+        $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
+        $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
+        $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
+        $emp->emp_name = $emp->name_kh;
+        $emp->emp_phone = $emp->phone_number;
+        $emp->emp_nid = $emp->nid;
+        $emp->emp_position = $emp->position;
+        $emp->emp_sex = $emp->sex;
+        $emp->emp_address = $emp->address;
+    
+        return (object)[
+            'contractInfo' => $emp,
+        ];
+    }
+    
+    static function getBranchInfo($branch_id)
+    {
+        // Fetch branch details
+        $row = DB::table('um_branches as b')
+            ->where('id', $branch_id)
+            ->selectRaw('b.id, b.name, b.name_kh, b.address_kh, b.city_id, b.director_id')
+            ->first();
+    
+        if (!$row) return null;
+    
+        // Fetch city and director details
+        // $city = City::getById($row->city_id);
+        // $row->city = $city ? $city->name : '';
+        $row->director = self::getBranchDirector($row->director_id);
+    
+        return $row;
+    }
+    
+    static function getBranchDirector($director_id)
+    {
+        if (!$director_id) return null;
+    
+        return DB::table('employees as e')
+            ->where('e.id', $director_id)
+            ->selectRaw('e.id, e.name, e.name_kh, e.sex, e.date_of_birth, e.phone_number, e.nid')
+            ->first();
+    }
+    
 }

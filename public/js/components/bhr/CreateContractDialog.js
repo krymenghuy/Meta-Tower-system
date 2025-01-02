@@ -12,15 +12,15 @@ const CreateContractDialog = (()=>{
                     <div class="col-md-6">
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Branch"></label>
-                            <input name="director-branch" class="form-control data-input" data-field="branch_id"/>
+                            <input name="director-branch" class="form-control data-input" data-field="branch_name"/>
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Director"> </label>
-                            <input name="director-name" class="form-control data-input" data-field="director_id"/>
+                            <input name="director-name" class="form-control data-input" data-field="com_rep_name"/>
                         </div>
                         <div class="form-group w-100">
                             <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                            <select class="form-control data-input" data-field="sex">
+                            <select class="form-control data-input" data-field="com_rep_sex">
                                 <option value="">(Select Sex)</option>
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
@@ -30,15 +30,15 @@ const CreateContractDialog = (()=>{
                         
                            <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.ID Card"></label>
-                            <input name="director-nid" class="form-control data-input" data-field="director_nid"  />
+                            <input name="director-nid" class="form-control data-input" data-field="com_rep_nid"  />
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Phone Number"></label>
-                            <input name="director-phone" class="form-control data-input" data-field="phone_number"/>
+                            <input name="director-phone" class="form-control data-input" data-field="com_rep_phone"/>
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Location"></label>
-                            <textarea name="com_address" class="form-control data-input" data-field="address_kh"></textarea>
+                            <textarea name="com_address" class="form-control data-input" data-field="branch_address"></textarea>
                         </div>
                    
                     </div>
@@ -46,7 +46,7 @@ const CreateContractDialog = (()=>{
                     <div class="col-lg-6">
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Employee"></label>
-                            <input name="emp-name" class="form-control data-input" data-field="emp_name" />
+                            <input name="emp-name" class="form-control data-input" data-field="name_kh" />
                         </div>
 
                         <div class="form-group w-100">
@@ -126,14 +126,14 @@ const CreateContractDialog = (()=>{
             prepareFormOptions:{
                 modifyTitle:"edit Contract",
                 createTitle:"Create Contract",
+                targetProp:"contractInfo",
                api:{
-                  targetProp:"branch",
-                  endpoint:[main_view.base_url,'/hr/employee/form-options'].join(''),
+                  endpoint:[main_view.base_url,'/hr/employee/contract-form-option'].join(''),
                   params: (op) => {
                     return { id: op.id };
                 },
                   onResponse: (me, res) => {
-                    // console.log(123,res.data);
+                    console.log(123,res.data);
                     
                     
                 },
@@ -142,6 +142,8 @@ const CreateContractDialog = (()=>{
             },
             onPrepareForm:(me,data,fields,divModal)=>{
                 LocaleManager.translateZone(me.divModal);
+                
+                
                 // const branch = EmployeeComponent.getFilterData().branch_id;
                 // console.log(12,branch);
                 
