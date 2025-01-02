@@ -111,6 +111,17 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
+    public function getEndDate(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $payroll = new Payroll;
+        $res = $payroll->getEndDate($ss);
+
+        return JDV::success($res);
+    }
 
 
 }

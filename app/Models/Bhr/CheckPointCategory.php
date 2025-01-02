@@ -2,6 +2,7 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -82,9 +83,9 @@ class CheckPointCategory //extends Model
         $currentPage = $data->current_page ?? 1;
         $perPage = $data->per_page ?? 10;
         $skipRows = ($currentPage - 1) * $perPage;
-
+        $col_update_date = DBX::formatDate('cpc.update_date', 'update_date');
         $query = DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name')
+            ->selectRaw('cpc.id, cpc.name, '.$col_update_date.'')
             ->orderBy('cpc.id', 'desc');
 
         if (!empty($data->search_value)) {
@@ -101,7 +102,7 @@ class CheckPointCategory //extends Model
     public static function getDetails($id, $ss)
     {
         return DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name')
+            ->selectRaw('cpc.id, cpc.name, cpc.update_date')
             ->where('cpc.id', $id)
             ->first();
     }

@@ -25,11 +25,29 @@ var CheckPointCategoryComponent = new (function () {
             className: "align-middle ",
             data: "",
         },
+
+        {
+            title: "",
+            className: "align-middle ",
+            data: "",
+        },
+
+        {
+            title: "",
+            className: "align-middle ",
+            data: "",
+        },
         {
             title: "Name",
             className: "align-left text-start w-10",
             data: (data) =>
                 `<span class="text-primary-custom text-start">${data.name}</span>`,
+        },
+        {
+            title: "Date",
+            className: "align-left text-start w-10",
+            data: (data) =>
+                `<span class="text-primary-custom text-start">${data.update_date}</span>`,
         },
         {
             title: "",

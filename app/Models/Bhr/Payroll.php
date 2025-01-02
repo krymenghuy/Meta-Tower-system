@@ -56,7 +56,7 @@ class Payroll
         {
             $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
             if($err) return DV::error($err);
-            
+
             $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
             if($checkExist){
                 return DV::error($inputs['name'].' is already exist!');
@@ -176,6 +176,17 @@ class Payroll
         return $row;
     }
 
+    function getEndDate($ss)
+    {
+        $end_date = DBX::formatDate('p.end_date', 'end_date');
+        $row = DB::table('payrolls as p')
+            ->selectRaw($end_date)
+            ->where('p.branch_id', $ss->branch_id)
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        return $row;
+    }
 
     function delete($id = null, $ss = null)
     {
@@ -184,7 +195,7 @@ class Payroll
         if(!is_numeric($id)){
             return DV::error('Invalid ID');
         }
-        
+
         $branch_id = $ss->branch_id;
         $query = DB::table('payrolls')
             ->where('id', $id)

@@ -86,7 +86,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
-   
+
     Route::post('/set-terminate-status', [EmployeeController::class, 'setTerminateStatus']);
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);
     Route::post('/set-rejoin-status',[EmployeeController::class,'setRejoinStatus']);
@@ -167,6 +167,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/update-authorize', [PayrollController::class, 'updateAuthorize']);
     Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
+    Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
 
