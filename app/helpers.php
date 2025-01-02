@@ -3,12 +3,11 @@
  //use Illuminate\support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
  use App\Models\DBX;
- use Carbon\Carbon;
  use App\Models\DV;
 use App\Models\Umt\Subscription;
 use App\Models\Umt\UMTSettings;
 use Intervention\Image\Facades\Image;
- use Ramsey\Uuid\Uuid;
+ //use Ramsey\Uuid\Uuid;
  //use GuzzleHttp\Client;
  use Illuminate\Http\Client\RequestException;
 use App\Services\Umt\AuthService;
@@ -177,7 +176,7 @@ function getAuthCode($d){
                $data->official_id = session('official_id',0);
                $data->login_name = session('login_name',0);
                //$data->full_name = session('full_name',0);
-               $data->last_active_time = Carbon::now();
+               $data->last_active_time = getNowTime();
                return $data;
           }
       }
@@ -588,9 +587,9 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
     //    return $mimeTypes[$ext];
     // }
 
-   function getNowTime()
+  function getNowTime()
    {
-       return Carbon::now()->format("Y-m-d H:i:s");
+     return date('Y-m-d H:i:s');
    }
 
    function isValidTime($time_string) {
