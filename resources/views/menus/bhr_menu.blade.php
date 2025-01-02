@@ -476,7 +476,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Company Profile"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="ContractGeneratorComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
@@ -484,7 +484,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Contract Generator"></span>
                 </a>
-            </li>
+            </li> --}}
 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
