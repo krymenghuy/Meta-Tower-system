@@ -245,8 +245,6 @@ class Employee //extends Model
                     ->first();
 
                 if ($bd) {
-                    $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate; // Use `withdraw_rate` from `benefit_disbursements` if available
-                    // $last_benefit_id = $bd->benefit_id;
                     $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
@@ -255,12 +253,13 @@ class Employee //extends Model
                     $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->count('id');
-                    // \Log::info('benefit_count: ' . $benefit_count );
 
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
+
+                                $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
@@ -278,6 +277,7 @@ class Employee //extends Model
                             }
                         }
                     }else{
+                        $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
@@ -294,7 +294,6 @@ class Employee //extends Model
                     ->where('benefit_id', $benefit_id)
                     ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id')
                     ->first();
-                    // \Log::info('emp_id: ' . $emp_id .' benefit_id' .$benefit_id);
 
                     if ($emp_benefit) {
                         if($emp_benefit->emp_id != $emp_id) break;
@@ -303,7 +302,6 @@ class Employee //extends Model
                         $used_amount = $full_amount * ($withdraw_rate / 100);
                         $last_benefit_id = $emp_benefit->benefit_id;
                     }
-
                 }
             }
 

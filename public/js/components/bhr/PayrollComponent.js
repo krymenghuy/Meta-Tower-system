@@ -460,7 +460,7 @@ const AddPayRollListDailog = (() => {
 
 
                 const currentYear = new Date().getFullYear();
-                const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
+                const years = Array.from({ length: 11 }, (_, i) => currentYear - 1 + i);
 
                 return [
                     `<div class="row">
@@ -523,7 +523,7 @@ const AddPayRollListDailog = (() => {
             },
 
             configSelect: [
-                // Add any specific configuration for select inputs if needed
+
             ],
 
             buttons: [
@@ -588,6 +588,16 @@ const AddPayRollListDailog = (() => {
                     me.controls.exchange_rate.value = payrolls.exchange_rate;
                     me.controls.p_number.value = payrolls.p_number;
                     // me.controls.total.value = payrolls.total;
+                }else{
+                    vsapi.call([main_view.base_url, '/hr/payroll/get-end-date'].join(''), null, null, null).then(res => {
+                        if (res.status_code == 200) {
+                            me.controls.start_date.value = res.data.end_date;
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+
+
                 }
 
 
@@ -612,8 +622,6 @@ const AddPayRollListDailog = (() => {
                 }
 
                 LocaleManager.translateZone(me.divModal);
-
-
             }
         });
 
