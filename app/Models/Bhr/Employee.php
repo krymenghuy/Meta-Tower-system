@@ -10,6 +10,8 @@ use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
+use App\Models\Umt\Branch;
+
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -620,7 +622,7 @@ class Employee //extends Model
         return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
         // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
-    function getDetails($id, $ss)
+    static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
 
@@ -1202,4 +1204,16 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
+    static function contractFormOptions($id,$director_id=0,$ss){
+        $employee = null;
+        if ($id) {
+          $employee = Employee::getDetails($id,$ss);
+         }
+        $branch= Branch::details($employee->branch_id,$ss);
+        $employee->branch_name = $branch->name;
+        $employee->branch_address = $branch->address; 
+       return (object)[
+         'contractInfo' => $employee,
+       ];
+     }
 }
