@@ -3,13 +3,19 @@
 namespace App\Models\Bhr;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\DB;
+use App\Models\Location\City;
+use App\Models\Bhr\Employee;
+
 use Carbon\Carbon;
 Use App\Models\DV;
+Use App\Models\DBX;
 class Contract
 {
     static function getBranchInfo($branch_id){
-        $row = DB::table('um_branches as b')->where('id',$branch_id)->selectRaw('b.id,b.name,b.name_kh,b.address_kh, b.director_id')->first();
+        $row = DB::table('um_branches as b')->where('id',$branch_id)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.city_id, b.director_id')->first();
         if(!$row) return null;
+        $city = City::getById($row->city_id);
+        $row->city = $city ? $city->name : '';
         $row->director = self::getBranchDirector($row->director_id);
         return $row; 
     }
@@ -32,9 +38,27 @@ class Contract
         return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
     }
     
-    static function createContract($branch_id,$emp_id)
+    static function createContract($arr,$emp_id)
     {
-        $branch = self::getBranchInfo($branch_id);
+        $d = (object)$arr;
+
+        $com_rep_branch = $d->branch_id ?? null;
+        $com_rep_name = $d->director_id ?? null;
+        $com_rep_nid = $d->nid ?? null;
+        $com_rep_sex  = $d->sex ?? null;
+        $com_rep_phone = $d->phone_number ?? null;
+        $com_address = $d->address_kh ?? null;
+
+        $emp_branch = $d->branch_id ?? null;
+        $emp_name = $d->emp_name ?? null;
+        $emp_sex  = $d->sex ?? null;
+        $emp_position = $d->position ?? null;
+        $emp_nid = $d->nid ?? null;
+        $emp_phone = $d->phone ?? null;
+        $emp_address = $d->address ?? null;
+        
+        
+        $branch = self::getBranchInfo($com_rep_branch);
         if(!$branch) return DV::error('Pleases, Select branch.');
         if(!$emp_id) return DV::error('Pleases, Select Employee.');
         $director = $branch->director;
@@ -48,7 +72,8 @@ class Contract
         
         // Define placeholders and default values
         $data = [
-            'com_address' => $branch->address_kh,
+            'com_address' => $com_address ? $com_address: $branch->address_kh,
+            'com_city' => $branch->city,
             'com_rep_branch' => $branch->name,
             'com_rep_name'=> $director->name ?? '<Director Name>',
             'com_rep_sex' => self::getSex($director->sex),
@@ -122,5 +147,7 @@ class Contract
         unlink($tempFile);
         exit;
     }
+    
+    
  
 }

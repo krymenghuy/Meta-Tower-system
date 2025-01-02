@@ -10,6 +10,8 @@ use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
+use App\Models\Umt\Branch;
+
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -618,7 +620,7 @@ class Employee //extends Model
         return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
         // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
-    function getDetails($id, $ss)
+    static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
 
@@ -1200,4 +1202,60 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
+    static function contractFormOptions($id, $director_id = 0, $ss)
+    {
+        $emp = null;
+        $director = null;
+    
+        if ($id) {
+            $emp = Employee::getDetails($id, $ss);
+        }
+    
+        $branch = self::getBranchInfo($emp->branch_id);
+        $emp->branch_name = $branch->name;
+        $emp->branch_address = $branch->address_kh;
+        $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
+        $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
+        $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
+        $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
+        $emp->emp_name = $emp->name_kh;
+        $emp->emp_phone = $emp->phone_number;
+        $emp->emp_nid = $emp->nid;
+        $emp->emp_position = $emp->position;
+        $emp->emp_sex = $emp->sex;
+        $emp->emp_address = $emp->address;
+    
+        return (object)[
+            'contractInfo' => $emp,
+        ];
+    }
+    
+    static function getBranchInfo($branch_id)
+    {
+        // Fetch branch details
+        $row = DB::table('um_branches as b')
+            ->where('id', $branch_id)
+            ->selectRaw('b.id, b.name, b.name_kh, b.address_kh, b.city_id, b.director_id')
+            ->first();
+    
+        if (!$row) return null;
+    
+        // Fetch city and director details
+        // $city = City::getById($row->city_id);
+        // $row->city = $city ? $city->name : '';
+        $row->director = self::getBranchDirector($row->director_id);
+    
+        return $row;
+    }
+    
+    static function getBranchDirector($director_id)
+    {
+        if (!$director_id) return null;
+    
+        return DB::table('employees as e')
+            ->where('e.id', $director_id)
+            ->selectRaw('e.id, e.name, e.name_kh, e.sex, e.date_of_birth, e.phone_number, e.nid')
+            ->first();
+    }
+    
 }
