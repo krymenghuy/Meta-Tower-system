@@ -47,7 +47,7 @@
                     <div id="employee_Info_container" class="img-container gap-3 mt-3" style="min-height:45vh"></div>
                 </div>
             </div>
-            <div style="position: absolute;top: 40px;left: 150px;width: 250px; height: 280px; overflow: hidden;" >
+            <div style="position: absolute;top: 40px;left: 150px;" >
                 <div id="employee_img_box"  class=""></div>
             </div>
         </div>

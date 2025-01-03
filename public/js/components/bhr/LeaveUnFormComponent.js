@@ -35,11 +35,7 @@ var LeaveUnFormComponent = new function () {
                                 <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
                                 <span class="text-muted" style="font-size: 11px; ">${data.emp_code ?? 'null'}</span>
-                                $str_dates = "(
-                                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-                                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-                                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
-                                )";       </div>
+                            </div>
                         </div>`;
             }
         },

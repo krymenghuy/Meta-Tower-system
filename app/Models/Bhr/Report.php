@@ -28,7 +28,6 @@ class Report {
         ['key' => 'request_type_id','name' => 'Request Type']
     ];
 
-
     function __construct($id=null,$ss=null){
         $this->ss = $ss;
         $this->id = $id;
