@@ -207,6 +207,17 @@ class EmployeeController extends Controller
         $emp = new Employee();
         return JDV::result($emp->getEmployeeList($req->all(), $ss));
    }
+   public function contractFormOptions(Request $req){
+    $ss = AuthService::verifyAuth($req, -1);
+    if ($ss->status_code !== 200) {
+        return JDV::raw($ss);
+    }
+    $id = $req->id ?? $req->branch_id;
+    $director_id = $req->director_id;
+    $data = new Employee();
+    
+    return JDV::result($data->contractFormOptions($id,$director_id,$ss)); 
+}
 
 }
 

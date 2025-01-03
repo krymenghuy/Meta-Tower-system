@@ -21,9 +21,7 @@ var EmployeeComponent = new (function () {
     this.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
     this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-    this.paginationContainer = mThis.self.querySelector(
-        "#container_pagination"
-    );
+    this.paginationContainer = mThis.self.querySelector("#container_pagination");
     mThis.store_filter = {};
     let div = mThis.self.querySelector("#_employee_list");
 
@@ -143,7 +141,7 @@ var EmployeeComponent = new (function () {
                     name: "edit_employee",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Contract">Contract</span>',
+                    html: '<span class="ps-2" vslang="titles.Create Contract">Create Contract</span>',
                     icon: `<i class="fa-solid text-dark fa-download"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract",
@@ -2203,15 +2201,19 @@ var EmployeeComponent = new (function () {
         EmployeeDialog.show(op);
     };
     this.CreateContract = (id) => {
-        let op = {
+        const op = {
+            id:mThis.el_branch.value,
             emp_id: id,
             branch_id: mThis.el_branch.value,
         };
+        CreateContractDialog.show(op);
     
-        console.log("Creating contract with parameters:", op);
+        // const queryString = new URLSearchParams(op).toString();
+        // const url = `${main_view.base_url}/create-contract?${queryString}`;
     
-        vsapi.call(`${main_view.base_url}/hr/create-contract`, op, false, false, false);
+        // window.open(url, '_blank', 'noopener,noreferrer');
     };
+    
 
     this.deleteEmployee = (id, menuLink) => {
         let op = {

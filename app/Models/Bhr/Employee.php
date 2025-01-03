@@ -10,6 +10,8 @@ use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
+use App\Models\Umt\Branch;
+
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -245,8 +247,6 @@ class Employee //extends Model
                     ->first();
 
                 if ($bd) {
-                    $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate; // Use `withdraw_rate` from `benefit_disbursements` if available
-                    // $last_benefit_id = $bd->benefit_id;
                     $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
@@ -255,12 +255,13 @@ class Employee //extends Model
                     $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->count('id');
-                    // \Log::info('benefit_count: ' . $benefit_count );
 
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
+
+                                $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
@@ -278,6 +279,7 @@ class Employee //extends Model
                             }
                         }
                     }else{
+                        $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
@@ -294,7 +296,6 @@ class Employee //extends Model
                     ->where('benefit_id', $benefit_id)
                     ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id')
                     ->first();
-                    // \Log::info('emp_id: ' . $emp_id .' benefit_id' .$benefit_id);
 
                     if ($emp_benefit) {
                         if($emp_benefit->emp_id != $emp_id) break;
@@ -303,7 +304,6 @@ class Employee //extends Model
                         $used_amount = $full_amount * ($withdraw_rate / 100);
                         $last_benefit_id = $emp_benefit->benefit_id;
                     }
-
                 }
             }
 
@@ -620,7 +620,7 @@ class Employee //extends Model
         return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
         // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
-    function getDetails($id, $ss)
+    static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
 
@@ -1202,4 +1202,60 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
+    static function contractFormOptions($id, $director_id = 0, $ss)
+    {
+        $emp = null;
+        $director = null;
+    
+        if ($id) {
+            $emp = Employee::getDetails($id, $ss);
+        }
+    
+        $branch = self::getBranchInfo($emp->branch_id);
+        $emp->branch_name = $branch->name;
+        $emp->branch_address = $branch->address_kh;
+        $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
+        $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
+        $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
+        $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
+        $emp->emp_name = $emp->name_kh;
+        $emp->emp_phone = $emp->phone_number;
+        $emp->emp_nid = $emp->nid;
+        $emp->emp_position = $emp->position;
+        $emp->emp_sex = $emp->sex;
+        $emp->emp_address = $emp->address;
+    
+        return (object)[
+            'contractInfo' => $emp,
+        ];
+    }
+    
+    static function getBranchInfo($branch_id)
+    {
+        // Fetch branch details
+        $row = DB::table('um_branches as b')
+            ->where('id', $branch_id)
+            ->selectRaw('b.id, b.name, b.name_kh, b.address_kh, b.city_id, b.director_id')
+            ->first();
+    
+        if (!$row) return null;
+    
+        // Fetch city and director details
+        // $city = City::getById($row->city_id);
+        // $row->city = $city ? $city->name : '';
+        $row->director = self::getBranchDirector($row->director_id);
+    
+        return $row;
+    }
+    
+    static function getBranchDirector($director_id)
+    {
+        if (!$director_id) return null;
+    
+        return DB::table('employees as e')
+            ->where('e.id', $director_id)
+            ->selectRaw('e.id, e.name, e.name_kh, e.sex, e.date_of_birth, e.phone_number, e.nid')
+            ->first();
+    }
+    
 }

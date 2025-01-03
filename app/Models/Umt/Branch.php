@@ -43,7 +43,7 @@ class Branch //extends Model
     static function details($id,$ss){
         $ss = $ss ?? AuthService::user();
         $subs_id = $ss->subs_id;
-        return DB::table(DBX::$branch_table.' as b')->where('b.subs_id',hex2bin($subs_id))->where('b.id',$id)->selectRaw('b.id,b.name,b.website ,b.address,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone')->first();
+        return DB::table(DBX::$branch_table.' as b')->where('b.subs_id',hex2bin($subs_id))->where('b.id',$id)->selectRaw('b.id,b.name,b.director_id,b.website ,b.address,b.address_kh,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone')->first();
     }
 
     function save($arr,$id = null, $ss = null){

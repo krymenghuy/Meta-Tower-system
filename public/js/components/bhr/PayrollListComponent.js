@@ -247,7 +247,6 @@ var PayrollListComponent = new (function () {
 
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
 
             let op = {
                 id: null,
@@ -257,7 +256,6 @@ var PayrollListComponent = new (function () {
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
-            // content.parentElement.classList.add('d-none');
 
             PayRollImportDailog.show(op);
         };
@@ -685,7 +683,9 @@ var PayrollListComponent = new (function () {
     }
 
     this.getFilterData = () => {
+
         let p = {};
+
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
         p.disburse = mThis.elFilterDisburse.value;
@@ -695,6 +695,7 @@ var PayrollListComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
+        console.log(222, p);
 
         return p;
     };
@@ -710,8 +711,13 @@ var PayrollListComponent = new (function () {
             d.payrolls.forEach(payroll => {
                 if (payroll.month === currentMonth && payroll.year === currentYear) {
                     payroll_id = payroll.id;
+
                 }
+                console.log(333, payroll);
+
             });
+            console.log(1111,payroll_id);
+
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
