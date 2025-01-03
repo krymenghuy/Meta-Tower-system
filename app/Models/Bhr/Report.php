@@ -1679,8 +1679,7 @@ class Report {
             return $front == 1 ? $bonus_string . '_' . $convertedString : $convertedString . '_' . $bonus_string;
         }
         return $convertedString;
-
-    }
+ 
 
     //** referral */
 
@@ -1834,6 +1833,8 @@ class Report {
     static function getReferralInfo($referrer_id){
         return '';
     }
+
+
 
 
     function getSchoolFee($filter,$ss){

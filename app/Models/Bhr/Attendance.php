@@ -263,14 +263,15 @@ class Attendance
         $employee =null;
         $col_subs_id = DBX::getHEX('subs_id','subs_id');
         if($employee_code){
-            $employee= DB::table('employees')->where('code',$employee_code)->selectRaw('id,name,code,work_shift_id,photo_file_name,'.$col_subs_id)->first();
+            $employee= DB::table('employees')->where('code',$employee_code)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,'.$col_subs_id)->first();
         }else if($employee_card_number){
-            $employee = DB::table('employees')->where('card_number',$employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,'.$col_subs_id)->first();
+            $employee = DB::table('employees')->where('card_number',$employee_card_number)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,'.$col_subs_id)->first();
         }else{
-            $employee = DB::table('employees')->where('id',$employee_id)->selectRaw('id,name,code,work_shift_id,photo_file_name,'.$col_subs_id)->first();
+            $employee = DB::table('employees')->where('id',$employee_id)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,'.$col_subs_id)->first();
         }
         // \Log::info($arr);
         if(!$employee) return DV::error('Employee not found');
+        if($employee->status_id != 10) return DV::error('Employee '.$employee->name.' are Resigned or Terminated ');
         $employee_id = $employee->id;
         $subs_id = $employee->subs_id ?? null;
         if (!$subs_id) {
@@ -367,6 +368,7 @@ class Attendance
             if($has_checked_in) return DV::error('You already checked in this session!');
             else{
                 $shift_order_number = $work_shift_detail->shift_order_number;
+                $message = null;
                 if($shift_order_number >1) {
                     foreach($work_shifts as $work_shift){
                         if($shift_order_number == (int)$work_shift->shift_order_number - 1){
@@ -475,6 +477,37 @@ class Attendance
         ];
         return DV::depends(1,$res);
 
+    }
+
+    function getLastEmployeesScan($arr=[],$ss=null){
+        $d = (object)$arr;
+        $subs_id = $ss->subs_id??getCurentSubsId(true);
+        $per_page = $d->per_page ?? 0;
+
+        $query = DB::table('students as s')
+        ->join('student_attendances as sa','s.id','=','sa.student_id')
+        ->join('student_groups as sg','sa.group_id','=','sg.id')
+        ->selectRaw('sa.in_diff_time,sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,sa.session_date,s.code,sa.enrollment_id');
+        $rows = $query->orderBy('sa.updated_at','DESC')->take($per_page)->get();
+        foreach ($rows as $row) {
+            $row->session = GeneralSettings::getSession($row->session_id)->name;
+            $url = PublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
+            $row->image_url = validateUrl($url,Student::getDefaulPhoto($ss));
+
+            $row->date_of_birth = date('d M Y', strtotime($row->date_of_birth));
+            $row->session_date = date('d M Y', strtotime($row->session_date));
+            $row->level = GeneralSettings::getLevel($row->level_id)->name;
+            $row->in_remarks = formatMinsTime($row->in_diff_time);
+            $row->out_remarks = formatMinsTime($row->out_diff_time);
+
+            $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
+                                    ->join('guardians as g','sg.guardian_id','=','g.id')
+                                    ->selectRaw('g.phone_number')
+                                    ->get();
+            $row->family_id = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)->selectRaw('sg.family_code as family_id')->distinct()->first()->family_id;
+            unset($row->file_name);
+        }
+        return $rows;
     }
 
     static function getWorkShift($scan_date){

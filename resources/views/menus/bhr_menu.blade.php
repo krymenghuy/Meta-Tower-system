@@ -234,7 +234,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Uninformed Leaves"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Leaves Management"></span>
                 </a>
             </li>
 
@@ -244,7 +244,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Leave Unform"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Uninformed Leaves"></span>
                 </a>
             </li>
  
@@ -625,10 +625,6 @@ function v_display($mod_id, $module_ids = null)
                     </ul>
                 </div>
             </li>
-
-         
-
-            
 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">

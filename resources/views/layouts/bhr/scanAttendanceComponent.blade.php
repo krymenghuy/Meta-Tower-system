@@ -44,11 +44,11 @@
                     </div>
                 </div>
                 <div class="row " style="height: 150px;">
-                    <div id="student_Info_container" class="img-container gap-3 mt-3" style="min-height:45vh"></div>
+                    <div id="employee_Info_container" class="img-container gap-3 mt-3" style="min-height:45vh"></div>
                 </div>
             </div>
             <div style="position: absolute;top: 40px;left: 150px;width: 250px; height: 280px; overflow: hidden;" >
-                <div id="student_img_box"  class=""></div>
+                <div id="employee_img_box"  class=""></div>
             </div>
         </div>
     </div>
