@@ -403,8 +403,9 @@ class Attendance
         $employee_name = $employee->name;
         $employee_code = $employee->code;
         $file_name = $employee->photo_file_name;
-        $defaultPhoto = PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>'default'],'image').'default_image_employee.avif';
-        $image = PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>'employee'],'image').$file_name;
+        $defaultPhoto = base_url('assets/images/default/').'default-staff.png';
+        $image = PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>'employees'],'image').$file_name;
+        \Log::info($image);
         $image_url = validateUrl($image,$defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
         $scan_status = null;

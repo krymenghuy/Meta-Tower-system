@@ -67,6 +67,7 @@ var ScanAttendanceComponent = new function () {
                 const d = res.data;
                 // mThis.popDialog(d);
                 mThis.renderTableEmployee();
+                console.log(123,d);
                 mThis.renderEmployeeImage(d);
 
             }
@@ -157,8 +158,9 @@ var ScanAttendanceComponent = new function () {
     this.renderEmployeeImage = (d) => {
         d = d ?? [];
         const html = `
-                        <img class="h-100 object-fit-scale" src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_employee.avif`}" alt="employee-profile"/>
-                    `;
+                        <div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 200px; height: 200px;">
+                            <img class="h-100 " src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_employee.avif`}" alt="employee-profile"/>
+                        </div>`;
         mThis.employeeImgBox.innerHTML = html;
         setTimeout(() => {
             mThis.employeeImgBox.innerHTML = '';
