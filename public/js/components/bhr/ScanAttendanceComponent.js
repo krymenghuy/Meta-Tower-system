@@ -1,7 +1,7 @@
 'use strict';
 
 
-const main_view = new function () {employeeTable
+const main_view = new function () {
     this.secure_endpoint = [this.base_url, '/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     this.base_url = window.location.origin;
 }
@@ -18,7 +18,6 @@ var ScanAttendanceComponent = new function () {
     this.elOption = mThis.self.querySelector('#_scan_option');
     this.employeeTable = mThis.self.querySelector('#employee_Info_container');
     this.employeeImgBox = mThis.self.querySelector('#employee_img_box');
-
 
     this.init = () => {
         setTimeout(() => {
