@@ -310,6 +310,8 @@ const PositionDialog = (()=>{
                     const p = me.getData();
 
                     p.id = me.dataOptions.id; //get "id" from op
+                    console.log(111,p);
+
 
                     vsapi.call( [main_view.base_url,'/hr/position/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
