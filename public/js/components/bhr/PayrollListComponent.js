@@ -569,7 +569,6 @@ var PayrollListComponent = new (function () {
                        <div class="col-12 d-flex justify-content-center pb-1">
                             <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
                        </div>
-
                 </div>
 
             </div>`;

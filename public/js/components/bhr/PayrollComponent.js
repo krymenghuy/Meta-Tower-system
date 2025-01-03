@@ -411,8 +411,8 @@ var PayrollComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,mThis.elAuthorized);
 
-            VSUtil.setComboItems(mThis.elAuthorized,d.authorized,'id','name',true,'All Authorized',null);
-            VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,'id','name',true,'All Disbursed',null);
+            VSUtil.setComboItems(mThis.elAuthorized,d.authorized,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,'id','name',true,'All',null);
 
 
         })
