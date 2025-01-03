@@ -393,11 +393,11 @@ const ViewExitFormDialog = (() => {
 
                         if (k.key === "name") {
                             return `<td class="text-capitalize align-middle">${cellData}</td>`;
-                        }
+                        }   
 
                         if (Array.isArray(cellData)) {
                             const divContent = cellData
-                                .map((item) => {
+                                .map((item,index) => {
                                     const itemName =
                                         typeof item === "object" &&
                                         item !== null
@@ -408,8 +408,24 @@ const ViewExitFormDialog = (() => {
 
                                     return `
                                     <div class="d-flex ml-1">
-                                        <div data_id="items" class=" ">${item.check}</div>
-                                        <span class="ms-2">${itemName}</span>
+                                        <div data_id="items" style="cursor:pointer">${
+                                            item.check
+                                        }</div>
+                                        <div class="d-flex ml-1">
+                                        <span 
+                                            class="ms-2 item-name" 
+                                            id="item_name_${key}_${index}" 
+                                            title="${item.item_type}" 
+                                            style="cursor:pointer"
+                                            data-info="${
+                                                item.details ||
+                                                "No additional details available"
+                                            }">
+                                            ${itemName}
+                                        </span>
+                                        <div class="details-container" id="details_${key}_${index}" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">
+                                        </div>
+                                    </div>
                                     </div>`;
                                 })
 
@@ -425,6 +441,7 @@ const ViewExitFormDialog = (() => {
             })
             .join("");
     };
+    
     const generateEmployeeInfo = (employeeInfo) => {
         const {
             emp_name = "",
