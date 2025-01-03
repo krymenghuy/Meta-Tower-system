@@ -138,7 +138,7 @@ class ShiftDetails
 
         $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time,sd.action, ws.name as work_shift_name')
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time,sd.action, ws.name as work_shift_name, sd.session, sd.shift_order_number, sd.start_time, sd.end_time')
             ->where('sd.id', $id)
             ->first();
         return $query;

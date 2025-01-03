@@ -16,10 +16,10 @@ var LeaveUnFormComponent = new function () {
     this.cols = [
 
         {
-            title: "Employee ID",
+            title: "Day",
             className: 'align-middle text-capitalize',
             data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class=""><span class="text-primary-custom">${data.emp_code ?? 'null'}</span></span>`;
+                return `<span style="font-size: 12px; class=""><span class="text-primary-custom"></span></span>`;
              }
         },
 
@@ -28,12 +28,18 @@ var LeaveUnFormComponent = new function () {
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                         <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                                <img class="h-100" src="${data.image_url}" alt="" />
+                            </div>
                             <div>
                                 <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${data.title ?? ''}</span>
-                            </div>
+                                <span class="text-muted" style="font-size: 11px; ">${data.emp_code ?? 'null'}</span>
+                                $str_dates = "(
+                                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
+                                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
+                                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+                                )";       </div>
                         </div>`;
             }
         },
@@ -47,13 +53,12 @@ var LeaveUnFormComponent = new function () {
         },
 
         {
-            title: "Duration",
+            title: "Leave Date",
             className: "align-middle",
             data: (data, index, tr) => {
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
                 return `<div class="d-flex flex-column">
-                            <small class="p-0 m-0 text-primary" style="font-size:11px;">${data.start_date} - ${data.end_date}</small>
-                            <span class="text-success" style="font-size:11px;">(${data.leave_days} day)</span>
+                            <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
                         </div>`;
             }
         },
@@ -79,7 +84,7 @@ var LeaveUnFormComponent = new function () {
         if (mThis.initAlready) return;
 
         mThis.LeaveRequestListView = new ListView('_leave_unform_list',{
-            fetchApi : `${main_view.base_url}/hr/leave/unform-list`,
+            fetchApi : `${main_view.base_url}/hr/leave/uninformed`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -294,7 +299,7 @@ var LeaveUnFormComponent = new function () {
         });
     }
 
-    this.prepareFormOptions = () => {
+    this.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
@@ -302,16 +307,18 @@ var LeaveUnFormComponent = new function () {
             VSUtil.setComboItems(mThis.elFilter_wark_shift,d.work_shifts,'id','name',true,'All Work Shifts',d.work_shifts[0].id);
             VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
             // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
+            onFinish(null);
         })
     }
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
+        mThis.prepareFormOptions(()=>{
+            mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
+                mThis.jm.siblings().hide();
+                mThis.jm.hide().fadeIn(250);
+            });
         });
     }
 

@@ -35,11 +35,11 @@ class LeaveController extends Controller
         return JDV::result($data);
     }
 
-    public function getLeaveUnFormList(Request $req)
+    public function getLeaveUninformList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $data = $this->leave->getLeaveUnFormList($req->all(),$ss);
+        $data = $this->leave->getLeaveUninformList($req->all(),$ss);
 
         return JDV::result($data);
     }

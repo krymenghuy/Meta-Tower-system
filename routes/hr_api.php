@@ -56,7 +56,7 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 });
 //end:: api without Authentication
 Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
-Route::post('/employee/attendance/last-students-scan',[AttendanceController::class,'getLastStudentsScan']);
+Route::post('/employee/attendance/last-employees-scan',[AttendanceController::class,'getLastEmployeesScan']);
 Route::post('/create-contract', [ContractController::class, 'createContract']);
 
 //begin::CompanyProfileController
@@ -121,7 +121,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
 
     Route::post('/save', [LeaveController::class, 'save']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
-    Route::post('/unform-list', [LeaveController::class, 'getLeaveUnFormList']);
+    Route::post('/uninformed', [LeaveController::class, 'getLeaveUninformList']);
     Route::post('/details', [LeaveController::class, 'getDetails']);
     Route::post('/delete', [LeaveController::class, 'delete']);
     Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
