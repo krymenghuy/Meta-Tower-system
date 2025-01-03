@@ -110,7 +110,7 @@ var LocationComponent = new function(){
          if(res.status_code===200){
             let rows = res.data;
             let i=0,c;
-            let html = ['<tr class=" color-text bg-info">',
+            let html = ['<tr class=" color-text text-white bg-primary-custom">',
                         `<th>Flag</th>`,
                         `<th>Country </th>`,
                         `<th>Currency Code</th>`,

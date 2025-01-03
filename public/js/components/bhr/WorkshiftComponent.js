@@ -435,7 +435,6 @@ const ShiftDetailDialog = (() => {
                         });
                     }
                     const shift = WorkshiftComponent.getFilterData().work_shift_id;
-
                     if(shift) {
                         me.controls.shifts.value = shift;
                     }

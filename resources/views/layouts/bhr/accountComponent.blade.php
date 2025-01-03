@@ -1,6 +1,7 @@
 <div id="_main_accountComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content" class="p-0">
-        <div class="d-flex justify-content-between w-100 p-2" id="_divFilter">
+        <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
+
             <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center w-50 gap-2 pl-3">
                     <input type="text" class="form-control filter-field btn_search" data-field="search_value"
