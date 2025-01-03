@@ -2869,37 +2869,37 @@ function togglePanelTable(div) {
 /**
  * These function for print report table
  */
-function windowPrint(html = null) {
-    HtmlString = html ? html : HtmlString;
-    if (HtmlString) {
+function windowPrint(html, style) {
+    if (html) {
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
-                <title>Student Attendaces Report</title>
+                <title>Print Report</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
-                <link rel="stylesheet" type="text/css" href="${
-                    main_view.base_url
-                }/assets/css/ksm_style.css"/>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
                 <link rel="stylesheet" type="text/css" href="${
                     main_view.base_url
                 }/assets/css/vsstyle.css"/>
                 <link rel="stylesheet" type="text/css" href="${
                     main_view.base_url
-                }/assets/css/css_for_print.css"/>
+                }/assets/css/css_for_print_invoice.css"/>
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/font-awesome/6.2.0/css/all.min.css" media="print//"/>
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/ksm_style.css" media="print//"/>
                 <style>
-                     *{
+                    *{
                         margin:0;
                         padding:0;
                         box-sizing: border-box;
-                        font-size:11px;
+                        font-size:14px;
                     }
-                    .table tbody>tr>td {
-                        max-height: 150px;
-                        max-width: 300px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
+                    ${style}
                 </style>
 
             </head>
