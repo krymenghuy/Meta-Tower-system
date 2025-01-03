@@ -4,6 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DBX;
 use App\Models\DV;
+use Google\Auth\Cache\Item;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -38,6 +39,7 @@ class ExitForm
         }
 
         $inputs = $res->values;
+        $id = $res->id;
         $d = (object)$inputs;
 
         $existingData = DB::table('exit_forms')->where('id', $id)->first();
@@ -59,16 +61,16 @@ class ExitForm
 
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            if($d->is_finished== 1){
+            if ($d->is_finished == 1) {
                 $check_points = DB::table('check_points')->selectRaw('id,name')->get();
-                foreach($check_points as $check_point){
+                foreach ($check_points as $check_point) {
                     self::saveExitItem(['form_id' => $id, 'check_point_id' => $check_point->id, 'status_id' => 1, 'check_id' => 1], $ss);
                     // DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>1]);
                 }
-            } else{
+            } else {
                 $check_points = DB::table('check_points')->selectRaw('id,name')->get();
                 foreach ($check_points as $check_point) {
-                    DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>0]);
+                    DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id' => 0]);
                 }
             }
             return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
@@ -86,6 +88,10 @@ class ExitForm
             'check_point_id' => '1|number',
             'check_id' => '0|number',
             'status_id' => '0|number|default=1',
+            'amount' => '0|number|default=00',
+            'remarks' => '0|string|default=N/A',
+            'item_type' => '0|choice|default=general',
+            'currency' => '0|choice|KHR,USD|default=KHR'
         ];
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
@@ -95,21 +101,38 @@ class ExitForm
             return DV::error($res->error);
         }
 
-
         $id = $res->id;
         $inputs = $res->values;
         $inputs['branch_id'] = $branch_id;
         $d = (object)$inputs;
-        $isExist = DB::table('exit_form_items')->where('check_point_id', $d->check_point_id)->where('form_id', $d->form_id)->take(1)->value('id');
-        if($isExist){
+
+        $checkPointName = DB::table('check_points')->where('id', $d->check_point_id)->value('name');
+        if ($checkPointName && (strpos($checkPointName, 'ប្រាក់') !== false || strpos($checkPointName, 'ការផាក') !== false)) {
+            $inputs['item_type'] = 'loan';
+        } elseif ($checkPointName && (strpos($checkPointName, 'ឯកសារកម្ចី') !== false || strpos($checkPointName, 'សៀវភៅ') !== false || strpos($checkPointName, 'របាយការណ៍') !== false)) {
+            $inputs['item_type'] = 'document';
+        } elseif ($checkPointName && (strpos($checkPointName, 'ផ្សេងៗ') !== false || strpos($checkPointName, 'មតិយោបល់') !== false)) {
+            $inputs['item_type'] = 'general';
+        } else {
+            $inputs['item_type'] = 'item';
+        }
+        
+
+        $isExist = DB::table('exit_form_items')
+            ->where('check_point_id', $d->check_point_id)
+            ->where('form_id', $d->form_id)
+            ->take(1)
+            ->value('id');
+
+        if ($isExist) {
             $id = $isExist;
         }
 
         unset($inputs['check_id']);
 
         if ($id) {
-            $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' =>$d->check_id]);
-                return DV::depends(1, ['id' => $id], 'Update successful');
+            $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' => $d->status_id]);
+            return DV::depends(1, ['id' => $id], 'Update successful');
         } else {
             $newId = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
             if ($newId > 0) {
@@ -119,7 +142,6 @@ class ExitForm
             }
         }
     }
-
 
     public function getList($arr, $ss = null)
     {
@@ -232,7 +254,7 @@ class ExitForm
         $ss = $ss ?? $this->userInfo;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();
 
-        return DV::depends($deleted,null,'Error deleting the exit form');
+        return DV::depends($deleted, null, 'Error deleting the exit form');
     }
 
     public static function getFormOptions($id, $ss)
@@ -265,28 +287,28 @@ class ExitForm
         $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
 
         $query = DB::table('exit_forms as ef')
-        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
-        ->where('emp.status_id', 20)
-        ->selectRaw("
-        ef.id,
-        ef.name,
-        ef.emp_id,
-        ef.is_finished,
-        emp.id as emp_id,
-        emp.name as employee_name,
-        emp.code,
-        $col_start_date,
-        emp.position_id,
-        emp.branch_id,
-        br.name as branch_name,
-        pos.title as position,
-        emp.photo_file_name as emp_photo,
-        $col_effective_date
-    ")
-        ->where('ef.emp_id', $emp_id);
+            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
+            ->where('emp.status_id', 20)
+            ->selectRaw("
+                ef.id,
+                ef.name,
+                ef.emp_id,
+                ef.is_finished,
+                emp.id as emp_id,
+                emp.name as employee_name,
+                emp.code,
+                $col_start_date,
+                emp.position_id,
+                emp.branch_id,
+                br.name as branch_name,
+                pos.title as position,
+                emp.photo_file_name as emp_photo,
+                $col_effective_date
+            ")
+            ->where('ef.emp_id', $emp_id);
 
         if (!empty($data->search_value)) {
             $query->where(function ($q) use ($data) {
@@ -303,9 +325,9 @@ class ExitForm
         $form_items = [];
         if ($forms) {
             $form_items = DB::table('exit_form_items')
-            ->selectRaw('id, form_id, check_point_id as item_id')
-            ->where('form_id', $forms->id)
-            ->where('status_id', 1)
+                ->selectRaw('id, form_id, check_point_id as item_id, item_type, amount, currency, remarks')
+                ->where('form_id', $forms->id)
+                ->where('status_id', 1)
                 ->get();
         }
 
@@ -315,15 +337,19 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $check = '<input data-id="'.$item->id.'" type="checkbox" value="check_point_id" onclick="check_box(event)" >';
+                    $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" onclick="check_box(event)" >';
+
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="check_box(event)" >';
+                            $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="check_box(event)" >';
+                            $item->item_type = $form_item->item_type;
+                            $item->amount = $form_item->amount;
+                            $item->remarks = $form_item->remarks;
+                            $item->currency = $form_item->currency;
                             break;
                         }
                     }
 
-                    $item->check = $check;
                     $groupedData[$category->id]['item'][] = $item;
                     $groupedData[$category->id]['name'] = $category->name;
 
@@ -333,6 +359,7 @@ class ExitForm
                 }
             }
         }
+
 
         $employeeData = $exitFormItems->map(function ($ef) {
             return [

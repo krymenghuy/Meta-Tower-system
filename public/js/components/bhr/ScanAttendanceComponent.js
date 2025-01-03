@@ -16,14 +16,13 @@ var ScanAttendanceComponent = new function () {
     this.elCurrentTime = mThis.self.querySelector('#_scan_current_time');
     this.elCurrentDate = mThis.self.querySelector('#_scan_current_date');
     this.elOption = mThis.self.querySelector('#_scan_option');
-    this.studentTable = mThis.self.querySelector('#employee_Info_container');
-    this.studentImgBox = mThis.self.querySelector('#employee_img_box');
-
+    this.employeeTable = mThis.self.querySelector('#employee_Info_container');
+    this.employeeImgBox = mThis.self.querySelector('#employee_img_box');
 
     this.init = () => {
         setTimeout(() => {
             mThis.elInput.focus();
-            mThis.renderTableStudent();
+            mThis.renderTableEmployee();
         }, 0);
 
         mThis.elInput.oninput = function (e) {
@@ -48,12 +47,12 @@ var ScanAttendanceComponent = new function () {
                     op.current_date = mThis.elCurrentDate.value;
                     op.session_date = mThis.elCurrentDate.value;
                 }
-                mThis.sendStudentCode(this, op);
+                mThis.sendEmployeeCode(this, op);
             }, 200);
         }
     }
 
-    this.sendStudentCode = (elInput, op) => {
+    this.sendEmployeeCode = (elInput, op) => {
         elInput.value = '';
         console.log(op);
         vsapi.call(`${mThis.base_url}/hr/employee/attendance/scan`, {
@@ -67,8 +66,9 @@ var ScanAttendanceComponent = new function () {
             if (res.status_code === 200) {
                 const d = res.data;
                 // mThis.popDialog(d);
-                mThis.renderTableStudent();
-                mThis.renderStudentImage(d);
+                mThis.renderTableEmployee();
+                console.log(123,d);
+                mThis.renderEmployeeImage(d);
 
             }
             else {
@@ -93,8 +93,8 @@ var ScanAttendanceComponent = new function () {
     this.popDialog = (d) => {
         let timerInterval;
         Swal.fire({
-            title: "Student Information",
-            html: mThis.renderStudent(d),
+            title: "Employee Information",
+            html: mThis.renderEmployee(d),
             timer: 3000,
             timerProgressBar: true,
             didOpen: () => {
@@ -111,7 +111,7 @@ var ScanAttendanceComponent = new function () {
         });
     }
 
-    this.renderStudent = (d) => {
+    this.renderEmployee = (d) => {
 
        
         const html = `<div class="d-flex">
@@ -123,14 +123,14 @@ var ScanAttendanceComponent = new function () {
             <div class="w-50">
                 <div class="d-flex flex-column w-100">
                     <div class="d-flex align-items-center flex-column gap-2">
-                        <div class="container-image-student rounded-circle overflow-hidden">
-                            <img class="w-100 h-100 object-fit-scale" src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_student.avif`}" alt="student-profile"/>
+                        <div class="container-image-employee rounded-circle overflow-hidden">
+                            <img class="w-100 h-100 object-fit-scale" src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_employee.avif`}" alt="employee-profile"/>
                         </div>
                         <p class="fs-5 fw-semibold">${d.employee_name ?? ''}</p>
                     </div>
                     <div class="d-flex align-items-start flex-column gap-3">
                         <div class="d-flex">
-                            <p class="text-start p-0 m-0 width-p-in-popup">Student ID</p>
+                            <p class="text-start p-0 m-0 width-p-in-popup">Employee ID</p>
                             <p class="p-0 m-0">${d.employee_code ?? ''}</p>
                         </div>
                         <div class="d-flex">
@@ -155,39 +155,35 @@ var ScanAttendanceComponent = new function () {
         </div>`;
         return html;
     }
-    this.renderStudentImage = (d) => {
+    this.renderEmployeeImage = (d) => {
         d = d ?? [];
         const html = `
-                        <img class="h-100 object-fit-scale" src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_student.avif`}" alt="student-profile"/>
-                    `;
-        mThis.studentImgBox.innerHTML = html;
+                        <div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 200px; height: 200px;">
+                            <img class="h-100 " src="${d.image_url ?? `${mThis.base_url}/assets/images/logo/default_image_employee.avif`}" alt="employee-profile"/>
+                        </div>`;
+        mThis.employeeImgBox.innerHTML = html;
         setTimeout(() => {
-            mThis.studentImgBox.innerHTML = '';
+            mThis.employeeImgBox.innerHTML = '';
         }, 2000);
 
     }
-    this.number_student=0;
-    this.renderTableStudent = () => {
-        let per_page = mThis.number_student <=3 ? mThis.number_student : 3;
+    this.number_employee=0;
+    this.renderTableEmployee = () => {
+        let per_page = mThis.number_employee <=3 ? mThis.number_employee : 3;
         let rows = null; 
         let html = `<table class="table border header-light-blue header-uppercase" id="tbl_astr__table">
                 <thead>
                     <tr>
-                        <th class="Student-ID">Student ID</th>
-                        <th class="Student-Name">Student Name</th>
+                        <th class="Employee-ID">Employee ID</th>
+                        <th class="Employee-Name">Employee Name</th>
                         <th class="Session">Session</th>
-                        <th class="Date">Date</th>
                         <th class="Check-In">Check-In</th>
-                        <th class="Come-Late">Come-Late</th>
                         <th class="Check-Out">Check-Out</th>
-                        <th class="Leave-Early">Leave Early</th>
-                        <th class="Family-ID">Family ID</th>
-                        <th class="Phone">Parent Phone</th>
                     </tr>
                 </thead>
         `;
         console.log(234,per_page);
-        vsapi.call(`${mThis.base_url}/api/student/attendance/last-students-scan`, {
+        vsapi.call(`${mThis.base_url}/api/employee/attendance/last-employees-scan`, {
             "per_page":per_page
         }, null, false).then(res => {
             console.log(123,res);
@@ -201,8 +197,8 @@ var ScanAttendanceComponent = new function () {
                         d.map( s =>{
                             rows = [rows,`<tr class="text-nowrap" data-id="">
                                 
-                                <td class="align-middle Student-ID">${s.code}</td>
-                                <td class="align-middle Student-Name">
+                                <td class="align-middle Employee-ID">${s.code}</td>
+                                <td class="align-middle Employee-Name">
                                     <p class="pb-0 mb-1 text-capitalize">${s.name}</p>
                                     <span class="text-success">${s.sex}</span>
                                 </td>
@@ -210,17 +206,12 @@ var ScanAttendanceComponent = new function () {
                                     <p class="pb-0 mb-1 text-nowrap">${s.session ?? ''}</p>
                                     <span>Class: </span><span class="text-success">${d.level ?? ''}</span>
                                 </td>
-                                <td class="align-middle Date">${s.date_of_birth ?? ''}</td>
                                 <td class="align-middle Check-In">
                                     <div class="d-flex flex-column">
                                         <span>${s.checkin_time ?? ''}</span>
                                     </div>
                                 </td>
-                                <td class="align-middle Come-Late">${s.in_remarks ?? ''}</td>
                                 <td class="align-middle Check-Out">${s.checkout_time ?? ''}</td>
-                                <td class="align-middle Leave-Late">${s.out_remarks ?? ''}</td>
-                                <td class="align-middle Family-ID">${s.family_id ?? ''}</td>
-                                <td class="align-middle Phone">${s.parent_phone[0].phone_number ?? ''} ${s.parent_phone[1]? '<br>'+s.parent_phone[1].phone_number : ''}</td>
                             </tr>`].join('');
                         }),rows ?? ''
                     }
@@ -234,8 +225,8 @@ var ScanAttendanceComponent = new function () {
             
                     
                 html+= '</table>';
-                mThis.studentTable.innerHTML = html;
-                mThis.number_student ++;
+                mThis.employeeTable.innerHTML = html;
+                mThis.number_employee ++;
             }
             else {
 

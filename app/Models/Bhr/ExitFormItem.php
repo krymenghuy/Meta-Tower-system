@@ -35,8 +35,7 @@ class ExitFormItem
             'check_point_id' => '1|number',
             'amount' => '0|number',
             'remarks' => '0|string',
-            'is_settled' => '1|choice|0,1|default=0',
-            'item_type' => '1|choice|1,2,3,4,5|default=1',
+            'item_type' => '0|choice|1,2,3,4|default=general',
             'currency' => '1|choice|KHR,USD|default=KHR'
         ];
 

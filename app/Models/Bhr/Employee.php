@@ -200,8 +200,6 @@ class Employee //extends Model
         return DB::table('leaves as l')->where('l.id', $id)->whereRaw($str_dates)->value('id');
     }
 
-
-
     static function getCurrentLeaveInfo($id)
     {
         $today = date('Y-m-d');
@@ -1206,11 +1204,11 @@ class Employee //extends Model
     {
         $emp = null;
         $director = null;
-    
+
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
         }
-    
+
         $branch = self::getBranchInfo($emp->branch_id);
         $emp->branch_name = $branch->name;
         $emp->branch_address = $branch->address_kh;
@@ -1224,12 +1222,12 @@ class Employee //extends Model
         $emp->emp_position = $emp->position;
         $emp->emp_sex = $emp->sex;
         $emp->emp_address = $emp->address;
-    
+
         return (object)[
             'contractInfo' => $emp,
         ];
     }
-    
+
     static function getBranchInfo($branch_id)
     {
         // Fetch branch details
@@ -1237,25 +1235,25 @@ class Employee //extends Model
             ->where('id', $branch_id)
             ->selectRaw('b.id, b.name, b.name_kh, b.address_kh, b.city_id, b.director_id')
             ->first();
-    
+
         if (!$row) return null;
-    
+
         // Fetch city and director details
         // $city = City::getById($row->city_id);
         // $row->city = $city ? $city->name : '';
         $row->director = self::getBranchDirector($row->director_id);
-    
+
         return $row;
     }
-    
+
     static function getBranchDirector($director_id)
     {
         if (!$director_id) return null;
-    
+
         return DB::table('employees as e')
             ->where('e.id', $director_id)
             ->selectRaw('e.id, e.name, e.name_kh, e.sex, e.date_of_birth, e.phone_number, e.nid')
             ->first();
     }
-    
+
 }
