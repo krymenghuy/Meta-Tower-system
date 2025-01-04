@@ -168,10 +168,10 @@ const CreateContractDialog = (()=>{
                   let op = me.getData();
                     console.log(123456,op);
                     
-                // const queryString = new URLSearchParams(op).toString();
-                // const url = `${main_view.base_url}/create-contract?${queryString}`;
+                const queryString = new URLSearchParams(op).toString();
+                const url = `${main_view.base_url}/create-contract?${queryString}`;
             
-                // window.open(url, '_blank', 'noopener,noreferrer');
+                window.open(url, '_blank', 'noopener,noreferrer');
                 }
               }  
             ],
