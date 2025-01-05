@@ -19,7 +19,7 @@ var LeaveUnFormComponent = new function () {
             title: "Day",
             className: 'align-middle text-capitalize',
             data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class=""><span class="text-primary-custom"></span></span>`;
+                return `<span class="d-block" style=" min-width:205px; "class=""><span class="text-primary-custom">${data.day}</span></span>`;
              }
         },
 
@@ -27,35 +27,88 @@ var LeaveUnFormComponent = new function () {
             title: "Employee Info",
             className: "align-middle text-start",
             data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
+                const employees = data.employees;
+                let rows = '';
+                rows = [rows,`<div class="row" style="background-color:; min-width:250px;" >`].join('');
+
+                if (Array.isArray(employees) && employees.length > 0) {
+                    employees.forEach((d,i) => {
+                        rows = [rows,`
+                        <div style="display: flex; align-items: center;">
                             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
-                                <img class="h-100" src="${data.image_url}" alt="" />
+                                <img class="h-100" src="${d.image_url}" alt="" />
                             </div>
                             <div>
-                                <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
+                                <span style="font-size: 12px; font-weight: bold;">${d.employee ??''}</span>
                                 <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${data.emp_code ?? 'null'}</span>
+                                <span class="text-muted" style="font-size: 11px; ">${d.emp_code ?? 'null'}</span>
                             </div>
-                        </div>`;
+                        </div>
+                        `].join('');
+
+                    });
+                }
+                rows = [rows,`</div>`].join('');
+
+                return rows;    
+
+                // return `<div style="display: flex; align-items: center;">
+                //             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                //                 <img class="h-100" src="${data.image_url}" alt="" />
+                //             </div>
+                //             <div>
+                //                 <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
+                //                 <br/>
+                //                 <span class="text-muted" style="font-size: 11px; ">${data.emp_code ?? 'null'}</span>
+                //             </div>
+                //         </div>`;
             }
         },
 
         {
-            title: "Leave Type",
+            title: "Shifts",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<span style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</span>`;
-            }
-        },
+                const shifts = data.shifts;
+                console.log(shifts);
+                let rows = '';
+                rows = [rows,`<div class="d-flex gap-2 w-100">`].join('');
 
-        {
-            title: "Leave Date",
-            className: "align-middle",
-            data: (data, index, tr) => {
+                if (Array.isArray(shifts) && shifts.length > 0) {
+                    shifts.forEach((shift,i) => {
+                        const actionClass =
+                            shift.action === "Check In" ||
+                            shift.action === "CheckIn"
+                                ? "bg-green"
+                                : shift.action === "Check Out" ||
+                                  shift.action === "CheckOut"
+                                ? "bg-gold"
+                                : "";
+                        rows = [rows,`
+                        <div class="shift_card ${actionClass} " style="width:150px !important;">
+                            <div class="shift_element">
+                                <div class="shift_time">${shift.time}</div>
+                                <div class="shift_action">${shift.action}</div>
+                            </div>
+                            <div class="d-flex justify-content-start align-items-start">
+                                <div class="text-end gap-2 d-flex flex-wrap">
+                                </div>
+                            </div>
+                        </div>
+                        `].join('');
+
+                    });
+                }
+                else  {
+                    rows = [rows,`<div class="card p-4 bg-secondary no_shifts">No Shift</div>`].join('');
+                }
+                rows = [rows,`</div>`].join('');
+
+                return rows;
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<div class="d-flex flex-column">
-                            <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
-                        </div>`;
+                // return `<div class="d-flex flex-column">
+                //             <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
+                //         </div>`;
             }
         },
         
@@ -81,10 +134,10 @@ var LeaveUnFormComponent = new function () {
 
         mThis.LeaveRequestListView = new ListView('_leave_unform_list',{
             fetchApi : `${main_view.base_url}/hr/leave/uninformed`,
-            perPage: 10,
+            perPage: 3,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
+            tableClass: 'table bg-white rounded-3 overflow-hidden header-uppercase',
             listContainerClass: null
         });
 
@@ -110,7 +163,7 @@ var LeaveUnFormComponent = new function () {
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 240) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        sh_parent.classList.add("overflow-x-auto");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
         }
