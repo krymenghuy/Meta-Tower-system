@@ -81,8 +81,11 @@ class Skill
         $rows = $query->get();
     
         foreach ($rows as $row) {
-            $row->image_url = $row->image_file_name ? self::getProfilePicture($row->id) : '';
-            unset($row->image_file_name);
+            $row->image_url = '';
+            if (!empty($row->emp_id) && $row->emp_photo) {
+                $row->image_url = Employee::profilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);
         }
     
         return $rows;

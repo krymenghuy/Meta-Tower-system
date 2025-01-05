@@ -24,7 +24,7 @@ class PositionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->department_id ?? $req->id;
+        $id = $req->id ?? null;
         $department = new Position($id, $ss);
         $res = $department->save($req->all());
         return JDV::raw($res);

@@ -423,6 +423,7 @@ class PayrollList
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->whereRaw($str_payroll_id)
+            ->where('pl.emp_id',7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         '.$start_date.',
@@ -461,16 +462,32 @@ class PayrollList
                 ->where('tax_option_id', 2)
                 ->value('used_amount');
 
+
                 $row->benefit_flat_rate = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 3)
-                ->value('used_amount');
+                ->selectRaw('id,used_amount');
 
                 $row->flat_tax_rate = DB::table('emp_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('tax_option_id', 3)
-                ->value('flat_tax_rate');
+                ->selectRaw('id,flat_tax_rate');
+
+                $emp_benefit_count = DB::table('emp_benefits')
+                    ->where('emp_id', $row->emp_id)
+                    ->count('id');
+
+                if($emp_benefit_count > 1) {
+                    $row->benefit_flat_rate = $row->benefit_flat_rate->get();
+                    $row->flat_tax_rate = $row->flat_tax_rate->get();
+                }else {
+                    $row->benefit_flat_rate = $row->benefit_flat_rate->first()->used_amount ?? 0;
+                    $row->flat_tax_rate = $row->flat_tax_rate->first()->flat_tax_rate ?? 0;
+
+                }
+
+
 
                 $row->tax_base = ($row->tax_base ?? 0);
                 $row->deduction = ($row->deduction ?? 0);
@@ -485,7 +502,7 @@ class PayrollList
         $error = 0;
         $success_ids = [];
         $error_ids = [];
-
+        return $payrolls;
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;
@@ -593,7 +610,6 @@ class PayrollList
                     $payroll->tax_base = 0;
                     $payroll->total += $last_salary - $deduction;
                 }
-
             }
 
             if ($benefit_non_tax > 0)

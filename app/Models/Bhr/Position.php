@@ -34,13 +34,19 @@ class Position
         ];
         $pos_char = ['$',"'", '#', '@', '!','&', '.', '-', '_', '=', '?'];
 
-        $checkUnque = ["$branch_id|positions|title|id=id|text=Position already exists."];
-        $res = validateObject($arr, $v_rule, true, ['Title'=>$pos_char], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, ['Title'=>$pos_char], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
+        if(!$id)
+        {
+            $checkUnque = DB::table('positions')->where('title',$inputs['title'])->where('job_level_id',$inputs['job_level_id'])->where('branch_id', $branch_id)->select('id')->first();
+            if ($checkUnque) {
+                return DV::error('Position already exists.');
+            }
+        }
 
         $id = saveData($ss,'positions', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
@@ -70,7 +76,7 @@ class Position
         }
 
         $update_date =DBX::$updated_at;
-        $col_update_date = DBX::formatTime("p.$update_date",'updated_at'); 
+        $col_update_date = DBX::formatTime("p.$update_date",'updated_at');
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->join('job_levels as job','job.id','=','p.job_level_id')
@@ -87,8 +93,8 @@ class Position
     static function isDuplidateName($title, $id){
         $q = DB::table('position')->where('title',$title)->selectRaw('id');
         if($id > 0) $q->where('id','<>',$id);
-        if($q->first()) return true; 
-        return false; 
+        if($q->first()) return true;
+        return false;
     }
 
     function getDetails($id,$ss){
