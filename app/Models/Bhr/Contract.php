@@ -13,7 +13,8 @@ class Contract
 {
     static function getBranchInfo($branch_id){
         $row = DB::table('um_branches as b')->where('id',$branch_id)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.city_id, b.director_id')->first();
-        if(!$row) return null;
+        // if(!$row) return null;
+        if (!$row) return DV::error('Please, Select Branch.');
         $city = City::getById($row->city_id);
         $row->city = $city ? $city->name : '';
         $row->director = self::getBranchDirector($row->director_id);
