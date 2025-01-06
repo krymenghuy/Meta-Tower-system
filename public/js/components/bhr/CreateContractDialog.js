@@ -12,13 +12,13 @@ const CreateContractDialog = (()=>{
                     <div class="col-md-6">
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Branch"></label>
-                            <input name="director-branch" class="form-control data-input" data-field="branch_name"/>
+                            <input name="director-branch" class="form-control data-input" data-field="branch_name" readonly />
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Director"> </label>
-                            <input name="director-name" class="form-control data-input" data-field="com_rep_name"/>
+                            <input name="director-name" class="form-control data-input" data-field="com_rep_name" readonly />
                         </div>
-                        <div class="form-group w-100">
+                        <!-- <div class="form-group w-100">
                             <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                             <select class="form-control data-input" data-field="com_rep_sex">
                                 <option value="">(Select Sex)</option>
@@ -26,7 +26,7 @@ const CreateContractDialog = (()=>{
                                 <option value="F">Female</option>
                                 <option value="O">Other</option>
                             </select>
-                        </div>
+                        </div> -->
                         
                            <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.ID Card"></label>
@@ -34,22 +34,22 @@ const CreateContractDialog = (()=>{
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Phone Number"></label>
-                            <input name="director-phone" class="form-control data-input" data-field="com_rep_phone"/>
+                            <input name="director-phone" class="form-control data-input" data-field="com_rep_phone" />
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Location"></label>
-                            <textarea name="com_address" class="form-control data-input" data-field="branch_address"></textarea>
+                            <textarea name="com_address" class="form-control data-input" data-field="branch_address" ></textarea>
                         </div>
                    
                     </div>
 
                     <div class="col-lg-6">
                         <div class="form-group w-100">
-                            <label for="" class="form-label " vslang="titles.Employee"></label>
-                            <input name="emp-name" class="form-control data-input" data-field="name_kh" />
+                            <label for="" class="form-label " vslang="titles.Staff Name"></label>
+                            <input name="emp-name" class="form-control data-input" data-field="name_kh" readonly />
                         </div>
 
-                        <div class="form-group w-100">
+                        <!-- <div class="form-group w-100">
                             <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                             <select class="form-control data-input" data-field="emp_sex">
                                 <option value="">(Select Sex)</option>
@@ -57,17 +57,17 @@ const CreateContractDialog = (()=>{
                                 <option value="F">Female</option>
                                 <option value="O">Other</option>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Position"></label>
-                            <input name="emp-position" class="form-control data-input" data-field="emp_position"  />
+                            <input name="emp-position" class="form-control data-input" data-field="emp_position"  readonly />
                         </div>
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.ID Card"></label>
                             <input name="emp-nid" class="form-control data-input" data-field="emp_nid"  />
                         </div>
-                        <div class="form-group w-100">
-                            <label for="" class="form-label " vslang="titles.Phone Number"></label> <span class = 'text-danger' > *</span>
+                       <div class="form-group w-100">
+                            <label for="" class="form-label " vslang="titles.Phone Number"></label>
                             <input name="emp-phone" class="form-control data-input" data-field="emp_phone" />
                         </div>
                         <div class="form-group w-100">
@@ -124,7 +124,7 @@ const CreateContractDialog = (()=>{
             //     }
             // },
             prepareFormOptions:{
-                modifyTitle:"edit Contract",
+                modifyTitle:"Create Contract",
                 createTitle:"Create Contract",
                 targetProp:"contractInfo",
                api:{
