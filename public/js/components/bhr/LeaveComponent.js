@@ -11,7 +11,7 @@ var LeaveComponent = new function () {
     // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
     this.elFilter_status = this.self.querySelector('#el_status');
     this.elFilter_session = this.self.querySelector('#el_leave_session');
-    this.elSearch = this.self.querySelector("#_sdl_search_leave");
+    this.elSearch = this.self.querySelector("#_search_leave");
 
     this.cols = [
 

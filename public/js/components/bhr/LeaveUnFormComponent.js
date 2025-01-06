@@ -11,7 +11,7 @@ var LeaveUnFormComponent = new function () {
     // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
     this.elFilter_wark_shift = this.self.querySelector('#el_wark_shift');
     this.elFilter_session = this.self.querySelector('#el_leave_session');
-    this.elSearch = this.self.querySelector("#_sdl_search_emp_leave");
+    this.elSearch = this.self.querySelector("#_search_uninform_leave");
 
     this.cols = [
 

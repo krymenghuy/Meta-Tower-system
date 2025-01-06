@@ -42,8 +42,6 @@ class Contract
     static function createContract($arr,$emp_id)
     {
         $d = (object)$arr;
-        // \Log::info($arr);
-
         $com_rep_branch = $d->id ?? null;
         $com_rep_name = $d->director_id ?? null;
         $com_rep_nid = $d->nid ?? null;
@@ -60,9 +58,7 @@ class Contract
         $emp_address = $d->address ?? null;
         
         
-         $branch = self::getBranchInfo($com_rep_branch);
-        //  \Log::info((array)$branch);
-        //  return $branch->director->sex;
+        $branch = self::getBranchInfo($com_rep_branch);
         if(!$com_rep_branch) return DV::error('Please, Select branch.');
         if(!$emp_id) return DV::error('Pleases, Select Employee.');
         $director = $branch->director_id;
@@ -100,6 +96,7 @@ class Contract
 
         // Define the template path
         $base_path = base_path();
+        $base_path = str_replace('\\',"/",$base_path);
         $templatePath = $base_path . '/storage/doc_templates/staff_contract_unlimited.docx';
 
         if (!file_exists($templatePath)) {
