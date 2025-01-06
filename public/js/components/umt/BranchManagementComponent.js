@@ -567,11 +567,11 @@ var BranchManagementComponent = new function(){
         }
         div.innerHTML = html;
         const parent = div.parentElement;
-        parent.style.height = (window.innerHeight - 240)+'px';
+        parent.style.height = (window.innerHeight - 200)+'px';
         window.onresize = function(e)
         {
             e.preventDefault();
-            parent.style.height = (window.innerHeight - 240)+'px';
+            parent.style.height = (window.innerHeight - 200)+'px';
         }
         mThis.setMenuAction(div.querySelectorAll('.btn-action'));
         div.querySelectorAll('.custom-buttons').forEach(ctn => {

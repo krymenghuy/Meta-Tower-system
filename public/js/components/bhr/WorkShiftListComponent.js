@@ -11,7 +11,7 @@ var WorkShiftListComponent = new (function () {
     this.elSearch = this.self.querySelector("#_work_shift_list_search");
     this.cols = [
         {
-            title: "#",
+            title: "NO",
             className: "align-middle",
             data: (data, index) =>
                 `<div class="rounded-circle text-center p-1 text-white" style="background-color: #2b3991; width: 30px; height: 30px;">

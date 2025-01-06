@@ -80,7 +80,7 @@ var BenefitDisbursementComponent = new (function () {
             title: "Withdraw Rate",
             className: "align-middle",
             data: (data) =>
-                `<span class="text-primary-custom">${data.withdraw_rate}%</span>`,
+                `<span class="text-primary-custom">${data.withdraw_rate ?? "0"}%</span>`,
         },
         {
             title: "Action",
@@ -133,11 +133,11 @@ var BenefitDisbursementComponent = new (function () {
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 260) + 'px';
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 260) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
 
         mThis.initDropdownMenus(pr_tbl);
