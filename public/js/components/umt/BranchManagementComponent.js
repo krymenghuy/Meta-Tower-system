@@ -496,7 +496,7 @@ var BranchManagementComponent = new function(){
                     <div class="col" >
                         <div class="d-block" >
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">`,branch.website?`<a href="javascript:void(0)" data-link ="${branch.website||'#'}" class="webite-view"> View <i class="fas fa-eye text-info fs-6"></i></a>`: 'N/A',`</span>
+                                <span class="text-capitalize">`,branch.website?`<a href="javascript:void(0)" data-link ="${branch.website||'#'}" onClick= class="webite-view"> View <i class="fas fa-eye text-info fs-6"></i></a>`: 'N/A',`</span>
                             </p>
                         </div>
                     </div>
@@ -510,7 +510,7 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">`,branch.address?`<a href="javascript:void(0)" data-link ="#" class="address-view"><i class="fa-solid fa-map-location-dot fs-6"></i> Address </a>`: 'N/A',`</span>
+                            <span class="text-capitalize">`,branch.address?`<a href="javascript:void(0)" data-link ="#" class="address-view"><i class="fa-solid fa-map-location-dot fs-6"></i> Address </a>`: 'N/A',`</span>
                             </p>
                         </div>
                     </div>

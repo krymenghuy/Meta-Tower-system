@@ -273,7 +273,7 @@ class Leave
             foreach ($filterDays as $filterDay) {
                 $day = $filterDay['day'];
                 $ds = ShiftDetails::getScanTimes($rows, $day);
-                $leav_uninform['day'] = $day;
+                $leav_uninform['day'] = $day . '-' .$filterDay['date'];
     
                 foreach($ds as $scenTime){
                     $leav_uninform['shifts'][] = $scenTime;
@@ -283,16 +283,16 @@ class Leave
                         (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
                     )";
 
-                    $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
+                    $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
                     
                     $date = new DateTime($filterDay['date']); 
                     $date = $date->format('Y-m-d');
                     $q_session_date = DBX::convertToDate('attendance_date');
                     $strsearch_date = "$q_session_date = '$date'";
                     // return $work_shifts[0];
-                    
+                    $leav_uninform['employees'] =  [];
                     foreach($employees as $emp){
-                        $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->whereRaw($strsearch_date)->value('id');
+                        $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
                         if(!$has_checked_in_m){
                             $emp->leave_date = $today;
                             $emp->leave_type = 'Uninformed';

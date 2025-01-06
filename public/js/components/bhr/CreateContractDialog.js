@@ -166,7 +166,7 @@ const CreateContractDialog = (()=>{
                 cssClass:"btn btn-sm btn-primary",
                 click:(me)=>{
                   let op = me.getData();
-                    // console.log(123456,op);
+                    console.log(123456,JSON.stringify(op,null,2) );
                     
                 const queryString = new URLSearchParams(op).toString();
                 const url = `${main_view.base_url}/create-contract?${queryString}`;

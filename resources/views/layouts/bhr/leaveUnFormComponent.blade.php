@@ -34,7 +34,7 @@
                     <span>Leave Request</span>
                 </button> -->
                 <div class="d-flex align-items-center" style="min-width: 300px;">
-                    <input type="text" class="form-control filter-field btn_search" id="_sdl_search_leave"  placeholder="Search here....">
+                    <input type="text" class="form-control filter-field btn_search" id="_sdl_search_emp_leave"  placeholder="Search here....">
                 </div>
             </div>
         </div>
