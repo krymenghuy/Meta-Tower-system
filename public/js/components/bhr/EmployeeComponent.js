@@ -529,7 +529,8 @@ var EmployeeComponent = new (function () {
 
                                 </div>
                                  </div>`,
-                                `<hr class="bg-white fs-5">`,
+                                
+                                `<hr class="bg-white">`,
                                 `<div class="row row-cols-4 mt-2">
                                     <div class="col">
                                         <div class="d-flex">
@@ -570,14 +571,9 @@ var EmployeeComponent = new (function () {
                                                 data.salary || "0.00"
                                             }(KHR)</p>
                                         </div>
-                                        <div class="d-flex">
-                                            <P class="text-nowrap width-p" vslang="titles.Address">Address</p>
-                                            <P class="px-2">:</p>
-                                            <P class="text-nowrap" style="overflow: hidden; text-overflow: ellipsis;color:#cab54a;">${
-                                                data.address
-                                            }</p>
-                                        </div>
+                                        
                                     </div>
+                                     
                                     <div class="col">
                                         <div class="d-flex justify-content-center gap-4 mt-5">
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
@@ -603,6 +599,15 @@ var EmployeeComponent = new (function () {
 
                                         </div>
 
+                                </div>`,
+                                `<div class="row row-cols-12">
+                                    <div class="d-flex">
+                                        <P class="text-nowrap width-p" vslang="titles.Address">Address</p>
+                                        <P class="px-2">:</p>
+                                        <P class="text-nowrap" color:#cab54a;">${
+                                            data.address
+                                        }</p>
+                                    </div>
                                 </div>`,
 
                             `</div>`,

@@ -57,7 +57,7 @@
     box-shadow: 0 2px 8px -4px #0006;
 }
 
-.filter-dete-custom .form-label{
+.filter-date-custom .form-label{
     margin: 0 -100px 0 30px;
     padding: 0.65rem 0;
     font-size: 110%;
@@ -66,7 +66,7 @@
     white-space: nowrap;
     z-index: 9;
 }
-.filter-dete-custom .form-control{
+.filter-date-custom .form-control{
     padding-left: 110px;
 }
 
