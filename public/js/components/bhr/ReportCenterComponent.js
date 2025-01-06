@@ -42,16 +42,16 @@ var ReportCenterComponent = new (function () {
             required: false,
             dot_object: "branches",
         },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/hr/form-option`,
-            api_params: {},
-            name: "employee_id",
-            value_field: "id",
-            text_field: "employee_name",
-            required: false,
-            dot_object: "employees",
-        },
+        // {
+        //     type: "select",
+        //     api_fetch: `${main_view.base_url}/hr/form-option`,
+        //     api_params: {},
+        //     name: "employee_id",
+        //     value_field: "id",
+        //     text_field: "employee_name",
+        //     required: false,
+        //     dot_object: "employees",
+        // },
         {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/form-option`,
@@ -155,7 +155,7 @@ var ReportCenterComponent = new (function () {
                                     <div id="" class=" my-auto rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                                         <h6 class="text-uppercase w-50 mt-4 mx-auto fs-4 text-center" style="color:#eccf67;">Veiw Report History</h6>
                                         <div class="container w-50 mx-auto d-flex align-items-center">
-                                            <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -70px; z-index: 9;"></i>
+                                            <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -60px; z-index: 9;"></i>
                                         <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
                                             placeholder="Search report...">
                                         </div>
@@ -489,7 +489,7 @@ var ReportCenterComponent = new (function () {
             setTimeout(() => {
                 const btn = div[0].querySelector("#_rpt_btn_report");
                 if (btn) btn.click();
-                console.log(111);
+                console.log(111,btn);
             }, 300);
         }
     };
@@ -683,9 +683,9 @@ var ReportCenterComponent = new (function () {
                                 jsonToTable(containerTable, d);
                                 break;
                             case "attendance_report":
-                                emploteeAttendance(containerTable, d);
+                                employeeAttendance(containerTable, d);
                                 break;
-                                
+
                             case "school_fee":
                             case "non_tuition":
                                 nonTuitionFeeTable(containerTable, d);
@@ -702,8 +702,8 @@ var ReportCenterComponent = new (function () {
                             case "leave_student":
                                 leaveStudent(containerTable, d);
                                 break;
-                            case "attendanceList":
-                                attendanceList(containerTable, d);
+                            case "employee_benefits_report":
+                                employeeBenefitsReport(containerTable, d);
                                 break;
                             case "student_payment_history":
                                 studentPaymentHistory(containerTable, d);

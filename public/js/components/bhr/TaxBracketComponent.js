@@ -111,11 +111,11 @@ var TaxBracketComponent = new (function () {
         };
         const pr_tbl = mThis.TaxBracketListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 215) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
         }
 
         mThis.initDropdownMenus(pr_tbl);
