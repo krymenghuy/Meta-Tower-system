@@ -2213,6 +2213,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             },
         };
+        
         CreateContractDialog.show(op);
     
         // const queryString = new URLSearchParams(op).toString();
