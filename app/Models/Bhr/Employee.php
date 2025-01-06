@@ -256,6 +256,7 @@ class Employee //extends Model
 
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
+
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
 
@@ -272,6 +273,7 @@ class Employee //extends Model
                                     "full_amount" => $full_amount,
                                     "tax_option_id" => $tax_option_id,
                                     "used_amount" => $used_amount,
+                                    "emp_benefit_id" => $emp_benefit->id,
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -314,6 +316,7 @@ class Employee //extends Model
             "full_amount" => $full_amount,
             "tax_option_id" => $tax_option_id,
             "used_amount" => $used_amount,
+            "emp_benefit_id" => null,
         ];
         if($benefit_count <=1)
         $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
@@ -333,6 +336,7 @@ class Employee //extends Model
             'withdraw_rate' => '0|number',
             'tax_option_id' => '1|number',
             'used_amount' => '0|number',
+            'emp_benefit_id' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -1207,7 +1211,7 @@ class Employee //extends Model
 
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
-        }
+        }else return DV::error('Branch Can not be Empty!');
 
         $branch = self::getBranchInfo($emp->branch_id);
         $emp->branch_name = $branch->name;

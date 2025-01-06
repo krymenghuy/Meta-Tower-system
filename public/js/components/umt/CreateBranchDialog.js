@@ -133,6 +133,7 @@ const CreateBranchDialog = (()=>{
                 click:(me)=>{
                   let p = me.getData();
                   p.id = me.dataOptions.id||'';
+                  console.log(11234,JSON.stringify(p,null,2));
                     vsapi.call([main_view.base_url,'/api/branch/save'].join(''),p,false,false).then(res =>{
                         if(res.status_code ==200){
                             cv_interact.success('success!');

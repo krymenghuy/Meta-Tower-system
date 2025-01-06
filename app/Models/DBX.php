@@ -8,7 +8,7 @@ class DBX
 
     public static $created_at ='created_at';
     public static $updated_at ='updated_at';
-    public static $branch_table = 'um_branches';
+    public static $branch_table = 'um_branches';    
     /***
      * query_user_info() returns select SQL for columns "updated_at, update_user, and created_at, create_user".
      * @$include_creation_info =true means to include "fields Created_at , create_user"

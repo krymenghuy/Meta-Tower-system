@@ -19,7 +19,6 @@ class ContractController extends Controller
         // $id = $req->id ?? $req->emp_id;
         $id = $req->branch_id ?? 1;
         $emp_id = $req->emp_id ?? 1;
-        
         $res = Contract::createContract($req->all(),$emp_id);
         return JDV::raw($res);
     }

@@ -55,7 +55,7 @@ class Branch //extends Model
             'name_kh'=>'0|string|1-250',
             'website'=>'0|string|0-250',
             'address'=>'0|string|0-250',
-            'shortcut'=>'1|string|1-30',
+            // 'shortcut'=>'1|string|1-30',
             'phone_number'=>'0|string|1-20',
             'first_cp_name'=>'0|string|1-25',
             'first_cp_phone'=>'0|string|1-20',

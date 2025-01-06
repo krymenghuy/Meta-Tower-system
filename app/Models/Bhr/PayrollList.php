@@ -467,7 +467,7 @@ class PayrollList
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 3)
-                ->selectRaw('id,used_amount');
+                ->selectRaw('emp_benefit_id,used_amount');
 
                 $row->flat_tax_rate = DB::table('emp_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -477,32 +477,54 @@ class PayrollList
                 $emp_benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $row->emp_id)
                     ->count('id');
+                $row->emp_benefit_count = $emp_benefit_count;
+                $used_amount = [];
+                $flat_tax_rates = [];
 
                 if($emp_benefit_count > 1) {
                     $row->benefit_flat_rate = $row->benefit_flat_rate->get();
                     $row->flat_tax_rate = $row->flat_tax_rate->get();
+                    foreach ($row->flat_tax_rate as $flat_tax_rate) {
+                        if (!in_array($flat_tax_rate->flat_tax_rate, $flat_tax_rates)) {
+                            $flat_tax_rates[] = $flat_tax_rate->flat_tax_rate;
+
+                        }
+                    }
+                    foreach($flat_tax_rates as $flat_tax_rate) {
+                        $used_amount[$flat_tax_rate] = 0;
+                        foreach ($row->flat_tax_rate as $ftr) {
+                            if($ftr->flat_tax_rate == $flat_tax_rate) {
+                                foreach($row->benefit_flat_rate as $bftr) {
+                                    if($bftr->emp_benefit_id == $ftr->id) {
+                                        $used_amount[$flat_tax_rate] += $bftr->used_amount;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // \Log::info($used_amount);
+
+                    // \Log::info($flat_tax_rates);
                 }else {
                     $row->benefit_flat_rate = $row->benefit_flat_rate->first()->used_amount ?? 0;
                     $row->flat_tax_rate = $row->flat_tax_rate->first()->flat_tax_rate ?? 0;
-
                 }
-
-
-
+                $row->used_amount = $used_amount;
+                // $row->flat_tax_rates = $flat_tax_rates;
                 $row->tax_base = ($row->tax_base ?? 0);
                 $row->deduction = ($row->deduction ?? 0);
                 $row->allowance = ($row->allowance ?? 0);
                 $row->benefit_taxable = ($row->benefit_taxable ?? 0);
                 $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
                 $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
-                $row->flat_tax_rate = ($row->flat_tax_rate ?? 0);
+                $row->flat_tax_rate = ($flat_tax_rates ?? $row->flat_tax_rate ?? 0);
             }
 
         $success = 0;
         $error = 0;
         $success_ids = [];
         $error_ids = [];
-        return $payrolls;
+        // return $payrolls;
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;
@@ -523,8 +545,15 @@ class PayrollList
             $salary = ($full_salary/$day_in_month) * $payroll_days;
             $benefit_taxable = ($payroll->benefit_taxable/$day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax/$day_in_month) * $payroll_days;
+            \Log::info($payroll->benefit_flat_rate);
+            if($payroll->emp_benefit_count > 1) {
+                $benefit_flat_rate = 0;
+                foreach ($payroll->benefit_flat_rate as $bftr) {
+                    $benefit_flat_rate += $bftr->used_amount;
+                }
+            }else
             $benefit_flat_rate = ($payroll->benefit_flat_rate/$day_in_month) * $payroll_days;
-
+            return 1;
             // \Log::info('Payroll Days: ' . $payroll_days. ', Salary: ' . $salary . ', Benefit Taxable: ' . $benefit_taxable . ', Benefit Non Tax: ' . $benefit_non_tax . ', Benefit Flat Rate: ' . $benefit_flat_rate);
 
             $resigned_or_new_start = false;
