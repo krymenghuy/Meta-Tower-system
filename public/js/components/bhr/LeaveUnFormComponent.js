@@ -19,7 +19,15 @@ var LeaveUnFormComponent = new function () {
             title: "Day",
             className: 'align-middle text-capitalize',
             data: (data, index, tr) => {
-                return `<span class="d-block" style=" min-width:205px; "class=""><span class="text-primary-custom">${data.day}</span></span>`;
+                const employees = data.employees;
+                let rows = '';
+
+                let day = `<span class="d-block align-middle" style=" min-width:205px; height:72px;"class=""><span class="text-primary-custom">${data.day}</span></span>`;
+                employees.forEach((d,i) => {
+                    rows = [rows,day].join('');
+                });
+
+                return rows;
              }
         },
 
@@ -34,7 +42,7 @@ var LeaveUnFormComponent = new function () {
                 if (Array.isArray(employees) && employees.length > 0) {
                     employees.forEach((d,i) => {
                         rows = [rows,`
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 72px;">
                             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
                                 <img class="h-100" src="${d.image_url}" alt="" />
                             </div>
@@ -69,21 +77,15 @@ var LeaveUnFormComponent = new function () {
             title: "Shifts",
             className: "align-middle",
             data: (data, index, tr) => {
-                const shifts = data.shifts;
+                const shifts = data.shifts,
+                employees = data.employees ?? [];
                 console.log(shifts);
+                let shift_rows = '';
                 let rows = '';
-                rows = [rows,`<div class="d-flex gap-2 w-100">`].join('');
-
+                rows = [rows,`<div class="d-flex gap-2 w-100" style="height: 72px;">`].join('');
                 if (Array.isArray(shifts) && shifts.length > 0) {
                     shifts.forEach((shift,i) => {
-                        const actionClass =
-                            shift.action === "Check In" ||
-                            shift.action === "CheckIn"
-                                ? "bg-green"
-                                : shift.action === "Check Out" ||
-                                  shift.action === "CheckOut"
-                                ? "bg-gold"
-                                : "";
+                        const actionClass = shift.action === "Check In" || shift.action === "CheckIn" ? "bg-green" : shift.action === "Check Out" || shift.action === "CheckOut" ? "bg-gold" : "";
                         rows = [rows,`
                         <div class="shift_card ${actionClass} " style="width:150px !important;">
                             <div class="shift_element">
@@ -96,15 +98,20 @@ var LeaveUnFormComponent = new function () {
                             </div>
                         </div>
                         `].join('');
-
                     });
                 }
                 else  {
+                    let rows = '';
                     rows = [rows,`<div class="card p-4 bg-secondary no_shifts">No Shift</div>`].join('');
+                    shift_rows = [shift_rows,rows].join('');
                 }
                 rows = [rows,`</div>`].join('');
+                employees.forEach((d,i) => {
+                    shift_rows = [shift_rows,rows].join('');
+                });
+                // rows = [rows,`</div>`].join('');
 
-                return rows;
+                return shift_rows;
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
                 // return `<div class="d-flex flex-column">
                 //             <span class="text-success" style="font-size:11px;">${data.leave_date}</span>
@@ -196,6 +203,7 @@ var LeaveUnFormComponent = new function () {
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
                 const f = el.dataset.field;
+                if(f == 'start_date') p['date'] = el.value;
                 p[f] = el.value;
         });
 

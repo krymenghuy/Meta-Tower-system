@@ -38,7 +38,7 @@
                     </div>
                     <div class="form-group mx-auto d-none" style="max-width: 300px;">
                         <label for="card_number" class="form-label text-center "
-                            vslang="titles.Enter Enter Student Card Number">Please scan your card in this box</label>
+                            vslang="titles.Please scan your card in this box">Please scan your card in this box</label>
                         <input id="_scan_card_number" type="text" class="form-control" data-field="card_number"
                             plaeholder="Student ID" />
                     </div>

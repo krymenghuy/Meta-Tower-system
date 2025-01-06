@@ -219,8 +219,10 @@ class Leave
         $status_id = $d->status_id ?? null;
         $leave_type_id = $d->leave_type_id ?? null;
         $work_shift_id = $d->work_shift_id ?? null;
-        $start_date = $d->start_date ?? date('d-M-Y');
-        $end_date = $d->end_date ?? date('d-M-Y');
+        // $start_date = $d->start_date ?? date('d-M-Y');
+        // $end_date = $d->end_date ?? date('d-M-Y');
+        $start_date = $d->date ?? date('d-M-Y');
+        $end_date = $d->date ?? date('d-M-Y');
 
         $str_search = '1=1';
         $str_status = '2=2';
@@ -272,6 +274,7 @@ class Leave
                 $day = $filterDay['day'];
                 $ds = ShiftDetails::getScanTimes($rows, $day);
                 $leav_uninform['day'] = $day;
+    
                 foreach($ds as $scenTime){
                     $leav_uninform['shifts'][] = $scenTime;
                     $str_time = "(
@@ -289,7 +292,7 @@ class Leave
                     // return $work_shifts[0];
                     
                     foreach($employees as $emp){
-                        $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
+                        $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->whereRaw($strsearch_date)->value('id');
                         if(!$has_checked_in_m){
                             $emp->leave_date = $today;
                             $emp->leave_type = 'Uninformed';
