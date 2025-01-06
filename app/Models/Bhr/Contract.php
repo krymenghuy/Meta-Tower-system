@@ -13,7 +13,8 @@ class Contract
 {
     static function getBranchInfo($branch_id){
         $row = DB::table('um_branches as b')->where('id',$branch_id)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.city_id, b.director_id')->first();
-        if(!$row) return null;
+        // if(!$row) return null;
+        if (!$row) return DV::error('Please, Select Branch.');
         $city = City::getById($row->city_id);
         $row->city = $city ? $city->name : '';
         $row->director = self::getBranchDirector($row->director_id);
@@ -41,15 +42,16 @@ class Contract
     static function createContract($arr,$emp_id)
     {
         $d = (object)$arr;
+        // \Log::info($arr);
 
-        $com_rep_branch = $d->branch_id ?? null;
+        $com_rep_branch = $d->id ?? null;
         $com_rep_name = $d->director_id ?? null;
         $com_rep_nid = $d->nid ?? null;
         $com_rep_sex  = $d->sex ?? null;
         $com_rep_phone = $d->phone_number ?? null;
         $com_address = $d->address_kh ?? null;
 
-        $emp_branch = $d->branch_id ?? null;
+        $emp_branch = $d->id ?? null;
         $emp_name = $d->emp_name ?? null;
         $emp_sex  = $d->sex ?? null;
         $emp_position = $d->position ?? null;
@@ -58,10 +60,12 @@ class Contract
         $emp_address = $d->address ?? null;
         
         
-        $branch = self::getBranchInfo($com_rep_branch);
-        if(!$branch) return DV::error('Pleases, Select branch.');
+         $branch = self::getBranchInfo($com_rep_branch);
+        //  \Log::info((array)$branch);
+        //  return $branch->director->sex;
+        if(!$com_rep_branch) return DV::error('Please, Select branch.');
         if(!$emp_id) return DV::error('Pleases, Select Employee.');
-        $director = $branch->director;
+        $director = $branch->director_id;
         // Fetch employee data from the database
         
         $emp = DB::table('employees as e')
@@ -72,14 +76,14 @@ class Contract
         
         // Define placeholders and default values
         $data = [
-            'com_address' => $com_address ? $com_address: $branch->address_kh,
-            'com_city' => $branch->city,
-            'com_rep_branch' => $branch->name,
+            'com_address' =>isset($branch->address_kh) ? $branch->address_kh : null,
+            'com_city' => isset($branch->city) ? $branch->city : null,
+            'com_rep_branch' => isset($branch->name) ? $branch->name : null,
             'com_rep_name'=> $director->name ?? '<Director Name>',
-            'com_rep_sex' => self::getSex($director->sex),
-            'com_rep_dob' => getKhmerDate($director->date_of_birth),
-            'com_rep_nid' => $director->nid,
-            'com_rep_phone' => $director->phone_number,
+            'com_rep_sex' => self::getSex($branch->director->sex),
+            'com_rep_dob' => getKhmerDate($branch->director->date_of_birth),
+            'com_rep_nid' => $branch->director->nid,
+            'com_rep_phone' => $branch->director->phone_number,
             'emp_name' => $emp->name_kh ?? $emp->name,
             'emp_code' => $emp->code,
             'emp_sex' => self::getSex($emp->sex),
