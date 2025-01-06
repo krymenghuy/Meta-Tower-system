@@ -2201,11 +2201,19 @@ var EmployeeComponent = new (function () {
         EmployeeDialog.show(op);
     };
     this.CreateContract = (id) => {
+        if(!mThis.el_branch.value ){
+            cv_interact.error('Branch is Empty. Please Select branch!');
+            return;
+        }
         const op = {
             id:mThis.el_branch.value,
             emp_id: id,
-            branch_id: mThis.el_branch.value,
+            // branch_id: mThis.el_branch.value,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            },
         };
+        
         CreateContractDialog.show(op);
     
         // const queryString = new URLSearchParams(op).toString();

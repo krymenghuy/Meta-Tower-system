@@ -240,7 +240,7 @@ var ReportCenterComponent = new (function () {
             .on("click", function (e) {
                 e.preventDefault();
                 if (!AuthManager.allowed(`${mThis.permissionID}.print`)) return;
-                windowPrint();
+                windowPrint(html);
             });
 
         container

@@ -482,33 +482,33 @@ class Attendance
 
     function getLastEmployeesScan($arr=[],$ss=null){
         $d = (object)$arr;
-        $subs_id = $ss->subs_id??getCurentSubsId(true);
+        $ss = $ss ?? $this->ss;
+        $subs_id = $ss->subs_id;
         $per_page = $d->per_page ?? 0;
 
-        $query = DB::table('students as s')
-        ->join('student_attendances as sa','s.id','=','sa.student_id')
-        ->join('student_groups as sg','sa.group_id','=','sg.id')
-        ->selectRaw('sa.in_diff_time,sa.out_diff_time,s.id as student_id,s.name,s.name_kh,s.sex,s.date_of_birth,s.phone_number,s.email,sg.session_id,sg.level_id,s.file_name,sa.checkin_time,sa.checkout_time,sa.in_remarks,out_remarks,sa.session_date,s.code,sa.enrollment_id');
-        $rows = $query->orderBy('sa.updated_at','DESC')->take($per_page)->get();
-        foreach ($rows as $row) {
-            $row->session = GeneralSettings::getSession($row->session_id)->name;
-            $url = PublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
-            $row->image_url = validateUrl($url,Student::getDefaulPhoto($ss));
+        $query = DB::table('employees as emp')
+        ->join('emp_attendances as att','att.emp_id','=','emp.id')
+        ->selectRaw('emp.id,emp.name,emp.code,att.scan_time,att.scan_action');
+        $rows = $query->orderBy('att.updated_at','DESC')->take($per_page)->get();
+        // foreach ($rows as $row) {
+        //     $row->session = GeneralSettings::getSession($row->session_id)->name;
+        //     $url = PublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
+        //     $row->image_url = validateUrl($url,Student::getDefaulPhoto($ss));
 
-            $row->date_of_birth = date('d M Y', strtotime($row->date_of_birth));
-            $row->session_date = date('d M Y', strtotime($row->session_date));
-            $row->level = GeneralSettings::getLevel($row->level_id)->name;
-            $row->in_remarks = formatMinsTime($row->in_diff_time);
-            $row->out_remarks = formatMinsTime($row->out_diff_time);
+        //     $row->date_of_birth = date('d M Y', strtotime($row->date_of_birth));
+        //     $row->session_date = date('d M Y', strtotime($row->session_date));
+        //     $row->level = GeneralSettings::getLevel($row->level_id)->name;
+        //     $row->in_remarks = formatMinsTime($row->in_diff_time);
+        //     $row->out_remarks = formatMinsTime($row->out_diff_time);
 
-            $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
-                                    ->join('guardians as g','sg.guardian_id','=','g.id')
-                                    ->selectRaw('g.phone_number')
-                                    ->get();
-            $row->family_id = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)->selectRaw('sg.family_code as family_id')->distinct()->first()->family_id;
-            unset($row->file_name);
-        }
-        return $rows;
+        //     $row->parent_phone = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)
+        //                             ->join('guardians as g','sg.guardian_id','=','g.id')
+        //                             ->selectRaw('g.phone_number')
+        //                             ->get();
+        //     $row->family_id = DB::table('student_guardians as sg')->where('sg.student_id',$row->student_id)->selectRaw('sg.family_code as family_id')->distinct()->first()->family_id;
+        //     unset($row->file_name);
+        // }
+        return DV::depends(1,$rows);
     }
 
     static function getWorkShift($scan_date){

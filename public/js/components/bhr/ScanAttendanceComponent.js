@@ -95,7 +95,7 @@ var ScanAttendanceComponent = new function () {
         Swal.fire({
             title: "Employee Information",
             html: mThis.renderEmployee(d),
-            timer: 3000,
+            timer: 5000,
             timerProgressBar: true,
             didOpen: () => {
                 Swal.showLoading();
@@ -112,7 +112,7 @@ var ScanAttendanceComponent = new function () {
     }
 
     this.renderEmployee = (d) => {
-
+        console.log(555,d);
        
         const html = `<div class="d-flex">
             <div class="d-flex align-items-center justify-content-center w-50">
@@ -132,14 +132,6 @@ var ScanAttendanceComponent = new function () {
                         <div class="d-flex">
                             <p class="text-start p-0 m-0 width-p-in-popup">Employee ID</p>
                             <p class="p-0 m-0">${d.employee_code ?? ''}</p>
-                        </div>
-                        <div class="d-flex">
-                            <p class="text-start p-0 m-0 width-p-in-popup">Grade</p>
-                            <p class="p-0 m-0">${d.level ?? ''}</p>
-                        </div>
-                        <div class="d-flex">
-                            <p class="text-start p-0 m-0 width-p-in-popup">Group</p>
-                            <p class="p-0 m-0">${d.group ?? ''}</p>
                         </div>
                         <div class="d-flex">
                             <p class="text-start p-0 m-0 width-p-in-popup">Status</p>
@@ -177,13 +169,13 @@ var ScanAttendanceComponent = new function () {
                         <th class="Employee-ID">Employee ID</th>
                         <th class="Employee-Name">Employee Name</th>
                         <th class="Session">Session</th>
-                        <th class="Check-In">Check-In</th>
-                        <th class="Check-Out">Check-Out</th>
+                        <th class="Check-In">Scan Time</th>
+                        <th class="Check-Out">Scan Action </th>
                     </tr>
                 </thead>
         `;
         console.log(234,per_page);
-        vsapi.call(`${mThis.base_url}/api/employee/attendance/last-employees-scan`, {
+        vsapi.call(`${mThis.base_url}/hr/employee/attendance/last-employees-scan`, {
             "per_page":per_page
         }, null, false).then(res => {
             console.log(123,res);
@@ -211,7 +203,7 @@ var ScanAttendanceComponent = new function () {
                                         <span>${s.checkin_time ?? ''}</span>
                                     </div>
                                 </td>
-                                <td class="align-middle Check-Out">${s.checkout_time ?? ''}</td>
+                                <td class="align-middle Check-Out">${s.scan_action ?? ''}</td>
                             </tr>`].join('');
                         }),rows ?? ''
                     }
