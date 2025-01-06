@@ -83,7 +83,7 @@ class AttendanceController extends Controller
     function scanAttendance(Request $req){
         $branch_id =null;
         $subs_id = getCurrentSubsId(true);
-        $ss = (object)[''=>$subs_id,'branch_id'=>$branch_id,'lang'=>'en'];
+        $ss = (object)['subs_id'=>$subs_id,'branch_id'=>$branch_id,'lang'=>'en'];
         $instance = new Attendance(null,$ss);
         $save = $instance->scanAttendance($req->all(),$ss);
         return JDV::raw($save);
@@ -92,7 +92,7 @@ class AttendanceController extends Controller
     function getLastEmployeesScan(Request $req){
         $branch_id =null;
         $subs_id = getCurrentSubsId(true);
-        $ss = (object)[''=>$subs_id,'branch_id'=>$branch_id,'lang'=>'en'];
+        $ss = (object)['subs_id'=>$subs_id,'branch_id'=>$branch_id,'lang'=>'en'];
         $instance = new Attendance(null,$ss);
         $save = $instance->getLastEmployeesScan($req->all(),$ss);
         return JDV::raw($save);

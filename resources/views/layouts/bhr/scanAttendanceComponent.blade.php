@@ -43,7 +43,7 @@
                             plaeholder="Student ID" />
                     </div>
                 </div>
-                <div class="row " style="height: 150px;">
+                <div class="row " style="height: 200px;">
                     <div id="employee_Info_container" class="img-container gap-3 mt-3" style="min-height:45vh"></div>
                 </div>
             </div>
