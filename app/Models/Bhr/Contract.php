@@ -43,90 +43,80 @@ class Contract
     {
         $d = (object)$arr;
         $com_rep_branch = $d->id ?? null;
-        $com_rep_name = $d->director_id ?? null;
-        $com_rep_nid = $d->nid ?? null;
-        $com_rep_sex  = $d->sex ?? null;
-        $com_rep_phone = $d->phone_number ?? null;
-        $com_address = $d->address_kh ?? null;
-
-        $emp_branch = $d->id ?? null;
-        $emp_name = $d->emp_name ?? null;
-        $emp_sex  = $d->sex ?? null;
-        $emp_position = $d->position ?? null;
-        $emp_nid = $d->nid ?? null;
-        $emp_phone = $d->phone ?? null;
-        $emp_address = $d->address ?? null;
-        
-        
-        $branch = self::getBranchInfo($com_rep_branch);
-        if(!$com_rep_branch) return DV::error('Please, Select branch.');
-        if(!$emp_id) return DV::error('Pleases, Select Employee.');
-        $director = $branch->director_id;
-        // Fetch employee data from the database
-        
+        if (!$com_rep_branch) {
+            return DV::error('Please, Select branch.');
+        }
+        if (!$emp_id) {
+            return DV::error('Please, Select Employee.');
+        }
         $emp = DB::table('employees as e')
             ->join('positions as p','p.id','=','e.position_id')
             ->where('e.id', $emp_id)
             ->selectRaw('e.id,e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,e.joining_date ')
             ->first();
+      
+        
+        $branch = self::getBranchInfo($com_rep_branch);
+        $director =$d->branch_name ?? $branch->director;
+        $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
+        $com_rep_nid = $d->com_rep_nid ?? $director->nid;
+        $com_rep_sex = $d->com_rep_sex ?? $director->sex;
+        $com_rep_phone = $d->com_rep_phone ?? $director->phone_number;
+        $com_address = $d->branch_address ?? $branch->address_kh;
+
+        $emp_branch = $d->branch_name ?? $emp->branch; 
+        $emp_name = $d->name_kh ?? $emp->name_kh;
+        $emp_sex = $d->emp_sex ?? $emp->sex;
+        $emp_position = $d->emp_position ?? $emp->position;
+        $emp_nid = $d->emp_nid ?? $emp->nid;
+        $emp_phone = $d->emp_phone ?? $emp->phone_number;
+        $emp_address = $d->emp_address ?? $emp->address;
+        // Fetch employee data from the database
+        
+        
         
         // Define placeholders and default values
-        $data = [
-            'com_address' =>isset($branch->address_kh) ? $branch->address_kh : null,
-            'com_city' => isset($branch->city) ? $branch->city : null,
-            'com_rep_branch' => isset($branch->name) ? $branch->name : null,
-            'com_rep_name'=> $director->name ?? '<Director Name>',
-            'com_rep_sex' => self::getSex($branch->director->sex),
+          $data = [
+            'com_address' => $com_address,
+            // 'com_city' => $branch->city ?? '',
+            'com_rep_branch' => $com_rep_name,
+            'com_rep_name' => $director,
+            'com_rep_sex' => self::getSex($com_rep_sex),
             'com_rep_dob' => getKhmerDate($branch->director->date_of_birth),
-            'com_rep_nid' => $branch->director->nid,
-            'com_rep_phone' => $branch->director->phone_number,
-            'emp_name' => $emp->name_kh ?? $emp->name,
+            'com_rep_nid' =>  $com_rep_nid,
+            'com_rep_phone' => $com_rep_phone,
+            'emp_name' => $emp_name,
             'emp_code' => $emp->code,
-            'emp_sex' => self::getSex($emp->sex),
-            'emp_phone' => $emp->phone_number ?? '',
-            'emp_nid' => $emp->nid ?? '',
+            'emp_sex' => self::getSex($emp_sex),
+            'emp_phone' => $emp_phone,
+            'emp_nid' => $emp_nid,
             'start_date' => getKhmerDate($emp->joining_date),
             'end_date' => getKhmerDate(self::calculateEndDate($emp->joining_date)),
-            'position' => $emp->position ?? '',
-            'emp_address' => $emp->address ?? '',
-            'branch' => $branch->name,
+            'position' => $emp_position,
+            'emp_address' => $emp_address,
+            'branch' => $emp_branch,
             'emp_dob' => getKhmerDate($emp->date_of_birth),
-            'signature_date'=>getKhmerDate(null)
+            'signature_date' => getKhmerDate(null),
         ];
 
         // Define the template path
         $base_path = base_path();
-        $base_path = str_replace('\\',"/",$base_path);
-        $templatePath = $base_path . '/storage/doc_templates/staff_contract_unlimited.docx';
-
+        // $base_path = str_replace('\\',"/",$base_path);
+        // $templatePath = $base_path . '/storage/doc_templates/staff_contract_unlimited.docx';
+        $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
         if (!file_exists($templatePath)) {
             \Log::info("Contract Template file not found at {$templatePath}");
             return;
         }
-
+        
+        
         // Load the template
         $templateProcessor = new TemplateProcessor($templatePath);
-        //$templateContent = file_get_contents($templatePath); // Log raw content
-        //\Log::info("Template Content: " . $templateContent);
-        //$placeholders = $templateProcessor->getVariables();
- 
-        // $zip = new ZipArchive;
-        // if ($zip->open($templatePath) === TRUE) {
-        //     $xmlContent = $zip->getFromName('word/document.xml');
-        //     \Log::info("Template XML Content: " . $xmlContent);
-        //     $zip->close();
-        // } else {
-        //     \Log::info("Failed to open DOCX file.");
-        // }
  
         // Replace placeholders with actual values
         foreach ($data as $key => $value) {
             $templateProcessor->setValue($key, $value);
-            // if ($templateProcessor->setValue($key, $value)) {
-            //     \Log::info ( "Successfully replaced {$key} with {$value}\n");
-            // } else {
-            //     \Log::info( "Failed to replace {$key}\n");
-            // }
+          
         }
 
         // Create a temporary file in memory
