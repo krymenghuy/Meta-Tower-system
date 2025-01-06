@@ -101,7 +101,7 @@ var EmployeeBenefitComponent = new (function () {
             title: "Flat Tax Rate",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.flat_tax_rate ?? ""} %</p>`;
+                return `<p class="p-0 m-0">${data.flat_tax_rate ?? "0"} %</p>`;
             },
         },
         {
@@ -151,11 +151,11 @@ var EmployeeBenefitComponent = new (function () {
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
         mThis.elSearch.addEventListener(
             "keyup",

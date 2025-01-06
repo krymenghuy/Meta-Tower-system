@@ -117,11 +117,11 @@ var ExitFormComponent = new (function () {
 
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 250 + "px";
+        sh_parent.style.height = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         };
         mThis.initDropdownMenus(pr_tbl);
 
@@ -681,7 +681,7 @@ function check_box(event) {
         let op = {};
         op.check_point_id = event.target.dataset.id;
         op.form_id = form_id;
-        op.check_id = 1;
+        op.status_id = 1;
 
         console.log(8888, op);
         vsapi
@@ -697,14 +697,11 @@ function check_box(event) {
                     return;
                 } else cv_interact.error(res.error_message);
             });
-
-
-
     } else {
         let op = {};
         op.check_point_id = event.target.dataset.id;
         op.form_id = form_id;
-        op.check_id = 0;
+        op.status_id = 0;
         console.log("uncheck");
         vsapi
             .call(
@@ -715,6 +712,7 @@ function check_box(event) {
             )
             .then((res) => {
                 if (res.status_code == 200) {
+                    return;
                 } else cv_interact.error(res.error_message);
             });
     }
