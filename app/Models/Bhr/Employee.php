@@ -1207,7 +1207,7 @@ class Employee //extends Model
 
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
-        }
+        }else return DV::error('Branch Can not be Empty!');
 
         $branch = self::getBranchInfo($emp->branch_id);
         $emp->branch_name = $branch->name;

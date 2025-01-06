@@ -82,9 +82,9 @@ const CreateContractDialog = (()=>{
                
             </div>`].join('');
             },
-            configSelect:[
+            // configSelect:[
               
-            ],
+            // ],
             contentCreated:(me)=>{
               //initialize div_user_photo, making it become an ImageBox that contains functionality (upload image, display image of user)
               //   me.controls.userImageBox = new ImageBox(me.controls.div_user_photo,{cssClass:"data-input",dataset:{"field":"photo"}});
@@ -133,7 +133,7 @@ const CreateContractDialog = (()=>{
                     return { id: op.id };
                 },
                   onResponse: (me, res) => {
-                    console.log(123,res.data);
+                    // console.log(123,res.data);
                     
                     
                 },
@@ -166,12 +166,14 @@ const CreateContractDialog = (()=>{
                 cssClass:"btn btn-sm btn-primary",
                 click:(me)=>{
                   let op = me.getData();
-                    console.log(123456,op);
+                    // console.log(123456,op);
                     
                 const queryString = new URLSearchParams(op).toString();
                 const url = `${main_view.base_url}/create-contract?${queryString}`;
-            
                 window.open(url, '_blank', 'noopener,noreferrer');
+                me.modal.hide(true, op);
+
+                
                 }
               }  
             ],
