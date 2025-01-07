@@ -142,7 +142,7 @@ var EmployeeComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Create Contract">Create Contract</span>',
-                    icon: `<i class="fa-solid text-dark fa-download"></i>`,
+                    icon: `<i class="fa-solid text-primary fa-download"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract",
                 },
