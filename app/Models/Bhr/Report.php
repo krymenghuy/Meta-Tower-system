@@ -672,56 +672,58 @@ class Report {
             'list' => $groupedData,//$rows,//
             'company_profile' => CompanyProfile::details($ss)
         ];
-    } 
+    }
 
-    function getPrintEmployeeCV($filter,$ss=null) {
+    function getPrintEmployeeCV($filter, $ss = null)
+    {
+        $header_list = ['Name', 'Kh name', 'Position', 'Email', 'Sex', 'Phone Number', 'Address', 'Action'];
+        $key_list = ['name', 'name_kh', 'position_id', 'email', 'sex', 'phone_number', 'address', 'action'];
 
-    
-        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
-        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
-
-        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
-        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
         $d = (object)$filter;
-        $campus_id = isset($d->campus_id)?$d->campus_id:null;
-        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
-        $branch_ids = getAccessBranches($ss,$branch_id);
-        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
-        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
-        $str_between_date = '1=1';
+        $campus_id = isset($d->campus_id) ? $d->campus_id : null;
+        $branch_id = isset($d->branch_id) ? $d->branch_id : $campus_id;
+        $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $str_branch_id = '2=2';
-        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
-        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
-        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
+
+        if ($start_date && $end_date) {
+            $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        }
+        if ($branch_id) {
+            $str_branch_id = 'emp.branch_id = ' . $branch_id;
+        }
+
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.name_kh, emp.phone_number, emp.code, emp.sex, emp.email, emp.address, emp.joining_date')
         ->whereRaw($str_branch_id);
         $rows = $query->get();
 
         $groupedData = [];
-        $feeTotals = [];
-        // $d = [];
-        foreach($rows as $row){
+        foreach ($rows as $row) {
+            // Add the action field
+            $row->action = '<a href="/hr/experience/list-all"><i class="fa fa-eye ml-3"></i></a>';
             unset($row->id);
         }
-        $groupedData['data']= $rows;
+        $groupedData['data'] = $rows;
 
         $title = 'Print Employee CV';
-        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        $sub_title = $start_date && $end_date ? $start_date . ' to ' . $end_date : 'N/A to N/A';
         return (object)[
             'title' => $title,
             'sub_title' => $sub_title,
             'form' => 'simple',
             'header' => $headers,
-            'list' => $groupedData,//$rows,//
+            'list' => $groupedData,
             'company_profile' => CompanyProfile::details($ss)
         ];
-    } 
+    }
+
 
     function getPayrollExpensesByMonth($filter,$ss=null) {
-
     
         $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
         $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
@@ -732,13 +734,10 @@ class Report {
         $d = (object)$filter;
         $campus_id = isset($d->campus_id)?$d->campus_id:null;
         $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
-        $branch_ids = getAccessBranches($ss,$branch_id);
         $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
         $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
-        $str_between_date = '1=1';
         $str_branch_id = '2=2';
         if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
-        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
         if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
@@ -747,8 +746,6 @@ class Report {
         $rows = $query->get();
 
         $groupedData = [];
-        $feeTotals = [];
-        // $d = [];
         foreach($rows as $row){
             unset($row->id);
         }
@@ -761,7 +758,7 @@ class Report {
             'sub_title' => $sub_title,
             'form' => 'simple',
             'header' => $headers,
-            'list' => $groupedData,//$rows,//
+            'list' => $groupedData,
             'company_profile' => CompanyProfile::details($ss)
         ];
     } 
