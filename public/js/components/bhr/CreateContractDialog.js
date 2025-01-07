@@ -18,7 +18,7 @@ const CreateContractDialog = (()=>{
                             <label for="" class="form-label " vslang="titles.Director"> </label>
                             <input name="director-name" class="form-control data-input" data-field="com_rep_name" readonly />
                         </div>
-                        <div class="form-group w-100">
+                        <!-- <div class="form-group w-100">
                             <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                             <select class="form-control data-input" data-field="com_rep_sex">
                                 <option value="">(Select Sex)</option>
@@ -26,7 +26,7 @@ const CreateContractDialog = (()=>{
                                 <option value="F">Female</option>
                                 <option value="O">Other</option>
                             </select>
-                        </div> 
+                        </div> -->
                         
                            <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.ID Card"></label>
@@ -49,7 +49,7 @@ const CreateContractDialog = (()=>{
                             <input name="emp-name" class="form-control data-input" data-field="name_kh" readonly />
                         </div>
 
-                        <div class="form-group w-100">
+                        <!-- <div class="form-group w-100">
                             <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                             <select class="form-control data-input" data-field="emp_sex">
                                 <option value="">(Select Sex)</option>
@@ -57,7 +57,7 @@ const CreateContractDialog = (()=>{
                                 <option value="F">Female</option>
                                 <option value="O">Other</option>
                             </select>
-                        </div> 
+                        </div> -->
                         <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.Position"></label>
                             <input name="emp-position" class="form-control data-input" data-field="emp_position"  readonly />

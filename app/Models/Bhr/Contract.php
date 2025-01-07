@@ -60,13 +60,13 @@ class Contract
         $director =$d->branch_name ?? $branch->director;
         $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
         $com_rep_nid = $d->com_rep_nid ?? $director->nid;
-        $com_rep_sex = $d->com_rep_sex ?? $director->sex;
+        $com_rep_sex = $branch->director->sex;
         $com_rep_phone = $d->com_rep_phone ?? $director->phone_number;
         $com_address = $d->branch_address ?? $branch->address_kh;
 
         $emp_branch = $d->branch_name ?? $emp->branch; 
         $emp_name = $d->name_kh ?? $emp->name_kh;
-        $emp_sex = $d->emp_sex ?? $emp->sex;
+        $emp_sex = $emp->sex;
         $emp_position = $d->emp_position ?? $emp->position;
         $emp_nid = $d->emp_nid ?? $emp->nid;
         $emp_phone = $d->emp_phone ?? $emp->phone_number;
@@ -76,7 +76,7 @@ class Contract
         
         
         // Define placeholders and default values
-          $data = [
+           $data = [
             'com_address' => $com_address,
             // 'com_city' => $branch->city ?? '',
             'com_rep_branch' => $com_rep_name,
