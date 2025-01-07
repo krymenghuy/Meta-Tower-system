@@ -38,6 +38,39 @@ class Contract
         }
         return Carbon::parse($startDate)->addMonths(3)->format('Y-m-d');
     }
+    static function convertToKhmerWords($number) {
+        $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
+        $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
+    
+        // Convert the number to an integer if it ends with .00
+        if (strpos($number, '.') !== false) {
+            $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
+        }
+    
+        // Split the number into integer and decimal parts
+        $parts = explode('.', strval($number));
+        $integerPart = $parts[0];
+    
+        // Convert the integer part
+        $integerInWords = '';
+        $length = strlen($integerPart);
+    
+        for ($i = 0; $i < $length; $i++) {
+            $digit = $integerPart[$i];
+            $position = $length - $i - 1;
+    
+            if ($digit !== '0') {
+                $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
+            }
+    
+            if ($position % 4 === 0 && $position !== 0) {
+                $integerInWords .= 'លាន ';
+            }
+        }
+    
+        return trim($integerInWords);
+    }
+    
     
     static function createContract($arr,$emp_id)
     {
@@ -52,7 +85,7 @@ class Contract
         $emp = DB::table('employees as e')
             ->join('positions as p','p.id','=','e.position_id')
             ->where('e.id', $emp_id)
-            ->selectRaw('e.id,e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,e.joining_date ')
+            ->selectRaw('e.id,e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,p.salary,e.joining_date ')
             ->first();
       
         
@@ -68,6 +101,7 @@ class Contract
         $emp_name = $d->name_kh ?? $emp->name_kh;
         $emp_sex = $emp->sex;
         $emp_position = $d->emp_position ?? $emp->position;
+        $emp_salary = $emp->salary;
         $emp_nid = $d->emp_nid ?? $emp->nid;
         $emp_phone = $d->emp_phone ?? $emp->phone_number;
         $emp_address = $d->emp_address ?? $emp->address;
@@ -76,9 +110,9 @@ class Contract
         
         
         // Define placeholders and default values
-           $data = [
+        $data = [
             'com_address' => $com_address,
-            // 'com_city' => $branch->city ?? '',
+            'com_city' => $branch->city,
             'com_rep_branch' => $com_rep_name,
             'com_rep_name' => $director,
             'com_rep_sex' => self::getSex($com_rep_sex),
@@ -93,6 +127,11 @@ class Contract
             'start_date' => getKhmerDate($emp->joining_date),
             'end_date' => getKhmerDate(self::calculateEndDate($emp->joining_date)),
             'position' => $emp_position,
+            'salary_level' => $emp_salary,
+            'khr_amount' => $emp_salary,
+            'khr_amount_in_word' => self::convertToKhmerWords($emp_salary),
+            'khr_salary' => $emp_salary,
+            'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
             'emp_address' => $emp_address,
             'branch' => $emp_branch,
             'emp_dob' => getKhmerDate($emp->date_of_birth),
