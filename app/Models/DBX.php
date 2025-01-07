@@ -15,8 +15,8 @@ class DBX
     */
     public static function query_user_info($table_alias= null,$update_date_alias= null,$include_creation_info = true, $create_date_alias =null ){
         if($table_alias) $table_alias = $table_alias.'.';
-        if(!$include_creation_info) return self::formatTime($table_alias.self::$updated_at,$update_date_alias);
-        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).','.self::formatTime($table_alias.self::$created_at,$create_date_alias);
+        if(!$include_creation_info) return self::formatTime($table_alias.self::$updated_at,$update_date_alias).',update_user';
+        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).',update_user,create_user,'.self::formatTime($table_alias.self::$created_at,$create_date_alias); 
     }
 
     public static function ifNull($col_name, $alt_column_or_value, $col_alias = null)
