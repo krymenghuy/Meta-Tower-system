@@ -12,6 +12,7 @@ var PayrollComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_search_payroll");
     let cloneTable = null;
+    let div = mThis.self.querySelector("#_payroll_list");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -59,7 +60,10 @@ var PayrollComponent = new (function () {
         {
             title: "Staff Count",
             className: "align-middle",
-            data: (data) => `<span class="text-success">${data.head_count}</span>`
+            data: (data) => `
+              <a href="javascript:void(0)" class="view_payroll_list" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                    <span class="text-success">${data.head_count}</span>
+              </a>`
         },
         {
             title: "Total",
@@ -135,9 +139,8 @@ var PayrollComponent = new (function () {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-end align-items-end">
-                    <a href="javascript:void(0)"
-                       class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
-                       data-id="${data.id}" data-authorized="${data.authorized}" >
+                    <a href="javascript:void(0)" class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
+                        data-id="${data.id}" data-authorized="${data.authorized}" >
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
                 </div>`
@@ -210,6 +213,24 @@ var PayrollComponent = new (function () {
 
         this.cloneTable = mThis.self.querySelector('#_payroll_list');
         console.log(7777,mThis.cloneTable.querySelector('tr'));
+
+        const view_payroll_list = div.querySelectorAll(".view_payroll_list");
+        view_payroll_list.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const payrollId = e.target.dataset.id;
+                console.log(123,payrollId);
+
+                const data = mThis.PayrollListView.getData();
+                const payrollData = data.find((payroll) => payroll.id == payrollId);
+
+                if (payrollData) {
+                    mThis.showPayrollList(payrollData);
+
+                }
+
+
+            });
+        });
 
         mThis.initAlready = true;
     };
