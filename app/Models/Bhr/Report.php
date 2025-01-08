@@ -193,8 +193,8 @@ class Report {
     function getPayrollList($filter,$ss=null) {
 
     
-        $header_list = ['Employee','Salary','Benefit','Deduction','Allowance','Tax Rate','Bias','Tax Base','Benefit Tax','	Total'];
-        $key_list = ['employee','salary','benefit','deduction','allowance','tax_rate','bias','tax_base','benefit_tax','total_salary'];
+        $header_list = ['Payroll', 'Employee','Salary','Deduction','Allowance','Tax Rate','Bias','Tax Base','Benefit Tax','	Total'];
+        $key_list = ['payroll_name', 'employee','salary', 'deduction','allowance','tax_rate','bias','tax_base','benefit_tax','total_salary'];
 
         $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name',$header_list,$key_props);
@@ -224,7 +224,7 @@ class Report {
                         b.name as branch_name,
                         pl.salary,
                         emp.apply_payroll_tax,
-                        pl.benefit,
+                        pl.payroll_id,
                         pl.deduction,
                         pl.tax_rate,
                         pl.bias,
