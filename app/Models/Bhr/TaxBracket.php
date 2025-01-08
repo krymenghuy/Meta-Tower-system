@@ -25,13 +25,17 @@ class TaxBracket
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'lower_amount' => '1|decimal',
-            'upper_amount' => '1|decimal',
+            'lower_amount' => '1|number',
+            'upper_amount' => '1|number',
             'rate' => '1|number',
             'bias' => '1|number',
         ];
+        $checkUnique = [
+            "$branch_id|tax_brackets|lower_amount,upper_amount|id=id|text= already exists by tax bracket."
+        ];
+        
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -48,33 +52,30 @@ class TaxBracket
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
+    
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
-
-        $search_value = $d->search_value ?? null;
-
-        $str_search = '1=1';
-        $update_date = DBX::formatTime("tb.update_date",'update_date');
-        $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.update_user,'.$update_date.' ')
-            ->where('tb.branch_id', $ss->branch_id);
-
+    
         
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->where('tb.lower_amount', 'like', '%' . $search_value . '%' . 'or' . 'tb.upper_amount', 'like', '%' . $search_value . '%');
-        }
+    
+        $update_date = DBX::formatTime("tb.update_date", 'update_date');
+        $query = DB::table('tax_brackets as tb')
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias, tb.update_user, ' . $update_date)
+            ->where('tb.branch_id', $branch_id)
+            ->orderBy('tb.lower_amount', 'asc') // Order by lower_amount first
+            ->orderBy('tb.upper_amount', 'asc'); // Then order by upper_amount
+    
+    
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+    
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+    
 
     function getDetails($id, $ss)
     {
