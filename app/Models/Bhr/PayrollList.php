@@ -454,14 +454,13 @@ class PayrollList
                     ->where('emp_id', $row->emp_id)
                     ->where('payroll_id', $row->payroll_id)
                     ->where('tax_option_id', 1)
-                    ->value('used_amount');
+                    ->selectRaw('emp_benefit_id,used_amount');
 
                 $row->benefit_non_tax = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 2)
-                ->value('used_amount');
-
+                ->selectRaw('emp_benefit_id,used_amount');
 
                 $row->benefit_flat_rate = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -480,6 +479,19 @@ class PayrollList
                 $row->emp_benefit_count = $emp_benefit_count;
                 $used_amount = [];
                 $flat_tax_rates = [];
+
+                if ($emp_benefit_count > 1) {
+                    $row->benefit_taxable = $row->benefit_taxable->get();
+                    $row->benefit_non_tax = $row->benefit_non_tax->get();
+
+                    $row->benefit_taxable = $row->benefit_taxable->sum('used_amount');
+                    $row->benefit_non_tax = $row->benefit_non_tax->sum('used_amount');
+                }else {
+                    $row->benefit_taxable = $row->benefit_taxable->first();
+                    $row->benefit_non_tax = $row->benefit_non_tax->first();
+                    $row->benefit_taxable = $row->benefit_taxable->used_amount;
+                    $row->benefit_non_tax = $row->benefit_non_tax->used_amount;
+                }
 
                 if($emp_benefit_count > 1) {
                     $row->benefit_flat_rate = $row->benefit_flat_rate->get();
@@ -524,7 +536,7 @@ class PayrollList
         $error = 0;
         $success_ids = [];
         $error_ids = [];
-        // return $payrolls;
+        return $payrolls;
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;
@@ -554,7 +566,6 @@ class PayrollList
             }else
             $benefit_flat_rate = ($payroll->benefit_flat_rate/$day_in_month) * $payroll_days;
             return 1;
-            // \Log::info('Payroll Days: ' . $payroll_days. ', Salary: ' . $salary . ', Benefit Taxable: ' . $benefit_taxable . ', Benefit Non Tax: ' . $benefit_non_tax . ', Benefit Flat Rate: ' . $benefit_flat_rate);
 
             $resigned_or_new_start = false;
             $count_date = $payroll_days;

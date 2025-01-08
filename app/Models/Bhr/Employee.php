@@ -244,15 +244,16 @@ class Employee //extends Model
                     ->selectRaw('id, withdraw_rate, emp_id, target_month, target_year, benefit_id')
                     ->first();
 
-                if ($bd) {
-                    $emp_benefit = DB::table('emp_benefits')
+                $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
                     ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id');
 
-                    $benefit_count = DB::table('emp_benefits')
+                $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->count('id');
+
+                if ($bd) {
 
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
@@ -291,18 +292,39 @@ class Employee //extends Model
                 }
                 else{
 
-                    $emp_benefit = DB::table('emp_benefits')
-                    ->where('emp_id', $emp_id)
-                    ->where('benefit_id', $benefit_id)
-                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id')
-                    ->first();
+                    if($benefit_count > 1){
+                        $rows = $emp_benefit->get();
 
-                    if ($emp_benefit) {
-                        if($emp_benefit->emp_id != $emp_id) break;
-                        $full_amount = $emp_benefit->amount ?? 0;
-                        $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-                        $used_amount = $full_amount * ($withdraw_rate / 100);
-                        $last_benefit_id = $emp_benefit->benefit_id;
+                        if ($emp_benefit) {
+                            foreach($rows as $emp_benefit){
+
+                                $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
+                                $full_amount = $emp_benefit->amount ?? 0;
+                                $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+                                $used_amount = $full_amount * ($withdraw_rate / 100);
+                                $last_benefit_id = $emp_benefit->benefit_id;
+                                $result =  [
+                                    "emp_id" => $emp_id,
+                                    "payroll_id" => $payroll_id,
+                                    "withdraw_rate" => $withdraw_rate,
+                                    "benefit_id" => $last_benefit_id,
+                                    "full_amount" => $full_amount,
+                                    "tax_option_id" => $tax_option_id,
+                                    "used_amount" => $used_amount,
+                                    "emp_benefit_id" => $emp_benefit->id,
+                                ];
+                                $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
+                            }
+                        }
+                    }else{
+                        $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
+                        $emp_benefit = $emp_benefit->first();
+                        if ($emp_benefit) {
+                            $full_amount = $emp_benefit->amount ?? 0;
+                            $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+                            $used_amount = $full_amount * ($withdraw_rate / 100);
+                            $last_benefit_id = $emp_benefit->benefit_id;
+                        }
                     }
                 }
             }
@@ -320,8 +342,6 @@ class Employee //extends Model
         ];
         if($benefit_count <=1)
         $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-
-
 
         return (object)$result;
     }
