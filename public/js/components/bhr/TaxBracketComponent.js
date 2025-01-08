@@ -22,11 +22,11 @@ var TaxBracketComponent = new (function () {
 
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            // data: (data, index, i) => {
+            //     return index + 1;
+            // },
         },
         {
             title: "Lower Amount",
@@ -60,8 +60,18 @@ var TaxBracketComponent = new (function () {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias)}</p>`;
             }
         },
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
+                <small >${data.update_date ?? ""}</small>
+            </div>`,
+        },
 
         {
+            title: "",
             className: "col_action align-middle",
             data: (data) => `
             <div class="d-flex justify-content-end align-items-end">
