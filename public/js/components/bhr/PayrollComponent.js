@@ -157,7 +157,7 @@ var PayrollComponent = new (function () {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
                 cloneTable = tr.parentElement.parentElement;
-                console.log(1212,cloneTable);
+                // console.log(1212,cloneTable);
 
                 tr.classList.add('tr_action');
                 // mThis.initDropdownMenus(cloneTable);
@@ -210,7 +210,7 @@ var PayrollComponent = new (function () {
         mThis.initDropdownMenus(mThis.pr_table);
 
         this.cloneTable = mThis.self.querySelector('#_payroll_list');
-        console.log(7777,mThis.cloneTable.querySelector('tr'));
+        // console.log(7777,mThis.cloneTable.querySelector('tr'));
 
         mThis.initAlready = true;
     };
@@ -280,7 +280,7 @@ var PayrollComponent = new (function () {
             },
         };
         new VSDropdownMenu(menuOptions);
-        console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
+        // console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
 
         table.querySelectorAll('a.btn_payroll_action').forEach(e => {
             const isAuthorized = e.dataset.authorized == '1';
@@ -634,13 +634,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', function (event) {
         if (event.target.classList.contains('payroll-link')) {
             const payrollId = event.target.getAttribute('data-payroll-id');
-            
             const option = {
                  payroll_id: payrollId
                 };
 
             if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
-
                 PayrollListComponent.show(option);
             } else {
                 console.error('PayrollListComponent.show is not defined.');
