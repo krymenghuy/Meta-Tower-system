@@ -12,7 +12,6 @@ var PayrollComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_search_payroll");
     let cloneTable = null;
-    let div = mThis.self.querySelector("#_payroll_list");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -60,11 +59,9 @@ var PayrollComponent = new (function () {
         {
             title: "Staff Count",
             className: "align-middle",
-            data: (data) => `
-              <a href="javascript:void(0)" class="view_payroll_list" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
-                    <span class="text-success">${data.head_count}</span>
-              </a>`
+            data: (data) => `<a href="javascript:void(0);" class="text-success payroll-link" data-payroll-id="${data.id}">${data.head_count}</a>`
         },
+
         {
             title: "Total",
             className: "align-middle",
@@ -139,8 +136,9 @@ var PayrollComponent = new (function () {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-end align-items-end">
-                    <a href="javascript:void(0)" class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
-                        data-id="${data.id}" data-authorized="${data.authorized}" >
+                    <a href="javascript:void(0)"
+                       class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
+                       data-id="${data.id}" data-authorized="${data.authorized}" >
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
                 </div>`
@@ -191,11 +189,11 @@ var PayrollComponent = new (function () {
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 215) + 'px';
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
         }
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
@@ -213,24 +211,6 @@ var PayrollComponent = new (function () {
 
         this.cloneTable = mThis.self.querySelector('#_payroll_list');
         console.log(7777,mThis.cloneTable.querySelector('tr'));
-
-        const view_payroll_list = div.querySelectorAll(".view_payroll_list");
-        view_payroll_list.forEach((link) => {
-            link.addEventListener("click", (e) => {
-                const payrollId = e.target.dataset.id;
-                console.log(123,payrollId);
-
-                const data = mThis.PayrollListView.getData();
-                const payrollData = data.find((payroll) => payroll.id == payrollId);
-
-                if (payrollData) {
-                    mThis.showPayrollList(payrollData);
-
-                }
-
-
-            });
-        });
 
         mThis.initAlready = true;
     };
@@ -620,8 +600,6 @@ const AddPayRollListDailog = (() => {
 
 
                 }
-
-
                 me.payroll_name ='';
                 me.month =  payrolls? months[payrolls.month ].name :'';
                 me.year =  payrolls? '-'+payrolls.year:'-';
@@ -652,3 +630,21 @@ const AddPayRollListDailog = (() => {
 })();
 
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', function (event) {
+        if (event.target.classList.contains('payroll-link')) {
+            const payrollId = event.target.getAttribute('data-payroll-id');
+            
+            const option = {
+                 payroll_id: payrollId
+                };
+
+            if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
+
+                PayrollListComponent.show(option);
+            } else {
+                console.error('PayrollListComponent.show is not defined.');
+            }
+        }
+    });
+});

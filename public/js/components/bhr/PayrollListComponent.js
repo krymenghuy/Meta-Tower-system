@@ -725,21 +725,20 @@ var PayrollListComponent = new (function () {
         });
     };
 
-
-
     this.show = function (option) {
-
+        mThis.option = option;
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
+            console.log(5656,option.payroll_id);
+
             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
         });
 
     };
-
 });
 
 const AddDeductionDialog = (() => {

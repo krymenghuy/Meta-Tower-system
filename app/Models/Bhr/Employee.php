@@ -328,7 +328,6 @@ class Employee //extends Model
                     }
                 }
             }
-
         }
         $result =  [
             "emp_id" => $emp_id,
