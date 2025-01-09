@@ -2238,6 +2238,7 @@ var EmployeeComponent = new (function () {
                 context: "delete",
                 confirmButtonText: "Delete",
             },
+            
             function (e) {
                 if (e) {
                     vsapi
