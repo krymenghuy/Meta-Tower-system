@@ -269,11 +269,11 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 205) + 'px';
+        sh_parent.style.height = (window.innerHeight - 215) + 'px';
         sh_parent.classList.add("overflow-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
         }
 
         mThis.initDropdownMenus(pr_tbl);///
@@ -581,7 +581,7 @@ var PayrollListComponent = new (function () {
 
     };
     this.btnPrint.addEventListener('click', () => {
-        windowPrint(this.payment_info.innerHTML);
+        windowPrintPayrollList(this.payment_info.innerHTML);
         // window.print();
     })
 
@@ -725,19 +725,18 @@ var PayrollListComponent = new (function () {
         });
     };
 
-
-
-    this.show = function () {
+    this.show = function (option) {
+        mThis.option = option;
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
+            mThis.elFilter.value = option.payroll_id;
             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
         });
 
     };
-
 });
 
 const AddDeductionDialog = (() => {
@@ -747,8 +746,8 @@ const AddDeductionDialog = (() => {
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
             cssClass: 'modal-lg',
-            backdrop: 'static', // User click outside form, do not close form
-            keyboard: true, // Prevent user from using ESC key
+            backdrop: 'static',
+            keyboard: true,
             createContent: () => {
                 return [
                     `<div class="row">`,
@@ -855,8 +854,8 @@ const PayRollImportDailog = (()=>{
 
         dialogImport = dialogImport || new GeneralDialog({
             cssClass:'modal-md',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
+            backdrop: 'static',
+            keyboard:true,
             createContent:()=>{
                  return [`<div class="row">
                  <div class="form-group col-12">
@@ -931,7 +930,7 @@ const PayRollImportDailog = (()=>{
     return self;
 })();
 
-function windowPrint(html=null)
+function windowPrintPayrollList(html=null)
 {
     let HtmlString = null;
     HtmlString = html ? html : HtmlString;

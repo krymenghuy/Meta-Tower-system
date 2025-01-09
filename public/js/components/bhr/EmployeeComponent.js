@@ -142,7 +142,7 @@ var EmployeeComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2" vslang="titles.Create Contract">Create Contract</span>',
-                    icon: `<i class="fa-solid text-dark fa-download"></i>`,
+                    icon: `<i class="fa-solid text-primary fa-download"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract",
                 },
@@ -529,9 +529,10 @@ var EmployeeComponent = new (function () {
 
                                 </div>
                                  </div>`,
-                                `<hr class="bg-white fs-5">`,
-                                `<div class="row row-cols-4 mt-2">
-                                    <div class="col">
+                                
+                                `<hr class="bg-white">`,
+                                `<div class="row mt-2">
+                                    <div class="col-md-4">
                                         <div class="d-flex">
                                             <p class="text-nowrap  width-p">Date of Birth</p>
                                             <p class="px-2">:</p>
@@ -546,8 +547,16 @@ var EmployeeComponent = new (function () {
                                                 data.joining_date
                                             }</p>
                                         </div>
+                                        <div class="d-flex">
+                                            <P class="text-nowrap width-p">salary</p>
+                                            <P class="px-2">:</p>
+                                            <P class="text-white">​${
+                                                data.salary || "0.00"
+                                            }(KHR)</p>
+                                        </div>
+                                        
                                     </div>
-                                    <div class="col">
+                                    <div class="col-md-4">
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Work Shift</p>
                                             <P class="px-2">:</p>
@@ -560,51 +569,43 @@ var EmployeeComponent = new (function () {
                                             <P class="px-2">:</p>
                                             <P class="text-nowrap" style="color:#cab54a;">${data.apply_payroll_tax == "0" ? "Have Tax": ""}${data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
                                         </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="d-flex">
-                                            <P class="text-nowrap width-p">salary</p>
-                                            <P class="px-2">:</p>
-                                            <P class="text-white">​${
-                                                data.salary || "0.00"
-                                            }(KHR)</p>
-                                        </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p" vslang="titles.Address">Address</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-nowrap" style="overflow: hidden; text-overflow: ellipsis;color:#cab54a;">${
+                                            <P class="text-nowrap" style="color:#cab54a;">${
                                                 data.address
                                             }</p>
                                         </div>
                                     </div>
-                                    <div class="col">
-                                        <div class="d-flex justify-content-center gap-4 mt-5">
+
+                                    
+                                     
+                                    <div class="col-md-4">
+                                        <div class="d-flex justify-content-center gap-4 mt-2">
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                                 data.id
                                             }" data-status ="${data.status_id}">
-                                                <i class="fa-regular fa-pen-to-square  fs-5 tool-tip" style="color:#fff;"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                                <i class="fa-regular fa-pen-to-square  fs-4 tool-tip" style="color:#fff;"><span class="tool-tiptext fs-6">Edit Profile</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="delete_employee" data-id="${
                                                 data.id
                                             }" data-status ="${data.status_id}">
-                                                <i class="fa-solid fa-user-xmark fs-5 tool-tip" style="color:#e21f2c;"><span class="tool-tiptext fs-6">Delete</span></i>
+                                                <i class="fa-solid fa-user-xmark fs-4 tool-tip" style="color:#e21f2c;"><span class="tool-tiptext fs-6">Delete</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="set_resign" data-id="${
                                                 data.id
                                             }" data-status ="${data.status_id}">
-                                                <i class="fa-solid fa-circle-exclamation tool-tip fs-5" style="color:#efc84a;"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                                <i class="fa-solid fa-circle-exclamation tool-tip fs-4" style="color:#efc84a;"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                             </a>
                                             <a href="javascript:void(0)" class="movement" data-id="${
                                                 data.id
                                             }" data-status ="${data.status_id}">
-                                                <i class="fa-brands fa-stack-exchange tool-tip fs-5" style="color:#05ff77"><span class="tool-tiptext fs-6">movement</span></i>
+                                                <i class="fa-brands fa-stack-exchange tool-tip fs-4" style="color:#05ff77"><span class="tool-tiptext fs-6">movement</span></i>
                                             </a>
 
                                         </div>
 
                                 </div>`,
-
                             `</div>`,
                         `</div>`,
                     `</div>`,

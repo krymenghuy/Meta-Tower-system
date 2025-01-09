@@ -4,7 +4,7 @@ let HtmlString = null;
  * These function for generate student attendance table of reports
  */
 
-function emploteeAttendance(div, data = null) {
+function employeeAttendance(div, data = null) {
     let html = `<title>Monthly Employee Attendance Sheet</title>
     <style>
       table {
@@ -84,6 +84,92 @@ function emploteeAttendance(div, data = null) {
         <td>Y</td>
         <td>Y</td>
         <td class="totals">Attended: 15<br>Sick/PTO: 5<br>Unpaid Leave: 5<br>Holiday/Non-work: 9<br>No Show/No Call: 2<br>Attendance: 42%</td>
+      </tr>
+      </tbody>
+  </table>`;
+    div.html(html);
+    togglePanelTable(div);
+    HtmlString = html;
+}
+function employeeBenefitsReport(div, data = null) {
+    let html = `<title>Monthly Employee Benefit Sheet</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+  
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+      }
+  
+      th {
+        background-color: #f2f2f2;
+      }
+  
+      .employee-name {
+        background-color: #e0e0e0;
+      }
+  
+      .totals {
+        font-weight: bold;
+        background-color: #d0d0d0;
+      }
+    </style>  
+    
+  <h2>Monthly Employee Attendance Sheet</h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+        <th>12</th>
+        <th>13</th>
+        <th>14</th>
+        <th>15</th>
+        <th>16</th>
+        <th>17</th>
+        <th>18</th>
+        <th>19</th>
+        <th>20</th>
+        <th>Totals</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="employee-name">Luiza Leveque<br>Sales Associate<br>Sales</td>
+        <td>H</td>
+        <td>H</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>N</td>
+        <td>N</td>
+        <td>P</td>
+        <td>P</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>H</td>
+        <td>H</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>Y</td>
+        <td>Y</td>
       </tr>
       </tbody>
   </table>`;

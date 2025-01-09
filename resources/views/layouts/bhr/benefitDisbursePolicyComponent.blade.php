@@ -12,7 +12,7 @@
                 data-field="benefit_id"></select>
         </div>
     </div>
-    <div id="_benefit_disbursement_policy_list" class="mt-4"></div>
+    <div id="_benefit_disbursement_policy_list" class="mt-4 px-4"></div>
 </div>
 <style>
 

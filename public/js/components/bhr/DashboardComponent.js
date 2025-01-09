@@ -603,7 +603,7 @@ var DashboardComponent = new (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.update_date || ""}
+                            ${item.updated_by || ""}
                         </span>
                     </td>
                 </tr>

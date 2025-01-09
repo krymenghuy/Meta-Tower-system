@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div id="_attendance_list" class="p-3"></div>
+    <div id="_attendance_list" class="p-4"></div>
 </div>
 <style>
     /* Add your CSS styles here */

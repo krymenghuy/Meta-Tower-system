@@ -116,10 +116,9 @@ class ExitForm
         } else {
             $inputs['item_type'] = 'item';
         }
-        
 
         $isExist = DB::table('exit_form_items')
-            ->where('check_point_id', $d->check_point_id)
+        ->where('check_point_id', $d->check_point_id)
             ->where('form_id', $d->form_id)
             ->take(1)
             ->value('id');
@@ -131,17 +130,32 @@ class ExitForm
         unset($inputs['check_id']);
 
         if ($id) {
-            $updated = DB::table('exit_form_items')->where('id', $id)->update(['status_id' => $d->status_id]);
-            return DV::depends(1, ['id' => $id], 'Update successful');
+            DB::table('exit_form_items')->where('id', $id)->update(['status_id' => $d->status_id]);
         } else {
-            $newId = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
-            if ($newId > 0) {
-                return DV::depends(1, ['id' => $newId], 'Create successful');
-            } else {
+            $id = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
+            if ($id <= 0) {
                 return DV::error('Create failed.');
             }
         }
+
+        $totalItems = DB::table('exit_form_items')
+        ->where('form_id', $d->form_id)
+            ->count();
+
+        $checkedItems = DB::table('exit_form_items')
+        ->where('form_id', $d->form_id)
+            ->where('status_id', 1)
+            ->count();
+
+        $isFinished = $totalItems > 0 && $totalItems == $checkedItems ? 1 : 0;
+
+        DB::table('exit_forms')
+        ->where('id', $d->form_id)
+            ->update(['is_finished' => $isFinished]);
+
+        return DV::depends(1, ['id' => $id, 'is_finished' => $isFinished], $id ? 'Update successful' : 'Create successful');
     }
+
 
     public function getList($arr, $ss = null)
     {

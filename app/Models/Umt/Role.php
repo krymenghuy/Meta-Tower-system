@@ -108,16 +108,16 @@ class Role //extends Model
         $search_value = escape_like_str($search_value);
         $str_search = '(r.name LIKE \'%'.$search_value.'%\')';
       }
-      $col_create_date = DBX::query_user_info('r' ,'created_at',true,'updated_at');
+      $col_user_info = DBX::query_user_info('r' ,'updated_at',true,'created_at');
       $rows = DB::table('um_roles AS r')
-      ->selectRaw("r.id, r.`name`,$col_create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.role_id = r.id) AS user_count")
+      ->selectRaw("r.id, r.`name`,$col_user_info,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.role_id = r.id) AS user_count")
       ->orderBy('r.name','ASC')
       ->whereRaw($str_search)
       ->get();
       if($search_value && !isset($rows[0])){
         $str_search = '(r.id IN (SELECT ur.role_id FROM um_user_roles AS ur INNER JOIN um_users as u ON ur.user_id = u.id WHERE u.login_name LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.official_code = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\') )';
         $rows = DB::table('um_roles AS r')
-        ->selectRaw('\''.$search_value.'\' AS user_search_value,' ."r.id, r.`name`,$col_create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.role_id = r.id) AS user_count")
+        ->selectRaw('\''.$search_value.'\' AS user_search_value,' ."r.id, r.`name`,$col_user_info,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.role_id = r.id) AS user_count")
         ->orderBy('r.id','DESC')
         ->where('r.subs_id',hex2bin($subs_id))
         ->whereRaw($str_search)
@@ -221,10 +221,10 @@ class Role //extends Model
       if($search_value){
           $str_search = '(u.login_name LIKE \'%'.$search_value.'%\' OR u.official_code LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\')';
       }
-      $col_user_info = DBX::query_user_info('u',null,true);
+      $col_user_info = DBX::query_user_info('u',null,true,null);
       $query = DB::table('um_user_roles AS ur')
       ->join('um_users AS u','u.id','=','ur.user_id')
-      ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.official_id,u.phone_number,'.$col_user_info.', '.DBX::formatTime('u.last_login_date','last_login_date').', u.is_locked,u.status, u.create_user, u.email,u.lang,u.otp_code,u.user_class')
+      ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.official_id,u.phone_number,'.$col_user_info.', '.DBX::formatTime('u.last_login_date','last_login_date').', u.is_locked,u.status, u.email,u.lang,u.otp_code,u.user_class')
       // ->where('u.subs_id',$bin_app_id)
       ->where('ur.role_id',$role_id)
       ->whereRaw($str_search)->orderBy('u.id','DESC');
@@ -261,10 +261,10 @@ class Role //extends Model
     if($search_value){
         $str_search = '(u.login_name LIKE \'%'.$search_value.'%\' OR u.official_code LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\')';
     }
-    $col_user_info = DBX::query_user_info('u',null,true);
+    $col_user_info = DBX::query_user_info('u',null,true,null);
     $query = DB::table('um_user_roles AS ur')
     ->join('um_users AS u','u.id','=','ur.user_id')
-    ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.official_id,u.phone_number,'.$col_user_info.', '.DBX::formatTime('u.last_login_date','last_login_date').', u.is_locked,u.status, u.create_user, u.email,u.lang,u.otp_code,u.user_class')
+    ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.official_id,u.phone_number,'.$col_user_info.', '.DBX::formatTime('u.last_login_date','last_login_date').', u.is_locked,u.status, u.email,u.lang,u.otp_code,u.user_class')
     // ->where('u.subs_id',$bin_app_id)
     ->where('ur.role_id',$role_id)
     ->whereRaw($str_search)->orderBy('u.id','DESC');

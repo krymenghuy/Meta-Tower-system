@@ -1175,7 +1175,7 @@ class User //extends Model
         $create_date_col = DBX::query_user_info('u','update_date',true,'start_date');
         // $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->whereRaw($str_role)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.photo_file_name')
 
-        $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->join('um_roles as r','r.id','=','ur.role_id')->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.created_at as start_date,u.photo_file_name,r.id AS role_id,r.name AS role_name')
+        $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->join('um_roles as r','r.id','=','ur.role_id')->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.photo_file_name,r.id AS role_id,r.name AS role_name')
         ->where('u.subs_id', hex2bin($subs_id))->whereRaw($more_where)->orderBy('u.id','DESC');
         if ($role_id > 0 && !$search_value) $query->where('ur.role_id',$role_id); 
 
@@ -1222,7 +1222,7 @@ class User //extends Model
         //$get_primary_role = ',(SELECT r.`name` FROM um_user_roles AS ur INNER JOIN um_roles AS r ON r.id = ur.role_id WHERE user_id = u.id AND ur.is_primary_role =1 LIMIT 1) AS primary_role';
         $last_Login_date_col = DBX::formatTime('u.last_login_date','last_login_date');
         $subs_id_col = DBX::getHEX('u.subs_id','subs_id');
-        $create_date_col = DBX::query_user_info('u',null,true);
+        $create_date_col = DBX::query_user_info('u',null,true,null);
         $query = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.photo_file_name')
         ->where('u.subs_id', hex2bin($subs_id))->orderBy('u.id','DESC');
          

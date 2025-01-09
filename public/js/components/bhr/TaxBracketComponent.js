@@ -22,35 +22,34 @@ var TaxBracketComponent = new (function () {
 
     this.cols = [
         {
-            title: "No",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            title: "#",
+            className: "align-middle",
+            data: (data, index) =>
+                `<div class="rounded-circle text-center p-1 text-white" style="background-color:rgb(202 181 74); width: 30px; height: 30px;">
+                    <span>${index + 1}</span>
+                </div>
+            `,
         },
         {
-            title: "Lower Amount",
-            className: "align-middle",
+            title: "Salary Range",
+            className: "align-middle text-dark",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.lower_amount) ?? '0.00'}</p>`;
+                const lowerAmount = data.lower_amount;
+                const upperAmount = data.upper_amount > 12000000 ? 'ឡើងទៅ' : data.upper_amount;
+        
+                if (data.upper_amount > 12000000) {
+                    return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ${upperAmount}</p>`;
+                } else {
+                    return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ដល់ ${upperAmount} រៀល</p>`;
+                }
             }
         },
-
-        {
-            title: "Upper Amount",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                let upperAmount = Number(data.upper_amount) === -1 ? '∞' : (main_view.currency.symbol + formattedNumber(data.upper_amount) ?? '0.00');
-                return `<p class="p-0 m-0">${upperAmount}</p>`;
-            }
-        },
-
-
+        
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.rate ?? '0.00'} %</p>`;
+                return `<p class="text-danger p-0 m-0">${data.rate} %</p>`;
             }
         },
         {
@@ -60,11 +59,21 @@ var TaxBracketComponent = new (function () {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias)}</p>`;
             }
         },
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
+                <small class="text-primary">${data.update_date ?? ""}</small>
+            </div>`,
+        },
 
         {
+            title: "",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-end align-items-end">
+            <div class="d-flex justify-content-center align-items-center">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_taxBracket_action"
@@ -107,15 +116,15 @@ var TaxBracketComponent = new (function () {
                     mThis.TaxBracketListView.showPage();
                 },
             };
-            TaxBracketDailog.show(op);
+            TaxBracketDialog.show(op);
         };
         const pr_tbl = mThis.TaxBracketListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 215) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
         }
 
         mThis.initDropdownMenus(pr_tbl);
@@ -131,14 +140,14 @@ var TaxBracketComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify Tax Bracket">Modify Tax Bracket</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    html: '<span class="ps-2 " vslang="titles.Edit">Modify Tax Bracket</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_taxBracket",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Tax Bracket">Delete Tax Bracket</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Delete">Delete Tax Bracket</span>',
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_taxBracket",
                 },
@@ -174,7 +183,7 @@ var TaxBracketComponent = new (function () {
                 mThis.TaxBracketListView.showPage();
             },
         };
-        TaxBracketDailog.show(op);
+        TaxBracketDialog.show(op);
     };
 
     this.deleteTaxBracket = (id, menuLink) => {
@@ -228,7 +237,7 @@ var TaxBracketComponent = new (function () {
 
 })
 
-const TaxBracketDailog = (()=>{
+const TaxBracketDialog = (()=>{
 
     const self = {};
     let dialog = null;
@@ -262,8 +271,8 @@ const TaxBracketDailog = (()=>{
 
             buttons:[
                {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
+                label:'<span class="text-white">Cancel</span>',
+                cssClass:'btn btn-sm btn-warning',
                 click:(me,btn)=>{
                     //Close with Cancel button
                     me.hide(false);
@@ -271,12 +280,13 @@ const TaxBracketDailog = (()=>{
                },
                {
                 label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
+                cssClass:'btn btn-sm btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
 
-                    p.id = me.dataOptions.id; //get "id" from op
-
+                    p.id = me.dataOptions.id;
+                    console.log(123,p);
+                    
                     vsapi.call( [main_view.base_url,'/hr/tax-bracket/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
@@ -286,7 +296,7 @@ const TaxBracketDailog = (()=>{
                }
             ],
             prepareFormOptions:{
-               createTitle:'Add Tax Bracket',
+               createTitle:'Create Tax Bracket',
                modifyTitle:'Edit Tax Bracket',
                targetProp: 'tax_bracket',
                api:{
