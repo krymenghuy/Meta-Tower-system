@@ -98,7 +98,6 @@ var ReportCenterComponent = new (function () {
                 if (res.status_code === 200) {
                     data = res.data;
                 }
-                // console.log(6666,data);
                 mThis.renderPanelBox(data);
             });
         if (typeof onFinish === "function") onFinish();
@@ -295,13 +294,9 @@ var ReportCenterComponent = new (function () {
             inner_html = null;
         if (p.param) {
             const values = p.param.split("|");
-            console.log(2222,JSON.stringify(values));
-            // Trim whitespace from each value (optional, but recommended)
             const param = values.map((value) => value.trim());
             param.map((item) => {
-                // // console.log(111,item.key);
                 mThis.filter_fields.map((f) => {
-                    //console.log(222,f.type,'|',f.name,'|',item);
                     if (f.type === "select" && f.name === item) {
                         const id = ["select_", f.name].join("");
                         inner_html = [
@@ -352,7 +347,6 @@ var ReportCenterComponent = new (function () {
                 </div>
             </div>`;
         }
-        // console.log(333,inner_html);
         html = `<div class="row card-report m-0" style="max-height:; display: none;">
                 <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center gap-3" >
                     <div id="_rpt_btn_list" class="p-0 text-end" style="display: none; width: 80px">
@@ -422,8 +416,6 @@ var ReportCenterComponent = new (function () {
         mThis.options.params.map((item, index, array) => {
             let data = [];
             vsapi.call(item.api, item.param, null, false).then((res) => {
-                console.log(2222,res);
-
                 if (res.status_code === 200) {
                     
                     data = res.data;
@@ -457,7 +449,6 @@ var ReportCenterComponent = new (function () {
                         } else if (code === "referral" && item.text == "name") {
                             console.log(1234,item.api);
                         }
-                        // console.log(234,item);
                         VSUtil.setComboItems(
                             el,
                             data || [],
@@ -489,7 +480,6 @@ var ReportCenterComponent = new (function () {
             setTimeout(() => {
                 const btn = div[0].querySelector("#_rpt_btn_report");
                 if (btn) btn.click();
-                console.log(111,btn);
             }, 300);
         }
     };
@@ -542,7 +532,6 @@ var ReportCenterComponent = new (function () {
                 p[f] = el.val();
                 p.code = code;
             });
-            console.log(222333,p);
 
             if (p.required && !p.required.value && p.required.text)
                 cv_interact.warning(p.required.text);
@@ -553,7 +542,6 @@ var ReportCenterComponent = new (function () {
             el.onchange = (e) => {
                 e.preventDefault();
                 let op = mThis.getDataFilter();
-                // console.log(9999,e);
                 const btn = div[0].querySelector("#_rpt_btn_report");
                 if (
                     e.target.dataset.field == "start_date" ||
@@ -566,8 +554,6 @@ var ReportCenterComponent = new (function () {
         });     
 
         div.find("#_rpt_btn_list").on("click", function (e) {
-            console.log(23567111);
-
             e.preventDefault();
             const filterTop = mThis.self.find("#_rpt_filter");
             filterTop.click();
@@ -576,7 +562,6 @@ var ReportCenterComponent = new (function () {
         div.find("#_rpt_btn_print").on("click", function (e) {
             e.preventDefault();
             let btn = e.target.closest("button");
-            // console.log(3,btn);
             if (btn.dataset.name == "btn_pdf") {
                 mThis.self.find("#_rpt_pdf").click();
             } else if (btn.dataset.name == "btn_excel") mThis.self.find("#_rpt_excel").click();
@@ -660,7 +645,8 @@ var ReportCenterComponent = new (function () {
             });
 
             console.log(JSON.stringify(end_point));
-            console.log(JSON.stringify(p,null,2));
+            console.log(JSON.stringify(p, null, 2));
+           p.employee_id ?  p.emp_id = p.employee_id : '';
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
                 .then((res) => {
@@ -674,7 +660,8 @@ var ReportCenterComponent = new (function () {
                         );
                         mThis.isBusy = false;
                     }
-                    // console.log(22223,d);
+                    console.log(555,d);
+
 
                     if (d && !$.isEmptyObject(d)) {
                         
@@ -742,9 +729,7 @@ var ReportCenterComponent = new (function () {
     this.getValueWhenClick = (div) => {
         div.on("click", "li.report-name", function (e) {
             e.preventDefault();
-            mThis.permissionID = e.currentTarget.dataset.permissionid;
-            console.log(2342,$(this));
-            
+            mThis.permissionID = e.currentTarget.dataset.permissionid;            
             let params = $(this).data("filter").replaceAll("'", '"');
             params = JSON.parse(params);
             mThis.options.params = [];

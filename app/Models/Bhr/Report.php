@@ -600,10 +600,8 @@ class Report
         $branch_ids = getAccessBranches($ss, $branch_id);
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-        $str_between_date = '1=1';
         $str_branch_id = '2=2';
         if ($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
-        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
         if ($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
             ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
@@ -612,8 +610,6 @@ class Report
         $rows = $query->get();
 
         $groupedData = [];
-        $feeTotals = [];
-        // $d = [];
         foreach ($rows as $row) {
             unset($row->id);
         }
@@ -642,21 +638,14 @@ class Report
 
         $d = (object)$filter;
         $emp_id = isset($d->emp_id) ? $d->emp_id : null;
-        $branch_id = isset($d->branch_id) ? $d->branch_id : (isset($d->campus_id) ? $d->campus_id : null);
+        // $branch_id = isset($d->branch_id) ? $d->branch_id : (isset($d->campus_id) ? $d->campus_id : null);
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $joining_date = DBX::formatDate('emp.joining_date', 'joining_date');
-
-        if (!$emp_id) {
-            return (object)[
-                'title' => 'Payslip Print',
-                'sub_title' => 'No Employee Selected',
-                'form' => 'payslip_print',
-                'header' => $headers,
-                'data' => [],
-                'company_profile' => CompanyProfile::details($ss),
-            ];
-        }
+        $formatted_start_date = date('d-M-Y', strtotime($start_date));
+        $formatted_end_date = date('d-M-Y', strtotime($end_date));
+        $title = 'Payslip Print';
+        $sub_title = "$formatted_start_date to $formatted_end_date";
 
         $query = DB::table('payroll_list as pl')
             ->join('employees as emp', 'emp.id', '=', 'pl.emp_id')
@@ -673,6 +662,7 @@ class Report
             p.name as payroll_name,
             '$start_date' as start_date,
             '$end_date' as end_date,
+            '$sub_title' as duration,
             emp.id as emp_id,
             emp.code as emp_code,
             emp.name as emp_name,
@@ -701,13 +691,11 @@ class Report
 
         foreach ($rows as $row) {
             unset($row->id);
+            $row->image_url = $row->emp_photo
+                ? Employee::profilePicture($row->emp_id)
+                : '';
+            unset($row->emp_photo);
         }
-
-        $formatted_start_date = date('d-M-Y', strtotime($start_date));
-        $formatted_end_date = date('d-M-Y', strtotime($end_date));
-        $title = 'Payslip Print';
-        $sub_title = "$formatted_start_date to $formatted_end_date";
-
         return (object)[
             'title' => $title,
             'sub_title' => $sub_title,
@@ -734,35 +722,30 @@ class Report
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $joining_date = DBX::formatDate('emp.joining_date', 'joining_date');
 
-        if (!$emp_id) {
-            return (object)[
-                'title' => 'Employee CV',
-                'sub_title' => 'No Employee Selected',
-                'form' => 'print_employee_CV',
-                'header' => $headers,
-                'data' => [],
-                'company_profile' => CompanyProfile::details($ss),
-            ];
-        }
-
         $query = DB::table('employees as emp')
             ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+            ->join('loc_countries as loc', 'loc.id', '=', 'emp.nationality_id')
             ->selectRaw('
-            emp.id, 
-            emp.work_shift_id, 
-            pos.title as position_id, 
-            emp.salary, 
-            emp.emp_type_id, 
-            emp.name, 
-            emp.name_kh, 
-            emp.phone_number, 
-            emp.code, 
-            emp.sex, 
-            emp.email, 
-            emp.address, 
-            ' . $joining_date . '
-        ')
+        emp.id as emp_id,
+        emp.work_shift_id,
+        pos.title as position_id,
+        emp.salary,
+        emp.emp_type_id,
+        emp.name,
+        emp.name_kh,
+        emp.phone_number,
+        emp.code,
+        emp.sex,
+        emp.email,
+        emp.address,
+        loc.nationality,
+        loc.name as country,
+        emp.address,
+        ' . $joining_date . ',
+        emp.photo_file_name as emp_photo
+    ')
             ->where('emp.id', $emp_id);
+
 
         if ($branch_id) {
             $query->where('emp.branch_id', $branch_id);
@@ -772,7 +755,7 @@ class Report
 
         $emp_skills = DB::table('emp_skills as es')
             ->join('skills as s', 's.id', '=', 'es.skill_id')
-            ->selectRaw('es.id, s.title as skill,es.rate, s.description')
+            ->selectRaw('es.id, s.title as skill, es.rate, s.description')
             ->where('es.emp_id', $emp_id)
             ->get();
 
@@ -791,6 +774,10 @@ class Report
             ->get();
 
         foreach ($rows as $row) {
+            $row->image_url = $row->emp_photo
+                ? Employee::profilePicture($row->emp_id)
+                : '';
+            unset($row->emp_photo);
             $row->skills = $emp_skills;
             $row->experiences = $emp_exp;
             $row->educations = $emp_edu;
@@ -810,6 +797,7 @@ class Report
             'company_profile' => CompanyProfile::details($ss),
         ];
     }
+
 
     function getPayrollExpensesByMonth($filter, $ss = null)
     {

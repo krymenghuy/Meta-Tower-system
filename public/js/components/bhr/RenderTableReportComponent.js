@@ -186,145 +186,210 @@ function employeeBenefitsReport(div, data = null) {
     togglePanelTable(div);
     HtmlString = html;
 }
-function employeeCV(div, data = null) {
-    let html = `<title>Employee CV</title>
+function employeeCV(div, d = null) {
+    const data = d.data[0] || null;
+
+    let html = "";
+    if (data) {
+        html = `<title>Employee CV</title>
                 <style>
                     .employee_cv {
-                      max-width: 800px;
-                      margin: 0 auto;
-                      padding: 20px;
-                      border: 1px solid #ddd;
-                      background-color: #f9f9f9;
+                        max-width: 90%;
+                        margin: 50px;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        background-color: #f9f9f9;
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
                     }
-                    h1, h2, h3 {
-                      color: #222;
+                    h1, h2, h3, h4, h5, h6 {
+                        margin: 10px 0;
+                        color: #333;
+                    }
+                    h5 {
+                        font-size: 18px;
+                        color: #555;
+                        margin-bottom: 10px;
+                        text-transform: uppercase;
+                        border-bottom: 2px solid #ddd;
+                        padding-bottom: 5px;
                     }
                     .emp_cv_header {
-                      display:flex;
-                      justify-content: space-between;
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 20px;
                     }
-                    .cv_header_left{
-                      width: 10%;
+                    .cv_header_left {
+                        flex: 0 0 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        overflow: hidden;
+                        margin-right: 20px;
                     }
-                    .cv_header_right{
-                      width: 85%;
-                      margin-right:5%;
-                      text-align:center;
+                    .cv_header_left img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
                     }
-                    .emp_cv_header h1 {
-                      margin: 0;
-                      font-size: 28px;
+                    .cv_header_right {
+                        flex: 1;
+                        text-align: left;
                     }
-                    .emp_cv_header p {
-                      margin: 5px 0;
-                      font-size: 14px;
-                      color: #555;
+                    .cv_header_right h4 {
+                        margin: 0;
+                        font-size: 24px;
+                        color: #222;
+                    }
+                    .cv_header_right p {
+                        margin: 5px 0;
+                        font-size: 14px;
+                        color: #555;
                     }
                     .section {
-                      margin-top: 20px;
+                        margin-top: 20px;
                     }
-                    .section h2 {
-                      background-color: #eee;
-                      padding: 10px;
-                      margin: 0 -20px 10px;
+                    .sub_info {
+                        color: #666;
+                        font-size: 14px;
                     }
                     .list-group {
-                      list-style: none;
-                      padding: 0;
-                      margin: 0;
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
                     }
                     .list-group li {
-                      margin-bottom: 10px;
+                        background: #f5f5f5;
+                        border: 1px solid #ddd;
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border-radius: 5px;
+                        color: #333;
                     }
                     .two-column {
-                      display: flex;
-                      justify-content: space-between;
+                        display: flex;
+                        gap: 20px;
+                        margin-top: 10px;
                     }
                     .two-column > div {
-                      width: 50%;
+                        flex: 1;
                     }
                 </style>
                 <div class="employee_cv">
                     <div class="emp_cv_header">
-                      <div class="cv_header_left">
-                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
-                      </div>
-                      <div class="cv_header_right">
-                        <h4>${data.name}</h4>
-                        <p>${data.position_id} | ${data.email} | ${data.phone_number}</p>
-                      </div>
-                    </div>
-
-                    <div class="section">
-                      <h5 class="text-primary">ABOUT ME</h5>
-                      <p>UX Designer with a focus on delivering impactful results, eager to tackle dynamic challenges and apply creativity to craft intuitive user experiences. Demonstrated proficiency in project management, user-centric problem-solving, and seamless collaboration across teams. Skilled in leveraging state-of-the-art tools and methodologies to streamline processes and elevate user satisfaction.</p>
-                    </div>
-
-                    <div class="section">
-                      <h5 class="text-primary">TECHNICAL SKILLS</h5>
-                      <div class="two-column">
-                        <div>
-                          <ul class="list-group">
-                            <li>Prototyping Tools</li>
-                            <li>User Research</li>
-                            <li>Information Architecture</li>
-                            <li>Interaction Design</li>
-                            <li>Visual Design</li>
-                          </ul>
+                        <div class="cv_header_left">
+                            <img src="${data.image_url}" alt="Profile Image">
                         </div>
-                        <div>
-                          <ul class="list-group">
-                            <li>Accessibility</li>
-                            <li>Responsive Design</li>
-                            <li>Usability Heuristics</li>
-                            <li>User Testing Tools</li>
-                          </ul>
+                        <div class="cv_header_right">
+                            <h4>${data.name}</h4>
+                            <p>Position: ${data.position_id}</p>
                         </div>
-                      </div>
-                    </div>
+                    </div>`;
 
-                    <div class="section">
-                      <h5 class="text-primary">PROFESSIONAL EXPERIENCE</h5>
-                      <h6 class="text-primary">Instant Chartz App, Morcelle Program (Jan 2023 - Present)</h6>
-                      <ul class="list-group">
-                        <li>Led development of an advanced automation system, achieving a 15% increase in operational efficiency.</li>
-                        <li>Streamlined manufacturing processes, reducing production costs by 10%.</li>
-                        <li>Implemented preventive maintenance strategies, resulting in a 20% decrease in equipment downtime.</li>
-                      </ul>
-                      <h6 class="text-primary">System UX Engineer, XarrowAI Industries (Feb 2021 - Dec 2022)</h6>
-                      <ul class="list-group">
-                        <li>Designed and optimized a robotic control system, realizing a 12% performance improvement.</li>
-                        <li>Coordinated testing and validation, ensuring compliance with industry standards.</li>
-                        <li>Provided technical expertise, contributing to a 15% reduction in system failures.</li>
-                      </ul>
-                    </div>
-
-                    <div class="section">
-                      <h5 class="text-primary">EDUCATION</h5>
-                      <h6 class="text-primary">UX Industrial Basics and General Application (Aug 2016 - Oct 2019)</h6>
-                      <span>University of Engineering UX Cohort</span>
-                      <span>Major in Automotive Technology.</span>
-                      <span>Thesis on "Technological Advancements within the current Mechatronics Industry".</span>
-                      <h6 class="text-primary">Bachelor of Design in Process Engineering (May 2014 - May 2016)</h6>
-                      <span>Engineering University</span>
-                      <span>Relevant coursework in Structural Design and Project Management.</span>
-                    </div>
-
-                    <div class="section">
-                      <h5 class="text-primary">ADDITIONAL INFORMATION</h5>
-                      <ul class="list-group">
-                        <li>Languages: English, French, Mandarin.</li>
-                        <li>Certifications: Professional Design Engineer (PDE) License, Project Management Tech (PMT).</li>
-                        <li>Awards/Activities: Most Innovative Employer of the Year (2021), Overall Best Employee Division Two (2024), Onboarding Project Lead (2023).</li>
-                      </ul>
-                    </div>
+        html += `<div class="section">
+                    <h5>About Me</h5>
+                    <p class="sub_info">My name’s ${data.name}. I excelent in problem-solving, teamwork, and designing scalable applications. With a proven track record of delivering high-quality projects on time, I specialize in creating intuitive user interfaces and robust backend systems. My ability to adapt to challenges and communicate effectively enables me to thrive in dynamic environments. I am passionate about leveraging technology to solve real-world problems and committed to continuous learning and professional growth.</p>
                 </div>`;
+
+        if (data.skills && data.skills.length > 0) {
+            html += `<div class="section">
+                        <h5>Technical Skills</h5>
+                        <div class="two-column">`;
+            data.skills.forEach((skill) => {
+                html += `<div><ul class="list-group">
+                            <li>${skill.skill} (${skill.rate}%) - ${skill.description}</li>
+                        </ul></div>`;
+            });
+            html += `</div></div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Technical Skills</h5>
+                        <p class="sub_info">No skills data available.</p>
+                    </div>`;
+        }
+
+        if (data.experiences && data.experiences.length > 0) {
+            html += `<div class="section">
+                        <h5>Professional Experience</h5>`;
+            data.experiences.forEach((experience) => {
+                html += `
+                    <ul class="list-group">
+                        <li>
+                            <h6>${experience.position} at ${experience.organization} (${experience.period_type})</h6>
+                            <p>${experience.description}</p>
+                        </li>
+                    </ul>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Professional Experience</h5>
+                        <p class="sub_info">No professional experience data available.</p>
+                    </div>`;
+        }
+
+        if (data.educations && data.educations.length > 0) {
+            html += `<div class="section">
+                        <h5>Education</h5>`;
+            data.educations.forEach((education) => {
+                html += `
+                    <ul class="list-group">
+                        <li>
+                            <h6>${education.edu_level} in ${education.major}</h6>
+                            <p>${education.school} (${education.start_year} - ${education.finish_year})</p>
+                        </li>
+                    </ul>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Education</h5>
+                        <p class="sub_info">No education data available.</p>
+                    </div>`;
+        }
+
+        html += `<div class="section">
+                    <h5>Additional Information</h5>
+                    <ul class="list-group">
+                        <li>Languages: ${data.nationality}</li>
+                        <li>Country: ${data.country}</li>
+                        <li>Address: ${data.address}</li>
+                        <li>Phone Number: ${data.phone_number}</li>
+                    </ul>
+                </div>
+            </div>`;
+    }
+
     div.html(html);
     togglePanelTable(div);
     HtmlString = html;
 }
-function paySlipReport(div, data = null) {
-    let html = `<title>Pay Slip</title>
+
+this.viewEmployeeCV = (id, menuLink) => {
+    let op = {
+        id: id,
+    };
+
+    vsapi
+        .call(
+            `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
+            op,
+            false,
+            false,
+            false
+        )
+        .then((res) => {
+            if (res.status_code == 200) {
+                let d = res.data;
+                employeeCV(menuLink, d);
+            }
+        });
+};
+
+function paySlipReport(div, d = null) {
+    const data = d.data[0] || null;
+    let html = "";
+    if (data)
+        html = `<title>Pay Slip</title>
                 <style>
                     .payment_card {
                         border: 1px solid #ccc;
@@ -346,10 +411,6 @@ function paySlipReport(div, data = null) {
                         position: relative;
                         padding: 10px;
                         padding-bottom: 20px;
-                    }
-                    .payment-logo {
-                        position: absolute;
-                        left: 0;
                     }
 
                     .payment-title {
@@ -382,15 +443,8 @@ function paySlipReport(div, data = null) {
                 </style>
                 <div class="payment_card overflow-y-auto overflow-x-hidden">
                     <div class="payment-header">
-                        <div class="payment-logo">
-                            <img src="${
-                                main_view.base_url
-                            }/assets/images/logo/lc_logo.svg" alt="Company Logo">
-                        </div>
                         <div class="payment-title">
-                            <h4>Pay Slip : ${data.start_date} - ${
-        data.end_date
-    }</h4>
+                            <h4>Pay Slip : ${data.duration}</h4>
                         </div>
 
                     </div>
@@ -399,9 +453,9 @@ function paySlipReport(div, data = null) {
                         <div class="row cols-2 mb-0">
                             <div class="col-2">
                                 <div class="payment_img" data-id="" data-imageurl="">
-                                    <img src="${
-                                        data.image_url
-                                    }" alt="Profile Image">
+                                <img src="${
+                                    data.image_url
+                                }" alt="Profile Image">
                                 </div>
                             </div>
                             <div class="col-5 p_profile_left">
@@ -557,7 +611,8 @@ function paySlipReport(div, data = null) {
                            </div>
                     </div>
 
-                </div>`;
+                </div>
+            `;
     div.html(html);
     togglePanelTable(div);
     HtmlString = html;
@@ -566,8 +621,6 @@ this.viewPaySlip = (id, menuLink) => {
     let op = {
         id: id,
     };
-
-    console.log(303003, op);
 
     vsapi
         .call(
@@ -578,12 +631,8 @@ this.viewPaySlip = (id, menuLink) => {
             false
         )
         .then((res) => {
-            console.log(666, res);
-
             if (res.status_code == 200) {
                 let d = res.data;
-                console.log(555, d);
-
                 mThis.paySlipReport(d);
             }
         });
@@ -3728,8 +3777,6 @@ function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
             numTh = (HtmlString.match(/count-th/g) || []).length;
         let startIndex = HtmlString.indexOf("<img"),
             endIndex = HtmlString.indexOf('"/>', startIndex);
-        console.log(2222, numTable, 44444, numTh);
-
         // return;
         let tStartIndex = 0,
             tLastIndex,
@@ -4145,7 +4192,7 @@ function convertCurrencyToWords(number) {
 
         if (num >= 10 && num <= 19) {
             parts.push(teens[num - 10]);
-            num = 0; // Skip the tens place
+            num = 0;
         } else if (num >= 20) {
             parts.push(tens[Math.floor(num / 10)]);
             num %= 10;
