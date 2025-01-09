@@ -42,16 +42,16 @@ var ReportCenterComponent = new (function () {
             required: false,
             dot_object: "branches",
         },
-        // {
-        //     type: "select",
-        //     api_fetch: `${main_view.base_url}/hr/form-option`,
-        //     api_params: {},
-        //     name: "employee_id",
-        //     value_field: "id",
-        //     text_field: "employee_name",
-        //     required: false,
-        //     dot_object: "employees",
-        // },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/hr/form-option`,
+            api_params: {},
+            name: "employee_id",
+            value_field: "id",
+            text_field: "employee_name",
+            required: false,
+            dot_object: "employees",
+        },
         {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/form-option`,
@@ -705,11 +705,11 @@ var ReportCenterComponent = new (function () {
                             case "employee_benefits_report":
                                 employeeBenefitsReport(containerTable, d);
                                 break;
-                            case "student_payment_history":
-                                studentPaymentHistory(containerTable, d);
+                            case "print_employee_CV":
+                                employeeCV(containerTable, d);
                                 break;
-                            case "income_by_class":
-                                incomeByClassTable(containerTable, d);
+                            case "payslip_print":
+                                paySlipReport(containerTable, d);
                                 break;
                             case "student_change_campus":
                                 studentChangeCampus(containerTable, d);

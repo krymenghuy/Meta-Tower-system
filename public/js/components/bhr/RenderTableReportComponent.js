@@ -3,7 +3,16 @@ let HtmlString = null;
 /**
  * These function for generate student attendance table of reports
  */
-
+const formattedNumber = (number) => {
+    number = Number(number) || 0;
+    return number
+        .toLocaleString("en-US", {
+            useGrouping: true,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
+        .replace(/,/g, " ");
+};
 function employeeAttendance(div, data = null) {
     let html = `<title>Monthly Employee Attendance Sheet</title>
     <style>
@@ -32,7 +41,7 @@ function employeeAttendance(div, data = null) {
       }
     </style>  
     
-  <h2>Monthly Employee Attendance Sheet</h2>
+  <h5 class="text-primary">Monthly Employee Attendance Sheet</h5>
   
   <table>
     <thead>
@@ -177,7 +186,408 @@ function employeeBenefitsReport(div, data = null) {
     togglePanelTable(div);
     HtmlString = html;
 }
+function employeeCV(div, data = null) {
+    let html = `<title>Employee CV</title>
+                <style>
+                    .employee_cv {
+                      max-width: 800px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      border: 1px solid #ddd;
+                      background-color: #f9f9f9;
+                    }
+                    h1, h2, h3 {
+                      color: #222;
+                    }
+                    .emp_cv_header {
+                      display:flex;
+                      justify-content: space-between;
+                    }
+                    .cv_header_left{
+                      width: 10%;
+                    }
+                    .cv_header_right{
+                      width: 85%;
+                      margin-right:5%;
+                      text-align:center;
+                    }
+                    .emp_cv_header h1 {
+                      margin: 0;
+                      font-size: 28px;
+                    }
+                    .emp_cv_header p {
+                      margin: 5px 0;
+                      font-size: 14px;
+                      color: #555;
+                    }
+                    .section {
+                      margin-top: 20px;
+                    }
+                    .section h2 {
+                      background-color: #eee;
+                      padding: 10px;
+                      margin: 0 -20px 10px;
+                    }
+                    .list-group {
+                      list-style: none;
+                      padding: 0;
+                      margin: 0;
+                    }
+                    .list-group li {
+                      margin-bottom: 10px;
+                    }
+                    .two-column {
+                      display: flex;
+                      justify-content: space-between;
+                    }
+                    .two-column > div {
+                      width: 50%;
+                    }
+                </style>
+                <div class="employee_cv">
+                    <div class="emp_cv_header">
+                      <div class="cv_header_left">
+                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                      </div>
+                      <div class="cv_header_right">
+                        <h4>${data.name}</h4>
+                        <p>${data.position_id} | ${data.email} | ${data.phone_number}</p>
+                      </div>
+                    </div>
 
+                    <div class="section">
+                      <h5 class="text-primary">ABOUT ME</h5>
+                      <p>UX Designer with a focus on delivering impactful results, eager to tackle dynamic challenges and apply creativity to craft intuitive user experiences. Demonstrated proficiency in project management, user-centric problem-solving, and seamless collaboration across teams. Skilled in leveraging state-of-the-art tools and methodologies to streamline processes and elevate user satisfaction.</p>
+                    </div>
+
+                    <div class="section">
+                      <h5 class="text-primary">TECHNICAL SKILLS</h5>
+                      <div class="two-column">
+                        <div>
+                          <ul class="list-group">
+                            <li>Prototyping Tools</li>
+                            <li>User Research</li>
+                            <li>Information Architecture</li>
+                            <li>Interaction Design</li>
+                            <li>Visual Design</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <ul class="list-group">
+                            <li>Accessibility</li>
+                            <li>Responsive Design</li>
+                            <li>Usability Heuristics</li>
+                            <li>User Testing Tools</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="section">
+                      <h5 class="text-primary">PROFESSIONAL EXPERIENCE</h5>
+                      <h6 class="text-primary">Instant Chartz App, Morcelle Program (Jan 2023 - Present)</h6>
+                      <ul class="list-group">
+                        <li>Led development of an advanced automation system, achieving a 15% increase in operational efficiency.</li>
+                        <li>Streamlined manufacturing processes, reducing production costs by 10%.</li>
+                        <li>Implemented preventive maintenance strategies, resulting in a 20% decrease in equipment downtime.</li>
+                      </ul>
+                      <h6 class="text-primary">System UX Engineer, XarrowAI Industries (Feb 2021 - Dec 2022)</h6>
+                      <ul class="list-group">
+                        <li>Designed and optimized a robotic control system, realizing a 12% performance improvement.</li>
+                        <li>Coordinated testing and validation, ensuring compliance with industry standards.</li>
+                        <li>Provided technical expertise, contributing to a 15% reduction in system failures.</li>
+                      </ul>
+                    </div>
+
+                    <div class="section">
+                      <h5 class="text-primary">EDUCATION</h5>
+                      <h6 class="text-primary">UX Industrial Basics and General Application (Aug 2016 - Oct 2019)</h6>
+                      <span>University of Engineering UX Cohort</span>
+                      <span>Major in Automotive Technology.</span>
+                      <span>Thesis on "Technological Advancements within the current Mechatronics Industry".</span>
+                      <h6 class="text-primary">Bachelor of Design in Process Engineering (May 2014 - May 2016)</h6>
+                      <span>Engineering University</span>
+                      <span>Relevant coursework in Structural Design and Project Management.</span>
+                    </div>
+
+                    <div class="section">
+                      <h5 class="text-primary">ADDITIONAL INFORMATION</h5>
+                      <ul class="list-group">
+                        <li>Languages: English, French, Mandarin.</li>
+                        <li>Certifications: Professional Design Engineer (PDE) License, Project Management Tech (PMT).</li>
+                        <li>Awards/Activities: Most Innovative Employer of the Year (2021), Overall Best Employee Division Two (2024), Onboarding Project Lead (2023).</li>
+                      </ul>
+                    </div>
+                </div>`;
+    div.html(html);
+    togglePanelTable(div);
+    HtmlString = html;
+}
+function paySlipReport(div, data = null) {
+    let html = `<title>Pay Slip</title>
+                <style>
+                    .payment_card {
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        padding: 10px;
+                        width: 98%;
+                    }
+                    .payment_details {
+                        display: flex;
+                        justify-content: center;
+                        height: 510px;
+                    }
+
+                    .payment-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        padding: 10px;
+                        padding-bottom: 20px;
+                    }
+                    .payment-logo {
+                        position: absolute;
+                        left: 0;
+                    }
+
+                    .payment-title {
+                        text-align: center;
+                        flex-grow: 1;
+                    }
+                    .payment_profile {
+                        gap: 10px;
+                        justify-content: center;
+                        border: 1px solid #ccc;
+                        padding: 10px;
+                        border-radius: 5px;
+                    }
+
+                    .payment_img {
+                        display: flex;
+                        justify-content: center;
+                        width: 80px;
+                        height: 80px;
+                        overflow: hidden;
+                        border-radius: 50%;
+
+                    }
+
+                    .payment_table{
+                        display: flex;
+                        padding: 10px;
+                    }
+
+                </style>
+                <div class="payment_card overflow-y-auto overflow-x-hidden">
+                    <div class="payment-header">
+                        <div class="payment-logo">
+                            <img src="${
+                                main_view.base_url
+                            }/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                        </div>
+                        <div class="payment-title">
+                            <h4>Pay Slip : ${data.start_date} - ${
+        data.end_date
+    }</h4>
+                        </div>
+
+                    </div>
+
+                    <div class="payment_profile">
+                        <div class="row cols-2 mb-0">
+                            <div class="col-2">
+                                <div class="payment_img" data-id="" data-imageurl="">
+                                    <img src="${
+                                        data.image_url
+                                    }" alt="Profile Image">
+                                </div>
+                            </div>
+                            <div class="col-5 p_profile_left">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize data-get">${
+                                        data.emp_name || "N/A"
+                                    }</p>
+                                </div>
+
+                               <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Sex</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">
+                                        ${
+                                            data.sex === "M"
+                                                ? "Male"
+                                                : data.sex === "F"
+                                                ? "Female"
+                                                : "Other"
+                                        }
+                                    </p>
+                                </div>
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Employee ID</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap">${
+                                        data.emp_code || "N/A"
+                                    }</p>
+                                </div>
+                            </div>
+                            <div class="col-5 p_profile_right">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Branch</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.branch_name || "N/A"
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Position</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.emp_position || "N/A"
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Join Date</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.joining_date || "N/A"
+                                    }</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment_table row "style="display: flex !important">
+                    <div class="col-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> Salary </td>
+                                    <td>${formattedNumber(
+                                        data.p_salary || 0.0
+                                    )}</td>
+                                </tr>
+                                 <tr>
+                                    <td>Days</td>
+                                    <td>${data.count_day || 0}</td>
+                                </tr>
+                                <tr>
+                                    <td>Taxable BFT</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_taxable || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>BFT (${
+                                        data.flat_tax_rate || 0.0
+                                    } % tax)</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_flat_rate || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Deduction</td>
+                                    <td class="text-danger">${formattedNumber(
+                                        data.deduction || 0.0
+                                    )}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>Allowance</td>
+                                    <td>${formattedNumber(
+                                        data.p_allowance || 0.0
+                                    )}</td>
+                                </tr>
+
+                                 <tr>
+                                    <td>Tax Rate</td>
+                                    <td>${data.tax_rate || 0.0}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Nontax BFT</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_non_tax || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Benefit Tax Flat Rate</td>
+                                    <td class="text-danger">${formattedNumber(
+                                        data.benefit_tax || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax Base</td>
+                                    <td class ="text-danger">${formattedNumber(
+                                        data.tax_base || 0.0
+                                    )}</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        </div>
+                           <div class="col-12 d-flex justify-content-center pb-1">
+                                <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(
+                                    data.total_salary || 0.0
+                                )}</p>
+                           </div>
+                    </div>
+
+                </div>`;
+    div.html(html);
+    togglePanelTable(div);
+    HtmlString = html;
+}
+this.viewPaySlip = (id, menuLink) => {
+    let op = {
+        id: id,
+    };
+
+    console.log(303003, op);
+
+    vsapi
+        .call(
+            `${main_view.base_url}/hr/reports/employee/payslip-print`,
+            op,
+            false,
+            false,
+            false
+        )
+        .then((res) => {
+            console.log(666, res);
+
+            if (res.status_code == 200) {
+                let d = res.data;
+                console.log(555, d);
+
+                mThis.paySlipReport(d);
+            }
+        });
+};
 function studentAttendance(div, data) {
     if (data && !$.isEmptyObject(data)) {
         let html = `<div class="d-flex justify-content-center mb-3">

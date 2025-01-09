@@ -581,7 +581,7 @@ var PayrollListComponent = new (function () {
 
     };
     this.btnPrint.addEventListener('click', () => {
-        windowPrint(this.payment_info.innerHTML);
+        windowPrintPayrollList(this.payment_info.innerHTML);
         // window.print();
     })
 
@@ -931,7 +931,7 @@ const PayRollImportDailog = (()=>{
     return self;
 })();
 
-function windowPrint(html=null)
+function windowPrintPayrollList(html=null)
 {
     let HtmlString = null;
     HtmlString = html ? html : HtmlString;
