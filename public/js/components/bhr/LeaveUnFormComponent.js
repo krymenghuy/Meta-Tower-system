@@ -32,7 +32,7 @@ var LeaveUnFormComponent = new function () {
         },
 
         {
-            title: "Employee Info",
+            title: "Staff Information",
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 const employees = data.employees;
@@ -47,9 +47,9 @@ var LeaveUnFormComponent = new function () {
                                 <img class="h-100" src="${d.image_url}" alt="" />
                             </div>
                             <div>
-                                <span style="font-size: 12px; font-weight: bold;">${d.employee ??''}</span>
+                                <span style="font-size: 12px; font-weight: bold;">${d.employee ?? ''}</span>
                                 <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${d.emp_code ?? 'null'}</span>
+                                <span class="text-muted" style="font-size: 11px; ">${d.emp_code ?? ''}</span>
                             </div>
                         </div>
                         `].join('');
@@ -74,12 +74,11 @@ var LeaveUnFormComponent = new function () {
         },
 
         {
-            title: "Shifts",
+            title: "Attendance Scan Information",
             className: "align-middle",
             data: (data, index, tr) => {
                 const shifts = data.shifts,
                 employees = data.employees ?? [];
-                console.log(shifts);
                 let shift_rows = '';
                 let rows = '';
                 rows = [rows,`<div class="d-flex gap-2 w-100" style="height: 72px;">`].join('');
@@ -163,8 +162,6 @@ var LeaveUnFormComponent = new function () {
         // };
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
-        console.log(122,mThis.tblLeaves);
-
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -243,7 +240,7 @@ var LeaveUnFormComponent = new function () {
            },
 
             onClick:(menuLink, id, name)=>{
-                console.log(90,menuLink,80,id,70,name);
+                //console.log(90,menuLink,80,id,70,name);
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -333,7 +330,7 @@ var LeaveUnFormComponent = new function () {
     }
 
     this.deleteLeaveRequest = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
             btn: menuLink,
             onClose: () => {
