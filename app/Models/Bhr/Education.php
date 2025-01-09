@@ -77,7 +77,6 @@ class Education //extends Model
 
     }
 
-
     function details($id,$ss=null){
         $branch_id = $ss->branch_id;
         $rows = DB::table('emp_educations as e')
@@ -90,7 +89,6 @@ class Education //extends Model
 
 
     }
-
 
     function formOptions($id,$ss){
         $educations = null;
