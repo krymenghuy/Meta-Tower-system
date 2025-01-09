@@ -21,9 +21,10 @@ var EmployeeComponent = new (function () {
     this.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
     this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
+    this.divlistView = this.self.querySelector('#_employee_list');
     this.paginationContainer = mThis.self.querySelector("#container_pagination");
     mThis.store_filter = {};
-    let div = mThis.self.querySelector("#_employee_list");
+    const div = mThis.self.querySelector("#_employee_list");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -39,7 +40,7 @@ var EmployeeComponent = new (function () {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.EmployeeListView = new ListView("_employee_list", {
+        mThis.EmployeeListView = new ListView(mThis.divlistView, {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
             perPage: 8,
             paginationContainer: mThis.paginationContainer,
@@ -1596,14 +1597,14 @@ var EmployeeComponent = new (function () {
                 return `
                     <div id="movement-options">
                         <div class="d-flex align-items-center gap-3 border-bottom ">
-                            <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch"  value="branch" />
-                            <label for="branch" class="text-primary-custom">Change Branch</label>
+                            <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" value="branch" />
+                            <label for="change_branch" class="text-primary-custom">Change Branch</label>
 
-                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox" id="position"  value="position" />
-                            <label for="position" class="text-primary-custom">Change Position</label>
+                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox"  value="position" />
+                            <label for="change_position" class="text-primary-custom">Change Position</label>
 
-                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary"  value="salary" />
-                            <label for="salary" class="text-primary-custom">Change Salary</label>
+                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox"  value="salary" />
+                            <label for="change_salary" class="text-primary-custom">Change Salary</label>
                         </div>
                     </div>
 
@@ -1687,7 +1688,10 @@ var EmployeeComponent = new (function () {
 
                 me.setEvent = (div) => {
                     div.querySelectorAll("input.change-option").forEach((input) => {
+                        console.log('hh1: ',input);
                         input.onchange = (e) => {
+                            e.preventDefault();
+                            console.log('change_d:1');
                             const divTarget = me.controls[input.dataset.target];
                             if (divTarget) {
                                 divTarget.style.display = input.checked
@@ -1697,6 +1701,7 @@ var EmployeeComponent = new (function () {
                         };
                     });
                 };
+                me.setEvent(me.divModal); 
             },
             // configSelect: [
                 // {
@@ -1724,10 +1729,10 @@ var EmployeeComponent = new (function () {
                     cssClass: "btn btn-primary",
                     label: "<span>Save</span",
                     click: (me, btn, divModal) => {
-                        let p = me.getData();
+                        const p = me.getData();
                         p.emp_id = op.id;
                         console.log(321, p);
-                        let d = {};
+                        const d = {};
                         d.emp_id = p.emp_id;
                         let change_branch = {},
                             change_position = {},
@@ -1757,8 +1762,7 @@ var EmployeeComponent = new (function () {
                         d.change_branch = change_branch;
                         d.change_position = change_position;
                         d.change_salary = change_salary;
-                        console.log(12301, d);
-
+                         
                         vsapi
                             .call(
                                 `${main_view.base_url}/hr/staff-promotion/promote`,
@@ -1797,7 +1801,7 @@ var EmployeeComponent = new (function () {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                let op = {id:me.dataOptions.id};
+                const op = {id: me.dataOptions.id};
 
                     vsapi.call(`${main_view.base_url}/hr/staff-promotion/form-options`,op,null,null).then((res) => {
                     const d = res.status_code == 200 ? res.data : {};
@@ -1809,7 +1813,8 @@ var EmployeeComponent = new (function () {
                 // me.controls.branch.value = data.employee.branch_id;
                 // me.controls.position.value = data.employee.position_id;
                 // me.controls.org_salary.value = data.employee.salary;
-                me.divModal.querySelectorAll("input.change-option").forEach((input) => {
+                const divModal = me.divModal;
+                divModal.querySelectorAll("input.change-option").forEach((input) => {
                     input.checked = false;
                     const divTarget = me.controls[input.dataset.target];
                     if (divTarget) {
@@ -1818,7 +1823,8 @@ var EmployeeComponent = new (function () {
                             : "none";
                     }
                 });
-                me.setEvent(me.divModal);
+              
+                //me.setEvent(divModal);
 
             },
         });
@@ -2055,9 +2061,9 @@ var EmployeeComponent = new (function () {
 
     this.setTerminated = (id, lnk) => {
         let tr = lnk.closest("tr");
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        const status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
 
-        let inputOptions = {
+        const inputOptions = {
             title: "Set Employee Terminate",
             dataLabel: "Employee status",
             valueMember: "status_id",
@@ -2075,7 +2081,7 @@ var EmployeeComponent = new (function () {
 
         InputBox2.show(inputOptions, (d) => {
             if (d) {
-                let p = {
+                const p = {
                     id: id,
                     status_id: d.value,
                 };
@@ -2099,6 +2105,7 @@ var EmployeeComponent = new (function () {
             }
         });
     };
+
     this.setRejoin = (id, menuLink) => {
         let op = {
             id: id,
@@ -2113,7 +2120,7 @@ var EmployeeComponent = new (function () {
                 return [
                     ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Rejoin Date</label>
-                            <div><input  name="rejoin_date" class="form-control data-input" placeholder="" data-field="rejoin_date"/></div>
+                            <div><input name="rejoin_date" class="form-control data-input" placeholder="" data-field="rejoin_date"/></div>
                         </div>
 
                       <div class="form-group col-md-12">
@@ -2239,6 +2246,7 @@ var EmployeeComponent = new (function () {
                 context: "delete",
                 confirmButtonText: "Delete",
             },
+            
             function (e) {
                 if (e) {
                     vsapi

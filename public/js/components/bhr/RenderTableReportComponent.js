@@ -3,7 +3,16 @@ let HtmlString = null;
 /**
  * These function for generate student attendance table of reports
  */
-
+const formattedNumber = (number) => {
+    number = Number(number) || 0;
+    return number
+        .toLocaleString("en-US", {
+            useGrouping: true,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
+        .replace(/,/g, " ");
+};
 function employeeAttendance(div, data = null) {
     let html = `<title>Monthly Employee Attendance Sheet</title>
     <style>
@@ -32,7 +41,7 @@ function employeeAttendance(div, data = null) {
       }
     </style>  
     
-  <h2>Monthly Employee Attendance Sheet</h2>
+  <h5 class="text-primary">Monthly Employee Attendance Sheet</h5>
   
   <table>
     <thead>
@@ -177,7 +186,457 @@ function employeeBenefitsReport(div, data = null) {
     togglePanelTable(div);
     HtmlString = html;
 }
+function employeeCV(div, d = null) {
+    const data = d.data[0] || null;
 
+    let html = "";
+    if (data) {
+        html = `<title>Employee CV</title>
+                <style>
+                    .employee_cv {
+                        max-width: 90%;
+                        margin: 50px;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        background-color: #f9f9f9;
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                    }
+                    h1, h2, h3, h4, h5, h6 {
+                        margin: 10px 0;
+                        color: #333;
+                    }
+                    h5 {
+                        font-size: 18px;
+                        color: #555;
+                        margin-bottom: 10px;
+                        text-transform: uppercase;
+                        border-bottom: 2px solid #ddd;
+                        padding-bottom: 5px;
+                    }
+                    .emp_cv_header {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 20px;
+                    }
+                    .cv_header_left {
+                        flex: 0 0 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        overflow: hidden;
+                        margin-right: 20px;
+                    }
+                    .cv_header_left img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    .cv_header_right {
+                        flex: 1;
+                        text-align: left;
+                    }
+                    .cv_header_right h4 {
+                        margin: 0;
+                        font-size: 24px;
+                        color: #222;
+                    }
+                    .cv_header_right p {
+                        margin: 5px 0;
+                        font-size: 14px;
+                        color: #555;
+                    }
+                    .section {
+                        margin-top: 20px;
+                    }
+                    .sub_info {
+                        color: #666;
+                        font-size: 14px;
+                    }
+                    .list-group {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .list-group li {
+                        background: #f5f5f5;
+                        border: 1px solid #ddd;
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border-radius: 5px;
+                        color: #333;
+                    }
+                    .two-column {
+                        display: flex;
+                        gap: 20px;
+                        margin-top: 10px;
+                    }
+                    .two-column > div {
+                        flex: 1;
+                    }
+                </style>
+                <div class="employee_cv">
+                    <div class="emp_cv_header">
+                        <div class="cv_header_left">
+                            <img src="${data.image_url}" alt="Profile Image">
+                        </div>
+                        <div class="cv_header_right">
+                            <h4>${data.name}</h4>
+                            <p>Position: ${data.position_id}</p>
+                        </div>
+                    </div>`;
+
+        html += `<div class="section">
+                    <h5>About Me</h5>
+                    <p class="sub_info">My name’s ${data.name}. I excelent in problem-solving, teamwork, and designing scalable applications. With a proven track record of delivering high-quality projects on time, I specialize in creating intuitive user interfaces and robust backend systems. My ability to adapt to challenges and communicate effectively enables me to thrive in dynamic environments. I am passionate about leveraging technology to solve real-world problems and committed to continuous learning and professional growth.</p>
+                </div>`;
+
+        if (data.skills && data.skills.length > 0) {
+            html += `<div class="section">
+                        <h5>Technical Skills</h5>
+                        <div class="two-column">`;
+            data.skills.forEach((skill) => {
+                html += `<div><ul class="list-group">
+                            <li>${skill.skill} (${skill.rate}%) - ${skill.description}</li>
+                        </ul></div>`;
+            });
+            html += `</div></div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Technical Skills</h5>
+                        <p class="sub_info">No skills data available.</p>
+                    </div>`;
+        }
+
+        if (data.experiences && data.experiences.length > 0) {
+            html += `<div class="section">
+                        <h5>Professional Experience</h5>`;
+            data.experiences.forEach((experience) => {
+                html += `
+                    <ul class="list-group">
+                        <li>
+                            <h6>${experience.position} at ${experience.organization} (${experience.period_type})</h6>
+                            <p>${experience.description}</p>
+                        </li>
+                    </ul>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Professional Experience</h5>
+                        <p class="sub_info">No professional experience data available.</p>
+                    </div>`;
+        }
+
+        if (data.educations && data.educations.length > 0) {
+            html += `<div class="section">
+                        <h5>Education</h5>`;
+            data.educations.forEach((education) => {
+                html += `
+                    <ul class="list-group">
+                        <li>
+                            <h6>${education.edu_level} in ${education.major}</h6>
+                            <p>${education.school} (${education.start_year} - ${education.finish_year})</p>
+                        </li>
+                    </ul>`;
+            });
+            html += `</div>`;
+        } else {
+            html += `<div class="section">
+                        <h5>Education</h5>
+                        <p class="sub_info">No education data available.</p>
+                    </div>`;
+        }
+
+        html += `<div class="section">
+                    <h5>Additional Information</h5>
+                    <ul class="list-group">
+                        <li>Languages: ${data.nationality}</li>
+                        <li>Country: ${data.country}</li>
+                        <li>Address: ${data.address}</li>
+                        <li>Phone Number: ${data.phone_number}</li>
+                    </ul>
+                </div>
+            </div>`;
+    }
+
+    div.html(html);
+    togglePanelTable(div);
+    HtmlString = html;
+}
+
+this.viewEmployeeCV = (id, menuLink) => {
+    let op = {
+        id: id,
+    };
+
+    vsapi
+        .call(
+            `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
+            op,
+            false,
+            false,
+            false
+        )
+        .then((res) => {
+            if (res.status_code == 200) {
+                let d = res.data;
+                employeeCV(menuLink, d);
+            }
+        });
+};
+
+function paySlipReport(div, d = null) {
+    const data = d.data[0] || null;
+    let html = "";
+    if (data)
+        html = `<title>Pay Slip</title>
+                <style>
+                    .payment_card {
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        padding: 10px;
+                        width: 98%;
+                    }
+                    .payment_details {
+                        display: flex;
+                        justify-content: center;
+                        height: 510px;
+                    }
+
+                    .payment-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        padding: 10px;
+                        padding-bottom: 20px;
+                    }
+
+                    .payment-title {
+                        text-align: center;
+                        flex-grow: 1;
+                    }
+                    .payment_profile {
+                        gap: 10px;
+                        justify-content: center;
+                        border: 1px solid #ccc;
+                        padding: 10px;
+                        border-radius: 5px;
+                    }
+
+                    .payment_img {
+                        display: flex;
+                        justify-content: center;
+                        width: 80px;
+                        height: 80px;
+                        overflow: hidden;
+                        border-radius: 50%;
+
+                    }
+
+                    .payment_table{
+                        display: flex;
+                        padding: 10px;
+                    }
+
+                </style>
+                <div class="payment_card overflow-y-auto overflow-x-hidden">
+                    <div class="payment-header">
+                        <div class="payment-title">
+                            <h4>Pay Slip : ${data.duration}</h4>
+                        </div>
+
+                    </div>
+
+                    <div class="payment_profile">
+                        <div class="row cols-2 mb-0">
+                            <div class="col-2">
+                                <div class="payment_img" data-id="" data-imageurl="">
+                                <img src="${
+                                    data.image_url
+                                }" alt="Profile Image">
+                                </div>
+                            </div>
+                            <div class="col-5 p_profile_left">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize data-get">${
+                                        data.emp_name || "N/A"
+                                    }</p>
+                                </div>
+
+                               <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Sex</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">
+                                        ${
+                                            data.sex === "M"
+                                                ? "Male"
+                                                : data.sex === "F"
+                                                ? "Female"
+                                                : "Other"
+                                        }
+                                    </p>
+                                </div>
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Employee ID</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap">${
+                                        data.emp_code || "N/A"
+                                    }</p>
+                                </div>
+                            </div>
+                            <div class="col-5 p_profile_right">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Branch</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.branch_name || "N/A"
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Position</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.emp_position || "N/A"
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Join Date</p>
+                                    <p class="px-3">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.joining_date || "N/A"
+                                    }</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment_table row "style="display: flex !important">
+                    <div class="col-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> Salary </td>
+                                    <td>${formattedNumber(
+                                        data.p_salary || 0.0
+                                    )}</td>
+                                </tr>
+                                 <tr>
+                                    <td>Days</td>
+                                    <td>${data.count_day || 0}</td>
+                                </tr>
+                                <tr>
+                                    <td>Taxable BFT</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_taxable || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>BFT (${
+                                        data.flat_tax_rate || 0.0
+                                    } % tax)</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_flat_rate || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Deduction</td>
+                                    <td class="text-danger">${formattedNumber(
+                                        data.deduction || 0.0
+                                    )}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>Allowance</td>
+                                    <td>${formattedNumber(
+                                        data.p_allowance || 0.0
+                                    )}</td>
+                                </tr>
+
+                                 <tr>
+                                    <td>Tax Rate</td>
+                                    <td>${data.tax_rate || 0.0}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Nontax BFT</td>
+                                    <td class="text-success">${formattedNumber(
+                                        data.benefit_non_tax || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Benefit Tax Flat Rate</td>
+                                    <td class="text-danger">${formattedNumber(
+                                        data.benefit_tax || 0.0
+                                    )}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax Base</td>
+                                    <td class ="text-danger">${formattedNumber(
+                                        data.tax_base || 0.0
+                                    )}</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        </div>
+                           <div class="col-12 d-flex justify-content-center pb-1">
+                                <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(
+                                    data.total_salary || 0.0
+                                )}</p>
+                           </div>
+                    </div>
+
+                </div>
+            `;
+    div.html(html);
+    togglePanelTable(div);
+    HtmlString = html;
+}
+this.viewPaySlip = (id, menuLink) => {
+    let op = {
+        id: id,
+    };
+
+    vsapi
+        .call(
+            `${main_view.base_url}/hr/reports/employee/payslip-print`,
+            op,
+            false,
+            false,
+            false
+        )
+        .then((res) => {
+            if (res.status_code == 200) {
+                let d = res.data;
+                mThis.paySlipReport(d);
+            }
+        });
+};
 function studentAttendance(div, data) {
     if (data && !$.isEmptyObject(data)) {
         let html = `<div class="d-flex justify-content-center mb-3">
@@ -3318,8 +3777,6 @@ function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
             numTh = (HtmlString.match(/count-th/g) || []).length;
         let startIndex = HtmlString.indexOf("<img"),
             endIndex = HtmlString.indexOf('"/>', startIndex);
-        console.log(2222, numTable, 44444, numTh);
-
         // return;
         let tStartIndex = 0,
             tLastIndex,
@@ -3735,7 +4192,7 @@ function convertCurrencyToWords(number) {
 
         if (num >= 10 && num <= 19) {
             parts.push(teens[num - 10]);
-            num = 0; // Skip the tens place
+            num = 0;
         } else if (num >= 20) {
             parts.push(tens[Math.floor(num / 10)]);
             num %= 10;

@@ -3,6 +3,8 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
+use App\Models\DBX;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -18,7 +20,7 @@ class TaxBracket
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $ss = null, $id = null){
+    function save($arr = [],$id = null,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
@@ -28,17 +30,19 @@ class TaxBracket
             'rate' => '1|number',
             'bias' => '1|number',
         ];
+        $checkUnique = [
+            "$branch_id|tax_brackets|lower_amount,upper_amount|id=id|text= already exists by tax bracket."
+        ];
+        
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
-
         $id = saveData($ss, 'tax_brackets', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['tax_brackets' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving data');
@@ -48,47 +52,38 @@ class TaxBracket
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
+    
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
-
-        $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
-        $str_search = '1=1';
-
+    
+        
+    
+        $update_date = DBX::formatTime("tb.update_date", 'update_date');
         $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias')
-            ->where('tb.branch_id', $ss->branch_id);
-
-        if ($search_id) {
-            $query->where('tb.id', $search_id);
-        }
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->where('tb.lower_amount', 'like', '%' . $search_value . '%' . 'or' . 'tb.upper_amount', 'like', '%' . $search_value . '%');
-        }
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias, tb.update_user, ' . $update_date)
+            ->where('tb.branch_id', $branch_id)
+            ->orderBy('tb.lower_amount', 'asc') // Order by lower_amount first
+            ->orderBy('tb.upper_amount', 'asc'); // Then order by upper_amount
+    
+    
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+    
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+    
 
     function getDetails($id, $ss)
     {
-        $branch_id = $ss->branch_id;
-        $query = DB::table('tax_brackets as tb')
+        $row = DB::table('tax_brackets as tb')
             ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias')
-            ->where('tb.branch_id', $ss->branch_id)
             ->where('tb.id', $id)
             ->first();
-        return $query;
+        return $row;
     }
 
 

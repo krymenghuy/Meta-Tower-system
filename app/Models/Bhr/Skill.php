@@ -138,7 +138,7 @@ class Skill
 
    
 
-    function getDetails($id)
+    function getDetails($id,$ss)
     {
         $row = DB::table('skills')
             ->selectRaw('id, title, description, image_file_name')

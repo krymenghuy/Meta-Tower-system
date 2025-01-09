@@ -59,7 +59,7 @@ var PayrollComponent = new (function () {
         {
             title: "Staff Count",
             className: "align-middle",
-            data: (data) => `<a href="javascript:void(0);" class="text-success payroll-link" data-payroll-id="${data.id}">${data.head_count}</a>`
+            data: (data) => `<a href="javascript:void(0);" class="text-success show_payroll_list" data-id="${data.id}">${data.head_count}</a>`
         },
 
         {
@@ -157,7 +157,7 @@ var PayrollComponent = new (function () {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
                 cloneTable = tr.parentElement.parentElement;
-                console.log(1212,cloneTable);
+                // console.log(1212,cloneTable);
 
                 tr.classList.add('tr_action');
                 // mThis.initDropdownMenus(cloneTable);
@@ -195,6 +195,24 @@ var PayrollComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
         }
+
+        pr_tbl.onclick = e =>{
+            let lnk = VSUtil.closestLimited(e.target,'a.show_payroll_list');
+            if(lnk){
+                const op = {"payroll_id": lnk.dataset.id};
+                VSRoute.showComponent('PayrollListComponent', op);
+                 return;
+            }
+
+        //     // *** You can add other action button click here like this
+        //    lnk = VSUtil.closestLimited(e.target,'a.other_click_action');
+        //    if(lnk){
+        //      //do something when user clicks on "other_click_action"
+        //      return;
+        //    }
+
+        };
+
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
         });
@@ -210,7 +228,7 @@ var PayrollComponent = new (function () {
         mThis.initDropdownMenus(mThis.pr_table);
 
         this.cloneTable = mThis.self.querySelector('#_payroll_list');
-        console.log(7777,mThis.cloneTable.querySelector('tr'));
+        // console.log(7777,mThis.cloneTable.querySelector('tr'));
 
         mThis.initAlready = true;
     };
@@ -280,7 +298,7 @@ var PayrollComponent = new (function () {
             },
         };
         new VSDropdownMenu(menuOptions);
-        console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
+        // console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
 
         table.querySelectorAll('a.btn_payroll_action').forEach(e => {
             const isAuthorized = e.dataset.authorized == '1';
@@ -629,21 +647,21 @@ const AddPayRollListDailog = (() => {
     return self;
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', function (event) {
-        if (event.target.classList.contains('payroll-link')) {
-            const payrollId = event.target.getAttribute('data-payroll-id');
 
-            const option = {
-                 payroll_id: payrollId
-                };
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.body.addEventListener('click', function (event) {
+//         if (event.target.classList.contains('payroll-link')) {
+//             const payrollId = event.target.getAttribute('data-payroll-id');
+//             const option = {
+//                  payroll_id: payrollId
+//                 };
 
-            if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
-
-                PayrollListComponent.show(option);
-            } else {
-                console.error('PayrollListComponent.show is not defined.');
-            }
-        }
-    });
-});
+//             if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
+//                 VSRoute.showComponent('PayrollListComponent', option);
+//                 //PayrollListComponent.show(option);
+//             } else {
+//                 console.error('PayrollListComponent.show is not defined.');
+//             }
+//         }
+//     });
+// });
