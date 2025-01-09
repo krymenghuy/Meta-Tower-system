@@ -21,9 +21,10 @@ var EmployeeComponent = new (function () {
     this.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
     this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
+    this.divlistView = this.self.querySelector('#_employee_list');
     this.paginationContainer = mThis.self.querySelector("#container_pagination");
     mThis.store_filter = {};
-    let div = mThis.self.querySelector("#_employee_list");
+    const div = mThis.self.querySelector("#_employee_list");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -39,7 +40,7 @@ var EmployeeComponent = new (function () {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.EmployeeListView = new ListView("_employee_list", {
+        mThis.EmployeeListView = new ListView(mThis.divlistView, {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
             perPage: 8,
             paginationContainer: mThis.paginationContainer,
