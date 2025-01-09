@@ -629,12 +629,11 @@ const AddPayRollListDailog = (() => {
     return self;
 })();
 
-
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', function (event) {
         if (event.target.classList.contains('payroll-link')) {
             const payrollId = event.target.getAttribute('data-payroll-id');
-            
+
             const option = {
                  payroll_id: payrollId
                 };

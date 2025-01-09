@@ -1,4 +1,5 @@
 "use strict";
+
 var PayrollListComponent = new (function () {
     const mThis = this;
     this.base_url = main_view.base_url;
@@ -243,8 +244,6 @@ var PayrollListComponent = new (function () {
             });
         };
 
-
-
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
 
@@ -377,6 +376,24 @@ var PayrollListComponent = new (function () {
 
     this.renderPayment = (data) => {
        let html = '';
+       let benefit_flat_rate = null;
+       let div_BFT  = '';
+
+       if (data.benefit_flat_rate != null) {
+            const parts = data.benefit_flat_rate.split('|').filter(part => part);
+
+            benefit_flat_rate = parts.map(part => {
+                const [bft, bftr] = part.split('@');
+                return { BFT: bft, BFTR: bftr };
+            });
+
+            div_BFT = benefit_flat_rate
+                .map(value => `${value.BFT} (${value.BFTR} %)`)
+                .join(' & ');
+        }
+
+
+
          html += `
         <style>
             .payment_card {
@@ -519,8 +536,8 @@ var PayrollListComponent = new (function () {
                                 <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
                             </tr>
                             <tr>
-                                <td>BFT (${data.flat_tax_rate} % tax)</td>
-                                <td class="text-success">${formattedNumber(data.benefit_flat_rate || 0.00)}</td>
+                                <td>BFT</td>
+                                <td class="text-success">${div_BFT}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
