@@ -24,8 +24,11 @@ class TaxBracketController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
+        $id = $req->id ?? $req->id;
+        $tax = new TaxBracket($id,$ss);
+        $res = $tax->save($req->all());
 
-        return $this->taxBracket->save($req, $ss);
+        return JDV::raw($res);
     }
 
     public function getTaxBracketListPaginate(Request $req)
