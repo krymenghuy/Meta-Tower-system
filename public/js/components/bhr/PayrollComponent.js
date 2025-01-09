@@ -59,7 +59,7 @@ var PayrollComponent = new (function () {
         {
             title: "Staff Count",
             className: "align-middle",
-            data: (data) => `<a href="javascript:void(0);" class="text-success payroll-link" data-payroll-id="${data.id}">${data.head_count}</a>`
+            data: (data) => `<a href="javascript:void(0);" class="text-success show_payroll_list" data-id="${data.id}">${data.head_count}</a>`
         },
 
         {
@@ -195,6 +195,24 @@ var PayrollComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
         }
+
+        pr_tbl.onclick = e =>{
+            let lnk = VSUtil.closestLimited(e.target,'a.show_payroll_list');
+            if(lnk){
+                const op = {"payroll_id": lnk.dataset.id};
+                VSRoute.showComponent('PayrollListComponent', op);
+                 return;
+            }
+          
+        //     // *** You can add other action button click here like this
+        //    lnk = VSUtil.closestLimited(e.target,'a.other_click_action');
+        //    if(lnk){
+        //      //do something when user clicks on "other_click_action"
+        //      return;
+        //    }
+
+        };
+
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
         });
@@ -630,19 +648,20 @@ const AddPayRollListDailog = (() => {
 })();
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', function (event) {
-        if (event.target.classList.contains('payroll-link')) {
-            const payrollId = event.target.getAttribute('data-payroll-id');
-            const option = {
-                 payroll_id: payrollId
-                };
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.body.addEventListener('click', function (event) {
+//         if (event.target.classList.contains('payroll-link')) {
+//             const payrollId = event.target.getAttribute('data-payroll-id');
+//             const option = {
+//                  payroll_id: payrollId
+//                 };
 
-            if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
-                PayrollListComponent.show(option);
-            } else {
-                console.error('PayrollListComponent.show is not defined.');
-            }
-        }
-    });
-});
+//             if (typeof PayrollListComponent !== 'undefined' && PayrollListComponent.show) {
+//                 VSRoute.showComponent('PayrollListComponent', option);
+//                 //PayrollListComponent.show(option);
+//             } else {
+//                 console.error('PayrollListComponent.show is not defined.');
+//             }
+//         }
+//     });
+// });
