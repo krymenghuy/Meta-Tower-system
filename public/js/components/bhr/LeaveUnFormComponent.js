@@ -1,7 +1,7 @@
 "use strict";
 
 var LeaveUnFormComponent = new function () {
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Uninformed Leaves";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_leave_unform_component");
@@ -12,6 +12,7 @@ var LeaveUnFormComponent = new function () {
     this.elFilter_wark_shift = this.self.querySelector('#el_wark_shift');
     this.elFilter_session = this.self.querySelector('#el_leave_session');
     this.elSearch = this.self.querySelector("#_search_uninform_leave");
+    this.divListView = this.self.querySelector('#_leave_unform_list');
 
     this.cols = [
 
@@ -22,7 +23,7 @@ var LeaveUnFormComponent = new function () {
                 const employees = data.employees;
                 let rows = '';
 
-                let day = `<div class="d-flex align-items-center " style=" min-width:205px; height:72px;"><span class="text-primary-custom">${data.day}</span></div>`;
+                const day = `<div class="d-flex align-items-center " style=" min-width:205px; height:72px;"><span class="text-primary-custom">${data.day}</span></div>`;
                 employees.forEach((d,i) => {
                     rows = [rows,day].join('');
                 });
@@ -138,7 +139,7 @@ var LeaveUnFormComponent = new function () {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.LeaveRequestListView = new ListView('_leave_unform_list',{
+        mThis.LeaveRequestListView = new ListView(mThis.divListView,{
             fetchApi : `${main_view.base_url}/hr/leave/uninformed`,
             perPage: 3,
             apiCluster: main_view.apiCluster,

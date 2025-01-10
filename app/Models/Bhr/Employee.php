@@ -48,11 +48,12 @@ class Employee //extends Model
 
     function checkUniqueEmployeeByNID($nid, $id = null)
     {
+        if(!$nid) return null;
         $str_id = '1=1';
         if (!$nid) return 'National ID cannot be empty';
         if ($id > 0) $str_id = "emp.id <> $id";
         $x = DB::table('employees as emp')->where('emp.nid', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'National ID "' . $nid . '" has been used by another employee';
+        if ($x) return 'National ID ?? has been used by another employee::'. $nid;
         return null;
     }
 
@@ -79,7 +80,7 @@ class Employee //extends Model
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid' => '1|string|1-100',
-            'nid_expiry_date' => '1|date',
+            'nid_expiry_date' => '0|date',
             'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
@@ -88,7 +89,7 @@ class Employee //extends Model
             'spouse_emp_id' => '0|number',
             'spouse_occ_code' => '0|string|0-100',
             'passport_number' => '0|string|0-100',
-            'passport_expiry_date' => '1|date',
+            'passport_expiry_date' => '0|date',
 
         ];
 
@@ -98,10 +99,23 @@ class Employee //extends Model
         if ($res->error) {
             return DV::error($res->error);
         }
-
-
+         
         $inputs = $res->values;
         $d = (object) $inputs;
+
+        $nid = $d->nid ?? null;
+        if($nid){
+            $expire_date = $d->nid_expiry_date ?? null;
+            if (!$expire_date) return DV::error('Expiry Date for National ID Card is required');
+            else $inputs['nid_expiry_date'] = convertDate($expire_date);
+        }
+        $passport_number = $d->passport_number;
+        if($passport_number){
+            $expire_date = $d->passport_expiry_date ?? null;
+            if (!$expire_date) return DV::error('Expiry Date for passport is required');
+            else $inputs['passport_expiry_date'] = convertDate($expire_date);
+        }  
+
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
