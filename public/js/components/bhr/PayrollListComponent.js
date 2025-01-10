@@ -107,7 +107,6 @@ var PayrollListComponent = new (function () {
                 return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.allowance ?? '0.00')}</p>`;
             }
         },
-
         {
             title: "Tax Rate",
             className: "align-middle text-nowrap",
