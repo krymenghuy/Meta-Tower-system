@@ -157,16 +157,16 @@ class Attendance
     }
 
 
-    function getDetails($id, $ss)
+    function getDetails($id)
     {
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         if (empty($id)) {
             return response()->json([
                 'message' => 'Attendance ID is required.',
                 'status' => 400
             ], 400);
         }
-        $row = DB::table('attendances as a')->selectRaw('a.id,a.emp_id,a.attendance_date,a.check_in_time,a.check_out_time,a.remark')->where('a.branch_id', $branch_id)->where('a.id', $id)->first();
+        $row = DB::table('attendances as a')->selectRaw('a.id,a.emp_id,a.attendance_date,a.check_in_time,a.check_out_time,a.remark')->where('a.id', $id)->first();
         if (!$row) {
             return response()->json([
                 'message' => 'Attendance ID not found.',
@@ -184,7 +184,7 @@ class Attendance
             return DV::error('Invalid ID');
         }
 
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
 
         $query = DB::table('attendances')
             ->where('id', $id)
@@ -216,7 +216,7 @@ class Attendance
 
     function scanAttendance($arr = [], $ss = null)
     {
-        $ss = $ss ?? $this->ss;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = 1;
         //$branch_id = $ss->branch_id ?? $branch_id =1;
         $subs_id = isset($ss->subs_id) ? $ss->subs_id : getCurrentSubsId(true);
@@ -387,7 +387,7 @@ class Attendance
         $file_name = $employee->photo_file_name;
         $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
         $image = PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
-        \Log::info($image);
+     
         $image_url = validateUrl($image, $defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
         $scan_status = null;
@@ -464,7 +464,7 @@ class Attendance
     function getLastEmployeesScan($arr = [], $ss = null)
     {
         $d = (object)$arr;
-        $ss = $ss ?? $this->ss;
+        $ss = $ss ?? $this->userInfo;
         $subs_id = $ss->subs_id;
         $per_page = $d->per_page ?? 0;
 

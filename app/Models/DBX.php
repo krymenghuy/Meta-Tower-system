@@ -8,7 +8,7 @@ class DBX
 
     public static $created_at ='created_at';
     public static $updated_at ='updated_at';
-    public static $branch_table = 'um_branches';    
+    public static $branch_table = 'um_branches';
     /***
      * query_user_info() returns select SQL for columns "updated_at, update_user, and created_at, create_user".
      * @$include_creation_info =true means to include "fields Created_at , create_user"
@@ -16,7 +16,7 @@ class DBX
     public static function query_user_info($table_alias= null,$update_date_alias= null,$include_creation_info = true, $create_date_alias =null ){
         if($table_alias) $table_alias = $table_alias.'.';
         if(!$include_creation_info) return self::formatTime($table_alias.self::$updated_at,$update_date_alias).',update_user';
-        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).',update_user,create_user,'.self::formatTime($table_alias.self::$created_at,$create_date_alias); 
+        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).','.$table_alias.'update_user,'.$table_alias.'create_user,'.self::formatTime($table_alias.self::$created_at,$create_date_alias);
     }
 
     public static function ifNull($col_name, $alt_column_or_value, $col_alias = null)
@@ -246,7 +246,7 @@ public static function formatTimeOnly($column, $alias_name = null)
            DB::table($table_name)->where($fk_name,$old_value)->update([$fk_name=>$new_value]);
         }
     }
-    
+
     static function deleteForeignKeyRows($fk_tables, $value,$soft_delete = false){
         foreach($fk_tables as $table_name => $fk_name){
             if($soft_delete)
@@ -297,7 +297,7 @@ public static function formatTimeOnly($column, $alias_name = null)
                 return true;
             } catch (\Exception $e) {
                 // Rollback in case of error
-                DB::rollBack(); 
+                DB::rollBack();
                 return false;
             }
         }
