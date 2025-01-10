@@ -853,7 +853,6 @@ class PayrollList
             ]);
             // \Log::info(json_encode($flat_rate_details));
 
-
             $payroll_total = DB::table('payroll_list')
                 ->where('payroll_id', $payroll->payroll_id)
                 ->sum('total_salary');

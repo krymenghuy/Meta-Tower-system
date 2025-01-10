@@ -17,7 +17,7 @@ class Role //extends Model
 {
     //use HasFactory;
     protected  $id = null, $user_info = null;
-    protected static $table = 'um_roles'; 
+    protected static $table = 'um_roles';
     function __construct($id = null, $user_info = null)
     {
         $this->id = $id;
@@ -46,7 +46,7 @@ class Role //extends Model
              $inputs['id']= $id;
              $inputs['subs_id'] = $subs_id;
              return DV::depends(1,['new_role'=>$inputs],'Failed to role');
-         }    
+         }
     }
 
     //Test whether a given @role can access to use a specified Application Module
@@ -72,11 +72,11 @@ class Role //extends Model
       $c_user = AuthService::user();
       //if(!$c_user) return  null;
       $subs_id = $c_user->subs_id;
-      $id = hex2bin($id);  
+      $id = hex2bin($id);
       DB::table(self::$table)->where('subs_id',hex2bin($subs_id))->where('id',$role_id)->delete();
       return DV::depends(1);
     }
-    
+
     static function getUserDetails($id,$ss){
       $c_user = AuthService::user();
       if(!$c_user) return  null;
@@ -181,7 +181,7 @@ class Role //extends Model
       $skip_rows = ($current_page - 1) * $per_page;
       if (!is_numeric($current_page)) $current_page = 1;
 
-     
+
       $str_search = '2=2';
       if ($search_value) {
         $search_value = escape_like_str($search_value);
@@ -214,7 +214,7 @@ class Role //extends Model
       $skip_rows = ($current_page - 1) * $per_page;
       if (!is_numeric($current_page)) $current_page = 1;
 
-     
+
       $role_name = Utils::getRoleName($role_id);
       $search_value = escape_like_str($search_value);
       $str_search = '7=7';
@@ -228,7 +228,7 @@ class Role //extends Model
       // ->where('u.subs_id',$bin_app_id)
       ->where('ur.role_id',$role_id)
       ->whereRaw($str_search)->orderBy('u.id','DESC');
-      
+
       $count_query = clone $query;
       $count = $count_query->count('u.id');
       $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -237,10 +237,10 @@ class Role //extends Model
         if($role){
            $row->role_id = $role->id;
            $row->role_name = $role->name;
-        } 
+        }
         $row->image_url = User::getPhoto($row->id,'id',$row->user_class);
       }
-      return new LengthAwarePaginator($rows, $count, $per_page, $current_page);    
+      return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
    }
 
    function getMemberForPrint($arr,$role_id = null,$ss =null){
@@ -252,9 +252,9 @@ class Role //extends Model
     $d = (object)$arr;
     // $subs_id = $c_user->subs_id;
     // $bin_app_id = hex2bin($subs_id);
-    
+
     $search_value = $d->search_value ?? null;
-   
+
     $role_name = Utils::getRoleName($role_id);
     $search_value = escape_like_str($search_value);
     $str_search = '7=7';
@@ -268,7 +268,7 @@ class Role //extends Model
     // ->where('u.subs_id',$bin_app_id)
     ->where('ur.role_id',$role_id)
     ->whereRaw($str_search)->orderBy('u.id','DESC');
-    
+
     $count_query = clone $query;
     $count = $count_query->count('u.id');
     $rows = $query->get();
@@ -277,7 +277,7 @@ class Role //extends Model
       if($role){
          $row->role_id = $role->id;
          $row->role_name = $role->name;
-      } 
+      }
       $row->image_url = User::getPhoto($row->id,'id',$row->user_class);
     }
     return DV::success(['data'=>(object)[
@@ -289,7 +289,7 @@ class Role //extends Model
    function addMember($user_id, $role_id = null,$ss = null){
      return $this->addMembers($user_id,$role_id,$ss);
    }
-   
+
    static function setUserDefaultBranch($ss,$subs_id,$user_id){
       $bin_subs_id = hex2bin($subs_id);
       $firstBranch = DB::table(DBX::$branch_table.' as b')->where('subs_id',$bin_subs_id)->selectRaw('id,name')->orderByRaw('id ASC')->first();
@@ -324,9 +324,9 @@ class Role //extends Model
             self::setUserDefaultBranch($ss,$role->subs_id,$user_id);
             $user_count = $res->data['user_count'];
             $success_count++;
-        } 
+        }
       }
-      return DV::depends(1, ['role_id'=>$role_id, 'user_count'=>$user_count, 'success_count'=>$success_count], 'Failed to add role members to role '.$role_id);  
+      return DV::depends(1, ['role_id'=>$role_id, 'user_count'=>$user_count, 'success_count'=>$success_count], 'Failed to add role members to role '.$role_id);
   }
 
   protected static function addRoleMember_internal($ss,$role_id,$user_id){
@@ -343,11 +343,11 @@ class Role //extends Model
       'is_primary_role' => 1,
       'start_date'=>$nowTime,
    ];
-     $m_id = saveData($ss,'um_user_roles', ['id'=>$m_id],$input,[],0,false); 
+     $m_id = saveData($ss,'um_user_roles', ['id'=>$m_id],$input,[],0,false);
      $user_count = DB::table('um_user_roles AS ur')->where('ur.role_id',$role_id)->count('ur.user_id');
      return DV::depends($m_id,['role_id'=>$role_id,'user_count'=>$user_count],'Failed to add user to the given role');
  }
- 
+
   static function getUserIdsByName($roleName){
     return DB::table('um_roles as r')->join('um_user_roles as ur','r.id','=','ur.role_id')->where('r.name', $roleName)->pluck('ur.user_id')->toArray();
   }
@@ -369,9 +369,9 @@ class Role //extends Model
   //     if($row) return DV::error('This user membership already exists');
   //     $inputs['start_date'] = getNowTime();
   //     $new_id = saveData($user,'um_user_roles',['id'=>null],$inputs,[],0,false);
-  //     return DV::depends($new_id,null,'Failed to create role membership'); 
+  //     return DV::depends($new_id,null,'Failed to create role membership');
   //  }
- 
+
   function getAccessibleApps($role_id = null){
     $role_id = $role_id ?? $this->id;
     return self::getAccessibleApps_internal($role_id);
@@ -415,24 +415,24 @@ class Role //extends Model
     }
     return $mods;
   }
- 
+
   function getAccessibleModules($app_id,$role_id = null, $ss =null){
     $role_id = $role_id ?? $this->id;
     $ss = $ss ?? $this->user_info;
     return self::getAccessibleModules_internal($role_id,$app_id);
   }
 
-  protected static function getAccessibleApps_internal($role_id){ 
+  protected static function getAccessibleApps_internal($role_id){
      $cols = DBX::getHEX('app.id','id').', app.name,is_mobile_app, home_route, icon_file_name,'.DBX::formatTime('ra.start_date', 'start_time');
      return DB::table('um_role_apps as ra')->join('um_applications as app','app.id','=','ra.app_id')->where('ra.role_id',$role_id)->selectRaw($cols)->get();
   }
 
-  protected static function getAccessibleApps_sql($role_id){ 
+  protected static function getAccessibleApps_sql($role_id){
     $apps = DB::table('um_role_apps as ra')->join('um_applications as app','app.id','=','ra.app_id')->where('ra.role_id',$role_id)->pluck('app.id')->toArray();
     return $apps;
   }
 
-  protected static function getPermissions_internal($role_id){ 
+  protected static function getPermissions_internal($role_id){
     $role_id = $role_id ?? 0;
     $cols = 'p.id,rp.role_id,rp.permission_id,'.DBX::formatTime('rp.start_date', 'start_time');
     return DB::table('um_role_permissions as rp')
@@ -441,7 +441,7 @@ class Role //extends Model
     ->join('um_permissions as p','p.id','=','rp.permission_id')->get();
  }
 
- protected static function getReports_internal($role_id){ 
+ protected static function getReports_internal($role_id){
   $role_id = $role_id ?? 0;
   $cols = 'p.id,rp.role_id,rp.permission_id,'.DBX::formatTime('rp.start_date', 'start_time');
   return DB::table('um_role_permissions as rp')
@@ -460,7 +460,7 @@ class Role //extends Model
     $search_value =  $d->search_value ?? null;
     $str_app_id = DBX::getHEX('app.id','app_id');
     $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('um_app_modules as am','am.id','=','p.module_id')->where('p.category','<>','report')->selectRaw('p.id,am.name AS module_name, CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name,'.$str_app_id)->orderByRaw('p.name ASC');
-    
+
     if($search_value){
       $str_search = '(p.name LIKE \'%'.escape_like_str($search_value).'%\' )';
       if(is_numeric($search_value) && $search_value > 0 ) $str_search = '(p.id = '.$search_value.')';
@@ -481,7 +481,7 @@ class Role //extends Model
        $prns[$row->module_name]['name'] = $row->module_name;
        $prns[$row->module_name]['id'] = $row->module_id;
        if (!isset($prns[$row->module_name]['items'])) $prns[$row->module_name]['items']= [];
- 
+
        $prns[$row->module_name]['items'][] = [
         'id'=>$row->id,
         'module_id'=>$row->module_id, //$module_id is used for Export list of Permissions to json file only
@@ -493,14 +493,14 @@ class Role //extends Model
     }
     return $prns;
   }
- 
+
   /** return all avaialable permissions with status as 1 = allowed, and 0 = Denied */
   function getRoleReports($arr, $role_id = null,$ss = null){
     $role_id = $role_id ?? $this->id;
     $ss = $ss ?? $this->user_info;
     $d = (object)$arr;
     $app_id = $d->app_id ?? null;
-    if($app_id =='') $app_id = null; 
+    if($app_id =='') $app_id = null;
     $search_value = $d->search_value ?? null;
     $str_app_id = DBX::getHEX('app.id','app_id');
     $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('reports as rpt','rpt.permission_id','=','p.id')->where('p.category','Report')->selectRaw('p.id,CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name,rpt.category AS report_group,'.$str_app_id)->orderByRaw('rpt.category ASC, p.name ASC');
@@ -541,7 +541,7 @@ class Role //extends Model
     }
     return $prns;
   }
- 
+
   /** return all avaialable reports group by report's category (or report_group) */
   function getRoleReportsByCategory($arr, $role_id = null,$ss = null){
     $role_id = $role_id ?? $this->id;
@@ -552,7 +552,7 @@ class Role //extends Model
     $col_app_id = DBX::getHEX('app.id','app_id');
     $access_prns = self::getReports_internal($role_id,$app_id);
     $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('reports as rpt','rpt.permission_id','=','p.id')->where('p.category','Report')->selectRaw('p.id,CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name,rpt.print_permission, rpt.export_excel, rpt.export_pdf, rpt.export_csv,rpt.category AS report_group,'.$col_app_id)->orderByRaw('rpt.category ASC, p.name ASC');
-   
+
     if($search_value){
       $str_search = '(p.name LIKE \'%'.escape_like_str($search_value).'%\' )';
       if( is_numeric($search_value) && $search_value > 0) $str_search = 'p.id = '.$search_value.'';
@@ -595,7 +595,7 @@ class Role //extends Model
     }
     return $prns;
   }
-  
+
   /** return all apps, and show status as allowed or not */
   static function getAppList($arr, $ss = null){
     $d = (object)$arr;
@@ -614,7 +614,7 @@ class Role //extends Model
            });
            $allowed = $founds->isEmpty()? 0 : 1;
            $row->allowed = $allowed;
-           $row->status_id = $allowed;  
+           $row->status_id = $allowed;
         }
         return $rows;
   }
@@ -635,7 +635,7 @@ class Role //extends Model
      $a_user_class = $role->user_class;
      if ($a_user_class !== $app->user_class){
        return DV::error("user in '$a_user_class' cannot access to app '$app->name'");
-     } 
+     }
      $item_id= DB::table('um_role_apps')->where('app_id',$bin_app_id)->where('role_id',$role_id)->value('id');
      $item_id = saveData($ss,'um_role_apps',['id'=>$item_id],$inputs,[],0,false);
      return DV::depends($item_id,[],"");
@@ -648,10 +648,10 @@ class Role //extends Model
     $x = DB::table('um_role_apps')->where('app_id',$bin_app_id)->where('role_id',$role_id)->delete();
     return DV::depends(1);
   }
- 
+
   function addModule($module_action, $role_id=null, $ss=null){
     $role_id = $role_id ?? $this->id;
-    $ss = $ss ?? $this->user_info; 
+    $ss = $ss ?? $this->user_info;
     $sts = explode('.',$module_action);
     $module_id = $sts[0] ?? null;
     if(!$module_id) return DV::error('No module ID provideð');
@@ -671,23 +671,23 @@ class Role //extends Model
     $x = DB::table('um_role_modules')->where('module_id',$module_id)->where('role_id',$role_id)->delete();
     return DV::depends(1);
   }
- 
+
   protected static function getAccessibleModules_internal($role_id, $app_id = null)
   {
       $cols = DBX::getHEX('am.app_id', 'id') . ', am.id, rm.role_id, am.name, ' . DBX::formatTime('rm.start_date', 'start_time');
-      
+
       $query = DB::table('um_role_modules as rm')
                   ->join('um_app_modules as am', 'am.id', '=', 'rm.module_id')
                   ->where('rm.role_id', $role_id)
                   ->selectRaw($cols);
-      
+
       if ($app_id) {
           $query->where('am.app_id', hex2bin($app_id));
       }
-      
+
       return $query->get();
   }
-   
+
   protected static function removeAppsByRole($role_id){
      $apps = self::getAccessibleApps_internal($role_id);
      foreach($apps as $app){
@@ -709,22 +709,22 @@ class Role //extends Model
    function removeMembers($user_ids, $role_id = null, $ss = null)
    {
        $role_id = $role_id ?? $this->id;
-       $ss = $ss ?? AuthService::user();    
+       $ss = $ss ?? AuthService::user();
        if(!$role_id) return DV::error('Role is not found');
        $ids = explode('|',$user_ids);
        foreach($ids as $user_id){
           self::removeRoleMember_internal($user_id,$role_id,$ss);
-       } 
+       }
    }
-    
+
    function removeMember($user_id, $role_id = null, $ss = null)
    {
        $role_id = $role_id ?? $this->id;
-       $ss = $ss ?? AuthService::user();    
+       $ss = $ss ?? AuthService::user();
        return self::removeRoleMember_internal($user_id,$role_id,$ss);
    }
 
-   static function removeRoleMember_internal($user_id, $role_id = null, $ss = null){    
+   static function removeRoleMember_internal($user_id, $role_id = null, $ss = null){
       if(!$role_id) return DV::error('Role is not found');
       $x = DB::table('um_user_roles')->where('role_id', $role_id)->where('user_id', $user_id)->delete();
       if($x){
@@ -733,7 +733,7 @@ class Role //extends Model
       }
       $row = DB::table('um_user_roles')->where('role_id', $role_id)->selectRaw("COUNT(user_id) AS user_count")->get()->first();
       $user_count = $row? $row->user_count : 0;
-      return DV::depends(1,['user_count'=>$user_count,'role_id'=>$role_id]);  
+      return DV::depends(1,['user_count'=>$user_count,'role_id'=>$role_id]);
    }
 
    function getPermissions($arr, $id = null, $ss = null){
@@ -775,7 +775,7 @@ class Role //extends Model
             'items'=>[]
           ];
           }
-          
+
           $data[$row->category]->items[] =(object)[
           'id'=>$row->id,
           'name'=>$row->permission_name,
@@ -808,8 +808,8 @@ class Role //extends Model
          $module_id = $row->module_id;
          $module_name = $row->name;
          //$prn_cat = $row->category;
-       } else return DV::error('Permission ID ?? does not exist::'.$prn_id); 
-          
+       } else return DV::error('Permission ID ?? does not exist::'.$prn_id);
+
        $nowTime = getNowTime();
        if ($module_id) {
            if (!self::can_access_module($module_id,$role_id)) {
@@ -896,24 +896,24 @@ class Role //extends Model
    return DV::depends(1);
 }
 
-  /** 
-   * addReport() adds a report as a permission to role, and ensure that all users in that roles have that permissions by inserting data into table "um_user_permissions" 
-   * NOTE: that $prn can be "205.print" 
+  /**
+   * addReport() adds a report as a permission to role, and ensure that all users in that roles have that permissions by inserting data into table "um_user_permissions"
+   * NOTE: that $prn can be "205.print"
   */
   function addReport($prn, $role_id =null, $ss = null)
    {
       $role_id = $role_id ?? $this->id;
       $ss = $ss ?? AuthService::user();
       $auto_add_module_access = true;
- 
+
        if(!$prn) return DV::error('I seems there is no report id or permission id provided');
        //$str_branch =$branch_id>0? "m.branch_id =$branch_id" :"1=1";
        if (empty($role_id)) return DV::error("Invalid role ID. The given role ID is empty");
-         
+
        $sts = explode('.',$prn);
        $prn_id = $sts[0]?? null;
        $action_name = $sts[1] ?? 'primary';
-        //For Report, the permission such as "302.view" must be translated to "302.primary". NOTE: that "primary" action is the very first action that user can do before accessing to other actions such as "print or export_pdf". For user friendly purpose, the "primary" is shown as "View" permision for report.   
+        //For Report, the permission such as "302.view" must be translated to "302.primary". NOTE: that "primary" action is the very first action that user can do before accessing to other actions such as "print or export_pdf". For user friendly purpose, the "primary" is shown as "View" permision for report.
        if(strtolower($action_name) === 'view') $action_name ='primary';
        $module_id = null;
        //$module_name = null;
@@ -922,8 +922,8 @@ class Role //extends Model
          $module_id = $row->module_id;
          //$module_name = $row->name;
          //$prn_cat = $row->category;
-       } else return DV::error('Report Permission ID does not exist'); 
-          
+       } else return DV::error('Report Permission ID does not exist');
+
        $nowTime = getNowTime();
        if ($module_id) {
            if (!self::can_access_module($module_id,$role_id)) {
@@ -949,9 +949,9 @@ class Role //extends Model
 
        $id = DB::table('um_role_permissions')->where('role_id', $role_id)->where('permission_id', $prn_id)->where('action_name',$action_name)->value('id');
        $inputs = [
-        'role_id' => $role_id, 
+        'role_id' => $role_id,
         'permission_id' => $prn_id,
-        'action_name'=>$action_name, 
+        'action_name'=>$action_name,
         'start_date' =>$nowTime,
         DBX::$created_at=>$nowTime,
         'create_uid'=>$ss->user_id,
@@ -982,7 +982,7 @@ class Role //extends Model
      $role_id = $role_id ?? $this->id;
      $ss = $ss ?? AuthService::user();
      /** $ids is a list of permission Ids separated by | **/
-     $ids = $ids ?? ''; 
+     $ids = $ids ?? '';
      if (empty($role_id)) return DV::error("role ID is empty or not valid");
      $ms = explode('|', $ids);
      foreach ($ms as $prn_action) {
