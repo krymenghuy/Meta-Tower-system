@@ -273,14 +273,16 @@ class Leave
             foreach ($filterDays as $filterDay) {
                 $day = $filterDay['day'];
                 $ds = ShiftDetails::getScanTimes($rows, $day);
-                $leav_uninform['day'] = $day . '-' .$filterDay['date'];
+                $leav_uninform['day'] = $filterDay['date']. ' ('.$day.')';
     
                 foreach($ds as $scenTime){
                     $leav_uninform['shifts'][] = $scenTime;
+                    $q_start_date = DBX::convertToDate('l.start_date');
+                    $q_end_date = DBX::convertToDate('l.end_date');
                     $str_time = "(
-                        (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-                        (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-                        (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+                        ($q_start_date BETWEEN '$start_date' AND '$end_date') OR
+                        ($q_end_date BETWEEN '$start_date' AND '$end_date') OR
+                        ($q_start_date <= '$start_date' AND $q_end_date >= '$end_date')
                     )";
 
                     $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
