@@ -555,15 +555,15 @@ const ViewFormItemDialog = (() => {
                                             <td colspan="5">
                                                 <div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" id="purpose1">
+                                                        <input class="exit_form_check_box" type="checkbox" id="purpose1">
                                                         <label class="form-check-label" for="purpose1">ការចាកចេញគ្រប់គ្រង</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" id="purpose2">
+                                                        <input class="exit_form_check_box" type="checkbox" id="purpose2">
                                                         <label class="form-check-label" for="purpose2">ការចុះ</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox" id="purpose3">
+                                                        <input class="exit_form_check_box" type="checkbox" id="purpose3">
                                                         <label class="form-check-label" for="purpose3">ផ្សេងៗ</label>
                                                     </div>
                                                 </div>

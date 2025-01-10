@@ -202,11 +202,7 @@ function employeeCV(div, d = null) {
                         font-family: Arial, sans-serif;
                         line-height: 1.6;
                     }
-                    h1, h2, h3, h4, h5, h6 {
-                        margin: 10px 0;
-                        color: #333;
-                    }
-                    h5 {
+                    .section_header>h5 {
                         font-size: 18px;
                         color: #555;
                         margin-bottom: 10px;
@@ -245,19 +241,19 @@ function employeeCV(div, d = null) {
                         font-size: 14px;
                         color: #555;
                     }
-                    .section {
+                    .section_header {
                         margin-top: 20px;
                     }
                     .sub_info {
                         color: #666;
                         font-size: 14px;
                     }
-                    .list-group {
+                    .info_cv_group {
                         list-style: none;
                         padding: 0;
                         margin: 0;
                     }
-                    .list-group li {
+                    .info_cv_group li {
                         background: #f5f5f5;
                         border: 1px solid #ddd;
                         padding: 10px;
@@ -285,34 +281,34 @@ function employeeCV(div, d = null) {
                         </div>
                     </div>`;
 
-        html += `<div class="section">
+        html += `<div class="section_header">
                     <h5>About Me</h5>
                     <p class="sub_info">My name’s ${data.name}. I excelent in problem-solving, teamwork, and designing scalable applications. With a proven track record of delivering high-quality projects on time, I specialize in creating intuitive user interfaces and robust backend systems. My ability to adapt to challenges and communicate effectively enables me to thrive in dynamic environments. I am passionate about leveraging technology to solve real-world problems and committed to continuous learning and professional growth.</p>
                 </div>`;
 
         if (data.skills && data.skills.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Technical Skills</h5>
                         <div class="two-column">`;
             data.skills.forEach((skill) => {
-                html += `<div><ul class="list-group">
+                html += `<div><ul class="info_cv_group">
                             <li>${skill.skill} (${skill.rate}%) - ${skill.description}</li>
                         </ul></div>`;
             });
             html += `</div></div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Technical Skills</h5>
                         <p class="sub_info">No skills data available.</p>
                     </div>`;
         }
 
         if (data.experiences && data.experiences.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Professional Experience</h5>`;
             data.experiences.forEach((experience) => {
                 html += `
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>
                             <h6>${experience.position} at ${experience.organization} (${experience.period_type})</h6>
                             <p>${experience.description}</p>
@@ -321,18 +317,18 @@ function employeeCV(div, d = null) {
             });
             html += `</div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Professional Experience</h5>
                         <p class="sub_info">No professional experience data available.</p>
                     </div>`;
         }
 
         if (data.educations && data.educations.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Education</h5>`;
             data.educations.forEach((education) => {
                 html += `
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>
                             <h6>${education.edu_level} in ${education.major}</h6>
                             <p>${education.school} (${education.start_year} - ${education.finish_year})</p>
@@ -341,15 +337,15 @@ function employeeCV(div, d = null) {
             });
             html += `</div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Education</h5>
                         <p class="sub_info">No education data available.</p>
                     </div>`;
         }
 
-        html += `<div class="section">
+        html += `<div class="section_header">
                     <h5>Additional Information</h5>
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>Languages: ${data.nationality}</li>
                         <li>Country: ${data.country}</li>
                         <li>Address: ${data.address}</li>
@@ -391,20 +387,20 @@ function paySlipReport(div, d = null) {
     if (data)
         html = `<title>Pay Slip</title>
                 <style>
-                    .payment_card {
+                    .paySlip_card {
                         border: 1px solid #ccc;
                         border-radius: 5px;
                         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                         padding: 10px;
                         width: 98%;
                     }
-                    .payment_details {
+                    .paySlip_details {
                         display: flex;
                         justify-content: center;
                         height: 510px;
                     }
 
-                    .payment-header {
+                    .paySlip-header {
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -413,11 +409,11 @@ function paySlipReport(div, d = null) {
                         padding-bottom: 20px;
                     }
 
-                    .payment-title {
+                    .paySlip-title {
                         text-align: center;
                         flex-grow: 1;
                     }
-                    .payment_profile {
+                    .paySlip_profile {
                         gap: 10px;
                         justify-content: center;
                         border: 1px solid #ccc;
@@ -425,7 +421,7 @@ function paySlipReport(div, d = null) {
                         border-radius: 5px;
                     }
 
-                    .payment_img {
+                    .paySlip_img {
                         display: flex;
                         justify-content: center;
                         width: 80px;
@@ -435,24 +431,24 @@ function paySlipReport(div, d = null) {
 
                     }
 
-                    .payment_table{
+                    .paySlip_table{
                         display: flex;
                         padding: 10px;
                     }
 
                 </style>
-                <div class="payment_card overflow-y-auto overflow-x-hidden">
-                    <div class="payment-header">
-                        <div class="payment-title">
+                <div class="paySlip_card overflow-y-auto overflow-x-hidden">
+                    <div class="paySlip-header">
+                        <div class="paySlip-title">
                             <h4>Pay Slip : ${data.duration}</h4>
                         </div>
 
                     </div>
 
-                    <div class="payment_profile">
+                    <div class="paySlip_profile">
                         <div class="row cols-2 mb-0">
                             <div class="col-2">
-                                <div class="payment_img" data-id="" data-imageurl="">
+                                <div class="paySlip_img" data-id="" data-imageurl="">
                                 <img src="${
                                     data.image_url
                                 }" alt="Profile Image">
@@ -516,7 +512,7 @@ function paySlipReport(div, d = null) {
                         </div>
                     </div>
 
-                    <div class="payment_table row "style="display: flex !important">
+                    <div class="paySlip_table row "style="display: flex !important">
                     <div class="col-6">
                         <table class="table">
                             <thead>

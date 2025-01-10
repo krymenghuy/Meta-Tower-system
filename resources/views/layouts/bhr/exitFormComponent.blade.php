@@ -28,7 +28,7 @@
         margin-bottom: 20px;
     }
 
-    .form-check-input {
+    .exit_form_check_box {
         margin-top: 4px;
     }
 
