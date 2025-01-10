@@ -207,7 +207,7 @@ class Report
         $campus_id = $d->campus_id ?? null;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-        $employee_id = $d->employee_id ?? null;
+        $staff = $d->staff ?? null;
         $branch_id = $d->branch_id ?? $campus_id;
         $employee_name = $d->name ?? null;
         $str_branch_id = '2=2';
@@ -246,8 +246,8 @@ class Report
                     emp.photo_file_name as emp_photo')
             ->whereRaw($str_branch_id);
 
-        if ($employee_id) {
-            $query->where('emp.id', $employee_id);
+        if ($staff) {
+            $query->where('emp.id', $staff);
         }
 
         if ($employee_name) {
@@ -453,7 +453,7 @@ class Report
         $d = (object)$filter;
 
         $campus_id = isset($d->campus_id) ? (int)$d->campus_id : null;
-        $employee_id = isset($d->employee_id) ? (int)$d->employee_id : null;
+        $staff = isset($d->staff) ? (int)$d->staff : null;
         $branch_id = isset($d->branch_id) ? (int)$d->branch_id : $campus_id;
         $employee_name = isset($d->name) ? $d->name : null;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
@@ -482,8 +482,8 @@ class Report
             $query->where('emp.branch_id', $branch_id);
         }
 
-        if ($employee_id) {
-            $query->where('emp.id', $employee_id);
+        if ($staff) {
+            $query->where('emp.id', $staff);
         }
 
         if ($employee_name) {
