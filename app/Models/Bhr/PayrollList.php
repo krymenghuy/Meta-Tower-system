@@ -142,29 +142,76 @@ class PayrollList
                 ->where('emp_id', $row->emp_id)
                 ->value('allowance');
 
-            $row->benefit_taxable = DB::table('payroll_list_benefits')
+                $row->benefit_taxable = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 1)
-                ->value('used_amount');
+                ->selectRaw('emp_benefit_id,used_amount');
 
             $row->benefit_non_tax = DB::table('payroll_list_benefits')
             ->where('emp_id', $row->emp_id)
             ->where('payroll_id', $row->payroll_id)
             ->where('tax_option_id', 2)
-            ->value('used_amount');
+            ->selectRaw('emp_benefit_id,used_amount');
 
             $row->benefit_flat_rate = DB::table('payroll_list_benefits')
             ->where('emp_id', $row->emp_id)
             ->where('payroll_id', $row->payroll_id)
             ->where('tax_option_id', 3)
-            ->value('used_amount');
+            ->selectRaw('emp_benefit_id,used_amount');
 
             $row->flat_tax_rate = DB::table('emp_benefits')
             ->where('emp_id', $row->emp_id)
             ->where('tax_option_id', 3)
-            ->value('flat_tax_rate');
+            ->selectRaw('id,flat_tax_rate');
 
+            $emp_benefit_count = DB::table('emp_benefits')
+                ->where('emp_id', $row->emp_id)
+                ->count('id');
+            $row->emp_benefit_count = $emp_benefit_count;
+            $used_amount = [];
+            $flat_tax_rates = [];
+
+            if ($emp_benefit_count > 1) {
+                $row->benefit_taxable = $row->benefit_taxable->get();
+                $row->benefit_non_tax = $row->benefit_non_tax->get();
+
+                $row->benefit_taxable = $row->benefit_taxable->sum('used_amount');
+                $row->benefit_non_tax = $row->benefit_non_tax->sum('used_amount');
+            }else {
+                $row->benefit_taxable = $row->benefit_taxable->first();
+                $row->benefit_non_tax = $row->benefit_non_tax->first();
+                $row->benefit_taxable = $row->benefit_taxable->used_amount ?? 0;
+                $row->benefit_non_tax = $row->benefit_non_tax->used_amount ?? 0;
+            }
+
+            if($emp_benefit_count > 1) {
+                $row->benefit_flat_rate = $row->benefit_flat_rate->get();
+                $row->flat_tax_rate = $row->flat_tax_rate->get();
+                foreach ($row->flat_tax_rate as $flat_tax_rate) {
+                    if (!in_array($flat_tax_rate->flat_tax_rate, $flat_tax_rates)) {
+                        $flat_tax_rates[] = $flat_tax_rate->flat_tax_rate;
+
+                    }
+                }
+                foreach($flat_tax_rates as $flat_tax_rate) {
+                    $used_amount[$flat_tax_rate] = 0;
+                    foreach ($row->flat_tax_rate as $ftr) {
+                        if($ftr->flat_tax_rate == $flat_tax_rate) {
+                            foreach($row->benefit_flat_rate as $bftr) {
+                                if($bftr->emp_benefit_id == $ftr->id) {
+                                    $used_amount[$flat_tax_rate] += $bftr->used_amount;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }else {
+                $row->benefit_flat_rate = $row->benefit_flat_rate->first()->used_amount ?? 0;
+                $row->flat_tax_rate = $row->flat_tax_rate->first()->flat_tax_rate ?? 0;
+            }
+            $row->used_amount = $used_amount;
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
             $row->deduction = ($row->deduction ?? 0);
@@ -804,7 +851,7 @@ class PayrollList
                 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
-            \Log::info(json_encode($flat_rate_details));
+            // \Log::info(json_encode($flat_rate_details));
 
 
             $payroll_total = DB::table('payroll_list')
