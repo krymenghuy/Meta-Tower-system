@@ -965,7 +965,6 @@ class PayrollList
             return DV::depends(1, ['Payroll Disbursed' => $query]);
         }
         return DV::error('Disbursement failed');
-
     }
 
     function disburseAllPayrollList($payroll_id, $ss = null)

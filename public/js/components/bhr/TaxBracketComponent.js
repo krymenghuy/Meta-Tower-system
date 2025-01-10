@@ -36,7 +36,7 @@ var TaxBracketComponent = new (function () {
             data: (data, index, tr) => {
                 const lowerAmount = data.lower_amount;
                 const upperAmount = data.upper_amount > 12000000 ? 'ឡើងទៅ' : data.upper_amount;
-        
+
                 if (data.upper_amount > 12000000) {
                     return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ${upperAmount}</p>`;
                 } else {
@@ -44,7 +44,7 @@ var TaxBracketComponent = new (function () {
                 }
             }
         },
-        
+
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -217,7 +217,7 @@ var TaxBracketComponent = new (function () {
                                 mThis.TaxBracketListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
@@ -286,7 +286,7 @@ const TaxBracketDialog = (()=>{
 
                     p.id = me.dataOptions.id;
                     console.log(123,p);
-                    
+
                     vsapi.call( [main_view.base_url,'/hr/tax-bracket/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);

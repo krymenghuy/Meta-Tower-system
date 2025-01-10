@@ -219,7 +219,7 @@ var ExitFormComponent = new (function () {
                         });
                 }
                 else {
-                    cv_interact.error(res.message);
+                    cv_interact.error(res.error_message);
                 }
             }
         );
@@ -393,7 +393,7 @@ const ViewExitFormDialog = (() => {
 
                         if (k.key === "name") {
                             return `<td class="text-capitalize align-middle">${cellData}</td>`;
-                        }   
+                        }
 
                         if (Array.isArray(cellData)) {
                             const divContent = cellData
@@ -412,10 +412,10 @@ const ViewExitFormDialog = (() => {
                                             item.check
                                         }</div>
                                         <div class="d-flex ml-1">
-                                        <span 
-                                            class="ms-2 item-name" 
-                                            id="item_name_${key}_${index}" 
-                                            title="${item.item_type}" 
+                                        <span
+                                            class="ms-2 item-name"
+                                            id="item_name_${key}_${index}"
+                                            title="${item.item_type}"
                                             style="cursor:pointer"
                                             data-info="${
                                                 item.details ||
@@ -441,7 +441,7 @@ const ViewExitFormDialog = (() => {
             })
             .join("");
     };
-    
+
     const generateEmployeeInfo = (employeeInfo) => {
         const {
             emp_name = "",

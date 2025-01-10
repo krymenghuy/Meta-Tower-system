@@ -44,7 +44,7 @@ var LeaveUnFormComponent = new function () {
                     employees.forEach((d,i) => {
                         rows = [rows,`
                         <div style="display: flex; align-items: center; height: 72px;">
-                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;">
                                 <img class="h-100" src="${d.image_url}" alt="" />
                             </div>
                             <div>
@@ -59,10 +59,10 @@ var LeaveUnFormComponent = new function () {
                 }
                 rows = [rows,`</div>`].join('');
 
-                return rows;    
+                return rows;
 
                 // return `<div style="display: flex; align-items: center;">
-                //             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                //             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;">
                 //                 <img class="h-100" src="${data.image_url}" alt="" />
                 //             </div>
                 //             <div>
@@ -118,7 +118,7 @@ var LeaveUnFormComponent = new function () {
                 //         </div>`;
             }
         },
-        
+
         // {
         //     className: 'col_action align-middle',
         //     data: function (data, row, display) {
@@ -349,7 +349,11 @@ var LeaveUnFormComponent = new function () {
                         cv_interact.success('Deleted Successfully');
                         mThis.LeaveRequestListView.showPage();
                     }
+
                 })
+            }
+            else {
+                cv_interact.error(res.error_message);
             }
         });
     }

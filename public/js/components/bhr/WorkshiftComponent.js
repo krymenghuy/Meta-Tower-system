@@ -232,7 +232,7 @@ var WorkshiftComponent = new (function () {
                                 mThis.WorkshiftListView();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
 

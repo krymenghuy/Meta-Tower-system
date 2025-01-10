@@ -122,7 +122,6 @@ var PayrollListComponent = new (function () {
             }
         },
 
-
         {
             title: "Tax Base",
             className: "align-middle text-nowrap",
@@ -705,7 +704,7 @@ var PayrollListComponent = new (function () {
                 })
             }
             else {
-                cv_interact.error(res.message);
+                cv_interact.error(res.error_message);
             }
         });
 

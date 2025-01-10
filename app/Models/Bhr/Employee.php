@@ -427,7 +427,6 @@ class Employee //extends Model
             ->first();
     }
 
-
     function deleteProfilePicture($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
