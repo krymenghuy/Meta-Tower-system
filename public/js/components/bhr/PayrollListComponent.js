@@ -79,10 +79,20 @@ var PayrollListComponent = new (function () {
             title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_flat_rate ?? '0.00')} (${data.flat_tax_rate ?? '0.00'}%)</p>`;
+                if (!data.used_amount || Object.keys(data.used_amount).length === 0 || !data.flat_tax_rate) {
+                    return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber('0.00')}</p>`;
+                }
+
+                const flatTaxDetails = Object.entries(data.used_amount)
+                    .map(([taxRate, amount]) => {
+                        const formattedAmount = formattedNumber(amount);
+                        return `${formattedAmount} (${taxRate}%)`;
+                    })
+                    .join('<br>');
+
+                return `<p class="p-0 m-0">${flatTaxDetails}</p>`;
             }
         },
-
         {
             title: "Deduction",
             className: "align-middle text-nowrap",
@@ -388,8 +398,12 @@ var PayrollListComponent = new (function () {
             });
 
             div_BFT = benefit_flat_rate
-                .map(value => `${value.BFT} (${value.BFTR} %)`)
-                .join(' & ');
+            .map(value => {
+                const formattedAmount = value.BFT.replace(/,/g, ' ').trim();
+                return `${formattedAmount} (${value.BFTR} %)`;
+            })
+            .join(' & ');
+
         }
 
 
@@ -733,7 +747,6 @@ var PayrollListComponent = new (function () {
 
             });
             console.log(1111,payroll_id);
-
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
