@@ -182,7 +182,7 @@ var JobsLevelComponent = new (function () {
                                 mThis.JobLevelListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

@@ -83,7 +83,7 @@ var LeaveComponent = new function () {
             className: 'status text-nowrap text-center align-start',
             data: function (data, index, tr) {
                 let cls_class = 'text-danger text-center';
-                let bg_color = ''; // Default background color 
+                let bg_color = ''; // Default background color
 
                 if ((data.status || '').toLowerCase() === 'approved') {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
@@ -339,7 +339,7 @@ var LeaveComponent = new function () {
                 })
             }
             else {
-                cv_interact.error(res.message);
+                cv_interact.error(res.error_message);
             }
         });
     }

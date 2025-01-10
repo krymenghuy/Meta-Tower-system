@@ -199,7 +199,7 @@ var CheckPointCategoryComponent = new (function () {
                                 mThis.ExitCheckpointsListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

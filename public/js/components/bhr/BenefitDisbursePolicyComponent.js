@@ -182,7 +182,7 @@ var BenefitDisbursePolicyComponent = new (function () {
                                 mThis.BdpListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

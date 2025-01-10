@@ -423,7 +423,7 @@ var WalletAccountComponent = new (function () {
                                 mThis.WalletAccountListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

@@ -185,7 +185,7 @@ var CheckPointComponent = new (function () {
                                 mThis.CheckPointListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

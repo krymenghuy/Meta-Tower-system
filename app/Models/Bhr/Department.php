@@ -12,7 +12,7 @@ class Department
     protected $id = null;
     protected $userInfo = null;
 
-    protected $fk_tables = [
+    protected static $fk_tables = [
        'positions'=>'department_id'
     ];
 
@@ -94,7 +94,7 @@ class Department
         $id = $id ?? $this->id;
         $d = self::getProps($id,'name');
         if(!$d) return DV::error('Department ID is not valid');
-        $cnt = DBX::count_fk_items($id,self::$fk_tables,'position');
+        $cnt = DBX::count_fk_items($id,self::$fk_tables,'positions');
         if($cnt > 0) return DV::error('Cannot delete ?? because it is already in use::'. $d->name);
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
         return DV::depends($delete,null,'Failed to delete department');

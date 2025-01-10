@@ -238,7 +238,7 @@ var EmployeeBenefitComponent = new (function () {
                                 );
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }

@@ -269,7 +269,7 @@ var ExitFormItemComponent = new (function () {
                                 mThis.ExitFormItemListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
