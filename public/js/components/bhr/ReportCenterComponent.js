@@ -46,7 +46,7 @@ var ReportCenterComponent = new (function () {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/form-option`,
             api_params: {},
-            name: "employee_id",
+            name: "staff",
             value_field: "id",
             text_field: "employee_name",
             required: false,
@@ -646,7 +646,7 @@ var ReportCenterComponent = new (function () {
 
             console.log(JSON.stringify(end_point));
             console.log(JSON.stringify(p, null, 2));
-           p.employee_id ?  p.emp_id = p.employee_id : '';
+           p.staff ?  p.emp_id = p.staff : '';
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
                 .then((res) => {
