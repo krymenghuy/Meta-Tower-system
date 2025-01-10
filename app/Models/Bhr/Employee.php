@@ -291,7 +291,6 @@ class Employee //extends Model
                     }
                 }
                 else{
-
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
 

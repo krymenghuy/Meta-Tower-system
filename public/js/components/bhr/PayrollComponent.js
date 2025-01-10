@@ -203,7 +203,7 @@ var PayrollComponent = new (function () {
                 VSRoute.showComponent('PayrollListComponent', op);
                  return;
             }
-          
+
         //     // *** You can add other action button click here like this
         //    lnk = VSUtil.closestLimited(e.target,'a.other_click_action');
         //    if(lnk){
