@@ -48,6 +48,8 @@ use App\Http\Controllers\Bhr\EmployeeDocumentController;
 use App\Http\Controllers\Bhr\ExitItemController;
 use App\Http\Controllers\Bhr\FormController;
 use App\Http\Controllers\Bhr\ContractController;
+use App\Http\Controllers\Bhr\SchoolController;
+
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -429,4 +431,12 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-ca
     Route::post('/delete', [CheckPointCategoryController::class, 'delete']);
     Route::post('/form-options', [CheckPointCategoryController::class, 'getFormOptions']);
     Route::post('/list-all', [CheckPointCategoryController::class, 'getAllList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('school')->group(function () {
+    Route::post('/save', [SchoolController::class, 'save']);
+    Route::post('/list-paginate', [SchoolController::class, 'getList']);
+    Route::post('/list-all', [SchoolController::class, 'schoolList']);
+    Route::post('/details', [SchoolController::class, 'getDetails']);
+    Route::post('/delete', [SchoolController::class, 'delete']);
+    Route::post('/form-options', [SchoolController::class, 'getFormOptions']);
 });
