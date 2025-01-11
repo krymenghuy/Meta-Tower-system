@@ -72,32 +72,46 @@ class Payroll
         return DV::error('Error saving payroll');
     }
 
-    static function validatePayrollDates($start_date,$end_date,$id){
+    static function validatePayrollDates($start_date, $end_date, $id) {
         $str_id = '1 = 1';
-        if($id){
+        if ($id) {
             $str_id = "p.id <> $id";
         }
 
-        $test = DB::table('payrolls as p')->whereRaw("date(p.start_date) >= '$start_date'")->whereRaw($str_id)->select('id')->first();
-        if($test)
-            return 'Start Date is not correct!';
+        if (new DateTime($start_date) > new DateTime($end_date)) {
+            return 'Start Date and End Date is not correct!';
+        }
 
-        $test = DB::table('payrolls as p')->whereRaw("date(p.end_date) >= '$end_date'")->whereRaw($str_id)->select('id')->first();
-        if($test)
+        $test = DB::table('payrolls as p')
+            ->whereRaw("date(p.start_date) >= '$start_date'")
+            ->whereRaw($str_id)
+            ->select('id')
+            ->first();
+        if ($test) {
+            return 'Start Date is not correct!';
+        }
+
+        $test = DB::table('payrolls as p')
+            ->whereRaw("date(p.end_date) >= '$end_date'")
+            ->whereRaw($str_id)
+            ->select('id')
+            ->first();
+        if ($test) {
             return 'End Date is not correct!';
+        }
 
         $start = new DateTime($start_date);
         $end = new DateTime($end_date);
         $interval = $start->diff($end);
 
         $test = $interval->days;
-
         if ($test > 31) {
-            return 'The difference between start date and end date cannot be longer than 31 days!';
+            return 'The difference between Start Date and End Date cannot be longer than 31 days!';
         }
 
         return null;
     }
+
 
     static function checkDuplicateName($name,$id){
         $str_id = '1 = 1';
