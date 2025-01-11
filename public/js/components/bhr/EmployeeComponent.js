@@ -879,9 +879,15 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
                 let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
-                    <h6 class="mt-1">Education</h6>
                     <div class="d-flex gap-2">
+                        <h6 class="mt-1">Education</h6>
                         <a href="javascript:void(0)" id="lnk_add_education">
+                            (<i class="fa fa-plus-circle fs-7"></i>)
+                        </a>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <h6 class="mt-1">School</h6>
+                        <a href="javascript:void(0)" id="add_school">
                             (<i class="fa fa-plus-circle fs-7"></i>)
                         </a>
                     </div>
@@ -1087,6 +1093,21 @@ var EmployeeComponent = new (function () {
                 //             }
                 //         });
                 //     });
+                document
+                    .getElementById("add_school")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+                        let op = {
+                            id: null,
+                            emp_id: employeeId,
+                            btn: e.target,
+                            title: "New Education",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddSchool.show(op);
+                    });
             });
     };
 
@@ -2449,6 +2470,88 @@ const AddEducation = (() => {
                         //         // me.setValue('amount', res.data.amount);
                         //     }
                         // },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
+const AddSchool = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id ? "Edit School" : "New School",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="form-group">
+                            <label class="form-label" vslang="titles.School Name">School Name</label>
+                            <div><input name="school_name" class=" form-control data-input" data-field="name"></input></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" vslang="titles.Location">Location</label>
+                            <div><input name="location" class=" form-control data-input" data-field="location"></input></div>
+                        </div>
+                        `,
+                    ].join("");
+                },
+                // contentCreated: (me) => {
+                //     DateTimePicker.init(me.controls.established_year);
+                // },
+                buttons: [
+                    {
+                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(11, p);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/school/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+
+                                        EmployeeComponent.renderCardCenter(
+                                            me.dataOptions.emp_id
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "New School",
+                    modifyTitle: "Edit School",
+                    targetProp: "education",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/school/form-options`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
                 onShow: (me) => {},
