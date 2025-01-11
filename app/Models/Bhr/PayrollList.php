@@ -446,7 +446,14 @@ class PayrollList
                 $success++;
             }
         }
-        DB::statement(DB::raw('UPDATE `payrolls` SET `head_count` = (Select Count(l.id) FROM  payroll_list as l Where l.payroll_id = '.($payroll_id ?? 0).')'));
+        DB::statement(DB::raw("
+            UPDATE `payrolls` AS p
+            SET `head_count` = (
+                SELECT COUNT(l.id)
+                FROM `payroll_list` AS l
+                WHERE l.payroll_id = p.id
+            )
+        "));
         return DV::depends(1, ['success_count' => $success, 'error' => $error]);
     }
 
@@ -457,6 +464,9 @@ class PayrollList
         $str_payroll_id = '1=1';
         if ($payroll_id) {
             $str_payroll_id = 'p.id = ' . $payroll_id;
+        }
+        if(!$payroll_id){
+            return DV::error('Not have data');
         }
 
         $start_date = DBX::formatDate('p.start_date', 'start_date');
@@ -489,6 +499,10 @@ class PayrollList
                         rej.rejoin_date')
             ->orderBy('e.id')
             ->get();
+
+            if ($payrolls->isEmpty()) {
+                return DV::error('Not have data');
+            }
 
             foreach ($payrolls as $row) {
 

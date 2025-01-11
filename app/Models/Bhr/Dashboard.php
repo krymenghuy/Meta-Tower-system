@@ -143,7 +143,7 @@ static function countEmployee($arr, $ss)
     $rows = DB::table('employees AS emp')
         ->join('emp_types AS t', 'emp.emp_type_id', '=', 't.id') // Join with emp_types table
         // ->where('emp.branch_id', $branch_id) // Filter by branch
-        // ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date]) 
+        // ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date])
         ->selectRaw("t.name AS category, COUNT(emp.id) AS count") // Group by employment type
         ->groupBy('t.name')
         ->get();
@@ -240,21 +240,18 @@ static function countEmployee($arr, $ss)
         return $data;
     }
 
-
     public static function getEmployeeDataForBarChart($ss)
     {
-        $start_date = Carbon::now()->subMonths(12)->startOfMonth()->format('Y-m-d');
-        $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
-
-        $data = DB::table('employees AS e')
+        $data = DB::table('payrolls as p')
             ->selectRaw('
-                DATE_FORMAT(e.joining_date, "%Y-%m") AS month,
-                COUNT(e.id) AS employee_count,
-                SUM(e.salary) AS total_salary
+                p.month,
+                p.year,
+                SUM(p.total) as total_salary,
+                MAX(p.head_count) as max_head_count
             ')
-            ->whereBetween('e.joining_date', [$start_date, $end_date])
-            ->groupBy('month')
-            ->orderBy('month')
+            ->groupBy('p.month', 'p.year')
+            ->orderByRaw('p.year ASC, p.month ASC')
+            ->limit(12)
             ->get();
 
         $labels = [];
@@ -263,13 +260,12 @@ static function countEmployee($arr, $ss)
 
         foreach ($data as $item) {
             // Convert "2024-01" to "Jan 2024"
-            $month_name = Carbon::createFromFormat('Y-m', $item->month)->format('M Y');
+            $month_name = Carbon::createFromFormat('Y-m', $item->year . '-' . $item->month)->format('M Y');
             $labels[] = $month_name;
-            $employee_counts[] = $item->employee_count;
+            $employee_counts[] = $item->max_head_count;
             $total_salaries[] = $item->total_salary;
         }
 
-        // Return the data for the bar chart
         return (object)[
             'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
             'labels' => $labels,
@@ -277,6 +273,7 @@ static function countEmployee($arr, $ss)
             'total_salaries' => $total_salaries
         ];
     }
+
 
     function getOnLevels($arr, $ss)
     {
