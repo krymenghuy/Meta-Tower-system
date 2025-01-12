@@ -606,8 +606,8 @@ const ViewExitFormDialog = (() => {
                     ].join('');
 
 
-
-                    dialog = new GeneralDialog({
+                    /// THiS LINE is WRONG dialog = dialog || new GeneralDialog({ ..
+                    dialog = dialog || new GeneralDialog({
                         cssClass: "modal-lg custom-modal-size",
                         backdrop: "static",
                         keyboard: true,
@@ -690,6 +690,7 @@ const ViewExitFormDialog = (() => {
     return self;
 })();
 
+/** hello Ratanak , Please DO NOT Write function outside like this. This is VERY BAD practice */
 // function check_box(event) {
 //     if (event.target.checked) {
 //         const op = {};
