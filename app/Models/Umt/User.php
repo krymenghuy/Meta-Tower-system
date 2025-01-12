@@ -956,7 +956,6 @@ class User //extends Model
         $app_id = $d->app_id ?? null;
         $module_id = $d->module_id ?? null;
         $role_id = $role_id ?? self::getPrimaryRole($user_id);
-        \Log::info($role_id);
         if(!$role_id){
             \Log::error("Umt\user.php: getAuthorizationReport(\$arr,\$user_id,\$ss) tried to query Auth report data, but the user ID $user_id does not have primary role");
             return collect([]);

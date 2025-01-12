@@ -50,6 +50,7 @@ class Education //extends Model
         return DV::error('Error saving data');
 
     }
+
     function getListAll($arr,$ss){
         $branch_id = $ss->branch_id;
         $d = (object) $arr;
@@ -61,12 +62,11 @@ class Education //extends Model
         $emp_id = $d->emp_id ?? null;
         $skip_rows = ($current_page -1) * $per_page;
         $query  = DB::table('emp_educations as e')
-            ->join('employees as emp', 'emp.id', '=','e.emp_id')
+            //->join('employees as emp', 'emp.id', '=','e.emp_id') //no need "employees", it is BIG table
             ->join('schools as s','s.id','=','e.school_id')
             ->join('edu_levels as l','l.id','=','e.edu_level_id')
-            ->where('e.branch_id',$branch_id)
             ->where('e.emp_id',$emp_id)
-            ->selectRaw('e.id,emp.id as emp_id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
+            ->selectRaw('e.id,e.emp_id,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
             ->orderBy('e.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('e.id');

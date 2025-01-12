@@ -1003,7 +1003,6 @@ class Role //extends Model
   function removeReport($ids, $role_id = null, $ss = null){
     $role_id = $role_id ?? $this->id;
     $ss = $ss ?? AuthService::user();
-    \Log::info($ids);
     if (empty($ids)) return DV::error("Report ID is empty or not valid");
     /** $ids is a list of permission Ids separated by | **/
     $ids = $ids ?? '';
@@ -1014,7 +1013,7 @@ class Role //extends Model
         $prn_id = $sts[0] ?? null;
         $action_name = strtolower($sts[1] ?? 'primary');
         if ($action_name ==='view')  $action_name ='primary'; //NOTE: In database, report's View permission is known as "primary"
-        \Log::info("sts: $prn_id | $action_name");
+ 
         if ($prn_id) {
           DB::table('um_user_permissions')->where('role_id',$role_id)->where('permission_id',$prn_id)->where('action_name',$action_name)->where('access_type','role')->delete();
           DB::table('um_role_permissions')->where('role_id',$role_id)->where('permission_id',$prn_id)->where('action_name',$action_name)->delete();

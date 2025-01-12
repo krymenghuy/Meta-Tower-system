@@ -149,8 +149,7 @@ var LeaveComponent = new function () {
         };
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
-        console.log(122,mThis.tblLeaves);
-
+  
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;

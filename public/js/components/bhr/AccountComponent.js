@@ -20,9 +20,7 @@ var AccountMenagmentComponent = new (function () {
             })
             .replace(/,/g, ' ');
     };
-
-
-
+ 
     this.cols = [
         {
             title: "No",

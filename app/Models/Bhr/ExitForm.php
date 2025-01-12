@@ -351,11 +351,11 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" onclick="check_box(event)" >';
+                    $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" onclick="" >';
 
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="check_box(event)" >';
+                            $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="" >';
                             $item->item_type = $form_item->item_type;
                             $item->amount = $form_item->amount;
                             $item->remarks = $form_item->remarks;
@@ -373,7 +373,6 @@ class ExitForm
                 }
             }
         }
-
 
         $employeeData = $exitFormItems->map(function ($ef) {
             return [

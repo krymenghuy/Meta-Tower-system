@@ -424,16 +424,16 @@ window.addEventListener('DOMContentLoaded',function(){
     // }
 });
 
-const inputs = main_view.VSAppContent.querySelectorAll("input");
- inputs.forEach(el =>{
-    el.onselect = function(e){
+const inputs = main_view.VSAppContent.querySelectorAll('input[type="text"], input[type="number"]');
+inputs.forEach(el => {
+    el.onselect = function(e) {
         e.preventDefault();
-    }
+    };
 
-    el.onfocus = function(e){
+    el.onfocus = function(e) {
         e.preventDefault();
-    }
- });
+    };
+});
 
 // window.oncontextmenu = function(){
 //     return false;

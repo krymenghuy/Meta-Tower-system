@@ -7,9 +7,7 @@ use App\Models\Bhr\Position;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
-
-
-
+ 
 class PositionController extends Controller
 {
     protected $positionModel;
