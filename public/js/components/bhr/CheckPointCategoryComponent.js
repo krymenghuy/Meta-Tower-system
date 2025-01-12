@@ -1,7 +1,7 @@
 "use strict";
 
 var CheckPointCategoryComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_exitCheckpoints_component");
     this.self = this.jm[0];
@@ -175,9 +175,9 @@ var CheckPointCategoryComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Exit check point?",
+            "Delete this exit check point?",
             {
-                title: "Delete this Exit exit check point?",
+                title: "Delete this exit exit check point?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -194,7 +194,7 @@ var CheckPointCategoryComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Exit check point Delete Successfully"
+                                    "Exit check point delete successfully"
                                 );
                                 mThis.ExitCheckpointsListView.showPage();
                             }
@@ -224,8 +224,8 @@ var CheckPointCategoryComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitCheckpointsListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
 })();
 const ExitCheckpointsDialog = (() => {
@@ -279,11 +279,11 @@ const ExitCheckpointsDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                            cv_interact.success('Updated checkpoints category cuccessfully');
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added Checkpoints Category Successfully');
+                                            cv_interact.success('Added checkpoints category successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });

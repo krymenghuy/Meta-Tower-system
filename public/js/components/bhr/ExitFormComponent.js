@@ -137,7 +137,7 @@ var ExitFormComponent = new (function () {
             if (mThis.ExitFormListView) {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             } else {
-                console.error("Exit Form is not defined");
+                console.error("Exit form is not defined");
             }
         }, 200);
     });
@@ -161,15 +161,18 @@ var ExitFormComponent = new (function () {
             let btn = VSUtil.closestLimited(e.target, ".btn-exit_form-modify");
             if (btn) {
                 mThis.edit_exit_form(btn.dataset.id, btn);
+                return;
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-delete-exit-form");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
+                return;
             }
             btn = VSUtil.closestLimited(e.target, ".btn-exit_form-view");
             if (btn) {
                 form_id = btn.dataset.id;
                 mThis.view_exit_form(btn.dataset.emp_id, btn);
+                return;
             }
         });
     };
@@ -193,9 +196,9 @@ var ExitFormComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Item Status?",
+            "Delete this item status?",
             {
-                title: "Delete this Item Status?",
+                title: "Delete this item status?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -212,13 +215,12 @@ var ExitFormComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Item Status Delete Successfully"
+                                    "Item status delete successfully"
                                 );
                                 mThis.ExitFormListView.showPage();
                             }
                         });
-                }
-                else {
+                } else {
                     cv_interact.error(res.error_message);
                 }
             }
@@ -248,8 +250,8 @@ var ExitFormComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitFormListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
 })();
 
@@ -693,7 +695,6 @@ function check_box(event) {
             )
             .then((res) => {
                 if (res.status_code == 200) {
-                    //cv_interact.success('saved!')
                     return;
                 } else cv_interact.error(res.error_message);
             });

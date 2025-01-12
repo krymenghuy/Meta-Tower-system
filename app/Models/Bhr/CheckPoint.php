@@ -3,8 +3,6 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -87,9 +85,7 @@ class CheckPoint
 
         $query = DB::table('check_points as cp')
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.check_point_cat_id')
-            ->selectRaw('cp.id, cp.name, cpc.name as category_name')
-            // ->orderBy('cp.id', 'desc');
-            ->orderBy('cpc.id', 'asc');
+            ->selectRaw('cp.id, cp.name, cpc.name as category_name');
 
         if (!empty($params->check_point_cat_id)) {
             $query->where('cp.check_point_cat_id', $params->check_point_cat_id);

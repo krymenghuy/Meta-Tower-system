@@ -300,8 +300,8 @@ var ExitFormItemComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitFormItemListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
 })();
 

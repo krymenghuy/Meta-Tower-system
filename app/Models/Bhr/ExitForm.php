@@ -4,7 +4,6 @@ namespace App\Models\Bhr;
 
 use App\Models\DBX;
 use App\Models\DV;
-use Google\Auth\Cache\Item;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -160,7 +159,6 @@ class ExitForm
     public function getList($arr, $ss = null)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
@@ -438,7 +436,7 @@ class ExitForm
     function createMulKeyValue($key_name, $arr, $bonus_data = null)
     {
         $result = [];
-        $count = count($arr);
+        // $count = count($arr);
 
         foreach ($arr as $index => $header) {
             $headerData = [$key_name => $header];
