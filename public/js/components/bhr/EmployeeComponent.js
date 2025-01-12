@@ -1,5 +1,4 @@
 "use strict";
-
 var EmployeeComponent = new (function () {
     const mThis = this;
     this.title_prop = "Employee management";
@@ -294,7 +293,7 @@ var EmployeeComponent = new (function () {
         html = [html,`<div class="row mb-3" style="background-color:;">`].join('');
         let cmt = 0;
 
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data) && data[0]) {
             data.forEach((d) => {
                 const status = d.status || "Active";
                 let statusColor;
@@ -669,27 +668,54 @@ var EmployeeComponent = new (function () {
     //     }
     //     new VSDropdownMenu(menuOptopns);
     // };
-    this.setActionsProfileInfo = () => {
-        addEventListener("click", (e) => {
+
+    // // *** NOTE: Previous code that causes BIG trouble
+    // this.setActionsProfileInfo = () => {
+    //     addEventListener("click", (e) => {
+    //         let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
+    //         if (btn) {
+    //             mThis.editEmployee(btn.dataset.id, btn);
+    //         }
+    //         btn = VSUtil.closestLimited(e.target, ".delete_employee");
+    //         if (btn) {
+    //             mThis.deleteEmployee(btn.dataset.id, btn);
+    //         }
+    //         btn = VSUtil.closestLimited(e.target, ".set_resign");
+    //         if (btn) {
+    //             mThis.setResign(btn.dataset.id, btn);
+    //         }
+    //         btn = VSUtil.closestLimited(e.target, ".movement");
+    //         if (btn) {
+    //             mThis.movement(btn.dataset.id, btn);
+    //         }
+    //     });
+    // };
+ 
+    this.setActionsProfileInfo = (divProfile) => {
+        divProfile.addEventListener('click', (e) => {
             let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
             if (btn) {
                 mThis.editEmployee(btn.dataset.id, btn);
+                return;
             }
             btn = VSUtil.closestLimited(e.target, ".delete_employee");
             if (btn) {
                 mThis.deleteEmployee(btn.dataset.id, btn);
+                return;
             }
             btn = VSUtil.closestLimited(e.target, ".set_resign");
             if (btn) {
                 mThis.setResign(btn.dataset.id, btn);
+                return;
             }
             btn = VSUtil.closestLimited(e.target, ".movement");
             if (btn) {
                 mThis.movement(btn.dataset.id, btn);
+                return;
             }
         });
     };
-
+ 
     this.renderCardLeft = (employeeId) => {
         let p = {
             emp_id: employeeId,
@@ -1307,28 +1333,28 @@ var EmployeeComponent = new (function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
 
-                let html = `
-                    <div class="card" style="height:260px;">
-                        <div class="card-header bg-primary-custom text-white">
+                let html = [
+                    '<div class="card" style="height:260px;">',
+                        '<div class="card-header bg-primary-custom text-white">',
 
-                            <h6 class="mt-1">Tax Allowance </h6>
-                            <div class="d-flex"><a href="javascript:void(0)" data-empid="${employeeId}" class=" lnk-add-tax-allowance">(<i class="fa fa-plus"></i>)</a></div>
+                            '<h6 class="mt-1">Tax Allowance </h6>',
+                            '<div class="d-flex"><a href="javascript:void(0)" data-empid="',employeeId,'" class=" lnk-add-tax-allowance">(<i class="fa fa-plus"></i>)</a></div>',
 
-                        </div>
-                        <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-                        <div class="">
-                        <table class="table table-sm">
-                            <thead class="">
-                                <tr>
-                                    <th style="color:#2b3991; font-size:12px;">Id</th>
-                                    <th style="color:#2b3991; font-size:12px;">Qty</th>
-                                    <th style="color:#2b3991; font-size:12px;">Unit Amt</th>
-                                    <th style="color:#2b3991; font-size:12px;">Allowance</th>
-                                    <th style="color:#2b3991; font-size:12px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+                        '</div>',
+                        '<div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">',
+                        '<div class="">',
+                        '<table class="table table-sm">',
+                            '<thead class="">',
+                               '<tr>',
+                                    '<th style="color:#2b3991; font-size:12px;">Id</th>',
+                                    '<th style="color:#2b3991; font-size:12px;">Qty</th>',
+                                    '<th style="color:#2b3991; font-size:12px;">Unit Amt</th>',
+                                    '<th style="color:#2b3991; font-size:12px;">Allowance</th>',
+                                    '<th style="color:#2b3991; font-size:12px;">Action</th>',
+                                '</tr>',
+                            '</thead>',
+                            '<tbody>'
+                ].join('');
 
                 data.map((d,index,i) => {
                     html += `
@@ -1457,6 +1483,7 @@ var EmployeeComponent = new (function () {
                     });
             });
     };
+
     this.renderEmpDocuments = (employeeId) => {
         let p = { emp_id: employeeId };
         let cmt = 0 ;
@@ -1710,7 +1737,7 @@ var EmployeeComponent = new (function () {
                 me.setEvent = (div) => {
                     div.querySelectorAll("input.change-option").forEach((input) => {
                         console.log('hh1: ',input);
-                        input.onchange = (e) => {
+                        input.onchange = e => {
                             e.preventDefault();
                             console.log('change_d:1');
                             const divTarget = me.controls[input.dataset.target];
@@ -1719,7 +1746,8 @@ var EmployeeComponent = new (function () {
                                     ? "block"
                                     : "none";
                             }
-                        };
+                        
+                         };
                     });
                 };
                 me.setEvent(me.divModal); 
@@ -1967,12 +1995,12 @@ var EmployeeComponent = new (function () {
             createContent: () => {
                 return [
                     `<div class="form-group col-md-12">
-                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
-                        <span class="text-danger" >*</span>
-                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
-                      </div>
-                      <div class="form-group col-md-12">
-                        <label class="form-label" vslang="titles.Event Date">Event Date</label>
+                        '<label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                        '<span class="text-danger" >*</span>
+                        '<select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                      '</div>
+                      '<div class="form-group col-md-12">
+                        '<label class="form-label" vslang="titles.Event Date">Event Date</label>
                         <div><input  name="event_date" class="form-control data-input" placeholder="" data-field="event_date"/></div>
                       </div>
                       <div class="form-group col-md-12">
@@ -2351,9 +2379,7 @@ const AddEducation = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
                 title: op.id ? "Edit Education" : "New Education",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
@@ -2484,9 +2510,7 @@ const AddSchool = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
                 title: op.id ? "Edit School" : "New School",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
@@ -2796,147 +2820,147 @@ const EmployeeDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row">`,
-                        `<div class="col-3">`,
-                            `<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">`,
-                                `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
-                            `</div>`,
-                        `</div>`,
-                        `<div class="col-9">`,
-                            `<div class="row">`,
-                                `<div class="form-group col-6">
-                                    <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="name" class="form-control data-input" data-field="name" />
-                                </div>`,
-                                `<div class="form-group col-6">
-                                    <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="name_kh" class="form-control data-input" data-field="name_kh" />
-                                </div>`,
-                                `<div class="form-group col-4">
-                                    <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                    <select class="form-control data-input" data-field="sex">
-                                        <option value="">(Select Sex)</option>
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                        <option value="O">Other</option>
-                                    </select>
-                                </div>`,
-                                `<div class="form-group col-4">
-                                    <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
-                                    <span class="text-danger">*</span>
-                                    <select name="marital_status" class="form-control data-input" data-field="marital_status">
-                                        <option value="Single">Single</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Divorced">Divorced</option>
-                                        <option value="Not Disclosed">Not Disclosed</option>
-                                    </select>
-                                </div>`,
-                                `<div class="form-group col-4">
-                                    <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />
-                                </div>`,
-                                `<hr style="border: none; border-top: 2px solid #6e7272;"></hr>`,
+                    '<div class="row">',
+                        '<div class="col-3">',
+                            '<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">',
+                                '<div name="div_emp_photo" data-field="photo" class="h-100"></div>',
+                            '</div>',
+                        '</div>',
+                        '<div class="col-9">',
+                            '<div class="row">',
+                                '<div class="form-group col-6">',
+                                    '<label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>',
+                                    '<span class="text-danger">*</span>',
+                                    '<input name="name" class="form-control data-input" data-field="name"/>',
+                                '</div>',
+                                '<div class="form-group col-6">',
+                                    '<label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>',
+                                    '<span class="text-danger">*</span>',
+                                    '<input name="name_kh" class="form-control data-input" data-field="name_kh" />',
+                                '</div>',
+                                '<div class="form-group col-4">',
+                                    '<label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>',
+                                    '<select class="form-control data-input" data-field="sex">',
+                                        '<option value="">(Select Sex)</option>',
+                                        '<option value="M">Male</option>',
+                                        '<option value="F">Female</option>',
+                                        '<option value="O">Other</option>',
+                                    '</select>',
+                                '</div>',
+                                '<div class="form-group col-4">',
+                                    '<label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>',
+                                    '<span class="text-danger">*</span>',
+                                    '<select name="marital_status" class="form-control data-input" data-field="marital_status">',
+                                        '<option value="Single">Single</option>',
+                                        '<option value="Married">Married</option>',
+                                        '<option value="Divorced">Divorced</option>',
+                                        '<option value="Not Disclosed">Not Disclosed</option>',
+                                    '</select>',
+                                '</div>',
+                                '<div class="form-group col-4">',
+                                    '<label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>',
+                                    '<span class="text-danger">*</span>',
+                                    '<input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />',
+                                '</div>',
+                                '<hr style="border: none; border-top: 2px solid #6e7272;"></hr>',
 
-                            `</div>`,
+                            '</div>',
 
-                        `</div>`,
+                        '</div>',
 
-                        `<div class="row">`,
-                            `<div class="form-group col-4">
-                                <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
-                                <span class="text-danger">*</span>
-                                <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
-                                <span class="text-danger">*</span>
-                                <input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />
-                            </div>`,
+                        '<div class="row">',
+                            '<div class="form-group col-4">',
+                                '<label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />',
+                            '</div>',
 
-                            `<div class="form-group col-4">
-                                <label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>
-                                <span class="text-danger" >*</span>
-                                <input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
-                                <input name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
-                                <input name="passport_number" class="form-control data-input" data-field="passport_number" />
-                            </div>`,
+                            '<div class="form-group col-4">',
+                                '<label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>',
+                                '<span class="text-danger" >*</span>',
+                                '<input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>',
+                                '<input name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>',
+                                '<input name="passport_number" class="form-control data-input" data-field="passport_number" />',
+                            '</div>',
 
-                            `<div class="form-group col-4">
-                                  <label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>
-                                    <span class="text-danger" >*</span>
-                                    <input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
-                                <select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>
-                            </div>`,
+                            '<div class="form-group col-4">',
+                                  '<label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>',
+                                    '<span class="text-danger" >*</span>',
+                                    '<input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>',
+                                '<select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>',
+                            '</div>',
 
-                            `<div class="form-group col-4">
-                                <label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>
-                                <span class="text-danger">*</span>
-                                <select name="type" class="form-control data-input" data-field="emp_type_id"></select>
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="position" class="form-label text-primary-custom" vslang="titles.Position"></label>
-                                <span class="text-danger">*</span>
-                                <select name="position" class="form-control data-input" data-field="position_id"></select>
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
-                                <span class="text-danger">*</span>
-                                <input name="phone_number" class="form-control data-input" data-field="phone_number" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
-                                <span class="text-danger">*</span>
-                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                            </div>`,
+                            '<div class="form-group col-4">',
+                                '<label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<select name="type" class="form-control data-input" data-field="emp_type_id"></select>',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="position" class="form-label text-primary-custom" vslang="titles.Position"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<select name="position" class="form-control data-input" data-field="position_id"></select>',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<input name="phone_number" class="form-control data-input" data-field="phone_number" />',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />',
+                            '</div>',
 
-                            `<div class="form-group salary col-4">
-                                <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
-                                <input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />
-                            </div>`,
+                            '<div class="form-group salary col-4">',
+                                '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>',
+                                '<input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />',
+                            '</div>',
 
 
-                            `<div class="form-group col-6">
-                                <label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>
-                                <span class="text-danger">*</span>
-                                <select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>
-                            </div>`,
-                           `<div class="form-group col-6">
-                                <label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>
-                                <span class="text-danger">*</span>
-                                <input name="joining_date"  class="form-control data-input" data-field="joining_date" />
-                            </div>`,
+                            '<div class="form-group col-6">',
+                                '<label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>',
+                            '</div>',
+                           '<div class="form-group col-6">',
+                                '<label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>',
+                                '<span class="text-danger">*</span>',
+                                '<input name="joining_date"  class="form-control data-input" data-field="joining_date" />',
+                            '</div>',
 
-                            `<div class="form-group col-4">
-                                <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
-                                <input name="spouse_name" class="form-control data-input" data-field="spouse_name" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>
-                                <select name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id"></select>
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
-                                <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />
-                            </div>`,
-                            `<div class="form-group col-12">
-                                <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
-                                <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
-                            </div>`,
-                        `</div>`,
-                    `</div>`,
-                ].join("");
+                            '<div class="form-group col-4">',
+                                '<label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>',
+                                '<input name="spouse_name" class="form-control data-input" data-field="spouse_name" />',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>',
+                                '<select name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id"></select>',
+                            '</div>',
+                            '<div class="form-group col-4">',
+                                '<label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>',
+                                '<input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />',
+                            '</div>',
+                            '<div class="form-group col-12">',
+                                '<label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>',
+                                '<textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                ].join('');
             },
             contentCreated: (me) => {
                 // const salary = me.divModal.querySelector(".salary");
@@ -3324,24 +3348,24 @@ const AddEmployeeDocumentDialog = (() => {
                     me.fileData = null;
 
                     const fileInput = me.controls.btn_file;
-                    fileInput.onchange = (e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                                me.fileData = {
-                                    file: event.target.result.split(",")[1], // Base64 content
-                                    ext: file.name.split(".").pop(),
-                                    name: file.name,
-                                };
-                                // document.getElementById("fileNameDisplay").textContent = `Selected file: ${file.name}`;
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            me.fileData = null;
-                            document.getElementById("fileNameDisplay").textContent = "No file chosen";
-                        }
-                    };
+                    // fileInput.onchange = (e) => {
+                    //     const file = e.target.files[0];
+                    //     if (file) {
+                    //         const reader = new FileReader();
+                    //         reader.onload = (event) => {
+                    //             me.fileData = {
+                    //                 file: event.target.result.split(",")[1], // Base64 content
+                    //                 ext: file.name.split(".").pop(),
+                    //                 name: file.name,
+                    //             };
+                    //             // document.getElementById("fileNameDisplay").textContent = `Selected file: ${file.name}`;
+                    //         };
+                    //         reader.readAsDataURL(file);
+                    //     } else {
+                    //         me.fileData = null;
+                    //         document.getElementById("fileNameDisplay").textContent = "No file chosen";
+                    //     }
+                    // };
                 },
                 buttons: [
                     {
@@ -3404,4 +3428,3 @@ const AddEmployeeDocumentDialog = (() => {
 
     return self;
 })();
-

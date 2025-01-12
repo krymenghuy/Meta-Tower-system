@@ -1512,6 +1512,7 @@ var Choices = /** @class */function () {
     var target = _a.target;
     var clickWasWithinContainer = this.containerOuter.element.contains(target);
     if (clickWasWithinContainer) {
+ 
       if (!this.dropdown.isActive && !this.containerOuter.isDisabled) {
         if (this._isTextElement) {
           if (document.activeElement !== this.input.element) {
