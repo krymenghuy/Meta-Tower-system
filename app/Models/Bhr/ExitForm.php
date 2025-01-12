@@ -42,7 +42,7 @@ class ExitForm
         $id = $res->id;
         $d = (object)$inputs;
 
-        $existingData = DB::table('exit_forms')->where('id', $id)->first();
+        $existingData = DB::table('exit_forms')->where('id', $id)->first(); //Hello Ratanak! do not select all fields if NOT necessary
         if ($existingData) {
             $existingDataArray = (array) $existingData;
 
@@ -281,21 +281,20 @@ class ExitForm
         ];
     }
 
-    public function getExitFormList($arr, $ss = null)
+    public function getCheckpoints($form_id)
     {
         $header_list = ['អ្នកទទួល ខុសត្រូវ', 'បរិយាយព័ត៌មានលំអិត', 'កាលបរិច្ឆេទត្រូវបានជម្រះ', 'ទឹកប្រាក់ទូទាត់', 'ចំណាំ'];
         $key_list = ['name', 'item', 'description', 'effective_date', 'amount', 'remarks'];
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
-        $data = (object) $arr;
-        $campus_id = $data->campus_id ?? null;
-        $branch_id = $data->branch_id ?? $campus_id;
-        $emp_id = $data->emp_id ?? null;
-        $branch_ids = getAccessBranches($ss, $branch_id);
-        $start_date = isset($data->start_date) ? convertDate($data->start_date) : date('Y-m-01');
-        $end_date = isset($data->end_date) ? convertDate($data->end_date) : date('Y-m-t');
-        $date_condition = $start_date && $end_date ? "DATE(emp.created_at) BETWEEN '$start_date' AND '$end_date'" : '';
+        //$campus_id = $data->campus_id ?? null;
+        //$branch_id = $data->branch_id ?? $campus_id;
+        //$emp_id = $data->emp_id ?? null;
+        //$branch_ids = getAccessBranches($ss, $branch_id);
+        // $start_date = isset($data->start_date) ? convertDate($data->start_date) : date('Y-m-01');
+        // $end_date = isset($data->end_date) ? convertDate($data->end_date) : date('Y-m-t');
+        //$date_condition = $start_date && $end_date ? "DATE(emp.created_at) BETWEEN '$start_date' AND '$end_date'" : '';
 
         $col_start_date = DBX::formatDate('emp.joining_date', 'joining_date');
         $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
@@ -322,28 +321,29 @@ class ExitForm
                 emp.photo_file_name as emp_photo,
                 $col_effective_date
             ")
-            ->where('ef.emp_id', $emp_id);
+            ->where('ef.id', $form_id);
 
-        if (!empty($data->search_value)) {
-            $query->where(function ($q) use ($data) {
+        // **** WHY you need search value for this function ???
+        // if (!empty($data->search_value)) {
+        //     $query->where(function ($q) use ($data) {
 
-                $q->where('emp.name', 'LIKE', "%{$data->search_value}%");
-            });
-        }
+        //         $q->where('emp.name', 'LIKE', "%{$data->search_value}%");
+        //     });
+        // }
 
         $exitFormItems = $query->get();
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
-        $forms = DB::table('exit_forms')->selectRaw('id, emp_id')->where('emp_id', $emp_id)->first();
+       // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
 
         $form_items = [];
-        if ($forms) {
+        //if ($form) {
             $form_items = DB::table('exit_form_items')
                 ->selectRaw('id, form_id, check_point_id as item_id, item_type, amount, currency, remarks')
-                ->where('form_id', $forms->id)
+                ->where('form_id', $form_id)
                 ->where('status_id', 1)
                 ->get();
-        }
+        //}
 
         $groupedData = [];
         $number_cat = [];

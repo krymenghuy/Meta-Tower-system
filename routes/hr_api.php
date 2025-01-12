@@ -422,7 +422,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->g
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
     Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
-    Route::post('/list-all', [ExitFormController::class, 'getAllList']);
+    Route::post('/list-all', [ExitFormController::class, 'getCheckpoints']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-category')->group(function(){
     Route::post('/save', [CheckPointCategoryController::class, 'save']);
