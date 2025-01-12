@@ -1,4 +1,4 @@
-var EmployeeMovementComponent = (function () {
+var EmployeeMovementComponent = (()=> {
     const mThis = {};
     mThis.title_prop = "Employee Movements";
     mThis.base_url = main_view.base_url;
@@ -9,7 +9,7 @@ var EmployeeMovementComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_emp_movement");
     mThis.elEvent = mThis.self.querySelector('#el_event');
     mThis.elEmployee = mThis.self.querySelector('#el_employee');
-    
+
     mThis.cols = [
 
         {
@@ -114,9 +114,9 @@ var EmployeeMovementComponent = (function () {
         // };
         mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.initDropdownMenus(mThis.tblMovement);
-        mThis.sh_container  = mmThis.MovementListView.getListContainer();
+        mThis.sh_container  = mThis.MovementListView.getListContainer();
 
-        const pr_tbl = mmThis.MovementListView.getListContainer();
+        const pr_tbl = mThis.MovementListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 215) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -261,12 +261,9 @@ var EmployeeMovementComponent = (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.MovementListView.showPage(mThis.getFilterData(),null,()=>{
-                mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(250);
-
-            });
-
+            mThis.MovementListView.showPage(mThis.getFilterData());
+            mThis.jm.siblings().hide();
+            mThis.jm.hide().fadeIn(250);
     };
 
     return mThis;
