@@ -1,18 +1,17 @@
 "use strict";
-
-var ExitFormComponent = new (function () {
-    const mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_exit_form_component");
-    this.self = this.jm[0];
-    this.title_prop = "Exit Form";
-    this.btnAdd = this.self.querySelector("#_btnAddExitForm");
-    this.elSearch = this.self.querySelector("#_exit_form_search");
-    this.divFilter = this.self.querySelector("#container_exit_form");
-    this.viewExitForm = this.self.querySelector("#view_exit_form_");
-    this.cols = [
+var ExitFormComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_exit_form_component");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Exit Forms";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddExitForm");
+    mThis.elSearch = mThis.self.querySelector("#_exit_form_search");
+    mThis.divFilter = mThis.self.querySelector("#container_exit_form");
+    mThis.viewExitForm = mThis.self.querySelector("#view_exit_form_");
+    mThis.cols = [
         {
-            title: "Name",
+            title: "Staff Name",
             className: "align-middle text-start w-25",
             data: (data) => {
                 return `
@@ -73,7 +72,7 @@ var ExitFormComponent = new (function () {
                         <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form-delete" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-warning btn-delete-exit-form" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                         <button class="btn rounded-3 p-1 btn-success btn-exit_form-view" data-id="${data.id}" data-emp_id="${data.emp_id}">
@@ -84,10 +83,10 @@ var ExitFormComponent = new (function () {
             },
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitFormListView = new ListView("_exit_form_list", {
-            fetchApi: `${mThis.base_url}/hr/exit-form/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/exit-form/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -131,22 +130,26 @@ var ExitFormComponent = new (function () {
         });
         mThis.initAlready = true;
     };
+
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.ExitFormListView) {
-                mThis.ExitFormListView.showPage(mThis.getFilterData());
-            } else {
-                console.error("Exit Form is not defined");
-            }
+            mThis.ExitFormListView.showPage(mThis.getFilterData(mThis.getFilterData()));
+            //WHY DO YOU need to check Defined?
+            // if (mThis.ExitFormListView) { 
+            //     mThis.ExitFormListView.showPage(mThis.getFilterData());
+            // } else {
+            //     console.error("Exit Form is not defined");
+            // }
         }, 200);
     });
 
-    this.setFilterPeriod = (p) => {
-        return p;
-    };
+    // // *** What is this for ? DELETE function that is NOTY used!
+    // mThis.setFilterPeriod = (p) => {
+    //     return p;
+    // };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
         };
@@ -156,25 +159,30 @@ var ExitFormComponent = new (function () {
         });
         return filters;
     };
-    this.initDropdownMenus = () => {
+
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-exit_form-modify");
             if (btn) {
                 mThis.edit_exit_form(btn.dataset.id, btn);
+                return;
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-delete-exit-form");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
+                return;
             }
             btn = VSUtil.closestLimited(e.target, ".btn-exit_form-view");
             if (btn) {
-                form_id = btn.dataset.id;
-                mThis.view_exit_form(btn.dataset.emp_id, btn);
+                const form_id = btn.dataset.id;
+                mThis.view_exit_form(form_id, btn);
+                return;
             }
         });
     };
-    this.edit_exit_form = (id, menulink) => {
-        let op = {
+
+    mThis.edit_exit_form = (id, menulink) => {
+        const op = {
             id: id,
             btn: menulink,
             onClose: () => {
@@ -184,8 +192,9 @@ var ExitFormComponent = new (function () {
 
         ExitFormDialog.show(op);
     };
-    this.delete_exit_form = (id, menulink) => {
-        let op = {
+
+    mThis.delete_exit_form = (id, menulink) => {
+        const op = {
             id: id,
             btn: menulink,
             onClose: () => {
@@ -193,9 +202,9 @@ var ExitFormComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Item Status?",
+            "Delete this exit form?",
             {
-                title: "Delete this Item Status?",
+                title: "Delete Form",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -212,9 +221,9 @@ var ExitFormComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Item Status Delete Successfully"
+                                    "Form was deleted successfully!"
                                 );
-                                mThis.ExitFormListView.showPage();
+                                mThis.ExitFormListView.showPage(mThis.getFilterData());
                             }
                         });
                 }
@@ -224,18 +233,19 @@ var ExitFormComponent = new (function () {
             }
         );
     };
-    this.view_exit_form = (id, menulink) => {
-        let op = {
-            id: id,
+
+    mThis.view_exit_form = (form_id, menulink) => {
+        const op = {
+            form_id: form_id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
         ViewExitFormDialog.show(op);
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi.call(
             `${main_view.base_url}/hr/exit-form/form-options`,
             null,
@@ -243,17 +253,22 @@ var ExitFormComponent = new (function () {
             null
         );
     };
-    this.show = function () {
+
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitFormListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+        // $(mThis.self).siblings().hide();
+        // $(mThis.self).fadeIn(200);
     };
+
+    return mThis;
 })();
 
-let form_id = null;
+// let form_id = null; //DO NOT delcare variable outside like this
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -497,7 +512,7 @@ const ViewExitFormDialog = (() => {
     self.show = (op) => {
         vsapi
             .call(`${main_view.base_url}/hr/exit-form/list-all`, {
-                emp_id: op.id,
+                form_id: op.form_id || op.id,
             })
             .then((res) => {
                 if (res.status_code === 200) {
@@ -675,45 +690,43 @@ const ViewExitFormDialog = (() => {
 
     return self;
 })();
-function check_box(event) {
-    if (event.target.checked) {
-        console.log("checked");
-        let op = {};
-        op.check_point_id = event.target.dataset.id;
-        op.form_id = form_id;
-        op.status_id = 1;
 
-        console.log(8888, op);
-        vsapi
-            .call(
-                [main_view.base_url, "/hr/exit-form/save-item"].join(""),
-                op,
-                null,
-                null
-            )
-            .then((res) => {
-                if (res.status_code == 200) {
-                    //cv_interact.success('saved!')
-                    return;
-                } else cv_interact.error(res.error_message);
-            });
-    } else {
-        let op = {};
-        op.check_point_id = event.target.dataset.id;
-        op.form_id = form_id;
-        op.status_id = 0;
-        console.log("uncheck");
-        vsapi
-            .call(
-                [main_view.base_url, "/hr/exit-form/save-item"].join(""),
-                op,
-                null,
-                null
-            )
-            .then((res) => {
-                if (res.status_code == 200) {
-                    return;
-                } else cv_interact.error(res.error_message);
-            });
-    }
-}
+// function check_box(event) {
+//     if (event.target.checked) {
+//         const op = {};
+//         op.check_point_id = event.target.dataset.id;
+//         op.form_id = form_id;
+//         op.status_id = 1;
+//         vsapi
+//             .call(
+//                 [main_view.base_url, "/hr/exit-form/save-item"].join(""),
+//                 op,
+//                 false,
+//                 null
+//             )
+//             .then((res) => {
+//                 if (res.status_code == 200) {
+//                     //cv_interact.success('saved!')
+//                     return;
+//                 } else cv_interact.error(res.error_message);
+//             });
+//     } else {
+//         const op = {};
+//         op.check_point_id = event.target.dataset.id;
+//         op.form_id = form_id;
+//         op.status_id = 0;
+//         console.log("uncheck");
+//         vsapi
+//             .call(
+//                 [main_view.base_url, "/hr/exit-form/save-item"].join(""),
+//                 op,
+//                 null,
+//                 null
+//             )
+//             .then((res) => {
+//                 if (res.status_code == 200) {
+//                     return;
+//                 } else cv_interact.error(res.error_message);
+//             });
+//     }
+// }

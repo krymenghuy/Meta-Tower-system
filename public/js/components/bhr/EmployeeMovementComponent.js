@@ -1,15 +1,16 @@
-var EmployeeMovementComponent = new (function () {
-    let mThis = this;
-    this.title_prop = "Employee Movement";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_employeeMovementComponent");
-    this.self = this.jm[0];
-    // this.btnAdd = this.self.querySelector("#_btnAddMovement");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_emp_movement");
-    this.elEvent = this.self.querySelector('#el_event');
-    this.elEmployee = this.self.querySelector('#el_employee');
-    this.cols = [
+var EmployeeMovementComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Employee Movements";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_employeeMovementComponent");
+    mThis.self = mThis.jm[0];
+    // mThis.btnAdd = mThis.self.querySelector("#_btnAddMovement");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_emp_movement");
+    mThis.elEvent = mThis.self.querySelector('#el_event');
+    mThis.elEmployee = mThis.self.querySelector('#el_employee');
+    
+    mThis.cols = [
 
         {
             title: "",
@@ -48,7 +49,7 @@ var EmployeeMovementComponent = new (function () {
         },
 
         {
-            title: "Create By",
+            title: "last Updated",
             className: "align-middle",
             data: (data) => `
             <div style="display: block; align-items: center;">
@@ -88,7 +89,7 @@ var EmployeeMovementComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.MovementListView = new ListView('_emp_movement_list',{
@@ -113,9 +114,9 @@ var EmployeeMovementComponent = new (function () {
         // };
         mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.initDropdownMenus(mThis.tblMovement);
-        this.sh_container  = mThis.MovementListView.getListContainer();
+        mThis.sh_container  = mmThis.MovementListView.getListContainer();
 
-        const pr_tbl = mThis.MovementListView.getListContainer();
+        const pr_tbl = mmThis.MovementListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 215) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -149,7 +150,7 @@ var EmployeeMovementComponent = new (function () {
 
 
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
             event: mThis.elEvent.value,
@@ -162,10 +163,8 @@ var EmployeeMovementComponent = new (function () {
         return p;
     };
 
-
-
-
-    this.initDropdownMenus = (table)=>{
+ 
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_movement_action",
@@ -210,7 +209,7 @@ var EmployeeMovementComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.editMovement = (movement_id, menuLink) => {
+    mThis.editMovement = (movement_id, menuLink) => {
         let op = {
             id: movement_id,
             btn: menuLink,
@@ -218,14 +217,12 @@ var EmployeeMovementComponent = new (function () {
                 mThis.MovementListView.showPage(); // Refresh the list after editing
             }
         };
-        console.log(123,op);
-
-
+          
         MovementDialog.show(op);
     }
 
-    this.deleteMovement = (movement_id, menuLink) => {
-        let op = {
+    mThis.deleteMovement = (movement_id, menuLink) => {
+        const op = {
             id: movement_id,
             btn: menuLink,
             onClose: () => {
@@ -251,7 +248,7 @@ var EmployeeMovementComponent = new (function () {
         });
 
     }
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
 
         vsapi.call(`${main_view.base_url}/hr/emp-event/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
@@ -260,7 +257,7 @@ var EmployeeMovementComponent = new (function () {
 
         })
     }
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
@@ -270,9 +267,10 @@ var EmployeeMovementComponent = new (function () {
 
             });
 
-    }
+    };
 
-})()
+    return mThis;
+})();
 
 const MovementDialog = (()=>{
 
