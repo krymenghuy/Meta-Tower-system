@@ -176,8 +176,7 @@ var DashboardComponent = new (function () {
             `</div>`,
             `</div>`,
 
-            `</div>`,
-            '<input type="checkbox" />'
+            `</div>`
         ].join("");
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
