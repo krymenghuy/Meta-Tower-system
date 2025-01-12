@@ -468,50 +468,50 @@ const ViewExitFormDialog = (() => {
             emp = "resignation",
         } = employeeInfo[0];
 
-        return `
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr colspan="6">
-                            <td colspan="1">ឈ្មោះបុគ្គលិក៖</td>
-                            <td colspan="1"> ${emp_name}</td>
-                            <td colspan="1">អត្ថលេខ៖</td>
-                            <td colspan="1">${code}</td>
-                            <td colspan="1">កាលបរិច្ឆេទចូលធ្វើការ៖</td>
-                            <td colspan="1">${joining_date}</td>
-                        </tr>
-                        <tr colspan="6">
-                            <td colspan="1">កាលបរិច្ឆេទបិទការងារ៖</td>
-                            <td colspan="1"> ${effective_date}</td>
-                            <td colspan="1">នាយកដ្ឋាន ឬសាខា៖</td>
-                            <td colspan="3">${branch_name}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="text-align:left;">
-                                <div class="d-flex text-center gap-4">
-                                    <span>គោលបំណង៖</span>
-                                    <div class="d-flex disabled">
-                                        <div class="form-check me-3">
-                                            <input type="checkbox" value="action" checked >
-                                            <label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>
-                                        </div>
-                                        <div class="form-check me-3">
-                                            <input type="checkbox" value="action" >
-                                            <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" value="action" >
-                                            <label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>`;
+        return ['<table class="table table-bordered">',
+                    '<tbody>',
+                        '<tr colspan="6">',
+                            '<td colspan="1">ឈ្មោះបុគ្គលិក៖</td>',
+                            '<td colspan="1">',emp_name,'</td>',
+                            '<td colspan="1">អត្ថលេខ៖</td>',
+                            '<td colspan="1">',code,'</td>',
+                            '<td colspan="1">កាលបរិច្ឆេទចូលធ្វើការ៖</td>',
+                            '<td colspan="1">',joining_date,'</td>',
+                        '</tr>',
+                        '<tr colspan="6">',
+                            '<td colspan="1">កាលបរិច្ឆេទបិទការងារ៖</td>',
+                            '<td colspan="1">',effective_date,'</td>',
+                            '<td colspan="1">នាយកដ្ឋាន ឬសាខា៖</td>',
+                            '<td colspan="3">',branch_name,'</td>',
+                        '</tr>',
+                        '<tr>',
+                            '<td colspan="6" style="text-align:left;">',
+                                '<div class="d-flex text-center gap-4">',
+                                    '<span>គោលបំណង៖</span>',
+                                    '<div class="d-flex disabled">',
+                                        '<div class="form-check me-3">',
+                                            '<input type="checkbox" value="action" checked >',
+                                            '<label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>',
+                                        '</div>',
+                                        '<div class="form-check me-3">',
+                                            '<input type="checkbox" value="action">',
+                                            '<label class="form-check-label" for="terminate">ការបញ្ចប់</label>',
+                                        '</div>',
+                                        '<div class="form-check">',
+                                            '<input type="checkbox" value="action">',
+                                            '<label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>',
+                                        '</div>',
+                                    '</div>',
+                                '</div>',
+                            '</td>',
+                        '</tr>',
+                    '</tbody>',
+                '</table>'].join('');
     };
+
     self.show = (op) => {
         vsapi
-            .call(`${main_view.base_url}/hr/exit-form/list-all`, {
+            .call(`${main_view.base_url}/hr/exit-form/checkpoints`, {
                 form_id: op.form_id || op.id,
             })
             .then((res) => {
@@ -523,88 +523,87 @@ const ViewExitFormDialog = (() => {
                         title = "",
                     } = d;
                     const employee = d.employee ?? {};
-                    let htmlString = `
-                        <div class="d-block position-relative min-height-top">
-                            <div class="d-flex flex-column gap-2">
-                                <h4 class="text-center text-uppercase">${title}</h4>
-                            </div>
-                            <div class="employee-info-section">
-                                ${generateEmployeeInfo(employee)}
-                            </div>
-                        </div>
-                        <div class="pb-3 bg-white">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>${generateTableHeaders(thead)}</tr>
-                                </thead>
-                                <tbody>${generateTableBody(
-                                    tbody,
-                                    thead
-                                )}</tbody>
-                            </table>
-                            <table class="table table-bordered mt-3">
-                                <thead class="bg bg-secondary">
-                                    <tr>
-                                        <th class="align-middle text-center ">បុគ្គលិក</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">បញ្ជាក់ដោយ</th>
-                                        <th class="align-middle text-center ">អនុម័តដោយ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="p-5"></td>
-                                        <td class="p-5"></td>
-                                        <td class="p-5"></td>
-                                        <td class="p-5"></td>
-                                        <td class="p-5"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="align-middle text-center">ហត្ថលេខា</td>
-                                        <td class="align-middle text-center">ហត្ថលេខា</td>
-                                        <td class="align-middle text-center">ហត្ថលេខា</td>
-                                        <td class="align-middle text-center">ហត្ថលេខា</td>
-                                        <td class="align-middle text-center">ហត្ថលេខា</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="align-left text-start"><br>
-                                            ឈ្មោះ ........................................<br><br>
-                                            តំណែង .....................................
-                                        </td>
-                                        <td class="align-left text-start"><br>
-                                            ឈ្មោះ ........................................<br><br>
-                                            តំណែង .....................................
-                                        </td>
-                                        <td class="align-left text-start"><br>
-                                            ឈ្មោះ ........................................<br><br>
-                                            តំណែង .....................................
-                                        </td>
-                                        <td class="align-left text-start"><br>
-                                            ឈ្មោះ ........................................<br><br>
-                                            តំណែង .....................................
-                                        </td>
-                                        <td class="align-left text-start"><br>
-                                            ឈ្មោះ ........................................<br><br>
-                                            តំណែង .....................................
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>
-                                        <td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>
-                                        <td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>
-                                        <td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>
-                                        <td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    let htmlString = [
+                        '<div class="d-block position-relative min-height-top">',
+                            '<div class="d-flex flex-column gap-2">',
+                                '<h4 class="text-center text-uppercase">',title,'</h4>',
+                            '</div>',
+                            '<div class="employee-info-section">',
+                                generateEmployeeInfo(employee),
+                            '</div>',
+                        '</div>',
+                        '<div class="pb-3 bg-white">',
+                            '<table class="table table-bordered">',
+                                '<thead>',
+                                    '<tr>',generateTableHeaders(thead),'</tr>',
+                                '</thead>',
+                                '<tbody>',
+                                     generateTableBody(tbody,thead),
+                                '</tbody>',
+                            '</table>',
+                            '<table class="table table-bordered mt-3">',
+                                '<thead class="bg bg-secondary">',
+                                    '<tr>',
+                                        '<th class="align-middle text-center ">បុគ្គលិក</th>',
+                                        '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
+                                        '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
+                                        '<th class="align-middle text-center ">បញ្ជាក់ដោយ</th>',
+                                        '<th class="align-middle text-center ">អនុម័តដោយ</th>',
+                                    '</tr>',
+                                '</thead>',
+                                '<tbody>',
+                                    '<tr>',
+                                        '<td class="p-5"></td>',
+                                        '<td class="p-5"></td>',
+                                        '<td class="p-5"></td>',
+                                        '<td class="p-5"></td>',
+                                        '<td class="p-5"></td>',
+                                    '</tr>',
+                                    '<tr>',
+                                        '<td class="align-middle text-center">ហត្ថលេខា</td>',
+                                        '<td class="align-middle text-center">ហត្ថលេខា</td>',
+                                        '<td class="align-middle text-center">ហត្ថលេខា</td>',
+                                        '<td class="align-middle text-center">ហត្ថលេខា</td>',
+                                        '<td class="align-middle text-center">ហត្ថលេខា</td>',
+                                    '</tr>',
+                                    '<tr>',
+                                        '<td class="align-left text-start"><br>',
+                                            'ឈ្មោះ ........................................<br><br>',
+                                            'តំណែង .....................................',
+                                        '</td>',
+                                        '<td class="align-left text-start"><br>',
+                                            'ឈ្មោះ ........................................<br><br>',
+                                            'តំណែង .....................................',
+                                        '</td>',
+                                        '<td class="align-left text-start"><br>',
+                                            'ឈ្មោះ ........................................<br><br>',
+                                            'តំណែង .....................................',
+                                        '</td>',
+                                        '<td class="align-left text-start"><br>',
+                                            'ឈ្មោះ ........................................<br><br>',
+                                            'តំណែង .....................................',
+                                        '</td>',
+                                        '<td class="align-left text-start"><br>',
+                                            'ឈ្មោះ ........................................<br><br>',
+                                            'តំណែង .....................................',
+                                        '</td>',
+                                    '</tr>',
+                                    '<tr>',
+                                        '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+                                        '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+                                        '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+                                        '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+                                        '<td class="align-middle text-center">កាលបរិច្ឆេទ<br><br> ................/................/................</td>',
+                                    '</tr>',
+                                '</tbody>',
+                            '</table>',
 
-                        </div>
-                        <div class="d-flex flex-column">
-                            <span><strong>ចំណាំ៖</strong></span>
-                            <span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>
-                        </div>
-                    `;
+                        '</div>',
+                        '<div class="d-flex flex-column">',
+                            '<span><strong>ចំណាំ៖</strong></span>',
+                            '<span>ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ ត្រូវអនុវត្តន៍ជាចាំបាច់ និងប្រើប្រាស់ជាឯកសារយោងសម្រាប់ការទូទាត់ប្រាក់បំណាច់ចុងក្រោយជូនដល់បុគ្គលិកដែលត្រូវបញ្ចប់ការងារ ឬចាក់ចេញពីក្រុមហ៊ុន។ ប្រធាននាយកដ្ឋាន ឬប្រធានសាខានីមួយៗត្រូវអនុវត្តន៍ និងពិនិត្យឱ្យបានហ្មត់ចត់មុនផ្ញើឯកសារនេះទៅកាន់នាយកក្រុមហ៊ុន ដើម្បីសុំសេចក្តីសម្រេចចិត្តចុងក្រោយ។</span>',
+                        '</div>',
+                    ].join('');
 
 
 
