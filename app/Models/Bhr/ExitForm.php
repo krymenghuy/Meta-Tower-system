@@ -4,7 +4,6 @@ namespace App\Models\Bhr;
 
 use App\Models\DBX;
 use App\Models\DV;
-use Google\Auth\Cache\Item;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -160,7 +159,6 @@ class ExitForm
     public function getList($arr, $ss = null)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
@@ -351,11 +349,9 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
-                    $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" onclick="" >';
 
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $item->check = '<input data-id="' . $item->id . '" type="checkbox" value="check_point_id" checked onclick="" >';
                             $item->item_type = $form_item->item_type;
                             $item->amount = $form_item->amount;
                             $item->remarks = $form_item->remarks;
@@ -437,7 +433,7 @@ class ExitForm
     function createMulKeyValue($key_name, $arr, $bonus_data = null)
     {
         $result = [];
-        $count = count($arr);
+        // $count = count($arr);
 
         foreach ($arr as $index => $header) {
             $headerData = [$key_name => $header];
