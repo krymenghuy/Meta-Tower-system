@@ -117,7 +117,7 @@ class ExitForm
         }
 
         $isExist = DB::table('exit_form_items')
-        ->where('check_point_id', $d->check_point_id)
+            ->where('check_point_id', $d->check_point_id)
             ->where('form_id', $d->form_id)
             ->take(1)
             ->value('id');
@@ -138,18 +138,18 @@ class ExitForm
         }
 
         $totalItems = DB::table('exit_form_items')
-        ->where('form_id', $d->form_id)
+            ->where('form_id', $d->form_id)
             ->count();
 
         $checkedItems = DB::table('exit_form_items')
-        ->where('form_id', $d->form_id)
+            ->where('form_id', $d->form_id)
             ->where('status_id', 1)
             ->count();
 
         $isFinished = $totalItems > 0 && $totalItems == $checkedItems ? 1 : 0;
 
         DB::table('exit_forms')
-        ->where('id', $d->form_id)
+            ->where('id', $d->form_id)
             ->update(['is_finished' => $isFinished]);
 
         return DV::depends(1, ['id' => $id, 'is_finished' => $isFinished], $id ? 'Update successful' : 'Create successful');
@@ -331,16 +331,16 @@ class ExitForm
 
         $exitFormItems = $query->get();
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
-        $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
-       // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
+        $exit_items = DB::table('exit_form_items as ef')->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')->where('ef.form_id', $form_id)->selectRaw('ef.id, cp.name, cp.check_point_cat_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')->get();
+        // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
 
-        $form_items = [];
+        // $form_items = [];
         //if ($form) {
-            $form_items = DB::table('exit_form_items')
-                ->selectRaw('id, form_id, check_point_id as item_id, item_type, amount, currency, remarks')
-                ->where('form_id', $form_id)
-                ->where('status_id', 1)
-                ->get();
+        // $form_items = DB::table('exit_form_items')
+        //     ->selectRaw('id, form_id, check_point_id as item_id, status_id, item_type, amount, currency, remarks')
+        //     ->where('form_id', $form_id)
+        //     ->where('status_id', 1)
+        //     ->get();
         //}
 
         $groupedData = [];
@@ -350,15 +350,14 @@ class ExitForm
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
 
-                    foreach ($form_items as $form_item) {
-                        if ($form_item->item_id == $item->id) {
-                            $item->item_type = $form_item->item_type;
-                            $item->amount = $form_item->amount;
-                            $item->remarks = $form_item->remarks;
-                            $item->currency = $form_item->currency;
-                            break;
-                        }
-                    }
+                    // foreach ($form_items as $form_item) {
+                    // if ($form_item->item_id == $item->id) {
+                    // $item->item_type = $item->item_type;
+                    // $item->amount = $item->amount;
+                    // $item->remarks = $item->remarks;
+                    // $item->currency = $item->currency;
+                    // break;                        // }
+                    // }
 
                     $groupedData[$category->id]['item'][] = $item;
                     $groupedData[$category->id]['name'] = $category->name;
