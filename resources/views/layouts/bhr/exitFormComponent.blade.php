@@ -12,8 +12,6 @@
     </div>
     <div id="_exit_form_list" class="p-4">
     </div>
-    <div class="d-none container mt-4" id="view_exit_form_">
-    </div>
 </div>
 <style>
     .custom-modal-size {

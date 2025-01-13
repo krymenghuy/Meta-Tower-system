@@ -8,7 +8,6 @@ var ExitFormComponent = (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddExitForm");
     mThis.elSearch = mThis.self.querySelector("#_exit_form_search");
     mThis.divFilter = mThis.self.querySelector("#container_exit_form");
-    mThis.viewExitForm = mThis.self.querySelector("#view_exit_form_");
     mThis.cols = [
         {
             title: "Staff Name",
@@ -267,7 +266,6 @@ var ExitFormComponent = (function () {
     return mThis;
 })();
 
-// let form_id = null; //DO NOT delcare variable outside like this
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -333,11 +331,6 @@ const ExitFormDialog = (() => {
                     },
                 },
             ],
-            contentCreated: (me, divModal) => {
-                me.saveBenefitDisburse = (bd) => {
-                    //alert("Data saved.");
-                };
-            },
             prepareFormOptions: {
                 createTitle: "Create Exit Form",
                 modifyTitle: "Edit Exit Form",
@@ -378,8 +371,8 @@ const ViewExitFormDialog = (() => {
                 const displayName =
                     headerName === "starting date"
                         ? "Admission Date"
-                        : headerName === "tuition fee"
-                        ? "School Fee"
+                        : headerName === "exit form"
+                        ? "Exit form"
                         : t.name ?? "";
 
                 return `
@@ -412,7 +405,7 @@ const ViewExitFormDialog = (() => {
 
                                     const checkItemHTML = ['<div class="d-flex ml-1">',
                                         
-                                        '<input type="checkbox" class="exit_check_box" data-id="',item.id,'" style="cursor:pointer">',item.check,'</input>',
+                                        '<input type="checkbox" ', item.status_id == 1 ? 'checked' : '' ,' class="exit_check_box" data-id="',item.id,'" style="cursor:pointer"></input>',
                                         '<div class="d-flex ml-1">',
                                         `<span class="ms-2 item-name" title="`,item.item_type,`" style="cursor:pointer" data-info="`,(item.details || "No additional details available"),`">`,itemName,'</span>',
                                         '<div class="details-container" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">',
@@ -604,7 +597,6 @@ const ViewExitFormDialog = (() => {
                                     op.check_point_id = event.target.dataset.id;
                                     op.form_id = form_id;
                                     op.status_id = event.target.checked ? 1 : 0;
-                                    console.log(33838, op);
 
                                     vsapi.call([main_view.base_url,"/hr/exit-form/save-item",].join(""),op,false,null)
                                             .then((res) => {
@@ -614,7 +606,8 @@ const ViewExitFormDialog = (() => {
                                                 cv_interact.error(
                                                     res.error_message
                                                 );
-                                    });
+                                            });
+                                    return;
                                 };
 
                                 me.getCheckPointItems(me.divModal);
@@ -668,7 +661,7 @@ const ViewExitFormDialog = (() => {
                                         main_view.base_url,
                                         "/hr/exit-form/form-options",
                                     ].join(""),
-                                    params: (op) => {
+                                    params: (op) => {                                        
                                         return { id: op.id };
                                     },
                                 },
