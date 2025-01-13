@@ -1,17 +1,16 @@
 "use strict";
+var StaffAttendanceComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_staffAttendanceComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Staff Attendance";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
+    mThis.elSearch = mThis.self.querySelector("#_staff_attendance_search");
+    mThis.containerFilter = mThis.self.querySelector('#container_scan_filter');
 
-var StaffAttendanceComponent = new function () {
-    const mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_staffAttendanceComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Staff Attendance";
-    this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
-    this.elSearch = this.self.querySelector("#_staff_attendance_search");
-    this.containerFilter = this.self.querySelector('#container_scan_filter');
 
-
-    this.cols = [
+    mThis.cols = [
         {
             title: "",
             className: "align-middle",
@@ -89,7 +88,7 @@ var StaffAttendanceComponent = new function () {
 
     ];
 
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
@@ -142,7 +141,7 @@ var StaffAttendanceComponent = new function () {
 
         mThis.initAlready = true;
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi.call(`${main_view.base_url}/hr/employee/form-options`,null,null,null).then((res) => {
 
             let d = res.status_code === 200 ? res.data : {};
@@ -173,7 +172,7 @@ var StaffAttendanceComponent = new function () {
         });
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
@@ -185,15 +184,16 @@ var StaffAttendanceComponent = new function () {
 
         return p;
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.StaffAttendanceListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
-};
+    return mThis;
+})();
 
 const StaffAttendanceDialog = (() => {
     const self = {};
@@ -283,7 +283,7 @@ const StaffAttendanceDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "attendance save successfully"
+                                            "Attendance save successfully"
                                         );
                                     } else cv_interact.error(res.error_message);
                                 });

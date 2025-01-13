@@ -1,21 +1,21 @@
 "use strict";
 
-var BenefitDisbursementComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
+var BenefitDisbursementComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children(
         "#_main_benefit_disbursement_component"
     );
-    this.self = this.jm[0];
-    this.title_prop = "Benefits Disbursement";
-    this.btnAdd = this.self.querySelector("#_btnAddBenefitDisburse");
-    this.elSearch = this.self.querySelector("#_benefit_disburse_search");
-    this.elCard = this.self.querySelector(".top_level_card");
-    this._searchBenefitDisburse = this.self.querySelector(
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Benefits Disbursement";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefitDisburse");
+    mThis.elSearch = mThis.self.querySelector("#_benefit_disburse_search");
+    mThis.elCard = mThis.self.querySelector(".top_level_card");
+    mThis._searchBenefitDisburse = mThis.self.querySelector(
         "#container_benefit_disburse"
     );
-    this.divFilter = this.self.querySelector("#container_benefit_disburse");
-    this.elBenefit = this.self.querySelector("#el_benefit");
+    mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
     const monthNames = [
         "January",
         "February",
@@ -30,7 +30,7 @@ var BenefitDisbursementComponent = new (function () {
         "November",
         "December",
     ];
-    this.cols = [
+    mThis.cols = [
         {
             title: "Name",
             className: "align-middle text-start w-25",
@@ -100,7 +100,7 @@ var BenefitDisbursementComponent = new (function () {
             },
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.BenefitDisburseListView = new ListView("_benefit_disburse_list", {
@@ -159,11 +159,11 @@ var BenefitDisbursementComponent = new (function () {
         }, 200);
     });
 
-    this.setFilterPeriod = (p) => {
+    mThis.setFilterPeriod = (p) => {
         return p;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             benefit_id: mThis.elBenefit.value,
             search_value: mThis.elSearch.value,
@@ -174,7 +174,7 @@ var BenefitDisbursementComponent = new (function () {
         });
         return filters;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
@@ -193,7 +193,7 @@ var BenefitDisbursementComponent = new (function () {
             console.log(123, btn);
         });
     };
-    this.editBenefitDisburse = (id, menulink) => {
+    mThis.editBenefitDisburse = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -203,7 +203,7 @@ var BenefitDisbursementComponent = new (function () {
         };
         BenefitDisburseDialog.show(op);
     };
-    this.deleteBenefitDisburse = (id, menulink) => {
+    mThis.deleteBenefitDisburse = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -212,9 +212,9 @@ var BenefitDisbursementComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Benefit Disburse?",
+            "Delete this benefit disburse?",
             {
-                title: "Delete this Benefit Disburse?",
+                title: "Delete disbursement",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -231,7 +231,7 @@ var BenefitDisbursementComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Benefit Disburse Delete Successfully"
+                                    "Benefit disburse delete successfully"
                                 );
                                 mThis.BenefitDisburseListView.showPage();
                             }
@@ -244,7 +244,7 @@ var BenefitDisbursementComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/employee/benefit-disbursement/form-options`,
@@ -266,14 +266,15 @@ var BenefitDisbursementComponent = new (function () {
                 console.log(1111, mThis.elBenefit);
             });
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.BenefitDisburseListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 const BenefitDisburseDialog = (() => {
     const self = {};
@@ -391,10 +392,10 @@ const BenefitDisburseDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated Benefit Disbursement Successfully");
+                                            cv_interact.success("Updated benefit disbursement successfully");
                                         }
                                         else{
-                                        cv_interact.success("Added Benefit Disbursement Successfully");
+                                        cv_interact.success("Added benefit disbursement successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });

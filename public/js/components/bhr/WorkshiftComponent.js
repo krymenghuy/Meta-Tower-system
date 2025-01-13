@@ -1,18 +1,18 @@
 "use strict";
-var WorkshiftComponent = new (function () {
-    const mThis = this;
-    this.title_prop = "Attendance Tracks";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_workshiftComponent");
-    this.self = this.jm[0];
-    this.btnAddShiftDetail = this.self.querySelector("#_btnAddShiftDetail");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.work_shift_header = this.self.querySelector("#_work_shift_header");
-    this.elFilter_status = this.self.querySelector("#el_work_shift");
+var WorkshiftComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Attendance Tracks";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_workshiftComponent");
+    mThis.self = mThis.jm[0];
+    mThis.btnAddShiftDetail = mThis.self.querySelector("#_btnAddShiftDetail");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.work_shift_header = mThis.self.querySelector("#_work_shift_header");
+    mThis.elFilter_status = mThis.self.querySelector("#el_work_shift");
     const list_container = mThis.self.querySelector("#_work_shift_body");
     const header_container = mThis.self.querySelector("#_work_shift_header");
 
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
         mThis.WorkshiftListView = () => {
             vsapi
@@ -65,7 +65,7 @@ var WorkshiftComponent = new (function () {
 
 
 
-    this.renderWorkShift = (div, data) => {
+    mThis.renderWorkShift = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
             console.error(
@@ -78,7 +78,7 @@ var WorkshiftComponent = new (function () {
             mThis.beginRenderWorkShift(div, data);
         });
     };
-    this.beginRenderWorkShift = (div, data) => {
+    mThis.beginRenderWorkShift = (div, data) => {
         let html = `
         <div class="_work_shift_body col-12">
             <div class="row">
@@ -140,7 +140,7 @@ var WorkshiftComponent = new (function () {
 
         div.innerHTML = html;
     };
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const p = {
             work_shift_id: mThis.elFilter_status.value,
         };
@@ -152,7 +152,7 @@ var WorkshiftComponent = new (function () {
         return p;
     };
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_shift-details_action",
@@ -192,25 +192,25 @@ var WorkshiftComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editWorkShift = (id, menuLink) => {
+    mThis.editWorkShift = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("scanpoint is updated successfully!");
+                cv_interact.success("Scanpoint is updated successfully!");
                 mThis.WorkshiftListView();
             },
         };
 
         ShiftDetailDialog.show(op);
     };
-    this.deleteWorkShift = (id, menuLink) => {
+    mThis.deleteWorkShift = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
         };
         cv_interact.confirm(
-            "Are you sure you want to delete this Scanpoint?",
+            "Are you sure you want to delete this scanpoint?",
             {
                 title: "Delete Scanpoint",
                 context: "delete",
@@ -228,7 +228,7 @@ var WorkshiftComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("deleted !");
+                                cv_interact.success("Deleted successfully!");
                                 mThis.WorkshiftListView();
                             }
                             else {
@@ -241,7 +241,7 @@ var WorkshiftComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi.call(`${main_view.base_url}/hr/shift-details/form-options`,null,null,null).then((res) => {
                 if (res.status_code === 200){
                     const d = res.data;
@@ -250,14 +250,15 @@ var WorkshiftComponent = new (function () {
         });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.WorkshiftListView();
         mThis.jm.siblings().hide();
-        mThis.jm.hide().fadeIn(250);
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 const ShiftDetailDialog = (() => {
     const self = {};

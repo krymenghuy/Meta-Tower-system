@@ -1,16 +1,15 @@
 "use strict";
-
 var JobsLevelComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_jobsLevelComponent");
-    this.self = this.jm[0];
-    this.initAlready = false;
-    this.title_prop = "Job Levels";
-    this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
-    this.elSearch = this.self.querySelector("#_job_level_search");
-    this.elCard = this.self.querySelector(".top_level_card");
-    this.cols = [
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_jobsLevelComponent");
+    mThis.self = mThis.jm[0];
+    mThis.initAlready = false;
+    mThis.title_prop = "Job Levels";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddJobLevel");
+    mThis.elSearch = mThis.self.querySelector("#_job_level_search");
+    mThis.elCard = mThis.self.querySelector(".top_level_card");
+    mThis.cols = [
         {
             title: "",
             className: "align-middle text-capitalize text-nowrap",
@@ -66,7 +65,7 @@ var JobsLevelComponent = new (function () {
         },
     ];
 
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.JobLevelListView = new ListView("_job_level_list", {
@@ -117,16 +116,16 @@ var JobsLevelComponent = new (function () {
 
 
 
-    this.setFilterPeriod = (p, name, start_date, end_date) => {
+    mThis.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         return p;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-job-level-modify");
             if (btn) {
@@ -139,7 +138,7 @@ var JobsLevelComponent = new (function () {
             console.log(123, btn);
         });
     };
-    this.editJobLevel = (id, menulink) => {
+    mThis.editJobLevel = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -149,7 +148,7 @@ var JobsLevelComponent = new (function () {
         };
         JobLevelDialog.show(op);
     };
-    this.deleteJobLevel = (id, menulink) => {
+    mThis.deleteJobLevel = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -158,9 +157,9 @@ var JobsLevelComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Job level?",
+            "Delete this job level?",
             {
-                title: "Delete this Job level?",
+                title: "Delete Job level",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -177,7 +176,7 @@ var JobsLevelComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Job level Delete Successfully"
+                                    "Job level delete successfully"
                                 );
                                 mThis.JobLevelListView.showPage();
                             }
@@ -190,7 +189,7 @@ var JobsLevelComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/job_level/form-options`,
@@ -200,26 +199,27 @@ var JobsLevelComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                console.log(1111, mThis.elSortBy);
             });
     };
     // Show component
-    // this.show = function () {
-    //     this.init();
+    // mThis.show = function () {
+    //     mThis.init();
     //     main_view.setTitle(mThis.title_prop);
     //     mThis.JobLevelListView.showPage(null, null, () => {
     //         $(mThis.self).siblings().hide();
     //         $(mThis.self).fadeIn(200);
     //     });
     // };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.JobLevelListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 
 const JobLevelDialog = (() => {
@@ -287,11 +287,11 @@ const JobLevelDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated Job Level Successfully');
+                                            cv_interact.success('Updated job level successfully');
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added Job Level Successfully');
+                                            cv_interact.success('Added job level successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });

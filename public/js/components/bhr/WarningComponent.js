@@ -1,16 +1,16 @@
 "use strict";
 
-var WarningComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_warningComponent");
-    this.self = this.jm[0];
-    this.initAlready = false;
-    this.title_prop = "Employee Warning";
-    this.btnAdd = this.self.querySelector("#_btnAddWarning");
-    this.elSearch = this.self.querySelector("#_warning_search");
-    this._searchWarning = this.self.querySelector("#_warning_component");
-    this.cols = [
+var WarningComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_warningComponent");
+    mThis.self = mThis.jm[0];
+    mThis.initAlready = false;
+    mThis.title_prop = "Employee Warning";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddWarning");
+    mThis.elSearch = mThis.self.querySelector("#_warning_search");
+    mThis._searchWarning = mThis.self.querySelector("#_warning_component");
+    mThis.cols = [
         {
             title: "",
             className: "align-middle text-capitalize text-nowrap",
@@ -81,7 +81,7 @@ var WarningComponent = new (function () {
                 </div>`,
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.WarningListView = new ListView("_warning_list", {
@@ -99,7 +99,6 @@ var WarningComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Add warning successfully");
                     mThis.WarningListView.showPage();
                 },
             };
@@ -137,11 +136,11 @@ var WarningComponent = new (function () {
     });
 
 
-    this.setFilterPeriod = (p, name, start_date, end_date) => {
+    mThis.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
 
-    this.getDataFormFilter = () => {
+    mThis.getDataFormFilter = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters =
@@ -154,7 +153,7 @@ var WarningComponent = new (function () {
 
         return p;
     };
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_warning_action",
@@ -195,7 +194,7 @@ var WarningComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editWarning = (id, menulink) => {
+    mThis.editWarning = (id, menulink) => {
 
         let op = {
             id: id,
@@ -206,7 +205,7 @@ var WarningComponent = new (function () {
         };
         WarningDialog.show(op);
     };
-    this.deleteWarning = (id, menulink) => {
+    mThis.deleteWarning = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -215,9 +214,9 @@ var WarningComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Warning?",
+            "Delete this warning?",
             {
-                title: "Delete this Warning?",
+                title: "Delete mThis Warning?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -234,7 +233,7 @@ var WarningComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Warnings Delete Successfully"
+                                    "Warnings delete successfully"
                                 );
                                 mThis.WarningListView.showPage();
                             }
@@ -246,7 +245,7 @@ var WarningComponent = new (function () {
             }
         );
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/warning/form-options`,
@@ -256,18 +255,19 @@ var WarningComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                console.log(1111, mThis.elSortBy);
             });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.WarningListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 
 const WarningDialog = (() => {

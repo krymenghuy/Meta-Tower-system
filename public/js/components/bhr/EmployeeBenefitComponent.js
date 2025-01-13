@@ -1,20 +1,20 @@
 "use strict";
 
 var EmployeeBenefitComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children(
         "#_main_employee_benefit_component"
     );
-    this.self = this.jm[0];
-    this.title_prop = "Employee Benefits";
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Employee Benefits";
 
-    this.btnAdd = this.self.querySelector("#_btn_add_benefit");
-    this.divFilter = this.self.querySelector("#_divFilter_employee_benefit");
-    this.elSearch = this.self.querySelector("#_sdl_search_bonus");
-    this.elBenefit = this.self.querySelector("#el_benefit");
+    mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_bonus");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
-    this.cols = [
+    mThis.cols = [
         {
             title: "Name",
             className: "align-middle text-start w-15",
@@ -123,7 +123,7 @@ var EmployeeBenefitComponent = new (function () {
         },
     ];
 
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
@@ -159,7 +159,7 @@ var EmployeeBenefitComponent = new (function () {
         }
         mThis.elSearch.addEventListener(
             "keyup",
-            this.debounce(() => {
+            mThis.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             }, 300)
         );
@@ -171,7 +171,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.setActionListeners = () => {
+    mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
             if (btn) {
@@ -185,7 +185,7 @@ var EmployeeBenefitComponent = new (function () {
         });
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             benefit_id: mThis.elBenefit.value,
             search_value: mThis.elSearch.value,
@@ -197,7 +197,7 @@ var EmployeeBenefitComponent = new (function () {
         return filters;
     };
 
-    this.editBenefit = (id, btn) => {
+    mThis.editBenefit = (id, btn) => {
         EmployeeBenefitDialog.show({
             id,
             btn,
@@ -205,7 +205,7 @@ var EmployeeBenefitComponent = new (function () {
         });
     };
 
-    this.deleteBenefit = (id, menuLink) => {
+    mThis.deleteBenefit = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -214,7 +214,7 @@ var EmployeeBenefitComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Benefit?",
+            "Delete this benefit?",
             {
                 title: "Delete Benefit",
                 context: "delete",
@@ -232,7 +232,7 @@ var EmployeeBenefitComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.EmployeeBenefitListView.showPage(
                                     mThis.getFilterData()
                                 );
@@ -246,7 +246,7 @@ var EmployeeBenefitComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/employee/benefit/form-options`,
@@ -270,21 +270,23 @@ var EmployeeBenefitComponent = new (function () {
             });
     };
 
-    this.debounce = (func, delay) => {
+    mThis.debounce = (func, delay) => {
         let timeout;
         return function (...args) {
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
+            timeout = setTimeout(() => func.apply(mThis, args), delay);
         };
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+
     };
+    return mThis;
 })();
 const EmployeeBenefitDialog = (() => {
     const self = {};
@@ -400,10 +402,10 @@ const EmployeeBenefitDialog = (() => {
                                     me.hide(true, p);
                                     if(me.dataOptions.id > 0)
                                     {
-                                        cv_interact.success("Updated Employee Benefit Successfully");
+                                        cv_interact.success("Updated employee benefit successfully");
                                     }
                                     else{
-                                        cv_interact.success("Added Employee Benefit Successfully");
+                                        cv_interact.success("Added employee benefit successfully");
                                     }
                                 } else {
                                     cv_interact.error(res.error_message || "An error occurred.");

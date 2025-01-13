@@ -1,22 +1,21 @@
 "use strict";
-
 var PayrollListComponent = new (function () {
-    const mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_payrollListComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Payroll List";
-    this.elFilter = this.self.querySelector('#el_filter_payrollList');
-    this.elFilterBranch = this.self.querySelector('#el_filter_branch');
-    this.btnImport = this.self.querySelector("#_btnImport");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_payroll_list");
-    this.elFilterDisburse = this.self.querySelector("#el_filter_disburse");
-    this.btnCalculate = this.self.querySelector("#_btnCalculate");
-    this.btnDisburse = this.self.querySelector("#_btnDisburse");
-    this.btnBack = this.self.querySelector("#_btn_backTo_payrollList");
-    this.payment_info = this.self.querySelector("#payment_info");
-    this.btnPrint = this.self.querySelector("#_btnPrint");
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_payrollListComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Payroll List";
+    mThis.elFilter = mThis.self.querySelector('#el_filter_payrollList');
+    mThis.elFilterBranch = mThis.self.querySelector('#el_filter_branch');
+    mThis.btnImport = mThis.self.querySelector("#_btnImport");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_payroll_list");
+    mThis.elFilterDisburse = mThis.self.querySelector("#el_filter_disburse");
+    mThis.btnCalculate = mThis.self.querySelector("#_btnCalculate");
+    mThis.btnDisburse = mThis.self.querySelector("#_btnDisburse");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_payrollList");
+    mThis.payment_info = mThis.self.querySelector("#payment_info");
+    mThis.btnPrint = mThis.self.querySelector("#_btnPrint");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -29,7 +28,7 @@ var PayrollListComponent = new (function () {
             .replace(/,/g, ' ');
     };
 
-    this.cols = [
+    mThis.cols = [
 
         {
             title: "",
@@ -174,7 +173,7 @@ var PayrollListComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.PayrollList_ListView = new ListView('_payrollList_list',{
@@ -191,7 +190,7 @@ var PayrollListComponent = new (function () {
                 payroll_id: mThis.getFilterData().payroll_id,
             };
 
-            cv_interact.confirm('Calculate this Payroll List?', {
+            cv_interact.confirm('Calculate this payroll list?', {
                 title: 'Calculate Payroll List',
                 context: 'calculate',
                 confirmButtonText: "Calculate"
@@ -229,7 +228,7 @@ var PayrollListComponent = new (function () {
                 payroll_id: mThis.getFilterData().payroll_id,
             };
 
-            cv_interact.confirm('Disburse this Payroll List?', {
+            cv_interact.confirm('Disburse this payroll list?', {
                 title: 'Disburse Payroll List',
                 context: 'disburse',
                 confirmButtonText: "Disburse"
@@ -238,9 +237,9 @@ var PayrollListComponent = new (function () {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
                             if (res.data && res.data.message === 'Payroll List Already Disbursed') {
-                                cv_interact.error('Payroll List Already Disbursed');
+                                cv_interact.error('Payroll list already disbursed');
                             } else {
-                                cv_interact.success('Disbursed Successfully');
+                                cv_interact.success('Disbursed successfully');
                                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                             }
                         } else {
@@ -304,7 +303,7 @@ var PayrollListComponent = new (function () {
 
     };
 
-    this.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_payroll_list_action",
@@ -382,7 +381,7 @@ var PayrollListComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.renderPayment = (data) => {
+    mThis.renderPayment = (data) => {
        let html = '';
        let benefit_flat_rate = null;
        let div_BFT  = '';
@@ -602,24 +601,24 @@ var PayrollListComponent = new (function () {
 
             </div>`;
 
-        this.payment_info.innerHTML = html;
-        // let btnPrint = this.payment_info.querySelector('#_btnPrint');
-        console.log(444, this.payment_info);
+        mThis.payment_info.innerHTML = html;
+        // let btnPrint = mThis.payment_info.querySelector('#_btnPrint');
+        console.log(444, mThis.payment_info);
 
 
 
     };
-    this.btnPrint.addEventListener('click', () => {
-        windowPrintPayrollList(this.payment_info.innerHTML);
+    mThis.btnPrint.addEventListener('click', () => {
+        windowPrintPayrollList(mThis.payment_info.innerHTML);
         // window.print();
     })
 
 
-    this.viewPayment = (id, menuLink) => {
+    mThis.viewPayment = (id, menuLink) => {
 
-        const sub_content = this.self.querySelector("#sub_content");
+        const sub_content = mThis.self.querySelector("#sub_content");
         sub_content.classList.add("d-none");
-        const pay_slip = this.self.querySelector("#pay_slip");
+        const pay_slip = mThis.self.querySelector("#pay_slip");
         pay_slip.classList.remove("d-none");
         let op = {
             id: id,
@@ -636,7 +635,7 @@ var PayrollListComponent = new (function () {
         })
 
     }
-    this.addDeduction = (id, menuLink) => {
+    mThis.addDeduction = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -650,7 +649,7 @@ var PayrollListComponent = new (function () {
         AddDeductionDialog.show(op);
     }
 
-    this.disbursePayrollList = (id, menuLink) => {
+    mThis.disbursePayrollList = (id, menuLink) => {
         console.log(123, id);
 
         let op = {
@@ -660,7 +659,7 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
-        cv_interact.confirm('Disburse this Payroll ?',{
+        cv_interact.confirm('Disburse this payroll ?',{
             title: 'Disburse Payroll List',
             context: 'disburse',
             confirmButtonText:"Disburse"
@@ -670,7 +669,7 @@ var PayrollListComponent = new (function () {
                     console.log(321,res);
 
                     if(res.status_code == 200){
-                        cv_interact.success('Disbursed Successfully');
+                        cv_interact.success('Disbursed successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                     else{
@@ -682,7 +681,7 @@ var PayrollListComponent = new (function () {
 
     }
 
-    this.deletePayrollList = (id, menuLink) => {
+    mThis.deletePayrollList = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -710,7 +709,7 @@ var PayrollListComponent = new (function () {
 
     }
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
 
         let p = {};
 
@@ -728,7 +727,7 @@ var PayrollListComponent = new (function () {
         return p;
     };
 
-    this.prepareFormOptions = (onFinish) => {
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             let payroll_id = null;
@@ -753,7 +752,7 @@ var PayrollListComponent = new (function () {
         });
     };
 
-    this.show = function (option) {
+    mThis.show = function (option) {
         mThis.option = option;
         mThis.init();
         main_view.setTitle(mThis.title_prop);
@@ -763,8 +762,8 @@ var PayrollListComponent = new (function () {
             $(mThis.self).siblings().hide();
             $(mThis.self).fadeIn(200);
         });
-
     };
+    return mThis;
 });
 
 const AddDeductionDialog = (() => {
@@ -852,9 +851,9 @@ const AddDeductionDialog = (() => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Added Deduction Successfully");
+                                        cv_interact.success("Added deduction successfully");
                                     } else {
-                                        cv_interact.success("Added Deduction Successfully");
+                                        cv_interact.success("Added deduction successfully");
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -996,5 +995,5 @@ function windowPrintPayrollList(html=null)
         },500);
     }
     else
-        cv_interact.warning('Select Run Report Before Print!');
+        cv_interact.warning('Select run report before print!');
 }

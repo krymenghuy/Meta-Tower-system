@@ -1,14 +1,14 @@
-var AccountMenagmentComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_accountComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Payroll Account ";
-    this.btnAdd = this.self.querySelector("#_btnAddAccount");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_account");
-    this.elSortBy = this.self.querySelector("#el_sort_by");
-    this.btnBack = this.self.querySelector("#_btn_backTo_account");
+var AccountMenagmentComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_accountComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Payroll Account ";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
+    mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -20,8 +20,8 @@ var AccountMenagmentComponent = new (function () {
             })
             .replace(/,/g, ' ');
     };
- 
-    this.cols = [
+
+    mThis.cols = [
         {
             title: "No",
             className: "align-middle",
@@ -111,7 +111,7 @@ var AccountMenagmentComponent = new (function () {
     ];
 
 
-    this.cols2 = [
+    mThis.cols2 = [
         {
             title: "No",
             className: "align-middle",
@@ -211,7 +211,7 @@ var AccountMenagmentComponent = new (function () {
         },
 
     ];
-    this.initTransaction = () => {
+    mThis.initTransaction = () => {
         if (mThis.initTransactionAlready) return;
         mThis.TransactionListView = new ListView("_transaction_info", {
             fetchApi: `${main_view.base_url}/hr/transaction/get-list`,
@@ -233,7 +233,7 @@ var AccountMenagmentComponent = new (function () {
         mThis.initTransactionAlready = true;
 
     };
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.AccountListView = new ListView("_account_list", {
@@ -298,7 +298,7 @@ var AccountMenagmentComponent = new (function () {
         }, 200);
     });
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_account_action",
@@ -359,7 +359,7 @@ var AccountMenagmentComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    this.transfer = (id, menuLink) => {
+    mThis.transfer = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -372,7 +372,7 @@ var AccountMenagmentComponent = new (function () {
         TransferDialog.show(op);
     };
 
-    this.viewTransaction = (id, menuLink) => {
+    mThis.viewTransaction = (id, menuLink) => {
         console.log(321,menuLink );
         let emp_id = menuLink.dataset.emp_id;
         let p = {
@@ -380,12 +380,12 @@ var AccountMenagmentComponent = new (function () {
             account_id:id
 
         }
-        const viewTran = this.self.querySelector("#view_transaction_info");
-        const sub_content = this.self.querySelector("#sub_content");
-        // this.show = function () {
+        const viewTran = mThis.self.querySelector("#view_transaction_info");
+        const sub_content = mThis.self.querySelector("#sub_content");
+        // mThis.show = function () {
             mThis.initTransaction();
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
             mThis.TransactionListView.showPage(p);
 
             viewTran.classList.remove("d-none");
@@ -394,7 +394,7 @@ var AccountMenagmentComponent = new (function () {
         // };
 
     }
-    this.editAccount = (id, menuLink) => {
+    mThis.editAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -406,17 +406,17 @@ var AccountMenagmentComponent = new (function () {
         AccountDialog.show(op);
     };
 
-    this.deleteAccount = (id, menuLink) => {
+    mThis.deleteAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("Deleted Successfully");
+                cv_interact.success("Deleted successfully");
                 mThis.AccountListView.showPage();
             },
         };
         cv_interact.confirm(
-            "Delete this Account?",
+            "Delete this account?",
             {
                 title: "Delete Account",
                 context: "delete",
@@ -434,7 +434,7 @@ var AccountMenagmentComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.AccountListView.showPage();
                             }
                             else cv_interact.error(res.error_message);
@@ -444,7 +444,7 @@ var AccountMenagmentComponent = new (function () {
         );
     };
 
-    this.getDataFormFilter = () => {
+    mThis.getDataFormFilter = () => {
         let p = {};
         // p.search_value = mThis.elSearch.value;
         // p.sort_by = mThis.elSortBy.value;
@@ -460,7 +460,7 @@ var AccountMenagmentComponent = new (function () {
 
         return p;
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/account/form-options`,
@@ -478,15 +478,15 @@ var AccountMenagmentComponent = new (function () {
             });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.AccountListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
-
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 
 })();
 
@@ -593,10 +593,10 @@ const AccountDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated Payroll Account Successfully');
+                                            cv_interact.success('Updated payroll account successfully');
                                         }
                                         else{
-                                        cv_interact.success('Added Payroll Account Successfully');
+                                        cv_interact.success('Added payroll account successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -820,7 +820,7 @@ const TransferDialog = (() => {
 
                             vsapi.call([main_view.base_url, '/hr/account/get-confirm'].join(''), p, null, null).then(res => {
                                 if (res.status_code === 200 && res.data) {
-                                    const confirmationMessage = `Are you sure to transfer? To [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
+                                    const confirmationMessage = `Are you sure to transfer? to [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
 
                                     cv_interact.confirm(confirmationMessage, {
                                         title: 'Confirm or Cancel Transfer',
@@ -850,7 +850,7 @@ const TransferDialog = (() => {
                                                 cv_interact.error($res.error_message || 'Error in processing transfer');
                                             });
                                         } else {
-                                            cv_interact.info('Transfer Cancelled!');
+                                            cv_interact.info('Transfer cancelled!');
                                         }
                                     });
                                 } else {

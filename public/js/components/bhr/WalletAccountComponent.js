@@ -1,14 +1,14 @@
-var WalletAccountComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_walletAccountComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Wallet Account";
-    this.btnAdd = this.self.querySelector("#_btnWalletAddAccount");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_wallet_account");
-    this.elSortBy = this.self.querySelector("#el_sort_by");
-    this.btnBack = this.self.querySelector("#_btn_backTo_wallet_account");
+var WalletAccountComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_walletAccountComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Wallet Account";
+    mThis.btnAdd = mThis.self.querySelector("#_btnWalletAddAccount");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_wallet_account");
+    mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_wallet_account");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -21,7 +21,7 @@ var WalletAccountComponent = new (function () {
             .replace(/,/g, ' ');
     };
 
-    this.cols = [
+    mThis.cols = [
         {
             title: "No",
             className: "align-middle",
@@ -116,7 +116,7 @@ var WalletAccountComponent = new (function () {
             </div>`,
         },
     ];
-    this.cols2 = [
+    mThis.cols2 = [
         {
             title: "No",
             className: "align-middle",
@@ -219,7 +219,7 @@ var WalletAccountComponent = new (function () {
             },
         },
     ];
-    this.initTransaction = () => {
+    mThis.initTransaction = () => {
         if (mThis.initTransactionAlready) return;
         mThis.TransactionListView = new ListView("wallet_transaction_info", {
             fetchApi: `${main_view.base_url}/hr/transaction/get-list`,
@@ -240,7 +240,7 @@ var WalletAccountComponent = new (function () {
 
         mThis.initTransactionAlready = true;
     };
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.WalletAccountListView = new ListView("_wallet_account_list", {
@@ -306,7 +306,7 @@ var WalletAccountComponent = new (function () {
         }, 200);
     });
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_wallet_account_action",
@@ -356,21 +356,21 @@ var WalletAccountComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    this.viewTransaction = (id, menuLink) => {
+    mThis.viewTransaction = (id, menuLink) => {
         console.log(321, menuLink);
         let emp_id = menuLink.dataset.emp_id;
         let p = {
             emp_id: emp_id,
             account_id: id,
         };
-        const viewTran = this.self.querySelector(
+        const viewTran = mThis.self.querySelector(
             "#view_wallet_transaction_info"
         );
-        const sub_content = this.self.querySelector("#sub_wallet_content");
-        // this.show = function () {
+        const sub_content = mThis.self.querySelector("#sub_wallet_content");
+        // mThis.show = function () {
         mThis.initTransaction();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
         mThis.TransactionListView.showPage(p);
 
         viewTran.classList.remove("d-none");
@@ -379,7 +379,7 @@ var WalletAccountComponent = new (function () {
         // };
     };
 
-    this.editWalletAccount = (id, menuLink) => {
+    mThis.editWalletAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -391,17 +391,17 @@ var WalletAccountComponent = new (function () {
         WalletAccountDialog.show(op);
     };
 
-    this.deleteWalletAccount = (id, menuLink) => {
+    mThis.deleteWalletAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success("Deleted Successfully");
+                cv_interact.success("Deleted successfully");
                 mThis.WalletAccountListView.showPage();
             },
         };
         cv_interact.confirm(
-            "Delete this Account?",
+            "Delete this account?",
             {
                 title: "Delete Account",
                 context: "delete",
@@ -419,7 +419,7 @@ var WalletAccountComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.WalletAccountListView.showPage();
                             }
                             else {
@@ -431,7 +431,7 @@ var WalletAccountComponent = new (function () {
         );
     };
 
-    this.getDataFormFilter = () => {
+    mThis.getDataFormFilter = () => {
         let p = {};
         // p.search_value = mThis.elSearch.value;
         // p.sort_by = mThis.elSortBy.value;
@@ -447,7 +447,7 @@ var WalletAccountComponent = new (function () {
 
         return p;
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/account/form-options`,
@@ -457,7 +457,7 @@ var WalletAccountComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                console.log(1111, mThis.elSortBy);
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
@@ -465,14 +465,15 @@ var WalletAccountComponent = new (function () {
             });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.WalletAccountListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 
 const WalletAccountDialog = (() => {
@@ -576,10 +577,10 @@ const WalletAccountDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated Wallet Account Successfully");
+                                            cv_interact.success("Updated wallet account successfully");
                                         }
                                         else{
-                                        cv_interact.success("Added Wallet Account Successfully");
+                                        cv_interact.success("Added wallet account successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
