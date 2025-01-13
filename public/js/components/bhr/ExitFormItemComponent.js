@@ -302,6 +302,8 @@ var ExitFormItemComponent = new (function () {
         mThis.ExitFormItemListView.showPage();
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
 
     };
     return mThis;

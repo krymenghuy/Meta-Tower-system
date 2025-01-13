@@ -176,7 +176,7 @@ var CheckPointCategoryComponent =  (function () {
         cv_interact.confirm(
             "Delete this exit check point?",
             {
-                title: "Delete Exit exit check point",
+                title: "Delete this exit check point",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
