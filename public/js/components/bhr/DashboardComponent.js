@@ -106,14 +106,14 @@ var DashboardComponent = new (function () {
         data = data ? data : {};
         let html = [
             `<div class="chart-row py-3">`,
-            `<div class="col-md-3">
-                    <div class="chart-container dashboard_chart ">
-                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
-                            ${data.doughnutChart.title}
-                        </span>
-                        <canvas id="doughnutChart"></canvas>
-                    </div>
-                </div>`,
+            `<div class="col-md-3">`,
+                    '<div class="chart-container dashboard_chart ">',
+                        '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
+                            data.doughnutChart.title,
+                        '</span>',
+                        '<canvas id="doughnutChart"></canvas>',
+                    '</div>',
+                `</div>`,
             `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
@@ -128,11 +128,11 @@ var DashboardComponent = new (function () {
             `<div class="d-flex align-items-center p-2 mb-1">`,
 
             `<div class="bg--icon">`,
-            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
+            `<img class="img--size" src="`,main_view.base_url,`/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
             `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count}</span>`,
-            `<div class="text-primary mt-1" style="">${data.cards.new_staff_count.title}</div>`,
+            `<div class="text-primary mt-1" style="">`,data.cards.new_staff_count.title,`</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -176,7 +176,7 @@ var DashboardComponent = new (function () {
             `</div>`,
             `</div>`,
 
-            `</div>`,
+            `</div>`
         ].join("");
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
@@ -571,9 +571,8 @@ var DashboardComponent = new (function () {
         </div>
     `;
     };
-    this.renderDBCardBenefit = (data) => {
-        console.log(123456, data);
 
+    this.renderDBCardBenefit = (data) => {
         const rowsHtml = (data || [])
             .map(
                 (item) => `

@@ -1,7 +1,6 @@
 "use strict";
-
 var DepartmentComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_departmentComponent");
     this.self = this.jm[0];

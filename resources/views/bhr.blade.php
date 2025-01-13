@@ -290,7 +290,7 @@
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
-                            @include('layouts.bhr.exitFormItemComponent')
+ 
                         </div>
                     </div>
                 </div>

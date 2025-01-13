@@ -341,16 +341,16 @@ window.addEventListener('DOMContentLoaded',function(){
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });
 
-const input = document.getElementsByTagName("input");
-for(let i=0; i < input.length; i++){
-    input[i].onselect = function(e){
+const inputs = main_view.VSAppContent.querySelectorAll('input[type="text"], input[type="number"]');
+inputs.forEach(el => {
+    el.onselect = function(e) {
         e.preventDefault();
-    }
+    };
 
-    input[i].onfocus = function(e){
+    el.onfocus = function(e) {
         e.preventDefault();
-    }
-}
+    };
+});
 
 // window.oncontextmenu = function(){
 //     return false;
