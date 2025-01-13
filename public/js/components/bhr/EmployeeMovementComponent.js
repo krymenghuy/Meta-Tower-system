@@ -163,7 +163,7 @@ var EmployeeMovementComponent = (()=> {
         return p;
     };
 
- 
+
     mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
@@ -217,7 +217,7 @@ var EmployeeMovementComponent = (()=> {
                 mThis.MovementListView.showPage(); // Refresh the list after editing
             }
         };
-          
+
         MovementDialog.show(op);
     }
 
@@ -229,7 +229,7 @@ var EmployeeMovementComponent = (()=> {
                 mThis.MovementListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Employee Movement?',{
+        cv_interact.confirm('Delete this employee movement?',{
             title: 'Delete Employee Movement',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -237,7 +237,7 @@ var EmployeeMovementComponent = (()=> {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/emp-event/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.success('Deleted successfully');
                         mThis.MovementListView.showPage();
                     }
                 })

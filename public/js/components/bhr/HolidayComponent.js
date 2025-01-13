@@ -1,16 +1,15 @@
 "use strict";
-
-var HolidayComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_holidayComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Manage Holiday";
-    this.btnAdd = this.self.querySelector("#_btnAddHoliday");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_holiday");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
-    this.cols = [
+var HolidayComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_holidayComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Manage Holiday";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddHoliday");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_holiday");
+    mThis.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
+    mThis.cols = [
         {
             title: "",
             className: "align-middle",
@@ -75,7 +74,7 @@ var HolidayComponent = new (function () {
             },
         },
     ];
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.HolidayListView = new ListView("_holiday_list", {
@@ -129,7 +128,7 @@ var HolidayComponent = new (function () {
 
         mThis.initAlready = true;
     };
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
@@ -143,7 +142,7 @@ var HolidayComponent = new (function () {
         return p;
     };
 
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-holiday-modify");
             if (btn) {
@@ -155,7 +154,7 @@ var HolidayComponent = new (function () {
             }
         });
     };
-    this.editHoliday = (id, menuLink) => {
+    mThis.editHoliday = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -167,7 +166,7 @@ var HolidayComponent = new (function () {
         HolidayDialog.show(op);
     };
 
-    this.deleteHoliday = (id, menuLink) => {
+    mThis.deleteHoliday = (id, menuLink) => {
         menuLink.disabled = true;
         let op = {
             id: id,
@@ -178,7 +177,7 @@ var HolidayComponent = new (function () {
         };
 
         cv_interact.confirm(
-            "Delete this Holiday?",
+            "Delete this holiday?",
             {
                 title: "Delete Holiday",
                 context: "delete",
@@ -196,7 +195,7 @@ var HolidayComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.HolidayListView.showPage();
                             } else {
                                 cv_interact.error(
@@ -219,14 +218,15 @@ var HolidayComponent = new (function () {
         );
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.HolidayListView.showPage(mThis.getFilterData(), null, () => {
             mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
+            mThis.jm.hide().fadeIn(200);
         });
     };
+    return mThis;
 })();
 const HolidayDialog = (() => {
     const self = {};
@@ -306,11 +306,11 @@ const HolidayDialog = (() => {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Updated Holiday Successfully"
+                                            "Updated holiday successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "Added Holiday Successfully"
+                                            "Added holiday successfully"
                                         );
                                     }
                                 } else cv_interact.error(res.error_message);
