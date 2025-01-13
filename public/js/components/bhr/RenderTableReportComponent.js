@@ -20,29 +20,29 @@ function employeeAttendance(div, data = null) {
         border-collapse: collapse;
         width: 100%;
       }
-  
+
       th, td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
       }
-  
+
       th {
         background-color: #f2f2f2;
       }
-  
+
       .employee-name {
         background-color: #e0e0e0;
       }
-  
+
       .totals {
         font-weight: bold;
         background-color: #d0d0d0;
       }
-    </style>  
-    
+    </style>
+
   <h5 class="text-primary">Monthly Employee Attendance Sheet</h5>
-  
+
   <table>
     <thead>
       <tr>
@@ -107,29 +107,29 @@ function employeeBenefitsReport(div, data = null) {
         border-collapse: collapse;
         width: 100%;
       }
-  
+
       th, td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
       }
-  
+
       th {
         background-color: #f2f2f2;
       }
-  
+
       .employee-name {
         background-color: #e0e0e0;
       }
-  
+
       .totals {
         font-weight: bold;
         background-color: #d0d0d0;
       }
-    </style>  
-    
+    </style>
+
   <h2>Monthly Employee Attendance Sheet</h2>
-  
+
   <table>
     <thead>
       <tr>
@@ -983,7 +983,7 @@ function jsonToTable(div, d) {
         table th, td{
             border-collapse: collapse;
             border: 1px solid #c4dae3 !important;
-        } 
+        }
     </style>
     <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
         <table class="table table-bordered">
@@ -1651,7 +1651,7 @@ function totalPaymentByYear(div, d) {
                 table th, td{
                     border-collapse: collapse;
                     border: 1px solid #c4dae3 !important;
-                } 
+                }
                 </style>
                 <table class="table table-bordered">
                     <thead>
@@ -2433,7 +2433,7 @@ function studentPaymentHistory(div, d) {
                 }),
                 total ?? "")
             }
-            
+
         </div>`,
     ];
     div.html(html);
@@ -3321,7 +3321,7 @@ function footerHtml(d) {
                 }</td>
                 <td style="background-color:#0d6efd;color:#ffffff" class="bg-primary text-center text-white">${
                     fee_total.transfer ?? ""
-                }</td>   
+                }</td>
                 <td style="background-color:#0d6efd;color:#ffffff" class="bg-primary text-center text-white">${
                     fee_total.cheque ?? ""
                 }</td>
@@ -3453,7 +3453,7 @@ function windowPrint(html, style) {
             myWindow.print();
             myWindow.close();
         }, 500);
-    } else cv_interact.warning("Select Run Report Before Print!");
+    } else cv_interact.warning("Select run report before print!");
 }
 function windowPrintExitForm(html, style) {
     if (html) {
@@ -3462,7 +3462,7 @@ function windowPrintExitForm(html, style) {
         <html>
             <head>
                 <title>Exit Form</title>
-                
+
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3549,7 +3549,7 @@ function windowPrintRole(html = null, style = null) {
             myWindow.print();
             myWindow.close();
         }, 500);
-    } else cv_interact.warning("Select Run Report Before Print!");
+    } else cv_interact.warning("Select run report before print!");
 }
 
 function khmerNum(number) {
@@ -3751,7 +3751,7 @@ function exportToExcel() {
         link.click();
         document.body.removeChild(link);
     } else {
-        cv_interact.warning("Select Run Report Before Print!");
+        cv_interact.warning("Select run report before print!");
     }
 }
 
@@ -3958,7 +3958,7 @@ function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
         link.click();
         document.body.removeChild(link);
     } else {
-        cv_interact.warning("Select Run Report Before Print!");
+        cv_interact.warning("Select run report before print!");
     }
 }
 
@@ -3969,7 +3969,7 @@ function windowPrintInvoice(html, style) {
         <html>
             <head>
                 <title>Student Receipt</title>
-                
+
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

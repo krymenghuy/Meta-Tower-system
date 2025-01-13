@@ -1,27 +1,27 @@
 "use strict";
 var EmployeeComponent = new (function () {
-    const mThis = this;
-    this.title_prop = "Employee management";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_employeeComponent");
-    this.self = this.jm[0];
+    const mThis = {};
+    mThis.title_prop = "Employee management";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_employeeComponent");
+    mThis.self = mThis.jm[0];
 
-    this.elEmployeeStatus = this.self.querySelector("#filter_employee_status");
-    this.el_branch = this.self.querySelector("#el_branch");
-    this.el_work_shift = this.self.querySelector("#el_work_shift");
-    this.elEmployeeType = this.self.querySelector("#filter_employee_type");
-    this.btnAdd = this.self.querySelector("#_btn_add_employee");
-    this.btnBack = this.self.querySelector("#_btn_backTo_employee");
-    this.div_filter_fields = this.self.querySelector("#div_filter_filed");
-    this.elSearch = this.self.querySelector("#_search_employee");
-    this.profile_card_center = mThis.self.querySelector("#profile_card_center");
-    this.profile_card_left = mThis.self.querySelector("#profile_card_left");
-    this.profile_card_right = mThis.self.querySelector("#profile_card_right");
-    this.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
-    this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
-    this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-    this.divlistView = this.self.querySelector('#_employee_list');
-    this.paginationContainer = mThis.self.querySelector("#container_pagination");
+    mThis.elEmployeeStatus = mThis.self.querySelector("#filter_employee_status");
+    mThis.el_branch = mThis.self.querySelector("#el_branch");
+    mThis.el_work_shift = mThis.self.querySelector("#el_work_shift");
+    mThis.elEmployeeType = mThis.self.querySelector("#filter_employee_type");
+    mThis.btnAdd = mThis.self.querySelector("#_btn_add_employee");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_employee");
+    mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
+    mThis.elSearch = mThis.self.querySelector("#_search_employee");
+    mThis.profile_card_center = mThis.self.querySelector("#profile_card_center");
+    mThis.profile_card_left = mThis.self.querySelector("#profile_card_left");
+    mThis.profile_card_right = mThis.self.querySelector("#profile_card_right");
+    mThis.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
+    mThis.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
+    mThis.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
+    mThis.divlistView = mThis.self.querySelector('#_employee_list');
+    mThis.paginationContainer = mThis.self.querySelector("#container_pagination");
     mThis.store_filter = {};
     const div = mThis.self.querySelector("#_employee_list");
 
@@ -36,7 +36,7 @@ var EmployeeComponent = new (function () {
             .replace(/,/g, ' ');
     };
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.EmployeeListView = new ListView(mThis.divlistView, {
@@ -96,7 +96,7 @@ var EmployeeComponent = new (function () {
             }, 250);
         };
 
-        this.listContainer = mThis.EmployeeListView.getListContainer();
+        mThis.listContainer = mThis.EmployeeListView.getListContainer();
 
         mThis.initDropdownMenus(div);
         const sh_parent = mThis.listContainer.parentElement;
@@ -111,7 +111,7 @@ var EmployeeComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const p = {};
         p.status_id = mThis.elEmployeeStatus.value;
         p.emp_type_id = mThis.elEmployeeType.value;
@@ -128,7 +128,7 @@ var EmployeeComponent = new (function () {
         return p;
     };
 
-    this.initDropdownMenus = (listContainer) => {
+    mThis.initDropdownMenus = (listContainer) => {
         const menuOptopns = {
             containerElement: listContainer,
             actionButtonClass: "btn_employee_action",
@@ -274,7 +274,7 @@ var EmployeeComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.renderEmployeeList = (div, data) => {
+    mThis.renderEmployeeList = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
             console.error(
@@ -288,7 +288,7 @@ var EmployeeComponent = new (function () {
         });
     };
 
-    this.renderEmployee = (data) => {
+    mThis.renderEmployee = (data) => {
         let html = "";
         html = [html,`<div class="row mb-3" style="background-color:;">`].join('');
         let cmt = 0;
@@ -419,7 +419,7 @@ var EmployeeComponent = new (function () {
         });
     };
 
-    this.renderProfile = (data) => {
+    mThis.renderProfile = (data) => {
         let html = [
             `<div class="employee-card d-flex bg-primary-custom h-info-employee mb-2" data-id="">`,
                 `<div class="d-block w-100">`,
@@ -529,7 +529,7 @@ var EmployeeComponent = new (function () {
 
                                 </div>
                                  </div>`,
-                                
+
                                 `<hr class="bg-white">`,
                                 `<div class="row mt-2">
                                     <div class="col-md-4">
@@ -554,7 +554,7 @@ var EmployeeComponent = new (function () {
                                                 data.salary || "0.00"
                                             }(KHR)</p>
                                         </div>
-                                        
+
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex">
@@ -578,8 +578,8 @@ var EmployeeComponent = new (function () {
                                         </div>
                                     </div>
 
-                                    
-                                     
+
+
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-center gap-4 mt-2">
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
@@ -613,12 +613,12 @@ var EmployeeComponent = new (function () {
             `</div>`,
         ].join("");
 
-        this.profile_info_emp.innerHTML = html;
+        mThis.profile_info_emp.innerHTML = html;
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
     };
 
-    // this.initDropdownMenusInfo = (listContainer) => {
+    // mThis.initDropdownMenusInfo = (listContainer) => {
     //     const menuOptopns = {
     //         containerElement: listContainer,
     //         actionButtonClass: "btn_movement_action",
@@ -670,7 +670,7 @@ var EmployeeComponent = new (function () {
     // };
 
     // // *** NOTE: Previous code that causes BIG trouble
-    // this.setActionsProfileInfo = () => {
+    // mThis.setActionsProfileInfo = () => {
     //     addEventListener("click", (e) => {
     //         let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
     //         if (btn) {
@@ -690,8 +690,8 @@ var EmployeeComponent = new (function () {
     //         }
     //     });
     // };
- 
-    this.setActionsProfileInfo = (divProfile) => {
+
+    mThis.setActionsProfileInfo = (divProfile) => {
         divProfile.addEventListener('click', (e) => {
             let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
             if (btn) {
@@ -715,8 +715,8 @@ var EmployeeComponent = new (function () {
             }
         });
     };
- 
-    this.renderCardLeft = (employeeId) => {
+
+    mThis.renderCardLeft = (employeeId) => {
         let p = {
             emp_id: employeeId,
         };
@@ -784,7 +784,7 @@ var EmployeeComponent = new (function () {
                 }
 
                 html += `</tbody></table></div></div></div>`;
-                this.profile_card_left.innerHTML = html;
+                mThis.profile_card_left.innerHTML = html;
 
                 document
                     .querySelector(".lnk-add-skill")
@@ -850,7 +850,7 @@ var EmployeeComponent = new (function () {
                                 onClose: () => {},
                             };
                             cv_interact.confirm(
-                                "Delete this Skill?",
+                                "Delete this skill?",
                                 {
                                     title: "Delete Skill",
                                     context: "delete",
@@ -869,7 +869,7 @@ var EmployeeComponent = new (function () {
                                             .then((res) => {
                                                 if (res.status_code == 200) {
                                                     cv_interact.success(
-                                                        "Deleted Successfully"
+                                                        "Deleted successfully"
                                                     );
                                                     // EmployeeComponent.EmployeeListView.showPage();
                                                     EmployeeComponent.renderCardLeft(
@@ -888,7 +888,7 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.renderCardCenter = (employeeId) => {
+    mThis.renderCardCenter = (employeeId) => {
         let p = {
             emp_id: employeeId,
         };
@@ -957,7 +957,7 @@ var EmployeeComponent = new (function () {
                 }
 
                 html += `</div></div>`;
-                this.profile_card_center.innerHTML = html;
+                mThis.profile_card_center.innerHTML = html;
 
                 document.querySelectorAll(".education-item").forEach((item) => {
                     item.addEventListener("mouseover", () => {
@@ -1029,7 +1029,7 @@ var EmployeeComponent = new (function () {
                                 .closest("a")
                                 .getAttribute("data-empid");
                             cv_interact.confirm(
-                                "Delete this Education?",
+                                "Delete this education?",
                                 {
                                     title: "Delete Education",
                                     context: "delete",
@@ -1048,7 +1048,7 @@ var EmployeeComponent = new (function () {
                                             .then((res) => {
                                                 if (res.status_code == 200) {
                                                     cv_interact.success(
-                                                        "Deleted Successfully"
+                                                        "Deleted successfully"
                                                     );
                                                     EmployeeComponent.renderCardCenter(
                                                         emp_id
@@ -1084,11 +1084,11 @@ var EmployeeComponent = new (function () {
                 //             // Confirm delete action
                 //             if (
                 //                 confirm(
-                //                     "Are you sure you want to delete this record?"
+                //                     "Are you sure you want to delete mThis record?"
                 //                 )
                 //             ) {
                 //                 // Get the correct data-id
-                //                 let educationId = this.getAttribute("data-id");
+                //                 let educationId = mThis.getAttribute("data-id");
 
                 //                 // Send delete request to API
                 //                 vsapi
@@ -1137,7 +1137,7 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.renderCardRight = (employeeId) => {
+    mThis.renderCardRight = (employeeId) => {
         let p = {
             emp_id: employeeId,
         };
@@ -1198,7 +1198,7 @@ var EmployeeComponent = new (function () {
                 }
 
                 html += `</div></div>`;
-                this.profile_card_right.innerHTML = html;
+                mThis.profile_card_right.innerHTML = html;
                 document.querySelectorAll(".experience-item").forEach((item) => {
                     item.addEventListener("mouseover", () => {
                         const actions = item.querySelector(".action-buttons");
@@ -1268,7 +1268,7 @@ var EmployeeComponent = new (function () {
 
                             // Confirm deletion
                             cv_interact.confirm(
-                                "Delete this Experience?",
+                                "Delete this experience?",
                                 {
                                     title: "Delete Experience",
                                     context: "delete",
@@ -1288,7 +1288,7 @@ var EmployeeComponent = new (function () {
                                             .then((res) => {
                                                 if (res.status_code === 200) {
                                                     cv_interact.success(
-                                                        "Deleted Successfully"
+                                                        "Deleted successfully"
                                                     );
 
                                                     // Refresh the experience list
@@ -1319,7 +1319,7 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.renderCardTaxAllowance = (employeeId) => {
+    mThis.renderCardTaxAllowance = (employeeId) => {
         let p = { emp_id: employeeId };
         let cmt = 0;
         vsapi
@@ -1382,7 +1382,7 @@ var EmployeeComponent = new (function () {
 
 
                 html += `</tbody></table></div></div></div>`;
-                this.tax_allowance_card.innerHTML = html;
+                mThis.tax_allowance_card.innerHTML = html;
 
                 // Add event listener for "Add" button
                 document
@@ -1449,7 +1449,7 @@ var EmployeeComponent = new (function () {
                                 onClose: () => {},
                             };
                             cv_interact.confirm(
-                                "Delete this Tax Allowance?",
+                                "Delete this tax allowance?",
                                 {
                                     title: "Delete Tax Allowance",
                                     context: "delete",
@@ -1468,7 +1468,7 @@ var EmployeeComponent = new (function () {
                                             .then((res) => {
                                                 if (res.status_code == 200) {
                                                     cv_interact.success(
-                                                        "Deleted Successfully"
+                                                        "Deleted successfully"
                                                     );
                                                     // EmployeeComponent.EmployeeListView.showPage();
                                                     EmployeeComponent.renderCardTaxAllowance(
@@ -1484,7 +1484,7 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.renderEmpDocuments = (employeeId) => {
+    mThis.renderEmpDocuments = (employeeId) => {
         let p = { emp_id: employeeId };
         let cmt = 0 ;
 
@@ -1553,7 +1553,7 @@ var EmployeeComponent = new (function () {
                 }
 
                 html += `</div></div>`;
-                this.emp_documents_card.innerHTML = html;
+                mThis.emp_documents_card.innerHTML = html;
 
                 // Add event listener for "Add" button
                 document
@@ -1614,7 +1614,7 @@ var EmployeeComponent = new (function () {
                                             .then((res) => {
                                                 if (res.status_code == 200) {
                                                     cv_interact.success(
-                                                        "Deleted Successfully"
+                                                        "Deleted successfully"
                                                     );
                                                     // EmployeeComponent.EmployeeListView.showPage();
                                                     EmployeeComponent.renderEmpDocuments(
@@ -1630,7 +1630,7 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.movement = (id, menuLink) => {
+    mThis.movement = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1746,11 +1746,11 @@ var EmployeeComponent = new (function () {
                                     ? "block"
                                     : "none";
                             }
-                        
+
                          };
                     });
                 };
-                me.setEvent(me.divModal); 
+                me.setEvent(me.divModal);
             },
             // configSelect: [
                 // {
@@ -1811,7 +1811,7 @@ var EmployeeComponent = new (function () {
                         d.change_branch = change_branch;
                         d.change_position = change_position;
                         d.change_salary = change_salary;
-                         
+
                         vsapi
                             .call(
                                 `${main_view.base_url}/hr/staff-promotion/promote`,
@@ -1823,7 +1823,7 @@ var EmployeeComponent = new (function () {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     cv_interact.success(
-                                        "This Employee has been promoted successfully!"
+                                        "This employee has been promoted successfully!"
                                     );
                                     EmployeeComponent.EmployeeListView.showPage();
                                 } else cv_interact.error(res.error_message);
@@ -1872,7 +1872,7 @@ var EmployeeComponent = new (function () {
                             : "none";
                     }
                 });
-              
+
                 //me.setEvent(divModal);
 
             },
@@ -1880,7 +1880,7 @@ var EmployeeComponent = new (function () {
         mThis.MovementDialog.show(op);
     };
 
-    this.setResign = (id, menuLink) => {
+    mThis.setResign = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1942,7 +1942,7 @@ var EmployeeComponent = new (function () {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     cv_interact.success(
-                                        "This Employee has been resign successfully!"
+                                        "This employee has been resign successfully!"
                                     );
                                     EmployeeComponent.EmployeeListView.showPage();
                                 } else cv_interact.error(res.error_message);
@@ -1981,7 +1981,7 @@ var EmployeeComponent = new (function () {
         mThis.ResignDialog.show(op);
     };
 
-    this.promoteToStaff = (id, menuLink) => {
+    mThis.promoteToStaff = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -2069,7 +2069,7 @@ var EmployeeComponent = new (function () {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     cv_interact.success(
-                                        "This Employee has been promoted successfully!"
+                                        "This employee has been promoted successfully!"
                                     );
                                     EmployeeComponent.EmployeeListView.showPage();
                                 } else cv_interact.error(res.error_message);
@@ -2108,7 +2108,7 @@ var EmployeeComponent = new (function () {
         mThis.PromoteDialog.show(op);
     };
 
-    this.setTerminated = (id, lnk) => {
+    mThis.setTerminated = (id, lnk) => {
         let tr = lnk.closest("tr");
         const status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
 
@@ -2145,7 +2145,7 @@ var EmployeeComponent = new (function () {
                                 new Event("change")
                             );
                             cv_interact.success(
-                                "The Employee has been Terminate"
+                                "The employee has been terminate"
                             );
                             // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
@@ -2155,7 +2155,7 @@ var EmployeeComponent = new (function () {
         });
     };
 
-    this.setRejoin = (id, menuLink) => {
+    mThis.setRejoin = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -2210,7 +2210,7 @@ var EmployeeComponent = new (function () {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     cv_interact.success(
-                                        "This Employee has been join successfully!"
+                                        "This employee has been join successfully!"
                                     );
                                 } else cv_interact.error(res.error_message);
                             });
@@ -2247,7 +2247,7 @@ var EmployeeComponent = new (function () {
         });
         mThis.RejoinDialog.show(op);
     };
-    this.editEmployee = (id, menuLink) => {
+    mThis.editEmployee = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -2257,9 +2257,9 @@ var EmployeeComponent = new (function () {
         };
         EmployeeDialog.show(op);
     };
-    this.CreateContract = (id) => {
+    mThis.CreateContract = (id) => {
         if(!mThis.el_branch.value ){
-            cv_interact.error('Branch is Empty. Please Select branch!');
+            cv_interact.error('Branch is empty. Please select branch!');
             return;
         }
         const op = {
@@ -2270,17 +2270,17 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             },
         };
-        
+
         CreateContractDialog.show(op);
-    
+
         // const queryString = new URLSearchParams(op).toString();
         // const url = `${main_view.base_url}/create-contract?${queryString}`;
-    
+
         // window.open(url, '_blank', 'noopener,noreferrer');
     };
-    
 
-    this.deleteEmployee = (id, menuLink) => {
+
+    mThis.deleteEmployee = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -2289,13 +2289,13 @@ var EmployeeComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Employee?",
+            "Delete this employee?",
             {
                 title: "Delete Employee",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
-            
+
             function (e) {
                 if (e) {
                     vsapi
@@ -2308,17 +2308,17 @@ var EmployeeComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.EmployeeListView.showPage();
                             }else cv_interact.error(res.error_message);
-                            
+
                         });
                 }
             }
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         // mThis.def_filter = mThis.def_filter || {};
         // mThis.def_filter.id = 10;
         // mThis.allow_filter = false;
@@ -2364,14 +2364,16 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.EmployeeListView.showPage(mThis.getFilterData());
         mThis.jm.siblings().hide();
-        mThis.jm.hide().fadeIn(250);
+        mThis.jm.fadeIn(200);
+
     };
+    return mThis;
 })();
 
 const AddEducation = (() => {
@@ -2983,7 +2985,7 @@ const EmployeeDialog = (() => {
                     //dataset: { field: "image_url" },
                     beforeDeleteImage: async ()=> {
                        if(me.dataOptions.id > 0){
-                           const answer = await cv_interact.confirm('Are you sure to delete this profile photo?', {title:'Delete Photo','context':'delete'});
+                           const answer = await cv_interact.confirm('Are you sure to delete mThis profile photo?', {title:'Delete Photo','context':'delete'});
                            if(answer){
                                 me.deleteProfilePhoto(me.dataOptions.id);
                                 return true;
@@ -3184,10 +3186,10 @@ const EmployeeDialog = (() => {
                                     me.modal.hide(true, p);
                                     if(me.dataOptions.id > 0)
                                     {
-                                        cv_interact.success("Updated Employee Successfully");
+                                        cv_interact.success("Updated employee successfully");
                                     }
                                     else{
-                                        cv_interact.success("Added Employee Successfully");
+                                        cv_interact.success("Added employee successfully");
                                     }
                                     //EmployeeComponent.btnBack.click();
                                     // EmployeeDialog.show(me.dataOptions);

@@ -1,16 +1,15 @@
 "use strict";
-
 var PayrollComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_payrollComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Payroll";
-    this.elAuthorized = this.self.querySelector('#el_authorized');
-    this.elDisbursed = this.self.querySelector('#el_disbursed');
-    this.btnAdd = this.self.querySelector("#_btnAddpayroll");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_payroll");
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_payrollComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Payroll";
+    mThis.elAuthorized = mThis.self.querySelector('#el_authorized');
+    mThis.elDisbursed = mThis.self.querySelector('#el_disbursed');
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddpayroll");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_payroll");
     let cloneTable = null;
 
     const formattedNumber = (number) => {
@@ -26,7 +25,7 @@ var PayrollComponent = new (function () {
 
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    this.cols = [
+    mThis.cols = [
         {
             title: "",
             className: 'align-middle text-capitalize text-nowrap',
@@ -146,7 +145,7 @@ var PayrollComponent = new (function () {
     ];
 
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.PayrollListView = new ListView('_payroll_list', {
@@ -204,7 +203,7 @@ var PayrollComponent = new (function () {
                  return;
             }
 
-        //     // *** You can add other action button click here like this
+        //     // *** You can add other action button click here like mThis
         //    lnk = VSUtil.closestLimited(e.target,'a.other_click_action');
         //    if(lnk){
         //      //do something when user clicks on "other_click_action"
@@ -227,14 +226,14 @@ var PayrollComponent = new (function () {
         mThis.pr_table = mThis.PayrollListView.getTable();
         mThis.initDropdownMenus(mThis.pr_table);
 
-        this.cloneTable = mThis.self.querySelector('#_payroll_list');
+        mThis.cloneTable = mThis.self.querySelector('#_payroll_list');
         // console.log(7777,mThis.cloneTable.querySelector('tr'));
 
         mThis.initAlready = true;
     };
 
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         console.log(666,table);
 
         const menuOptions = {
@@ -322,7 +321,7 @@ var PayrollComponent = new (function () {
 
 
 
-    this.changeAuthorize = (id, menuLink)=>{
+    mThis.changeAuthorize = (id, menuLink)=>{
         let p={
             id:id,
             btn:menuLink,
@@ -331,7 +330,7 @@ var PayrollComponent = new (function () {
             }
 
         }
-       cv_interact.confirm('Authorize this Payroll?',{
+       cv_interact.confirm('Authorize this payroll?',{
            title: 'Authorize Payroll',
            context: 'authorize',
            confirmButtonText:"Authorize"
@@ -339,7 +338,7 @@ var PayrollComponent = new (function () {
            if(e){
                vsapi.call(`${mThis.base_url}/hr/payroll/update-authorize`,p).then(res => {
                    if(res.status_code === 200){
-                       cv_interact.success('Authorized Successfully');
+                       cv_interact.success('Authorized successfully');
                        mThis.PayrollListView.showPage();
                    }
                    else
@@ -348,7 +347,7 @@ var PayrollComponent = new (function () {
            }
        });
     }
-    this.changeDisbursed = (id, menuLink)=>{
+    mThis.changeDisbursed = (id, menuLink)=>{
         let p={
             id:id,
             btn:menuLink,
@@ -356,7 +355,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             }
         };
-        cv_interact.confirm('Disburse this Payroll?',{
+        cv_interact.confirm('Disburse this payroll?',{
             title: 'Disburse Payroll',
             context: 'disburse',
             confirmButtonText:"Disburse"
@@ -364,7 +363,7 @@ var PayrollComponent = new (function () {
             if(e){
                 vsapi.call(`${mThis.base_url}/hr/payroll/update-disburse`,p).then(res => {
                     if(res.status_code === 200){
-                        cv_interact.success('Disbursed Successfully');
+                        cv_interact.success('Disbursed successfully');
                         mThis.PayrollListView.showPage();
                     }
                     else
@@ -376,7 +375,7 @@ var PayrollComponent = new (function () {
 
 
 
-    this.editPayroll = (id, menuLink) => {
+    mThis.editPayroll = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -386,7 +385,7 @@ var PayrollComponent = new (function () {
         };
         AddPayRollListDailog.show(op);
     };
-    this.deletePayroll = (id, menuLink) => {
+    mThis.deletePayroll = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -394,7 +393,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Payroll?',{
+        cv_interact.confirm('Delete this payroll?',{
             title: 'Delete Payroll',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -402,7 +401,7 @@ var PayrollComponent = new (function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/payroll/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.success('Deleted successfully');
                         mThis.PayrollListView.showPage();
                     }
                 })
@@ -414,7 +413,7 @@ var PayrollComponent = new (function () {
 
     }
 
-    this.getDataFormFilter = () => {
+    mThis.getDataFormFilter = () => {
         let filters = {
 
             search_value: mThis.elSearch.value,
@@ -424,7 +423,7 @@ var PayrollComponent = new (function () {
         });
         return filters;
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
 
         vsapi.call(`${main_view.base_url}/hr/payroll/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
@@ -436,18 +435,15 @@ var PayrollComponent = new (function () {
 
         })
     }
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
-
-
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
             mThis.PayrollListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
-
-
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
+        };
+        return mThis;
 });
 
 const AddPayRollListDailog = (() => {
@@ -565,10 +561,10 @@ const AddPayRollListDailog = (() => {
                                 me.hide(true, p);
                                 if(me.dataOptions.id > 0)
                                 {
-                                    cv_interact.success('Updated Payroll Successfully');
+                                    cv_interact.success('Updated payroll successfully');
                                 }
                                 else{
-                                cv_interact.success('Added Payroll Successfully');
+                                cv_interact.success('Added payroll successfully');
                                 }
                             } else {
                                 cv_interact.error(res.error_message);

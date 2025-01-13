@@ -1,16 +1,16 @@
 "use strict";
 
-var BenefitDisbursePolicyComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
+var BenefitDisbursePolicyComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children(
         "#_main_benefit_disbursement_policy_component"
     );
-    this.self = this.jm[0];
-    this.title_prop = "Benefit Disbursement Policy";
-    this.btnAdd = this.self.querySelector("#_btnAddbdp");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elBenefit = this.self.querySelector("#el_benefit");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Benefit Disbursement Policy";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddbdp");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
         "January",
@@ -26,7 +26,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         "November",
         "December",
     ];
-    this.cols = [
+    mThis.cols = [
         {
             title: "No",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -82,7 +82,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         },
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.BdpListView = new ListView("_benefit_disbursement_policy_list", {
@@ -129,7 +129,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.setActionListeners = () => {
+    mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn_delete_bdp");
             if (btn) {
@@ -143,7 +143,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         });
     };
 
-    this.editBfp = (id, btn) => {
+    mThis.editBfp = (id, btn) => {
         BdpDialog.show({
             id,
             btn,
@@ -151,7 +151,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         });
     };
 
-    this.deleteBdp = (id, menuLink) => {
+    mThis.deleteBdp = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -160,7 +160,7 @@ var BenefitDisbursePolicyComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Benefit Disbursement Policy?",
+            "Delete this benefit disbursement policy?",
             {
                 title: "Delete Benefit Disbursement Policy",
                 context: "delete",
@@ -178,7 +178,7 @@ var BenefitDisbursePolicyComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.BdpListView.showPage();
                             }
                             else {
@@ -190,7 +190,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         );
     };
 
-    this.getDataFormFilter = () => {
+    mThis.getDataFormFilter = () => {
         let filters = {
             benefit_id: mThis.elBenefit.value,
         };
@@ -199,7 +199,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         });
         return filters;
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(`${main_view.base_url}/hr/disburse-policy/form-options`, null, null, null)
             .then((res) => {
@@ -217,14 +217,16 @@ var BenefitDisbursePolicyComponent = new (function () {
                 console.log(1111, mThis.elBenefit);
             });
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.BdpListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+
+    return mThis;
 })();
 
 const BdpDialog = (() => {
@@ -338,10 +340,10 @@ const BdpDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated Benefit Disburse Policy Successfully");
+                                            cv_interact.success("Updated benefit disburse policy successfully");
                                         }
                                         else{
-                                            cv_interact.success("Added Benefit Disburse Policy Successfully");
+                                            cv_interact.success("Added benefit disburse policy successfully");
                                         }
                                     } else {
                                         cv_interact.error(res.error_message);

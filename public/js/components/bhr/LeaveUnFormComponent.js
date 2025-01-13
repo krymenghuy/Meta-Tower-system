@@ -1,20 +1,19 @@
 "use strict";
+var LeaveUnFormComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Uninformed Leaves";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_leave_unform_component");
+    mThis.self = mThis.jm[0];
+    // mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
+    // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
+    mThis.elFilter_wark_shift = mThis.self.querySelector('#el_wark_shift');
+    mThis.elFilter_session = mThis.self.querySelector('#el_leave_session');
+    mThis.elSearch = mThis.self.querySelector("#_search_uninform_leave");
+    mThis.divListView = mThis.self.querySelector('#_leave_unform_list');
 
-var LeaveUnFormComponent = new function () {
-    const mThis = this;
-    this.title_prop = "Uninformed Leaves";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_leave_unform_component");
-    this.self = this.jm[0];
-    // this.btnAdd = this.self.querySelector("#_btnAddLeave");
-    this.divFilter = this.self.querySelector("#_divFilter_leave");
-    // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
-    this.elFilter_wark_shift = this.self.querySelector('#el_wark_shift');
-    this.elFilter_session = this.self.querySelector('#el_leave_session');
-    this.elSearch = this.self.querySelector("#_search_uninform_leave");
-    this.divListView = this.self.querySelector('#_leave_unform_list');
-
-    this.cols = [
+    mThis.cols = [
 
         {
             title: "Day",
@@ -136,7 +135,7 @@ var LeaveUnFormComponent = new function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.LeaveRequestListView = new ListView(mThis.divListView,{
@@ -192,7 +191,7 @@ var LeaveUnFormComponent = new function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             work_shift_id: mThis.elFilter_wark_shift.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
@@ -208,7 +207,7 @@ var LeaveUnFormComponent = new function () {
         return p;
     };
 
-    this.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
@@ -266,7 +265,7 @@ var LeaveUnFormComponent = new function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.changeStatus = (id, lnk)=>{
+    mThis.changeStatus = (id, lnk)=>{
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -317,7 +316,7 @@ var LeaveUnFormComponent = new function () {
         });
     }
 
-    this.editLeaveRequest = (id, menuLink) => {
+    mThis.editLeaveRequest = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -330,7 +329,7 @@ var LeaveUnFormComponent = new function () {
         LeaveRequestDialog.show(op);
     }
 
-    this.deleteLeaveRequest = (id, menuLink) => {
+    mThis.deleteLeaveRequest = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
@@ -338,7 +337,7 @@ var LeaveUnFormComponent = new function () {
                 mThis.LeaveRequestListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Leave Request?',{
+        cv_interact.confirm('Delete this leave request?',{
             title: 'Delete Leave Request',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -346,7 +345,7 @@ var LeaveUnFormComponent = new function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/leave/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.success('Deleted successfully');
                         mThis.LeaveRequestListView.showPage();
                     }
 
@@ -358,7 +357,7 @@ var LeaveUnFormComponent = new function () {
         });
     }
 
-    this.prepareFormOptions = (onFinish) => {
+    mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
@@ -370,17 +369,17 @@ var LeaveUnFormComponent = new function () {
         })
     }
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
                 mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(250);
+                mThis.jm.hide().fadeIn(200);
             });
         });
-    }
-
-};
+    };
+    return mThis;
+})();
 
 

@@ -1,13 +1,12 @@
 "use strict";
-
-var TaxBracketComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_taxBracketComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Tax Bracket";
-    this.btnAdd = this.self.querySelector("#_btnAddTaxBracket");
-    this.divFilter = this.self.querySelector("#_divFilter");
+var TaxBracketComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_taxBracketComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Tax Bracket";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTaxBracket");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -20,7 +19,7 @@ var TaxBracketComponent = new (function () {
             .replace(/,/g, ' ');
     };
 
-    this.cols = [
+    mThis.cols = [
         {
             title: "#",
             className: "align-middle",
@@ -90,7 +89,7 @@ var TaxBracketComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.TaxBracketListView = new ListView("_taxBracket_list", {
@@ -132,7 +131,7 @@ var TaxBracketComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_taxBracket_action",
@@ -173,7 +172,7 @@ var TaxBracketComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editTaxBracket = (id, menuLink) => {
+    mThis.editTaxBracket = (id, menuLink) => {
         console.log(234, id);
 
         let op = {
@@ -186,7 +185,7 @@ var TaxBracketComponent = new (function () {
         TaxBracketDialog.show(op);
     };
 
-    this.deleteTaxBracket = (id, menuLink) => {
+    mThis.deleteTaxBracket = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -195,7 +194,7 @@ var TaxBracketComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Tax Bracket?",
+            "Delete this tax bracket?",
             {
                 title: "Delete Tax Bracket",
                 context: "delete",
@@ -213,7 +212,7 @@ var TaxBracketComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.TaxBracketListView.showPage();
                             }
                             else {
@@ -226,16 +225,16 @@ var TaxBracketComponent = new (function () {
     };
 
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         // mThis.prepareFormOptions();
         mThis.TaxBracketListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
-
-})
+    return mThis;
+});
 
 const TaxBracketDialog = (()=>{
 

@@ -1,15 +1,15 @@
 "use strict";
 
 var ExitFormItemComponent = new (function () {
-    const mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_exit_form_item_component");
-    this.self = this.jm[0];
-    this.title_prop = "Exit Form Item";
-    this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
-    this.elSearch = this.self.querySelector("#_exit_form_item_search");
-    this.divFilter = this.self.querySelector("#container_exit_form_item");
-    this.viewExitForm = this.self.querySelector("#view_exit_form_item");
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_exit_form_item_component");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Exit Form Item";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddExitFormItem");
+    mThis.elSearch = mThis.self.querySelector("#_exit_form_item_search");
+    mThis.divFilter = mThis.self.querySelector("#container_exit_form_item");
+    mThis.viewExitForm = mThis.self.querySelector("#view_exit_form_item");
     const formattedNumber = (number) => {
         number = Number(number) || 0;
         return number
@@ -20,7 +20,7 @@ var ExitFormItemComponent = new (function () {
             })
             .replace(/,/g, " ");
     };
-    this.cols = [
+    mThis.cols = [
         {
             title: "Name",
             className: "align-middl",
@@ -133,7 +133,7 @@ var ExitFormItemComponent = new (function () {
             },
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitFormItemListView = new ListView("_exit_form_item_list", {
             fetchApi: `${mThis.base_url}/hr/exit-form-item/list-paginate`,
@@ -192,11 +192,11 @@ var ExitFormItemComponent = new (function () {
         }, 200);
     });
 
-    this.setFilterPeriod = (p) => {
+    mThis.setFilterPeriod = (p) => {
         return p;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
         };
@@ -206,7 +206,7 @@ var ExitFormItemComponent = new (function () {
         });
         return filters;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
@@ -225,7 +225,7 @@ var ExitFormItemComponent = new (function () {
             }
         });
     };
-    this.edit_exit_form_item = (id, menulink) => {
+    mThis.edit_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -236,7 +236,7 @@ var ExitFormItemComponent = new (function () {
 
         FormItemDialog.show(op);
     };
-    this.delete_exit_form_item = (id, menulink) => {
+    mThis.delete_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -245,9 +245,9 @@ var ExitFormItemComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Item Status?",
+            "Delete this item status?",
             {
-                title: "Delete this Item Status?",
+                title: "Delete Item Status",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -264,7 +264,7 @@ var ExitFormItemComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Item Status Delete Successfully"
+                                    "Item status delete successfully"
                                 );
                                 mThis.ExitFormItemListView.showPage();
                             }
@@ -276,7 +276,7 @@ var ExitFormItemComponent = new (function () {
             }
         );
     };
-    this.view_exit_form_item = (id, menulink) => {
+    mThis.view_exit_form_item = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -287,7 +287,7 @@ var ExitFormItemComponent = new (function () {
         ViewFormItemDialog.show(op);
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi.call(
             `${main_view.base_url}/hr/exit-form-item/form-options`,
             null,
@@ -295,14 +295,16 @@ var ExitFormItemComponent = new (function () {
             null
         );
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitFormItemListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+
     };
+    return mThis;
 })();
 
 const FormItemDialog = (() => {
@@ -411,10 +413,10 @@ const FormItemDialog = (() => {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated Exit Form Item Successfully");
+                                            cv_interact.success("Updated exit form item successfully");
                                         }
                                         else{
-                                            cv_interact.success("Added Exit Form Item Successfully");
+                                            cv_interact.success("Added exit form item successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
