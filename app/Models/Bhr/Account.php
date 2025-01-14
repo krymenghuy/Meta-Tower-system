@@ -34,7 +34,7 @@ class Account
             'emp_id' => '1|number',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
-            'currency' => '1|choice|KHR,USD',
+            'currency_code' => '1|choice|KHR,USD',
             'account_type' => '1|choice|Payroll,Wallet',
         ];
         $res = validateObject($arr, $v_rule, true, ['balance'=>['.'],'account_number'=>['-']], $ss->lang);
@@ -118,7 +118,7 @@ class Account
                a.account_type,
                a.account_number,
                a.balance,
-               a.currency,
+               a.currency_code,
                ' . $balance_date . ',
                e.photo_file_name as emp_photo
            ')
@@ -169,7 +169,7 @@ class Account
                a.account_type,
                a.account_number,
                a.balance,
-               a.currency,
+               a.currency_code,
                ' . $balance_date . ',
                e.photo_file_name as emp_photo
            ')
@@ -207,7 +207,7 @@ class Account
                pos.title as position,
                a.account_type,
                a.account_number,
-               a.currency,
+               a.currency_code,
                a.balance
            ')
            ->where('a.id', $id)
@@ -217,7 +217,7 @@ class Account
            $primaryAccount->image_url = Employee::profilePicture($primaryAccount->emp_id);
 
            $otherAccount = DB::table('accounts as a')
-               ->select('id', 'account_type', 'account_number', 'currency', 'balance')
+               ->select('id', 'account_type', 'account_number', 'currency_code', 'balance')
                ->where('a.emp_id', $primaryAccount->emp_id)
                ->where('a.id', '<>', $id)
                ->first();
@@ -226,7 +226,7 @@ class Account
                $primaryAccount->w_id = $otherAccount->id;
                $primaryAccount->w_account_type = $otherAccount->account_type;
                $primaryAccount->w_account_number = $otherAccount->account_number;
-               $primaryAccount->w_currency = $otherAccount->currency;
+               $primaryAccount->w_currency_code = $otherAccount->currency_code;
                $primaryAccount->w_balance = $otherAccount->balance;
            }
 
@@ -306,9 +306,9 @@ class Account
         $amount_in = $d->amount;
         $amount_out = $d->amount;
 
-        if ($d->currency === 'KHR' && $d->to_account_currency === 'USD') {
+        if ($d->currency_code === 'KHR' && $d->to_account_currency_code === 'USD') {
             $amount_out = $amount_in * $d->exchange_rate;
-        } elseif ($d->currency === 'USD' && $d->to_account_currency === 'KHR') {
+        } elseif ($d->currency_code === 'USD' && $d->to_account_currency_code === 'KHR') {
             $amount_out = $amount_in / $d->exchange_rate;
         }
 
@@ -379,12 +379,12 @@ class Account
         $account_type = DB::table('accounts')->where('account_number', $d->account_number)->value('account_type');
         $emp_id = DB::table('accounts')->where('account_number', $d->account_number)->value('emp_id');
         $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
-        $currency = DB::table('accounts')->where('account_number', $d->account_number)->value('currency');
+        $currency_code = DB::table('accounts')->where('account_number', $d->account_number)->value('currency_code');
 
         return DV::depends(1, [
             'account_type' => $account_type,
             'emp_name' => $emp_name,
-            'currency' => $currency
+            'currency_code' => $currency_code
 
         ]);
 
@@ -458,8 +458,8 @@ class Account
             ->join('employees as e', 'e.id', '=', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('accounts as a', 'a.id', '=', 't.account_id')
-            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id') // Join for from_account_id
-            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')   // Join for to_account_id
+            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
+            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
             ->whereRaw($str_emp_id)
             ->whereRaw($str_account_id)
             ->selectRaw(
@@ -475,15 +475,24 @@ class Account
         $rows = $query->get();
 
         foreach ($rows as $row) {
-            $row->payroll_name = DB::table('payrolls')->where('id', $row->payroll_id)->value('name');
+            $row->payroll_name = DB::table('payrolls')
+                ->where('id', $row->payroll_id)
+                ->value('name');
 
             $row->image_url = $row->emp_photo
                 ? Employee::profilePicture($row->emp_id)
                 : '';
+
             unset($row->emp_photo);
         }
 
-        return $rows;
+        return [
+            'status' => 'OK',
+            'status_code' => 200,
+            'data' => $rows,
+        ];
     }
+
+
 
 }

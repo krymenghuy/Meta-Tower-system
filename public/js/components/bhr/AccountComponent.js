@@ -68,13 +68,13 @@ var AccountMenagmentComponent =  (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currencySymbol = "";
-                if (data.currency === "USD") {
-                    currencySymbol = "$";
-                } else if (data.currency === "KHR") {
-                    currencySymbol = "៛";
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
                 }
-                return `<p class="p-0 m-0">${currencySymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
 
@@ -89,7 +89,7 @@ var AccountMenagmentComponent =  (function () {
             title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
             },
         },
         {
@@ -228,78 +228,25 @@ var AccountMenagmentComponent =  (function () {
                  </div>
 
                  <div class="transaction_table row "style="display: flex !important">
-                 <div class="col-6">
+                 <div class="col-12">
                      <table class="table">
                          <thead>
                              <tr>
-                                 <th>Category</th>
+                                 <th>Trx Type</th>
+                                 <th>From account</th>
+                                 <th>To account</th>
                                  <th>Amount</th>
+                                 <th>Date</th>
+                                 </th>Status</th>
+                                 <th>Remarks</th>
                              </tr>
                          </thead>
                          <tbody>
-                             <tr>
-                                 <td> Salary </td>
-                                 <td>${formattedNumber(data.p_salary || 0.00)}</td>
-                             </tr>
-                              <tr>
-                                 <td>Days</td>
-                                 <td>${data.count_day}</td>
-                             </tr>
-                             <tr>
-                                 <td>Taxable BFT</td>
-                                 <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
-                             </tr>
-                             <tr>
-                                 <td>BFT</td>
-                                 <td class="text-success">${formattedNumber(data.benefit || 0.00)}</td>
-                             </tr>
-                             <tr>
-                                 <td>Deduction</td>
-                                 <td class="text-danger">${formattedNumber(data.deduction || 0.00)}</td>
-                             </tr>
+
 
                          </tbody>
                      </table>
                  </div>
-                 <div class="col-6">
-
-                     <table class="table ">
-                         <thead>
-                             <tr>
-                                 <th>Category</th>
-                                 <th>Amount</th>
-                             </tr>
-                         </thead>
-                         <tbody>
-
-                             <tr>
-                                 <td>Allowance</td>
-                                 <td>${formattedNumber(data.p_allowance || 0.00)}</td>
-                             </tr>
-
-                              <tr>
-                                 <td>Tax Rate</td>
-                                 <td>${data.tax_rate }%</td>
-                             </tr>
-                             <tr>
-                                 <td>Nontax BFT</td>
-                                 <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
-                             </tr>
-                             <tr>
-                                 <td>Benefit Tax Flat Rate</td>
-                                 <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
-                             </tr>
-                             <tr>
-                                 <td>Tax Base</td>
-                                 <td class ="text-danger">${formattedNumber(data.tax_base || 0.00)}</td>
-                             </tr>
-                         </tbody>
-
-                     </table>
-                     </div>
-                        <div class="col-12 d-flex justify-content-center pb-1">
-                             <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
-                        </div>
                  </div>
 
              </div>`;
@@ -468,7 +415,7 @@ var AccountMenagmentComponent =  (function () {
         vsapi.call(`${main_view.base_url}/hr/account/print-transaction`,op,false,false,false).then(res => {
 
             if(res.status_code == 200){
-                let d = res.data.rows;
+                let d = res.data;
                 console.log(555,d);
 
                 mThis.renderTransaction(d)
@@ -607,8 +554,8 @@ const AccountDialog = (() => {
                         <input name="ballance" class="form-control data-input" data-field="balance"  />
                     </div>
                     <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <select class="modal-select data-input" name="currency" data-field="currency">
+                        <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" name="currency_code" data-field="currency_code">
                             <option value="KHR">KHR</option>
                             <option value="USD">USD</option>
                         </select>
@@ -620,9 +567,9 @@ const AccountDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    const currencyField = me.controls.currency;
-                    if (currencyField && !currencyField.value) {
-                        currencyField.value = "KHR";
+                    const currency_codeField = me.controls.currency_code;
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = "KHR";
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
@@ -806,7 +753,7 @@ const TransferDialog = (() => {
                             if (res.status_code == 200) {
                                 let d = res.data;
                                 me.account_type = d.account_type;
-                                me.currency = d.currency;
+                                me.currency_code = d.currency_code;
                                 let div = '';
                                 div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
                                             <div>
@@ -822,7 +769,7 @@ const TransferDialog = (() => {
                                             <div>
                                                 <label for="emp_name" class="form-label">Currency</label>
                                                 <span class = "mx-2">:</span>
-                                                <span class = "text-primary">${d.currency}</span>
+                                                <span class = "text-primary">${d.currency_code}</span>
                                             </div>
 
                                         </div>`;
@@ -839,7 +786,7 @@ const TransferDialog = (() => {
                             if (res.status_code == 200) {
                                 let d = res.data;
                                 me.to_account_type = d.account_type;
-                                me.to_account_currency = d.currency;
+                                me.to_account_currency_code = d.currency_code;
                                 let div = '';
                                 div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
                                             <div>
@@ -855,11 +802,11 @@ const TransferDialog = (() => {
                                             <div>
                                                 <label for="emp_name" class="form-label">Currency</label>
                                                 <span class = "mx-2">:</span>
-                                                <span class = "text-primary">${d.currency}</span>
+                                                <span class = "text-primary">${d.currency_code}</span>
                                             </div>
                                         </div>`;
                                 to_account_info.innerHTML = div;
-                                if(me.to_account_currency == me.currency){
+                                if(me.to_account_currency_code == me.currency_code){
                                     exchange_rate.classList.add('d-none');
                                 }
                                 else{
@@ -886,13 +833,13 @@ const TransferDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.account_type = me.account_type;
-                            p.currency = me.currency;
+                            p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
-                            p.to_account_currency = me.to_account_currency;
+                            p.to_account_currency_code = me.to_account_currency_code;
                             p.id = me.dataOptions.id;
                             // console.log(1234, p);
 
-                            if(me.to_account_currency != me.currency){
+                            if(me.to_account_currency_code != me.currency_code){
                                 if(!me.controls.exchange_rate.value){
                                     cv_interact.error('Please enter exchange rate');
                                     return;

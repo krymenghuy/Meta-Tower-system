@@ -71,13 +71,13 @@ var WalletAccountComponent = (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currencySymbol = "";
-                if (data.currency === "USD") {
-                    currencySymbol = "$";
-                } else if (data.currency === "KHR") {
-                    currencySymbol = "៛";
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
                 }
-                return `<p class="p-0 m-0">${currencySymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
         {
@@ -91,7 +91,7 @@ var WalletAccountComponent = (function () {
             title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.currency_code ?? ""}</p>`;
             },
         },
         {
@@ -512,8 +512,8 @@ const WalletAccountDialog = (() => {
                         <input name="ballance" class="form-control data-input" data-field="balance"  />
                     </div>
                     <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <select class="modal-select data-input" name="currency" data-field="currency">
+                        <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" name="currency_code" data-field="currency_code">
                             <option value="KHR">KHR</option>
                             <option value="USD">USD</option>
                         </select>
@@ -525,9 +525,9 @@ const WalletAccountDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    const currencyField = me.controls.currency;
-                    if (currencyField && !currencyField.value) {
-                        currencyField.value = "KHR";
+                    const currency_codeField = me.controls.currency_code;
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = "KHR";
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
