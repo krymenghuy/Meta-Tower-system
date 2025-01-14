@@ -1717,7 +1717,7 @@ var EmployeeComponent = new (function () {
                         <div class="row">
                             <div id="salary" class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Original Salary"></label>
-                                <input name="org_salary" class="form-control  data-input" placeholder="" data-field="salary" />
+                                <input name="org_salary" class="form-control  data-input" placeholder="" data-field="salary" readonly/>
                             </div>
                             <div id="salary" class="form-group col-md-4">
                                 <label class="form-label" vslang="titles.New Salary"></label>
