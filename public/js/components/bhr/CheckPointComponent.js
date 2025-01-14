@@ -106,7 +106,7 @@ var CheckPointComponent = new (function () {
             if (mThis.CheckPointListView) {
                 mThis.CheckPointListView.showPage(mThis.getFilterData());
             } else {
-                console.error("Exit Form is not defined");
+                console.error("Exit form is not defined");
             }
         }, 200);
     });
@@ -220,6 +220,8 @@ var CheckPointComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.CheckPointListView.showPage();
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);
 

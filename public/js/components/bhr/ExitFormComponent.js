@@ -8,7 +8,6 @@ var ExitFormComponent = (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddExitForm");
     mThis.elSearch = mThis.self.querySelector("#_exit_form_search");
     mThis.divFilter = mThis.self.querySelector("#container_exit_form");
-    mThis.viewExitForm = mThis.self.querySelector("#view_exit_form_");
     mThis.cols = [
         {
             title: "Staff Name",
@@ -226,8 +225,7 @@ var ExitFormComponent = (function () {
                                 mThis.ExitFormListView.showPage(mThis.getFilterData());
                             }
                         });
-                }
-                else {
+                } else {
                     cv_interact.error(res.error_message);
                 }
             }
@@ -268,7 +266,6 @@ var ExitFormComponent = (function () {
     return mThis;
 })();
 
-// let form_id = null; //DO NOT delcare variable outside like this
 
 const ExitFormDialog = (() => {
     const self = {};
@@ -325,15 +322,7 @@ const ExitFormDialog = (() => {
 
                         p.id = me.dataOptions.id;
 
-                        vsapi
-                            .call(
-                                [main_view.base_url, "/hr/exit-form/save"].join(
-                                    ""
-                                ),
-                                p,
-                                btn,
-                                null
-                            )
+                        vsapi.call([main_view.base_url, "/hr/exit-form/save"].join(""), p, btn, null)
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.hide(true, p);
@@ -342,11 +331,6 @@ const ExitFormDialog = (() => {
                     },
                 },
             ],
-            contentCreated: (me, divModal) => {
-                me.saveBenefitDisburse = (bd) => {
-                    //alert("Data saved.");
-                };
-            },
             prepareFormOptions: {
                 createTitle: "Create Exit Form",
                 modifyTitle: "Edit Exit Form",
@@ -387,8 +371,8 @@ const ViewExitFormDialog = (() => {
                 const displayName =
                     headerName === "starting date"
                         ? "Admission Date"
-                        : headerName === "tuition fee"
-                        ? "School Fee"
+                        : headerName === "exit form"
+                        ? "Exit form"
                         : t.name ?? "";
 
                 return `
@@ -419,32 +403,18 @@ const ViewExitFormDialog = (() => {
                                             ? item.name ?? ""
                                             : item;
 
-                                    console.log(1010, item);
-
-                                    return `
-                                    <div class="d-flex ml-1">
-                                        <div data_id="items" style="cursor:pointer">${
-                                            item.check
-                                        }</div>
-                                        <div class="d-flex ml-1">
-                                        <span
-                                            class="ms-2 item-name"
-                                            id="item_name_${key}_${index}"
-                                            title="${item.item_type}"
-                                            style="cursor:pointer"
-                                            data-info="${
-                                                item.details ||
-                                                "No additional details available"
-                                            }">
-                                            ${itemName}
-                                        </span>
-                                        <div class="details-container" id="details_${key}_${index}" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">
-                                        </div>
-                                    </div>
-                                    </div>`;
-                                })
-
-                                .join("");
+                                    const checkItemHTML = ['<div class="d-flex ml-1">',
+                                        
+                                        '<input type="checkbox" ', item.status_id == 1 ? 'checked' : '' ,' class="exit_check_box" data-id="',item.id,'" style="cursor:pointer"></input>',
+                                        '<div class="d-flex ml-1">',
+                                        `<span class="ms-2 item-name" title="`,item.item_type,`" style="cursor:pointer" data-info="`,(item.details || "No additional details available"),`">`,itemName,'</span>',
+                                        '<div class="details-container" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">',
+                                        '</div>',
+                                    '</div>',
+                                    '</div>'].join("");
+                                    
+                                    return checkItemHTML;
+                                }).join("");
 
                             return `<td class="text-start">${divContent}</td>`;
                         }
@@ -468,7 +438,7 @@ const ViewExitFormDialog = (() => {
             emp = "resignation",
         } = employeeInfo[0];
 
-        return ['<table class="table table-bordered">',
+        return ['<table class="table table-bordered ">',
                     '<tbody>',
                         '<tr colspan="6">',
                             '<td colspan="1">ឈ្មោះបុគ្គលិក៖</td>',
@@ -533,7 +503,7 @@ const ViewExitFormDialog = (() => {
                             '</div>',
                         '</div>',
                         '<div class="pb-3 bg-white">',
-                            '<table class="table table-bordered">',
+                            '<table class="table table-bordered tbl_exit_check_item">',
                                 '<thead>',
                                     '<tr>',generateTableHeaders(thead),'</tr>',
                                 '</thead>',
@@ -607,78 +577,113 @@ const ViewExitFormDialog = (() => {
 
 
                     /// THiS LINE is WRONG dialog = dialog || new GeneralDialog({ ..
-                    dialog = dialog || new GeneralDialog({
-                        cssClass: "modal-lg custom-modal-size",
-                        backdrop: "static",
-                        keyboard: true,
-                        createContent: () => htmlString,
-                        contentCreated: (me) => {
-                            me.getCheckPointItems = (htmlString) => {
-                                htmlString
-                                    .querySelectorAll(".check-point-id")
-                                    .forEach((el) => {
-                                        console.log(el);
-                                    });
-                            };
+                    dialog =
+                        dialog ||
+                        new GeneralDialog({
+                            cssClass: "modal-lg custom-modal-size",
+                            backdrop: "static",
+                            keyboard: true,
+                            createContent: () => htmlString,
+                            contentCreated: (me) => {
+                                me.getCheckPointItems = (htmlString) => {
+                                    htmlString
+                                        .querySelectorAll(".check-point-id")
+                                        .forEach((el) => {
+                                            console.log(el);
+                                        });
+                                };
+                                me.saveCheckBoxes = (event, form_id) => {
+                                    const op = {};
+                                    op.check_point_id = event.target.dataset.id;
+                                    op.form_id = form_id;
+                                    op.status_id = event.target.checked ? 1 : 0;
 
-                            me.getCheckPointItems(me.divModal);
-                        },
-                        buttons: [
-                            {
-                                label: '<span class="bg bg-danger rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-xmark"></i></span>',
-                                cssClass: "btn btn-sm-outline rounded-3",
-                                click: (me) => me.hide(true, null),
-                            },
-                            {
-                                label: '<span id="_btnAddExitItem" class="bg bg-success rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-check"></i></span>',
-                                cssClass: "btn btn-sm-outline rounded-3",
-                                click: (me) => me.hide(true, null),
-                            },
-                            {
-                                label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-print"></i></span>',
-                                cssClass: "btn btn-sm-outline rounded-3",
-                                click: (me, btn) => {
-                                    const p = {
-                                        ...me.getData(),
-                                        id: me.dataOptions.id,
-                                    };
-
-                                    vsapi
-                                        .call(
-                                            `${main_view.base_url}/hr/exit-form/details`,
-                                            p,
-                                            btn
-                                        )
-                                        .then((res) => {
-                                            if (res.status_code === 200) {
-                                                windowPrintExitForm(htmlString);
-                                            } else {
+                                    vsapi.call([main_view.base_url,"/hr/exit-form/save-item",].join(""),op,false,null)
+                                            .then((res) => {
+                                            if (res.status_code == 200) {
+                                                return;
+                                            } else
                                                 cv_interact.error(
                                                     res.error_message
                                                 );
-                                            }
-                                        });
+                                            });
+                                    return;
+                                };
+
+                                me.getCheckPointItems(me.divModal);
+                            },
+                            buttons: [
+                                {
+                                    label: '<span class="bg bg-danger rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-xmark"></i></span>',
+                                    cssClass: "btn btn-sm-outline rounded-3",
+                                    click: (me) => me.hide(true, null),
                                 },
-                            },
-                        ],
-                        prepareFormOptions: {
-                            createTitle: "View Exit Form",
-                            modifyTitle: "View Exit Form",
-                            targetProp: "exit_forms",
-                            api: {
-                                endpoint: [
-                                    main_view.base_url,
-                                    "/hr/exit-form/form-options",
-                                ].join(""),
-                                params: (op) => {
-                                    return { id: op.id };
+                                {
+                                    label: '<span id="_btnAddExitItem" class="bg bg-success rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-check"></i></span>',
+                                    cssClass: "btn btn-sm-outline rounded-3",
+                                    click: (me) => me.hide(true, null),
                                 },
+                                {
+                                    label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-print"></i></span>',
+                                    cssClass: "btn btn-sm-outline rounded-3",
+                                    click: (me, btn) => {
+                                        const p = {
+                                            ...me.getData(),
+                                            id: me.dataOptions.id,
+                                        };
+
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/exit-form/details`,
+                                                p,
+                                                btn
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code === 200) {
+                                                    windowPrintExitForm(
+                                                        htmlString
+                                                    );
+                                                } else {
+                                                    cv_interact.error(
+                                                        res.error_message
+                                                    );
+                                                }
+                                            });
+                                    },
+                                },
+                            ],
+                            prepareFormOptions: {
+                                createTitle: "View Exit Form",
+                                modifyTitle: "View Exit Form",
+                                targetProp: "exit_forms",
+                                api: {
+                                    endpoint: [
+                                        main_view.base_url,
+                                        "/hr/exit-form/form-options",
+                                    ].join(""),
+                                    params: (op) => {                                        
+                                        return { id: op.id };
+                                    },
+                                },
+
                             },
-                            onResponse: (me, res) => {
-                                console.log("API Response:", res);
+                            onPrepareForm: (me, res) => {
+                                const tbl = me.divModal.querySelector(
+                                    ".tbl_exit_check_item"
+                                );
+                                const checkboxes =
+                                    tbl.querySelectorAll(".exit_check_box");
+                                
+                                checkboxes.forEach((cb) => {
+                                    cb.onchange = (event) => {
+                                        me.saveCheckBoxes(
+                                            event,
+                                            me.dataOptions.form_id
+                                        );
+                                    };
+                                });
                             },
-                        },
-                    });
+                        });
 
                     dialog.show(op);
                 } else {
