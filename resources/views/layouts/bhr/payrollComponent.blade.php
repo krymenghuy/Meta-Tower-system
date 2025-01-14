@@ -1,5 +1,3 @@
-
-
 <div id="_main_payrollComponent" style="display:none;padding:20px 0 0;">
     <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-3 w-25 ">

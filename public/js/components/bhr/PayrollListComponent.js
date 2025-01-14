@@ -15,7 +15,7 @@ var PayrollListComponent = new (function () {
     mThis.btnDisburse = mThis.self.querySelector("#_btnDisburse");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_payrollList");
     mThis.payment_info = mThis.self.querySelector("#payment_info");
-    mThis.btnPrint = mThis.self.querySelector("#_btnPrint");
+    mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -602,7 +602,6 @@ var PayrollListComponent = new (function () {
             </div>`;
 
         mThis.payment_info.innerHTML = html;
-        // let btnPrint = mThis.payment_info.querySelector('#_btnPrint');
         console.log(444, mThis.payment_info);
 
 

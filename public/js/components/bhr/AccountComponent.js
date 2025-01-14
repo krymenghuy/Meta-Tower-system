@@ -9,6 +9,7 @@ var AccountMenagmentComponent =  (function () {
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
     mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
+    mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -110,129 +111,206 @@ var AccountMenagmentComponent =  (function () {
         },
     ];
 
+    mThis.renderTransaction = (data) => {
+        let html = '';
 
-    mThis.cols2 = [
-        {
-            title: "No",
-            className: "align-middle",
-            data: (data, index, i) => {
-                return index + 1;
-            },
-        },
-        {
-            title: "Trx Type",
-            className: 'trx_type text-nowrap align-middle',
-            data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
-                let trx_label = '';
+          html += `
+         <style>
+             .transaction_card {
 
-                if (data.trx_type === 1) {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#9DBDFF';
-                    trx_label = 'Deposit';
-                } else if (data.trx_type === 2) {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#FFB26F';
-                    trx_label = 'Withdrawal';
-                } else if (data.trx_type === 3) {
-                    cls_class = 'text-white text-center border border-primary rounded-5 p-1';
-                    bg_color = '#88C273';
-                    trx_label = 'Transfer';
-                }
+             border: 1px solid #ccc;
+             border-radius: 5px;
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+             padding: 10px;
+             width: 98%;
 
-                return `<div><a class="d-block" data-trx_type="${data.trx_type}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${trx_label}
-                            </span>
-                        </a></div>`;
-            }
-        },
-        {
-            title: "From Account",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.from_account_number ?? ""}</p>`;
-            },
-        },
-        {
-            title: "To Account",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.to_account_number ?? ""}</p>`;
-            },
-        },
-        {
-            title: "Amount",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${formattedNumber(data.amount ?? 0.00)}</p>`;
-            },
-        },
-        {
-            title: "Date",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.created_at ?? ""}</p>`;
-            },
-        },
-        {
-            title: "Status",
-            className: "status text-nowrap align-middle",
-            data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
-                let status_label = '';
 
-                if (data.status === 'in') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#73EC8B';
-                    status_label = 'In';
-                } else if (data.status === 'out') {
-                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#FF6B6B';
-                    status_label = 'Out';
-                }
+             }
+             .transaction_header {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             position: relative;
+             padding: 10px;
+             padding-bottom: 20px;
+             }
+             .transaction_logo {
+                 position: absolute;
+                 left: 0;
+             }
 
-                return `<div>
-                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${status_label}
-                            </span>
-                        </div>`;
-            }
-        },
+             .transaction_title {
+                 text-align: center;
+                 flex-grow: 1;
+             }
+             .transaction_profile {
+                 gap: 10px;
+                 justify-content: center;
+                 border: 1px solid #ccc;
+                 padding: 10px;
+                 border-radius: 5px;
+             }
 
-        {
-            title: "Remarks",
-            className: "align-middle w-25",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.remarks ?? ""}</p>`;
-            },
-        },
+             .transaction_image {
+                 display: flex;
+                 justify-content: center;
+                 width: 80px;
+                 height: 80px;
+                 overflow: hidden;
+                 border-radius: 50%;
 
-    ];
-    mThis.initTransaction = () => {
-        if (mThis.initTransactionAlready) return;
-        mThis.TransactionListView = new ListView("_transaction_info", {
-            fetchApi: `${main_view.base_url}/hr/transaction/get-list`,
-            perPage: 10,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.cols2,
-            tableClass: "table table--white overflow-hidden  header-uppercase",
-            listContainerClass: null,
-        });
-        const pr_tbl = mThis.TransactionListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 215 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 215 + "px";
-        };
+             }
 
-        mThis.initTransactionAlready = true;
+             .transaction_table{
+                 display: flex;
+                 padding: 10px;
+             }
 
-    };
+         </style>
+             <div class="transaction_card overflow-y-auto overflow-x-hidden">
+                 <div class="transaction_header">
+                     <div class="transaction_logo">
+                         <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                     </div>
+                     <div class="transaction_title">
+                         <h4>Transaction</h4>
+                     </div>
+
+                 </div>
+
+                 <div class="transaction_profile">
+                     <div class="row cols-2 mb-0">
+                         <div class="col-2">
+                             <div class="transaction_image" data-id="" data-imageurl="">
+                                 <img src="${data.image_url}" alt="Profile Image">
+                             </div>
+                         </div>
+                         <div class="col-5 p_profile_left">
+                             <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
+                             </div>
+
+                            <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Sex</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap text-capitalize">
+                                     ${data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other'}
+                                 </p>
+                             </div>
+
+                             <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Account Number</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap">${data.account_number}</p>
+                             </div>
+                         </div>
+                         <div class="col-5 p_profile_right">
+                             <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Branch</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap text-capitalize">${data.branch_name}</p>
+                             </div>
+                             <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Position</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap text-capitalize">${data.emp_position}</p>
+                             </div>
+                             <div class="d-flex">
+                                 <p class="text-nowrap text-muted width-p">Account Type</p>
+                                 <p class="px-3">:</p>
+                                 <p class="text-nowrap text-capitalize">${data.account_type}</p>
+                             </div>
+
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="transaction_table row "style="display: flex !important">
+                 <div class="col-6">
+                     <table class="table">
+                         <thead>
+                             <tr>
+                                 <th>Category</th>
+                                 <th>Amount</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             <tr>
+                                 <td> Salary </td>
+                                 <td>${formattedNumber(data.p_salary || 0.00)}</td>
+                             </tr>
+                              <tr>
+                                 <td>Days</td>
+                                 <td>${data.count_day}</td>
+                             </tr>
+                             <tr>
+                                 <td>Taxable BFT</td>
+                                 <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
+                             </tr>
+                             <tr>
+                                 <td>BFT</td>
+                                 <td class="text-success">${formattedNumber(data.benefit || 0.00)}</td>
+                             </tr>
+                             <tr>
+                                 <td>Deduction</td>
+                                 <td class="text-danger">${formattedNumber(data.deduction || 0.00)}</td>
+                             </tr>
+
+                         </tbody>
+                     </table>
+                 </div>
+                 <div class="col-6">
+
+                     <table class="table ">
+                         <thead>
+                             <tr>
+                                 <th>Category</th>
+                                 <th>Amount</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+
+                             <tr>
+                                 <td>Allowance</td>
+                                 <td>${formattedNumber(data.p_allowance || 0.00)}</td>
+                             </tr>
+
+                              <tr>
+                                 <td>Tax Rate</td>
+                                 <td>${data.tax_rate }%</td>
+                             </tr>
+                             <tr>
+                                 <td>Nontax BFT</td>
+                                 <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
+                             </tr>
+                             <tr>
+                                 <td>Benefit Tax Flat Rate</td>
+                                 <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
+                             </tr>
+                             <tr>
+                                 <td>Tax Base</td>
+                                 <td class ="text-danger">${formattedNumber(data.tax_base || 0.00)}</td>
+                             </tr>
+                         </tbody>
+
+                     </table>
+                     </div>
+                        <div class="col-12 d-flex justify-content-center pb-1">
+                             <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
+                        </div>
+                 </div>
+
+             </div>`;
+
+         mThis._transaction_info.innerHTML = html;
+         console.log(444, mThis._transaction_info);
+
+
+
+     };
+
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -258,10 +336,11 @@ var AccountMenagmentComponent =  (function () {
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            let view_see_info = mThis.self.querySelector("#view_transaction_info");
-            view_see_info.classList.add("d-none");
-            let sub_content = mThis.self.querySelector("#sub_content");
-            sub_content.classList.remove("d-none");
+            const sub_content_account = mThis.self.querySelector("#sub_content_account");
+            sub_content_account.classList.remove("d-none");
+            const view_transaction = mThis.self.querySelector("#view_transaction");
+            view_transaction.classList.add("d-none");
+
         };
 
         const pr_tbl = mThis.AccountListView.getListContainer();
@@ -373,26 +452,28 @@ var AccountMenagmentComponent =  (function () {
     };
 
     mThis.viewTransaction = (id, menuLink) => {
-        console.log(321,menuLink );
+
+        const sub_content_account = mThis.self.querySelector("#sub_content_account");
+        sub_content_account.classList.add("d-none");
+        const view_transaction = mThis.self.querySelector("#view_transaction");
+        view_transaction.classList.remove("d-none");
+
         let emp_id = menuLink.dataset.emp_id;
-        let p = {
-            emp_id:emp_id,
-            account_id:id
-
+        let op = {
+            emp_id: emp_id,
+            account_id: id,
         }
-        const viewTran = mThis.self.querySelector("#view_transaction_info");
-        const sub_content = mThis.self.querySelector("#sub_content");
-        // mThis.show = function () {
-            mThis.initTransaction();
-            mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(200);
-            mThis.TransactionListView.showPage(p);
 
-            viewTran.classList.remove("d-none");
-            sub_content.classList.add("d-none");
 
-        // };
+        vsapi.call(`${main_view.base_url}/hr/account/print-transaction`,op,false,false,false).then(res => {
 
+            if(res.status_code == 200){
+                let d = res.data.rows;
+                console.log(555,d);
+
+                mThis.renderTransaction(d)
+            }
+        })
     }
     mThis.editAccount = (id, menuLink) => {
         let op = {
