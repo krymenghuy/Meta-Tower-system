@@ -99,7 +99,7 @@ class Employee //extends Model
         if ($res->error) {
             return DV::error($res->error);
         }
-         
+
         $inputs = $res->values;
         $d = (object) $inputs;
 
@@ -114,7 +114,7 @@ class Employee //extends Model
             $expire_date = $d->passport_expiry_date ?? null;
             if (!$expire_date) return DV::error('Expiry Date for passport is required');
             else $inputs['passport_expiry_date'] = convertDate($expire_date);
-        }  
+        }
 
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
@@ -1040,17 +1040,29 @@ class Employee //extends Model
 
         if ($change_branch) {
             $resBranch = self::changeBranch($ss, $id, $promo_id, $change_branch);
-            if ($resBranch) $event_names[] = 'Change Branch';
+            if ($resBranch->status_code == 200) {
+                $event_names[] = 'Change Branch';
+            } else {
+                return $resBranch;
+            }
         }
 
         if ($change_position) {
             $resPosition = self::changePosition($ss, $id, $promo_id, $change_position);
-            if ($resPosition) $event_names[] = 'Change Position';
+            if ($resPosition->status_code == 200) {
+                $event_names[] = 'Change Position';
+            } else {
+                return $resPosition;
+            }
         }
 
         if ($change_salary) {
             $resSalary = self::changeSalary($ss, $id, $promo_id, $change_salary);
-            if ($resSalary) $event_names[] = 'Change Salary';
+            if ($resSalary ->status_code == 200) {
+                $event_names[] = 'Change Salary';
+            } else {
+                return $resSalary;
+            }
         }
 
         foreach ($event_names as $event_name) {
@@ -1089,13 +1101,14 @@ class Employee //extends Model
 
         if (!$arr) return;
 
-        $v_rule = [
-            'branch_id' => '1|number',
+         $v_rule = [
+            'branch_id' => '0|number',
+            'to_branch_id' => '1|number',
             'effective_date' => '1|date',
             'remarks' => '0|string|1-300',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -1105,7 +1118,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $emp_id;
 
         $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
-        $branch_id = $arr['branch_id'];
+        $branch_id = $arr['to_branch_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
         return DV::depends(1, null);
     }
@@ -1114,7 +1127,8 @@ class Employee //extends Model
     {
         if (!$arr) return;
         $v_rule = [
-            'position_id' => '1|number',
+            'position_id' => '0|number',
+            'to_position_id' => '1|number',
             'start_date' => '1|date',
             'remarks' => '0|string|0-300'
         ];
@@ -1128,7 +1142,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $emp_id;
 
         $id = saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
-        $position_id = $arr['position_id'];
+        $position_id = $arr['to_position_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
 
 
@@ -1137,15 +1151,23 @@ class Employee //extends Model
     static function changeSalary($ss, $emp_id, $promo_id, $arr)
     {
         if (!$arr) return;
+
+        if (empty($arr['new_salary'])) {
+            return DV::error('new salary is required.');
+        }
+
         $v_rule = [
             'org_position_id' => '0|number',
             'new_position_id' => '0|number',
             'org_salary' => '0|decimal',
-            'new_salary' => '0|decimal',
-
-
+            'new_salary' => '1|decimal'
         ];
+
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
         $inputs = $res->values;
         $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
         $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
@@ -1155,14 +1177,13 @@ class Employee //extends Model
         $inputs['org_salary'] = $org_salary;
         $inputs['org_position_id'] = $org_position_id;
 
-
         $id = saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
         $salary = $arr['new_salary'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
 
-
         return DV::depends(1, null);
     }
+
     static function createPromotion($arr, $ss = null)
     {
         $ss = $ss ?? self::userInfo;

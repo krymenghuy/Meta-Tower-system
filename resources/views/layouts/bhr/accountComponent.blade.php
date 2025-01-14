@@ -1,5 +1,5 @@
 <div id="_main_accountComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content" class="p-0">
+    <div id="sub_content_account" class="p-0">
         <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
 
             <div class="d-flex align-items-center w-50 gap-2">
@@ -25,13 +25,22 @@
         <div id="_account_list" class="px-4"></div>
     </div>
 
-    <div class="d-none " id="view_transaction_info">
-        <div class="d-flex px-3 pt-3" id="btn_back">
-            <button id="_btn_backTo_account" style="background-color:#2b3991; width:100px;"
-                class="btn text-white shadow rounded-4 m-2 p-2" type="button">
-                <i class="fa-solid fa-angles-left "></i>
-                <span class="" vslang="buttons.Back">Back</span>
-            </button>
+    <div class="d-none " id="view_transaction">
+        <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
+            <div class="d-flex px-3 pt-3" id="btn_back">
+                <button id="_btn_backTo_account" style="background-color:#2b3991; width:100px;"
+                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                    <i class="fa-solid fa-angles-left "></i>
+                    <span class="" vslang="buttons.Back">Back</span>
+                </button>
+            </div>
+            <div class="d-flex px-3 pt-3" >
+                <button id="_print_transaction" style="background-color:#2b3991; width:100px;"
+                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                    <i class="fa-solid fa-print "></i>
+                    <span class="" vslang="buttons.Print">Print</span>
+                </button>
+            </div>
         </div>
         <div id="_transaction_info" class="m-4"> </div>
 

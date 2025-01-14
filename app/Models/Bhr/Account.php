@@ -435,4 +435,55 @@ class Account
         return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
     }
 
+    function printTransaction($arr, $ss)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+        $date = DBX::formatDate('t.created_at', 'created_at');
+        $str_emp_id = '1=1';
+        $emp_id = $d->emp_id ?? null;
+
+        if ($emp_id) {
+            $str_emp_id = 'e.id=' . $emp_id;
+        }
+
+        $account_id = $d->account_id ?? null;
+        $str_account_id = '2=2';
+
+        if ($account_id) {
+            $str_account_id = 't.account_id=' . $account_id;
+        }
+
+        $query = DB::table('transactions as t')
+            ->join('employees as e', 'e.id', '=', 't.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('accounts as a', 'a.id', '=', 't.account_id')
+            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id') // Join for from_account_id
+            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')   // Join for to_account_id
+            ->whereRaw($str_emp_id)
+            ->whereRaw($str_account_id)
+            ->selectRaw(
+                't.emp_id, e.name as emp_name, pos.title as position, t.amount,
+                t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, ' . $date . ',
+                t.from_account_id, t.to_account_id, a.account_number, a.account_type,
+                fa.account_number as from_account_number, ta.account_number as to_account_number,
+                e.photo_file_name as emp_photo'
+            )
+            ->where('t.branch_id', $branch_id)
+            ->orderBy('t.created_at', 'desc');
+
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $row->payroll_name = DB::table('payrolls')->where('id', $row->payroll_id)->value('name');
+
+            $row->image_url = $row->emp_photo
+                ? Employee::profilePicture($row->emp_id)
+                : '';
+            unset($row->emp_photo);
+        }
+
+        return $rows;
+    }
+
 }
