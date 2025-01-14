@@ -248,6 +248,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/transfer', [AccountController::class, 'transfer']);
     Route::post('/get-info', [AccountController::class, 'getAccountInfo']);
     Route::post('/get-confirm', [AccountController::class, 'getConfirmTransfer']);
+    Route::post('/print-transaction', [AccountController::class, 'printTransaction']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 
@@ -335,7 +336,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
-    
+
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->group(function(){
     Route::post('/list',[ReportController::class,'getReportList']);

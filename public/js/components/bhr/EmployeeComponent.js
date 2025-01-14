@@ -1659,18 +1659,25 @@ var EmployeeComponent = new (function () {
                     <div name="div_branch" class="p-3  branch" style="display:none;">
                         <div class="row">
                             <div class="form-group col-md-3">
-                                <label class="form-label" vslang="titles.Change Branch"></label>
+                                <label class="form-label" vslang="titles.Current Branch"></label>
                                 <span class="text-danger" >*</span>
-                                <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
+                                <select name="branch" id="branch" class="form-control data-input" data-field="branch_id" disabled>
 
                                 </select>
                             </div>
-                            <div class=" form-group col-md-4">
+                            <div class="form-group col-md-3">
+                                <label class="form-label" vslang="titles.To Branch"></label>
+                                <span class="text-danger" >*</span>
+                                <select name="to_branch" id="to_branch" class="form-control data-input" data-field="to_branch_id" >
+
+                                </select>
+                            </div>
+                            <div class=" form-group col-md-3">
                                 <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
                                 <span class="text-danger" >*</span>
                                 <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                             </div>
-                            <div id="remarks" class="form-group col-md-5">
+                            <div id="remarks" class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Remarks"></label>
                                 <input name="branch_remarks" class="form-control  data-input" placeholder="" data-field="remarks">
                             </div>
@@ -1682,16 +1689,23 @@ var EmployeeComponent = new (function () {
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Position"></label>
                                 <span class="text-danger" >*</span>
-                                <select name="position" id="position" class="form-control data-input" data-field="position_id">
+                                <select name="position" id="position" class="form-control data-input" data-field="position_id" disabled>
 
                                 </select>
                             </div>
-                              <div class=" form-group col-md-4">
+                             <div class="form-group col-md-3">
+                                <label class="form-label" vslang="titles.Change Position"></label>
+                                <span class="text-danger" >*</span>
+                                <select name="to_position" id="to_position" class="form-control data-input" data-field="to_position_id">
+
+                                </select>
+                            </div>
+                              <div class=" form-group col-md-3">
                                 <label class="form-label" vslang="titles.Start Date">Start Date</label>
                                 <span class="text-danger" >*</span>
                                 <input  name="start_date" class="form-control data-input" data-field="start_date"></input>
                             </div>
-                            <div id="remarks" class="form-group col-md-5">
+                            <div id="remarks" class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Remarks"></label>
                                 <input name="position_remarks" class="form-control data-input" placeholder="" data-field="remarks" />
                             </div>
@@ -1752,20 +1766,20 @@ var EmployeeComponent = new (function () {
                 };
                 me.setEvent(me.divModal);
             },
-            // configSelect: [
-                // {
-                //     name: "branch",
-                //     data: "branches",
-                //     textField: "branch_name",
-                //     valueField: "id",
-                // },
-                // {
-                //     name: "position",
-                //     data: "positions",
-                //     textField: "title",
-                //     valueField: "id",
-                // },
-            // ],
+            configSelect: [
+                {
+                    name: "to_branch",
+                    data: "branches",
+                    textField: "branch_name",
+                    valueField: "id",
+                },
+                {
+                    name: "to_position_id",
+                    data: "positions",
+                    textField: "title",
+                    valueField: "id",
+                },
+            ],
             buttons: [
                 {
                     label: "<span>Cancel</span>",
@@ -1780,7 +1794,6 @@ var EmployeeComponent = new (function () {
                     click: (me, btn, divModal) => {
                         const p = me.getData();
                         p.emp_id = op.id;
-                        console.log(321, p);
                         const d = {};
                         d.emp_id = p.emp_id;
                         let change_branch = {},
@@ -1788,13 +1801,16 @@ var EmployeeComponent = new (function () {
                             change_salary = {};
 
                         if (me.controls.change_branch.checked) {
-                            change_branch.branch_id = p.branch_id;
+                            change_branch.branch_id = p.branch_id || null;
+                            change_branch.to_branch_id = p.to_branch_id || null;
+
                             change_branch.remarks =
                                 me.controls.branch_remarks.value;
                             change_branch.effective_date = p.effective_date;
                         }
                         if (me.controls.change_position.checked) {
                             change_position.position_id = p.position_id;
+                            change_position.to_position_id = p.to_position_id;
                             change_position.remarks =
                                 me.controls.position_remarks.value;
                             change_position.start_date = p.start_date;
@@ -1825,28 +1841,28 @@ var EmployeeComponent = new (function () {
                                     cv_interact.success(
                                         "This employee has been promoted successfully!"
                                     );
-                                    EmployeeComponent.EmployeeListView.showPage();
+                                    mThis.EmployeeListView.showPage();
                                 } else cv_interact.error(res.error_message);
                             });
                     },
                 },
             ],
-            // prepareFormOptions: {
-            //     createTitle: "Employee Movement",
-            //     modifyTitle: "Edit Movement",
-            //     targetProp: "employee",
-            //     api: {
-            //         endpoint: `${main_view.base_url}/hr/employee/form-options`,
+            prepareFormOptions: {
+                createTitle: "Employee Movement",
+                modifyTitle: "Edit Movement",
+                targetProp: "employee",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
 
-            //         params: (op) => {
-            //             return { id: op.id };
-            //         },
-            //         onResponse: (me, res) => {
-            //             console.log(123,me,321,res);
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                    onResponse: (me, res) => {
+                        console.log(123,me,321,res);
 
-            //         },
-            //     },
-            // },
+                    },
+                },
+            },
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);

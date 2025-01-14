@@ -49,7 +49,7 @@
 
     <div class="d-none row px-3 bg-white" id="pay_slip">
         <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
-            <div class="d-flex justify-content-start  px-3 w-25" id="btn_back">
+            <div class="d-flex justify-content-start  px-3 w-25">
                 <button id="_btn_backTo_payrollList" style="background-color:#2b3991;"
                     class="btn text-white shadow rounded-4" type="button">
                     <i class="fa-solid fa-angles-left "></i>
@@ -57,7 +57,7 @@
                 </button>
             </div>
             <div class="d-flex justify-content-end w-25 px-3">
-                <button class="btn text-white shadow rounded-4"style="background-color:#2b3991;" id="_btnPrint">
+                <button class="btn text-white shadow rounded-4"style="background-color:#2b3991;" id="_print_pay_slip">
                     <i class="fa-solid fa-print"></i>Print
                 </button>
             </div>
