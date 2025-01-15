@@ -190,7 +190,7 @@ var PayrollListComponent = new (function () {
                 payroll_id: mThis.getFilterData().payroll_id,
             };
 
-            cv_interact.confirm('Calculate this payroll list?', {
+            cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
                 title: 'Calculate Payroll List',
                 context: 'calculate',
                 confirmButtonText: "Calculate"
@@ -228,7 +228,7 @@ var PayrollListComponent = new (function () {
                 payroll_id: mThis.getFilterData().payroll_id,
             };
 
-            cv_interact.confirm('Disburse this payroll list?', {
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
                 title: 'Disburse Payroll List',
                 context: 'disburse',
                 confirmButtonText: "Disburse"
@@ -254,7 +254,7 @@ var PayrollListComponent = new (function () {
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
+            const op = {
                 id: null,
                 payroll_id: PayrollListComponent.elFilter.value,
                 // btn: e.target,
@@ -602,11 +602,8 @@ var PayrollListComponent = new (function () {
             </div>`;
 
         mThis.payment_info.innerHTML = html;
-        console.log(444, mThis.payment_info);
-
-
-
     };
+
     mThis.btnPrint.addEventListener('click', () => {
         windowPrintPayrollList(mThis.payment_info.innerHTML);
         // window.print();
@@ -757,9 +754,10 @@ var PayrollListComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
-            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+            mThis.elFilter.dispatchEvent(new Event('change'));
+           // mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
         });
     };
     return mThis;
@@ -873,7 +871,6 @@ const AddDeductionDialog = (() => {
 
 
 const PayRollImportDailog = (()=>{
-
     const self = {};
     let dialogImport = null;
      self.show = (op)=>{
@@ -944,8 +941,8 @@ const PayRollImportDailog = (()=>{
 
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
-                 me.controls.payroll_name.value = me.dataOptions.payroll_id; //here
-                 me.controls.payroll_name.setAttribute('disbaled',true);
+                 me.controls.payroll_name.value = me.dataOptions.payroll_id;
+                 me.controls.payroll_name.setAttribute('disabled',true);
             }
 
         });
