@@ -100,7 +100,7 @@ class GeneralSettings //extends Model
     static function options_exit_form($ss){
         return DB::table('forms as f')->selectRaw('id,name')->get();
     }
-   
+
     static function options_pmt_status($ss=null){
        return [
         (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
@@ -108,7 +108,7 @@ class GeneralSettings //extends Model
         (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
        ];
     }
-   
+
     static function options_calendar_month($ss=null)
     {
         $months = [

@@ -34,18 +34,14 @@ var PositionComponent =  (function () {
         {
             title: "Salary",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data) => {
-                const formattedSalary = data.salary
-                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                          .format(data.salary)
-                          .replace(',', '.')
-                    : "";
-
-                return `
-                    <span class="text-primary-custom" style="font-weight: bold;">
-                        ${formattedSalary} <span class="text-danger">(KHR)</span>
-                    </span>
-                `;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.salary ?? 0)}</p>`;
             },
         },
 
@@ -249,31 +245,35 @@ const PositionDialog = (()=>{
      self.show = (op)=>{
 
         dialog = new GeneralDialog({
-            cssClass:'modal-md',
+            cssClass:'modal-lg',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
-                 <div class="form-group col-md-12">
+                 <div class="form-group col-md-6">
                      <label for="department" class="form-label" vslang="titles.Department"></label>
                      <span class="text-danger" >*</span>
                      <select name="department" class="data-input"  data-field="department_id"></select>
                  </div>
-                 <div class="form-group col-md-12">
+                 <div class="form-group col-md-6">
                      <label for="job_level" class="form-label" vslang="titles.Job Level"></label>
                      <span class="text-danger" >*</span>
                      <select name="job_level" class="data-input"  data-field="job_level_id"></select>
                  </div>
-                 <div class="form-group col-md-6">
+                 <div class="form-group col-md-4">
                      <label for="title" class="form-label" vslang="titles.Position"></label>
                      <span class="text-danger" >*</span>
                      <input type="text" class="form-control data-input" data-field="title">
                  </div>
-                 <div class="form-group col-md-6">
+                 <div class="form-group col-md-4">
                         <label for="salary" class="form-label" vslang="titles.Salary"></label>
                         <span class="text-danger" >*</span>
                         <input  type="number" class="form-control data-input" data-field="salary">
                  </div>
+                 <div class="form-group col-4">
+                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                    <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                </div>
 
 
               </div>`].join('');
@@ -291,7 +291,13 @@ const PositionDialog = (()=>{
                 data:"job_levels",
                 textField:"level",
                 valueField:'id'
-               }
+               },
+               {
+                name: "currency_code",
+                data: "currency_codes",
+                textField: "code",
+                valueField: "code",
+                }
             ],
             buttons:[
                {
@@ -334,7 +340,6 @@ const PositionDialog = (()=>{
             //      console.log('result from api "/form-options": ', res);
             //    }
             },
-
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
             }

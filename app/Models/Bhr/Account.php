@@ -6,6 +6,7 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use App\Models\Money;
 
 class Account
 {
@@ -34,7 +35,7 @@ class Account
             'emp_id' => '1|number',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
-            'currency_code' => '1|choice|KHR,USD',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'account_type' => '1|choice|Payroll,Wallet',
         ];
         $res = validateObject($arr, $v_rule, true, ['balance'=>['.'],'account_number'=>['-']], $ss->lang);
@@ -260,7 +261,7 @@ class Account
                 ['id' => 'a.account_number', 'name' => 'By Account Number'],
                 ['id' => 'a.balance', 'name' => 'By  Balance'],
             ],
-
+            'currency_codes' => Money::options_currency($ss),
             'employees' => GeneralSettings::options_employee([10, 20],$ss),
             'accounts' => $account,
         ];
@@ -439,6 +440,7 @@ class Account
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
+        $last_balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
         $date = DBX::formatDate('t.created_at', 'created_at');
         $str_emp_id = '1=1';
         $emp_id = $d->emp_id ?? null;
@@ -451,33 +453,50 @@ class Account
         $str_account_id = '2=2';
 
         if ($account_id) {
-            $str_account_id = 't.account_id=' . $account_id;
+            $str_account_id = 'a.id=' . $account_id;
         }
 
-        $query = DB::table('transactions as t')
-            ->join('employees as e', 'e.id', '=', 't.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('accounts as a', 'a.id', '=', 't.account_id')
-            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
-            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
+        $query = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->whereRaw($str_emp_id)
             ->whereRaw($str_account_id)
-            ->selectRaw(
-                't.emp_id, e.name as emp_name, pos.title as position, t.amount,
-                t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, ' . $date . ',
-                t.from_account_id, t.to_account_id, a.account_number, a.account_type,
-                fa.account_number as from_account_number, ta.account_number as to_account_number,
-                e.photo_file_name as emp_photo'
-            )
-            ->where('t.branch_id', $branch_id)
-            ->orderBy('t.created_at', 'desc');
+            ->selectRaw('
+                a.id as account_id,
+                a.account_number,
+                a.account_type,
+                a.currency_code,
+                a.balance,
+                ' . $last_balance_date . ',
+                e.id as emp_id,
+                e.name as emp_name,
+                e.photo_file_name as emp_photo
+            ')
+            ->orderBy('e.id');
 
         $rows = $query->get();
 
         foreach ($rows as $row) {
-            $row->payroll_name = DB::table('payrolls')
-                ->where('id', $row->payroll_id)
-                ->value('name');
+            $threeMonthsAgo = now()->subMonths(3); // Get the date 3 months ago
+
+            $row->trx = DB::table('transactions as t')
+                ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
+                ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
+                ->where('t.account_id', $row->account_id)
+                ->where('t.emp_id', $row->emp_id)
+                ->where('t.created_at', '>=', $threeMonthsAgo) // Filter by the last 3 months
+                ->selectRaw('
+                    t.trx_type,
+                    t.from_account_id,
+                    t.to_account_id,
+                    fa.account_number as from_account_number,
+                    ta.account_number as to_account_number,
+                    t.amount,
+                    ' . $date . ',
+                    t.status,
+                    t.remarks
+                ')
+                ->orderBy('t.created_at', 'desc')
+                ->get();
 
             $row->image_url = $row->emp_photo
                 ? Employee::profilePicture($row->emp_id)
@@ -492,7 +511,4 @@ class Account
             'data' => $rows,
         ];
     }
-
-
-
 }

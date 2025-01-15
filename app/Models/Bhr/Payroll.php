@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
+use App\Models\Money;
 
 class Payroll
 {
@@ -32,7 +33,7 @@ class Payroll
             'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
-            'currency_code' => '0|number',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'exchange_rate' => '0|number',
 
         ];
@@ -242,6 +243,7 @@ class Payroll
                 ['id' => '0', 'name' => 'Pending'],
 
             ],
+            'currency_codes' => Money::options_currency($ss),
             'payrolls' => $payroll,
         ];
 

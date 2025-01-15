@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 use App\Models\Bhr\Event;
 use App\Models\Bhr\Employee;
+use App\Models\Money;
 
 class EmployeeBenefit
 {
@@ -33,6 +34,7 @@ class EmployeeBenefit
             'flat_tax_rate' => '0|number',
             'balance' => '0|number|default=0',
             'amount' => '1|number',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'remarks' => '0|string|1-250',
         ];
 
@@ -92,6 +94,7 @@ class EmployeeBenefit
                 eb.flat_tax_rate,
                 eb.balance,
                 eb.amount,
+                eb.currency_code,
                 eb.remarks,
                 emp.photo_file_name as emp_photo
             ')
@@ -141,6 +144,7 @@ class EmployeeBenefit
             eb.balance,
             eb.amount,
             eb.remarks,
+            eb.currency_code,
             emp.photo_file_name as emp_photo
         ')
             ->where('eb.branch_id', $branch_id)->where('eb.id', $id)->take(1)->first();
@@ -167,6 +171,7 @@ class EmployeeBenefit
         return (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
+            'currency_codes' => Money::options_currency($ss),
             'emp_benefits' => $emp_benefits,
         ];
     }
