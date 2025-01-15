@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Models\Bhr;
-
 
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
-
 use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use App\Models\Umt\Branch;
-
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Money;
 
 class Employee //extends Model
 {
@@ -76,6 +73,7 @@ class Employee //extends Model
             'emp_type_id' => '1|number',
             // 'branch_id' => '1|number',
             'salary' => '0|number',
+            'currency_code' => '0|string|0-5',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
@@ -143,6 +141,13 @@ class Employee //extends Model
         } else if ($d->emp_type_id != '3') {
 
             $inputs['salary'] = null;
+        }
+        $currency_code =DB::table('positions')->where('id', $d->position_id)->first(['currency_code']);
+
+        if ($currency_code) {
+            $inputs['currency_code'] = $currency_code->currency_code;
+        } else {
+            $inputs['currency_code'] = null;
         }
         //error_log('Saving data: ' . json_encode($inputs)); //Please remove uused log
         $save = !$emp_id;

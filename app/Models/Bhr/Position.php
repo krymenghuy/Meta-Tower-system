@@ -6,6 +6,7 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use App\Models\Money;
 
 class Position
 {
@@ -30,6 +31,7 @@ class Position
             'job_level_id'=>'1|number',
             'department_id' => '1|number',
             'salary' => '1|number',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'inactive' => '1|number|default = 0',
         ];
         $pos_char = ['$',"'", '#', '@', '!','&', '.', '-', '_', '=', '?'];
@@ -82,7 +84,7 @@ class Position
             ->join('job_levels as job','job.id','=','p.job_level_id')
             ->where('p.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.title, p.department_id,p.job_level_id,job.name as level,p.salary, d.name as department,'.$col_update_date.',p.update_user')->orderByRaw('job.rank ASC, d.name ASC');
+            ->selectRaw('p.id, p.title, p.department_id,p.job_level_id,job.name as level,p.salary,p.currency_code, d.name as department,'.$col_update_date.',p.update_user')->orderByRaw('job.rank ASC, d.name ASC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -103,7 +105,7 @@ class Position
         $rows = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->join('job_levels as job','job.id','=','p.job_level_id')
-            ->selectRaw('p.id, p.title,p.job_level_id, p.department_id,p.salary, d.name as department,job.name as level')
+            ->selectRaw('p.id, p.title,p.job_level_id, p.department_id,p.salary,p.currency_code, d.name as department,job.name as level')
             ->where('p.inactive',0)
             ->where('p.id',$id)
             ->first();
@@ -134,7 +136,7 @@ class Position
         return (object) [
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-
+            'currency_codes' => Money::options_currency($ss),
             'departments' => DB::table('departments as d')->where('d.inactive',0)->selectRaw('id,name')->get(),
             'job_levels' => DB::table('job_levels as job')->selectRaw('id,name as level')->get(),
             'positions' => $position,

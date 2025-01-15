@@ -17,23 +17,10 @@ class Warning
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
-        $this->$userInfo = $userInfo;
+        $this->userInfo = $userInfo;
     }
-    protected $fillable = [
-        'name',
-        'name_kh',
-        'emp_id',
-        'email',
-        'position',
-        'issues',
-        'promises',
-        'warning',
-        'subs_id'
-    ];
 
-    protected static $img_dir = 'warnings/profile';
-
-    public function saveWarnings($arr = [], $ss = null, $id = null)
+    public function save($arr = [],$id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -56,17 +43,18 @@ class Warning
 
         $inputs = $res->values;
 
-        // Check for duplicate warning_type for the employee
-        $exists = DB::table('emp_warnings')
+        if(!$id){
+            $exists = DB::table('emp_warnings')
             ->where('emp_id', $inputs['emp_id'])
             ->where('warning_type', $inputs['warning_type'])
             ->exists();
 
-        if ($exists) {
+            if ($exists) {
             return DV::error("The employee already has a warning of this type.");
         }
 
-        // Save warning data
+        }
+
         $warning = saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
         if ($warning > 0) {
             // Define event details
@@ -129,7 +117,7 @@ class Warning
             $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "')";
         }
         $col_update_date = DBX::formatTime('w.updated_at', 'updated_at');
-        $col_warning_date = DBX::formatTime('w.warning_date', 'warning_date');
+        $col_warning_date = DBX::formatDate('w.warning_date', 'warning_date');
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
             ->whereRaw($str_search)

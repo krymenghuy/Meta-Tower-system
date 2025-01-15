@@ -60,21 +60,27 @@ var EmployeeBenefitComponent = new (function () {
         {
             title: "Amount",
             className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    main_view.currency.symbol + data.amount ?? ""
-                }</p>`;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.amount ?? 0)}</p>`;
             },
         },
         {
             title: "Balance",
             className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    main_view.currency.symbol + data.balance ?? ""
-                }</p>`;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
         {
@@ -304,11 +310,15 @@ const EmployeeBenefitDialog = (() => {
                             <label for="employee" class="form-label" vslang="titles.Employee"></label>
                             <select name="employee" class="data-input" data-field="emp_id"></select>
                         </div>`,
-                    `    <div class="form-group col-md-6">
+                    `    <div class="form-group col-md-4">
                             <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
                             <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
                         </div>`,
-                    `    <div class="form-group col-md-6">
+                        `<div class="form-group col-4">
+                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                        </div>`,
+                    `    <div class="form-group col-md-4">
                             <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
                             <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
                                 <option value="">(Select Tax Option)</option>
@@ -381,6 +391,12 @@ const EmployeeBenefitDialog = (() => {
                     textField: "name",
                     valueField: "id",
                 },
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                }
             ],
             buttons: [
                 {

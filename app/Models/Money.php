@@ -97,4 +97,13 @@ class Money
     {
         return self::convert($ss,$amount, $currency, $exchange_rate, false);
     }
+
+    static function getBaseCurrency() {
+        return self::$base_currency;
+    }
+
+    static function options_currency($ss)
+    {
+        return DB::table('currencies')->selectRaw('code,name,symbol')->get();
+    }
 }
