@@ -758,8 +758,8 @@ var PayrollListComponent = new (function () {
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
         });
     };
     return mThis;
