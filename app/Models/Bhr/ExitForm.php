@@ -83,8 +83,8 @@ class ExitForm
        if($is_finished ==1) return;
        DB::table('exit_form_items')->where('form_id',$form_id)->delete();
        $rows = DB::table('check_points as cp')
-       ->join('check_point_categories as cc','cc.id', '=', 'cp.check_point_cat_id')
-       ->selectRaw('cp.id,cp.name as name,cp.check_point_cat_id, cc.name as category, cc.id as category_id')
+       ->join('check_point_categories as cc','cc.id', '=', 'cp.category_id')
+       ->selectRaw('cp.id,cp.name as name,cp.category_id, cc.name as category, cc.id as category_id')
        ->get();
        $success_cnt = 0;
        foreach($rows as $row){
@@ -203,9 +203,10 @@ class ExitForm
     }
 
 
-    public function getList($arr, $ss = null)
+    public function getList($arr, $ss)
     {
         $d = (object) $arr;
+        $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
@@ -356,7 +357,7 @@ class ExitForm
                 ef.emp_id,
                 ef.is_finished,
                 emp.id as emp_id,
-                emp.name as employee_name,
+                emp.name as emp_name,
                 emp.code,
                 $col_start_date,
                 emp.position_id,
@@ -376,9 +377,12 @@ class ExitForm
         //     });
         // }
 
-        $exitFormItems = $query->get();
+        $exitForm= $query->first();
+        if(!$exitForm){
+            return (object)[];
+        }
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
-        $exit_items = DB::table('exit_form_items as ef')->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')->where('ef.form_id', $form_id)->selectRaw('ef.id, cp.name, cp.check_point_cat_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')->get();
+        $exit_items = DB::table('exit_form_items as ef')->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')->where('ef.form_id', $form_id)->selectRaw('ef.id, cp.name, cp.category_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')->get();
         // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
 
         // $form_items = [];
@@ -394,38 +398,51 @@ class ExitForm
         $number_cat = [];
 
         foreach ($check_point_categories as $category) {
-            foreach ($exit_items as $item) {
-                if ($item->check_point_cat_id == $category->id) {
-
-                    // foreach ($form_items as $form_item) {
-                    // if ($form_item->item_id == $item->id) {
-                    // $item->item_type = $item->item_type;
-                    // $item->amount = $item->amount;
-                    // $item->remarks = $item->remarks;
-                    // $item->currency = $item->currency;
-                    // break;                        // }
-                    // }
-
-                    $groupedData[$category->id]['item'][] = $item;
-                    $groupedData[$category->id]['name'] = $category->name;
-
-                    if (!in_array($category->id, $number_cat)) {
-                        $number_cat[] = $category->id;
-                    }
-                }
+            $cat_id = $category->id;
+            $filtered_items = [];
+            foreach($exit_items as $item){
+                if ($item->category_id === $cat_id)
+                $filtered_items[] = $item;
             }
+
+            // \Log::info(json_encode($filtered_items));
+
+
+            $category->item_count = count($filtered_items);
+            $category->items = $filtered_items;
+            $groupedData[] = $category; 
+            
+            // $groupedData['category_id'] = $category->id;
+            // foreach ($exit_items as $item) {
+            //     // if ($item->category_id == $category->id) {
+
+            //     //     // foreach ($form_items as $form_item) {
+            //     //     // if ($form_item->item_id == $item->id) {
+            //     //     // $item->item_type = $item->item_type;
+            //     //     // $item->amount = $item->amount;
+            //     //     // $item->remarks = $item->remarks;
+            //     //     // $item->currency = $item->currency;
+            //     //     // break;                        // }
+            //     //     // }
+                   
+            //     //     // $groupedData['category_id'] = $category->id;
+            //     //     // $groupedData[$category->id]['items'][] = $item;
+
+            //     //     if (!in_array($category->id, $number_cat)) {
+            //     //         $number_cat[] = $category->id;
+            //     //     }
+            //     // }
+            // }
         }
 
-        $employeeData = $exitFormItems->map(function ($ef) {
-            return [
-                'emp_name' => $ef->employee_name,
-                'position' => $ef->position,
-                'code' => $ef->code,
-                'joining_date' => $ef->joining_date,
-                'branch_name' => $ef->branch_name,
-                'effective_date' => $ef->effective_date,
-            ];
-        });
+        $employeeData = [
+            'emp_name' => $exitForm->emp_name,
+            'position' => $exitForm->position,
+            'code' => $exitForm->code,
+            'joining_date' => $exitForm->joining_date,
+            'branch_name' => $exitForm->branch_name,
+            'efective_date' => $exitForm->effective_date,
+        ];
 
         $title = 'ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ';
         return (object) [
@@ -435,6 +452,18 @@ class ExitForm
             'list' => $groupedData,
             'employee' => $employeeData,
         ];
+    }
+
+    public static function objectToArray($obj)
+    {
+        return json_decode(json_encode($obj), true);
+        // if (is_object($obj)) {
+        //     $obj = get_object_vars($obj);
+        // }
+        // if (is_array($obj)) {
+        //     return array_map('objectToArray', $obj);
+        // }
+        // return $obj;
     }
 
     function createKeyValue($key_name, $arr)
