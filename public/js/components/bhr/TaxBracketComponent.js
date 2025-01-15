@@ -233,8 +233,9 @@ var TaxBracketComponent = (function () {
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);
     };
+    
     return mThis;
-});
+})();
 
 const TaxBracketDialog = (()=>{
 
