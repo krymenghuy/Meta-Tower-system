@@ -50,7 +50,7 @@ class ExitFormController extends Controller
             return JDV::raw($ss);
         }
         $form_id = $req->id ?? $req->form_id;
-        return JDV::result($this->exit_form->getCheckpoints($form_id, $ss));
+        return JDV::result($this->exit_form->getCheckpoints($form_id));
     }
 
     public function getDetails(Request $req)
