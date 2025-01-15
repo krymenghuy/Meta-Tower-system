@@ -2945,7 +2945,7 @@ const EmployeeDialog = (() => {
 
                             '<div class="form-group salary col-4">',
                                 '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>',
-                                '<input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />',
+                                '<input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />',
                             '</div>',
 
 
@@ -3157,15 +3157,22 @@ const EmployeeDialog = (() => {
                     const disabled_fields = ['salary','position_id','work_shift_id','department_id','emp_type_id'];
                     for(const name in fields){
                         const el = fields[name];
-                        if (id > 0){
-                            if (disabled_fields.indexOf(name) >=0) {
-                                if (el.tagName.toLowerCase() === "select") {
-                                    el.setAttribute("disabled", true);
-                                }else el.setAttribute('readOnly',true);
-                            }
+                    if (id > 0){
+                        if (disabled_fields.indexOf(name) >=0) {
+
+                            if (el.tagName.toLowerCase() === "select") {
+                                el.setAttribute("disabled", true);
+                            }else el.setAttribute('readonly',true);
                         }
-                        el.value = data[name] ?? '';
+                    }else{
+                        if (el.tagName.toLowerCase() === "select") {
+                            el.setAttribute("disabled", false);
+                        }else el.removeAttribute('readonly');
                     }
+                    el.value = data[name] ?? '';
+
+                }
+
                     me.empImageBox.setImage(data.image_url);
                     me.controls.type.value = data.emp_type_id;
                 },
@@ -3231,6 +3238,12 @@ const EmployeeDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+            //     if(me.dataOptions.id>0){
+            //         me.controls.salary.setAttribute('readonly',true);
+
+
+            // }else me.controls.salary.removeAttribute('readonly');
+
             },
             //onClose: (canceled) => {},
         });

@@ -64,7 +64,15 @@ var PayrollComponent = new (function () {
         {
             title: "Total",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total ?? '0.00')}</p>`
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.total ?? 0)}</p>`;
+            },
         },
 
         {
@@ -514,13 +522,9 @@ const AddPayRollListDailog = (() => {
                             <label for="end_date" class="form-label" vslang="titles.End Date"></label>
                             <input name="end_date" class="form-control data-input form_input" data-field="end_date" />
                         </div>
-                        <div class="form-group col-4">
+                       <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                            <select name="currency_code" class="modal-select data-input form_input" data-field="currency_code">
-                                <option value="0">select currency</option>
-                                <option value="KHR">KHR</option>
-                                <option value="USD">USD</option>
-                            </select>
+                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
                         </div>
                         <div class="form-group col-4">
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
@@ -635,7 +639,15 @@ const AddPayRollListDailog = (() => {
                 }
 
                 LocaleManager.translateZone(me.divModal);
-            }
+            },
+            configSelect: [
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                }
+            ],
         });
 
         dialogAdd.show(op);

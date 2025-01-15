@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div id="payment_info" class="payment_details p-2" style="height:520px;">
+        <div id="payment_info" class="payment_details p-2" style="height:520px; overflow-y:auto">
         </div>
 
     </div>
