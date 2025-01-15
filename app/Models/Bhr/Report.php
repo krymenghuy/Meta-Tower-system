@@ -446,8 +446,8 @@ class Report
 
     function getWalletAccountList($filter, $ss = null)
     {
-        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency', 'Balance Date'];
-        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency', 'last_balance_date'];
+        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency Code', 'Balance Date'];
+        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency_code', 'last_balance_date'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
@@ -474,7 +474,7 @@ class Report
             acc.account_number,
             acc.balance,
             $col_balance_date,
-            acc.currency,
+            acc.currency_code,
             emp.name,
             emp.code,
             acc.account_type
@@ -513,8 +513,8 @@ class Report
 
     function getEmployeeAccountReport($filter, $ss = null)
     {
-        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency', 'Balance Date'];
-        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency', 'last_balance_date'];
+        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency Code', 'Balance Date'];
+        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency_code', 'last_balance_date'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
@@ -541,7 +541,7 @@ class Report
             acc.account_number,
             acc.balance,
             $col_balance_date,
-            acc.currency,
+            acc.currency_code,
             emp.name,
             emp.code,
             acc.account_type
