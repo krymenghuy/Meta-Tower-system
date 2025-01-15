@@ -308,7 +308,7 @@ class Report
             ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
             ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
             ->selectRaw(
-                'b.id, emp.id as emp_id, emp.name as name, b.currency,
+                'b.id, emp.id as emp_id, emp.name as name, b.currency_code as currency,
             b.benefit_id, bc.name as benefit_type, b.tax_option_id, b.flat_tax_rate, b.balance, b.amount, b.remarks, b.update_user, b.updated_at, ' . $col_create_date . ', emp.photo_file_name as emp_photo'
             )
             ->whereRaw($str_branch_id);
