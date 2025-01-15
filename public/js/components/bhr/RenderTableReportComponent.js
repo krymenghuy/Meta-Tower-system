@@ -262,7 +262,6 @@ function employeeCV(div, d = null) {
                         color: #333;
                     }
                     .two-column {
-                        display: flex;
                         gap: 20px;
                         margin-top: 10px;
                     }
