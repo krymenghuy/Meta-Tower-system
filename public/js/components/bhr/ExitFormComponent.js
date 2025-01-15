@@ -232,7 +232,7 @@ var ExitFormComponent = (function () {
         );
     };
 
-    mThis.view_exit_form = (form_id, menulink) => {
+    mThis.view_exit_form = (form_id, menulink) => {        
         const op = {
             form_id: form_id,
             btn: menulink,
@@ -363,70 +363,6 @@ const ExitFormDialog = (() => {
 const ViewExitFormDialog = (() => {
     const self = {};
     let dialog = null;
-
-    const generateTableHeaders = (thead) => {
-        return thead
-            .map((t) => {
-                const headerName = t.name.toLowerCase();
-                const displayName =
-                    headerName === "starting date"
-                        ? "Admission Date"
-                        : headerName === "exit form"
-                        ? "Exit form"
-                        : t.name ?? "";
-
-                return `
-                    <th class="table-header bg bg-secondary">
-                        ${displayName}
-                    </th>`;
-            })
-            .join("");
-    };
-
-    const generateTableBody = (tbody, thead) => {
-        return Object.entries(tbody)
-            .map(([key, d]) => {
-                const rowData = thead
-                    .map((k) => {
-                        const cellData = d[k.key] ?? "";
-
-                        if (k.key === "name") {
-                            return `<td class="text-capitalize align-middle">${cellData}</td>`;
-                        }
-
-                        if (Array.isArray(cellData)) {
-                            const divContent = cellData
-                                .map((item,index) => {
-                                    const itemName =
-                                        typeof item === "object" &&
-                                        item !== null
-                                            ? item.name ?? ""
-                                            : item;
-
-                                    const checkItemHTML = ['<div class="d-flex ml-1">',
-                                        
-                                        '<input type="checkbox" ', item.status_id == 1 ? 'checked' : '' ,' class="exit_check_box" data-id="',item.id,'" style="cursor:pointer"></input>',
-                                        '<div class="d-flex ml-1">',
-                                        `<span class="ms-2 item-name" title="`,item.item_type,`" style="cursor:pointer" data-info="`,(item.details || "No additional details available"),`">`,itemName,'</span>',
-                                        '<div class="details-container" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">',
-                                        '</div>',
-                                    '</div>',
-                                    '</div>'].join("");
-                                    
-                                    return checkItemHTML;
-                                }).join("");
-
-                            return `<td class="text-start">${divContent}</td>`;
-                        }
-                        return `<td class="text-start">${cellData}</td>`;
-                    })
-                    .join("");
-
-                return `<tr class="table-row">${rowData}</tr>`;
-            })
-            .join("");
-    };
-
     const generateEmployeeInfo = (employeeInfo) => {
         const {
             emp_name = "",
@@ -505,10 +441,10 @@ const ViewExitFormDialog = (() => {
                         '<div class="pb-3 bg-white">',
                             '<table class="table table-bordered tbl_exit_check_item">',
                                 '<thead>',
-                                    '<tr>',generateTableHeaders(thead),'</tr>',
+                             
                                 '</thead>',
                                 '<tbody>',
-                                     generateTableBody(tbody,thead),
+                                    //  generateTableBody(tbody,thead),
                                 '</tbody>',
                             '</table>',
                             '<table class="table table-bordered mt-3">',
@@ -577,8 +513,7 @@ const ViewExitFormDialog = (() => {
 
 
                     /// THiS LINE is WRONG dialog = dialog || new GeneralDialog({ ..
-                    dialog =
-                        dialog ||
+                    dialog = dialog ||
                         new GeneralDialog({
                             cssClass: "modal-lg custom-modal-size",
                             backdrop: "static",
@@ -609,6 +544,101 @@ const ViewExitFormDialog = (() => {
                                             });
                                     return;
                                 };
+                                    me.generateTableHeaders = (head_tr) => {
+                                        let html = head_tr
+                                            .map((t) => {
+                                                const headerName =
+                                                    t.name.toLowerCase();
+                                                const displayName =
+                                                    headerName ===
+                                                    "starting date"
+                                                        ? "Admission Date"
+                                                        : headerName ===
+                                                          "exit form"
+                                                        ? "Exit form"
+                                                        : t.name ?? "";
+                                                return `<th class="table-header bg bg-secondary">${displayName}</th>`;
+                                            }).join("");
+                                        return ["<tr>", html, "</tr>,"].join("");
+                                    };
+
+                                    me.generateTableBody = (tbody, thead) => {
+                                        return Object.entries(tbody)
+                                            .map(([key, d]) => {
+                                                const rowData = thead
+                                                    .map((k) => {
+                                                        const cellData =
+                                                            d[k.key] ?? "";
+
+                                                        if (k.key === "name") {
+                                                            return `<td class="text-capitalize align-middle">${cellData}</td>`;
+                                                        }
+
+                                                        if (
+                                                            Array.isArray(
+                                                                cellData
+                                                            )
+                                                        ) {
+                                                            const divContent =
+                                                                cellData
+                                                                    .map(
+                                                                        (
+                                                                            item,
+                                                                            index
+                                                                        ) => {
+                                                                            const itemName =
+                                                                                typeof item ===
+                                                                                    "object" &&
+                                                                                item !==
+                                                                                    null
+                                                                                    ? item.name ??
+                                                                                      ""
+                                                                                    : item;
+
+                                                                            const checkItemHTML =
+                                                                                [
+                                                                                    '<div class="d-flex ml-1">',
+
+                                                                                    '<input type="checkbox" ',
+                                                                                    item.status_id ==
+                                                                                    1
+                                                                                        ? "checked"
+                                                                                        : "",
+                                                                                    ' class="exit_check_box" data-id="',
+                                                                                    item.id,
+                                                                                    '" style="cursor:pointer"></input>',
+                                                                                    '<div class="d-flex ml-1">',
+                                                                                    `<span class="ms-2 item-name" title="`,
+                                                                                    item.item_type,
+                                                                                    `" style="cursor:pointer" data-info="`,
+                                                                                    item.details ||
+                                                                                        "No additional details available",
+                                                                                    `">`,
+                                                                                    itemName,
+                                                                                    "</span>",
+                                                                                    '<div class="details-container" style="display: none; padding: 5px; background: #f9f9f9; border: 1px solid #ccc; margin-top: 5px;">',
+                                                                                    "</div>",
+                                                                                    "</div>",
+                                                                                    "</div>",
+                                                                                ].join(
+                                                                                    ""
+                                                                                );
+
+                                                                            return checkItemHTML;
+                                                                        }
+                                                                    )
+                                                                    .join("");
+
+                                                            return `<td class="text-start">${divContent}</td>`;
+                                                        }
+                                                        return `<td class="text-start">${cellData}</td>`;
+                                                    })
+                                                    .join("");
+
+                                                return `<tr class="table-row">${rowData}</tr>`;
+                                            })
+                                            .join("");
+                                    };
 
                                 me.getCheckPointItems(me.divModal);
                             },
@@ -671,6 +701,12 @@ const ViewExitFormDialog = (() => {
                                 const tbl = me.divModal.querySelector(
                                     ".tbl_exit_check_item"
                                 );
+                                const head_tr = tbl.querySelector("thead>tr");
+                                const tbody = tbl.querySelector("tbody");
+                                console.log(338838,me.generateTableHeaders(head_tr));
+                                
+                                thead.innerHTML = me.generateTableHeaders(head_tr);
+                                tbody.innerHTML = me.generateTableBody(tbody,thead);
                                 const checkboxes =
                                     tbl.querySelectorAll(".exit_check_box");
                                 

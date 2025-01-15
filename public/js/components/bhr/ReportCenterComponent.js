@@ -386,7 +386,7 @@ var ReportCenterComponent = new (function () {
         div.find("[data-select='datepicker']").each(function () {
             DateTimePicker.init($(this));
         });
-        div.find("select.modal-select2").select2();
+        // div.find("select.modal-select2").select2();
         LocaleManager.translateZone("_rpt_input_filter");
     };
 
