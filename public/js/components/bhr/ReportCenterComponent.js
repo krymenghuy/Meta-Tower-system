@@ -1,18 +1,17 @@
 "use strict";
 var ReportCenterComponent = new (function () {
-    const mThis = {};
-    mThis.title_prop = "Report Center";
-    mThis.self = main_view.appContent.children("#_main_reportCenterComponent");
-    mThis.options = {};
-    mThis.permissionID = null;
+    const mThis = this;
+    this.title_prop = "Report Center";
+    this.self = main_view.appContent.children("#_main_reportCenterComponent");
+    this.options = {};
+    this.permissionID = null;
 
-    mThis.init = () => {
+    this.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
     };
 
-    mThis.filter_fields = [
-
+    this.filter_fields = [
         {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/reports/options-receiver`,
@@ -83,7 +82,7 @@ var ReportCenterComponent = new (function () {
         },
     ];
 
-    mThis.displayMainOptions = (onFinish = null) => {
+    this.displayMainOptions = (onFinish = null) => {
         const op = { app_id: main_view.app_id };
         vsapi
             .call(
@@ -103,7 +102,7 @@ var ReportCenterComponent = new (function () {
         if (typeof onFinish === "function") onFinish();
     };
 
-    mThis.renderPanelBox = (data) => {
+    this.renderPanelBox = (data) => {
         const html = [
             `<div id="_div_filter" class="d-none">
             <div class="d-flex p-3 justify-content-between align-items-center bg-white rounded-3 overflow-hidden">
@@ -113,7 +112,6 @@ var ReportCenterComponent = new (function () {
                     </button>
                 </div>
                 <div id="_div_filter_top" style="height:  ; max-width: 80% overflow-y: scroll;"></div>
-
                 <div>
                     <div class="d-flex justify-content-end gap-2">
                         <button id="_rpt_pdf" class="btn-print" type="button">
@@ -136,17 +134,19 @@ var ReportCenterComponent = new (function () {
                             <div class="row gy-2 w-100 h-100">
                                 <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                                     <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
-                                    <ul class="del-marker h-100" style=" max-height: ${ window.innerHeight - 160 + "px"}; ">  `,
-                                        mThis.renderReportType(data),
-                                    `</ul>
+                                    <ul class="del-marker h-100" style=" max-height: ${
+                                        window.innerHeight - 160 + "px"
+                                    }; ">  `,
+            mThis.renderReportType(data),
+            `</ul>
                                 </div>`,
 
-                            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
-                            //     <div class="h-img-report">
-                            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
-                            //     </div>
-                            //  </div>`,
-                            `</div>
+            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
+            //     <div class="h-img-report">
+            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
+            //     </div>
+            //  </div>`,
+            `</div>
                         </div>
                         <div class="d-flex col-lg-6">
                             <div class="gy-2 w-100 h-100">
@@ -158,7 +158,6 @@ var ReportCenterComponent = new (function () {
                                         <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
                                             placeholder="Search report...">
                                         </div>
-
                                         <div class="row w-75 mx-auto my-3">
                                             <div class="col-lg-3">
                                                 <div class="border p-4 rounded-4 text-center">
@@ -185,16 +184,15 @@ var ReportCenterComponent = new (function () {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
+                
                 <!-- <div class="col-sm-12 col-md-6 col-lg-6 m-0">
                     <div id="_rpt_input_filter" class="card-report d-block"></div>
                 </div> -->
                 <div class="col">
                 <div id="_rpt_input_filter" class=" d-block"></div>
-                </div>
+                </div> 
             </div>
         </div>
         <div id="_rpt_table" class="container-table overflow-hover-auto" ></div>`,
@@ -206,8 +204,7 @@ var ReportCenterComponent = new (function () {
         LocaleManager.translateZone(mThis.self);
     };
 
-
-    mThis.controlPanel = (container) => {
+    this.controlPanel = (container) => {
         const reportTable = container.find("#_rpt_table").children();
         container.find("#_rpt_filter").on("click", function (e) {
             e.preventDefault();
@@ -252,7 +249,7 @@ var ReportCenterComponent = new (function () {
             });
     };
 
-    mThis.renderReportType = (d) => {
+    this.renderReportType = (d) => {
         d = d || [];
         let html = null;
         d.map((item) => {
@@ -263,14 +260,16 @@ var ReportCenterComponent = new (function () {
                     item.code
                 }" data-permissionid="${item.permission_id}">
                 <i class="fa-brands text-primary-custom fa-pushed"></i>
-                <span class="text-capitalize text-primary-custom">${item.name || ""}</span>
+                <span class="text-capitalize text-primary-custom">${
+                    item.name || ""
+                }</span>
             </li>`,
             ].join("");
         });
         return html || "";
     };
 
-    mThis.getFormGroupLabelText = (key) => {
+    this.getFormGroupLabelText = (key) => {
         let label = {
             student_id: "Student",
             campus_id: "Campus",
@@ -287,7 +286,7 @@ var ReportCenterComponent = new (function () {
         return label[key] ?? key;
     };
 
-    mThis.renderFilters = (div, p) => {
+    this.renderFilters = (div, p) => {
         p = p || {};
 
         let html = null,
@@ -361,7 +360,7 @@ var ReportCenterComponent = new (function () {
                         <h4 class="text-muted text-center">No Filter</h4>
                     </div>`
                     }
-
+                    
                     <div id="_rpt_btn_print" class="col text-nowrap" style="display: none;">
                         <button data-name="btn_pdf" class="btn-print" type="button">
                             <i class="fa-solid px-1 fa-print"></i>
@@ -385,13 +384,13 @@ var ReportCenterComponent = new (function () {
         mThis.runReport(div, p.code);
 
         div.find("[data-select='datepicker']").each(function () {
-            DateTimePicker.init($(mThis));
+            DateTimePicker.init($(this));
         });
         div.find("select.modal-select2").select2();
         LocaleManager.translateZone("_rpt_input_filter");
     };
 
-    mThis.getDataOption = (
+    this.getDataOption = (
         api,
         param,
         value,
@@ -412,12 +411,11 @@ var ReportCenterComponent = new (function () {
         });
     };
 
-    mThis.renderSelect = (div, code = null) => {
+    this.renderSelect = (div, code = null) => {
         mThis.options.params.map((item, index, array) => {
             let data = [];
             vsapi.call(item.api, item.param, null, false).then((res) => {
                 if (res.status_code === 200) {
-
                     data = res.data;
                     data = item.dot_object ? data[item.dot_object] : data;
                     const el = div.find(`#${item.dom_id}`);
@@ -447,7 +445,7 @@ var ReportCenterComponent = new (function () {
                             has = true;
                             all_text = "All Level";
                         } else if (code === "referral" && item.text == "name") {
-                            console.log(1234,item.api);
+                            console.log(1234, item.api);
                         }
                         VSUtil.setComboItems(
                             el,
@@ -460,7 +458,7 @@ var ReportCenterComponent = new (function () {
                         );
                         if (el.hasClass("fee_type_id")) {
                             el.find("option").each(function () {
-                                const option = mThis;
+                                const option = this;
                                 if (option.textContent == "Tuition Fee")
                                     option.remove();
                             });
@@ -484,11 +482,11 @@ var ReportCenterComponent = new (function () {
         }
     };
 
-    mThis.getDataFilter = (div = null) => {
+    this.getDataFilter = (div = null) => {
         div = div || mThis.self.find("#_rpt_input_filter");
         let p = {};
         div.find(".data-input").each(function () {
-            const el = $(mThis);
+            const el = $(this);
             const title = el.is("input")
                 ? el.prev().text()
                 : el.parent().prev().text();
@@ -507,13 +505,12 @@ var ReportCenterComponent = new (function () {
         return p;
     };
 
-    mThis.runReport = (div, code) => {
-
+    this.runReport = (div, code) => {
         div.find("#_rpt_btn_report").on("click", function (e) {
             e.preventDefault();
             let p = {};
             div.find(".data-input").each(function () {
-                const el = $(mThis);
+                const el = $(this);
                 const title = el.is("input")
                     ? el.prev().text()
                     : el.parent().prev().text();
@@ -568,13 +565,13 @@ var ReportCenterComponent = new (function () {
         });
     };
 
-    mThis.capitalize = (str, lower = false) =>
+    this.capitalize = (str, lower = false) =>
         (lower ? str.toLowerCase() : str).replace(
             /(?:^|\s|["'([{])+\S/g,
             (match) => match.toUpperCase()
         );
 
-    mThis.getDataTable = (div, p) => {
+    this.getDataTable = (div, p) => {
         let end_point = null;
         if (mThis.isBusy) {
             setTimeout(() => {
@@ -583,10 +580,9 @@ var ReportCenterComponent = new (function () {
             return;
         }
         mThis.isBusy = true;
-        console.log(14,p.code);
+        console.log(14, p.code);
 
         switch (p.code) {
-
             case "employee_list_by_branch":
                 end_point = "hr/reports/employee/list-by-branch";
                 break;
@@ -646,7 +642,7 @@ var ReportCenterComponent = new (function () {
 
             console.log(JSON.stringify(end_point));
             console.log(JSON.stringify(p, null, 2));
-           p.staff ?  p.emp_id = p.staff : '';
+            p.staff ? (p.emp_id = p.staff) : "";
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
                 .then((res) => {
@@ -660,11 +656,9 @@ var ReportCenterComponent = new (function () {
                         );
                         mThis.isBusy = false;
                     }
-                    console.log(555,d);
-
+                    console.log(555, d);
 
                     if (d && !$.isEmptyObject(d)) {
-
                         switch (d.form) {
                             case "simple":
                                 jsonToTable(containerTable, d);
@@ -726,19 +720,19 @@ var ReportCenterComponent = new (function () {
         }
     };
 
-    mThis.getValueWhenClick = (div) => {
+    this.getValueWhenClick = (div) => {
         div.on("click", "li.report-name", function (e) {
             e.preventDefault();
             mThis.permissionID = e.currentTarget.dataset.permissionid;
-            let params = $(mThis).data("filter").replaceAll("'", '"');
+            let params = $(this).data("filter").replaceAll("'", '"');
             params = JSON.parse(params);
             mThis.options.params = [];
-            $(mThis)
+            $(this)
                 .addClass("text-primary-custom")
                 .siblings()
                 .removeClass("text-primary-custom");
             let p = {
-                code: $(mThis).data("code"),
+                code: $(this).data("code"),
                 param: params,
             };
             mThis.renderFilters(mThis.self.find("#_rpt_input_filter"), p);
@@ -746,7 +740,7 @@ var ReportCenterComponent = new (function () {
         });
     };
 
-    mThis.show = (options) => {
+    this.show = (options) => {
         mThis.init(); //NOTE: initOnce init one time only
         if (!options) options = {};
         main_view.setTitle(mThis.title_prop);
@@ -755,5 +749,4 @@ var ReportCenterComponent = new (function () {
             mThis.self.fadeIn(200);
         });
     };
-    return mThis;
 })();
