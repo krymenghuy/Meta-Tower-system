@@ -27,7 +27,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('bhr-style', 1, 2);
+    StyleManager::render('bhr-style', 1, 8);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -74,7 +74,7 @@
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 6);
     ScriptManager::render('bhr-primary-defer', 1, 8);
-    ScriptManager::render('bhr-components', 1, 42);
+    ScriptManager::render('bhr-components', 1, 121);
 
     //ScriptManager::render('pdfmake', 1);
     ?>
