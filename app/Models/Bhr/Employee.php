@@ -136,12 +136,12 @@ class Employee //extends Model
             if ($position) {
                 $inputs['salary'] = $position->salary;
             } else {
-                return DV::error('Position not found');
+                $inputs['salary'] = $inputs['salary'] ?? 0;
             }
-        } else if ($d->emp_type_id != '3') {
-
-            $inputs['salary'] = null;
+        } elseif ($d->emp_type_id != '3') {
+            $inputs['salary'] = $inputs['salary'] ?? 0;
         }
+
         $currency_code =DB::table('positions')->where('id', $d->position_id)->first(['currency_code']);
 
         if ($currency_code) {
@@ -239,6 +239,7 @@ class Employee //extends Model
         $tax_option_id = 0;
         $used_amount = 0;
         $benefit_count = 0;
+        $currency_code = null;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
@@ -266,7 +267,7 @@ class Employee //extends Model
                 $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
-                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id');
+                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id,currency_code');
 
                 $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
@@ -285,6 +286,7 @@ class Employee //extends Model
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
                                 $last_benefit_id = $emp_benefit->benefit_id;
+                                $currency_code = $emp_benefit->currency_code;
                                 $result =  [
                                     "emp_id" => $emp_id,
                                     "payroll_id" => $payroll_id,
@@ -294,6 +296,7 @@ class Employee //extends Model
                                     "tax_option_id" => $tax_option_id,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
+                                    "currency_code" => $emp_benefit->currency_code
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -306,6 +309,7 @@ class Employee //extends Model
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
+                            $currency_code = $emp_benefit->currency_code;
                         }
                     }
                 }
@@ -330,6 +334,7 @@ class Employee //extends Model
                                     "tax_option_id" => $tax_option_id,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
+                                    "currency_code" => $emp_benefit->currency_code
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -342,6 +347,7 @@ class Employee //extends Model
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
+                            $currency_code = $emp_benefit->currency_code;
                         }
                     }
                 }
@@ -356,6 +362,7 @@ class Employee //extends Model
             "tax_option_id" => $tax_option_id,
             "used_amount" => $used_amount,
             "emp_benefit_id" => null,
+            "currency_code" => $currency_code
         ];
         if($benefit_count <=1)
         $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
@@ -374,6 +381,7 @@ class Employee //extends Model
             'tax_option_id' => '1|number',
             'used_amount' => '0|number',
             'emp_benefit_id' => '0|number',
+            'currency_code' => '0|number'
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -399,7 +407,6 @@ class Employee //extends Model
         if ($id > 0) {
             return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
         }
-
         return DV::error('Error saving payroll list benefit!');
     }
 
@@ -541,6 +548,7 @@ class Employee //extends Model
             emp.position_id,
             p.title as position,
             emp.salary,
+            emp.currency_code,
             emp.emp_type_id,
             el.name as type,
             emp.work_shift_id,
@@ -691,6 +699,7 @@ class Employee //extends Model
                 emp.position_id,
                 p.title as position,
                 emp.salary,
+                emp.currency_code,
                 emp.emp_type_id,
                 el.name as type,
                 emp.work_shift_id,
@@ -771,7 +780,7 @@ class Employee //extends Model
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'positions' => GeneralSettings::options_position($ss),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
@@ -786,7 +795,7 @@ class Employee //extends Model
         }
         return (object) [
             'branches' => GeneralSettings::options_branch($ss),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'positions' => GeneralSettings::options_position($ss),
             'employee' => $employee,
         ];
     }

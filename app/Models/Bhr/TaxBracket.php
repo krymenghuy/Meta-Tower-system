@@ -4,7 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\DBX;
-
+use App\Models\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -29,11 +29,12 @@ class TaxBracket
             'upper_amount' => '1|number',
             'rate' => '1|number',
             'bias' => '1|number',
+           'currency_code'=> '1|choice|KHR,USD|default='.Money::$national_currency,
         ];
         $checkUnique = [
             "$branch_id|tax_brackets|lower_amount,upper_amount|id=id|text= already exists by tax bracket."
         ];
-        
+
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
         if ($res->error) {
@@ -54,33 +55,33 @@ class TaxBracket
         $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
-    
+
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-    
-        
-    
+
+
+
         $update_date = DBX::formatTime("tb.update_date", 'update_date');
         $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias, tb.update_user, ' . $update_date)
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code, tb.update_user, ' . $update_date)
             ->where('tb.branch_id', $branch_id)
             ->orderBy('tb.lower_amount', 'asc') // Order by lower_amount first
             ->orderBy('tb.upper_amount', 'asc'); // Then order by upper_amount
-    
-    
+
+
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-    
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    
+
 
     function getDetails($id, $ss)
     {
         $row = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias')
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias,tb.currency_code')
             ->where('tb.id', $id)
             ->first();
         return $row;
