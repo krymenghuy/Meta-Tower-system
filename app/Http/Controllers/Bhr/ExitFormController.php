@@ -27,11 +27,13 @@ class ExitFormController extends Controller
         $res = $exit_form->save($req->all(),$id, $ss);
         return JDV::raw($res);
     }
+
     function saveExitItem(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = ExitForm::saveExitItem($req->all(), $ss);
+        $id = $req->id ?? $req->item_id ?? $req->checkpoint_id;
+        $res = ExitForm::saveExitItem($req->all(), $id,$ss);
         return JDV::raw($res);
     }
     public function getList(Request $req)
