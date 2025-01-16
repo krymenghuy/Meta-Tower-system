@@ -32,7 +32,7 @@ class CheckPoint
         $validationRules = [
             'id' => '0|identity=1',
             'name' => '1|string|0-250',
-            'check_point_cat_id' => '1|number',
+            'category_id' => '1|number',
         ];
 
         $restrictedChars = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
@@ -46,7 +46,7 @@ class CheckPoint
         $inputs = $validationResult->values;
 
         $existingItem = DB::table('check_points')
-            ->where('check_point_cat_id', $inputs['check_point_cat_id'])
+            ->where('category_id', $inputs['category_id'])
             ->where('name', $inputs['name'])
             ->first();
 
@@ -84,11 +84,11 @@ class CheckPoint
         $offset = ($currentPage - 1) * $perPage;
 
         $query = DB::table('check_points as cp')
-            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.check_point_cat_id')
+            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
             ->selectRaw('cp.id, cp.name, cpc.name as category_name');
 
-        if (!empty($params->check_point_cat_id)) {
-            $query->where('cp.check_point_cat_id', $params->check_point_cat_id);
+        if (!empty($params->category_id)) {
+            $query->where('cp.category_id', $params->category_id);
         }
 
         if (!empty($params->search_value)) {
@@ -108,8 +108,8 @@ class CheckPoint
     public static function getDetails($id)
     {
         return DB::table('check_points as cp')
-            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.check_point_cat_id')
-            ->selectRaw('cp.id, cp.name, cp.check_point_cat_id, cpc.name as category_name')
+            ->join('check_point_categories as cpc', 'cpc.id', '=', 'cp.category_id')
+            ->selectRaw('cp.id, cp.name, cp.category_id, cpc.name as category_name')
             ->where('cp.id', $id)->get()
             ->first();
     }

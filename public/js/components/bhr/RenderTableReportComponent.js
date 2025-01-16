@@ -3455,7 +3455,9 @@ function windowPrint(html, style) {
     } else cv_interact.warning("Select run report before print!");
 }
 function windowPrintExitForm(html, style) {
-    if (html) {
+    console.log(3834838, html);
+    if (html) { 
+    
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>

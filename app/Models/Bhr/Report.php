@@ -269,7 +269,7 @@ class Report
 
         $start_date = date('d-M-Y', strtotime($start_date));
         $end_date = date('d-M-Y', strtotime($end_date));
-        $title = 'Payroll List';
+        $title = 'Payroll List Report';
         $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
 
         return (object)[
@@ -496,7 +496,7 @@ class Report
 
         $groupedData['data'] = $rows;
 
-        $title = 'Employee Account Report';
+        $title = 'Employee Wallet Account Report';
         $start_date = date('d-M-Y', strtotime($start_date));
         $end_date = date('d-M-Y', strtotime($end_date));
         $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
