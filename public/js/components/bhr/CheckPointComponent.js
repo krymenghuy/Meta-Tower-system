@@ -86,11 +86,11 @@ var CheckPointComponent = new (function () {
         };
         const pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 220 + "px";
+        sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
         };
         mThis.initDropdownMenus(pr_tbl);
 
@@ -118,7 +118,7 @@ var CheckPointComponent = new (function () {
     mThis.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
-            check_point_cat_id: mThis.elCheckPoint.value,
+            category_id: mThis.elCheckPoint.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const field = el.dataset.field;
@@ -161,9 +161,9 @@ var CheckPointComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this item status?",
+            "Delete this checkpoint?",
             {
-                title: "Delete item",
+                title: "Delete checkpoint",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -180,7 +180,7 @@ var CheckPointComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Item status delete successfully"
+                                    "Checkpoint delete successfully"
                                 );
                                 mThis.CheckPointListView.showPage();
                             }
@@ -209,10 +209,9 @@ var CheckPointComponent = new (function () {
                     "id",
                     "name",
                     true,
-                    "All Check Point Category",
+                    "All Category",
                     null
                 );
-                console.log(1111, mThis.elCheckPoint);
             });
     };
     mThis.show = function () {
@@ -244,7 +243,7 @@ const ExitFormItemDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-md-12">
                                 <label for="category_name" class="form-label" vslang="titles.Category"></label>
-                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id"></select>
+                                <select name="category_name" class="form-control data-input" data-field="category_id"></select>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="name" class="form-label" vslang="titles.name"></label>
@@ -292,10 +291,10 @@ const ExitFormItemDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated checkpoints category successfully');
+                                            cv_interact.success('Updated checkpoints successfully');
                                         }
                                         else{
-                                        cv_interact.success('Added checkpoints category successfully');
+                                        cv_interact.success('Create checkpoints successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -308,7 +307,7 @@ const ExitFormItemDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Check Point",
+                    createTitle: "Create Check Point",
                     modifyTitle: "Edit Check Point",
                     targetProp: "check_points",
                     api: {

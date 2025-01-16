@@ -283,7 +283,7 @@ const ExitCheckpointsDialog = (() => {
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added checkpoints category successfully');
+                                            cv_interact.success('Create category successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -296,8 +296,8 @@ const ExitCheckpointsDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Checkpoints Category",
-                    modifyTitle: "Edit Checkpoints Category",
+                    createTitle: "Create Category",
+                    modifyTitle: "Edit Category",
                     targetProp: "check_point_categories",
                     api: {
                         endpoint: [

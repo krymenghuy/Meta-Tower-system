@@ -116,16 +116,15 @@
 
 <div id="_main_workShiftListComponent" style="display:none;padding:20px 0 0 ">
     <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
-
-        <div class="d-flex align-items-center justify-content-start w-100 px-3">
-            <button type="button" class="btn_add" id="_btnAddWorkShift">
-                <span>Add Shift</span>
-            </button>
-        </div>
-        <div class="d-flex align-items-center justify-content-end w-50 px-3">
+        <div class="d-flex align-items-center justify-content-start w-50 px-3">
             <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
                 placeholder="Search Work Shift....">
         </div>
+        <div class="d-flex align-items-center justify-content-end w-50 px-3">
+            <button type="button" class="btn_add" id="_btnAddWorkShift">
+                <span><i class="fa fa-calendar mr-2"></i>Add Shift</span>
+            </button>
+        </div>
     </div>
-    <div id="_work_shift_lists" class="mt-4 p-3"></div>
+    <div id="_work_shift_lists" class="mt-3 p-4"></div>
 </div>
