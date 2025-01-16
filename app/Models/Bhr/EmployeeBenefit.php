@@ -98,6 +98,7 @@ class EmployeeBenefit
                 eb.remarks,
                 emp.photo_file_name as emp_photo
             ')
+            ->orderBy('id', 'DESC')
             ->where('eb.branch_id', $branch_id)
             ->whereRaw($str_srch);
 

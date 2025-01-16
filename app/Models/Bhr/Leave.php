@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Bhr;
-
+use App\Models\Bhr\GeneralSettings;
 use App\Models\DV;
 use App\Models\Bhr\Employee;
 use Illuminate\Support\Facades\DB;
@@ -212,7 +212,7 @@ class Leave
 
         if (!is_numeric($current_page)) {
             $current_page = 1;
-        } 
+        }
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
@@ -243,7 +243,7 @@ class Leave
         }
         if ($leave_type_id) {
            $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
-        } 
+        }
         $count = 0;
 
         // Determine date filter: use today's date if no date range is provided, otherwise use specified range
@@ -254,7 +254,7 @@ class Leave
         $emp_leav_uninform = [];
 
         if ($start_date && $end_date) {
-            
+
             $work_shifts = null;// self::getWorkShift($current_date);
             $rows = DB::table('shift_details as sd')
                 ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
@@ -262,11 +262,11 @@ class Leave
                 ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action ,sd.session, sd.start_time, sd.end_time, sd.shift_order_number')
                 // ->where('ws.id', $work_shift_id)
                 ->get();
-            $date = new DateTime($today); 
+            $date = new DateTime($today);
             $day = $date->format('D');
             $ds = ShiftDetails::getScanTimes($rows, $day);
             $work_shifts = $ds;
-            
+
 
             $filterDays = self::getDatesWithDays($start_date,$end_date);
             // $arrDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -274,7 +274,7 @@ class Leave
                 $day = $filterDay['day'];
                 $ds = ShiftDetails::getScanTimes($rows, $day);
                 $leav_uninform['day'] = $filterDay['date']. ' ('.$day.')';
-    
+
                 foreach($ds as $scenTime){
                     $leav_uninform['shifts'][] = $scenTime;
                     $q_start_date = DBX::convertToDate('l.start_date');
@@ -286,8 +286,8 @@ class Leave
                     )";
 
                     $employees = DB::table('employees as emp')->join('work_shifts as ws','ws.id','=','emp.work_shift_id')->where('emp.status_id',10)->whereRaw($str_search)->whereRaw($str_work_shift)->selectRaw('emp.id,emp.name as employee,emp.code as emp_code')->get();
-                    
-                    $date = new DateTime($filterDay['date']); 
+
+                    $date = new DateTime($filterDay['date']);
                     $date = $date->format('Y-m-d');
                     $q_session_date = DBX::convertToDate('attendance_date');
                     $strsearch_date = "$q_session_date = '$date'";
@@ -331,7 +331,7 @@ class Leave
             $q_session_date = DBX::convertToDate('attendance_date');
             $strsearch_date = "$q_session_date = '$today'";
             // return $work_shifts[0];
-            
+
             foreach($employees as $emp){
                 $has_checked_in_m = DB::table('emp_attendances')->where('session','m')->where('emp_id',$emp->id)->whereRaw($strsearch_date)->value('id');
                 if(!$has_checked_in_m){
@@ -366,7 +366,7 @@ class Leave
     function getDatesWithDays($start_date, $end_date) {
         $start = Carbon::createFromFormat('d-M-Y', $start_date);
         $end = Carbon::createFromFormat('d-M-Y', $end_date);
-    
+
         $dates = [];
         while ($start <= $end) {
             $dates[] = [
@@ -375,10 +375,10 @@ class Leave
             ];
             $start->addDay();
         }
-    
+
         return $dates;
     }
-    
+
 
     function getDetails($id ,$ss =null)
     {

@@ -5,6 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Money;
 
 class TaxAllowance
 {
@@ -29,6 +30,7 @@ class TaxAllowance
             'amount' => '1|number',
             'qty' => '1|number',
             'allowance' => '0|number',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'remarks' => '0|string|250',
         ];
 
@@ -72,7 +74,7 @@ class TaxAllowance
 
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.remarks')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.emp_id', $emp_id);
 
@@ -97,7 +99,7 @@ class TaxAllowance
         $branch_id = $ss->branch_id;
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.remarks')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.id', $id)
             ->first();
@@ -112,8 +114,7 @@ class TaxAllowance
             $tax_allowance = self::getDetails($id, $ss);
         }
         return (object) [
-
-
+            'currency_codes' => Money::options_currency($ss),
             'employees' => GeneralSettings::options_employee(10,$ss),
             'tax_allowance' => $tax_allowance,
         ];

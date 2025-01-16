@@ -548,13 +548,12 @@ var EmployeeComponent = new (function () {
                                             }</p>
                                         </div>
                                         <div class="d-flex">
-                                            <P class="text-nowrap width-p">salary</p>
-                                            <P class="px-2">:</p>
-                                            <P class="text-white">​${
-                                                data.salary || "0.00"
-                                            }(KHR)</p>
+                                            <p class="text-nowrap width-p">salary</p>
+                                            <p class="px-2">:</p>
+                                            <p class="text-white">
+                                                ${new Intl.NumberFormat('fr-FR', { useGrouping: true }).format(data.salary || 0)} (${data.currency_code})
+                                            </p>
                                         </div>
-
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex">
@@ -1361,8 +1360,17 @@ var EmployeeComponent = new (function () {
                         <tr>
                             <td><small>#</small></td>
                             <td><small>${d.qty}</small></td>
-                            <td><small>${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}</small></td>
-                            <td><small>${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}</small></td>
+                            <td>
+                                <small>
+                                    ${d.currency_code === 'KHR' ? '៛' : d.currency_code === 'USD' ? '$' : ''} ${formattedNumber(d.amount ?? 0)}
+                                </small>
+                            </td>
+                            <td>
+                                <small>
+                                    ${d.currency_code === 'KHR' ? '៛' : d.currency_code === 'USD' ? '$' : ''} ${formattedNumber(d.allowance ?? 0)}
+                                </small>
+                            </td>
+
                             <td class="text-start">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance me-2">
                                     <small><i class="fa-regular fa-pen-to-square fs-7 text-primary"></i></small>
@@ -1841,7 +1849,7 @@ var EmployeeComponent = new (function () {
                                     cv_interact.success(
                                         "This employee has been promoted successfully!"
                                     );
-                                    mThis.EmployeeListView.showPage();
+                                    EmployeeComponent.self.querySelector('#_btn_backTo_employee').click();;
                                 } else cv_interact.error(res.error_message);
                             });
                     },
@@ -2011,12 +2019,12 @@ var EmployeeComponent = new (function () {
             createContent: () => {
                 return [
                     `<div class="form-group col-md-12">
-                        '<label for="type" class="form-label" vslang="titles.Employee Type"></label>
-                        '<span class="text-danger" >*</span>
-                        '<select name="type" class=" data-input"  data-field="emp_type_id"></select>
-                      '</div>
-                      '<div class="form-group col-md-12">
-                        '<label class="form-label" vslang="titles.Event Date">Event Date</label>
+                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                        <span class="text-danger" >*</span>
+                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Event Date">Event Date</label>
                         <div><input  name="event_date" class="form-control data-input" placeholder="" data-field="event_date"/></div>
                       </div>
                       <div class="form-group col-md-12">
@@ -2087,7 +2095,7 @@ var EmployeeComponent = new (function () {
                                     cv_interact.success(
                                         "This employee has been promoted successfully!"
                                     );
-                                    EmployeeComponent.EmployeeListView.showPage();
+                                    EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
                                 } else cv_interact.error(res.error_message);
                             });
                     },
@@ -2325,7 +2333,7 @@ var EmployeeComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
-                                mThis.EmployeeListView.showPage();
+                                EmployeeComponent.self.querySelector('#_btn_backTo_employee').click();
                             }else cv_interact.error(res.error_message);
 
                         });
@@ -2744,13 +2752,17 @@ const AddTaxAllowance = (() => {
                     return [
                         `<div class="row">
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label class="form-label" vslang="titles.Amount">Amount</label>
                             <div><input name="amount" class="form-control data-input" data-field="amount"/></div>
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label class="form-label" vslang="titles.Amount">Quantity</label>
                             <div><input name="qty" class="form-control data-input" data-field="qty"/></div>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
+                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
                         </div>
                         <div class="form-group col-12">
                             <label for="remarks" class="form-label"
@@ -2818,6 +2830,15 @@ const AddTaxAllowance = (() => {
                         },
                     },
                 },
+                configSelect: [
+
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    }
+                ],
                 onShow: (me) => {},
             });
 
@@ -3101,6 +3122,7 @@ const EmployeeDialog = (() => {
                 //me.deleteImage(div_emp_photo);
 
                 //me.showProfile(me.dataOptions.id);
+
             },
             configSelect: [
                 {
@@ -3210,6 +3232,7 @@ const EmployeeDialog = (() => {
                                     if(me.dataOptions.id > 0)
                                     {
                                         cv_interact.success("Updated employee successfully");
+                                        EmployeeComponent.self.querySelector('#_btn_backTo_employee').click();;
                                     }
                                     else{
                                         cv_interact.success("Added employee successfully");

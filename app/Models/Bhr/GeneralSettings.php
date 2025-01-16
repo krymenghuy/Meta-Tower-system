@@ -201,8 +201,13 @@ class GeneralSettings //extends Model
     static function options_leave_type($ss){
         return DB::table('leave_types')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
     }
-    static function options_position($ss){
-        return DB::table('positions')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS position')->get();
+    static function options_position($ss) {
+        $q = DB::table('positions')
+            ->where('subs_id', hex2bin($ss->subs_id))
+            ->where('inactive', 0)
+            ->selectRaw('id, title');
+
+        return $q->get();
     }
     static function options_emp_type($ss){
         return DB::table('emp_types')->selectRaw('id,name AS emp_type')->get();
