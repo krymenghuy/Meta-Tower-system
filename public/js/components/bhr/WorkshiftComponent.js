@@ -172,8 +172,6 @@ var WorkshiftComponent = (function () {
                 },
             ],
             onClick: (menuLink, id, name) => {
-                console.log(1, menuLink, 2, id, 3, name);
-
                 switch (name) {
                     case "edit_shift-details": {
                         mThis.editWorkShift(id, menuLink);
@@ -367,7 +365,7 @@ const ShiftDetailDialog = (() => {
                         const p = me.getData();
 
                         p.id = me.dataOptions.id;
-                        console.log(9090, p);
+                       
                         const selectedDays = [];
                         const days =
                             me.divModal.querySelectorAll(".days.active");
@@ -375,7 +373,7 @@ const ShiftDetailDialog = (() => {
                             selectedDays.push(day.dataset.value);
                         });
                         p.days = selectedDays.join("|");
-                        console.log(2222,p);
+   
                         vsapi.call([ main_view.base_url,"/hr/shift-details/save"].join(""),p,btn,null).then((res) => {
                             if (res.status_code == 200) {
                                 me.hide(true, p);
@@ -400,9 +398,9 @@ const ShiftDetailDialog = (() => {
                         return { id: op.id };
                     },
                 },
-                onResponse: (me, res) => {
-                    console.log('Result from API "/form-options": ', res);
-                },
+                // onResponse: (me, res) => {
+                //     console.log('Result from API "/form-options": ', res);
+                // },
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
