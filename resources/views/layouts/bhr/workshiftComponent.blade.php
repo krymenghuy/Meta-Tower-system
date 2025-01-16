@@ -332,16 +332,16 @@
 
 <div id="_main_workshiftComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
-        <div class="d-flex justify-content-start gap-3 w-100">
-            <button type="button" class="btn_add" id="_btnAddShiftDetail">
-                <i class="fas fa-plus"></i>
-                <span>Add Scan</span>
-            </button>
-        </div>
-        <div class="d-flex align-items-center justify-content-end  w-50">
+        <div class="d-flex align-items-center justify-content-start  w-50">
             <div class="d-flex align-items-center w-50">
                 <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
             </div>
+        </div>
+        <div class="d-flex justify-content-end gap-3 w-100">
+            <button type="button" class="btn_add" id="_btnAddShiftDetail">
+                <i class="fas fa-calendar-check mr-2"></i>
+                <span>Add Scan</span>
+            </button>
         </div>
     </div>
 

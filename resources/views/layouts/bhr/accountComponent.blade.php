@@ -16,7 +16,7 @@
                         data-field="sort_by"></select>
                 </div>
                 <button type="button" class="btn btn-primary btn_add" id="_btnAddAccount">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-user"></i>
                     <span>Add Account</span>
                 </button>
             </div>

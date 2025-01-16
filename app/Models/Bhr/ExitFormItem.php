@@ -113,9 +113,9 @@ class ExitFormItem
             efi.amount,
             efi.remarks,
             efi.item_type,
-            efi.is_settled,
+            efi.status_id,
             cp.name as item_name,
-            cp.check_point_cat_id',
+            cp.category_id',
         )
             ->orderBy('efi.id', 'desc');
 
@@ -163,9 +163,9 @@ class ExitFormItem
                 efi.amount,
                 efi.remarks,
                 efi.item_type,
-                efi.is_settled,
+                efi.status_id,
                 cp.name as item_name,
-                cp.check_point_cat_id',
+                cp.category_id',
 
             )
             ->orderBy('efi.id', 'desc')
@@ -228,9 +228,9 @@ class ExitFormItem
             efi.form_id,
             efi.amount,
             efi.remarks,
-            efi.is_settled,
+            efi.status_id,
             cp.name as item_name,
-            cp.check_point_cat_id'
+            cp.category_id'
             );
         if (!empty($d->search_value)) {
             $query->where(function ($q) use ($d) {
@@ -241,7 +241,7 @@ class ExitFormItem
         $exitFormItems = $query->get();
 
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
-        $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
+        $exit_items = DB::table('check_points')->selectRaw('id, name, category_id')->get();
         $form_item = DB::table('exit_form_items')->selectRaw('id, check_point_id')->get();
         $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
 
@@ -256,7 +256,7 @@ class ExitFormItem
         }
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
-                if ($item->check_point_cat_id == $category->id) {
+                if ($item->category_id == $category->id) {
                     $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>';
 
                     foreach ($form_items as $form_item) {

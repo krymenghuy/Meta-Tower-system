@@ -356,6 +356,7 @@ class ExitForm
                 ef.name,
                 ef.emp_id,
                 ef.is_finished,
+                ef.update_date,
                 emp.id as emp_id,
                 emp.name as emp_name,
                 emp.code,
@@ -382,7 +383,11 @@ class ExitForm
             return (object)[];
         }
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
-        $exit_items = DB::table('exit_form_items as ef')->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')->where('ef.form_id', $form_id)->selectRaw('ef.id, cp.name, cp.category_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')->get();
+        $exit_items = DB::table('exit_form_items as ef')
+        ->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')
+        ->where('ef.form_id', $form_id)
+        ->selectRaw('ef.id, cp.name, cp.category_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')
+        ->get();
         // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
 
         // $form_items = [];
@@ -447,7 +452,7 @@ class ExitForm
         $title = 'ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ';
         return (object) [
             'title' => $title,
-            'header' => $headers,
+            'headers' => $headers,
             'num_cat' => $number_cat,
             'list' => $groupedData,
             'employee' => $employeeData,
