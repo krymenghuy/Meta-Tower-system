@@ -36,6 +36,14 @@ class ExitFormController extends Controller
         $res = ExitForm::saveExitItem($req->all(), $id,$ss);
         return JDV::raw($res);
     }
+    function updateCheckboxItem(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id ?? $req->item_id ?? $req->checkbox_item;
+        $res = ExitForm::updateCheckboxItem($req->all(), $id,$ss);
+        return JDV::raw($res);
+    }
     public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);

@@ -111,7 +111,10 @@ var ExitFormComponent = (function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.ExitFormListView.showPage();
+                    console.log(9999, "cancel");
+                    
                 },
+                
             };
             ExitFormDialog.show(op);
         };
@@ -521,21 +524,24 @@ const ViewExitFormDialog = (() => {
                     };
                     me.saveCheckBoxes = (event, form_id) => {
                         const op = {};
-                        op.check_point_id = event.target.dataset.id;
+                        op.id = event.target.dataset.id;
                         op.form_id = form_id;
                         op.status_id = event.target.checked ? 1 : 0;
-
+                        console.log(444,op);
+                        
                         vsapi
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/hr/exit-form/save-item",
+                                    "/hr/exit-form/update-checkbox",
                                 ].join(""),
                                 op,
                                 false,
                                 null
                             )
                             .then((res) => {
+                                console.log(3939,res);
+                                
                                 if (res.status_code == 200) {
                                     return;
                                 } else cv_interact.error(res.error_message);
@@ -610,17 +616,12 @@ const ViewExitFormDialog = (() => {
                 },
                 buttons: [
                     {
-                        label: '<span class="bg bg-danger rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-xmark"></i></span>',
+                        label: '<span class="bg bg-danger rounded-3" style="outline:none; padding:10px;"><i class="fa-solid text-white fa-xmark"></i></span>',
                         cssClass: "btn btn-sm-outline rounded-3",
                         click: (me) => me.hide(true, null),
                     },
                     {
-                        label: '<span id="_btnAddExitItem" class="bg bg-success rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-check"></i></span>',
-                        cssClass: "btn btn-sm-outline rounded-3",
-                        click: (me) => me.hide(true, null),
-                    },
-                    {
-                        label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid ml-2 text-white fa-print"></i></span>',
+                        label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid text-white fa-print"></i></span>',
                         cssClass: "btn btn-sm-outline rounded-3",
                         click: (me, btn) => {
                             const p = {
@@ -704,6 +705,12 @@ const ViewExitFormDialog = (() => {
                             me.saveCheckBoxes(event, me.dataOptions.form_id);
                         };
                     });
+                    //overize dialog close button
+                    const btnClose = me.divModal.querySelector("button.close");
+                    btnClose.onclick = (e) => {
+                          ExitFormComponent.ExitFormListView.showPage();
+                        //me.dataOptions.onClose();
+                    };
                 },
             });
 
