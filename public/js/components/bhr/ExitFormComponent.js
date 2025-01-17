@@ -248,6 +248,7 @@ var ExitFormComponent = (function () {
             btn: menulink,
             onClose: (p,canceled) => {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
+                alert('test:');
             },
         };
         ViewExitFormDialog.show(op);
@@ -512,7 +513,7 @@ const ViewExitFormDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 showCancelButton: false,
-                allowCancel:false,
+                allowCancel:true,
                 createContent: () => {
                     return htmlString;
                 },
