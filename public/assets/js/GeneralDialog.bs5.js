@@ -1,1 +1,789 @@
-'use strict';const _0x4de8cb=_0x59e4;(function(_0x124ec1,_0x13c2ea){const _0x517b7c=_0x59e4,_0x3d66ef=_0x124ec1();while(!![]){try{const _0x535bb0=-parseInt(_0x517b7c(0x1d7))/0x1*(parseInt(_0x517b7c(0x198))/0x2)+parseInt(_0x517b7c(0x14c))/0x3+-parseInt(_0x517b7c(0x1d4))/0x4+parseInt(_0x517b7c(0x17d))/0x5*(parseInt(_0x517b7c(0x1c3))/0x6)+parseInt(_0x517b7c(0x13d))/0x7+parseInt(_0x517b7c(0x1c8))/0x8+parseInt(_0x517b7c(0x13c))/0x9*(parseInt(_0x517b7c(0x118))/0xa);if(_0x535bb0===_0x13c2ea)break;else _0x3d66ef['push'](_0x3d66ef['shift']());}catch(_0x4c68d2){_0x3d66ef['push'](_0x3d66ef['shift']());}}}(_0x4de5,0xef22e));function _0x4de5(){const _0x33c32b=['static','.modal-body','dataType','GeneralDialog\x20=>\x20dialogId\x20\x22','querySelector','backdrop','password','date','531624CSlIts','modal\x20fade\x22','shift','ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789','selectConfig','parentElement','toLowerCase','ariaHidden','onResponse','status_code','filterData','\x22\x20placeholder=\x22','If\x20the\x20prepareformOptions.api\x20is\x20not\x20provided,\x20the\x20onPrepareForm()\x20must\x20be\x20an\x20async\x20function','index','4160466JoAsxA','dataProp','Cancel','4088570QBlPoM','</button>','button','\x22\x20data-index=\x22','<button\x20type=\x22button\x22\x20class=\x22','icon','btn-save','1969735fLdlNc','_title','data','fieldList','placeholder','overrideMethod','push','charAt','\x22\x20\x20placeholder=\x22','div.modal-header','error','dialog_id','forEach','init','dialog_id_prefix','SELECT','params','options','extendMethods','<div><select\x20data-type=\x22','targetProp','</div>','<div\x20class=\x22modal-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22modal-title\x22\x20id=\x22','[data-bs-dismiss]','8384616IBOxZK','146270vifKia','<div><input\x20type=\x22','usedIds','getControlList','hasError','hide.bs.modal','select','dismissModal','cssClass','type','btn-cancel\x20btn\x20btn-secondary','</label>','controlList','renderButtons','\x20.hint:\x20make\x20sure\x20configSelect\x20is\x20an\x20array\x20like\x20this\x20[\x20{name:\x22select_name\x22,dataProp:\x22some_key_name\x22}\x20]','className','Modify\x20It','dataset','form-control','20MTnYzH','has','target','createControls','label','onPrepareForm','8qWOaYG','modal','2mgsLGn','remove','insertBefore','insertAdjacentHTML','get','join','querySelectorAll','getControls','\x22\x20does\x20not\x20have\x20correct\x20options\x20data.\x20Please\x20ensure\x20that\x20each\x20item\x20option\x20has\x20\x22value\x22\x20and\x20\x22label\x22\x20or\x20you\x20can\x20set\x20your\x20own\x20names\x20using\x20key\x20\x22textField\x22\x20and\x20\x22valueField\x22\x20','body','\x22\x20data-action=\x22','setData','Modal','initInputStyle','map','168vlIFLu','afterSetData','\x20data-input\x22\x20data-field=\x22','initSelect','controls','btn\x20btn-default','\x22>\x20</select></div>\x20','then','processResponse','floor','_form\x22>','canceled','parentName','createContents','dialogClass','onChange','_renderCloseButton','show','buttons','field','extendMethod','It\x20seems\x20you\x20dont\x20have\x20options\x20or\x20any\x20items\x20provide\x20via\x20the\x20\x22data\x22\x20key\x20inside\x20selectConfig:\x20[{name:\x22select_name\x22,\x20data:\x22options_item\x22}]','unshift','modalBody','AsyncFunction','\x22\x20class=\x22','[name]','change','6dwJiPC','filter','dialogId','divModal','getData','4171592gagchF','176067dKfBKk','Password','.modal-header','_addEventhandler','prepareForm','\x20<div\x20class=\x22form-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20for=\x22','triggerBy','split','integer','disposeControls','<div\x20class=\x22modal-body\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22modal-footer\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22btn-cancel\x20btn\x20btn-secondary\x22\x20data-bs-dismiss=\x22modal\x22>Cancel</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22btn-save\x20btn\x20btn-primary\x22>Reset\x20Now</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','3606080GYSAaq','\x22\x20is\x20already\x20in\x20use.','errorCount','1895106QncOdj','modalFooter','onAfterInit','tagName','960ZnGUPP','click','Select\x20box\x20named\x20\x22','depends','dispatchEvent','src','.close','.data-input','_createRandomId','<span\x20vslang=\x22buttons.Cancel\x22>Cancel</span>','prepareFormOptions','createControlList','data-bs-dismiss','_vsd1188','424281qGnUBQ','addEventListener','getFieldList','classList','17182tMspdg','onInit','lnkClose','Create\x20It','validatePanel','displayType','htmlRendered','onShow','5399870jnXQgs','call','closest','bind','textField','.modal-title','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20</div></div>','default','tabIndex','firstOption','filterOptions','showCancelButton','string','add','setAttribute','<form\x20id=\x22','renderFields','action','stored_datailed','override','valueField','dialogStore','onHide','true','SELECT\x20a\x20depends\x20on\x20select\x20b,\x20but\x20select\x20b\x20does\x20not\x20have\x20a\x20data-field.\x20Example:\x20detail_type\x20list\x20depends\x20on\x20category,\x20so\x20the\x20category\x20SELECT\x20shoud\x20have\x20data-field=\x22category_id\x22','append','createElement','text','modifyTitle','contentCreated','div','3864756UPODIx','preventDefault','title','fields','<button\x20type=\x22button\x22\x20class=\x22close\x22\x20data-bs-dismiss=\x22modal\x22\x20aria-label=\x22Close\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20aria-hidden=\x22true\x22>&times;</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>','27xKAIrQ','9997792MCuuJH','345223TDgJGj','undefined','dataOptions','Confirm\x20Password','onclick','indexOf'];_0x4de5=function(){return _0x33c32b;};return _0x4de5();}const _0x4a0daa=_0x1698;(function(_0x59993a,_0xb665b6){const _0x5a6c11=_0x59e4,_0x54c60b=_0x1698,_0x37a816=_0x59993a();while(!![]){try{const _0x1f4367=-parseInt(_0x54c60b(0x15d))/0x1+parseInt(_0x54c60b(0x118))/0x2+parseInt(_0x54c60b(0x16f))/0x3+-parseInt(_0x54c60b(0x157))/0x4+-parseInt(_0x54c60b(0x1bf))/0x5+-parseInt(_0x54c60b(0x138))/0x6*(-parseInt(_0x54c60b(0x121))/0x7)+parseInt(_0x54c60b(0x1b6))/0x8;if(_0x1f4367===_0xb665b6)break;else _0x37a816[_0x5a6c11(0x16a)](_0x37a816[_0x5a6c11(0x14e)]());}catch(_0x11bf0a){_0x37a816[_0x5a6c11(0x16a)](_0x37a816[_0x5a6c11(0x14e)]());}}}(_0x4872,0x891f9));const _0x14e4e8=_0x6937;(function(_0x2924b9,_0x13cff7){const _0x7bb915=_0x59e4,_0x1f0623=_0x1698,_0x5dc861=_0x6937,_0x48b377=_0x2924b9();while(!![]){try{const _0x3370b1=parseInt(_0x5dc861(0x179))/0x1*(parseInt(_0x5dc861(0x1f2))/0x2)+-parseInt(_0x5dc861(0x1de))/0x3*(parseInt(_0x5dc861(0x1d8))/0x4)+parseInt(_0x5dc861(0x191))/0x5+parseInt(_0x5dc861(0x1b8))/0x6+-parseInt(_0x5dc861(0x216))/0x7+-parseInt(_0x5dc861(0x17d))/0x8*(parseInt(_0x5dc861(0x223))/0x9)+-parseInt(_0x5dc861(0x1d6))/0xa*(-parseInt(_0x5dc861(0x1ba))/0xb);if(_0x3370b1===_0x13cff7)break;else _0x48b377[_0x7bb915(0x16a)](_0x48b377[_0x1f0623(0x103)]());}catch(_0xcf831){_0x48b377[_0x1f0623(0x1ac)](_0x48b377[_0x1f0623(0x103)]());}}}(_0x4ca7,0x57024));function _0x4ca7(){const _0x46f1a9=_0x59e4,_0x5914ad=_0x1698,_0x5d08f0=[_0x5914ad(0x1c5),_0x5914ad(0x11e),_0x5914ad(0xf8),_0x5914ad(0x18c),_0x5914ad(0x177),_0x46f1a9(0x107),_0x5914ad(0x1be),_0x46f1a9(0x142),_0x5914ad(0x130),_0x5914ad(0x18f),_0x5914ad(0x149),_0x5914ad(0x10d),_0x46f1a9(0x127),_0x5914ad(0x15a),_0x5914ad(0x11b),_0x5914ad(0x17a),_0x5914ad(0x13d),_0x5914ad(0x169),_0x5914ad(0xfc),_0x5914ad(0x1b1),_0x5914ad(0x13a),_0x5914ad(0x127),_0x5914ad(0x1b4),_0x5914ad(0x179),_0x5914ad(0x1b5),_0x5914ad(0x11f),_0x46f1a9(0x15e),_0x46f1a9(0x166),_0x5914ad(0x16e),_0x5914ad(0x190),_0x5914ad(0x13e),_0x5914ad(0x1bb),_0x5914ad(0x17e),_0x5914ad(0x178),_0x5914ad(0x1aa),_0x5914ad(0x132),_0x5914ad(0x148),_0x46f1a9(0x174),_0x5914ad(0x180),_0x5914ad(0x160),_0x46f1a9(0x1bd),_0x5914ad(0xf2),_0x5914ad(0x10f),_0x5914ad(0x14c),_0x5914ad(0x14a),_0x5914ad(0x1c8),_0x5914ad(0x161),_0x5914ad(0x168),_0x46f1a9(0x15c),'action',_0x5914ad(0x12c),_0x5914ad(0x105),_0x5914ad(0x18d),_0x5914ad(0x182),_0x5914ad(0x120),_0x5914ad(0x155),_0x5914ad(0x143),_0x5914ad(0x14b),_0x46f1a9(0x133),_0x5914ad(0x108),_0x5914ad(0x175),'\x22\x20class=\x22',_0x5914ad(0x1c0),_0x5914ad(0xfa),_0x5914ad(0x1c3),_0x5914ad(0x109),_0x5914ad(0xee),_0x46f1a9(0x19d),_0x5914ad(0x1b2),_0x5914ad(0xf9),_0x5914ad(0x10a),_0x5914ad(0x16a),_0x5914ad(0x164),_0x5914ad(0x151),_0x46f1a9(0x1a7),_0x5914ad(0x15e),_0x46f1a9(0x104),_0x5914ad(0x17c),_0x5914ad(0x15f),_0x5914ad(0x18e),_0x5914ad(0x187),_0x5914ad(0x11c),_0x5914ad(0x199),_0x5914ad(0x1c1),_0x5914ad(0x173),_0x46f1a9(0x143),_0x5914ad(0x131),_0x5914ad(0x1a6),_0x5914ad(0x19d),_0x5914ad(0x136),_0x46f1a9(0x119),_0x5914ad(0x1c7),_0x5914ad(0x194),_0x5914ad(0x165),_0x5914ad(0x10c),_0x5914ad(0x145),_0x5914ad(0x101),_0x5914ad(0xf7),_0x5914ad(0x15b),_0x5914ad(0x146),_0x46f1a9(0x165),_0x5914ad(0x123),_0x5914ad(0x1af),_0x5914ad(0x166),_0x46f1a9(0x195),_0x46f1a9(0x1b2),_0x46f1a9(0x1a8),_0x5914ad(0x159),_0x5914ad(0x1b9),_0x5914ad(0x191),_0x46f1a9(0x173),_0x5914ad(0x167),'confirm_password',_0x5914ad(0x142),_0x5914ad(0x133),_0x5914ad(0xed),_0x5914ad(0x1a9),_0x5914ad(0x1ad),_0x5914ad(0x114),_0x5914ad(0xfb),_0x46f1a9(0x136),_0x46f1a9(0x12b),_0x5914ad(0x156),_0x5914ad(0x17b),_0x5914ad(0x111),_0x5914ad(0x1bd),_0x5914ad(0x137),_0x5914ad(0x14f),_0x46f1a9(0x144),_0x5914ad(0xec),'\x22\x20data-type=\x22',_0x46f1a9(0x1b6),_0x5914ad(0x147),_0x46f1a9(0x15a),_0x5914ad(0x15c),'42229ISRkHI',_0x5914ad(0x189),_0x5914ad(0x10b),_0x5914ad(0x124),_0x5914ad(0x12d),_0x5914ad(0x19c),_0x5914ad(0xfe),_0x5914ad(0xf6),_0x46f1a9(0x181),_0x5914ad(0x11d),_0x5914ad(0x128),_0x5914ad(0x102),_0x5914ad(0x150),_0x5914ad(0x135),_0x46f1a9(0x172),_0x5914ad(0x19a),_0x5914ad(0x17d),_0x5914ad(0x144),_0x5914ad(0x162),_0x5914ad(0x12b),_0x5914ad(0x19f),_0x5914ad(0xf0),_0x5914ad(0x198),_0x5914ad(0x172),_0x5914ad(0x1a8),_0x5914ad(0xf5),_0x5914ad(0x16d),_0x5914ad(0x196),_0x5914ad(0x17f),_0x5914ad(0xfd),_0x5914ad(0x12f),_0x5914ad(0x1a2),_0x46f1a9(0x1bf),_0x5914ad(0x158),_0x5914ad(0x119),_0x5914ad(0x134),_0x5914ad(0x18a),_0x46f1a9(0x1b1),_0x46f1a9(0x155),_0x5914ad(0x163),_0x46f1a9(0x157),_0x5914ad(0x14e),_0x5914ad(0x154),_0x46f1a9(0x11f),_0x5914ad(0x117),_0x46f1a9(0x14d),_0x5914ad(0x107),_0x5914ad(0x129),_0x5914ad(0x106),_0x5914ad(0x19e),_0x5914ad(0x13b),_0x5914ad(0x16b),_0x5914ad(0xff),_0x5914ad(0x195),_0x5914ad(0x1a5),_0x5914ad(0x12e),_0x5914ad(0x139),_0x5914ad(0x13f),_0x46f1a9(0x16d),_0x46f1a9(0x185),_0x46f1a9(0x113),_0x5914ad(0x1c6),_0x5914ad(0x1ab),_0x5914ad(0x1a4),_0x5914ad(0x13c),_0x5914ad(0x141),'dataOptions',_0x5914ad(0x100),_0x5914ad(0x152),_0x5914ad(0x171),_0x46f1a9(0x125),_0x5914ad(0x1b8),_0x5914ad(0x16c),_0x46f1a9(0x1d8),_0x5914ad(0xf3),_0x5914ad(0x181),_0x5914ad(0x1c4),_0x46f1a9(0x10e),_0x46f1a9(0x1af),_0x46f1a9(0x1c6),_0x5914ad(0x1b0),_0x5914ad(0x174),'.data-input[data-required=\x221\x22]',_0x5914ad(0x12a),_0x46f1a9(0x147),_0x5914ad(0x192),_0x46f1a9(0x15f),_0x5914ad(0x193),_0x5914ad(0x10e),_0x46f1a9(0x128),_0x5914ad(0x113),_0x5914ad(0x185),'351988NUJqiB',_0x5914ad(0x125),_0x5914ad(0x18b),_0x5914ad(0x1c2),_0x5914ad(0x188)];return _0x4ca7=function(){return _0x5d08f0;},_0x4ca7();}function _0x6937(_0x43684e,_0x439169){const _0x5280d4=_0x4ca7();return _0x6937=function(_0xfe258e,_0x188f84){_0xfe258e=_0xfe258e-0x160;let _0x94d7af=_0x5280d4[_0xfe258e];return _0x94d7af;},_0x6937(_0x43684e,_0x439169);}function _0x59e4(_0x4d5044,_0x197ea0){const _0x4de5d6=_0x4de5();return _0x59e4=function(_0x59e47c,_0x165296){_0x59e47c=_0x59e47c-0xfd;let _0x415b54=_0x4de5d6[_0x59e47c];return _0x415b54;},_0x59e4(_0x4d5044,_0x197ea0);}function _0x4872(){const _0x4702ee=_0x59e4,_0x1a8e04=['length','modal-select2',_0x4702ee(0x1a9),'number',_0x4702ee(0x145),_0x4702ee(0x1b0),_0x4702ee(0xfe),_0x4702ee(0x1ab),'\x22\x20data-required=\x22',_0x4702ee(0x179),'inputType',_0x4702ee(0x125),_0x4702ee(0x16c),'status_code',_0x4702ee(0x1c5),_0x4702ee(0x176),_0x4702ee(0x1d0),_0x4702ee(0x10c),'ariaLabel',_0x4702ee(0x1d3),_0x4702ee(0x16f),'vs-modal-dialog',_0x4702ee(0x18e),_0x4702ee(0x18f),_0x4702ee(0x16b),_0x4702ee(0x14b),'hide',_0x4702ee(0x162),'cancel','createContent','set',_0x4702ee(0x193),_0x4702ee(0x1ba),_0x4702ee(0x186),_0x4702ee(0x174),_0x4702ee(0xfd),'elTitle','removeEventListener','triggeredBy','It\x20seems\x20the\x20issue\x20with\x20API\x20return\x20incorrect\x20json\x20format.\x20The\x20key\x20\x22data\x22\x20is\x20missing.\x20Exapected\x20format\x20is\x20{status_code,\x20error_message,\x20data:\x20{}\x20}',_0x4702ee(0x1c0),_0x4702ee(0x19b),_0x4702ee(0x121),'_title\x22>Reset\x20Password</h5>',_0x4702ee(0x1cd),_0x4702ee(0x115),'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22modal-dialog\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22modal-content\x22>',_0x4702ee(0x134),_0x4702ee(0x163),_0x4702ee(0x12d),_0x4702ee(0x132),_0x4702ee(0x16a),_0x4702ee(0x100),_0x4702ee(0x18b),_0x4702ee(0x14a),_0x4702ee(0x1ae),_0x4702ee(0x13a),_0x4702ee(0x120),_0x4702ee(0x114),_0x4702ee(0x197),_0x4702ee(0x11c),_0x4702ee(0x17c),_0x4702ee(0x124),_0x4702ee(0x183),_0x4702ee(0x18a),_0x4702ee(0x1c6),_0x4702ee(0x12e),_0x4702ee(0x19a),'setData','\x20data-bs-dismiss=\x22modal\x22',_0x4702ee(0x15d),'.modal-footer',_0x4702ee(0x1bb),_0x4702ee(0x148),_0x4702ee(0x167),'button.close',_0x4702ee(0x158),_0x4702ee(0x1ca),'modalTitle',_0x4702ee(0x103),_0x4702ee(0x15b),_0x4702ee(0x138),_0x4702ee(0x1a1),'getControls',_0x4702ee(0x135),_0x4702ee(0x126),_0x4702ee(0x18c),_0x4702ee(0x1aa),_0x4702ee(0x141),_0x4702ee(0x170),'onClose','.data-input',_0x4702ee(0x199),_0x4702ee(0x17a),_0x4702ee(0x11a),_0x4702ee(0x1b4),_0x4702ee(0x10f),'random',_0x4702ee(0x149),_0x4702ee(0x1ce),_0x4702ee(0x1d5),'getFields',_0x4702ee(0x192),_0x4702ee(0x14e),_0x4702ee(0x1d1),_0x4702ee(0x17e),'_handleClose',_0x4702ee(0x154),'createFields',_0x4702ee(0x1a0),_0x4702ee(0x196),'div.modal-dialog',_0x4702ee(0x164),_0x4702ee(0x194),_0x4702ee(0x17b),'createTitle','override',_0x4702ee(0x130),'configSelect',_0x4702ee(0x169),'overrideMethods','contains',_0x4702ee(0x1b2),_0x4702ee(0x1d6),'465960rzLjjd',_0x4702ee(0x1cc),_0x4702ee(0x166),_0x4702ee(0x151),'setComboItems',_0x4702ee(0x12a),'beforeend',_0x4702ee(0x1ac),_0x4702ee(0x175),'165935xHcgIu',_0x4702ee(0x173),'afterInit',_0x4702ee(0x14f),_0x4702ee(0x131),_0x4702ee(0x182),'api',_0x4702ee(0x19e),_0x4702ee(0x1c7),_0x4702ee(0x187),_0x4702ee(0x1b5),_0x4702ee(0x139),_0x4702ee(0x106),'manualHide',_0x4702ee(0x190),_0x4702ee(0x1c9),_0x4702ee(0x1b8),_0x4702ee(0x1b3),'</form>',_0x4702ee(0x1d2),_0x4702ee(0x112),'required',_0x4702ee(0x1cb),'102bnzjTq',_0x4702ee(0x110),_0x4702ee(0x1c4),_0x4702ee(0x1a2),_0x4702ee(0x1b7),'IMG',_0x4702ee(0x1c2),'error',_0x4702ee(0x123),_0x4702ee(0x111),'function',_0x4702ee(0x10d),_0x4702ee(0x11b),_0x4702ee(0x171),_0x4702ee(0x1d9),_0x4702ee(0x150),'defaultValue','innerHTML',_0x4702ee(0x191),_0x4702ee(0x11e),_0x4702ee(0x168),_0x4702ee(0x140),_0x4702ee(0x1cf),_0x4702ee(0x152),'name',_0x4702ee(0x178),_0x4702ee(0x101),_0x4702ee(0x1ad),_0x4702ee(0x13f),_0x4702ee(0x188),_0x4702ee(0x1a5),_0x4702ee(0x137),_0x4702ee(0x180),_0x4702ee(0x159),'_handleShown',_0x4702ee(0x12f),_0x4702ee(0x17f),_0x4702ee(0x13e),'endpoint',_0x4702ee(0x12c),_0x4702ee(0x10b),_0x4702ee(0x13b),_0x4702ee(0x184),_0x4702ee(0x10a),_0x4702ee(0x160),_0x4702ee(0x1c1),_0x4702ee(0x1a6),_0x4702ee(0x116),_0x4702ee(0x19c),_0x4702ee(0x108),_0x4702ee(0x1be),_0x4702ee(0x1b9),_0x4702ee(0x189),'value',_0x4702ee(0x109),'3020223aJsWiC',_0x4702ee(0x1a8),'getAttribute',_0x4702ee(0x146),_0x4702ee(0x122),_0x4702ee(0x117),_0x4702ee(0x18d),_0x4702ee(0x19d),'shown.bs.modal',_0x4702ee(0x1a4)];return _0x4872=function(){return _0x1a8e04;},_0x4872();}function _0x1698(_0x4f06c3,_0x16aae8){const _0x17d3e8=_0x4872();return _0x1698=function(_0x54163f,_0x4f26b4){_0x54163f=_0x54163f-0xec;let _0x2c0e92=_0x17d3e8[_0x54163f];return _0x2c0e92;},_0x1698(_0x4f06c3,_0x16aae8);}class GeneralDialog{static [_0x14e4e8(0x1b9)]=new Set();static [_0x4a0daa(0x1aa)]=new Map();static [_0x14e4e8(0x1d0)]=_0xc3ffc2=>{const _0x3aaccb=_0x4a0daa,_0x3e7696=_0x14e4e8,_0x48e60b=_0xc3ffc2[_0x3e7696(0x1c4)](_0x3e7696(0x190)),_0x51fb95={};return _0x48e60b[_0x3aaccb(0xf5)](_0x3e6477=>{const _0x1f2c14=_0x3e7696,_0x44dde2=_0x3e6477[_0x1f2c14(0x1ff)]('name');if(_0x44dde2)_0x51fb95[_0x44dde2]=_0x3e6477;}),{'controls':_0x51fb95,'controlList':_0x48e60b};};static [_0x14e4e8(0x237)]=_0x3c81f3=>{const _0x211a44=_0x4a0daa,_0x117a33=_0x14e4e8;return _0x3c81f3[_0x117a33(0x1c4)](_0x211a44(0x165));};constructor(_0x23e143){const _0x23fc70=_0x59e4,_0x5d42bd=_0x4a0daa,_0x4b1d11=_0x14e4e8;this[_0x4b1d11(0x1c8)]=_0x4b1d11(0x242),_0x23e143=_0x23e143||{'backdrop':![],'fields':[{'name':_0x4b1d11(0x199),'label':_0x4b1d11(0x1f7),'dataType':_0x5d42bd(0x1af),'displayType':_0x4b1d11(0x199)},{'name':_0x4b1d11(0x1a3),'label':_0x5d42bd(0xf4),'dataType':_0x4b1d11(0x199),'displayType':_0x4b1d11(0x199)}],'buttons':[{'cssClass':_0x4b1d11(0x20d),'icon':'','dismissModal':!![],'action':_0x4b1d11(0x1ef),'label':_0x4b1d11(0x163)},{'cssClass':_0x4b1d11(0x1a7),'icon':'','label':'','action':'','click':(_0x542ce6,_0x320090)=>{}}],'prepareFormOptions':{'createTitle':_0x4b1d11(0x1f6),'modifyTitle':_0x4b1d11(0x16f),'targetProp':null,'api':{'endpoint':null,'params':_0x5a1589=>{}}},'onClose':_0xb3778f=>{return;}};const _0x228bdb=this;_0x23e143[_0x4b1d11(0x1cf)]=_0x23e143[_0x4b1d11(0x1cf)]||_0x23e143[_0x4b1d11(0x198)]||_0x23e143[_0x4b1d11(0x196)],this[_0x4b1d11(0x169)]=_0x23e143,!this[_0x23fc70(0x175)][_0x23fc70(0x1c5)]&&(this[_0x4b1d11(0x169)][_0x5d42bd(0x187)]=this[_0x4b1d11(0x1be)]()),(this[_0x4b1d11(0x167)]=[this[_0x4b1d11(0x1c8)],this[_0x5d42bd(0x120)][_0x4b1d11(0x183)]][_0x4b1d11(0x176)](''),this[_0x4b1d11(0x209)]=GeneralDialog[_0x4b1d11(0x23d)][_0x4b1d11(0x162)](this[_0x4b1d11(0x167)]));let _0x51b620=_0x23e143[_0x4b1d11(0x1f5)]||_0x23e143[_0x4b1d11(0x244)]||_0x23e143[_0x4b1d11(0x1cd)];_0x51b620=_0x51b620||_0x4b1d11(0x182);if(!this[_0x4b1d11(0x209)]){if(GeneralDialog[_0x5d42bd(0x15c)][_0x5d42bd(0x14a)](this[_0x4b1d11(0x167)]))throw _0x4b1d11(0x20e)+this[_0x4b1d11(0x167)]+_0x4b1d11(0x1fd);this[_0x4b1d11(0x209)]=document[_0x4b1d11(0x1f8)](_0x4b1d11(0x1ab)),this[_0x4b1d11(0x209)][_0x4b1d11(0x244)]=_0x4b1d11(0x1e7),this[_0x4b1d11(0x209)][_0x5d42bd(0xf1)]('id',''+this[_0x4b1d11(0x167)]),this[_0x4b1d11(0x209)][_0x4b1d11(0x177)]=-0x1,this[_0x4b1d11(0x209)][_0x4b1d11(0x218)]=this[_0x4b1d11(0x167)]+_0x4b1d11(0x197),this[_0x4b1d11(0x209)][_0x23fc70(0x153)]=!![];const _0x475225=[_0x5d42bd(0x1a7),_0x4b1d11(0x178)+this[_0x4b1d11(0x167)]+_0x4b1d11(0x1f9),_0x4b1d11(0x168),_0x4b1d11(0x21e)][_0x4b1d11(0x176)]('');this[_0x5d42bd(0x1ba)][_0x5d42bd(0x149)]=_0x475225,document[_0x4b1d11(0x175)][_0x4b1d11(0x217)](this[_0x4b1d11(0x209)]),GeneralDialog[_0x4b1d11(0x23d)][_0x5d42bd(0x197)](this[_0x4b1d11(0x167)],this[_0x4b1d11(0x209)]),GeneralDialog[_0x5d42bd(0x15c)][_0x5d42bd(0x184)](this[_0x4b1d11(0x167)]);}if(_0x51b620){const _0x10ec74=_0x51b620[_0x4b1d11(0x1bb)]('\x20'),_0x182b9c=_0x228bdb[_0x4b1d11(0x209)][_0x4b1d11(0x219)](_0x4b1d11(0x1bc));_0x10ec74[_0x23fc70(0x1a6)](_0x48a98f=>{const _0x37272f=_0x5d42bd,_0x273ecf=_0x4b1d11;if(_0x48a98f){if(!_0x182b9c[_0x273ecf(0x22d)][_0x37272f(0x115)](_0x48a98f))_0x182b9c[_0x273ecf(0x22d)][_0x273ecf(0x200)](_0x48a98f);}});}this[_0x4b1d11(0x169)][_0x4b1d11(0x16e)]=this['options'][_0x4b1d11(0x16e)]||this[_0x4b1d11(0x169)][_0x4b1d11(0x1d5)],this[_0x4b1d11(0x231)]=new bootstrap[(_0x4b1d11(0x23c))](this[_0x4b1d11(0x209)],{'backdrop':this[_0x4b1d11(0x169)][_0x4b1d11(0x1c0)]??_0x4b1d11(0x1b3)}),this[_0x4b1d11(0x17a)]=this[_0x4b1d11(0x209)][_0x4b1d11(0x219)](_0x4b1d11(0x1ca)),this['modalFooter']=this['divModal'][_0x4b1d11(0x219)](_0x4b1d11(0x171)),this[_0x4b1d11(0x18b)]=this[_0x4b1d11(0x209)][_0x4b1d11(0x219)](_0x23fc70(0x11d)),this[_0x4b1d11(0x18e)]=this[_0x4b1d11(0x18b)];if(typeof this[_0x4b1d11(0x169)][_0x5d42bd(0x141)]===_0x4b1d11(0x1a4))this[_0x5d42bd(0x120)][_0x4b1d11(0x1fb)](this,this[_0x23fc70(0x1c6)]);this[_0x5d42bd(0x110)]=this[_0x4b1d11(0x169)][_0x4b1d11(0x1ac)]||this[_0x5d42bd(0x120)][_0x4b1d11(0x214)]||this[_0x5d42bd(0x120)][_0x4b1d11(0x1a9)]||{},this[_0x4b1d11(0x186)]=this[_0x4b1d11(0x169)][_0x4b1d11(0x186)]||this[_0x5d42bd(0x120)][_0x4b1d11(0x21a)]||{},this[_0x4b1d11(0x1c7)]=this[_0x4b1d11(0x209)][_0x4b1d11(0x219)](_0x4b1d11(0x1f4))[_0x4b1d11(0x219)](_0x4b1d11(0x17f)),this[_0x5d42bd(0x135)]&&(this[_0x5d42bd(0x135)][_0x23fc70(0x142)]=_0x39b334=>{const _0x3fac86=_0x5d42bd,_0x37c86e=_0x4b1d11;_0x39b334[_0x3fac86(0xed)](),this[_0x3fac86(0x116)]=!![],this[_0x37c86e(0x231)][_0x3fac86(0x193)]();}),this[_0x4b1d11(0x228)]=this[_0x4b1d11(0x228)][_0x4b1d11(0x1cb)](this),this[_0x4b1d11(0x1ea)]=this[_0x5d42bd(0x106)][_0x4b1d11(0x1cb)](this);}[_0x4a0daa(0x106)](){const _0x3b8b36=_0x4a0daa,_0x59a46e=_0x14e4e8;this[_0x59a46e(0x169)][_0x59a46e(0x1c1)]&&this[_0x59a46e(0x169)][_0x59a46e(0x1c1)](this[_0x59a46e(0x19c)]),this[_0x59a46e(0x19c)]===![]&&this[_0x3b8b36(0x12e)]===![]&&this[_0x59a46e(0x1fc)][_0x3b8b36(0xf6)]&&this[_0x59a46e(0x1fc)][_0x59a46e(0x1c1)](this[_0x3b8b36(0x129)]());if(this[_0x59a46e(0x169)][_0x59a46e(0x23a)])this[_0x59a46e(0x169)][_0x3b8b36(0x1bb)](this);}[_0x14e4e8(0x228)](){const _0x5128ff=_0x4a0daa,_0x1390e6=_0x14e4e8;if(this[_0x5128ff(0x120)][_0x1390e6(0x20b)])this[_0x1390e6(0x169)][_0x5128ff(0x174)](this,this[_0x1390e6(0x22e)],this[_0x5128ff(0x180)],this[_0x1390e6(0x209)]);}[_0x14e4e8(0x1be)](){const _0x14384b=_0x14e4e8;function _0x3a2da9(_0x1e6b97=0x8){const _0x51e300=_0x6937,_0x39bfdc=_0x51e300(0x1bd);let _0x414c5b='';for(let _0x3c78eb=0x0;_0x3c78eb<_0x1e6b97;_0x3c78eb++){_0x414c5b+=_0x39bfdc[_0x51e300(0x1a0)](Math[_0x51e300(0x23b)](Math[_0x51e300(0x1d7)]()*_0x39bfdc[_0x51e300(0x232)]));}return _0x414c5b;}let _0x3d4980;do{_0x3d4980=_0x3a2da9();}while(GeneralDialog[_0x14384b(0x1b9)][_0x14384b(0x247)](_0x3d4980));return _0x3d4980;}[_0x14e4e8(0x19f)](_0x380567){const _0x244aec=_0x14e4e8;let _0x3865b3='',_0x4a8d15=0x0;_0x380567[_0x244aec(0x19a)](_0x5efb6e=>{const _0x2b7478=_0x59e4,_0x52cfa0=_0x1698,_0x2f2564=_0x244aec;let _0x47b27a='';if(_0x5efb6e[_0x2f2564(0x1cc)]==!![]||_0x5efb6e[_0x2f2564(0x1cc)]==0x1)_0x47b27a=_0x2f2564(0x221);let _0x4157d0=_0x5efb6e[_0x2f2564(0x1f5)]||_0x5efb6e[_0x52cfa0(0xf2)];_0x4157d0=_0x4157d0||_0x2f2564(0x234),_0x3865b3=[_0x3865b3,_0x2b7478(0x161)+_0x4157d0+_0x2f2564(0x1ec)+(_0x5efb6e[_0x2f2564(0x164)]||'')+_0x2f2564(0x17b)+_0x4a8d15+'\x22\x20'+_0x47b27a+'>'+(_0x5efb6e[_0x2f2564(0x18f)]||'')+'\x20'+(_0x5efb6e[_0x52cfa0(0x10d)]||(_0x5efb6e[_0x2f2564(0x16d)]||''))+_0x2f2564(0x235)][_0x52cfa0(0x176)](''),_0x4a8d15++;}),this[_0x244aec(0x203)][_0x244aec(0x225)]=_0x3865b3;const _0x50128a=this;this[_0x244aec(0x203)][_0x244aec(0x222)]=_0x28c599=>{const _0x497985=_0x59e4,_0x5793ff=_0x1698,_0x2e4992=_0x244aec;let _0x296000=_0x28c599[_0x2e4992(0x1c5)][_0x2e4992(0x172)]('button');if(_0x296000){const _0x24fdfe=_0x296000[_0x2e4992(0x1ff)](_0x2e4992(0x1e1));if(_0x24fdfe)_0x50128a[_0x2e4992(0x19c)]=!![];else _0x50128a[_0x2e4992(0x19c)]=(_0x296000[_0x2e4992(0x224)][_0x497985(0x129)]||'')[_0x2e4992(0x1b2)]()==_0x2e4992(0x1ef)||_0x296000[_0x5793ff(0x162)]==!![];let _0x59e0b3=_0x296000[_0x2e4992(0x224)][_0x2e4992(0x19e)];if(_0x59e0b3>=0x0){let _0x3251b8=_0x50128a[_0x2e4992(0x169)][_0x2e4992(0x1ed)][_0x59e0b3]?.[_0x497985(0xff)];if(_0x3251b8)_0x3251b8(_0x50128a,_0x296000,_0x50128a[_0x2e4992(0x209)]);}}};}[_0x14e4e8(0x211)](_0x3fd5ac=![],_0x45a094=null){const _0x4bc75c=_0x4a0daa,_0x9ed329=_0x14e4e8;this['canceled']=!_0x3fd5ac,_0x3fd5ac&&this[_0x9ed329(0x1fc)][_0x4bc75c(0xf6)]&&(_0x45a094=_0x45a094||this[_0x9ed329(0x1e9)](),this[_0x4bc75c(0x14d)][_0x9ed329(0x1c1)](this[_0x9ed329(0x1e9)](_0x45a094))),this[_0x9ed329(0x1f1)]=!![],this[_0x9ed329(0x231)][_0x9ed329(0x211)]();}[_0x14e4e8(0x1dd)](){const _0x3e7679=_0x4a0daa,_0x6b4a2b=_0x14e4e8;this[_0x6b4a2b(0x22e)]=null,this[_0x6b4a2b(0x241)]=null,this[_0x3e7679(0x16c)]=null,this[_0x3e7679(0x1c3)]=null;}[_0x14e4e8(0x213)](_0x32c450){const _0x211aa2=_0x4a0daa,_0x4fbd47=_0x14e4e8;let _0x3a8c3d='';this[_0x211aa2(0x134)](),_0x32c450[_0x4fbd47(0x19a)](_0x4d85ed=>{const _0x465a6b=_0x59e4,_0x4c2684=_0x211aa2,_0x51d3d9=_0x4fbd47;let _0xa56ce5=_0x4d85ed[_0x51d3d9(0x18c)]==!![]||_0x4d85ed[_0x51d3d9(0x18c)]==0x1?0x1:0x0,_0x4b9119=(_0x4d85ed[_0x51d3d9(0x1d1)]||'')[_0x51d3d9(0x1b2)]();_0x4b9119=_0x4b9119||(_0x4d85ed[_0x51d3d9(0x1c9)]||'')[_0x4c2684(0x14f)]();let _0x4ae042=_0x4d85ed[_0x4c2684(0x183)]||_0x4d85ed[_0x51d3d9(0x18a)];if(_0x4b9119===_0x51d3d9(0x199))_0x4ae042=_0x51d3d9(0x199);else{if(_0x4b9119==_0x51d3d9(0x20f))_0x4ae042=_0x51d3d9(0x16d);else{if([_0x51d3d9(0x180),_0x4c2684(0x104),'decimal'][_0x51d3d9(0x188)](_0x4b9119)>=0x0&&!_0x4ae042)_0x4ae042=_0x51d3d9(0x180);}}let _0x48118e=_0x51d3d9(0x238);if(_0x4ae042===_0x51d3d9(0x201))_0x48118e=_0x51d3d9(0x22a);let _0x12d1a2=[_0x51d3d9(0x166),_0x4ae042,_0x51d3d9(0x1b5)+(_0x4d85ed['dataType']||_0x4d85ed[_0x51d3d9(0x1c9)])+_0x4c2684(0x1a1)+_0x48118e+_0x51d3d9(0x1ae)+_0x4d85ed[_0x51d3d9(0x1c6)]+_0x51d3d9(0x215),_0x4d85ed[_0x51d3d9(0x246)]||'',_0x51d3d9(0x205),_0xa56ce5,_0x51d3d9(0x16c)][_0x51d3d9(0x176)]('');if(_0x4ae042==_0x4c2684(0x1b8))_0x12d1a2=[_0x465a6b(0x177)+(_0x4d85ed[_0x51d3d9(0x1d1)]||_0x4d85ed[_0x4c2684(0x19a)])+_0x51d3d9(0x170)+_0x48118e+_0x4c2684(0x17b)+_0x4d85ed[_0x51d3d9(0x1c6)]+_0x51d3d9(0x1e2),_0x4d85ed[_0x51d3d9(0x246)]||'',_0x51d3d9(0x205),_0xa56ce5,_0x4c2684(0x153)][_0x51d3d9(0x176)]('');_0x3a8c3d=[_0x3a8c3d,_0x51d3d9(0x1ee),_0x4d85ed[_0x4c2684(0x150)],'\x22>',_0x4d85ed[_0x51d3d9(0x226)],_0x51d3d9(0x16a),_0x12d1a2][_0x4c2684(0x176)]('');}),this[_0x4fbd47(0x17a)][_0x4fbd47(0x225)]=[_0x4fbd47(0x227)+this[_0x4fbd47(0x167)]+_0x4fbd47(0x1df),_0x3a8c3d,_0x4fbd47(0x1a5)][_0x4fbd47(0x176)]('');if(this[_0x4fbd47(0x169)][_0x4fbd47(0x1cf)])this[_0x211aa2(0x120)][_0x4fbd47(0x1cf)](this,this[_0x4fbd47(0x209)]);this[_0x211aa2(0x156)](this[_0x4fbd47(0x17a)]),this[_0x4fbd47(0x22e)]=this[_0x211aa2(0x101)](),this[_0x4fbd47(0x241)]=this[_0x211aa2(0xef)]();}[_0x14e4e8(0x193)](){const _0x427325=_0x14e4e8;let _0xaecfd4={};const _0x4c34d4=this[_0x427325(0x17a)][_0x427325(0x1c4)](_0x427325(0x194));return _0x4c34d4[_0x427325(0x1d3)](_0x4632a1=>{const _0x566329=_0x427325;let _0x4c621b=_0x4632a1[_0x566329(0x224)][_0x566329(0x185)];_0x4c621b&&(_0xaecfd4[_0x4c621b]=_0x4632a1);}),this[_0x427325(0x173)]=_0x4c34d4,_0xaecfd4;}[_0x14e4e8(0x207)](){const _0x388049=_0x59e4,_0x1a6976=_0x14e4e8;return this[_0x1a6976(0x17a)][_0x1a6976(0x1c4)](_0x388049(0x105));}[_0x4de8cb(0x1c7)](){const _0x43613d=_0x4a0daa,_0x38f487=_0x14e4e8;if(this[_0x38f487(0x1ac)][_0x43613d(0x129)])return this[_0x38f487(0x1ac)][_0x43613d(0x129)](this,this[_0x38f487(0x209)]);let _0x549f2d={'id':this[_0x38f487(0x1fc)]?this[_0x38f487(0x1fc)]['id']||'':null};const _0x1e2e8b=this[_0x43613d(0x16a)][_0x38f487(0x1c4)](_0x38f487(0x194));_0x1e2e8b[_0x43613d(0xf5)](_0x1f3cf7=>{const _0x24f4c3=_0x59e4,_0x421860=_0x43613d,_0x1f57eb=_0x38f487,_0x502c8c=_0x1f3cf7[_0x1f57eb(0x224)],_0x45d0c0=_0x502c8c[_0x24f4c3(0x1ba)]||_0x1f3cf7['getAttribute'](_0x1f57eb(0x1c6));_0x1f3cf7[_0x1f57eb(0x1bf)]===_0x1f57eb(0x22b)?_0x549f2d[_0x45d0c0]=_0x1f3cf7[_0x421860(0x171)](_0x1f57eb(0x160)):_0x549f2d[_0x45d0c0]=_0x1f3cf7[_0x421860(0x16d)];});if(this[_0x38f487(0x186)][_0x43613d(0x129)]){const _0x19ced1=this[_0x38f487(0x186)][_0x38f487(0x1e9)](this,this[_0x43613d(0x1ba)]);_0x549f2d={..._0x549f2d,..._0x19ced1};}return _0x549f2d;}[_0x14e4e8(0x1b0)](_0x545df0){const _0xaf792d=_0x4de8cb,_0x123ca0=_0x4a0daa,_0x1d02d4=_0x14e4e8;_0x545df0=_0x545df0||{};const _0x459e28=this;if(this[_0x1d02d4(0x1ac)][_0x1d02d4(0x1b0)])return this[_0x1d02d4(0x1ac)][_0x1d02d4(0x1b0)](this,_0x545df0,this[_0x1d02d4(0x209)]);_0x459e28[_0x1d02d4(0x1c3)]={},this[_0x1d02d4(0x17a)][_0x1d02d4(0x1c4)](_0x1d02d4(0x194))[_0x123ca0(0xf5)](_0x305cf5=>{const _0x1c39f3=_0x59e4,_0xa12c5e=_0x123ca0,_0x351e06=_0x1d02d4,_0x1277eb=_0x305cf5[_0x351e06(0x224)][_0x351e06(0x185)];if(_0x305cf5[_0x351e06(0x1bf)]===_0xa12c5e(0x122))_0x305cf5[_0x351e06(0x1d4)]=_0x545df0[_0x1277eb]||'',_0x305cf5[_0x1c39f3(0x102)](new Event(_0x351e06(0x239))),_0x459e28[_0xa12c5e(0x11d)][_0x1277eb]=_0x545df0[_0x1277eb]||'';else _0x305cf5[_0x351e06(0x1bf)]==_0xa12c5e(0x13d)?_0x305cf5[_0x1c39f3(0x126)](_0x351e06(0x160),_0x545df0[_0x1277eb]||''):_0x305cf5[_0x351e06(0x1d4)]=_0x545df0[_0x1277eb]||'';});if(this[_0x1d02d4(0x186)][_0x1d02d4(0x1b0)])this[_0x1d02d4(0x186)][_0x1d02d4(0x1b0)](this,_0x545df0,this[_0x123ca0(0x1ba)]);if(this[_0x1d02d4(0x169)][_0x1d02d4(0x19d)])_0x459e28[_0x123ca0(0x120)][_0x123ca0(0x170)](this,this[_0x1d02d4(0x22e)],_0x459e28[_0xaf792d(0x1c6)]);}[_0x4a0daa(0x119)](_0x2094e4,_0x5b067b,_0x1f2f44){const _0x64c436=_0x14e4e8;if(!_0x2094e4||!_0x1f2f44)return;_0x2094e4[_0x64c436(0x1eb)](_0x5b067b,_0x1f2f44),_0x2094e4['addEventListener'](_0x5b067b,_0x1f2f44);}[_0x14e4e8(0x1f0)](_0x37f84a,_0x236ada){const _0x50a0cd=_0x4a0daa,_0x1885d7=_0x14e4e8,_0xe54c00=this;_0x37f84a=_0x37f84a||{};let _0x3b30b9=this[_0x1885d7(0x169)][_0x1885d7(0x22c)];if(!_0x3b30b9||!_0x3b30b9[_0x1885d7(0x230)]){if(!_0xe54c00[_0x1885d7(0x169)][_0x1885d7(0x19b)]){_0x236ada({});return;}try{((async()=>{const _0x536129=_0x1885d7;await _0xe54c00[_0x536129(0x169)][_0x536129(0x19b)](_0xe54c00,null,_0xe54c00[_0x536129(0x22e)],_0xe54c00[_0x536129(0x209)]);})());}catch(_0x975800){const _0x479d3e=_0xe54c00[_0x1885d7(0x169)][_0x1885d7(0x19b)]['constructor'][_0x1885d7(0x1c6)]===_0x1885d7(0x1da);if(!_0x479d3e)throw _0x1885d7(0x21b);else throw _0x975800;}_0x236ada({});return;}let _0x2541b7=null;if(typeof _0x3b30b9[_0x1885d7(0x230)][_0x50a0cd(0x19b)]===_0x50a0cd(0x142))_0x2541b7=_0x3b30b9[_0x1885d7(0x230)][_0x1885d7(0x240)](_0xe54c00[_0x1885d7(0x1fc)]);else _0x2541b7=_0x3b30b9[_0x1885d7(0x230)][_0x1885d7(0x240)]||{};_0x2541b7=_0x2541b7||{},_0x2541b7['id']=_0x37f84a['id'],vsapi[_0x1885d7(0x18d)](_0x3b30b9[_0x50a0cd(0x127)][_0x1885d7(0x17e)],_0x2541b7,![],![],![])[_0x1885d7(0x20a)](_0x42aa8d=>{const _0x542c0b=_0x50a0cd,_0x1e99a9=_0x1885d7;if(_0x3b30b9[_0x1e99a9(0x230)][_0x1e99a9(0x1e8)])_0x3b30b9[_0x1e99a9(0x230)][_0x1e99a9(0x1e8)](_0xe54c00,_0x42aa8d,_0xe54c00[_0x1e99a9(0x209)]);const _0x1df61c=_0x42aa8d[_0x1e99a9(0x1e0)]==0xc8?_0x42aa8d[_0x1e99a9(0x236)]:{},_0x1d46df=_0xe54c00[_0x542c0b(0x1b1)],_0x277b4c=_0xe54c00[_0x1e99a9(0x241)],_0x5ad873=_0xe54c00[_0x1e99a9(0x169)][_0x542c0b(0x112)]||_0xe54c00[_0x1e99a9(0x169)][_0x1e99a9(0x1b7)];if(_0x5ad873)try{_0x5ad873[_0x1e99a9(0x19a)](_0x27c52a=>{const _0x285c4=_0x59e4,_0x196b66=_0x542c0b,_0x1f8554=_0x1e99a9;let _0x292cd4=_0x27c52a[_0x1f8554(0x1c6)]?_0x1d46df[_0x27c52a[_0x1f8554(0x1c6)]]:null;_0x292cd4=_0x292cd4||_0x277b4c[_0x27c52a[_0x1f8554(0x1c6)]];if(_0x292cd4&&_0x292cd4[_0x1f8554(0x1bf)]===_0x196b66(0x122)){let _0x1fe78e=[];if(!_0x27c52a[_0x1f8554(0x1fe)]){_0x1fe78e=typeof _0x27c52a[_0x1f8554(0x236)]===_0x196b66(0x1b7)&&_0x27c52a[_0x1f8554(0x236)]?_0x1df61c[_0x27c52a[_0x196b66(0x11a)]]:_0x27c52a[_0x1f8554(0x236)];if(!_0x1fe78e||!_0x1fe78e[0x0]){if(_0x27c52a[_0x196b66(0xec)])_0x1fe78e=_0x1df61c[_0x27c52a[_0x1f8554(0x1b4)]];}}const _0x2cd368=_0x27c52a[_0x285c4(0x156)]||_0x27c52a[_0x1f8554(0x22f)];if(_0x2cd368)_0x1fe78e=_0x2cd368(_0x1fe78e,_0x42aa8d);const _0x4e31c4=_0x27c52a[_0x196b66(0x1a3)];_0x4e31c4&&_0x1fe78e[_0x1f8554(0x243)](_0x4e31c4);let _0x568abd=_0x27c52a[_0x1f8554(0x23f)]||_0x27c52a[_0x1f8554(0x1e5)];_0x568abd=typeof _0x568abd===_0x1f8554(0x1a4)?_0x568abd(_0xe54c00,_0xe54c00[_0x1f8554(0x1fc)]):_0x568abd;if(_0x27c52a[_0x1f8554(0x187)]){const _0x1c04f0=_0x27c52a[_0x1f8554(0x187)],_0x237706=_0x1c04f0[_0x196b66(0x19f)]||_0x1c04f0[_0x1f8554(0x1e3)]||_0x1c04f0[_0x1f8554(0x229)]||_0x1c04f0[_0x196b66(0x132)],_0x979d6f=_0x237706?_0x277b4c[_0x237706]:null;_0x979d6f&&_0x979d6f[_0x1f8554(0x1bf)]===_0x1f8554(0x1a1)&&_0x979d6f[_0x1f8554(0x16b)](_0x1f8554(0x239),_0x171847=>{const _0x179d97=_0x285c4,_0x256967=_0x196b66,_0xc5a618=_0x1f8554;if(_0x1c04f0[_0x179d97(0x1c4)]){let _0x486c64=_0x1c04f0[_0xc5a618(0x22f)](_0xe54c00,_0x1fe78e||[],_0x277b4c),_0x4951e2=null,_0x24456e=_0xe54c00[_0xc5a618(0x241)][_0x27c52a[_0xc5a618(0x1c6)]][_0xc5a618(0x224)][_0x256967(0x199)];if(_0xe54c00[_0xc5a618(0x1c3)])_0x4951e2=_0xe54c00[_0x256967(0x11d)][_0x24456e];if(_0x4951e2)_0x568abd=_0x4951e2;VSUtil[_0xc5a618(0x184)](_0x292cd4,_0x486c64,_0x27c52a[_0x256967(0x15f)]||_0x256967(0x16d),_0x27c52a[_0xc5a618(0x233)]||_0xc5a618(0x226),null,null,_0x568abd);}});}else{if(_0x27c52a[_0x1f8554(0x1fe)]||_0x27c52a[_0x196b66(0x19f)]){const _0x49df1f=_0x27c52a[_0x1f8554(0x1fe)]||_0x27c52a[_0x1f8554(0x1ce)],_0x2518fa=_0x49df1f[_0x1f8554(0x1c6)]||_0x49df1f[_0x1f8554(0x1ce)]||(_0x49df1f[_0x1f8554(0x229)]||_0x49df1f[_0x1f8554(0x23e)])||_0x49df1f[_0x1f8554(0x1e3)],_0x4c3a21=_0x2518fa?_0x277b4c[_0x2518fa]:null;if(_0x4c3a21&&_0x4c3a21[_0x1f8554(0x1bf)]===_0x1f8554(0x1a1)){const _0x14c7c2=()=>{const _0x89e1cd=_0x285c4,_0x2684b7=_0x196b66,_0x237dbc=_0x1f8554,_0x234659=_0x49df1f[_0x237dbc(0x230)]?.[_0x237dbc(0x17e)];if(_0x234659){let _0x48c852=typeof _0x49df1f[_0x237dbc(0x230)][_0x237dbc(0x240)]===_0x237dbc(0x1a4)?_0x49df1f[_0x237dbc(0x230)][_0x2684b7(0x19b)](_0xe54c00,_0xe54c00[_0x237dbc(0x1fc)],_0x277b4c):_0x49df1f[_0x237dbc(0x230)][_0x237dbc(0x240)];if(!_0x48c852){const _0x5426e2=_0x4c3a21[_0x89e1cd(0x18e)][_0x237dbc(0x185)]||null;if(_0x5426e2)_0x48c852={'keyName':_0x4c3a21[_0x237dbc(0x1d4)]};else console[_0x237dbc(0x1f3)](_0x237dbc(0x1af));}vsapi[_0x237dbc(0x18d)](_0x234659,_0x48c852,![],![],![])[_0x237dbc(0x20a)](_0x4a0365=>{const _0x4002e4=_0x2684b7,_0x489ff2=_0x237dbc;if(_0x49df1f[_0x489ff2(0x208)])_0x1fe78e=_0x49df1f[_0x489ff2(0x208)](_0x4a0365);else _0x1fe78e=_0x4a0365[_0x4002e4(0x186)]==0xc8?_0x4a0365[_0x4002e4(0x11a)]:[];let _0x9fc438=null,_0x48577c=_0xe54c00[_0x489ff2(0x241)][_0x27c52a[_0x489ff2(0x1c6)]][_0x4002e4(0x18f)][_0x489ff2(0x185)];if(_0xe54c00[_0x489ff2(0x1c3)])_0x9fc438=_0xe54c00[_0x4002e4(0x11d)][_0x48577c];if(_0x9fc438)_0x568abd=_0x9fc438;const _0x2fc53f=_0x27c52a[_0x489ff2(0x181)]||_0x49df1f[_0x489ff2(0x181)]||_0x489ff2(0x1d4),_0x5da323=_0x27c52a[_0x4002e4(0x1b5)]||_0x49df1f['textField']||_0x489ff2(0x226);VSUtil[_0x489ff2(0x184)](_0x292cd4,_0x1fe78e,_0x2fc53f,_0x5da323,null,null,_0x568abd);});}};_0xe54c00[_0x196b66(0x119)](_0x4c3a21,_0x1f8554(0x239),_0x14c7c2);}}else{const _0x47b302=_0x27c52a[_0x1f8554(0x181)]??_0x1f8554(0x1d4),_0x22d1e3=_0x27c52a[_0x1f8554(0x233)]??_0x1f8554(0x226);if(typeof _0x22d1e3===_0x1f8554(0x1a4)){_0x1fe78e=_0x1fe78e[_0x1f8554(0x19a)](_0x12287f=>({'value':_0x12287f[_0x47b302]??'','label':_0x22d1e3(_0xe54c00,_0x12287f)})),VSUtil[_0x196b66(0x11c)](_0x292cd4,_0x1fe78e,_0x1f8554(0x1d4),'label',null,null,_0x568abd);return;}if(_0x1fe78e&&_0x1fe78e[0x0]){let _0x289d5f=_0x1fe78e[0x0];(!_0x289d5f[_0x22d1e3]||!_0x289d5f[_0x47b302])&&console[_0x1f8554(0x1f3)](_0x1f8554(0x1a8)+_0x27c52a[_0x1f8554(0x1c6)]+_0x1f8554(0x174));}else console[_0x1f8554(0x1f3)](_0x285c4(0x1bc));VSUtil[_0x1f8554(0x184)](_0x292cd4,_0x1fe78e,_0x47b302,_0x22d1e3,null,null,_0x568abd);}}_0x27c52a[_0x1f8554(0x1b6)]&&_0x292cd4[_0x1f8554(0x16b)](_0x196b66(0x13e),_0x577752=>{const _0x39da1f=_0x196b66,_0x3006b7=_0x1f8554;_0x577752[_0x3006b7(0x1a6)](),_0x27c52a[_0x3006b7(0x1b6)](_0xe54c00,_0x292cd4,_0xe54c00[_0x39da1f(0x1ba)]);});}});}catch(_0x42c7a0){console[_0x1e99a9(0x1f3)](_0x42c7a0+_0x542c0b(0x1ae));}_0x236ada(_0x1df61c);if(typeof _0xe54c00[_0x1e99a9(0x169)][_0x1e99a9(0x19b)]===_0x1e99a9(0x1a4))_0xe54c00[_0x1e99a9(0x169)][_0x1e99a9(0x19b)](_0xe54c00,_0x1df61c,_0xe54c00[_0x1e99a9(0x193)](),_0xe54c00[_0x1e99a9(0x209)]);});}[_0x14e4e8(0x1ad)](_0x4f0abb){const _0x48c7c1=_0x4de8cb,_0x2fe777=_0x4a0daa,_0x11ece2=_0x14e4e8;_0x4f0abb[_0x48c7c1(0x19e)](_0x48c7c1(0x105))[_0x11ece2(0x1d3)](_0x4be4f0=>{const _0x36d39f=_0x1698,_0x6fa386=_0x11ece2;let _0x192627=_0x4be4f0[_0x6fa386(0x224)][_0x6fa386(0x1c9)],_0x50ed2d=_0x4be4f0[_0x6fa386(0x1bf)][_0x6fa386(0x1b2)]();_0x50ed2d===_0x36d39f(0x1b8)&&VSUtil[_0x6fa386(0x204)](_0x4be4f0);switch(_0x192627){case _0x6fa386(0x20f):DateTimePicker[_0x6fa386(0x192)]($(_0x4be4f0));break;default:break;}});if(typeof Validator!==_0x11ece2(0x1e4))Validator[_0x2fe777(0x1b3)](_0x4f0abb);}[_0x14e4e8(0x1c2)](){const _0x36f36a=_0x4a0daa,_0x444802=_0x14e4e8,_0x178e58=this[_0x444802(0x17a)][_0x444802(0x1c4)](_0x444802(0x20c));for(let _0xd50ceb of _0x178e58){if(_0xd50ceb[_0x444802(0x224)][_0x444802(0x1f3)]==='1'||_0xd50ceb[_0x444802(0x224)][_0x36f36a(0x13f)]===_0x444802(0x195))return!![];}return![];}[_0x14e4e8(0x1e6)](){const _0x87c0d3=_0x4de8cb,_0x481f97=_0x14e4e8,_0x27bf12=this['modalBody'][_0x481f97(0x1c4)](_0x481f97(0x20c));let _0x5f204d=0x0;for(let _0x172725 of _0x27bf12){(_0x172725[_0x481f97(0x224)][_0x87c0d3(0x16e)]==='1'||_0x172725[_0x481f97(0x224)][_0x481f97(0x1f3)]===_0x481f97(0x195))&&_0x5f204d++;}return _0x5f204d;}[_0x4de8cb(0x19f)](){const _0x24cbc1=_0x14e4e8;let _0x18043a=GeneralDialog[_0x24cbc1(0x1d0)](this[_0x24cbc1(0x209)]);return this[_0x24cbc1(0x202)]=_0x18043a[_0x24cbc1(0x202)],_0x18043a[_0x24cbc1(0x241)];}[_0x14e4e8(0x1db)](){const _0x34ca89=_0x14e4e8;return GeneralDialog[_0x34ca89(0x237)](this[_0x34ca89(0x209)]);}[_0x14e4e8(0x1fa)](){const _0x4155c0=_0x4de8cb,_0x44e6da=_0x4a0daa,_0x19aa84=_0x14e4e8,_0x1768df=this;let _0xa10751=this[_0x19aa84(0x209)][_0x19aa84(0x219)](_0x19aa84(0x1b1)),_0x5440a2=this[_0x19aa84(0x209)][_0x44e6da(0x1c2)](_0x19aa84(0x171));if(this[_0x44e6da(0x120)][_0x44e6da(0x140)]){_0xa10751?.[_0x19aa84(0x219)](_0x19aa84(0x17f))?.[_0x19aa84(0x21d)]();let _0x24d852=_0x5440a2[_0x4155c0(0x148)](_0x19aa84(0x212));!_0x24d852&&(_0x24d852=document[_0x19aa84(0x1f8)](_0x19aa84(0x210)),_0x24d852[_0x19aa84(0x244)]=_0x19aa84(0x234),_0x24d852[_0x44e6da(0xf1)](_0x4155c0(0x10a),_0x19aa84(0x231)),_0x24d852[_0x44e6da(0x149)]=_0x19aa84(0x220),_0x5440a2[_0x44e6da(0x1bc)](_0x24d852,_0x5440a2['firstChild']));if(_0x24d852)_0x24d852[_0x19aa84(0x222)]=_0x587a55=>{const _0x454074=_0x19aa84;_0x1768df[_0x454074(0x231)][_0x454074(0x211)]();};}else{_0x5440a2[_0x44e6da(0x1c2)](_0x19aa84(0x212))?.[_0x19aa84(0x21d)]();let _0x2d05e9=_0xa10751?.[_0x19aa84(0x219)](_0x19aa84(0x17f));if(!_0x2d05e9){let _0x3e48d4=_0x19aa84(0x161);_0xa10751[_0x19aa84(0x1d9)](_0x19aa84(0x21c),_0x3e48d4);let _0x276c5e=_0xa10751[_0x19aa84(0x219)](_0x19aa84(0x206));_0x276c5e[_0x19aa84(0x222)]=_0xbeb0b2=>{const _0x742b53=_0x19aa84;_0x1768df[_0x742b53(0x19c)]=!![],_0x1768df[_0x742b53(0x231)][_0x742b53(0x211)]();};}}}[_0x14e4e8(0x189)](_0x56116a){const _0x19bf94=_0x4de8cb,_0x5ef1ba=_0x4a0daa,_0x2112d5=_0x14e4e8,_0xab86b0=this;_0xab86b0['canceled']=!![],this[_0x2112d5(0x1f1)]=![],this[_0x2112d5(0x1fc)]=_0x56116a||{};if(!this[_0x2112d5(0x1a2)]){const _0x57b03e=this[_0x2112d5(0x169)][_0x2112d5(0x1aa)]||this[_0x2112d5(0x169)][_0x5ef1ba(0x196)]||this[_0x2112d5(0x169)][_0x2112d5(0x16e)];if(_0x57b03e){this[_0x2112d5(0x1dd)]();let _0x5b69ee=_0x57b03e();this[_0x2112d5(0x17a)][_0x5ef1ba(0x149)]=_0x5b69ee,this[_0x2112d5(0x1ad)](this[_0x2112d5(0x17a)]),this[_0x2112d5(0x22e)]=this[_0x5ef1ba(0x101)](),this[_0x2112d5(0x241)]=this[_0x5ef1ba(0xef)]();if(this[_0x2112d5(0x169)][_0x2112d5(0x1cf)])this[_0x2112d5(0x169)][_0x2112d5(0x1cf)](this,this[_0x5ef1ba(0x1ba)]);}else _0xab86b0[_0x2112d5(0x213)](_0xab86b0[_0x2112d5(0x169)][_0x19bf94(0x13a)]);this[_0x2112d5(0x1a2)]=!![];}let _0x44acd1=GeneralDialog[_0x2112d5(0x1d0)](_0xab86b0[_0x2112d5(0x209)]);_0xab86b0[_0x5ef1ba(0x180)]=_0x44acd1[_0x2112d5(0x241)];;_0xab86b0[_0x2112d5(0x22e)]=_0xab86b0[_0x2112d5(0x193)](),this[_0x2112d5(0x19f)](_0xab86b0[_0x19bf94(0x175)][_0x2112d5(0x1ed)]),this[_0x2112d5(0x1fa)](),this[_0x19bf94(0x1cd)](_0x56116a,_0x55dbf0=>{const _0xd17ffe=_0x19bf94,_0x3ce4b4=_0x5ef1ba,_0x547a55=_0x2112d5;let _0x15ec2a=_0xab86b0[_0xd17ffe(0x175)][_0x547a55(0x165)],_0x25c372=_0xab86b0[_0x547a55(0x169)][_0x547a55(0x22c)],_0x18d93f=null;if(_0x25c372){if(_0x25c372[_0x547a55(0x230)])_0x18d93f=_0x25c372[_0x547a55(0x17c)]||_0x25c372[_0x547a55(0x230)][_0x547a55(0x17c)],_0x18d93f&&(_0x15ec2a=_0x55dbf0[_0x18d93f]?_0x25c372[_0x547a55(0x1d2)]:_0x25c372[_0x547a55(0x245)]),_0x56116a?.['id']&&!_0x55dbf0[_0x18d93f]&&console[_0x547a55(0x1f3)](_0x3ce4b4(0x1a0));else _0x15ec2a=_0xab86b0[_0x547a55(0x169)][_0x547a55(0x165)]||_0x25c372[_0x547a55(0x245)];}_0xab86b0[_0x547a55(0x18b)][_0x547a55(0x225)]=_0x15ec2a;if(this[_0x547a55(0x169)][_0x547a55(0x22c)])this[_0xd17ffe(0x1a3)](_0x18d93f?_0x55dbf0[_0x18d93f]:null);_0xab86b0[_0xd17ffe(0x1cc)](_0xab86b0[_0x3ce4b4(0x1ba)],_0x3ce4b4(0x126),this[_0x547a55(0x1ea)]),_0xab86b0[_0x547a55(0x1dc)](_0xab86b0[_0xd17ffe(0x1c6)],_0x547a55(0x21f),this[_0x547a55(0x228)]),_0xab86b0[_0x547a55(0x231)][_0x547a55(0x189)]();});}}
+"use strict";
+/** dependencies: vsapi.js, jqueryDatePicker2.js, VSUtil, LocaleManager */
+/**
+ GeneraDialogOptions = {
+   title:"Dialog Tile",
+   cssClass:"", NOTE: className also possible
+   showCancelButton:true,
+   fields:[
+     name:"account_type_id",
+     label:"trans::titles.Account Type",
+     dataType:"number",
+     displayType:"select", or inputType:"select"
+     
+   ],
+   buttons:[
+     {
+        label:"",
+        icon:"",
+        action:"do_somthing",
+        cssClass:"",
+        click:(instance,  btn, divModal)=>{
+        }
+     },
+
+   ],
+  createFields:()=>{}  NOTE: if use createFields() you must ensure that each field has class "data-input" and has attribute "data-field", do not use "fields"
+  configSelect:[
+   {
+      name:"country_id",
+      data:"countries",
+      valueField:"country_id",
+      textField:"country",
+      firstOption:{"value":"","label":""}
+      firstOptionValue:"",
+      firstOptionText:"",
+      default:13,
+      onChange:(selectElement,value){...}
+   },
+
+  ],
+  override:{
+    getData:(me,fields,divModal)=>{
+        ...
+        return {new_prop:"111", newOne:"222"};
+    },
+    setData: (me,fields,divModal)=>{
+       
+    }
+  },
+  extendMethod:{
+     getData:(me,data, divModal)=>{
+       ...
+       return something more;
+     },
+     setData:(me,data,divModal)=>{
+        ...
+     }
+  }
+  prepareFormOptions:{
+     createTitle:"Create Account",
+     modifyTitle:"Edit Account",
+     targetProp:"account",
+     api:{
+        endpoint:"",
+        params:(dataOptions)=>{...} //NOTE: the parameter "dataOption" is the options that is passed from, for example RoleDialog.show(options);
+        onResponse:(res)=>{ ...}
+     }
+  },
+  onInit:()=>{}
+  onShow:(instance,fields, divModal)=>{},
+  onPrepareForm:(instance,data,fields,divModal)=>{}
+  afterSetData: (me,fields, divModal)=>{}
+}
+*/
+class GeneralDialog{
+    //static container_id  = "_xdialog_container1107";
+    //static container = null;
+    static usedIds = new Set();
+    static dialogStore = new Map();
+
+    //Fetch each control element that has "name" attribute, and ensure space is replaced by "_"
+    static createControls = (divModal)=>{
+        const elements = divModal.querySelectorAll('[name]');
+        const controls = {};
+        elements.forEach(el =>{
+          const name = el.getAttribute('name');
+          if(name) controls[name] = el;
+        });
+        return {
+            "controls":controls,
+            "controlList":elements
+        }
+    }
+
+    static createControlList = (divModal)=>{
+        return divModal.querySelectorAll('[name]');
+    }
+
+    constructor(options){
+        this.dialog_id_prefix = "_vsd1188";
+      //   if (!GeneralDialog.container){
+      //     let xdiv = document.createElement('div');
+      //     xdiv.setAttribute('id',GeneralDialog.container_id);
+      //     GeneralDialog.container = document.body.appendChild(xdiv);
+      //   }
+
+        options = options || {
+           backdrop:false, 
+           fields:[
+               {
+                name:"password",
+                label:"Password",
+                dataType:"password", // dataType = password|string|number|date
+                displayType:"password"
+               },
+               {
+                name:"confirm_password",
+                label:"Confirm Password",
+                dataType:"password", // dataType = password|string|number|date
+                displayType:"password",
+                // config:{
+                //     data:"countries",
+                //     valueField:"id",
+                //     textField:"country",
+                //     default: 13
+                // }
+               },
+           ],
+        //    createFields:(dataOptionss)=>{
+        //      return '<div> ... </div>';
+        //    },
+           buttons:[
+             {
+                cssClass:"btn-cancel btn btn-secondary",
+                icon:"",
+                dismissModal:true,
+                action:"cancel",
+                label:"Cancel"
+              },
+              {
+                cssClass:"btn-save", // or className
+                icon:"",
+                label:"",
+                action:"",
+                click:(btn,divModal)=>{}
+              }
+           ],
+        //    selectConfig:{
+        //      country_id:{
+        //         data:"countries",
+        //         valueField:"id",
+        //         textField:"country",
+        //         default: 13
+        //      },
+        //      emp_type:{
+        //         source:'static',
+        //         data:[],
+        //         valueField:"emp_type",
+        //         textField:"emp_type",
+        //         default:"full-time"
+        //      }
+        //    }, 
+           prepareFormOptions:{
+              createTitle:"Create It",
+              modifyTitle:"Modify It",
+              targetProp:null,
+              api:{
+                endpoint: null,
+                params:(dataOptions)=>{},
+                //onResponse:(res)=>{}
+              }
+           },
+           onClose:(isCanceled) =>{ return;}
+        };
+        const that = this;
+        options.contentCreated = options.contentCreated || options.afterInit || options.onAfterInit;
+        if (options.allowCancel == 'undefined' || options.allowCancel ==null) options.allowCancel = true;
+        this.options = options;
+
+        if(!this.options.dialogId){
+            this.options.dialogId= this._createRandomId();
+            //throw "GeneralDialog => options.dialogId cannot be null or empty and it must be unique";
+        }
+        this.dialog_id = [this.dialog_id_prefix,this.options.dialogId].join('');
+        this.divModal = GeneralDialog.dialogStore.get(this.dialog_id);
+         //if(this.dialog_id) this.divModal =  GeneralDialog.container.querySelector (`#${this.dialog_id}`);
+         //   if(this.dialog_id) 
+         //      this.divModal = document.body.querySelector(`#${this.dialog_id}`);
+         //   else{
+         //     this.dialog_id = this._createRandomId();
+         //     this.divModal = null;
+         //   }
+
+        let formClassName = options.cssClass || options.className || options.dialogClass;
+        formClassName = formClassName || 'vs-modal-dialog'; 
+
+        if(!this.divModal){
+              if(GeneralDialog.usedIds.has(this.dialog_id)){
+                 throw `GeneralDialog => dialogId "${this.dialog_id}" is already in use.`;
+              }  
+              this.divModal = document.createElement('div');
+              this.divModal.className =`modal fade"`;
+              this.divModal.setAttribute('id',`${this.dialog_id}`);
+              this.divModal.tabIndex =-1;
+              this.divModal.ariaLabel =`${this.dialog_id}_title`;
+              this.divModal.ariaHidden = true;
+               const html = [`
+               <div class="modal-dialog">
+               <div class="modal-content">`,
+                  `<div class="modal-header">
+                     <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
+                  //   (that.options.showCancelButton? '': `<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  //   <span aria-hidden="true">&times;</span>
+                  //   </button>`),
+                  `</div>`,
+                  `<div class="modal-body">
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn-cancel btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn-save btn btn-primary">Reset Now</button>
+                  </div>
+               </div>
+               </div>`].join('');
+               this.divModal.innerHTML = html ;
+               document.body.append(this.divModal);
+               GeneralDialog.dialogStore.set(this.dialog_id,this.divModal);
+               GeneralDialog.usedIds.add(this.dialog_id);
+        }
+        
+       if(formClassName){
+         const cls = formClassName.split(' ');
+         const div = that.divModal.querySelector('div.modal-dialog'); 
+         cls.map(c =>{
+             if(c){
+               if(!div.classList.contains(c)) div.classList.add(c);  
+             }
+         }); 
+       }
+
+       this.options.createFields = this.options.createFields || this.options.createContent;
+      //  if(this.options.showCancelButton){
+      //     this.options.buttons = this.options.buttons || {};
+      //     this.options.buttons.unshift({ 
+      //       cssClass:"btn-cancel btn btn-secondary",
+      //       icon:"",
+      //       dismissModal:true,
+      //       action:"cancel",
+      //       label:"Cancel"
+      //     });
+      //  }
+
+       this.modal = new bootstrap.Modal(this.divModal, {backdrop: this.options.backdrop ?? 'static'});
+       this.modalBody = this.divModal.querySelector('.modal-body'); 
+       this.modalFooter = this.divModal.querySelector('.modal-footer'); 
+       this.elTitle = this.divModal.querySelector('.modal-title');
+       this.modalTitle = this.elTitle;
+       //this.renderButtons(this.options.buttons);
+       if(typeof this.options.onInit ==='function') this.options.onInit(this,this.divModal);
+       this.override = this.options.override || this.options.overrideMethod || this.options.overrideMethods || {};
+       this.extendMethod = this.options.extendMethod || this.options.extendMethods || {};
+       this.lnkClose = this.divModal.querySelector('div.modal-header').querySelector('.close');
+       if(this.lnkClose){
+         this.lnkClose.onclick = e =>{
+            e.preventDefault();
+             this.canceled = true;
+             this.modal.hide();
+         };
+       }
+       //because this._handleShown is passed as a callback to _addEventListener(), so we need to bind context to $this, so that the this.options inside _handleClose() will be working as usual
+       this._handleShown = this._handleShown.bind(this);
+       this._handleClose = this._handleClose.bind(this);
+    }
+ 
+    _handleClose (){
+        /*** the following code to remove backdrop is need only when the DIV dialog is render in a parent DIV, and NOT appended directly to document.body */
+        // /** Remove backgroup "div.modal-backdrop" from document's body */
+        // const backdrop = document.querySelector('.modal-backdrop');
+        // if (backdrop) {
+        //    backdrop.remove();
+        //    //backdrop.parentNode.removeChild(backdrop);
+        // }
+        if (this.options.onClose) {
+           this.options.onClose(this.canceled);
+        }
+        if(this.canceled === false && this.manualHide === false && this.dataOptions.onClose){
+            this.dataOptions.onClose(this.getData());
+        }
+        if(this.options.onHide) this.options.onHide(this);
+      }
+    
+      //handleOpen handler
+      _handleShown() {
+        if(this.options.onShow) this.options.onShow(this,this.fields, this.controls,this.divModal);
+      }
+
+    _createRandomId() {
+      // Helper function to generate a random string
+      function generateRandomString(length = 8) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+      }
+    
+      // Main function to create a unique ID
+      let id;
+      do {
+        id = generateRandomString();
+      } while (GeneralDialog.usedIds.has(id)); // Check for uniqueness in the Set
+       //GeneralDialog.usedIds.add(id); // Add the new unique ID to the Set
+      return id;
+    }
+
+    renderButtons(buttons){
+       let html = '';
+       let index = 0;
+       buttons.map(btn =>{
+          let data_dismiss_modal ="";
+          if(btn.dismissModal ==true || btn.dismissModal ==1) data_dismiss_modal = ` data-bs-dismiss="modal"`;
+          let className = btn.cssClass || btn.className;
+          className = className || "btn btn-default";
+          html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon || ""} ${btn.label || (btn.text || "")}</button>`].join('');
+          index++;
+        });
+
+       this.modalFooter.innerHTML = html;
+       const that = this;
+       this.modalFooter.onclick = e => {
+          let btn = e.target.closest('button');
+          if(btn){
+            const data_dimiss = btn.getAttribute('data-bs-dismiss');
+            if(data_dimiss) that.canceled = true;
+            else that.canceled = (( btn.dataset.action || "").toLowerCase() == "cancel" ) || (btn.dismissModal ==true);
+            let idx = btn.dataset.index;
+            if(idx >=0){
+                let fn = that.options.buttons[idx]?.click;
+                if(fn) fn(that,btn,that.divModal);
+            }
+           
+          }
+       };
+    }
+
+    //Close Dialog
+    hide(success = false, passBackData = null){
+      //if(this.options.onClose) this.options.onClose(this.canceled);
+      this.canceled = !success;
+      if (success && this.dataOptions.onClose){
+        passBackData = passBackData || this.getData();
+        this.dataOptions.onClose(this.getData(passBackData));
+      }
+      this.manualHide = true;
+      this.modal.hide();
+      // this.jm = this.jm || $(this.divModal);
+      // this.jm.modal('hide');
+    }
+
+    disposeControls(){
+        this.fields = null;
+        this.controls = null;
+        this.controlList = null;
+        this.fieldList = null;
+    }
+
+    renderFields(fields){
+       let html = ''; 
+       //dispose previous instances of controls if any  
+       this.disposeControls();
+       fields.map(field =>{
+          let required = (field.required ==true || field.required ==1)? 1:0;
+          let xType = (field.dataType || "").toLowerCase();
+          xType = xType || (field.type || "").toLowerCase();
+          let inputType = field.inputType || field.displayType;
+          //inputType = xType =="number"? "number":"text";
+          if (xType ==="password") inputType ="password";
+          else if(xType =='date') inputType ='text';
+          else if (['number','integer','decimal'].indexOf(xType) >=0 && !inputType) inputType ='number';
+
+          let selectClass = 'form-control';
+          if (inputType === 'select') selectClass ='modal-select2';
+          let inputHtml = [`<div><input type="`,inputType,`" data-type="${field.dataType || field.type}" class="${selectClass} data-input" data-field="${field.name}"  placeholder="`,(field.placeholder || ''),`" data-required="`,required,`">
+         </div></div>`].join('');
+         
+         if(inputType == 'select')
+         inputHtml = [`<div><select data-type="${field.dataType || field.type}" class="${selectClass} data-input" data-field="${field.name}" placeholder="`,(field.placeholder || ''),`" data-required="`,required,`"> </select></div> `].join('');
+          html = [html,` <div class="form-group">
+              <label for="`,field.name,`">`,field.label,`</label>`,inputHtml].join('');
+       });
+
+       this.modalBody.innerHTML =[`<form id="${this.dialog_id}_form">`,html,'</form>'].join('');
+       if(this.options.contentCreated) this.options.contentCreated(this, this.divModal);
+       this.initInputStyle(this.modalBody);
+       this.fields = this.getFields();
+       this.controls = this.getControls();
+    }
+
+    getFields(){
+      // if (this.fields && Object.keys(this.fields)[0]) {
+      //    return this.fields;
+      // }
+       let fields = {};
+       const elements = this.modalBody.querySelectorAll('.data-input');
+       elements.forEach(el=>{
+          let f = el.dataset.field;
+          if(f){
+            fields[f] = el;
+          }
+       });
+       //this.fields = fields;
+       this.fieldList = elements;
+       return fields;
+    }
+
+    getFieldList(){
+        return this.modalBody.querySelectorAll('.data-input');
+    }
+
+    getData(){
+      if (this.override.getData) return this.override.getData(this,this.divModal);
+      
+      let p = {id: this.dataOptions ? (this.dataOptions.id || '') : null}; 
+      const elements = this.modalBody.querySelectorAll('.data-input');
+      elements.forEach(el => {
+          const d = el.dataset;
+           //use dataset.field is not available, use the "name" attribute's value as field_name
+           const f = d.field || el.getAttribute('name');
+          if (el.tagName ==='IMG'){
+            p[f] = el.getAttribute('src');
+          }else{
+            p[f] = el.value;
+          }
+      });
+      
+      if (this.extendMethod.getData){
+          const p1 = this.extendMethod.getData(this,this.divModal);
+          p = {...p, ...p1};  // Merge properties of p1 into p
+      } 
+      
+      return p;
+  }
+  
+  setData(d){
+        d = d || {};
+        const that = this;
+        if (this.override.setData) return this.override.setData(this,d,this.divModal);
+        that.stored_datailed = {};
+        this.modalBody.querySelectorAll('.data-input').forEach(el =>{
+            const f = el.dataset.field;
+            if(el.tagName === 'SELECT'){
+                el.value = d[f] || ""; //value needs to match with data type exactly "1" is not 1
+                el.dispatchEvent(new Event('change'));
+                that.stored_datailed[f] = d[f] || "";  
+            }else if(el.tagName =='IMG'){
+                el.setAttribute('src', d[f] || "");
+            }else{
+                el.value = d[f] || "";
+            }
+        });
+
+        if (this.extendMethod.setData) this.extendMethod.setData(this,d,this.divModal);
+        if (this.options.afterSetData) that.options.afterSetData(this, this.fields, that.divModal);
+    }
+
+    //private method to add event handler to a control, by ensuring no duplicate
+    _addEventhandler(element,eventName, handler){
+      if(!element || !handler) return;
+      element.removeEventListener(eventName,handler);
+      element.addEventListener(eventName,handler);
+    }
+
+    prepareForm(dataOptions, onFinish){
+       const that = this;
+       dataOptions= dataOptions ||{};
+       let opx = this.options.prepareFormOptions;
+      //  if(!that.fields) that.fields = that.getFields();
+      //  if(!that.controls) that.controls = that.getControls();
+       if(!opx || !opx.api){
+          if (!that.options.onPrepareForm){
+            onFinish({});
+            return;
+             //throw "If the prepareformOptions.api is not provided, the onPrepareForm() must be an async function";
+          } 
+          try{
+            (async () => {
+                await that.options.onPrepareForm(that, null, that.fields, that.divModal);
+            })();
+          }catch(e){
+            const isAsync = that.options.onPrepareForm.constructor.name === 'AsyncFunction';
+            if(!isAsync){
+               throw "If the prepareformOptions.api is not provided, the onPrepareForm() must be an async function";
+            }else throw e;
+          }
+          onFinish({});
+          return;
+        }
+
+       //op.vsapi = op.vsapi || vsapi;
+       let p = null;
+       if (typeof opx.api.params ==='function') p = opx.api.params(that.dataOptions); 
+       else p = opx.api.params || {};
+       p = p || {};
+       //NOTE: that this.show(options). The $options can have options.id field that is unique ID
+       p.id = dataOptions.id;
+       vsapi.call(opx.api.endpoint,p,false,false,false).then(res =>{
+          if(opx.api.onResponse) opx.api.onResponse(that,res,that.divModal);
+          const d = res.status_code ==200 ? res.data: {};
+          const fieldElments = that.fields;
+          const controls = that.controls;
+          const configSelect = that.options.configSelect || that.options.selectConfig;
+          if(configSelect){
+             try{
+               configSelect.map(selectField =>{
+                  let el = selectField.name? fieldElments[selectField.name]:null;
+                  el = el || controls[selectField.name];
+                  if(el && el.tagName ==='SELECT'){
+                     let items = [];
+                     if(!selectField.depends){
+                        items = ((typeof selectField.data ==='string' && selectField.data) ? d[selectField.data]: selectField.data);
+                        if(!items || !items[0]){
+                         if(selectField.dataProp) items = d[selectField.dataProp];
+                        }
+                     }
+                     
+                     const filterData = selectField.filterData || selectField.filter;
+                     if(filterData) items = filterData(items,res);
+
+                    const firstOption = selectField.firstOption;
+                    if(firstOption){
+                      //error may occur when firstOption data structure is not the same as each item in the array "items"
+                      items.unshift(firstOption);
+                    }
+                     let def = selectField.defaultValue || selectField.default;
+                     def = (typeof def ==='function')? def(that,that.dataOptions) : def;
+                              if (selectField.filterOptions){
+                                 const fo = selectField.filterOptions;
+                                 const triggerByName = fo.triggeredBy || fo.triggerBy || fo.parentElement || fo.parentName;
+                                 const triggerBy = triggerByName? controls[triggerByName] : null;
+                                 if(triggerBy && triggerBy.tagName ==='SELECT'){
+                                       triggerBy.addEventListener("change", e=>{
+                                             if(fo.filter){
+                                                let filter_items = fo.filter(that,(items || []),controls);
+                                                let set_value = null;
+                                                let field_name = that.controls[selectField.name].dataset.field;
+                                                if(that.stored_datailed) set_value = that.stored_datailed[field_name];
+                                                if(set_value) def = set_value; 
+                                                VSUtil.setComboItems(el,filter_items,(selectField.valueField || "value"),(selectField.textField || "label"),null,null,def);
+                                             }
+                                       });
+                                 } 
+                           }else if (selectField.depends || selectField.triggeredBy){
+                              const fo = selectField.depends || selectField.triggeredBy;
+                              const triggerByName = (fo.name || fo.triggeredBy) || (fo.parentElement || fo.parentName) || fo.triggerBy;
+                              const triggerBy = triggerByName? controls[triggerByName] : null;
+                              if(triggerBy && triggerBy.tagName ==='SELECT'){
+                                 const onChangehandler = ()=>{
+                                          const endpoint = fo.api?.endpoint;
+                                          if(endpoint){
+                                             let p = (typeof fo.api.params ==='function')? fo.api.params(that,that.dataOptions,controls): fo.api.params;
+                                             if(!p){
+                                                const keyName =triggerBy.dataset.field || null;
+                                                if(keyName) p = {keyName:triggerBy.value}; 
+                                                else{
+                                                    console.error(`SELECT a depends on select b, but select b does not have a data-field. Example: detail_type list depends on category, so the category SELECT shoud have data-field="category_id"`);
+                                                }
+                                             }
+                                             vsapi.call(endpoint,p,false,false,false).then(res =>{
+                                                if(fo.processResponse) 
+                                                   items = fo.processResponse(res);
+                                                else items = res.status_code ==200? res.data:[];
+                                                let set_value = null;
+                                                let field_name = that.controls[selectField.name].dataset.field;
+                                                if(that.stored_datailed) set_value = that.stored_datailed[field_name]; 
+                                                if(set_value) def = set_value;
+                                                const valueField = selectField.valueField || fo.valueField || "value";
+                                                const textField = selectField.textField  || fo.textField || "label";
+                                                VSUtil.setComboItems(el,items,valueField,textField,null,null,def);
+                                             }); 
+                                          }
+                                 }
+                                 that._addEventhandler(triggerBy,'change',onChangehandler);
+                              }
+                              
+                           }else{
+                                 const value_field = selectField.valueField ?? "value";
+                                 const text_field = selectField.textField ?? "label";
+                                 if (typeof text_field ==='function'){
+                                      items = items.map(x => ({
+                                         'value':x[value_field] ?? '',
+                                         'label': text_field(that,x)
+                                      }));
+                                      VSUtil.setComboItems(el,items,'value','label',null,null,def);
+                                      return;
+                                 }
+
+                                 if(items && items[0]){
+                                    let x = items[0];
+                                    if(!x[text_field] || !x[value_field]){
+                                       console.error('Select box named "' + selectField.name + '" does not have correct options data. Please ensure that each item option has "value" and "label" or you can set your own names using key "textField" and "valueField" ');
+                                    }
+                                 }else {
+                                    console.error(`It seems you dont have options or any items provide via the "data" key inside selectConfig: [{name:"select_name", data:"options_item"}]`);
+                                 }
+                                 VSUtil.setComboItems(el,items,value_field,text_field,null,null,def);
+                           }
+
+                           if(selectField.onChange){
+                              el.addEventListener("change",e =>{
+                                 e.preventDefault();
+                                 selectField.onChange(that,el,that.divModal);
+                              });
+                           }
+ 
+                   }   
+               });   
+             }catch (e){
+                console.error(e + ' .hint: make sure configSelect is an array like this [ {name:"select_name",dataProp:"some_key_name"} ]');
+             }
+          }
+          onFinish(d);
+          if (typeof that.options.onPrepareForm === 'function') that.options.onPrepareForm(that,d,that.getFields(), that.divModal);
+         
+       });
+    }
+  
+   initInputStyle(modalMody){
+      modalMody.querySelectorAll('.data-input').forEach(el =>{
+         let type = el.dataset.type;
+         let inputType = el.tagName.toLowerCase();
+         //Use select2 for all SELECT field
+         if(inputType ==='select'){
+             VSUtil.initSelect(el);
+         }
+         
+         //use jquery DatePicker2 for Date field
+         switch (type) {
+           case 'date':
+            DateTimePicker.init($(el));
+              break;
+           // case 'dateRange':
+           //       DateHelper.initDateRange($(el));
+           //       break;
+           default:
+              break;
+         }
+           
+      });
+      if (typeof Validator !== 'undefined') Validator.validatePanel(modalMody);
+   }
+
+   hasError() {
+      const elements = this.modalBody.querySelectorAll('.data-input[data-required="1"]');
+      for (let el of elements) {
+          if (el.dataset.error === '1' || el.dataset.error === 'true') {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  errorCount() {
+   const elements = this.modalBody.querySelectorAll('.data-input[data-required="1"]');
+   let errCount = 0;
+   for (let el of elements) {
+       if (el.dataset.error === '1' || el.dataset.error === 'true') {
+          errCount++;
+       }
+   }
+   return errCount;
+ }
+   
+   getControls(){
+      let p = GeneralDialog.createControls(this.divModal);
+      this.controlList = p.controlList;
+      return p.controls;
+      //   this.controls = this.controls || GeneralDialog.createControls(that.divModal); 
+      //   return  this.controls;
+   }
+
+   getControlList(){
+     return GeneralDialog.createControlList(this.divModal);
+   }
+   _renderCloseButton(){
+      const that = this;
+      const header = this.divModal.querySelector('.modal-header');
+      const footer = this.divModal.querySelector('.modal-footer');
+      if (this.options.showCancelButton){
+         header?.querySelector('.close')?.remove(); 
+         let btn = footer.querySelector('[data-bs-dismiss]');
+         if(!btn){
+             btn = document.createElement('button');
+             btn.className = 'btn btn-default';
+             btn.setAttribute('data-bs-dismiss','modal');
+             btn.innerHTML = '<span vslang="buttons.Cancel">Cancel</span>';
+             footer.insertBefore(btn, footer.firstChild);
+         }
+         if(btn) btn.onclick = e =>{
+             // *** if allowCancel == true means that Every time the Dialog is close of hidden then the that.options.onClose() fires! The default value is "true"
+             const allowCancel = that.options.allowCancel || that.options.allowCancelAction;
+             if(allowCancel === false){
+                that.options.onClose(that);
+             }else{
+                 that.canceled = true;
+                 that.modal.hide();
+             } 
+         }
+      }else{
+        footer.querySelector('[data-bs-dismiss]')?.remove();
+        let btn = header?.querySelector('.close');
+        if(!btn){
+           let closeButton = `<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+           </button>`;
+           header.insertAdjacentHTML("beforeend",closeButton);
+           btn = header.querySelector('button.close');
+           btn.onclick = e =>{
+            // *** if allowCancel == true means that Every time the Dialog is close of hidden then the that.options.onClose() fires! The default value is "true"
+            const allowCancel = that.options.allowCancel || that.options.allowCancelAction;
+            alert(allowCancel);
+            if(allowCancel === false){
+               that.options.onClose(that);
+            }else{
+                that.canceled = true;
+                that.modal.hide();
+            }
+
+           }
+        }
+      }
+   }
+   
+   show(options){
+      const that = this;
+      that.canceled = true;
+      this.manualHide = false;
+
+      this.dataOptions = options || {};
+      this._renderCloseButton();
+      //console.log('html rendered = ',this.htmlRendered);
+      if(!this.htmlRendered){
+        const createContents = this.options.createContents || this.options.createContent || this.options.createFields; 
+        if(createContents){
+            this.disposeControls();
+            const html = createContents();
+            this.modalBody.innerHTML = html;
+            this.initInputStyle(this.modalBody);
+            this.fields = this.getFields();
+            this.controls = this.getControls();
+            if(this.options.contentCreated) this.options.contentCreated(this, this.divModal);
+         }else that.renderFields(that.options.fields);
+         this.htmlRendered = true;
+      } 
+     
+       //Create controls array as object. It is associative array or object that represents each control element such as DIV, input, select, label etc...
+       let p1 = GeneralDialog.createControls(that.divModal);
+       that.controls = p1.controls;;
+       that.fields = that.getFields();
+       
+      this.renderButtons(that.options.buttons);
+      
+      this.prepareForm(options,(d)=>{
+        let title = that.options.title;
+        let prepareOp = that.options.prepareFormOptions;
+        let targetProp =null;
+        if (prepareOp){
+            if (prepareOp.api){
+                targetProp = prepareOp.targetProp || prepareOp.api.targetProp;
+                if(targetProp){
+                    title = d[targetProp]? prepareOp.modifyTitle: prepareOp.createTitle;
+                }
+                //IMPORTANT NOTE: dataOptions.id is the fixed name key as "id" for GeneralDialog to check to see if it is Modify or Create intention
+                if( (options?.id) && !d[targetProp]){
+                    console.error('It seems the issue with API return incorrect json format. The key "data" is missing. Exapected format is {status_code, error_message, data: {} }');  
+                } 
+            }else title = that.options.title || prepareOp.createTitle;
+                  
+        }
+
+        that.elTitle.innerHTML = title;
+        if(this.options.prepareFormOptions) this.setData(targetProp? d[targetProp]:null);
+      
+        that._addEventhandler(that.divModal, 'hide.bs.modal',this._handleClose);
+        that._addEventhandler(that.divModal,'shown.bs.modal',this._handleShown);
+        that.modal.show();
+      });
+   }
+
+ }

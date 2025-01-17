@@ -246,7 +246,7 @@ var ExitFormComponent = (function () {
         const op = {
             form_id: form_id,
             btn: menulink,
-            onClose: () => {
+            onClose: (p,canceled) => {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
@@ -511,6 +511,8 @@ const ViewExitFormDialog = (() => {
                 cssClass: "modal-lg custom-modal-size",
                 backdrop: "static",
                 keyboard: true,
+                showCancelButton: false,
+                allowCancel:false,
                 createContent: () => {
                     return htmlString;
                 },
@@ -705,12 +707,7 @@ const ViewExitFormDialog = (() => {
                             me.saveCheckBoxes(event, me.dataOptions.form_id);
                         };
                     });
-                    //overize dialog close button
-                    const btnClose = me.divModal.querySelector("button.close");
-                    btnClose.onclick = (e) => {
-                          ExitFormComponent.ExitFormListView.showPage();
-                        //me.dataOptions.onClose();
-                    };
+
                 },
             });
 
