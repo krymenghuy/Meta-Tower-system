@@ -6,6 +6,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-100">
             <button type="button" class="btn_add" id="_btnAddExitCheckpoints">
+                <i class="fa fa-list mr-2"></i>
                 <span vslang="titles.Create Category"></span>
             </button>
         </div>

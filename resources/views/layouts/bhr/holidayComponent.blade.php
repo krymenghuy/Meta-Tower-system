@@ -11,7 +11,7 @@
             </div>
             <div class="d-flex w-50 justify-content-end">
                 <button type="button" class="btn text-white rounded-5" style="background-color:#2b3991;" id="_btnAddHoliday">
-                    <i class="fa-solid fa-plus px-1"></i>
+                    <i class="fa fa-calendar-times"></i>
                     <span>Add Holiday</span>
                 </button>
             </div>
