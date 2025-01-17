@@ -32,10 +32,10 @@ class ExitForm
         $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
         $checkUnique = ["$branch_id|exit_forms|name|id=id|text=Name already exists."];
         $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false, $checkUnique);
-        
+
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        if(!$id) $inputs['is_finished'] =0; 
+        if (!$id) $inputs['is_finished'] = 0;
         $d = (object)$inputs;
 
         $existingData = DB::table('exit_forms')->where('id', $id)->first(); //Hello Ratanak! do not select all fields if NOT necessary
@@ -54,23 +54,23 @@ class ExitForm
                 return DV::error('No changes were made to the exit form.');
             }
         }
-        $is_update = $id? true: false; 
+        $is_update = $id ? true : false;
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             if ($d->is_finished == 1 && $is_update) {
-                DB::table('exit_form_items')->where('form_id',$id)->update(['status_id'=>1]); 
+                DB::table('exit_form_items')->where('form_id', $id)->update(['status_id' => 1]);
                 //$check_points = DB::table('check_points')->selectRaw('id,name')->get();
                 // foreach ($check_points as $check_point) {
                 //     self::saveExitItem(['form_id' => $id, 'check_point_id' => $check_point->id,'', 'check_id' => 1], $ss);
                 //     // DB::table('exit_form_items')->where('form_id', $id)->where('check_point_id', $check_point->id)->update(['status_id'=>1]);
                 // }
-                
-            } else if(!$d->is_finished) {
-                if(self::isFinished($id)){
-                    DB::table('exit_forms')->where('form_id', $id)->where('id', $id)->update(['is_finished' => 1]);     
-                }else{
+
+            } else if (!$d->is_finished) {
+                if (self::isFinished($id)) {
+                    DB::table('exit_forms')->where('id', $id)->where('id', $id)->update(['is_finished' => 1]);
+                } else {
                     //Copy all items from table "check_points" to table "exit_form_items", so that when user changes name of any items, the existing exit form is not affected
-                    self::createExitFormItems($id,$ss);
+                    self::createExitFormItems($id, $ss);
                 }
             }
             return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
@@ -78,36 +78,55 @@ class ExitForm
         return DV::error('Error saving exit form');
     }
 
-    static function createExitFormItems($form_id,$ss){
-       $is_finished =  Db::table('exit_forms')->where('id',$form_id)->value('is_finished'); 
-       if($is_finished ==1) return;
-       DB::table('exit_form_items')->where('form_id',$form_id)->delete();
-       $rows = DB::table('check_points as cp')
-       ->join('check_point_categories as cc','cc.id', '=', 'cp.category_id')
-       ->selectRaw('cp.id,cp.name as name,cp.category_id, cc.name as category, cc.id as category_id')
-       ->get();
-       $success_cnt = 0;
-       foreach($rows as $row){
-         $inputs = [
-            'form_id'=>$form_id,
-            'name'=>$row->name, 
-            'check_point_id'=>$row->id,
-            'status_id'=>0,
-            'category'=>$row->category,
-            'category_id'=>$row->category_id,
-            'item_type'=>$row->item_type ?? 'General',
-            'amount'=>0,
-         ];
-         $new_id = saveData($ss,'exit_form_items',['id'=>null], $inputs,[],1,false);
-         if($new_id) $success_cnt++;
-       }
+    static function createExitFormItems($form_id, $ss)
+    {
+        $is_finished =  Db::table('exit_forms')->where('id', $form_id)->value('is_finished');
+        if ($is_finished == 1) return;
+        DB::table('exit_form_items')->where('form_id', $form_id)->delete();
+        $rows = DB::table('check_points as cp')
+            ->join('check_point_categories as cc', 'cc.id', '=', 'cp.category_id')
+            ->selectRaw('cp.id,cp.name as name,cp.category_id, cc.name as category, cc.id as category_id')
+            ->get();
+        $success_cnt = 0;
+        foreach ($rows as $row) {
+            $inputs = [
+                'form_id' => $form_id,
+                'name' => $row->name,
+                'check_point_id' => $row->id,
+                'status_id' => 0,
+                'category' => $row->category,
+                'category_id' => $row->category_id,
+                'item_type' => $row->item_type ?? 'General',
+                'amount' => 0,
+            ];
+            $new_id = saveData($ss, 'exit_form_items', ['id' => null], $inputs, [], 1, false);
+            if ($new_id) $success_cnt++;
+        }
     }
 
     /** Check if exit form is actually finished, by checking all its items status */
-    static function isFinished($id){
-        $q_status_id = DBX::ifNull('i.status_id',0);
-        $test = DB::table('exit_form_items as i')->where('i.form_id',$id)->whereRaw($q_status_id.'= 0')->selectRaw('id')->value('id');
-        return $test ? true: false;  
+    static function isFinished($id)
+    {
+        $q_status_id = DBX::ifNull('i.status_id', 0);
+        $test = DB::table('exit_form_items as i')->where('i.form_id', $id)->whereRaw($q_status_id . '= 0')->selectRaw('id')->value('id');
+        return $test ? true : false;
+    }
+
+    static function updateCheckboxItem($arr, $ss)
+    {
+        $d = (object) $arr;
+        $exit_form_item_id = $d->id;
+        $form_id = DB::table('exit_form_items as i')->where('i.id', $exit_form_item_id)->value('form_id');      
+         if ($exit_form_item_id && $form_id){
+            DB::table('exit_form_items as efi')
+            ->where('efi.id', $exit_form_item_id)
+            ->where('efi.form_id', $d->form_id)
+            ->update(['status_id'=>$d->status_id]);
+            $is_finished = self::isFinished($form_id) ? 1 : 0;
+            DB::table('exit_forms')->where('id', $form_id)->update(['is_finished' => $is_finished ]);
+
+        };
+        return DV::depends(1, "success");
     }
 
     static function saveExitItem($arr = [], $item_id, $ss)
@@ -122,7 +141,7 @@ class ExitForm
             'status_id' => '0|number|default=1',  // Ensure a default value for status_id
             'amount' => '0|number|default=0.00',
             'name' => '0|string|0-250',
-            'category_id' => '1|number|exists=checkpoint_categories.id',
+            'category_id' => '1|number|exists=check_point_categories.id',
             'remarks' => '0|string|default=N/A',
             'item_type' => '0|choice|default=general',
             'currency_code' => '0|choice|KHR,USD|default=KHR'
@@ -138,9 +157,9 @@ class ExitForm
         $inputs = $res->values;
         //$inputs['branch_id'] = $branch_id;
         $d = (object)$inputs;
-         $id = saveData($ss,'check_points',['id'=>$id],$inputs,[],1,false);
-         return DV::depends($id,null,'Failed to save cehckpoint item');
-         
+        $id = saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
+        return DV::depends($id, null, 'Failed to save cehckpoint item');
+
         // $checkPointName = DB::table('check_points')->where('id', $d->check_point_id)->value('name');
         // if ($checkPointName) {
         //     if (strpos($checkPointName, 'ប្រាក់') !== false || strpos($checkPointName, 'ការផាក') !== false) {
@@ -379,16 +398,16 @@ class ExitForm
         //     });
         // }
 
-        $exitForm= $query->first();
-        if(!$exitForm){
+        $exitForm = $query->first();
+        if (!$exitForm) {
             return (object)[];
         }
         $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
         $exit_items = DB::table('exit_form_items as ef')
-        ->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')
-        ->where('ef.form_id', $form_id)
-        ->selectRaw('ef.id, cp.name, cp.category_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')
-        ->get();
+            ->join('check_points as cp', 'cp.id', '=', 'ef.check_point_id')
+            ->where('ef.form_id', $form_id)
+            ->selectRaw('ef.id, cp.name, cp.category_id, ef.status_id, ef.item_type, ef.amount, ef.remarks, ef.currency')
+            ->get();
         // $form = DB::table('exit_forms')->selectRaw('id, emp_id')->where('id', $form_id)->first(); //WHY YOU NEED THIS Query again?
 
         // $form_items = [];
@@ -406,9 +425,9 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             $cat_id = $category->id;
             $filtered_items = [];
-            foreach($exit_items as $item){
+            foreach ($exit_items as $item) {
                 if ($item->category_id === $cat_id)
-                $filtered_items[] = $item;
+                    $filtered_items[] = $item;
             }
 
             // \Log::info(json_encode($filtered_items));
@@ -416,8 +435,8 @@ class ExitForm
 
             $category->item_count = count($filtered_items);
             $category->items = $filtered_items;
-            $groupedData[] = $category; 
-            
+            $groupedData[] = $category;
+
             // $groupedData['category_id'] = $category->id;
             // foreach ($exit_items as $item) {
             //     // if ($item->category_id == $category->id) {
@@ -430,7 +449,7 @@ class ExitForm
             //     //     // $item->currency = $item->currency;
             //     //     // break;                        // }
             //     //     // }
-                   
+
             //     //     // $groupedData['category_id'] = $category->id;
             //     //     // $groupedData[$category->id]['items'][] = $item;
 
