@@ -8,7 +8,8 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-50">
             <button type="button" class="btn_add" id="_btnAddDepartment">
-                <span>Create Department</span>
+                <i class="fa fa-sitemap mr-2"></i>
+                <span>Add Department</span>
             </button>
         </div>
     </div>
