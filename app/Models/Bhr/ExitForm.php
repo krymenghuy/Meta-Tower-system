@@ -122,7 +122,7 @@ class ExitForm
             ->where('efi.id', $exit_form_item_id)
             ->where('efi.form_id', $d->form_id)
             ->update(['status_id'=>$d->status_id]);
-            $is_finished = self::isFinished($form_id) ? 1 : 0;
+            $is_finished = self::isFinished($form_id) ? 0 : 1;
             DB::table('exit_forms')->where('id', $form_id)->update(['is_finished' => $is_finished ]);
 
         };
