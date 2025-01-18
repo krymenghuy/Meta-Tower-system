@@ -248,7 +248,6 @@ var ExitFormComponent = (function () {
             btn: menulink,
             onClose: (p,canceled) => {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
-                alert('test:');
             },
         };
         ViewExitFormDialog.show(op);
@@ -505,15 +504,13 @@ const ViewExitFormDialog = (() => {
             "</div>",
         ].join("");
 
-        /// THiS LINE is WRONG dialog = dialog || new GeneralDialog({ ..
-        dialog =
-            dialog ||
+        dialog = dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg custom-modal-size",
                 backdrop: "static",
                 keyboard: true,
-                showCancelButton: false,
-                allowCancel:true,
+                //showCancelButton: false, //This is default value. So you do not need to set "showCancelButton : false"
+                alwaysTriggerOnClose:true, //(default value is "false") Always trigger event onClose() even if user clocks on Cancel button or Close button on top right corner of dialog
                 createContent: () => {
                     return htmlString;
                 },

@@ -1271,29 +1271,30 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
+    
     static function contractFormOptions($id, $director_id = 0, $ss)
     {
         $emp = null;
-        $director = null;
-
+        
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
         }else return DV::error('Branch Can not be Empty!');
 
-        $branch = self::getBranchInfo($emp->branch_id);
-        $emp->branch_name = $branch->name;
-        $emp->branch_address = $branch->address_kh;
-        $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
-        $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
-        $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
-        $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
-        $emp->emp_name = $emp->name_kh;
-        $emp->emp_phone = $emp->phone_number;
-        $emp->emp_nid = $emp->nid;
-        $emp->emp_position = $emp->position;
-        $emp->emp_sex = $emp->sex;
-        $emp->emp_address = $emp->address;
-
+        $branch = self::getBranchInfo($emp->branch_id ?? null);
+        if ($branch){
+            $emp->branch_name = $branch->name ?? '(Branch not found)';
+            $emp->branch_address = $branch->address_kh ?? '(address not available)';
+            $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
+            $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
+            $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
+            $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
+            $emp->emp_name = $emp->name_kh;
+            $emp->emp_phone = $emp->phone_number;
+            $emp->emp_nid = $emp->nid;
+            $emp->emp_position = $emp->position;
+            $emp->emp_sex = $emp->sex;
+            $emp->emp_address = $emp->address;
+        } 
         return (object)[
             'contractInfo' => $emp,
         ];
