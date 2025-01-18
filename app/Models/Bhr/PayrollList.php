@@ -355,11 +355,8 @@ class PayrollList
 
     }
 
-    function importPayrollList($arr, $ss)
+    function importPayrollList($payroll_id, $ss)
     {
-        $d = (object) $arr;
-
-        $payroll_id = isset($d->payroll_id) ? $d->payroll_id : null;
         if (!$payroll_id) {
             return JDV::error('Payroll not found');
         }
@@ -371,9 +368,11 @@ class PayrollList
         $start_date = $payroll->start_date;
         $end_date = $payroll->end_date;
 
-        $currency_code = DB::table('payrolls')->where('id', $payroll_id)->value('currency_code');
+        $payroll_info = DB::table('payrolls')->where('id', $payroll_id)->selectRaw('currency_code, exchange_rate')->first();
+        $currency_code = $payroll_info->currency_code;
+        $exchange_rate = $payroll_info->exchange_rate;
 
-         $get_employee = DB::table('employees as e')
+         $employees = DB::table('employees as e')
             ->where(function ($query) use ($start_date, $end_date) {
                 $query->where('e.status_id', 10) // Active employees
                     ->orWhere(function ($query) use ($start_date, $end_date) {
@@ -395,23 +394,15 @@ class PayrollList
             ->where(function ($query) use ($end_date) {
                 $query->where('e.joining_date', '<=', $end_date);
             })
-            ->selectRaw('e.id as emp_id, e.name, e.apply_payroll_tax, e.salary')
+            ->selectRaw('e.id as emp_id, e.name, e.apply_payroll_tax, e.salary,e.currency_code as salary_currency')
             ->get();
 
         $success = 0;
         $error = 0;
 
-        foreach ($get_employee as $emp) {
-            $payroll_list = DB::table('payroll_list')
-                ->where('emp_id', $emp->emp_id)
-                ->where('payroll_id', $payroll_id)
-                ->first();
-
-            if ($payroll_list) {
-                $emp_salary = $payroll_list->salary;
-            } else {
-                $emp_salary = $emp->salary;
-            }
+        foreach ($employees as $emp) {
+            $emp_salary = $emp->salary;
+            $emp_salary = Money::convert($ss,$emp->salary,$emp->salary_currency,$currency_code,$exchange_rate);
 
             if ($emp->apply_payroll_tax == 0) {
                 $taxInfo = DB::table('tax_brackets')
@@ -430,48 +421,24 @@ class PayrollList
                 $emp->tax_rate = (object) ['rate' => 0, 'bias' => 0];
             }
 
-            $emp->payroll_id = $payroll_id;
-
-            $v_rule = [
-                'payroll_id' => '1|number',
-                'emp_id' => '1|number',
-                'deduction' => '0|number',
-                'tax_rate' => '0|number',
-                'tax_base' => '0|number',
-                'bias' => '0|number',
-                'total_salary' => '0|number',
-                'salary' => '0|number',
-                'currency_code' => '0|number',
+            $inputs = [
+                'payroll_id' => $payroll_id,
+                'emp_id' => $emp->emp_id,
+                'salary' => $emp_salary,
             ];
 
-            $empArray = (array)$emp;
-            $empArray['tax_rate'] = $emp->tax_rate->rate;
-            $empArray['bias'] = $emp->tax_rate->bias;
-            $empArray['salary'] = $emp_salary;
-            $empArray['currency_code'] = $currency_code;
+            $test_id = DB::table('payroll_list')
+                ->where('emp_id', $emp->emp_id)
+                ->where('payroll_id', $payroll_id)
+                ->value('id');
 
-            $res = validateObject($empArray, $v_rule, true, [], $ss->lang);
-            if ($res->error) {
-                $error++;
-                continue;
-            }
 
-            $inputs = $res->values;
-
-            $checkExist = DB::table('payroll_list')
-                ->where('emp_id', $inputs['emp_id'])
-                ->where('payroll_id', $inputs['payroll_id'])
-                ->first();
-
-            $payroll_id = $inputs['payroll_id'];
-            $emp_id = $inputs['emp_id'];
-
-            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id,$ss);
+            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
             // \Log::info((array)$payroll_list_benefit);
 
-            $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1);
+            $test_id =saveData($ss, 'payroll_list', ['id' => $test_id], $inputs, [], 1);
 
-            if ($payroll_list_id > 0) {
+            if ($test_id) {
                 $success++;
             }
         }
@@ -489,13 +456,10 @@ class PayrollList
     function calculatePayrollList($arr, $ss)
     {
         $d = (object) $arr;
-        $payroll_id = isset($d->payroll_id) ? $d->payroll_id : null;
-        $str_payroll_id = '1=1';
-        if ($payroll_id) {
-            $str_payroll_id = 'p.id = ' . $payroll_id;
-        }
+        $payroll_id =  $d->payroll_id ?? null;
+
         if(!$payroll_id){
-            return DV::error('Not have data');
+            return DV::error('No Payroll ID provided');
         }
 
         $start_date = DBX::formatDate('p.start_date', 'start_date');
@@ -503,12 +467,9 @@ class PayrollList
 
         $payrolls = DB::table('payroll_list as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->leftJoin('resignations as r', 'r.emp_id', '=', 'e.id')
-            ->leftJoin('rejoins as rej', 'rej.emp_id', '=', 'e.id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-            ->whereRaw($str_payroll_id)
+            ->where('p.id', $payroll_id)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         '.$start_date.',
@@ -518,28 +479,29 @@ class PayrollList
                         p.year,
                         e.id as emp_id,
                         e.name as emp_name,
-                        e.currency_code as currency_employee,
-                        pos.title as emp_position,
                         el.name as emp_role,
                         pl.salary,
-                        pl.currency_code as currency_payroll,
+                        p.currency_code as payroll_currency,
                         p.exchange_rate,
                         pl.deduction,
                         e.status_id,
                         e.joining_date,
-                        r.effective_date,
-                        rej.rejoin_date')
+                        e.last_rejoin_date
+                       ')
+
             ->orderBy('e.id')
             ->get();
-
             if ($payrolls->isEmpty()) {
                 return DV::error('Not have data');
             }
-
+            $issues = [];
+            $issues_count = 0;
+            $success_count = 0;
+            $fail_count = 0;
 
             foreach ($payrolls as $row) {
 
-                if( $row->currency_employee != Money::$national_currency ){
+                if( $row->salary_currency != Money::$national_currency ){
                     $row->salary = $row->salary * $row->exchange_rate;
                 }
 
@@ -551,19 +513,19 @@ class PayrollList
                     ->where('emp_id', $row->emp_id)
                     ->where('payroll_id', $row->payroll_id)
                     ->where('tax_option_id', 1)
-                    ->selectRaw('emp_benefit_id,used_amount');
+                    ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_taxable');
 
                 $row->benefit_non_tax = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 2)
-                ->selectRaw('emp_benefit_id,used_amount');
+                ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_non_tax');
 
                 $row->benefit_flat_rate = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 3)
-                ->selectRaw('emp_benefit_id,used_amount');
+                ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_flat_rate');
 
                 $row->flat_tax_rate = DB::table('emp_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -586,25 +548,46 @@ class PayrollList
                 if ($emp_allowance_count > 1) {
                     $row->allowance = $row->allowance->get();
                     foreach ($row->allowance as $allowance) {
-                        if($allowance->currency_allowance != Money::$national_currency) {
+                        if ($allowance->currency_allowance != Money::$national_currency) {
                             $allowance->allowance = $allowance->allowance * $row->exchange_rate;
-                        }
-                        else {
-                            $allowance->allowance = $allowance->allowance;
                         }
                     }
                     $row->allowance = $row->allowance->sum('allowance');
-
-                }else {
-                    $row->allowance = $row->allowance->first();
-                    $row->allowance = $row->allowance->allowance ?? 0;
+                } else {
+                    $allowance = $row->allowance->first();
+                    if ($allowance) {
+                        if ($allowance->currency_allowance != Money::$national_currency) {
+                            $row->allowance = $allowance->allowance * $row->exchange_rate;
+                        } else {
+                            $row->allowance = $allowance->allowance;
+                        }
+                    } else {
+                        $row->allowance = 0;
+                    }
                 }
+
 
                 if ($emp_benefit_count > 1) {
                     $row->benefit_taxable = $row->benefit_taxable->get();
-                    $row->benefit_non_tax = $row->benefit_non_tax->get();
-
+                    foreach ($row->benefit_taxable as $benefit_taxable) {
+                        if($benefit_taxable->currency_benefit_taxable != Money::$national_currency) {
+                            $benefit_taxable->used_amount = $benefit_taxable->used_amount * $row->exchange_rate;
+                        }
+                        else {
+                            $benefit_taxable->used_amount = $benefit_taxable->used_amount;
+                        }
+                    }
                     $row->benefit_taxable = $row->benefit_taxable->sum('used_amount');
+
+                    $row->benefit_non_tax = $row->benefit_non_tax->get();
+                    foreach ($row->benefit_non_tax as $benefit_non_tax) {
+                        if($benefit_non_tax->currency_benefit_non_tax != Money::$national_currency) {
+                            $benefit_non_tax->used_amount = $benefit_non_tax->used_amount * $row->exchange_rate;
+                        }
+                        else {
+                            $benefit_non_tax->used_amount = $benefit_non_tax->used_amount;
+                        }
+                    }
                     $row->benefit_non_tax = $row->benefit_non_tax->sum('used_amount');
                 }else {
                     $row->benefit_taxable = $row->benefit_taxable->first();
@@ -634,15 +617,12 @@ class PayrollList
                             }
                         }
                     }
-                    // \Log::info($used_amount);
 
-                    // \Log::info($flat_tax_rates);
                 }else {
                     $row->benefit_flat_rate = $row->benefit_flat_rate->first()->used_amount ?? 0;
                     $row->flat_tax_rate = $row->flat_tax_rate->first()->flat_tax_rate ?? 0;
                 }
                 $row->used_amount = $used_amount;
-                // $row->flat_tax_rates = $flat_tax_rates;
                 $row->tax_base = ($row->tax_base ?? 0);
                 $row->deduction = ($row->deduction ?? 0);
                 $row->allowance = ($row->allowance ?? 0);
@@ -652,11 +632,8 @@ class PayrollList
                 $row->flat_tax_rate = ($flat_tax_rates ?? $row->flat_tax_rate ?? 0);
             }
 
-        $success = 0;
-        $error = 0;
-        $success_ids = [];
-        $error_ids = [];
-        // return $payrolls;
+
+        return $payrolls;
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;
@@ -670,10 +647,10 @@ class PayrollList
 
             $full_salary = $payroll->salary ?? 0;
             $day_in_month = days_in_month($payroll->month, $payroll->year);
-            $payroll_start_date = new \DateTime($payroll->start_date);
-            $payroll_end_date = new \DateTime($payroll->end_date);
+            $payroll_start_date = convertDate($payroll->start_date);
+            $payroll_end_date = convertDate($payroll->end_date);
 
-            $payroll_days = $payroll_start_date->diff($payroll_end_date)->days + 1;
+            $payroll_days = dateDiff_days($payroll_start_date, $payroll_end_date) + 1;
             $salary = ($full_salary/$day_in_month) * $payroll_days;
             $benefit_taxable = ($payroll->benefit_taxable/$day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax/$day_in_month) * $payroll_days;
@@ -687,49 +664,55 @@ class PayrollList
                     ];
                 }
                 $payroll->benefit_flat_rate_data = $benefit_flat_rate_data;
-                // \Log::info('last',$payroll->benefit_flat_rate_data);
             } else {
                 $flat_tax_rate = $payroll->flat_tax_rate;
                 $benefit_flat_rate = $payroll->benefit_flat_rate;
-                // \Log::info('flat_tax_rate = ' . $flat_tax_rate . ' , benefit_flat_rate = ' . $benefit_flat_rate);
             }
             $resigned_or_new_start = false;
-            $count_date = $payroll_days;
+            $count_days = $payroll_days;
+            $count_days_resign = -1;
+            $count_days_rejoin = -1;
             $salary_used = $salary;
 
-            $check_rejoin = DB::table('employees as e')
-                ->join('rejoins as rej', 'rej.emp_id', '=', 'e.id')
-                ->where('e.id', $payroll->emp_id)->value('rej.id');
+            // \Log::info(['start_date' => $payroll_start_date, 'end_date' => $payroll_end_date, 'emp_id' => $payroll->emp_id,'count day' => $count_days]);
 
-            if($check_rejoin){
-                $effective_date = new \DateTime($payroll->effective_date);
-                if ($effective_date >= new \DateTime($payroll->start_date) && $effective_date <= new \DateTime($payroll->end_date)) {
-                    $count_date = (new \DateTime($payroll->start_date))->diff($effective_date)->days;
-                    $resigned_or_new_start = true;
+
+                $resign = self::count_days_resign($payroll->emp_id, $payroll_start_date, $payroll_end_date);
+                if($resign->error){
+                    $issues_count++;
+                    $fail_emps[] = (object)[
+                        'id' => $payroll->emp_id,
+                        'code' => $payroll->emp_code,
+                        'name' => $payroll->emp_name,
+                        'issue'=>$resign->error
+                        ];
+                }
+                else{
+                    $count_days_resign = $resign->count_days;
+                    $resigned_or_new_start = $resign->resigned_or_new_start;
+                }
+
+            $rejoin = self::count_days_rejoin($payroll->emp_id,$payroll->status_id, $payroll->last_rejoin_date, $payroll->joining_date, $payroll_start_date, $payroll_end_date);
+            if($rejoin->error){
+                $issues_count++;
+                $fail_emps[] = (object)[
+                    'id' => $payroll->emp_id,
+                    'code' => $payroll->emp_code,
+                    'name' => $payroll->emp_name,
+                    'issue'=>$rejoin->error
+                    ];
+            }
+            else{
+                if($rejoin->count_days >= 0){
+                    $count_days_rejoin = $rejoin->count_days;
+                    $resigned_or_new_start = $rejoin->resigned_or_new_start;
                 }
             }
-
-            if ($payroll->status_id == 20 && $payroll->effective_date) {
-                $effective_date = new \DateTime($payroll->effective_date);
-                if ($effective_date >= $payroll_start_date && $effective_date <= $payroll_end_date) {
-                    $count_date = $payroll_start_date->diff($effective_date)->days;
-                    $resigned_or_new_start = true;
-                }
-            } elseif ($payroll->rejoin_date) {
-                $rejoin_date = new \DateTime($payroll->rejoin_date);
-
-                if ($rejoin_date >= $payroll_start_date && $rejoin_date <= $payroll_end_date) {
-                    $count_date = $rejoin_date->diff($payroll_end_date)->days + 1;
-                    $resigned_or_new_start = true;
-                }
-
-            } elseif ($payroll->joining_date) {
-                $joining_date = new \DateTime($payroll->joining_date);
-                if ($joining_date >= $payroll_start_date && $joining_date <= $payroll_end_date) {
-                    $count_date = $joining_date->diff($payroll_end_date)->days + 1;
-                    $resigned_or_new_start = true;
-                }
+            if($count_days_resign >= 0 || $count_days_rejoin >= 0){
+                $count_days = ($count_days_resign < 0 ? 0 : $count_days_resign) + ($count_days_rejoin < 0 ? 0 : $count_days_rejoin);
             }
+
+            // \Log::info(['count_day '. $count_days . 'emp_id '.$payroll->emp_id]);
 
             $payroll->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $payroll->emp_id)
@@ -738,7 +721,7 @@ class PayrollList
             $allowance = $payroll->allowance;
             $allowance_used = ($allowance/$day_in_month) * $payroll_days;
             $allowance_per_day = $allowance_used / $payroll_days;
-            $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_date : $allowance_used;
+            $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
             $deduction = $payroll->deduction;
 
             $payroll->apply_payroll_tax = DB::table('employees')
@@ -749,7 +732,7 @@ class PayrollList
             {
                 $salary_used = $salary + $benefit_taxable;
                 $salary_per_day = $salary_used / $payroll_days;
-                $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary_used;
+                $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
                 if ($payroll->apply_payroll_tax == 0)
                 {
@@ -764,7 +747,7 @@ class PayrollList
                     $bias = $tax_info->bias ?? 0;
                     $bias_used = ($bias/$day_in_month) * $payroll_days;
                     $bias_per_day = $bias_used / $payroll_days;
-                    $last_bias = $resigned_or_new_start ? $bias_per_day * $count_date : $bias_used;
+                    $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
 
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     if ($payroll->tax_base < 0) {
@@ -786,7 +769,7 @@ class PayrollList
                 }else{
                     $salary_used = $salary;
                     $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary_used;
+                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
                     if ($payroll->apply_payroll_tax == 0) {
                         $tax_info = DB::table('tax_brackets')
@@ -800,7 +783,7 @@ class PayrollList
                         $bias = $tax_info->bias ?? 0;
                         $bias_used = ($bias/$day_in_month) * $payroll_days;
                         $bias_per_day = $bias_used / $payroll_days;
-                        $last_bias = $resigned_or_new_start ? $bias_per_day * $count_date : $bias_used;
+                        $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
 
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                         isset($payroll->tax_base) ? $payroll->tax_base : $payroll->tax_base = 0;
@@ -835,7 +818,7 @@ class PayrollList
                 } else {
                     $salary_used = $salary;
                     $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary_used;
+                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
                     if (isset($payroll->benefit_flat_rate_data) && !empty($payroll->benefit_flat_rate_data)) {
                         foreach ($payroll->benefit_flat_rate_data as $data) {
                             $benefit_flat_rate = $data['benefit_flat_rate'];
@@ -857,7 +840,7 @@ class PayrollList
                         $bias = $tax_info->bias ?? 0;
                         $bias_used = ($bias / $day_in_month) * $payroll_days;
                         $bias_per_day = $bias_used / $payroll_days;
-                        $last_bias = $resigned_or_new_start ? $bias_per_day * $count_date : $bias_used;
+                        $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
 
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                         if ($payroll->tax_base < 0) {
@@ -876,7 +859,7 @@ class PayrollList
 
                 $salary_used = $salary;
                 $salary_per_day = $salary_used / $payroll_days;
-                $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary_used;
+                $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $tax_info = DB::table('tax_brackets')
@@ -890,7 +873,7 @@ class PayrollList
                     $bias = $tax_info->bias ?? 0;
                     $bias_used = ($bias/$day_in_month) * $payroll_days;
                     $bias_per_day = $bias_used / $payroll_days;
-                    $last_bias = $resigned_or_new_start ? $bias_per_day * $count_date : $bias_used;
+                    $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
 
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                         if ($payroll->tax_base < 0) {
@@ -913,10 +896,10 @@ class PayrollList
 
                 }
             }
-            $row = DB::table('payroll_list')->where('id', $payroll->id)->update([
+            $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
-                'count_day' => $count_date,
+                'count_day' => $count_days,
                 'p_salary' => $last_salary,
                 'benefit_taxable' => $benefit_taxable,
                 'benefit_non_tax' => $benefit_non_tax,
@@ -935,19 +918,15 @@ class PayrollList
                 'total' => $payroll_total
             ]);
 
-            if ($row) {
-                $success++;
-                $success_ids[] = $payroll->id;
-            } else {
-                $error++;
-                $error_ids[] = $payroll->id;
-            }
+
+            $success_count++;
+
         }
         return DV::depends(1, [
-            'success_count', $success,
-            'ids', $success_ids,
-            'error_count', $error,
-            'error_ids', $error_ids,
+            'success_count' => $success_count,
+            'error_count'=> $fail_count,
+            'issues'=>$issues,
+            'issues_count'=>$issues_count,
             'payroll_total' => $payroll_total
         ]);
     }
@@ -1280,4 +1259,54 @@ class PayrollList
         return $row;
     }
 
+    static function getResigInfo($emp_id,$payroll_start_date, $payroll_end_date)
+    {
+        $q_date = DBX::convertToDate('r.effective_date');
+        $str_date = "$q_date BETWEEN '$payroll_start_date' AND '$payroll_end_date'";
+       return DB::table('resignations as r')->where('emp_id', $emp_id)->whereRaw($str_date)->selectRaw('r.id, r.effective_date')->orderby('r.effective_date', 'desc')->first();
+    }
+
+    static function count_days_resign($emp_id, $payroll_start_date, $payroll_end_date)
+    {
+
+        $resigned_or_new_start = false;
+        $count_days = -1;
+            $resignInfo = self::getResigInfo($emp_id,$payroll_start_date, $payroll_end_date);
+            if(!$resignInfo){
+                return (object)['error' => null, 'count_days'=> $count_days, 'resigned_or_new_start' => false];
+            }
+            $effective_date = convertDate($resignInfo->effective_date);
+            if ($effective_date >= $payroll_start_date && $effective_date <= $payroll_end_date) {
+                $count_days = dateDiff_days($payroll_start_date,$effective_date);
+                $resigned_or_new_start = true;
+            }
+            return (object)['error' => null, 'count_days'=> $count_days, 'resigned_or_new_start' =>$resigned_or_new_start];
+    }
+    /** count_days_rejoin() count effective days for rejoin and joining emp */
+    static function count_days_rejoin($emp_id,$emp_status_id, $rejoin_date,$joining_date, $payroll_start_date, $payroll_end_date)
+    {
+
+        $count_days = -1;
+        $resigned_or_new_start = false;
+        if ($rejoin_date) {
+
+            if ($rejoin_date >= $payroll_start_date && $rejoin_date <= $payroll_end_date && $emp_status_id === 10) {
+                $count_days = dateDiff_days($rejoin_date,$payroll_end_date) + 1;
+                $resigned_or_new_start = true;
+                return (object)['error' => null, 'count_days'=> $count_days, 'resigned_or_new_start' =>$resigned_or_new_start];
+            }
+        }
+        elseif ($joining_date) {
+
+            if ($joining_date >= $payroll_start_date && $joining_date <= $payroll_end_date  && $emp_status_id === 10) {
+                $count_days = dateDiff_days($joining_date,$payroll_end_date) + 1;
+                $resigned_or_new_start = true;
+                return (object)['error' => null, 'count_days'=> $count_days, 'resigned_or_new_start' =>$resigned_or_new_start];
+            }
+        }
+        return (object)['error' => null, 'count_days'=> -1, 'resigned_or_new_start' =>$resigned_or_new_start];
+
+
+    }
 }
+

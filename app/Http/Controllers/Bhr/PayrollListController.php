@@ -79,7 +79,7 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $res = $this->payrollListModel->importPayrollList($req->all(), $ss);
+        $res = $this->payrollListModel->importPayrollList($req->payroll_id, $ss);
         return JDV::raw($res);
         //Please DO NOT use JDV::result() for UPDATE or DELETE
         //return JDV::result($this->payrollListModel->importPayrollList($req->all(), $ss));

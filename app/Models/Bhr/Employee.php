@@ -982,6 +982,7 @@ class Employee //extends Model
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
+        $rejoin_date = $inputs['rejoin_date'];
         $emp = self::getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
@@ -1023,7 +1024,7 @@ class Employee //extends Model
         $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
         if ($rejoin_id) {
 
-            DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
+            DB::table('employees')->where('id', $id)->update(['status_id' => 10, 'last_rejoin_date' => $rejoin_date]);
 
             return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
         }
