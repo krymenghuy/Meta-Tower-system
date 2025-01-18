@@ -11,7 +11,7 @@
             </button>
         </div>
     </div>
-    <div id="_benefit_list" class="mt-4 p-4"></div>
+    <div id="_benefit_list" class="mt-4 px-4"></div>
 </div>
 <style>
 </style>

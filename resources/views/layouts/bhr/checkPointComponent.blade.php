@@ -12,6 +12,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
             <button type="button" class="btn_add" id="_btnAddCheckPoint">
+                <i class="fas fa-check-square mr-2"></i>
                 <span vslang="titles.Create Check Point"></span>
             </button>
         </div>

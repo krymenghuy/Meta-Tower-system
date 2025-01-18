@@ -676,7 +676,7 @@ class PayrollList
         $error = 0;
         $success_ids = [];
         $error_ids = [];
-        return $payrolls;
+        // return $payrolls;
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;

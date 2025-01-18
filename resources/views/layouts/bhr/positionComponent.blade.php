@@ -10,7 +10,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-100">
             <button type="button" class="btn_add" id="_btnAddPosition">
-                <i class="fas fa-plus"></i>
+                <i class="fa fa-street-view mr-2"></i>
                 <span>Add Position</span>
             </button>
         </div>
