@@ -64,23 +64,24 @@ class Money
     /**
      * Convert an amount from one currency to another.
      */
-    public static function convert($ss,$amount, $currency, $exchange_rate = null, $to_base = true)
+    public static function convert($ss,$amount, $from_currency, $to_currency = null, $exchange_rate = null)
     {
-        if ($currency === self::$base_currency) {
+        $to_currency = $to_currency ?? self::$base_currency;
+        if ($from_currency === $to_currency) {
             // If the currency is already the base currency, no conversion needed
             return $amount;
         }
         // Fetch the exchange rate if not provided
-        $exchange_rate = $exchange_rate ?? ExchangeRateProvider::getLatestRate($ss,self::$base_currency, $currency);
+        $exchange_rate = $exchange_rate ?? ExchangeRateProvider::getLatestRate($ss,$to_currency, $from_currency);
 
         if (!$exchange_rate) {
-            throw new \Exception("Exchange rate not found for $currency to " . self::$base_currency);
+            throw new \Exception("Exchange rate not found for $from_currency to " . $to_currency);
         }
 
         // Convert based on the direction (to_base: true for foreign -> base, false for base -> foreign)
-        return $to_base
-            ? round($amount * $exchange_rate, 2)
-            : round($amount / $exchange_rate, 2);
+        return  round($amount * $exchange_rate, 2);
+
+
     }
 
     /**
@@ -88,7 +89,7 @@ class Money
      */
     public static function toBase($ss,$amount, $currency,$exchange_rate = null)
     {
-        return self::convert($ss,$amount,$currency, $exchange_rate, true);
+        return self::convert($ss,$amount,$currency,null, $exchange_rate);
     }
 
     /**
