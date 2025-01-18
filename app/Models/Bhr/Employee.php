@@ -272,7 +272,7 @@ class Employee //extends Model
                 $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->count('id');
-
+                    
                 if ($bd) {
 
                     if($benefit_count > 1){

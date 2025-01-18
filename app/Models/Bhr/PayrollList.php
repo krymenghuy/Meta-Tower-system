@@ -536,7 +536,6 @@ class PayrollList
                 return DV::error('Not have data');
             }
 
-
             foreach ($payrolls as $row) {
 
                 if( $row->currency_employee != Money::$national_currency ){
@@ -551,19 +550,19 @@ class PayrollList
                     ->where('emp_id', $row->emp_id)
                     ->where('payroll_id', $row->payroll_id)
                     ->where('tax_option_id', 1)
-                    ->selectRaw('emp_benefit_id,used_amount');
+                    ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_taxable');
 
                 $row->benefit_non_tax = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 2)
-                ->selectRaw('emp_benefit_id,used_amount');
+                ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_non_tax');
 
                 $row->benefit_flat_rate = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 3)
-                ->selectRaw('emp_benefit_id,used_amount');
+                ->selectRaw('emp_benefit_id,used_amount,currency_code as currency_benefit_flat_rate');
 
                 $row->flat_tax_rate = DB::table('emp_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -597,14 +596,35 @@ class PayrollList
 
                 }else {
                     $row->allowance = $row->allowance->first();
-                    $row->allowance = $row->allowance->allowance ?? 0;
+                    if($row->allowance->currency_allowance != Money::$national_currency) {
+                        $row->allowance->allowance = $row->allowance->allowance * $row->exchange_rate;
+                    }
+                    else {
+                        $row->allowance->allowance = $row->allowance->allowance;
+                    }
                 }
 
                 if ($emp_benefit_count > 1) {
                     $row->benefit_taxable = $row->benefit_taxable->get();
-                    $row->benefit_non_tax = $row->benefit_non_tax->get();
-
+                    foreach ($row->benefit_taxable as $benefit_taxable) {
+                        if($benefit_taxable->currency_benefit_taxable != Money::$national_currency) {
+                            $benefit_taxable->used_amount = $benefit_taxable->used_amount * $row->exchange_rate;
+                        }
+                        else {
+                            $benefit_taxable->used_amount = $benefit_taxable->used_amount;
+                        }
+                    }
                     $row->benefit_taxable = $row->benefit_taxable->sum('used_amount');
+
+                    $row->benefit_non_tax = $row->benefit_non_tax->get();
+                    foreach ($row->benefit_non_tax as $benefit_non_tax) {
+                        if($benefit_non_tax->currency_benefit_non_tax != Money::$national_currency) {
+                            $benefit_non_tax->used_amount = $benefit_non_tax->used_amount * $row->exchange_rate;
+                        }
+                        else {
+                            $benefit_non_tax->used_amount = $benefit_non_tax->used_amount;
+                        }
+                    }
                     $row->benefit_non_tax = $row->benefit_non_tax->sum('used_amount');
                 }else {
                     $row->benefit_taxable = $row->benefit_taxable->first();
