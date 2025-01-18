@@ -8,7 +8,6 @@ use App\Models\Bhr\Employee;
 
 use Carbon\Carbon;
 Use App\Models\DV;
-Use App\Models\DBX;
 class Contract
 {
     static function getBranchInfo($branch_id){
@@ -90,42 +89,46 @@ class Contract
       
         
         $branch = self::getBranchInfo($com_rep_branch);
-        $director =$d->branch_name ?? $branch->director;
-        $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
-        $com_rep_nid = $d->com_rep_nid ?? $director->nid;
-        $com_rep_sex = $branch->director->sex;
-        $com_rep_phone = $d->com_rep_phone ?? $director->phone_number;
-        $com_address = $d->branch_address ?? $branch->address_kh;
-
-        $emp_branch = $d->branch_name ?? $emp->branch; 
-        $emp_name = $d->name_kh ?? $emp->name_kh;
-        $emp_sex = $emp->sex;
-        $emp_position = $d->emp_position ?? $emp->position;
-        $emp_salary = $emp->salary;
-        $emp_nid = $d->emp_nid ?? $emp->nid;
-        $emp_phone = $d->emp_phone ?? $emp->phone_number;
-        $emp_address = $d->emp_address ?? $emp->address;
+        if($branch){
+            $director =$d->branch_name ?? $branch->director;
+            $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
+            $com_rep_nid = $d->com_rep_nid ?? $director->nid ?? ' (ID Card Number Not found)'; 
+            $com_rep_sex = $branch->director->sex ?? '(sex)';
+            $com_rep_phone = $d->com_rep_phone ?? $director->phone_number  ?? '';
+            $com_address = $d->branch_address ?? $branch->address_kh ?? '';
+    
+            $emp_branch = $d->branch_name ?? $emp->branch ?? ''; 
+            $emp_name = $d->name_kh ?? $emp->name_kh ?? '(khmer name)';
+            $emp_sex = $emp->sex ?? '(Sex)';
+            $emp_position = $d->emp_position ?? $emp->position ?? '';
+            $emp_salary = $emp->salary ?? '';
+            $emp_nid = $d->emp_nid ?? $emp->nid ?? '';
+            $emp_phone = $d->emp_phone ?? $emp->phone_number ?? '';
+            $emp_address = $d->emp_address ?? $emp->address ?? '';
+        }
+      
         // Fetch employee data from the database
         
         
         
         // Define placeholders and default values
+        $joiningDate = $emp->joining_date ?? null;
         $data = [
             'com_address' => $com_address,
-            'com_city' => $branch->city,
+            'com_city' => $branch->city ?? '(city)',
             'com_rep_branch' => $com_rep_name,
             'com_rep_name' => $director,
             'com_rep_sex' => self::getSex($com_rep_sex),
-            'com_rep_dob' => getKhmerDate($branch->director->date_of_birth),
+            'com_rep_dob' => getKhmerDate($branch->director->date_of_birth ?? '(date_of_birth)'),
             'com_rep_nid' =>  $com_rep_nid,
             'com_rep_phone' => $com_rep_phone,
             'emp_name' => $emp_name,
-            'emp_code' => $emp->code,
+            'emp_code' => $emp->code ?? '(ID)',
             'emp_sex' => self::getSex($emp_sex),
             'emp_phone' => $emp_phone,
             'emp_nid' => $emp_nid,
-            'start_date' => getKhmerDate($emp->joining_date),
-            'end_date' => getKhmerDate(self::calculateEndDate($emp->joining_date)),
+            'start_date' => $joiningDate ? getKhmerDate($joiningDate): '',
+            'end_date' => $joiningDate ? getKhmerDate(self::calculateEndDate($joiningDate)) : '',
             'position' => $emp_position,
             'salary_level' => $emp_salary,
             'khr_amount' => $emp_salary,
@@ -134,7 +137,7 @@ class Contract
             'khr_salary_in_word' => self::convertToKhmerWords($emp_salary),
             'emp_address' => $emp_address,
             'branch' => $emp_branch,
-            'emp_dob' => getKhmerDate($emp->date_of_birth),
+            'emp_dob' => getKhmerDate($emp->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
         ];
 

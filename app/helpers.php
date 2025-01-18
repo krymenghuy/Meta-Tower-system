@@ -429,11 +429,12 @@ function convertToKhmerNumerals($number) {
     ];
  }
 
- function dateDiff_days($start_date,$end_date){
+ function dateDiff_days($start_date,$end_date, $include_start_day = false){
     $date1 = new DateTime($start_date);
     $date2 = New DateTime($end_date);
     $diff = $date1->diff($date2);
-    return $diff->days;
+    $days = $diff->days + ($include_start_day? 1:0);
+    return $days;
  }
 
  function processQueryString($query_string=null,$sanitize =true,$allow_chars=[]){
