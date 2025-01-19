@@ -160,7 +160,9 @@ var PayrollListComponent = new (function () {
                         `<a href="javascript:void(0)"`,
                            `class="btn_payroll_list_action"`,
                            `data-id="${data.id}"`,
-                           `data-disburse="${data.disbursed || 0}"`,
+                           `data-empid="${data.emp_id}"`,
+                           `data-payrollid="${data.payroll_id}"`,
+                           `data-disbursed="${data.disbursed || 0}"`,
                            `aria-haspopup="true"`,
                            `aria-expanded="false">`,
                            //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
@@ -364,9 +366,9 @@ var PayrollListComponent = new (function () {
                     }
 
                     case 'disburse_payroll_list':{
-                      const emp_id = menuLink.dataset.empid;  
-                      const payroll_id = menuLink.dataset.payrollid;
-                      mThis.disburseOne(id, emp_id, payroll_id, menuLink);
+                      const id = menuLink.dataset.id;  
+                      //const payroll_id = menuLink.dataset.payrollid;
+                      mThis.disburseOne(id, null, null, menuLink);
                       break;
                     }
                     case 'delete_payroll_list':{
@@ -650,8 +652,8 @@ var PayrollListComponent = new (function () {
     mThis.disburseOne = (id, emp_id,payroll_id, menuLink) => {
         const p = {
             id: id,
-            emp_id:emp_id,
-            payroll_id:payroll_id
+            //emp_id:emp_id,
+            //payroll_id:payroll_id
             // btn: menuLink,
             // onClose: () => {
             //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
