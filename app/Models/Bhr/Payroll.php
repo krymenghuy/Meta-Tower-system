@@ -261,14 +261,21 @@ class Payroll
 
     }
 
+    static function isEmpty($id){
+        $row = DB::table('payroll_list')->where('payroll_id',$id)->select('id')->first();
+        return $row? false: true;
+    }
+
     function updateAuthorize($id = null, $ss = null)
     {
             $ss = $ss ?? $this->userInfo;
-            
+            if(self::isEmpty($id)){
+                 return DV::error('Cannot authorize because the payroll is empty');
+            }
             if(self::isAuthorized($id)){
                 return DV::error('The payroll is already Authorized');
             }
-            
+
             $total = DB::table('payrolls as p')
                 ->where('id', $id)
                 ->selectRaw('total as amount')

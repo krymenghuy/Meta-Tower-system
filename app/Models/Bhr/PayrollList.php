@@ -943,7 +943,7 @@ class PayrollList
         ->where('pl.id', $id)
         ->selectRaw('pl.payroll_id,total_salary as amount,e.id AS emp_id, e.name, e.code, e.phone_number,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
         if(!$emp) return DV::error('The provided staff identity does not exist');
-
+ 
         $payroll = Payroll::getProps($emp->payroll_id,'id,name,currency_code, total,exchange_rate');
         if(!$payroll) return DV::error('The provided payroll ID does not exist');
         if (!Payroll::isAuthorized($emp->payroll_id)) {
