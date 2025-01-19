@@ -887,27 +887,27 @@ var EmployeeComponent = new (function () {
             });
     };
 
-    mThis.formatPeriod_exp =(d)=>{
-       if(!d) return ''; 
-       if(d.start_date && d.end_date) return [d.start_date, ' to ', d.end_date].join('');
-       else if (d.period) return d.period;
-    }
+    // mThis.formatPeriod_exp =(d)=>{
+    //    if(!d) return ''; 
+    //    if(d.start_date && d.end_date) return [d.start_date, ' to ', d.end_date].join('');
+    //    else if (d.period) return d.period;
+    // }
 
-    mThis.formatPeriod_edu = (finish_year, period)=>{
-        period = period || '';
-        let sts = period.split('to');
-        if(!sts[1]){
-             sts = period.split('-');
-        }
-        const start = sts[0];
-        const end = sts[1];
-        if (!finish_year || finish_year =='') finish_year = end; 
-        if (sts[1]){
-            return [start,' to ', end].join('');
-        }else{
-            return [start, ' until now'].join('');
-        }
-    }
+    // mThis.formatPeriod_edu = (finish_year, period)=>{
+    //     period = period || '';
+    //     let sts = period.split('to');
+    //     if(!sts[1]){
+    //          sts = period.split('-');
+    //     }
+    //     const start = sts[0];
+    //     const end = sts[1];
+    //     if (!finish_year || finish_year =='') finish_year = end; 
+    //     if (sts[1]){
+    //         return [start,' to ', end].join('');
+    //     }else{
+    //         return [start, ' until now'].join('');
+    //     }
+    // }
 
     mThis.formatFinishYear = (finish_year, period) =>{
         period = period || '';
@@ -961,7 +961,7 @@ var EmployeeComponent = new (function () {
                 <div class="row pt-2 border-bottom border-white education-item">
                     <div class="col-md-12 pb-2">
                         <div class="d-flex justify-content-between">
-                            <h6 style="color:#2b3991;">${mThis.formatPeriod_edu(d.finish_year,d.period)}</h6>
+                            <h6 style="color:#2b3991;">${d.period}</h6>
                             <span class="text-nowrap text-dark" style="color:#2b3991;">${d.school}</span>
                         </div>
                         <p class="text-muted mb-0">
@@ -1217,7 +1217,7 @@ var EmployeeComponent = new (function () {
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 style="color:#2b3991;">${d.position}</h6>
-                            <small class="text-muted" style="color:#3b3a36;">${mThis.formatPeriod_exp(d)}</small>
+                            <small class="text-muted" style="color:#3b3a36;">${d.period}</small>
                         </div>
                         <small class="pb-1 d-block" style="color:#293536;"> ${d.description || ''} </small>
 
@@ -2449,30 +2449,29 @@ const AddEducation = (() => {
                             <span class="text-danger" >*</span>
                             <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
                         </div>
-                        <div class=" form-group col-md-6">
+                        <div class=" form-group col-md-12">
                             <label class="form-label" vslang="titles.Level">Level</label>
                             <span class="text-danger" >*</span>
                             <div><select name="edu_level_id" class="data-input" data-field="edu_level_id"></select></div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.Period">Period</label>
-                            <div><input name="period" class="form-control data-input" placeholder="(2020-2024)" data-field="period"/></div>
-                        </div>
-                        <div class="form-group col-md-6">
+                        </div>`,
+                        `<div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Start Year">Start Year</label>
+                            <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+                        </div>`,
+                        `<div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Finish Year">Finish Year</label>
+                            <div><input name="finish_year" class="form-control data-input" data-field="finish_year"/></div>
+                        </div>`,
+                        // `<div class="form-group col-md-6">
+                        //     <label class="form-label" vslang="titles.Period">Period</label>
+                        //     <div><input name="period" class="form-control data-input" placeholder="(2020-2024)" data-field="period"/></div>
+                        // </div>`,
+                        `<div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Major">Major</label>
                             <div><input name="major" class="form-control data-input" data-field="major"/></div>
                         </div>
-
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.Start Year">Start Year</label>
-                            <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.Finish Year">Finish Year</label>
-                            <div><input name="finish_year" class="form-control data-input" data-field="finish_year"/></div>
-                        </div>
-
-                        <div class="form-group col-md-6">
+ 
+                        <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Diploma">Diploma</label>
                             <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
                         </div>
@@ -2508,7 +2507,6 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-
                                         EmployeeComponent.renderCardCenter(
                                             me.dataOptions.emp_id
                                         );
@@ -2667,7 +2665,7 @@ const AddExperience = (() => {
                             <label class="form-label" vslang="titles.End Date">End Date</label>
                             <div><input  name="end_date" class=" form-control data-input" data-field="end_date"></input></div>
                         </div>
-                          <div class=" form-group col-md-12">
+                        <div class=" form-group col-md-12">
                             <label class="form-label" vslang="titles.Period (if no dates)">Period</label>
                             <div><input name="period" class="form-control data-input" data-field="period"></input></div>
                         </div>
