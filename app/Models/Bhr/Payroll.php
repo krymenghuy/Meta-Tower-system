@@ -260,28 +260,28 @@ class Payroll
         ];
 
     }
+
     function updateAuthorize($id = null, $ss = null)
     {
-
-            $branch_id = $ss->branch_id;
             $ss = $ss ?? $this->userInfo;
-            $check = DB::table('payrolls')->where('id', $id)->value('authorized');
-            if($check){
-                return DV::error('Already Authorized');
+            
+            if(self::isAuthorized($id)){
+                return DV::error('The payroll is already Authorized');
             }
-
+            
             $total = DB::table('payrolls as p')
                 ->where('id', $id)
                 ->selectRaw('total as amount')
                 ->first();
-
             if (!$total || $total->amount <= 0) {
-                return DV::error('Invalid Total');
+                return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
             }
 
             $default_account = DB::table('accounts as a')
                 ->where('a.id', 1)
                 ->selectRaw('balance as amount, a.id as account_id')->first();
+            if(!$default_account) return DV::error('Master payroll account is not yet created!');
+
             if($total){
 
                 $total->trx_type = "1";

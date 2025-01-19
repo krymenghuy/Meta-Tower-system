@@ -1039,7 +1039,8 @@ class PayrollList
         if (!Payroll::isAuthorized($payroll_id)) {
             return DV::error('This payroll has not been authorized!');
         }
-         
+        
+       if($payroll_id)  DB::statement(DB::raw("update payrolls set total = (SELECT SUM(IFNULL(total_salary,0)) FROM payroll_list WHERE payroll_id = $payroll_id) WHERE id = $payroll_id"));
         $master_account = DB::table('accounts')
             ->where('id', $master_account_id)
             ->selectRaw('id,balance,currency_code')->first();
