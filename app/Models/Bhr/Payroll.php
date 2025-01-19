@@ -19,12 +19,15 @@ class Payroll
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+    static function getProps($id,$cols='id,name,currency_code,total,exchange_rate'){
+        return DB::table('payrolls')->where('id',$id)->selectRaw($cols)->first();
+    }
     function save($arr = [],$id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $v_rule = [
-            'name' => '1|string',
+            'name' => '1|string|1-150',
             'month' => '1|number',
             'year' => '1|number',
             'start_date' => '1|date',
@@ -47,9 +50,6 @@ class Payroll
         $inputs['start_date'] = convertDate($inputs['start_date']);
         $inputs['end_date'] = convertDate($inputs['end_date']);
         $d = (object)$inputs;
-
-
-
         $err = self::checkDuplicateName($d->name,$id);
         if($err) return DV::error($err);
 
@@ -127,6 +127,18 @@ class Payroll
         return null;
     }
 
+    static function isDisbursed($id){
+        if(!$id) return false;
+        $x = DB::table('payrolls as p')->where('id',$id)->value('disbursed');
+        if(!$x) return false;
+        return $x==1;
+    }
+    static function isAuthorized($id){
+        if(!$id) return false;
+        $x = DB::table('payrolls')->where('id',$id)->value('authorized');
+        if(!$x) return false;
+        return $x ==1;
+    }
     function getList($arr, $ss)
     {
         $d = (object) $arr;

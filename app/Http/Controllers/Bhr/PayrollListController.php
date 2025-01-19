@@ -91,27 +91,32 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $res =  $this->payrollListModel->calculatePayrollList($req->all(), $ss);
+        $id = $req->id ?? $req->payroll_id;
+        $res =  $this->payrollListModel->calculatePayrollList($id, $ss);
         return JDV::raw($res);
     }
 
-    public function disbursePayrollList(Request $req)
+    public function disburseOne(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $res = ($this->payrollListModel->disbursePayrollList($req->all(), $ss));
+        $id = $req->id;
+        //$payroll_id = $req->payroll_id;
+        //$emp_id = $req->emp_id;
+        $res = ($this->payrollListModel->disburseOne($id, $ss));
         return JDV::raw($res);
     }
 
-    public function disburseAllPayrollList(Request $req)
+    public function disburseAll(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $res = ($this->payrollListModel->disburseAllPayrollList($req->all(), $ss));
+        $id = $req->payroll_id;
+        $res = $this->payrollListModel->disburseAll($id,$ss);
         return JDV::raw($res);
     }
     public function paySlip(Request $req)

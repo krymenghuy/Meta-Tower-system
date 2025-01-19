@@ -167,9 +167,8 @@ var PayrollComponent = new (function () {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-                cloneTable = tr.parentElement.parentElement;
+                //cloneTable = tr.parentElement.parentElement;
                 // console.log(1212,cloneTable);
-
                 tr.classList.add('tr_action');
                 // mThis.initDropdownMenus(cloneTable);
 
@@ -238,7 +237,7 @@ var PayrollComponent = new (function () {
         mThis.pr_table = mThis.PayrollListView.getTable();
         mThis.initDropdownMenus(mThis.pr_table);
 
-        mThis.cloneTable = mThis.self.querySelector('#_payroll_list');
+        //mThis.cloneTable = mThis.self.querySelector('#_payroll_list');
         // console.log(7777,mThis.cloneTable.querySelector('tr'));
 
         mThis.initAlready = true;

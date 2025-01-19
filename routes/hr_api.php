@@ -180,8 +180,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
     Route::post('/import', [PayrollListController::class, 'importPayrollList']);
     Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
-    Route::post('disburse', [PayrollListController::class, 'disbursePayrollList']);
-    Route::post('disburse-all', [PayrollListController::class, 'disburseAllPayrollList']);
+    Route::post('disburse', [PayrollListController::class, 'disburseOne']);
+    Route::post('disburse-all', [PayrollListController::class, 'disburseAll']);
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
     Route::post('/list', [PayrollListController::class, 'getListPayrollList']);
 
