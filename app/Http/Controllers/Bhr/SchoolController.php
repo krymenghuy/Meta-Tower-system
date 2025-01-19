@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\BHR\School;
+use App\Models\Bhr\School;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
