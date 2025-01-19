@@ -11,9 +11,7 @@ var BenefitDisbursementComponent =  (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefitDisburse");
     mThis.elSearch = mThis.self.querySelector("#_benefit_disburse_search");
     mThis.elCard = mThis.self.querySelector(".top_level_card");
-    mThis._searchBenefitDisburse = mThis.self.querySelector(
-        "#container_benefit_disburse"
-    );
+    mThis._searchBenefitDisburse = mThis.self.querySelector("#container_benefit_disburse");
     mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
     const monthNames = [
@@ -77,7 +75,7 @@ var BenefitDisbursementComponent =  (function () {
                 `<span class="text-primary-custom">${data.target_year}</span>`,
         },
         {
-            title: "Withdraw Rate",
+            title: "Withdraw Percent",
             className: "align-middle",
             data: (data) =>
                 `<span class="text-primary-custom">${data.withdraw_rate ?? "0"}%</span>`,
@@ -318,7 +316,7 @@ const BenefitDisburseDialog = (() => {
                             <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
                         </div>
                         <div class="form-group col-6">
-                            <label for="withdraw_rate" class="form-label" vslang="titles.Withdraw Rate"></label>
+                            <label for="withdraw_rate" class="form-label" vslang="titles.Withdraw Percent"></label>
                             <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
                         </div>
                         <div class="form-group col-6">
@@ -404,7 +402,7 @@ const BenefitDisburseDialog = (() => {
                 ],
                 contentCreated: (me, divModal) => {
                     me.saveBenefitDisburse = (bd) => {
-                        alert("Data saved.");
+                        alert("It seems no action yet!");
                     };
                 },
                 prepareFormOptions: {
@@ -420,23 +418,23 @@ const BenefitDisburseDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log("API Response:", res);
-                        if (res.target_month && res.target_year) {
-                            setTimeout(() => {
-                                const monthSelect = me.divModal.querySelector(
-                                    '[name="target_month"]'
-                                );
-                                const yearSelect = me.divModal.querySelector(
-                                    '[name="target_year"]'
-                                );
-                                if (monthSelect)
-                                    monthSelect.value = res.target_month;
-                                if (yearSelect)
-                                    yearSelect.value = res.target_year;
-                            }, 100);
-                        }
-                    },
+                    // onResponse: (me, res) => {
+                         
+                    //     if (res.target_month && res.target_year) {
+                    //         setTimeout(() => {
+                    //             const monthSelect = me.divModal.querySelector(
+                    //                 '[name="target_month"]'
+                    //             );
+                    //             const yearSelect = me.divModal.querySelector(
+                    //                 '[name="target_year"]'
+                    //             );
+                    //             if (monthSelect)
+                    //                 monthSelect.value = res.target_month;
+                    //             if (yearSelect)
+                    //                 yearSelect.value = res.target_year;
+                    //         }, 100);
+                    //     }
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {
