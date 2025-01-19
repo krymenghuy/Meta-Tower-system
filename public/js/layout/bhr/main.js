@@ -400,11 +400,11 @@ window.addEventListener('DOMContentLoaded',function(){
     // }
 
     main_view.init();
-
     //VSRoute.onShowComponent = main_view.onShowComponent;
 
     LocaleManager.translateZone(main_view.appContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
+    VSMoney.init();
 
     // if(typeof AuthManager =='undefined'){
     //     VSRoute.loadScript(main_view.auth_script_url).then(()=>{

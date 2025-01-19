@@ -57,21 +57,22 @@ var PayrollListComponent = new (function () {
             title: "Salary",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
+                //return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
             }
         },
         {
             title: "Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxable ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_taxable), data.currency_code)}</p>`;
             }
         },
         {
             title: "Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_non_tax ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</p>`;
             }
         },
         {
@@ -79,12 +80,12 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
                 if (!data.used_amount || Object.keys(data.used_amount).length === 0 || !data.flat_tax_rate) {
-                    return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber('0.00')}</p>`;
+                    return `<p class="p-0 m-0">${VSMoney.formatAmount(0,data.currency_code)}</p>`;
                 }
 
                 const flatTaxDetails = Object.entries(data.used_amount)
                     .map(([taxRate, amount]) => {
-                        const formattedAmount = formattedNumber(amount);
+                        const formattedAmount = VSMoney.formatAmount(amount);
                         return `${formattedAmount} (${taxRate}%)`;
                     })
                     .join('<br>');
@@ -96,14 +97,14 @@ var PayrollListComponent = new (function () {
             title: "Deduction",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.deduction ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.deduction, data.currency_code)}</p>`;
             }
         },
         {
             title: "Allowance",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.allowance ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.p_allowance, data.currency_code)}</p>`;
             }
         },
         {
@@ -117,7 +118,7 @@ var PayrollListComponent = new (function () {
             title: "Bias",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
             }
         },
 
@@ -125,7 +126,7 @@ var PayrollListComponent = new (function () {
             title: "Tax Base",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.tax_base ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</p>`;
             }
         },
         // {
@@ -139,14 +140,14 @@ var PayrollListComponent = new (function () {
             title: "Benefit Tax",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_tax ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_tax), data.currency_code)}</p>`;
             }
         },
         {
             title: "Total",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0 ${data.disbursed == '1' ? 'text-success' : ''}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
             }
         },
         {
@@ -159,7 +160,7 @@ var PayrollListComponent = new (function () {
                         `<a href="javascript:void(0)"`,
                            `class="btn_payroll_list_action"`,
                            `data-id="${data.id}"`,
-                           `data-disburse="${data.disburse}"`,
+                           `data-disburse="${data.disbursed || 0}"`,
                            `aria-haspopup="true"`,
                            `aria-expanded="false">`,
                            //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
@@ -184,9 +185,10 @@ var PayrollListComponent = new (function () {
             tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
+
         mThis.btnCalculate.onclick = function (e) {
             e.preventDefault();
-            let op = {
+            const op = {
                 payroll_id: mThis.getFilterData().payroll_id,
             };
 
@@ -317,7 +319,7 @@ var PayrollListComponent = new (function () {
                     name: "pay_slip",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
+                    html:'<span class="ps-2  " vslang="titles.Disbursement"></span>',
                     icon:`<i class="fa-solid fa-square-check"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"disburse_payroll_list"
@@ -339,7 +341,7 @@ var PayrollListComponent = new (function () {
             onShow: (me, container) => {
 
                 const menu = me.getActiveMenus(container);
-                const disburse = container.dataset.disburse;
+                const disburse = container.dataset.disbursed;
 
 
                 if (disburse == 1) {
@@ -536,7 +538,7 @@ var PayrollListComponent = new (function () {
                         <tbody>
                             <tr>
                                 <td> Salary </td>
-                                <td>${formattedNumber(data.p_salary || 0.00)}</td>
+                                <td>${VSMoney.formatAmount(data.p_salary,data.currency_code)}</td>
                             </tr>
                              <tr>
                                 <td>Days</td>
@@ -544,7 +546,7 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>Taxable BFT</td>
-                                <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
+                                <td class="text-success">${VSMoney.formatAmount(data.benefit_taxable, data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>BFT</td>
@@ -552,7 +554,7 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>Deduction</td>
-                                <td class="text-danger">${formattedNumber(data.deduction || 0.00)}</td>
+                                <td class="text-danger">${VSMoney.formatAmount(data.deduction, data.currency_code)}</td>
                             </tr>
 
                         </tbody>
@@ -571,7 +573,7 @@ var PayrollListComponent = new (function () {
 
                             <tr>
                                 <td>Allowance</td>
-                                <td>${formattedNumber(data.p_allowance || 0.00)}</td>
+                                <td>${VSMoney.formatAmount(data.p_allowance, data.currency_code)}</td>
                             </tr>
 
                              <tr>
@@ -580,22 +582,22 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>Nontax BFT</td>
-                                <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
+                                <td class="text-success">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>Benefit Tax Flat Rate</td>
-                                <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
+                                <td class="text-danger">${VSMoney.formatAmount( (data.taxable_benefits || data.benefit_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>Tax Base</td>
-                                <td class ="text-danger">${formattedNumber(data.tax_base || 0.00)}</td>
+                                <td class ="text-danger">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</td>
                             </tr>
                         </tbody>
 
                     </table>
                     </div>
                        <div class="col-12 d-flex justify-content-center pb-1">
-                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
+                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>
                        </div>
                 </div>
 
@@ -711,7 +713,7 @@ var PayrollListComponent = new (function () {
 
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        p.disburse = mThis.elFilterDisburse.value;
+        p.disbursed = mThis.elFilterDisburse.value;
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -736,14 +738,14 @@ var PayrollListComponent = new (function () {
                     payroll_id = payroll.id;
 
                 }
-                console.log(333, payroll);
+             
 
             });
-            console.log(1111,payroll_id);
+           
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
-            VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
+            VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
     };

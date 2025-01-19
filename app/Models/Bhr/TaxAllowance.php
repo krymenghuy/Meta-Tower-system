@@ -19,18 +19,18 @@ class TaxAllowance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $ss = null,$id = null) {
+    function save($arr = [], $id = null, $ss = null) {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
+            //'id' => '0|identity=1',
             'emp_id' => '1|number',
             'amount' => '1|number',
-            'qty' => '1|number',
+            'qty' => '1|number|default=1',
             'allowance' => '0|number',
-            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$national_currency,
             'remarks' => '0|string|250',
         ];
 
@@ -38,26 +38,21 @@ class TaxAllowance
         if ($res->error) {
             return DV::error($res->error);
         }
-        $id = $res->id;
-
+        //$id = $res->id;
         $inputs = $res->values;
-
-        $inputs['allowance'] = $inputs['qty'] * $inputs['amount'];
+        $qty = $inputs['qty'] ?? 1;
+        $currency_code = $inputs['currency_code'] ?? null;
+        if($currency_code != Money::$national_currency) return DV::error('Tax Allowance must be national currency (??)::'.Money::$national_currency);   
+        $inputs['allowance'] = $qty * $inputs['amount'];
 
         $id = saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['tax_allowances' => $inputs, 'id' => $id]);
-        }
-
-        return DV::error('Error saving data');
+        return DV::depends($id, ['tax_allowances' => $inputs, 'id' => $id], 'Failed to save allowance');
     }
-
-
-    function getTaxAllowanceListPaginate($arr, $ss)
+ 
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
+         
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -68,19 +63,13 @@ class TaxAllowance
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-
-        $str_search = '1=1';
-
+         
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
             ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.emp_id', $emp_id);
-
-        if ($search_id) {
-            $query->where('ta.id', $search_id);
-        }
+ 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('em.name', 'like', '%' . $search_value . '%');
@@ -93,10 +82,28 @@ class TaxAllowance
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    function getListAll($arr, $ss)
+    {
+        $d = (object) $arr;
+        $emp_id = $d->emp_id ?? null;
+        $search_value = $d->search_value ?? null;
+         
+        $query = DB::table('tax_allowances as ta')
+            ->join('employees as em', 'em.id', '=', 'ta.emp_id')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
+            ->where('ta.branch_id', $ss->branch_id)
+            ->where('ta.emp_id', $emp_id);
+ 
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->where('em.name', 'like', '%' . $search_value . '%');
+        }
+        return $query->get();
+    }
+
 
     function getDetails($id, $ss)
     {
-        $branch_id = $ss->branch_id;
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
             ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
@@ -120,7 +127,6 @@ class TaxAllowance
         ];
 
     }
-
     function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;

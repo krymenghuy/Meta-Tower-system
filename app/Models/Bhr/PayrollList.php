@@ -56,11 +56,10 @@ class PayrollList
         return DV::error('Error saving payroll');
     }
 
-    function getPayrollListPaginate($arr, $ss)
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
+         
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -72,10 +71,10 @@ class PayrollList
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
         $filter_by = $d->payroll_id ?? null;
-        $search_branch = $d->branch_id ?? null;
+        $branch_id = $d->branch_id ?? null;
         $sort_by = $d->sort_by ?? 'pl.id';
         $sort_order = $d->sort_order ?? 'asc';
-        $search_disburse = $d->disburse ?? null;
+        $disbursed = $d->disbursed ?? null;
         $str_search = '1=1';
 
         $query = DB::table('payroll_list as pl')
@@ -100,7 +99,8 @@ class PayrollList
                         pl.tax_base,
                         pl.benefit_tax,
                         pl.total_salary,
-                        pl.disburse,
+                        pl.disbursed,
+                        p.currency_code,
                         e.photo_file_name as emp_photo')
             ->whereRaw($str_search);
 
@@ -120,12 +120,12 @@ class PayrollList
         //     $query->whereBetween('p.start_date', [$current_month_start, $current_month_end])
         //         ->orWhereBetween('p.end_date', [$current_month_start, $current_month_end]);
         // }
-        if ($search_branch) {
-            $query->where('e.branch_id', $search_branch);
+        if ($branch_id) {
+            $query->where('e.branch_id', $branch_id);
         }
 
-        if (!is_null($search_disburse)) {
-            $query->where('pl.disburse', $search_disburse);
+        if (!is_null($disbursed)) {
+            $query->where('pl.disbursed', $disbursed);
         }
 
         $query->orderBy($sort_by, $sort_order);
@@ -139,10 +139,10 @@ class PayrollList
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
-
+            //Tax allowance currency must be the same as National Currency
             $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance,currency_code as currency_allowance');
+                ->selectRaw('id,allowance,currency_code as allowance_currency');
 
                 $row->benefit_taxable = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -183,7 +183,7 @@ class PayrollList
             if ($emp_allowance_count > 1) {
                 $row->allowance = $row->allowance->get();
                 foreach ($row->allowance as $allowance) {
-                    if($allowance->currency_allowance != Money::$national_currency) {
+                    if($allowance->allowance_currency != Money::$national_currency) {
                         $allowance->allowance = $allowance->allowance * $row->exchange_rate;
                     }
                     else {
@@ -279,7 +279,7 @@ class PayrollList
                     pl.tax_base,
                     pl.benefit_tax,
                     pl.total_salary,
-                    pl.disburse,
+                    pl.disbursed,
                     '.$joining_date.',
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
@@ -507,7 +507,7 @@ class PayrollList
 
                 $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance,currency_code as currency_allowance');
+                ->selectRaw('id,allowance,currency_code as allowance_currency');
 
                 $row->benefit_taxable = DB::table('payroll_list_benefits')
                     ->where('emp_id', $row->emp_id)
@@ -548,7 +548,7 @@ class PayrollList
                 if ($emp_allowance_count > 1) {
                     $row->allowance = $row->allowance->get();
                     foreach ($row->allowance as $allowance) {
-                        if ($allowance->currency_allowance != Money::$national_currency) {
+                        if ($allowance->allowance_currency != Money::$national_currency) {
                             $allowance->allowance = $allowance->allowance * $row->exchange_rate;
                         }
                     }
@@ -556,7 +556,7 @@ class PayrollList
                 } else {
                     $allowance = $row->allowance->first();
                     if ($allowance) {
-                        if ($allowance->currency_allowance != Money::$national_currency) {
+                        if ($allowance->allowance_currency != Money::$national_currency) {
                             $row->allowance = $allowance->allowance * $row->exchange_rate;
                         } else {
                             $row->allowance = $allowance->allowance;
@@ -1023,7 +1023,6 @@ class PayrollList
     function disburseAllPayrollList($payroll_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
         $master_account_id = 1;
 
         $master_account_balance = DB::table('accounts')
@@ -1056,7 +1055,7 @@ class PayrollList
         $payrollEntries = DB::table('payroll_list as pl')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('pl.payroll_id', $payroll_id)
-            ->where('pl.disburse', 0)
+            ->where('pl.disbursed', 0)
             ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks')
             ->get();
 
