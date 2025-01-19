@@ -1319,23 +1319,22 @@ var EmployeeComponent = new (function () {
     };
 
     mThis.renderCardTaxAllowance = (employeeId) => {
-        let p = { emp_id: employeeId };
+        const p = { emp_id: employeeId };
         let cmt = 0;
         vsapi
             .call(
-                `${main_view.base_url}/hr/tax-allowance/list-paginate`,
+                `${main_view.base_url}/hr/tax-allowance/list-all`,
                 p,
-                null,
+                false,
                 false,
                 false
             )
             .then((res) => {
-                let data = res.status_code === 200 ? res.data.data : [];
+                const data = res.status_code === 200 ? res.data : [];
 
                 let html = [
                     '<div class="card" style="height:260px;">',
                         '<div class="card-header bg-primary-custom text-white">',
-
                             '<h6 class="mt-1">Tax Allowance </h6>',
                             '<div class="d-flex"><a href="javascript:void(0)" data-empid="',employeeId,'" class=" lnk-add-tax-allowance">(<i class="fa fa-plus"></i>)</a></div>',
 
@@ -1345,7 +1344,7 @@ var EmployeeComponent = new (function () {
                         '<table class="table table-sm">',
                             '<thead class="">',
                                '<tr>',
-                                    '<th style="color:#2b3991; font-size:12px;">Id</th>',
+                                    //'<th style="color:#2b3991; font-size:12px;"></th>',
                                     '<th style="color:#2b3991; font-size:12px;">Qty</th>',
                                     '<th style="color:#2b3991; font-size:12px;">Unit Amt</th>',
                                     '<th style="color:#2b3991; font-size:12px;">Allowance</th>',
@@ -1358,19 +1357,17 @@ var EmployeeComponent = new (function () {
                 data.map((d,index,i) => {
                     html += `
                         <tr>
-                            <td><small>#</small></td>
                             <td><small>${d.qty}</small></td>
                             <td>
                                 <small>
-                                    ${d.currency_code === 'KHR' ? '៛' : d.currency_code === 'USD' ? '$' : ''} ${formattedNumber(d.amount ?? 0)}
+                                    ${VSMoney.formatAmount(d.amount,d.currency_code)}
                                 </small>
                             </td>
                             <td>
                                 <small>
-                                    ${d.currency_code === 'KHR' ? '៛' : d.currency_code === 'USD' ? '$' : ''} ${formattedNumber(d.allowance ?? 0)}
+                                    ${VSMoney.formatAmount(d.allowance,d.currency_code)}
                                 </small>
                             </td>
-
                             <td class="text-start">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance me-2">
                                     <small><i class="fa-regular fa-pen-to-square fs-7 text-primary"></i></small>

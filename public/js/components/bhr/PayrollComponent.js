@@ -10,18 +10,18 @@ var PayrollComponent = new (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddpayroll");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_payroll");
-    let cloneTable = null;
+     
 
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString('en-US', {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, ' ');
-    };
+    // const formattedNumber = (number) => {
+    //     number = Number(number) || 0;
+    //     return number
+    //         .toLocaleString('en-US', {
+    //             useGrouping: true,
+    //             minimumFractionDigits: 2,
+    //             maximumFractionDigits: 2,
+    //         })
+    //         .replace(/,/g, ' ');
+    // };
 
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -65,20 +65,24 @@ var PayrollComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.total ?? 0)}</p>`;
+                /** OLD CODE TO BE REMOVED! */
+                // let currency_codeSymbol = "";
+                // if (data.currency_code === "USD") {
+                //     currency_codeSymbol = "$";
+                // } else if (data.currency_code === "KHR") {
+                //     currency_codeSymbol = "៛";
+                // }
+                // return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.total ?? 0)}</p>`;
+                
+                /** NEW CODE */
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.total,data.currency_code)}</p>`;
             },
         },
 
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
-            data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + data.exchange_rate ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? '(Not Found)'}</p>`
         },
          {
             title: "Last Updated",

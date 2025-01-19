@@ -74,7 +74,8 @@ class ScriptProvider
                 '/assets/js/init.toastr.js',
                 '/assets/js/scripts.bundle.js',
                 //'/assets/js/datatables.bundle.min.js',/** to be removed soon */
-                '/assets/js/browsercontrol.js'
+                '/assets/js/browsercontrol.js',
+                '/assets/js/VSMoney.js',
             ],
             'no-minify' => [
                 '/assets/js/crypto-js.js',

@@ -159,8 +159,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
     Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
     Route::post('/save', [PayrollController::class, 'savePayroll']);
     Route::post('/list-paginate', [PayrollController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollController::class, 'getDetails']);
@@ -171,10 +171,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
     Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
     Route::post('/save', [PayrollListController::class, 'savePayrollList']);
-    Route::post('/list-paginate', [PayrollListController::class, 'getPayrollListPaginate']);
+    Route::post('/list-paginate', [PayrollListController::class, 'getList']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
     Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
@@ -253,7 +253,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 
     Route::post('/save', [TaxAllowanceController::class, 'saveTaxAllowance']);
-    Route::post('/list-paginate', [TaxAllowanceController::class, 'getTaxAllowanceListPaginate']);
+    Route::post('/list-paginate', [TaxAllowanceController::class, 'getList']);
     Route::post('/list-all', [TaxAllowanceController::class, 'listAll']);
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);

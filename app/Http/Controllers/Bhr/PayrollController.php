@@ -35,7 +35,7 @@ class PayrollController extends Controller
             return JDV::raw($ss);
         }
         $war = new Payroll();
-        return JDV::result($war->getPayrollList($req->all(), $ss));
+        return JDV::result($war->getPayrollListAll($req->all(), $ss));
     }
 
     public function getPayrollListPaginate(Request $req)

@@ -24,18 +24,18 @@ class TaxAllowanceController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return $this->tax_allowance->save($req, $ss);
+        $id = $req->id ?? $req->allowance_id;
+        return $this->tax_allowance->save($req->all(),$id, $ss);
     }
 
-    public function getTaxAllowanceListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->tax_allowance->getTaxAllowanceListPaginate($req, $ss));
+        return JDV::result($this->tax_allowance->getList($req->all(), $ss));
     }
 
     public function listAll(Request $req)
@@ -44,7 +44,7 @@ class TaxAllowanceController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->tax_allowance->listAll($req, $ss));
+        return JDV::result($this->tax_allowance->getlistAll($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -53,12 +53,8 @@ class TaxAllowanceController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        // Assuming id is passed in the request (POST body), access it like this
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        return JDV::result($this->tax_allowance->getDetails($req->id, $ss));
+        $id = $req->id ?? $req->allowance_id;
+        return JDV::result($this->tax_allowance->getDetails($id, $ss));
     }
 
     public function deleteTaxAllowance(Request $req)
@@ -67,10 +63,8 @@ class TaxAllowanceController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        $res = $this->tax_allowance->delete($req->id, $ss);
+        $id = $req->id ?? $req->allowance_id;
+        $res = $this->tax_allowance->delete($id, $ss);
         return JDV::raw($res);
     }
 
@@ -80,6 +74,7 @@ class TaxAllowanceController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->tax_allowance->getFormOptions($req->id, $ss));
+        $id = $req->id ?? $req->allowance_id; 
+        return JDV::result($this->tax_allowance->getFormOptions($id, $ss));
     }
 }

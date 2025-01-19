@@ -28,13 +28,13 @@ class PayrollListController extends Controller
         return JDV::raw($res);
     }
 
-    public function getPayrollListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->payrollListModel->getPayrollListPaginate($req->all(), $ss));
+        return JDV::result($this->payrollListModel->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
