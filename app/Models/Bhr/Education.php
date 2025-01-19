@@ -24,8 +24,8 @@ class Education //extends Model
             'school_id' => '1|number',
             'edu_level_id' => '1|number',
             'period' => '0|string|0-150',
-            'start_year' => '0|year',
-            'finish_year' => '0|year',
+            'start_year' => '0|number',
+            'finish_year' => '0|number',
             'major' => '0|string|0-150',
             'diploma' => '0|string|1-150'
 
@@ -51,7 +51,7 @@ class Education //extends Model
     function getListAll($arr,$ss = null){
         $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
-         
+
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
