@@ -26,97 +26,64 @@ class Experience //extends Model
 
         $v_rule = [
             'emp_id' => '1|number|exists=employees.id',
-            'position_id' => '1|number|exists=positions.id',
+            'position' => '1|string|1-200',
             'organization_id' => '1|number|exists=organizations.id',
             'description' => '0|string|0-300',
-            'period_type' => '0|string|0-150',
-            'start_date' => '1|date',
-            'end_date' => '1|date',
+            'period' => '0|string|0-150',
+            'start_date' => '0|date',
+            'end_date' => '0|date',
         ];
 
         $exp_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-
         // Validate input
-        $res = validateObject($arr, $v_rule, true, ['period_type' => $exp_char], $ss->lang, false, null);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
+        $res = validateObject($arr, $v_rule, true, ['period' => $exp_char], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
-
-        if ($id === null) {
-            $id = DB::table('emp_experiences')->insertGetId(array_merge($inputs, ['branch_id' => $branch_id]));
-        } else {
-            $updated = DB::table('emp_experiences')->where('id', $id)->update($inputs);
-            if (!$updated) {
-                return DV::error('Failed to update experience.');
-            }
+        $d = (object)$inputs;
+        $start_date = convertDate($d->start_date);
+        $end_date = convertDate($d->end_date);
+        $period = $d->period;
+        if($start_date && $end_date){
+            $period = date('d-M-Y',strtotime($start_date)).' to '. date('d-M-Y',strtotime($end_date));  
+        }else if ($start_date && !$end_date){
+            $period = "$start_date until now";
+            $period = date('d-M-Y',strtotime($start_date)).' until now';
+        }else if (!$start_date){
+            if(!$period) return DV::error('If you dont exactly remember start date or end date. You can specify the period of experience like this "10-Jan-2023 to 15-Dec-2025" or "Jan-2023 to Dec-2025"'); 
         }
-
-        return DV::depends(1, ['emp_experiences' => $inputs, 'id' => $id]);
+        $inputs['start_date'] =  $start_date;
+        $inputs['end_date'] = $end_date;
+        $inputs['period'] = $period;
+        $id = saveData($ss,'emp_experiences',['id'=>$id],$inputs,1,false);
+        return DV::depends($id, ['emp_experiences' => $inputs, 'id' => $id], 'Failed to save experience');
     }
 
-    function getListAll($arr, $ss)
+    function getListAll($emp_id, $ss)
     {
-        $branch_id = $ss->branch_id;
-        $d = (object) $arr;
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-
-        $search_value = $d->search_value ?? null;
-        $emp_id = $d->emp_id ?? null;
-
-        $skip_rows = ($current_page - 1) * $per_page;
-
-        $str_search = '1=1';
-
-        if ($search_value) {
-            $skip_rows = 0;
-            $str_search = "(exp.emp_id LIKE '%" . $search_value . "%' OR exp.description LIKE '%" . $search_value . "%')";
-        }
         $start_date = DBX::formatDate('exp.start_date', 'start_date');
         $end_date = DBX::formatDate('exp.end_date', 'end_date');
 
         $query = DB::table('emp_experiences as exp')
             ->join('employees as emp', 'emp.id', '=', 'exp.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'exp.position_id')
-            ->join('departments as d','d.id','=','pos.department_id')
             ->join('organizations as org', 'org.id', '=', 'exp.organization_id')
-            ->where('exp.branch_id', $branch_id)
-            ->whereRaw($str_search)
             ->where('exp.emp_id', $emp_id)
-            ->selectRaw('exp.id, exp.description, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,'.$start_date.','.$end_date.'' )
+            ->selectRaw('exp.id, exp.description,exp.position,org.id as organization_id, org.name as organization_id,exp.period,'.$start_date.','.$end_date)
             ->orderBy('exp.id', 'DESC');
-
-        $clone_query = clone $query;
-        $count = $clone_query->count('exp.id');
-
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        return $query->get();
     }
 
-    function details($id, $ss = null)
+    function details($id)
     {
-        $branch_id = $ss->branch_id;
-        $rows = DB::table('emp_experiences')->selectRaw('id,emp_id,position_id,period_type,description,organization_id,start_date,end_date')
-            ->where('branch_id', $branch_id)
+        return DB::table('emp_experiences')->selectRaw('id,emp_id,position,period,description,organization_id,start_date,end_date')
             ->where('id', $id)
-            ->take(1)->first();
-        if (!$rows) return null;
-        return $rows;
+            ->first();
     }
-
-
+ 
     function formOptions($id, $ss)
     {
         $experience = null;
         if ($id) {
-            $experience = self::details($id, $ss);
+            $experience = self::details($id);
         }
         return (object) [
             'positions' => DB::table('positions')->selectRaw('id, title')->get(),

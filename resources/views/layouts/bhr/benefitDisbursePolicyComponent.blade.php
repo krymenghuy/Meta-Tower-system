@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center justify-content-end px-3 w-100">
             <button type="button" class="btn_add" id="_btnAddbdp">
                 <i class="fas fa-plus"></i>
-                <span>Create Bdp</span>
+                <span>Add Policy</span>
             </button>
         </div>
     </div>

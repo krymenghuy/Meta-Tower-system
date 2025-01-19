@@ -551,7 +551,7 @@ var EmployeeComponent = new (function () {
                                             <p class="text-nowrap width-p">salary</p>
                                             <p class="px-2">:</p>
                                             <p class="text-white">
-                                                ${new Intl.NumberFormat('fr-FR', { useGrouping: true }).format(data.salary || 0)} (${data.currency_code})
+                                                ${VSMoney.formatAmount(data.salary, data.currency_code)}
                                             </p>
                                         </div>
                                     </div>
@@ -887,8 +887,44 @@ var EmployeeComponent = new (function () {
             });
     };
 
+    mThis.formatPeriod_exp =(d)=>{
+       if(!d) return ''; 
+       if(d.start_date && d.end_date) return [d.start_date, ' to ', d.end_date].join('');
+       else if (d.period) return d.period;
+    }
+
+    mThis.formatPeriod_edu = (finish_year, period)=>{
+        period = period || '';
+        let sts = period.split('to');
+        if(!sts[1]){
+             sts = period.split('-');
+        }
+        const start = sts[0];
+        const end = sts[1];
+        if (!finish_year || finish_year =='') finish_year = end; 
+        if (sts[1]){
+            return [start,' to ', end].join('');
+        }else{
+            return [start, ' until now'].join('');
+        }
+    }
+
+    mThis.formatFinishYear = (finish_year, period) =>{
+        period = period || '';
+        let sts = period.split('to');
+        if(!sts[1]){
+             sts = period.split('-');
+        }
+        const end = sts[1];
+        if (sts[1]){
+            return sts[1];
+        }else{
+            return finish_year? finish_year: '';
+        }
+    }
+
     mThis.renderCardCenter = (employeeId) => {
-        let p = {
+        const p = {
             emp_id: employeeId,
         };
         let cmt = 0;
@@ -901,7 +937,7 @@ var EmployeeComponent = new (function () {
                 false
             )
             .then((res) => {
-                let data = res.status_code === 200 ? res.data.data : [];
+                const data = res.status_code === 200 ? res.data.data : [];
                 let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
                     <div class="d-flex gap-2">
@@ -925,7 +961,7 @@ var EmployeeComponent = new (function () {
                 <div class="row pt-2 border-bottom border-white education-item">
                     <div class="col-md-12 pb-2">
                         <div class="d-flex justify-content-between">
-                            <h6 style="color:#2b3991;">${d.period}</h6>
+                            <h6 style="color:#2b3991;">${mThis.formatPeriod_edu(d.finish_year,d.period)}</h6>
                             <span class="text-nowrap text-dark" style="color:#2b3991;">${d.school}</span>
                         </div>
                         <p class="text-muted mb-0">
@@ -1151,7 +1187,7 @@ var EmployeeComponent = new (function () {
                 false
             )
             .then((res) => {
-                let data = res.status_code === 200 ? res.data.data : [];
+                let data = res.status_code === 200 ? res.data : [];
                 let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
                     <h6 class="mt-1">Experience</h6>
@@ -1181,9 +1217,9 @@ var EmployeeComponent = new (function () {
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 style="color:#2b3991;">${d.position}</h6>
-                            <small class="text-muted" style="color:#3b3a36;">(${d.start_date} ~ ${d.end_date})</small>
+                            <small class="text-muted" style="color:#3b3a36;">${mThis.formatPeriod_exp(d)}</small>
                         </div>
-                        <small class="pb-1 d-block" style="color:#293536;"> ${d.description} </small>
+                        <small class="pb-1 d-block" style="color:#293536;"> ${d.description || ''} </small>
 
 
                     </div>
@@ -2631,17 +2667,17 @@ const AddExperience = (() => {
                             <label class="form-label" vslang="titles.End Date">End Date</label>
                             <div><input  name="end_date" class=" form-control data-input" data-field="end_date"></input></div>
                         </div>
+                          <div class=" form-group col-md-12">
+                            <label class="form-label" vslang="titles.Period (if no dates)">Period</label>
+                            <div><input name="period" class="form-control data-input" data-field="period"></input></div>
+                        </div>
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.Position">Position</label>
-                            <div><select name="position_id" class="data-input" data-field="position_id"></select></div>
+                            <div><input name="position" class="data-input form-control" data-field="position" /></div>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Organization">Organization</label>
                             <div><select name="organization_id" class="form-control data-input" data-field="organization_id"></select></div>
-                        </div>
-                        <div class=" form-group col-md-12">
-                            <label class="form-label" vslang="titles.Period">Period</label>
-                            <div><input name="period_type" class="form-control data-input" data-field="period_type"></input></div>
                         </div>
                         <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Description">Description</label>
@@ -2962,11 +2998,9 @@ const EmployeeDialog = (() => {
                             '</div>',
 
                             '<div class="form-group salary col-4">',
-                                '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>',
+                                '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label> <span>(',VSMoney.symbol,')</span>',
                                 '<input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />',
                             '</div>',
-
-
                             '<div class="form-group col-6">',
                                 '<label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>',
                                 '<span class="text-danger">*</span>',
