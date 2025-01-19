@@ -182,6 +182,11 @@ var PayrollListComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
+            rowCreated:(data,index,tr)=>{
+               tr.dataset.id = data.id;
+               tr.dataset.payrollid = data.payroll_id;
+               tr.dataset.empid = data.emp_id;
+            },
             tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
@@ -226,28 +231,21 @@ var PayrollListComponent = new (function () {
         mThis.btnDisburse.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
-                payroll_id: mThis.getFilterData().payroll_id,
+            const op = {
+                payroll_id: mThis.elFilter.value
             };
 
             cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
                 title: 'Disburse Payroll List',
-                context: 'disburse',
+                context: 'update',
                 confirmButtonText: "Disburse"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            if (res.data && res.data.message === 'Payroll List Already Disbursed') {
-                                cv_interact.error('Payroll list already disbursed');
-                            } else {
-                                cv_interact.success('Disbursed successfully');
-                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            }
-                        } else {
-                            cv_interact.error(res.error_message);
-                            // alert(res.data);
-                        }
+                            cv_interact.success('Salary disbursements were successful!');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                        } else cv_interact.error(res.error_message); 
                     });
                 }
             });
@@ -313,13 +311,13 @@ var PayrollListComponent = new (function () {
             //menuItemClass:"",
             menus:[
                 {
-                    html: '<span class="ps-2  " vslang="titles.View Pay Slip">View Pay Slip</span>',
+                    html: '<span class="ps-2 " vslang="titles.View Pay Slip">View Pay Slip</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "pay_slip",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Disbursement"></span>',
+                    html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
                     icon:`<i class="fa-solid fa-square-check"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"disburse_payroll_list"
@@ -366,7 +364,9 @@ var PayrollListComponent = new (function () {
                     }
 
                     case 'disburse_payroll_list':{
-                      mThis.disbursePayrollList(id, menuLink);
+                      const emp_id = menuLink.dataset.empid;  
+                      const payroll_id = menuLink.dataset.payrollid;
+                      mThis.disburseOne(id, emp_id, payroll_id, menuLink);
                       break;
                     }
                     case 'delete_payroll_list':{
@@ -647,25 +647,23 @@ var PayrollListComponent = new (function () {
         AddDeductionDialog.show(op);
     }
 
-    mThis.disbursePayrollList = (id, menuLink) => {
-        console.log(123, id);
-
-        let op = {
+    mThis.disburseOne = (id, emp_id,payroll_id, menuLink) => {
+        const p = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            }
+            emp_id:emp_id,
+            payroll_id:payroll_id
+            // btn: menuLink,
+            // onClose: () => {
+            //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            // }
         };
         cv_interact.confirm('Disburse this payroll ?',{
             title: 'Disburse Payroll List',
             context: 'disburse',
             confirmButtonText:"Disburse"
-        },function(e){
+        }, e =>{
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`,op,false,false,false).then(res => {
-                    console.log(321,res);
-
+                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`,p,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());

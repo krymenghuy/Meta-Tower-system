@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 use App\Models\Bhr\Employee;
 use App\Models\Bhr\Account;
+use App\Models\Bhr\Payroll;
 use App\Models\Money;
 // use App\Models\Bhr\PayrollListSettings;
 
@@ -26,15 +27,14 @@ class PayrollList
     function save($arr = [], $id = null, $ss = null) {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-
+         
         $v_rule = [
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
             // 'salary' => '0|number',
             // 'benefit' => '0|number',
             'deduction' => '0|number',
-            'disburse' => '0|number|default = 0',
+            'disbursed' => '0|number|default = 0',
             // 'tax_base' => '0|number',
             // 'allowance' => '0|number',
             // 'tax_rate' => '0|number',
@@ -342,7 +342,7 @@ class PayrollList
                 ['id' => 'e.salary', 'name' => 'By Salary'],
 
             ],
-            'disburse' => [
+            'disburse_statuses' => [
                 ['id' => 0, 'name' => 'Pending'],
                 ['id' => 1, 'name' => 'Disbursed'],
             ],
@@ -453,15 +453,16 @@ class PayrollList
         return DV::depends(1, ['success_count' => $success, 'error' => $error]);
     }
 
-    function calculatePayrollList($arr, $ss)
+    /** TODO: Please move this functionb to model Payroll.php */
+    function calculatePayrollList($payroll_id, $ss = null)
     {
-        $d = (object) $arr;
-        $payroll_id =  $d->payroll_id ?? null;
-
-        if(!$payroll_id){
+        $ss =$ss ?? $this->userInfo;
+        $payroll = Payroll::getProps($payroll_id,'id,name,authorized,disbursed');
+        if(!$payroll){
             return DV::error('No Payroll ID provided');
         }
-
+        if ($payroll->authorized ==1) return DV::error('Cannot calculate payroll that as been authorized! The next step is to disburse payments to all staffs');
+        if ($payroll->disbursed ==1) return DV::error('Cannot calculate any amounts because this payroll has been disbursed already!'); 
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
@@ -492,7 +493,7 @@ class PayrollList
             ->orderBy('e.id')
             ->get();
             if ($payrolls->isEmpty()) {
-                return DV::error('Not have data');
+                return DV::error('It seems you have not yet imported active staffs into the payroll');
             }
             $issues = [];
             $issues_count = 0;
@@ -500,11 +501,10 @@ class PayrollList
             $fail_count = 0;
 
             foreach ($payrolls as $row) {
-
-                if( $row->salary_currency != Money::$national_currency ){
-                    $row->salary = $row->salary * $row->exchange_rate;
-                }
-
+                //Ensure that Import staff => is to make sure all staffs' salary use the same currency as the payroll currency
+                // if( $row->payroll_currency != Money::$national_currency ){
+                //     $row->salary = $row->salary * $row->exchange_rate;
+                // }
                 $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
                 ->selectRaw('id,allowance,currency_code as allowance_currency');
@@ -631,9 +631,7 @@ class PayrollList
                 $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
                 $row->flat_tax_rate = ($flat_tax_rates ?? $row->flat_tax_rate ?? 0);
             }
-
-
-        return $payrolls;
+ 
         foreach ($payrolls as &$payroll)
         {
             $payroll->tax_base = 0;
@@ -914,7 +912,7 @@ class PayrollList
                 ->where('payroll_id', $payroll->payroll_id)
                 ->sum('total_salary');
 
-            $update = DB::table('payrolls')->where('id', $payroll->payroll_id)->update([
+            $x = DB::table('payrolls')->where('id', $payroll->payroll_id)->update([
                 'total' => $payroll_total
             ]);
 
@@ -931,229 +929,241 @@ class PayrollList
         ]);
     }
 
-    function disbursePayrollList($id, $ss = null)
+    //disbursePayrollList()
+    function disburseOne($id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
         $master_account_id = 1;
         $transfer_amount = 0;
+        if(self::isDisbursed($id)) return DV::error('This payroll amount has been disbursed already!');
+        $emp = DB::table('payroll_list as pl')
+        ->join('employees as e','e.id','=','pl.emp_id')
+        ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+        ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
+        ->where('pl.id', $id)
+        ->selectRaw('pl.payroll_id,total_salary as amount,e.id AS emp_id, e.name, e.code, e.phone_number,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
+        if(!$emp) return DV::error('The provided staff identity does not exist');
 
-        $master_account_balance = DB::table('accounts')
-            ->where('id', $master_account_id)
-            ->value('balance');
-
-        if (!$master_account_balance) {
-            return DV::error('Master account not found');
+        $payroll = Payroll::getProps($emp->payroll_id,'id,name,currency_code, total,exchange_rate');
+        if(!$payroll) return DV::error('The provided payroll ID does not exist');
+        if (!Payroll::isAuthorized($emp->payroll_id)) {
+            return DV::error('This payroll has not been authorized!');
         }
 
-        $existingDisbursement = DB::table('payroll_list')
-            ->where('id', $id)
-            ->value('disburse');
-
-        if ($existingDisbursement) {
+        $master_account = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->selectRaw('id,balance,currency_code')->first();
+        
+        if (!$master_account) {
+            return DV::error('Master account not found! NOTE: master account is the Cash Account of the company that is used to send cash to staff`s payroll accounts');
+        }
+        $master_account_balance = $master_account->balance ?? 0;
+        if($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
+        if (Payroll::isDisbursed($emp->payroll_id)) {
             return DV::error('Payroll has already been disbursed');
         }
-
-        $trx = DB::table('payroll_list as pl')
-                ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-                ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
-                ->where('pl.id', $id)
-                ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
-        if(!$trx) return DV::error('It seems that no staff is selected within the payroll!');
-        $payroll_name = $trx->name ?? 'This payroll';
-        if(!$trx->authorized){
-            return DV::error('?? is not yet authorized::'. $payroll_name);
+        $master_amount = 0 ;
+        if ($payroll->currency_code != $master_account->currency_code){
+            $master_amount = Money::convert($ss,$master_account->balance,$master_account->currency_code,$payroll->currency_code,$payroll->exchange_rate);
+        } else if (!$payroll->currency_code){
+           return DV::error('Either payroll currency or master payroll account currency is not valid!');
+        }else{
+            $master_amount = $master_account->balance ?? 0;
         }
-        if (!$trx) {
-            return DV::error('This Employee does not have Payroll account');
+  
+        if($master_amount < $emp->amount){
+            $p_amount = $payroll->currency_code . ' '.$payroll->amount;
+            return DV::error('Insufficient balance of the Master Payroll Account. ?? is required for overall payroll disbursements::'.$p_amount);
         }
 
-        $to_account = Employee::getPayrollAccount($trx->emp_id);
-
-        if(!$to_account){
-            return DV::error('Employee does not have payroll account');
-        }
+        $to_account = Employee::getPayrollAccount($emp->emp_id);
+        if(!$to_account) return DV::error('Employee does not have payroll account');
+        
+        $trx = $emp;
         $trx->trx_type=3;
         $trx->account_id = $to_account->account_id;
         $trx->from_account_id = $master_account_id;
         $trx->to_account_id = $to_account->account_id;
-        $payroll_name = $trx->remarks ?? 'This payroll';
-        if(!$trx->authorized){
-            return DV::error('??is not yet authorized::'. $payroll_name);
-        }
-        if($master_account_balance < $trx->amount){
-            return DV::error('Insufficient balance');
-        }
-        $transfer = Transaction::createTransaction((array)$trx, $ss);
-
-
-        if($transfer){
-            $transfer_amount = $transfer['transaction']['amount'];
-            $updateBalance_acc = Account::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
+       
+        $trx_inputs = (array)$trx;
+        $transfer = Transaction::createTransaction($trx_inputs, $ss);
+        $trx_error = $transfer->error ?? null;
+      
+        if(!$trx_error){
+            $transfer_amount = $transfer->transaction['amount'];
+            $updateBalance_acc = Account::updateBalance($transfer->transaction['account_id'],'accounts','in', $transfer_amount, $transfer->trx_id, $ss);
         }else{
-            return DV::error('Disbursement failed');
+            return DV::error($trx_error);
         }
+        
+        //$withdrawData = (array)$trx;
+        unset($trx_inputs['account_id']);
 
-        $withdrawData = (array)$trx;
-        unset($withdrawData['account_id']);
-
-        $res = Account::withdraw($withdrawData, $ss);
-
-        if($res->status == 'Error'){
-            return $res;
-        }
-        $trx = (object)$res->data;
-        if($trx){
+        $res = Account::withdraw($trx_inputs, $ss);
+        if($res->status === 'Error') return $res;
+       
+        if($res->status_code == 200){
+            $trx = (object)$res->data;
             $updateBalance_def = Account::updateBalance($master_account_id,'accounts','out',  $trx->transaction['amount'], $trx->trx_id, $ss);
+        }else{
+            return DV::error($res->error_message);
         }
 
         if($updateBalance_acc && $updateBalance_def){
-            $query = DB::table('payroll_list')
+            DB::table('payroll_list')
                 ->where('id', $id)
+                //->where('emp_id',$emp_id)
                 ->update([
-                    'disburse' => 1,
+                    'disbursed' => 1,
                     'trx_id' => hex2bin($trx->trx_id),
                 ]);
-
-            return DV::depends(1, ['Payroll Disbursed' => $query]);
+            return DV::depends(1, null);
         }
-        return DV::error('Disbursement failed');
+        return DV::error('Payroll Disbursement for staff named ?? failed::'.$emp->name);
     }
 
-    function disburseAllPayrollList($payroll_id, $ss = null)
+    static function isDisbursed($id){
+        if(!$id) return false;
+       $x = DB::table('payroll_list as l')->where('l.id',$id)->value('disbursed');
+       return $x ==1;
+    }
+    //disburseAllPayrollList()
+    function disburseAll($payroll_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $master_account_id = 1;
+        $transfer_amount = 0;
 
-        $master_account_balance = DB::table('accounts')
+        $payroll = Payroll::getProps($payroll_id,'id,name,currency_code, total,exchange_rate');
+        if(!$payroll) return DV::error('The provided payroll ID does not exist');
+        if (!Payroll::isAuthorized($payroll_id)) {
+            return DV::error('This payroll has not been authorized!');
+        }
+         
+        $master_account = DB::table('accounts')
             ->where('id', $master_account_id)
-            ->value('balance');
-
-        if (!$master_account_balance) {
-            return DV::error('Master account not found');
+            ->selectRaw('id,balance,currency_code')->first();
+        
+        if (!$master_account) {
+            return DV::error('Master account not found! NOTE: master account is the Cash Account of the company that is used to send cash to staff`s payroll accounts');
+        }
+        $master_account_balance = $master_account->balance ?? 0;
+        if($master_account_balance <= 0) return DV::error('The master payroll account balance is now zero!');
+        if (Payroll::isDisbursed($payroll_id)) {
+            return DV::error('Payroll has already been disbursed');
+        }
+        $master_amount = 0 ;
+        if ($payroll->currency_code != $master_account->currency_code){
+            $master_amount = Money::convert($ss,$master_account->balance,$master_account->currency_code,$payroll->currency_code,$payroll->exchange_rate);
+        } else if (!$payroll->currency_code){
+           return DV::error('Either payroll currency or master payroll account currency is not valid!');
+        }else{
+            $master_amount = $master_account->balance ?? 0;
         }
 
-        $payroll = DB::table('payrolls')
-            ->where('id', $payroll_id)
-            ->select('authorized', 'name')
-            ->first();
-
-        if (!$payroll || !$payroll->authorized) {
-            $payrollName = $payroll ? $payroll->name : 'Unknown Payroll';
-            return DV::error("Payroll {$payrollName} is not authorized");
+        if($master_amount < $payroll->total){
+            $p_amount = $payroll->currency_code . ' '.$payroll->total;
+            return DV::error('Insufficient balance of the Master Payroll Account. ?? is required for overall payroll disbursements::'.$p_amount);
         }
-
-        $undisbursed = DB::table('payroll_list')
-            ->where('payroll_id', $payroll_id)
-            ->where('disburse', 0)
-            ->first();
-
-        if (!$undisbursed) {
-            return DV::error('Payroll List Already Disbursed');
-        }
-
+     
         $payrollEntries = DB::table('payroll_list as pl')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->join('employees as e','e.id','=','pl.emp_id')
             ->where('pl.payroll_id', $payroll_id)
-            ->where('pl.disbursed', 0)
-            ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks')
+            ->whereRaw('IFNULL(pl.disbursed,0) =0')
+            ->selectRaw('pl.id,e.id AS emp_id,e.name,e.code,e.phone_number, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks')
             ->get();
-
-        $emp_ids = $payrollEntries->pluck('emp_id')->toArray();
-
-        $emp_id_no_account = [];
-        foreach ($emp_ids as $emp_id) {
-            $payroll_account = Employee::getPayrollAccount($emp_id);
-            if (!isset($payroll_account->account_id)) {
-                $emp_id_no_account[] = $emp_id;
-            }
+ 
+        //$emp_id_no_account = [];
+        foreach ($payrollEntries as &$emp) {
+            $payroll_account = Employee::getPayrollAccount($emp->emp_id);
+            if (!$payroll_account){
+                return DV::error('Staff named ?? does not have payroll account yet!::'.$emp->name);
+            }else $emp->account = $payroll_account;
+            // if (!isset($payroll_account->account_id)) {
+            //     $emp_id_no_account[] = $emp_id;
+            // }
         }
 
-        if (!empty($emp_id_no_account)) {
-            $employees = DB::table('employees')
-                ->whereIn('id', $emp_id_no_account)
-                ->pluck('name', 'id');
+        // if (!empty($emp_id_no_account)) {
+        //     $employees = DB::table('employees')
+        //         ->whereIn('id', $emp_id_no_account)
+        //         ->pluck('name', 'id');
 
-            $names = $employees->values()->all();
-            $first_name = $names[0] ?? 'Unknown';
-            $second_name = $names[1] ?? null;
-            $count = count($emp_id_no_account) - 2;
+        //     $names = $employees->values()->all();
+        //     $first_name = $names[0] ?? 'Unknown';
+        //     $second_name = $names[1] ?? null;
+        //     $count = count($emp_id_no_account) - 2;
 
-            if ($count > 0) {
-                $error_message = $second_name
-                    ? "Employees [$first_name, $second_name] and $count other" . ($count > 1 ? 's' : '') . " do not have  Payroll account."
-                    : "Employees [$first_name] and $count other" . ($count > 1 ? 's' : '') . " do not have a payroll account.";
-            } else {
-                $error_message = $second_name
-                    ? "Employees [$first_name, $second_name] do not have a payroll account."
-                    : "Employee [$first_name] does not have a payroll account.";
-            }
+        //     if ($count > 0) {
+        //         $error_message = $second_name
+        //             ? "Employees [$first_name, $second_name] and $count other" . ($count > 1 ? 's' : '') . " do not have  Payroll account."
+        //             : "Employees [$first_name] and $count other" . ($count > 1 ? 's' : '') . " do not have a payroll account.";
+        //     } else {
+        //         $error_message = $second_name
+        //             ? "Employees [$first_name, $second_name] do not have a payroll account."
+        //             : "Employee [$first_name] does not have a payroll account.";
+        //     }
 
-            return (object)[
-                'status' => 'error',
-                'status_code' => 405,
-                'error_message' => $error_message,
-                'data' => $emp_id_no_account,
-            ];
-        }
-
-        if($master_account_balance < $payrollEntries->sum('amount')){
-            return DV::error('Insufficient Balance');
-        }
-
-        $results = [];
+        //     return (object)[
+        //         'status' => 'error',
+        //         'status_code' => 405,
+        //         'error_message' => $error_message,
+        //         'data' => $emp_id_no_account,
+        //     ];
+        // }
+        $success_count = 0 ;
+        $failed_count = 0;
+        $failed_emps = 0;  
         foreach ($payrollEntries as $trx) {
-            $to_account = Employee::getPayrollAccount($trx->emp_id);
-
+            $to_account = $trx->account;
             $trx->trx_type = 3;
-            $trx->account_id = $to_account->account_id;
+            $trx->account_id = $to_account->id ?? $to_account->account_id;
             $trx->from_account_id = $master_account_id;
-            $trx->to_account_id = $to_account->account_id;
-
-            $transfer = Transaction::createTransaction((array)$trx, $ss);
-            if (!$transfer) {
-                $results[] = DV::error('Transfer failed for Employee ID ' . $trx->emp_id);
+            $trx->to_account_id =  $trx->account_id; //Why need this one?
+            $trx_inputs = (array)$trx;
+            $transfer = Transaction::createTransaction($trx_inputs, $ss);
+            $trx_error = $třansfer->error ?? null;
+            if ($trx_error) {
+                $results[] = DV::error('Disbursement failed for staff named ??::'.$trx->name.'. Tracked issue: ' .$trx_error);
                 continue;
             }
-
-            $transfer_amount = $transfer['transaction']['amount'];
-
+            $tr= $transfer->transaction;
+            $transfer_amount = $tr['amount'] ?? 0;
             $updateBalance_acc = Account::updateBalance(
-                $transfer['transaction']['account_id'], 'accounts', 'in',
-                $transfer_amount, $transfer['trx_id'], $ss
+                $tr['account_id'], 'accounts', 'in',
+                $transfer_amount, $transfer->trx_id, $ss
             );
 
-            $withdrawData = (array)$trx;
-            unset($withdrawData['account_id']);
-            $res = Account::withdraw($withdrawData, $ss);
-
+            unset($trx_inputs['account_id']);
+            $res = Account::withdraw($trx_inputs, $ss);
             if ($res->status === 'Error') {
-                $results[] = DV::error('Withdrawal failed for Employee ID ' . $trx->emp_id);
+                $results[] = DV::error('Withdrawal failed for staff named ??::'.$trx->name. '. Tracked issue: '. ($res->error_message ?? '' ) );
                 continue;
             }
-
-            $trx_result = (object)$res->data;
-
-            $updateBalance_def = Account::updateBalance(
-                $master_account_id, 'accounts', 'out',
-                $trx_result->transaction['amount'], $trx_result->trx_id, $ss
-            );
-
-            if ($updateBalance_acc && $updateBalance_def) {
-                DB::table('payroll_list')
-                    ->where('id', $trx->id)
-                    ->update([
-                        'disburse' => 1,
+            
+            $error = $res->error_message ?? null;
+            if(!$error){
+                $trx_result = (object)$res->data;
+                $updateBalance_def = Account::updateBalance($master_account_id, 'accounts', 'out',$trx_result->transaction['amount'], $trx_result->trx_id, $ss);
+               
+                if ($updateBalance_acc && $updateBalance_def){
+                    $x = DB::table('payroll_list')->where('id', $trx->id)->update([
+                        'disbursed' => 1,
                         'trx_id' => hex2bin($trx_result->trx_id),
                     ]);
-
-                $results[] = DV::depends(1, ['Payroll Disbursed for Employee ID ' . $trx->emp_id]);
-            } else {
-                $results[] = DV::error('Balance update failed for Employee ID ' . $trx->emp_id);
+                    $success_count++;
+                }else{
+                    $failed_count++;
+                    $failed_emps[] = (object)['id'=>$trx->emp_id,'name'=>$trx->name, 'code'=>$trx->emp_code, 'issue'=>'Looks like the withdrawal of cash from master accoutn faileld'];
+                }
+              
+            }else{
+                $failed_count++;
+                $failed_emps[] = (object)['id'=>$trx->emp_id,'name'=>$trx->name, 'code'=>$trx->emp_code, 'issue'=>$error];
             }
         }
-
-        return DV::depends(1, ['Payroll Disbursement Results' => $results]);
+        return DV::depends(1, ['success_count'=>$success_count,'failed_count'=>$failed_count,'failed_emps'=>$failed_emps]);
     }
 
 
