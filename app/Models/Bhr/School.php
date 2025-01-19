@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\BHR;
+namespace App\Models\Bhr;
 
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;

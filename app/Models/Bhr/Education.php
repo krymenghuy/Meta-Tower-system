@@ -5,8 +5,6 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
-
 class Education //extends Model
 {
     protected $id = null;
@@ -34,8 +32,7 @@ class Education //extends Model
         ];
         $edu_char = ['$','#','@','!','.','-','_','=','?'];
         // $checkUnque = ["$branch_id|emp_educations|emp_id|school_id|period|id=id|text=Employee Eduction is already Save "];
-
-
+ 
         $res = validateObject($arr,$v_rule,true,['period'=>$edu_char],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
@@ -51,9 +48,10 @@ class Education //extends Model
 
     }
 
-    function getListAll($arr,$ss){
-        $branch_id = $ss->branch_id;
+    function getListAll($arr,$ss = null){
+        $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
+         
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
