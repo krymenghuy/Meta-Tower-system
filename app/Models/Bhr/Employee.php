@@ -239,12 +239,16 @@ class Employee //extends Model
         $tax_option_id = 0;
         $used_amount = 0;
         $benefit_count = 0;
-        $currency_code = null;
+        $payroll_currency = null;
+        $benefit_currency = null;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
-            ->selectRaw('p.month, p.year')
+            ->selectRaw('p.month, p.year, p.currency_code,exchange_rate')
             ->first();
+
+        $payroll_currency = $payroll->currency_code ?? null;
+        $exchange_rate = $payroll->exchange_rate ?? 1;
 
         if ($payroll) {
 
@@ -264,7 +268,7 @@ class Employee //extends Model
                     ->selectRaw('id, withdraw_rate, emp_id, target_month, target_year, benefit_id')
                     ->first();
 
-                $emp_benefit = DB::table('emp_benefits')
+                    $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
                     ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id,currency_code');
@@ -280,13 +284,22 @@ class Employee //extends Model
 
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
+                                $benefit_currency = $emp_benefit->currency_code ?? null;
 
                                 $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
                                 $last_benefit_id = $emp_benefit->benefit_id;
-                                $currency_code = $emp_benefit->currency_code;
+
+                                if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                    }
+                                }
+
                                 $result =  [
                                     "emp_id" => $emp_id,
                                     "payroll_id" => $payroll_id,
@@ -296,7 +309,7 @@ class Employee //extends Model
                                     "tax_option_id" => $tax_option_id,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
-                                    "currency_code" => $emp_benefit->currency_code
+                                    "currency_code" => $payroll_currency
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -304,12 +317,21 @@ class Employee //extends Model
                     }else{
                         $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
+                        $benefit_currency = $emp_benefit->currency_code ?? null;
+
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
-                            $currency_code = $emp_benefit->currency_code;
+
+                            if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                    }
+                                }
                         }
                     }
                 }
@@ -317,14 +339,25 @@ class Employee //extends Model
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
 
+
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
+
+                                $benefit_currency = $emp_benefit->currency_code ?? null;
 
                                 $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
                                 $last_benefit_id = $emp_benefit->benefit_id;
+
+                                if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                    }
+                                }
                                 $result =  [
                                     "emp_id" => $emp_id,
                                     "payroll_id" => $payroll_id,
@@ -334,7 +367,7 @@ class Employee //extends Model
                                     "tax_option_id" => $tax_option_id,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
-                                    "currency_code" => $emp_benefit->currency_code
+                                    "currency_code" => $payroll_currency
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -342,15 +375,25 @@ class Employee //extends Model
                     }else{
                         $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
+                        $benefit_currency = $emp_benefit->currency_code ?? null;
+
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
-                            $currency_code = $emp_benefit->currency_code;
+                            if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                    }
+                                }
                         }
                     }
                 }
+                \Log::info(json_encode($benefit_currency));
+
             }
         }
         $result =  [
@@ -362,7 +405,7 @@ class Employee //extends Model
             "tax_option_id" => $tax_option_id,
             "used_amount" => $used_amount,
             "emp_benefit_id" => null,
-            "currency_code" => $currency_code
+            "currency_code" => $payroll_currency
         ];
         if($benefit_count <=1)
         $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
@@ -722,6 +765,7 @@ class Employee //extends Model
             $row->image_url = $img;
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
+
         } else {
             $row = null; // Or handle the case where employee is not found
         }
@@ -1271,11 +1315,11 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
-    
+
     static function contractFormOptions($id, $director_id = 0, $ss)
     {
         $emp = null;
-        
+
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
         }else return DV::error('Branch Can not be Empty!');
@@ -1294,7 +1338,7 @@ class Employee //extends Model
             $emp->emp_position = $emp->position;
             $emp->emp_sex = $emp->sex;
             $emp->emp_address = $emp->address;
-        } 
+        }
         return (object)[
             'contractInfo' => $emp,
         ];

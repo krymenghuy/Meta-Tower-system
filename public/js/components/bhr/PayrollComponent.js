@@ -10,7 +10,7 @@ var PayrollComponent = new (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddpayroll");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_payroll");
-     
+
 
     // const formattedNumber = (number) => {
     //     number = Number(number) || 0;
@@ -65,16 +65,6 @@ var PayrollComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                /** OLD CODE TO BE REMOVED! */
-                // let currency_codeSymbol = "";
-                // if (data.currency_code === "USD") {
-                //     currency_codeSymbol = "$";
-                // } else if (data.currency_code === "KHR") {
-                //     currency_codeSymbol = "៛";
-                // }
-                // return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.total ?? 0)}</p>`;
-                
-                /** NEW CODE */
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.total,data.currency_code)}</p>`;
             },
         },
@@ -82,9 +72,17 @@ var PayrollComponent = new (function () {
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
-            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? '(Not Found)'}</p>`
+            data: (data) => {
+                let x_rate = data.exchange_rate;
+                if (x_rate > 1) {
+                    x_rate = VSMoney.formatAmount(x_rate,null,null,{minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true});
+                }
+                    return `<p class="p-0 m-0">${x_rate}</p>`;
+            }
         },
-         {
+        {
             title: "Last Updated",
             className: "align-middle",
             data: (data, index, tr) => {
