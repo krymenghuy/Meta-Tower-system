@@ -221,7 +221,6 @@ class Payroll
         DB::table('payroll_list')->where('payroll_id',$id)->delete();
         DB::table('payrolls')->where('id',$id)->delete();
         return DV::depends(1);
-
     }
 
     /** reset payroll back to Pending (non-authorized), and remove all its disbursement transactions */
