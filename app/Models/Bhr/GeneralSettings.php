@@ -247,7 +247,7 @@ class GeneralSettings //extends Model
         return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
     }
     static function loc_options_city($ss){
-        return DB::table('loc_cities')->selectRaw('country_id,name')->orderByRaw('name ASC')->get();
+        return DB::table('loc_cities')->selectRaw('id as birth_city_id,name as city_name')->orderByRaw('name ASC')->get();
 
     }
 

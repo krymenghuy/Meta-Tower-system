@@ -422,17 +422,25 @@ var EmployeeComponent = new (function () {
     mThis.renderProfile = (data) => {
         let html = [
             `<div class="employee-card d-flex bg-primary-custom h-info-employee mb-2" data-id="">`,
-                `<div class="d-block w-100">`,
-                    `<div class="row text-white mb-0">`,
-                        `<div class="col-md-2">
+            `<div class="d-block w-100">`,
+            `<div class="row text-white mb-0">`,
+            `<div class="col-md-2">
                             <div class="div-img ms-3 mt-4">
-                                <img src="${data.image_url || main_view.asset_url +"/images/default/default-staff.png"}" alt="Employee Image">
+                                <img src="${
+                                    data.image_url ||
+                                    main_view.asset_url +
+                                        "/images/default/default-staff.png"
+                                }" alt="Employee Image">
                             </div>
                             <div class="d-flex mt-3  justify-content-center">
-                                <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${data.code}</span></small>
+                                <small class="text-nowrap" style="color:#28e07c;"># : <span class="text-white"> ${
+                                    data.code
+                                }</span></small>
                             </div>
                             <div class="d-flex  justify-content-center">
-                                <small class="text-nowrap" style="color:#cab54a;">${data.position}</small>
+                                <small class="text-nowrap" style="color:#cab54a;">${
+                                    data.position
+                                }</small>
                             </div>
                                 <div class="d-flex social-icons mt-3 w-100 justify-content-center">
                                 <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
@@ -441,97 +449,137 @@ var EmployeeComponent = new (function () {
                             </div>
 
                         </div>`,
-                        `<div class="col-md-10">`,
-                            `<div class="row">`,
-                                `<div class="col-md-4 mt-3">
+            `<div class="col-md-10">`,
+            `<div class="row">`,
+            `<div class="col-md-4 mt-3">
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${data.name}</p>
+                                        <p class="text-white text-capitalize">${
+                                            data.name
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name KH</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${data.name_kh}</p>
+                                        <p class="text-white text-capitalize">${
+                                            data.name_kh
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Sex</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white">${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""}</p>
+                                        <p class="text-white">${
+                                            data.sex == "M" ? "Male" : ""
+                                        }${data.sex == "F" ? "Female" : ""}${
+                data.sex == "O" ? "Other" : ""
+            }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Nationality</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white">${data.nationality}</p>
+                                        <p class="text-white">${
+                                            data.nationality
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap text-white">${data.marital_status}</p>
+                                        <P class="text-nowrap text-white">${
+                                            data.marital_status
+                                        }</p>
                                     </div>
                                 </div>`,
 
-                                `<div class="col-md-4 mt-3">
+            `<div class="col-md-4 mt-3">
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p">Staff Type</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap" style="color:#cab54a;">${data.type}</p>
+                                        <P class="text-nowrap" style="color:#cab54a;">${
+                                            data.type
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Position</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap" style="color:#cab54a;">${data.position}</p>
+                                        <P class="text-nowrap" style="color:#cab54a;">${
+                                            data.position
+                                        }</p>
                                     </div>
 
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Email</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-white" style="text-align:left; overflow:hidden; white-space:wrap; text-overflow:ellipsis; word-wrap:break-word; white-space:nowrap;" >${data.email}</p>
+                                        <P class="text-white" style="text-align:left; overflow:hidden; white-space:wrap; text-overflow:ellipsis; word-wrap:break-word; white-space:nowrap;" >${
+                                            data.email
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p">Phone Number</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap text-white">${data.phone_number}</p>
+                                        <P class="text-nowrap text-white">${
+                                            data.phone_number
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Husband/Wife Name</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-white">${data.spouse_name ?? "not yet"}</p>
+                                        <P class="text-white">${
+                                            data.spouse_name ?? "not yet"
+                                        }</p>
                                     </div>
                                 </div>`,
 
-                                `<div class="col-md-4 mt-3">
+            `<div class="col-md-4 mt-3">
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${data.nid}</p>
+                                        <p class="text-nowrap text-white">${
+                                            data.nid
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${data.passport_number}</p>
+                                        <p class="text-nowrap text-white">${
+                                            data.passport_number
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${data.passport_expiry_date ??"not yet have"}</p>
+                                        <p class="text-nowrap text-white">${
+                                            data.passport_expiry_date ??
+                                            "not yet have"
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-nowrap text-white">${data.nssf_id}</p>
+                                        <P class="text-nowrap text-white">${
+                                            data.nssf_id
+                                        }</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-white">${data.spouse_occ_code ?? "ទទេ"}</p>
+                                        <P class="text-white">${
+                                            data.spouse_occ_code ?? "ទទេ"
+                                        }</p>
+                                    </div>
+                                    <div class="d-flex">
+                                        <P class="text-nowrap width-p " vslang="titles.Country">Country</p>
+                                        <P class="pl-5 pr-2">:</p>
+                                        <P class="text-white">${
+                                            data.city_name ?? "ទទេ"
+                                        }</p>
                                     </div>
 
                                 </div>
                                  </div>`,
 
-                                `<hr class="bg-white">`,
-                                `<div class="row mt-2">
+            `<hr class="bg-white">`,
+            `<div class="row mt-2">
                                     <div class="col-md-4">
                                         <div class="d-flex">
                                             <p class="text-nowrap  width-p">Date of Birth</p>
@@ -551,7 +599,10 @@ var EmployeeComponent = new (function () {
                                             <p class="text-nowrap width-p">salary</p>
                                             <p class="px-2">:</p>
                                             <p class="text-white">
-                                                ${VSMoney.formatAmount(data.salary, data.currency_code)}
+                                                ${VSMoney.formatAmount(
+                                                    data.salary,
+                                                    data.currency_code
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -566,7 +617,13 @@ var EmployeeComponent = new (function () {
                                         <div class="d-flex">
                                             <P class="text-nowrap  width-p">Payroll Tax</p>
                                             <P class="px-2">:</p>
-                                            <P class="text-nowrap" style="color:#cab54a;">${data.apply_payroll_tax == "0" ? "Have Tax": ""}${data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
+                                            <P class="text-nowrap" style="color:#cab54a;">${
+                                                data.apply_payroll_tax == "0"
+                                                    ? "Have Tax"
+                                                    : ""
+                                            }${
+                data.apply_payroll_tax == "1" ? "Non Tax" : ""
+            }</p>
                                         </div>
                                         <div class="d-flex">
                                             <P class="text-nowrap width-p" vslang="titles.Address">Address</p>
@@ -605,10 +662,10 @@ var EmployeeComponent = new (function () {
                                         </div>
 
                                 </div>`,
-                            `</div>`,
-                        `</div>`,
-                    `</div>`,
-                `</div>`,
+            `</div>`,
+            `</div>`,
+            `</div>`,
+            `</div>`,
             `</div>`,
         ].join("");
 
@@ -1190,10 +1247,16 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data : [];
                 let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
-                    <h6 class="mt-1">Experience</h6>
                     <div class="d-flex gap-2">
+                        <h6 class="mt-1">Experience</h6>
                         <a href="javascript:void(0)" id="lnk_add_experience">
-                           (<i class="fa fa-plus-circle fs-7 "></i>)
+                            (<i class="fa fa-plus-circle fs-7"></i>)
+                        </a>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <h6 class="mt-1">Organization</h6>
+                        <a href="javascript:void(0)" id="add_arganization">
+                            (<i class="fa fa-plus-circle fs-7"></i>)
                         </a>
                     </div>
                 </div>
@@ -1349,6 +1412,21 @@ var EmployeeComponent = new (function () {
                                 }
                             );
                         });
+                    });
+                document
+                    .getElementById("add_arganization")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+                        let op = {
+                            id: null,
+                            emp_id: employeeId,
+                            btn: e.target,
+                            title: "New Organization",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddOrganization.show(op);
                     });
 
             });
@@ -2642,6 +2720,85 @@ const AddSchool = (() => {
     };
     return self;
 })();
+const AddOrganization = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id ? "Edit Organization" : "New Organization",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="form-group">
+                            <label class="form-label" vslang="titles.Organization Name">Organization Name</label>
+                            <div><input name="org_name" class=" form-control data-input" data-field="name"></input></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" vslang="titles.Address">Address</label>
+                            <div><input name="address" class=" form-control data-input" data-field="address"></input></div>
+                        </div>
+                        `,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(11, p);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/organization/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+
+                                        EmployeeComponent.renderCardCenter(
+                                            me.dataOptions.emp_id
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "New Organization",
+                    modifyTitle: "Edit Organization",
+                    targetProp: "organizations",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/organization/form-options`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
 
 const AddExperience = (() => {
     const self = {};
@@ -2794,7 +2951,7 @@ const AddTaxAllowance = (() => {
                         <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
                             <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code">
-                                <option value="${main_view.base_currency}">${main_view.base_currency}</option>
+                                <option value="${main_view.national_currency}">${main_view.national_currency}</option>
                                 <option value="USD">USD</option>
                             </select>
                         </div>
@@ -2873,7 +3030,12 @@ const AddTaxAllowance = (() => {
                 //         valueField: "code",
                 //     }
                 // ],
-                onShow: (me) => {},
+                onShow: (me) => {
+                    const currencySelect = document.getElementById("currency_code");
+                    if (currencySelect) {
+                        currencySelect.value = main_view.national_currency;
+                    }
+                },
             });
 
         dialog.show(op);
@@ -2887,421 +3049,463 @@ const EmployeeDialog = (() => {
 
     self.show = (op) => {
 
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                    '<div class="row">',
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        '<div class="row">',
                         '<div class="col-3">',
-                            '<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">',
-                                '<div name="div_emp_photo" data-field="photo" class="h-100"></div>',
-                            '</div>',
-                        '</div>',
+                        '<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">',
+                        '<div name="div_emp_photo" data-field="photo" class="h-100"></div>',
+                        "</div>",
+                        "</div>",
                         '<div class="col-9">',
-                            '<div class="row">',
-                                '<div class="form-group col-6">',
-                                    '<label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>',
-                                    '<span class="text-danger">*</span>',
-                                    '<input name="name" class="form-control data-input" data-field="name"/>',
-                                '</div>',
-                                '<div class="form-group col-6">',
-                                    '<label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>',
-                                    '<span class="text-danger">*</span>',
-                                    '<input name="name_kh" class="form-control data-input" data-field="name_kh" />',
-                                '</div>',
-                                '<div class="form-group col-4">',
-                                    '<label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>',
-                                    '<select class="form-control data-input" data-field="sex">',
-                                        '<option value="">(Select Sex)</option>',
-                                        '<option value="M">Male</option>',
-                                        '<option value="F">Female</option>',
-                                        '<option value="O">Other</option>',
-                                    '</select>',
-                                '</div>',
-                                '<div class="form-group col-4">',
-                                    '<label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>',
-                                    '<span class="text-danger">*</span>',
-                                    '<select name="marital_status" class="form-control data-input" data-field="marital_status">',
-                                        '<option value="Single">Single</option>',
-                                        '<option value="Married">Married</option>',
-                                        '<option value="Divorced">Divorced</option>',
-                                        '<option value="Not Disclosed">Not Disclosed</option>',
-                                    '</select>',
-                                '</div>',
-                                '<div class="form-group col-4">',
-                                    '<label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>',
-                                    '<span class="text-danger">*</span>',
-                                    '<input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />',
-                                '</div>',
-                                '<hr style="border: none; border-top: 2px solid #6e7272;"></hr>',
+                        '<div class="row">',
+                        '<div class="form-group col-6">',
+                        '<label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="name" class="form-control data-input" data-field="name"/>',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="name_kh" class="form-control data-input" data-field="name_kh" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>',
+                        '<select class="form-control data-input" data-field="sex">',
+                        '<option value="">(Select Sex)</option>',
+                        '<option value="M">Male</option>',
+                        '<option value="F">Female</option>',
+                        '<option value="O">Other</option>',
+                        "</select>",
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="marital_status" class="form-control data-input" data-field="marital_status">',
+                        '<option value="Single">Single</option>',
+                        '<option value="Married">Married</option>',
+                        '<option value="Divorced">Divorced</option>',
+                        '<option value="Not Disclosed">Not Disclosed</option>',
+                        "</select>",
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />',
+                        "</div>",
+                        '<hr style="border: none; border-top: 2px solid #6e7272;"></hr>',
 
-                            '</div>',
+                        "</div>",
 
-                        '</div>',
+                        "</div>",
 
                         '<div class="row">',
-                            '<div class="form-group col-4">',
-                                '<label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />',
-                            '</div>',
+                        '<div class="form-group col-4">',
+                        '<label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />',
+                        "</div>",
 
-                            '<div class="form-group col-4">',
-                                '<label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>',
-                                '<span class="text-danger" >*</span>',
-                                '<input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>',
-                                '<input name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>',
-                                '<input name="passport_number" class="form-control data-input" data-field="passport_number" />',
-                            '</div>',
+                        '<div class="form-group col-4">',
+                        '<label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>',
+                        '<span class="text-danger" >*</span>',
+                        '<input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>',
+                        '<input name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>',
+                        '<input name="passport_number" class="form-control data-input" data-field="passport_number" />',
+                        "</div>",
 
-                            '<div class="form-group col-4">',
-                                  '<label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>',
-                                    '<span class="text-danger" >*</span>',
-                                    '<input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>',
-                                '<select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>',
-                            '</div>',
+                        '<div class="form-group col-4">',
+                        '<label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>',
+                        '<span class="text-danger" >*</span>',
+                        '<input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="city_name" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>',
+                        '<select name="city_name" class="form-control data-input" data-field="birth_city_id"></select>',
+                        "</div>",
 
-                            '<div class="form-group col-4">',
-                                '<label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<select name="type" class="form-control data-input" data-field="emp_type_id"></select>',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="position" class="form-label text-primary-custom" vslang="titles.Position"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<select name="position" class="form-control data-input" data-field="position_id"></select>',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<input name="phone_number" class="form-control data-input" data-field="phone_number" />',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />',
-                            '</div>',
+                        '<div class="form-group col-4">',
+                        '<label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="type" class="form-control data-input" data-field="emp_type_id"></select>',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="position" class="form-label text-primary-custom" vslang="titles.Position"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="position" class="form-control data-input" data-field="position_id"></select>',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="phone_number" class="form-control data-input" data-field="phone_number" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />',
+                        "</div>",
 
-                            '<div class="form-group salary col-4">',
-                                '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label> <span>(',VSMoney.symbol,')</span>',
-                                '<input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />',
-                            '</div>',
-                            '<div class="form-group col-6">',
-                                '<label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>',
-                            '</div>',
-                           '<div class="form-group col-6">',
-                                '<label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>',
-                                '<span class="text-danger">*</span>',
-                                '<input name="joining_date"  class="form-control data-input" data-field="joining_date" />',
-                            '</div>',
+                        '<div class="form-group salary col-4">',
+                        '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label> <span></span>',
+                        '<input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<input name="joining_date"  class="form-control data-input" data-field="joining_date" />',
+                        "</div>",
 
-                            '<div class="form-group col-4">',
-                                '<label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>',
-                                '<input name="spouse_name" class="form-control data-input" data-field="spouse_name" />',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>',
-                                '<select name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id"></select>',
-                            '</div>',
-                            '<div class="form-group col-4">',
-                                '<label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>',
-                                '<input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />',
-                            '</div>',
-                            '<div class="form-group col-12">',
-                                '<label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>',
-                                '<textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>',
-                            '</div>',
-                        '</div>',
-                    '</div>',
-                ].join('');
-            },
-            contentCreated: (me) => {
-                // const salary = me.divModal.querySelector(".salary");
-                // console.log(123,salary);
+                        '<div class="form-group col-4">',
+                        '<label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>',
+                        '<input name="spouse_name" class="form-control data-input" data-field="spouse_name" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>',
+                        '<select name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id"></select>',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>',
+                        '<input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />',
+                        "</div>",
+                        '<div class="form-group col-12">',
+                        '<label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>',
+                        '<textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>',
+                        "</div>",
+                        "</div>",
+                        "</div>",
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    // const salary = me.divModal.querySelector(".salary");
+                    // console.log(123,salary);
 
-                // salary.classList.add("d-none");
-                //Convert field to be DatePicker : start_date and end_date
-                DateTimePicker.init(me.controls.date_of_birth);
-                DateTimePicker.init(me.controls.joining_date);
-                DateTimePicker.init(me.controls.nid_expiry_date);
-                DateTimePicker.init(me.controls.passport_expiry_date);
-                LocaleManager.translateZone(me.divModal);
-                const div_emp_photo = me.controls.div_emp_photo;
+                    // salary.classList.add("d-none");
+                    //Convert field to be DatePicker : start_date and end_date
+                    DateTimePicker.init(me.controls.date_of_birth);
+                    DateTimePicker.init(me.controls.joining_date);
+                    DateTimePicker.init(me.controls.nid_expiry_date);
+                    DateTimePicker.init(me.controls.passport_expiry_date);
+                    LocaleManager.translateZone(me.divModal);
+                    const div_emp_photo = me.controls.div_emp_photo;
 
-                me.empImageBox = new ImageBox(div_emp_photo, {
-                    defaultPhotoName:'default-staff',
-                    containerClass: "emp-profile-container",
-                    imgClass: "data-input",
-                    dataset: { field: "photo" }, /** please set field: photo so that we can use for both Edit and Create easily */
-                    //dataset: { field: "image_url" },
-                    beforeDeleteImage: async ()=> {
-                       if(me.dataOptions.id > 0){
-                           const answer = await cv_interact.confirm('Are you sure to delete mThis profile photo?', {title:'Delete Photo','context':'delete'});
-                           if(answer){
-                                me.deleteProfilePhoto(me.dataOptions.id);
-                                return true;
-                           } else return false;
-
-                       }
-                       return true;
-                    },
-                    //When user browse new photo and loads it in
-                    onOpenImage: (img)=>{
-                        if(me.dataOptions.id > 0){
-                          me.saveProfilePhoto(img, me.dataOptions.id);
-                       }
-                    },
-                    // onImageLoaded: (img)=>{
-                    //    if(me.dataOptions.id > 0){
-                    //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
-                    //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
-                    //             if(res.status_code == 200){
-                    //             cv_interact.info('Profile photo was deleted!');
-                    //             }else cv_interact.error(res.error_message);
-                    //         });
-                    //    }
-                    // }
-                });
-
-                me.deleteProfilePhoto = (emp_id)=>{
-                    const p = {"id":emp_id};
-                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/delete'].join(''),p,false,false).then(res =>{
-                        if(res.status_code == 200){
-                          me.empImageBox.setImage(null);
-                          cv_interact.info('Profile photo was deleted!');
-                        }else cv_interact.error(res.error_message);
+                    me.empImageBox = new ImageBox(div_emp_photo, {
+                        defaultPhotoName: "default-staff",
+                        containerClass: "emp-profile-container",
+                        imgClass: "data-input",
+                        dataset: {
+                            field: "photo",
+                        } /** please set field: photo so that we can use for both Edit and Create easily */,
+                        //dataset: { field: "image_url" },
+                        beforeDeleteImage: async () => {
+                            if (me.dataOptions.id > 0) {
+                                const answer = await cv_interact.confirm(
+                                    "Are you sure to delete mThis profile photo?",
+                                    { title: "Delete Photo", context: "delete" }
+                                );
+                                if (answer) {
+                                    me.deleteProfilePhoto(me.dataOptions.id);
+                                    return true;
+                                } else return false;
+                            }
+                            return true;
+                        },
+                        //When user browse new photo and loads it in
+                        onOpenImage: (img) => {
+                            if (me.dataOptions.id > 0) {
+                                me.saveProfilePhoto(img, me.dataOptions.id);
+                            }
+                        },
+                        // onImageLoaded: (img)=>{
+                        //    if(me.dataOptions.id > 0){
+                        //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
+                        //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
+                        //             if(res.status_code == 200){
+                        //             cv_interact.info('Profile photo was deleted!');
+                        //             }else cv_interact.error(res.error_message);
+                        //         });
+                        //    }
+                        // }
                     });
-                };
 
-                me.saveProfilePhoto = (photo, emp_id)=>{
-                    const p = {"photo": photo, "id" : emp_id};
-                    vsapi.call([main_view.base_url,'/hr/employee/profile/photo/save'].join(''), p,false).then(res =>{
-                        if(res.status_code == 200){
-                          me.empImageBox.setImage(res.data.image_url);
-                          cv_interact.success('Profile photo was deleted!');
-                        }else cv_interact.error(res.error_message);
-                   });
-                };
-
-                // me.showProfile = (code) => {
-                //     let fields = [];
-                //     let p = { id: code };
-
-                //     vsapi
-                //         .call(
-                //             [main_view.base_url,"/hr/employee/form-options"].join(""),
-                //             p,
-                //             false,
-                //             false
-                //         )
-                //         .then((res) => {
-                //             let d = res.status_code == 200 ? res.data : {};
-                //             d = d.employee || {};
-
-                //             me.divModal
-                //                 .querySelectorAll(".data-input")
-                //                 .forEach((el) => {
-                //                     const f = el.dataset.field;
-
-                //                     if (fields.indexOf(f) >= 0) {
-                //                         el.value = d[f] || "";
-                //                     } else if (f === "image_url") {
-                //                         if (me.dataOptions.id)
-                //                             el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
-                //                                 d[f] || ""
-                //                             }"/>`;
-                //                     }
-                //                 });
-                //         });
-                // };
-
-                // me.deleteImage = (div) => {
-                //     const btnDelete = div; //.querySelector('[role=\'button\']');
-                //     btnDelete.onclick = function (e) {
-                //         e.preventDefault();
-                //         const html = `<div id="dlg_image_chooser"
-                //                             class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                //                             <i class="fa-regular fa-image fs-4 text-muted"></i>
-                //                         </div>`;
-                //         div.innerHTML = html;
-                //         // mThis.chooseImage(div);
-                //         // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
-                //         me.userImageBox = new ImageBox(div, {
-                //             containerClass: "emp-profile-container",
-                //             imgClass: "data-input",
-                //             dataset: { field: "image_url" },
-                //         });
-                //     };
-                // };
-                //me.deleteImage(div_emp_photo);
-
-                //me.showProfile(me.dataOptions.id);
-
-            },
-            configSelect: [
-                {
-                    name: "nationality_id",
-                    data: "nationalities",
-                    textField: "nationality",
-                    valueField: "id", // "id" is the country_id
-                },
-                {
-                    name: "position",
-                    data: "positions",
-                    textField: "title",
-                    valueField: "id",
-                },
-                {
-                    name: "type",
-                    data: "types",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "work_shift",
-                    data: "work_shifts",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "branch_id",
-                    data: "branches",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "birth_city_id",
-                    data: "cities",
-                    textField: "name",
-                    valueField: "country_id",
-                },
-                {
-                    name: "spouse_emp_id",
-                    data: "employees",
-                    firstOption: {"id": '',"name":"None"},
-                    textField: (me, d) => {
-                        return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
-                    },
-                    valueField: "id",
-                },
-            ],
-            overrideMethod:{
-                "setData":(me, data)=> {
-                    const id = me.dataOptions.id;
-                    const fields = me.fields;
-                    //fields to be reasOnly or disabled when Editing employee
-                    const disabled_fields = ['salary','position_id','work_shift_id','department_id','emp_type_id'];
-                    for(const name in fields){
-                        const el = fields[name];
-                    if (id > 0){
-                        if (disabled_fields.indexOf(name) >=0) {
-
-                            if (el.tagName.toLowerCase() === "select") {
-                                el.setAttribute("disabled", true);
-                            }else el.setAttribute('readonly',true);
-                        }
-                    }else{
-                        if (el.tagName.toLowerCase() === "select") {
-                            el.setAttribute("disabled", false);
-                        }else el.removeAttribute('readonly');
-                    }
-                    el.value = data[name] ?? '';
-
-                }
-
-                    me.empImageBox.setImage(data.image_url);
-                    me.controls.type.value = data.emp_type_id;
-                },
-            },
-            buttons: [
-                {
-                    label: '<span class="text-white">Cancel</span>',
-                    cssClass: "btn btn-sm btn-danger",
-                    click: (me, btn) => {
-                        //Close with Cancel button
-                        me.hide(false);
-                    },
-                },
-                {
-                    label: "<span>Save</span>",
-                    cssClass: "btn btn-sm btn-primary",
-                    click: (me, btn) => {
-                        const p = me.getData();
-                        // console.log(1234,JSON.stringify(p));
-
-                        p.photo = me.empImageBox
-                            ? me.empImageBox.getImage()
-                            : '';
+                    me.deleteProfilePhoto = (emp_id) => {
+                        const p = { id: emp_id };
                         vsapi
                             .call(
-                                [main_view.base_url, "/hr/employee/save"].join(""),
+                                [
+                                    main_view.base_url,
+                                    "/hr/employee/profile/photo/delete",
+                                ].join(""),
                                 p,
-                                btn,
                                 false,
                                 false
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.modal.hide(true, p);
-                                    if(me.dataOptions.id > 0)
-                                    {
-                                        cv_interact.success("Updated employee successfully");
-                                        EmployeeComponent.self.querySelector('#_btn_backTo_employee').click();;
-                                    }
-                                    else{
-                                        cv_interact.success("Added employee successfully");
-                                    }
-                                    //EmployeeComponent.btnBack.click();
-                                    // EmployeeDialog.show(me.dataOptions);
+                                    me.empImageBox.setImage(null);
+                                    cv_interact.info(
+                                        "Profile photo was deleted!"
+                                    );
                                 } else cv_interact.error(res.error_message);
                             });
+                    };
+
+                    me.saveProfilePhoto = (photo, emp_id) => {
+                        const p = { photo: photo, id: emp_id };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/hr/employee/profile/photo/save",
+                                ].join(""),
+                                p,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.empImageBox.setImage(res.data.image_url);
+                                    cv_interact.success(
+                                        "Profile photo was deleted!"
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    };
+
+                    // me.showProfile = (code) => {
+                    //     let fields = [];
+                    //     let p = { id: code };
+
+                    //     vsapi
+                    //         .call(
+                    //             [main_view.base_url,"/hr/employee/form-options"].join(""),
+                    //             p,
+                    //             false,
+                    //             false
+                    //         )
+                    //         .then((res) => {
+                    //             let d = res.status_code == 200 ? res.data : {};
+                    //             d = d.employee || {};
+
+                    //             me.divModal
+                    //                 .querySelectorAll(".data-input")
+                    //                 .forEach((el) => {
+                    //                     const f = el.dataset.field;
+
+                    //                     if (fields.indexOf(f) >= 0) {
+                    //                         el.value = d[f] || "";
+                    //                     } else if (f === "image_url") {
+                    //                         if (me.dataOptions.id)
+                    //                             el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
+                    //                                 d[f] || ""
+                    //                             }"/>`;
+                    //                     }
+                    //                 });
+                    //         });
+                    // };
+
+                    // me.deleteImage = (div) => {
+                    //     const btnDelete = div; //.querySelector('[role=\'button\']');
+                    //     btnDelete.onclick = function (e) {
+                    //         e.preventDefault();
+                    //         const html = `<div id="dlg_image_chooser"
+                    //                             class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                    //                             <i class="fa-regular fa-image fs-4 text-muted"></i>
+                    //                         </div>`;
+                    //         div.innerHTML = html;
+                    //         // mThis.chooseImage(div);
+                    //         // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
+                    //         me.userImageBox = new ImageBox(div, {
+                    //             containerClass: "emp-profile-container",
+                    //             imgClass: "data-input",
+                    //             dataset: { field: "image_url" },
+                    //         });
+                    //     };
+                    // };
+                    //me.deleteImage(div_emp_photo);
+
+                    //me.showProfile(me.dataOptions.id);
+                },
+                configSelect: [
+                    {
+                        name: "nationality_id",
+                        data: "nationalities",
+                        textField: "nationality",
+                        valueField: "id", // "id" is the country_id
+                    },
+                    {
+                        name: "position",
+                        data: "positions",
+                        textField: "title",
+                        valueField: "id",
+                    },
+                    {
+                        name: "type",
+                        data: "types",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "work_shift",
+                        data: "work_shifts",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "branch_id",
+                        data: "branches",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "city_name",
+                        data: "cities",
+                        textField: "city_name",
+                        valueField: "birth_city_id",
+                    },
+                    {
+                        name: "spouse_emp_id",
+                        data: "employees",
+                        firstOption: { id: "", name: "None" },
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
+                        },
+                        valueField: "id",
+                    },
+                ],
+                overrideMethod: {
+                    setData: (me, data) => {
+                        const id = me.dataOptions.id;
+                        const fields = me.fields;
+                        //fields to be reasOnly or disabled when Editing employee
+                        const disabled_fields = [
+                            "salary",
+                            "position_id",
+                            "work_shift_id",
+                            "department_id",
+                            "emp_type_id",
+                        ];
+                        for (const name in fields) {
+                            const el = fields[name];
+                            if (id > 0) {
+                                if (disabled_fields.indexOf(name) >= 0) {
+                                    if (el.tagName.toLowerCase() === "select") {
+                                        el.setAttribute("disabled", true);
+                                    } else el.setAttribute("readonly", true);
+                                }
+                            } else {
+                                if (el.tagName.toLowerCase() === "select") {
+                                    el.setAttribute("disabled", false);
+                                } else el.removeAttribute("readonly");
+                            }
+                            el.value = data[name] ?? "";
+                        }
+
+                        me.empImageBox.setImage(data.image_url);
+                        me.controls.type.value = data.emp_type_id;
                     },
                 },
-            ],
-            prepareFormOptions: {
-                createTitle: "Create Employee",
-                modifyTitle: "Edit Employee",
-                targetProp: "employee",
-                api: {
-                    endpoint:[main_view.base_url,"/hr/employee/form-options"].join(""),
-                    params: (op) => {
-                        return { id: op.id };
+                buttons: [
+                    {
+                        label: '<span class="text-white">Cancel</span>',
+                        cssClass: "btn btn-sm btn-danger",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-sm btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            console.log(12340000, p);
+
+                            p.photo = me.empImageBox
+                                ? me.empImageBox.getImage()
+                                : "";
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/employee/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated employee successfully"
+                                            );
+                                            EmployeeComponent.self
+                                                .querySelector(
+                                                    "#_btn_backTo_employee"
+                                                )
+                                                .click();
+                                        } else {
+                                            cv_interact.success(
+                                                "Added employee successfully"
+                                            );
+                                        }
+                                        //EmployeeComponent.btnBack.click();
+                                        // EmployeeDialog.show(me.dataOptions);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Create Employee",
+                    modifyTitle: "Edit Employee",
+                    targetProp: "employee",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/employee/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    onResponse: (me, res) => {
+                        console.log('result from api "/form-options": ', res);
                     },
                 },
-                onResponse: (me, res) => {
-                    console.log('result from api "/form-options": ', res);
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    //     if(me.dataOptions.id>0){
+                    //         me.controls.salary.setAttribute('readonly',true);
+
+                    // }else me.controls.salary.removeAttribute('readonly');
                 },
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            //     if(me.dataOptions.id>0){
-            //         me.controls.salary.setAttribute('readonly',true);
-
-
-            // }else me.controls.salary.removeAttribute('readonly');
-
-            },
-            //onClose: (canceled) => {},
-        });
+                //onClose: (canceled) => {},
+            });
 
         dialog.show(op);
     };
@@ -3434,24 +3638,24 @@ const AddEmployeeDocumentDialog = (() => {
                     me.fileData = null;
 
                     const fileInput = me.controls.btn_file;
-                    // fileInput.onchange = (e) => {
-                    //     const file = e.target.files[0];
-                    //     if (file) {
-                    //         const reader = new FileReader();
-                    //         reader.onload = (event) => {
-                    //             me.fileData = {
-                    //                 file: event.target.result.split(",")[1], // Base64 content
-                    //                 ext: file.name.split(".").pop(),
-                    //                 name: file.name,
-                    //             };
-                    //             // document.getElementById("fileNameDisplay").textContent = `Selected file: ${file.name}`;
-                    //         };
-                    //         reader.readAsDataURL(file);
-                    //     } else {
-                    //         me.fileData = null;
-                    //         document.getElementById("fileNameDisplay").textContent = "No file chosen";
-                    //     }
-                    // };
+                    fileInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                me.fileData = {
+                                    file: event.target.result.split(",")[1], // Base64 content
+                                    ext: file.name.split(".").pop(),
+                                    name: file.name,
+                                };
+                                // document.getElementById("fileNameDisplay").textContent = `Selected file: ${file.name}`;
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            me.fileData = null;
+                            document.getElementById("fileNameDisplay").textContent = "No file chosen";
+                        }
+                    };
                 },
                 buttons: [
                     {
