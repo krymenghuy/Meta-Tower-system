@@ -888,7 +888,7 @@ var EmployeeComponent = new (function () {
     };
 
     // mThis.formatPeriod_exp =(d)=>{
-    //    if(!d) return ''; 
+    //    if(!d) return '';
     //    if(d.start_date && d.end_date) return [d.start_date, ' to ', d.end_date].join('');
     //    else if (d.period) return d.period;
     // }
@@ -901,7 +901,7 @@ var EmployeeComponent = new (function () {
     //     }
     //     const start = sts[0];
     //     const end = sts[1];
-    //     if (!finish_year || finish_year =='') finish_year = end; 
+    //     if (!finish_year || finish_year =='') finish_year = end;
     //     if (sts[1]){
     //         return [start,' to ', end].join('');
     //     }else{
@@ -2470,7 +2470,7 @@ const AddEducation = (() => {
                             <label class="form-label" vslang="titles.Major">Major</label>
                             <div><input name="major" class="form-control data-input" data-field="major"/></div>
                         </div>
- 
+
                         <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Diploma">Diploma</label>
                             <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
@@ -2793,7 +2793,10 @@ const AddTaxAllowance = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                            <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code">
+                                <option value="${main_view.base_currency}">${main_view.base_currency}</option>
+                                <option value="USD">USD</option>
+                            </select>
                         </div>
                         <div class="form-group col-12">
                             <label for="remarks" class="form-label"
@@ -2861,15 +2864,15 @@ const AddTaxAllowance = (() => {
                         },
                     },
                 },
-                configSelect: [
+                // configSelect: [
 
-                    {
-                        name: "currency_code",
-                        data: "currency_codes",
-                        textField: "code",
-                        valueField: "code",
-                    }
-                ],
+                //     {
+                //         name: "currency_code",
+                //         data: "currency_codes",
+                //         textField: "code",
+                //         valueField: "code",
+                //     }
+                // ],
                 onShow: (me) => {},
             });
 

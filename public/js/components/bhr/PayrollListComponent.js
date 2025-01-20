@@ -247,7 +247,7 @@ var PayrollListComponent = new (function () {
                         if (res.status_code === 200) {
                             cv_interact.success('Salary disbursements were successful!');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                        } else cv_interact.error(res.error_message); 
+                        } else cv_interact.error(res.error_message);
                     });
                 }
             });
@@ -366,7 +366,7 @@ var PayrollListComponent = new (function () {
                     }
 
                     case 'disburse_payroll_list':{
-                      const id = menuLink.dataset.id;  
+                      const id = menuLink.dataset.id;
                       //const payroll_id = menuLink.dataset.payrollid;
                       mThis.disburseOne(id, null, null, menuLink);
                       break;
@@ -552,7 +552,7 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>BFT</td>
-                                <td class="text-success">${div_BFT}</td>
+                                <td class="text-success">${div_BFT || 0.00}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
@@ -738,10 +738,10 @@ var PayrollListComponent = new (function () {
                     payroll_id = payroll.id;
 
                 }
-             
+
 
             });
-           
+
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
