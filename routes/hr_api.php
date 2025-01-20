@@ -48,6 +48,7 @@ use App\Http\Controllers\Bhr\EmployeeDocumentController;
 use App\Http\Controllers\Bhr\ExitItemController;
 use App\Http\Controllers\Bhr\FormController;
 use App\Http\Controllers\Bhr\ContractController;
+use App\Http\Controllers\Bhr\OrganizationController;
 use App\Http\Controllers\Bhr\SchoolController;
 
 //begin:: api without Authentication
@@ -441,4 +442,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('school')->gro
     Route::post('/details', [SchoolController::class, 'getDetails']);
     Route::post('/delete', [SchoolController::class, 'delete']);
     Route::post('/form-options', [SchoolController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('organization')->group(function () {
+    Route::post('/save', [OrganizationController::class, 'save']);
+    Route::post('/list-paginate', [OrganizationController::class, 'getList']);
+    Route::post('/list-all', [OrganizationController::class, 'getOrganization']);
+    Route::post('/details', [OrganizationController::class, 'getDetails']);
+    Route::post('/delete', [OrganizationController::class, 'delete']);
+    Route::post('/form-options', [OrganizationController::class, 'getFormOptions']);
 });
