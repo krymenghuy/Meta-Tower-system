@@ -17,103 +17,75 @@ class BenefitDisbursePolicy
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $ss = null, $id = null){
+    function save($arr = [],$id = null, $ss =null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $v_rule = [
             'benefit_id' => '1|number',
-            'target_month' => '1|number',
-            'target_year' => '1|number',
-            'withdraw_rate' => '1|number',
+            'target_month' => '1|number|default=0',
+            'target_year' => '1|number|default=0',
+            'withdraw_rate' => '1|number|default=100',
         ];
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
+        if ($res->error) return DV::error($res->error); 
         $inputs = $res->values;
-
         $id = saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
-        }
-        return DV::depends(0, ['sender' => $inputs]);
+        return DV::depends($id, ['sender' => $inputs, 'id' => $id]);
     }
 
-    function getBenefitDisbursePolicyListPaginate($arr, $ss)
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-
+        if (!is_numeric($current_page)) $current_page = 1; 
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-        $search_benefit_id = $d->benefit_id ?? null;
-
-        $str_search = '1=1';
+        $benefit_id = $d->benefit_id ?? null;
 
         $query = DB::table('benefit_disburse_policies as bdp')
             ->join('benefits as b', 'b.id', '=', 'bdp.benefit_id')
-            ->selectRaw('bdp.id, bdp.benefit_id, b.name as benefit_name, bdp.target_month, bdp.target_year, bdp.withdraw_rate')
-            ->where('bdp.branch_id', $ss->branch_id);
+            ->selectRaw('bdp.id, bdp.benefit_id, b.name as benefit_name, bdp.target_month, bdp.target_year, bdp.withdraw_rate');
 
-        if ($search_id) {
-            $query->where('bdp.id', $search_id);
-        }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('b.name', 'like', '%' . $search_value . '%');
         }
-        if($search_benefit_id){
-            $query->where('bdp.benefit_id', $search_benefit_id);
+        if($benefit_id){
+            $query->where('bdp.benefit_id', $benefit_id);
         }
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id, $ss)
+    function getDetails($id)
     {
-        $branch_id = $ss->branch_id;
         $query = DB::table('benefit_disburse_policies as bdp')
             ->join('benefits as b', 'b.id', '=', 'bdp.benefit_id')
             ->selectRaw('bdp.id, bdp.benefit_id, b.name as benefit_name, bdp.target_month, bdp.target_year, bdp.withdraw_rate')
             ->where('bdp.id', $id)
-            ->where('bdp.branch_id', $ss->branch_id)
             ->first();
         return $query;
     }
 
-    function deleteBenefitDisbursePolicy($id = null , $ss = null)
+    function delete($id = null , $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-        $query = DB::table('benefit_disburse_policies')
+        $x = DB::table('benefit_disburse_policies')
             ->where('id', $id)
             ->where('branch_id', $ss->branch_id)
             ->delete();
-        return DV::depends($query,null,'Error deleting benefit disburse policy');
+        return DV::depends($x,null,'Error deleting benefit disburse policy');
     }
 
     function getFormOptions($id, $ss)
     {
         $bdp = null;
-        if ($id) {
-            $bdp = self::getDetails($id, $ss);
-        }
-
+        if ($id)   $bdp = self::getDetails($id, $ss);
         return (object) [
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
             "disburse_policy" => $bdp,
