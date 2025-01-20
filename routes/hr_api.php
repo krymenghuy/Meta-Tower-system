@@ -379,9 +379,9 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-policy')->group(function(){
     Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
-    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getBenefitDisbursePolicyListPaginate']);
+    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getList']);
     Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
-    Route::post('/delete', [BenefitDisbursePolicyController::class, 'deleteBenefitDisbursePolicy']);
+    Route::post('/delete', [BenefitDisbursePolicyController::class, 'delete']);
     Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
 });
 

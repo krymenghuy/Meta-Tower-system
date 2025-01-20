@@ -13,7 +13,7 @@ class Payroll
 {
     protected $id = null;
     protected $userInfo = null;
-
+     
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -190,16 +190,14 @@ class Payroll
     }
 
 
-    function getDetails($id, $ss)
+    function getDetails($id)
     {
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
         $row = DB::table('payrolls as p')
             ->selectRaw('p.id, p.name, p.month, p.year,' . $start_date . ', ' . $end_date . ', p.p_number, p.head_count,p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
-            ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
             ->first();
-        // $row->p_number = 1;
         return $row;
     }
 
@@ -211,34 +209,42 @@ class Payroll
             ->where('p.branch_id', $ss->branch_id)
             ->orderBy('id', 'DESC')
             ->first();
-
         return $row;
     }
 
-    function delete($id = null, $ss = null)
+    function delete($id = null)
     {
         $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        if(!is_numeric($id)){
-            return DV::error('Invalid ID');
-        }
+        $payroll = self::getProps($id,'id,authorized');
+        if(!$payroll) return DV::error('The provided payroll ID does not exist');
+        if($payroll->authorized ==1) return DV::error('Cannot delete authorized payroll!');
+        DB::table('payroll_list')->where('payroll_id',$id)->delete();
+        DB::table('payrolls')->where('id',$id)->delete();
+        return DV::depends(1);
 
-        $branch_id = $ss->branch_id;
-        $query = DB::table('payrolls')
-            ->where('id', $id)
-            ->delete();
-        if(!$query){
-            return DV::error('Payroll not found');
-        }
-        return DV::depends($query, null, 'Error deleting payroll');
+    /** reset payroll back to Pending (non-authorized), and remove all its disbursement transactions */
+    function resetStatus($id = null){
+        
+    }
+
+    /** changeCurrency() makes change to payroll's currency. This can be done only before payroll is authorized */
+    function changeCurrency($new_currency,$exchange_rate, $id = null, $ss = null){
+      $id = $id ?? $this->id;
+      $ss = $ss ?? $this->userInfo;
+      $payroll = self::getProps($id,'id,name,authorized,disbursed,currency_code,exchange_rate,total');
+      if(!$payroll) return DV::error('Payroll ID is not valid');
+      if($payroll->authorized ==1) return DV::error('Cannot change currency because the payroll is already authorized1'); 
+      DB::table('payrolls')->where('id',$id)->update(['currency_code'=>$new_currency, 'exchange_rate'=>$exchange_rate]);
+      DB::table('payroll_list')->where('payroll_id',$id)->update(['currency_code'=>$new_currency]);
+      $pl = new \App\Models\Bhr\PayrollList();
+      $res = $pl->calculatePayrollList($id,$ss);
+      return $res; 
     }
 
     function getFormOptions($id, $ss)
     {
         $payroll = null;
-        if ($id) {
-            $payroll = self::getDetails($id, $ss);
-        }
+        if ($id) $payroll = self::getDetails($id); 
         return (object) [
             'sort_by' => [
 
