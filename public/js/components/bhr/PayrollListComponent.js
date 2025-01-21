@@ -104,7 +104,7 @@ var PayrollListComponent = new (function () {
             title: "Allowance",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.p_allowance, data.currency_code)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.allowance, data.currency_code)}</p>`;
             }
         },
         {

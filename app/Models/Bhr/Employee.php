@@ -241,6 +241,7 @@ class Employee //extends Model
         $benefit_count = 0;
         $payroll_currency = null;
         $benefit_currency = null;
+        $flat_tax_rate = 0;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
@@ -253,10 +254,17 @@ class Employee //extends Model
         if ($payroll) {
 
             $bdps = DB::table('benefit_disburse_policies')
-                ->where('target_month', $payroll->month)
-                ->where('target_year', $payroll->year)
+                ->where(function ($query) use ($payroll) {
+                    $query->where('target_month', $payroll->month)
+                        ->where('target_year', $payroll->year)
+                        ->orWhere(function ($query) {
+                            $query->where('target_month', 0);
+                                    // ->where('target_year', 0);
+                        });
+                })
                 ->selectRaw('id, withdraw_rate, benefit_id')
                 ->get();
+
             foreach ($bdps as $bdp) {
                 $withdraw_rate = $bdp->withdraw_rate ?? 0;
                 $benefit_id = $bdp->benefit_id;
@@ -285,7 +293,7 @@ class Employee //extends Model
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
                                 $benefit_currency = $emp_benefit->currency_code ?? null;
-
+                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
                                 $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
@@ -307,6 +315,7 @@ class Employee //extends Model
                                     "benefit_id" => $last_benefit_id,
                                     "full_amount" => $full_amount,
                                     "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
                                     "currency_code" => $payroll_currency
@@ -318,6 +327,7 @@ class Employee //extends Model
                         $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
                         $benefit_currency = $emp_benefit->currency_code ?? null;
+                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
 
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
@@ -344,7 +354,7 @@ class Employee //extends Model
                             foreach($rows as $emp_benefit){
 
                                 $benefit_currency = $emp_benefit->currency_code ?? null;
-
+                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
                                 $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
@@ -365,6 +375,7 @@ class Employee //extends Model
                                     "benefit_id" => $last_benefit_id,
                                     "full_amount" => $full_amount,
                                     "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
                                     "currency_code" => $payroll_currency
@@ -376,6 +387,7 @@ class Employee //extends Model
                         $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
                         $benefit_currency = $emp_benefit->currency_code ?? null;
+                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
 
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
@@ -392,7 +404,7 @@ class Employee //extends Model
                         }
                     }
                 }
-                \Log::info(json_encode($benefit_currency));
+                // \Log::info(json_encode($flat_tax_rate));
 
             }
         }
@@ -403,6 +415,7 @@ class Employee //extends Model
             "benefit_id" => $last_benefit_id,
             "full_amount" => $full_amount,
             "tax_option_id" => $tax_option_id,
+            "flat_tax_rate" => $flat_tax_rate,
             "used_amount" => $used_amount,
             "emp_benefit_id" => null,
             "currency_code" => $payroll_currency
@@ -414,14 +427,16 @@ class Employee //extends Model
     }
     static function savePayrollListBenefit($arr, $ss)
     {
+
         $v_rule = [
-            'id' => '0|identity=1',
+            // 'id' => '0|identity=1',
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
             'benefit_id' => '1|number',
             'full_amount' => '1|number',
             'withdraw_rate' => '0|number',
             'tax_option_id' => '1|number',
+            'flat_tax_rate' => '0|number',
             'used_amount' => '0|number',
             'emp_benefit_id' => '0|number',
             'currency_code' => '0|number'
@@ -434,19 +449,15 @@ class Employee //extends Model
 
         $inputs = $res->values;
 
-        $inputs['id'] = $inputs['id'] ?? null;
-
-        $existing = DB::table('payroll_list_benefits')
+        $existing_id = DB::table('payroll_list_benefits')
             ->where('payroll_id', $inputs['payroll_id'])
             ->where('emp_id', $inputs['emp_id'])
             ->where('benefit_id', $inputs['benefit_id'])
-            ->first();
+            ->value('id');
+        $id = $existing_id ?? null;
 
-        if ($existing) {
-            return DV::depends(1, ['message' => 'Record already exists', 'id' => $existing->id]);
-        }
 
-        $id = saveData($ss, 'payroll_list_benefits', ['id' => $inputs['id']], $inputs, [], 1);
+        $id = saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
         }
