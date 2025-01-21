@@ -8,6 +8,7 @@ var PositionComponent =  (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_position");
+    mThis.elDepartment = mThis.self.querySelector("#el_department");
 
     mThis.cols = [
         {
@@ -224,16 +225,25 @@ var PositionComponent =  (function () {
             }
         );
     };
-
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/position/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems( mThis.elDepartment, d.departments, "id", "name", true, "All Department", null);
+                console.log(38484,mThis.elDepartment);
+                
+            });
+    };
 
     mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.PositionListView.showPage(mThis.getFilterData(),null,()=>{
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
-
-        });
+        mThis.PositionListView.showPage(mThis.getFilterData());
+        mThis.prepareFormOptions();
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
     return mThis;
 })();

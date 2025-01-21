@@ -3612,9 +3612,12 @@ const AddEmployeeDocumentDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog ||
+        dialog =
+            dialog ||
             new GeneralDialog({
-                title: op.id ? "Edit Employee Document" : "Add Employee Document",
+                title: op.id
+                    ? "Edit Employee Document"
+                    : "Add Employee Document",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return `
@@ -3626,6 +3629,11 @@ const AddEmployeeDocumentDialog = (() => {
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
+                                 <label for="doc_name" class="form-label" vslang="titles.Document Type"></label>
+                                 <span class="text-danger" >*</span>
+                                 <select name="doc_name" class="data-input"  data-field="document_type_id"></select>
+                             </div>
+                            <div class="form-group col-md-12">
                                 <label class="form-label" vslang="titles.File">File</label>
                                 <div>
                                     <input type="file" name="btn_file" class="form-control data-input" data-field="file_name" />
@@ -3634,6 +3642,14 @@ const AddEmployeeDocumentDialog = (() => {
                             </div>
                         </div>`;
                 },
+                configSelect: [
+                    {
+                        name: "doc_name",
+                        data: "document_types",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
                 contentCreated: (me) => {
                     me.fileData = null;
 
@@ -3653,7 +3669,9 @@ const AddEmployeeDocumentDialog = (() => {
                             reader.readAsDataURL(file);
                         } else {
                             me.fileData = null;
-                            document.getElementById("fileNameDisplay").textContent = "No file chosen";
+                            document.getElementById(
+                                "fileNameDisplay"
+                            ).textContent = "No file chosen";
                         }
                     };
                 },
@@ -3669,7 +3687,9 @@ const AddEmployeeDocumentDialog = (() => {
                         click: (me) => {
                             const data = me.getData();
                             if (!data.name || !me.fileData) {
-                                return cv_interact.error("Please fill all required fields and select a file.");
+                                return cv_interact.error(
+                                    "Please fill all required fields and select a file."
+                                );
                             }
 
                             data.emp_id = me.dataOptions.emp_id;
@@ -3686,7 +3706,9 @@ const AddEmployeeDocumentDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code === 200) {
                                         me.modal.hide(true, data);
-                                        EmployeeComponent.renderEmpDocuments(me.dataOptions.emp_id);
+                                        EmployeeComponent.renderEmpDocuments(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else {
                                         cv_interact.error(res.error_message);
                                     }
@@ -3705,7 +3727,10 @@ const AddEmployeeDocumentDialog = (() => {
                             if (op.id) {
                                 const doc = res.data;
                                 me.controls.name.value = doc.name || "";
-                                document.getElementById("fileNameDisplay").textContent = doc.file_name || "No file chosen";
+                                document.getElementById(
+                                    "fileNameDisplay"
+                                ).textContent =
+                                    doc.file_name || "No file chosen";
                             }
                         },
                     },

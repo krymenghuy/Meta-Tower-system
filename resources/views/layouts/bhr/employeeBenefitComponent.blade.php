@@ -8,6 +8,9 @@
                 <input type="text" class="form-control filter-field btn_search" id="_sdl_search_bonus"
                     placeholder="Search Benefits">
             </div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
+                <select type="id" id="el_tax_option" class="data-input filter-field" data-field="tax_option_id"></select>
+            </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-50 gap-2">
             <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_add_benefit">

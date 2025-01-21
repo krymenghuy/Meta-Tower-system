@@ -71,6 +71,7 @@ class Position
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $search_department = $d->department_id ?? null;
         $str_search = '1=1';
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -85,10 +86,12 @@ class Position
             ->where('p.inactive',0)
             ->whereRaw($str_search)
             ->selectRaw('p.id, p.title, p.department_id,p.job_level_id,job.name as level,p.salary,p.currency_code, d.name as department,'.$col_update_date.',p.update_user')->orderByRaw('job.rank ASC, d.name ASC');
+            if ($search_department) {
+                $query->where('p.department_id', $search_department);
+            }
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
