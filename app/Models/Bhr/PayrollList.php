@@ -102,6 +102,7 @@ class PayrollList
                         pl.disbursed,
                         p.currency_code,
                         e.photo_file_name as emp_photo')
+            // ->where('pl.emp_id',7)
             ->whereRaw($str_search);
 
         if ($search_id) {
@@ -197,26 +198,27 @@ class PayrollList
             }
 
             if ($emp_benefit_count > 1) {
-                $row->benefit_flat_rate = $row->benefit_flat_rate->get();
-                foreach ($row->benefit_flat_rate as $bfr) {
-                    $used_amount[] = $bfr->used_amount;
-                    $flat_tax_rates[] = $bfr->flat_tax_rate;
+                $benefitFlatRates = $row->benefit_flat_rate->get();
+                $usedAmountByTaxRate = [];
+
+                foreach ($benefitFlatRates as $bfr) {
+                    $taxRate = (float) $bfr->flat_tax_rate;
+                    $usedAmount = (float) $bfr->used_amount;
+
+                    if (!isset($usedAmountByTaxRate[$taxRate])) {
+                        $usedAmountByTaxRate[$taxRate] = 0;
+                    }
+
+                    $usedAmountByTaxRate[$taxRate] += $usedAmount;
                 }
 
-                if ($flat_tax_rates == $flat_tax_rates) {
-                    $flat_tax_rate = $flat_tax_rates;
-                    $used_amount = array_sum($used_amount);
-                } else {
-                    $flat_tax_rate = $flat_tax_rates;
-                    $used_amount = $used_amount;
-                }
+                $row->benefit_flat_rate = $benefitFlatRates;
+                $row->used_amount = $usedAmountByTaxRate;
             } else {
                 $benefitFlatRate = $row->benefit_flat_rate->first();
-                $row->benefit_flat_rate = $benefitFlatRate->used_amount ?? 0;
-                $row->flat_tax_rate = $benefitFlatRate->flat_tax_rate ?? 0;
+                $row->benefit_flat_rate = $benefitFlatRate ? [$benefitFlatRate] : [];
+                $row->used_amount = $benefitFlatRate ? [(float) $benefitFlatRate->flat_tax_rate => (float) $benefitFlatRate->used_amount] : [];
             }
-
-
 
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
@@ -422,7 +424,7 @@ class PayrollList
                 ->where('payroll_id', $payroll_id)
                 ->value('id');
 
-             $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
+              $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
             // \Log::info((array)$payroll_list_benefit);
 
             $test_id =saveData($ss, 'payroll_list', ['id' => $test_id], $inputs, [], 1);

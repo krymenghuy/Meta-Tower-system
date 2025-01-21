@@ -474,7 +474,7 @@ var DashboardComponent =  (function () {
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                     <p class="fs-6" style="color: #2b3991;">$ ${
-                                        data.accounts.payrolls.total_count || 0
+                                        data.accounts.payrolls.total_balance || 0
                                     }</p>
                                 </div>
                             </div>

@@ -79,13 +79,13 @@ var PayrollListComponent = new (function () {
             title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                if (!data.used_amount || Object.keys(data.used_amount).length === 0 || !data.flat_tax_rate) {
-                    return `<p class="p-0 m-0">${VSMoney.formatAmount(0,data.currency_code)}</p>`;
+                if (!data.used_amount || Object.keys(data.used_amount).length === 0) {
+                    return `<p class="p-0 m-0">${VSMoney.formatAmount(0, data.currency_code)}</p>`;
                 }
 
                 const flatTaxDetails = Object.entries(data.used_amount)
                     .map(([taxRate, amount]) => {
-                        const formattedAmount = VSMoney.formatAmount(amount);
+                        const formattedAmount = VSMoney.formatAmount(amount, data.currency_code);
                         return `${formattedAmount} (${taxRate}%)`;
                     })
                     .join('<br>');
@@ -93,6 +93,7 @@ var PayrollListComponent = new (function () {
                 return `<p class="p-0 m-0">${flatTaxDetails}</p>`;
             }
         },
+
         {
             title: "Deduction",
             className: "align-middle text-nowrap",
