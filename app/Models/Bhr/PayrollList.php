@@ -142,9 +142,9 @@ class PayrollList
             //Tax allowance currency must be the same as National Currency
             $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance,currency_code as allowance_currency');
+                ->selectRaw('id,allowance');
 
-                $row->benefit_taxable = DB::table('payroll_list_benefits')
+            $row->benefit_taxable = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
                 ->where('payroll_id', $row->payroll_id)
                 ->where('tax_option_id', 1)
@@ -160,12 +160,7 @@ class PayrollList
             ->where('emp_id', $row->emp_id)
             ->where('payroll_id', $row->payroll_id)
             ->where('tax_option_id', 3)
-            ->selectRaw('emp_benefit_id,used_amount');
-
-            $row->flat_tax_rate = DB::table('emp_benefits')
-            ->where('emp_id', $row->emp_id)
-            ->where('tax_option_id', 3)
-            ->selectRaw('id,flat_tax_rate');
+            ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate');
 
             $emp_allowance_count = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
@@ -182,16 +177,7 @@ class PayrollList
 
             if ($emp_allowance_count > 1) {
                 $row->allowance = $row->allowance->get();
-                foreach ($row->allowance as $allowance) {
-                    if($allowance->allowance_currency != Money::$national_currency) {
-                        $allowance->allowance = $allowance->allowance * $row->exchange_rate;
-                    }
-                    else {
-                        $allowance->allowance = $allowance->allowance;
-                    }
-                }
                 $row->allowance = $row->allowance->sum('allowance');
-
             }else {
                 $row->allowance = $row->allowance->first();
                 $row->allowance = $row->allowance->allowance ?? 0;
@@ -210,33 +196,28 @@ class PayrollList
                 $row->benefit_non_tax = $row->benefit_non_tax->used_amount ?? 0;
             }
 
-            if($emp_benefit_count > 1) {
+            if ($emp_benefit_count > 1) {
                 $row->benefit_flat_rate = $row->benefit_flat_rate->get();
-                $row->flat_tax_rate = $row->flat_tax_rate->get();
-                foreach ($row->flat_tax_rate as $flat_tax_rate) {
-                    if (!in_array($flat_tax_rate->flat_tax_rate, $flat_tax_rates)) {
-                        $flat_tax_rates[] = $flat_tax_rate->flat_tax_rate;
-
-                    }
-                }
-                foreach($flat_tax_rates as $flat_tax_rate) {
-                    $used_amount[$flat_tax_rate] = 0;
-                    foreach ($row->flat_tax_rate as $ftr) {
-                        if($ftr->flat_tax_rate == $flat_tax_rate) {
-                            foreach($row->benefit_flat_rate as $bftr) {
-                                if($bftr->emp_benefit_id == $ftr->id) {
-                                    $used_amount[$flat_tax_rate] += $bftr->used_amount;
-                                }
-                            }
-                        }
-                    }
+                foreach ($row->benefit_flat_rate as $bfr) {
+                    $used_amount[] = $bfr->used_amount;
+                    $flat_tax_rates[] = $bfr->flat_tax_rate;
                 }
 
-            }else {
-                $row->benefit_flat_rate = $row->benefit_flat_rate->first()->used_amount ?? 0;
-                $row->flat_tax_rate = $row->flat_tax_rate->first()->flat_tax_rate ?? 0;
+                if ($flat_tax_rates == $flat_tax_rates) {
+                    $flat_tax_rate = $flat_tax_rates;
+                    $used_amount = array_sum($used_amount);
+                } else {
+                    $flat_tax_rate = $flat_tax_rates;
+                    $used_amount = $used_amount;
+                }
+            } else {
+                $benefitFlatRate = $row->benefit_flat_rate->first();
+                $row->benefit_flat_rate = $benefitFlatRate->used_amount ?? 0;
+                $row->flat_tax_rate = $benefitFlatRate->flat_tax_rate ?? 0;
             }
-            $row->used_amount = $used_amount;
+
+
+
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
             $row->deduction = ($row->deduction ?? 0);
@@ -244,7 +225,6 @@ class PayrollList
             $row->benefit_taxable = ($row->benefit_taxable ?? 0);
             $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
             $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
-            $row->flat_tax_rate = ($row->flat_tax_rate ?? 0);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -462,7 +442,6 @@ class PayrollList
         return DV::depends(1, ['success_count' => $success, 'error' => $error]);
     }
 
-    /** TODO: Please move this functionb to model Payroll.php */
     function calculatePayrollList($payroll_id, $ss = null)
     {
         $ss =$ss ?? $this->userInfo;
@@ -480,6 +459,7 @@ class PayrollList
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
+            ->where('pl.emp_id', 7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         '.$start_date.',
@@ -510,13 +490,10 @@ class PayrollList
             $fail_count = 0;
 
             foreach ($payrolls as $row) {
-                //Ensure that Import staff => is to make sure all staffs' salary use the same currency as the payroll currency
-                // if( $row->payroll_currency != Money::$national_currency ){
-                //     $row->salary = $row->salary * $row->exchange_rate;
-                // }
+
                 $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance,currency_code as allowance_currency');
+                ->selectRaw('id,allowance');
 
                 $row->benefit_taxable = DB::table('payroll_list_benefits')
                     ->where('emp_id', $row->emp_id)
@@ -556,25 +533,11 @@ class PayrollList
 
                 if ($emp_allowance_count > 1) {
                     $row->allowance = $row->allowance->get();
-                    foreach ($row->allowance as $allowance) {
-                        if ($allowance->allowance_currency != Money::$national_currency) {
-                            $allowance->allowance = $allowance->allowance * $row->exchange_rate;
-                        }
-                    }
                     $row->allowance = $row->allowance->sum('allowance');
-                } else {
-                    $allowance = $row->allowance->first();
-                    if ($allowance) {
-                        if ($allowance->allowance_currency != Money::$national_currency) {
-                            $row->allowance = $allowance->allowance * $row->exchange_rate;
-                        } else {
-                            $row->allowance = $allowance->allowance;
-                        }
-                    } else {
-                        $row->allowance = 0;
-                    }
+                }else {
+                    $row->allowance = $row->allowance->first();
+                    $row->allowance = $row->allowance->allowance ?? 0;
                 }
-
 
                 if ($emp_benefit_count > 1) {
                     $row->benefit_taxable = $row->benefit_taxable->get();
@@ -640,6 +603,7 @@ class PayrollList
                 $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
                 $row->flat_tax_rate = ($flat_tax_rates ?? $row->flat_tax_rate ?? 0);
             }
+            return $payrolls;
 
         foreach ($payrolls as &$payroll)
         {
