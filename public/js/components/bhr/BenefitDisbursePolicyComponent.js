@@ -13,6 +13,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
+        "All",
         "January",
         "February",
         "March",
@@ -44,7 +45,7 @@ var BenefitDisbursePolicyComponent =  (function () {
             title: "Target Month",
             className: "align-middle",
             data: (data) => {
-                const month = monthNames[data.target_month - 1] ?? "";
+                const month = monthNames[data.target_month ] ?? "";
 
                 return `<p class="p-0 m-0">${month} </p>`;
             },
@@ -243,6 +244,7 @@ const BdpDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     const months = [
+                        { value: 0, name: "All" },
                         { value: 1, name: "Jan" },
                         { value: 2, name: "Feb" },
                         { value: 3, name: "Mar" },
