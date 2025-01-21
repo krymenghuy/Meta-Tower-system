@@ -309,7 +309,7 @@ function employeeCV(div, d = null) {
                 html += `
                     <ul class="info_cv_group">
                         <li>
-                            <h6>${experience.position} at ${experience.organization} (${experience.period_type})</h6>
+                            <h6>${experience.position} at ${experience.organization} (${experience.period})</h6>
                             <p>${experience.description}</p>
                         </li>
                     </ul>`;
@@ -966,11 +966,6 @@ function jsonToTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative min-height-top">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -978,14 +973,8 @@ function jsonToTable(div, d) {
             }</p>
         </div>
     </div>
-    <style>
-        table th, td{
-            border-collapse: collapse;
-            border: 1px solid #c4dae3 !important;
-        }
-    </style>
     <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
-        <table class="table table-bordered">
+        <table class="table table-bordered table_reports">
             <thead>
                 <tr>
                     ${
@@ -1049,11 +1038,6 @@ function referralFeeTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${
@@ -1168,11 +1152,6 @@ function employeeListByBranchTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${
@@ -1294,11 +1273,6 @@ function nonTuitionFeeTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1472,11 +1446,6 @@ function incomeByCategoryTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1624,11 +1593,6 @@ function totalPaymentByYear(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute overflow-hidden">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 pb-0 mb-0 get-subtitle fs-5">${
@@ -1742,11 +1706,6 @@ function totalStudentPaymentHistory(div, d) {
     const html = [
         `
     <div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1921,11 +1880,6 @@ function leaveStudent(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2065,11 +2019,6 @@ function attendanceList(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2195,11 +2144,6 @@ function studentPaymentHistory(div, d) {
 
     let html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2617,11 +2561,6 @@ function incomeByClassTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt="" />
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2951,11 +2890,6 @@ function studentChangeCampus(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3058,11 +2992,6 @@ function crossYearPayment(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3154,11 +3083,6 @@ function upgradeFee(div, d) {
         merge_name = null;
 
     const html = `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title || ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3560,7 +3484,6 @@ function khmerNum(number) {
 
 function exportToExcel() {
     if (HtmlString) {
-        console.log(3333, HtmlString);
         const numTable = (HtmlString.match(new RegExp("<table", "g")) || [])
                 .length,
             numTh = (HtmlString.match(new RegExp("count-th", "g")) || [])
@@ -3759,16 +3682,13 @@ function exportToExcel() {
 function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
     HTML = HTML ?? null;
     HtmlString = `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
-        </div>
+
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase"> ${name}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5"></p>
         </div>
     </div>`;
     HtmlString += `<table class"table">${HTML}</table>`;
-    // console.log(3333,HtmlString);
     if (HtmlString) {
         const numTable = (HtmlString.match(/<table/g) || []).length,
             numTh = (HtmlString.match(/count-th/g) || []).length;

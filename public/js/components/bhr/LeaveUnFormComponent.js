@@ -9,7 +9,7 @@ var LeaveUnFormComponent = (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
     mThis.elFilter_wark_shift = mThis.self.querySelector('#el_wark_shift');
-    mThis.elFilter_session = mThis.self.querySelector('#el_leave_session');
+    // mThis.elFilter_session = mThis.self.querySelector('#el_leave_session');
     mThis.elSearch = mThis.self.querySelector("#_search_uninform_leave");
     mThis.divListView = mThis.self.querySelector('#_leave_unform_list');
 
@@ -165,11 +165,11 @@ var LeaveUnFormComponent = (function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 240) + 'px';
+        sh_parent.style.height = (window.innerHeight - 210) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
         }
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
@@ -363,7 +363,7 @@ var LeaveUnFormComponent = (function () {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elFilter_wark_shift,d.work_shifts,'id','name',true,'All Work Shifts',d.work_shifts[0].id);
-            VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
+            // VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
             // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
             onFinish(null);
         })

@@ -2733,7 +2733,7 @@ const AddOrganization = (() => {
                 createContent: () => {
                     return [
                         `<div class="form-group">
-                            <label class="form-label" vslang="titles.Organization Name">Organization Name</label>
+                            <label class="form-label" vslang="titles.Organization">Organization</label>
                             <div><input name="org_name" class=" form-control data-input" data-field="name"></input></div>
                         </div>
                         <div class="form-group">
