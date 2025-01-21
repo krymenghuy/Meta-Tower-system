@@ -252,7 +252,6 @@ class Employee //extends Model
         $exchange_rate = $payroll->exchange_rate ?? 1;
 
         if ($payroll) {
-
             $bdps = DB::table('benefit_disburse_policies')
                 ->where(function ($query) use ($payroll) {
                     $query->where('target_month', $payroll->month)
@@ -348,8 +347,6 @@ class Employee //extends Model
                 else{
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
-
-
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
 
@@ -382,10 +379,12 @@ class Employee //extends Model
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
+
                         }
                     }else{
                         $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
+                        $id = $emp_id;
                         $benefit_currency = $emp_benefit->currency_code ?? null;
                         $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
 
@@ -401,15 +400,26 @@ class Employee //extends Model
                                         $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
                                     }
                                 }
+                                $result =  [
+                                    "emp_id" => $emp_benefit->emp_id ?? $emp_id,
+                                    "payroll_id" => $payroll_id,
+                                    "withdraw_rate" => $withdraw_rate,
+                                    "benefit_id" => $last_benefit_id,
+                                    "full_amount" => $full_amount,
+                                    "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
+                                    "used_amount" => $used_amount,
+                                    "emp_benefit_id" => null,
+                                    "currency_code" => $payroll_currency
+                                ];
+                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                         }
                     }
                 }
-                // \Log::info(json_encode($flat_tax_rate));
-
             }
         }
         $result =  [
-            "emp_id" => $emp_id,
+            "emp_id" => $emp_benefit->emp_id ?? $emp_id,
             "payroll_id" => $payroll_id,
             "withdraw_rate" => $withdraw_rate,
             "benefit_id" => $last_benefit_id,
@@ -420,9 +430,6 @@ class Employee //extends Model
             "emp_benefit_id" => null,
             "currency_code" => $payroll_currency
         ];
-        if($benefit_count <=1)
-        $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-
         return (object)$result;
     }
     static function savePayrollListBenefit($arr, $ss)
@@ -441,21 +448,19 @@ class Employee //extends Model
             'emp_benefit_id' => '0|number',
             'currency_code' => '0|number'
         ];
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
 
         $existing_id = DB::table('payroll_list_benefits')
             ->where('payroll_id', $inputs['payroll_id'])
             ->where('emp_id', $inputs['emp_id'])
             ->where('benefit_id', $inputs['benefit_id'])
+            ->where('emp_benefit_id', $inputs['emp_benefit_id'])
             ->value('id');
         $id = $existing_id ?? null;
-
 
         $id = saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {

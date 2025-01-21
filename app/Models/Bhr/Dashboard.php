@@ -303,20 +303,25 @@ static function countEmployee($arr, $ss)
 
         return $rows;
     }
-    public static function getTotalWalletAndPayrollData($arr, $ss) {
+    public static function getTotalWalletAndPayrollData($arr, $ss)
+    {
         $d = (object) $arr;
-        $totalWalletsQuery = DB::table('accounts')
-            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id');
-        $totalWallets = $totalWalletsQuery->count();
 
-        $totalWalletBalance = $totalWalletsQuery->sum('accounts.balance');
+        $totalWallets = DB::table('accounts')
+            ->where('account_type', 'wallet')
+            ->count();
 
-        $totalPayrollsQuery = DB::table('accounts')
-            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id');
+        $totalWalletBalance = DB::table('accounts')
+            ->where('account_type', 'wallet')
+            ->sum('balance');
 
-        $totalPayrolls = $totalPayrollsQuery->count();
+        $totalPayrolls = DB::table('accounts')
+            ->where('account_type', 'payroll')
+            ->count();
 
-        $totalPayrollBalance = $totalPayrollsQuery->sum('accounts.balance');
+        $totalPayrollBalance = DB::table('accounts')
+            ->where('account_type', 'payroll')
+            ->sum('balance');
 
         return (object) [
             'wallets' => (object) [
@@ -328,7 +333,6 @@ static function countEmployee($arr, $ss)
                 'total_count' => $totalPayrolls,
                 'total_balance' => $totalPayrollBalance,
                 'currency' => 'KHR'
-
             ]
         ];
     }
