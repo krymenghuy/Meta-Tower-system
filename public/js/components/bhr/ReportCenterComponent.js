@@ -580,7 +580,6 @@ var ReportCenterComponent = new (function () {
             return;
         }
         mThis.isBusy = true;
-        console.log(14, p.code);
 
         switch (p.code) {
             case "employee_list_by_branch":
@@ -656,7 +655,6 @@ var ReportCenterComponent = new (function () {
                         );
                         mThis.isBusy = false;
                     }
-                    console.log(555, d);
 
                     if (d && !$.isEmptyObject(d)) {
                         switch (d.form) {

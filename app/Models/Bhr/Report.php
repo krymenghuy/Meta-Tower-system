@@ -242,7 +242,7 @@ class Report
                     pl.tax_base,
                     pl.benefit_tax,
                     pl.total_salary,
-                    pl.disburse,
+                    pl.disbursed,
                     emp.photo_file_name as emp_photo')
             ->whereRaw($str_branch_id);
 
@@ -756,9 +756,9 @@ class Report
             ->get();
 
         $emp_exp = DB::table('emp_experiences as exp')
-            ->join('positions as pos', 'pos.id', '=', 'exp.position_id')
+            // ->join('positions as pos', 'pos.id', '=', 'exp.position_id')
             ->join('organizations as org', 'org.id', '=', 'exp.organization_id')
-            ->selectRaw('pos.title as position, org.name as organization, exp.period_type, exp.description')
+            ->selectRaw('exp.position as position, org.name as organization, exp.period, exp.description')
             ->where('exp.emp_id', $emp_id)
             ->get();
 
