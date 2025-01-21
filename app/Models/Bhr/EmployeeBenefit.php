@@ -72,8 +72,8 @@ class EmployeeBenefit
 
         $search_value = $d->search_value ?? null;
         $search_benefit_id = $d->benefit_id ?? null;
+        $search_tax_option = $d->tax_option_id ?? null;
         $str_srch = '1=1';
-        $str_where = "2=2";
         if ($search_value) {
             $skip_rows = 0;
             $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR b.remarks LIKE '%" . $search_value . "%' OR b.amount LIKE '%" . $search_value . "%')";
@@ -104,6 +104,9 @@ class EmployeeBenefit
 
         if ($search_benefit_id) {
             $query->where('eb.benefit_id', $search_benefit_id);
+        }
+        if ($search_tax_option) {
+            $query->where('eb.tax_option_id', $search_tax_option);
         }
         $clone_query = clone $query;
 
@@ -174,6 +177,11 @@ class EmployeeBenefit
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
             'currency_codes' => Money::options_currency($ss),
             'emp_benefits' => $emp_benefits,
+            'tax_options' => [
+                ['id' => '1', 'name' => 'taxable'],
+                ['id' => '2', 'name' => 'none taxable'],
+                ['id' => '3', 'name' => 'flat rate'],
+            ],
         ];
     }
 }

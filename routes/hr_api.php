@@ -48,6 +48,7 @@ use App\Http\Controllers\Bhr\EmployeeDocumentController;
 use App\Http\Controllers\Bhr\ExitItemController;
 use App\Http\Controllers\Bhr\FormController;
 use App\Http\Controllers\Bhr\ContractController;
+use App\Http\Controllers\Bhr\DocumentTypeController;
 use App\Http\Controllers\Bhr\OrganizationController;
 use App\Http\Controllers\Bhr\SchoolController;
 
@@ -450,4 +451,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('organization'
     Route::post('/details', [OrganizationController::class, 'getDetails']);
     Route::post('/delete', [OrganizationController::class, 'delete']);
     Route::post('/form-options', [OrganizationController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('document-type')->group(function () {
+    Route::post('/save', [DocumentTypeController::class, 'save']);
+    Route::post('/list-paginate', [DocumentTypeController::class, 'getList']);
+    Route::post('/list-all', [DocumentTypeController::class, 'listDocumentType']);
+    Route::post('/details', [DocumentTypeController::class, 'getDetails']);
+    Route::post('/delete', [DocumentTypeController::class, 'delete']);
+    Route::post('/form-options', [DocumentTypeController::class, 'getFormOptions']);
 });

@@ -32,6 +32,7 @@ class EmployeeDocument
         $v_rule = [
             'emp_id' => '1|number',
             'name' => '0|string|0-150',
+            'document_type_id' => '0|number',
             'ext' => '0|string',
             'file_name' => '1|string',
         ];
@@ -91,7 +92,8 @@ class EmployeeDocument
         $skip_rows = ($current_page - 1) * $per_page;
 
         $query = DB::table('emp_documents as ed')
-            ->selectRaw('ed.id,ed.emp_id,ed.name,ed.file_name')
+            ->join('document_types as dt', 'dt.id', '=', 'ed.document_type_id')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.name,ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->where('ed.emp_id', $emp_id);
 
@@ -115,7 +117,8 @@ class EmployeeDocument
     function getDetails($id, $ss)
     {
         $row = DB::table('emp_documents as ed')
-            ->selectRaw('ed.id,ed.emp_id,ed.name,ed.file_name')
+            ->join('document_types as dt', 'dt.id', '=' , 'ed.document_type_id')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.name,ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->first();
         return $row;
@@ -170,7 +173,7 @@ class EmployeeDocument
         }
         return (object) [
 
-
+            'document_types'=> DB::table('document_types')->selectRaw('id, name')->get(),
             'emp_document' => $emp_document,
         ];
 
@@ -223,7 +226,8 @@ class EmployeeDocument
     {
 
         $rows = DB::table('emp_documents as ed')
-            ->selectRaw('ed.id, ed.emp_id, ed.name, ed.file_name')
+            ->join('document_types as dt', 'dt.id', '=', 'ed.document_type_id')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name, ed.emp_id, ed.name, ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->get();
 

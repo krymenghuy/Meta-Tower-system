@@ -13,6 +13,7 @@ var EmployeeBenefitComponent = new (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_bonus");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+    mThis.elTaxOption = mThis.self.querySelector("#el_tax_option");
 
     mThis.cols = [
         {
@@ -263,16 +264,9 @@ var EmployeeBenefitComponent = new (function () {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(
-                    mThis.elBenefit,
-                    d.benefits,
-                    "id",
-                    "name",
-                    true,
-                    "All Benefits",
-                    null
-                );
-                console.log(1111, mThis.elBenefit);
+                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", true, "All Benefits", null);
+                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", true, "All Tax Option", null);
+
             });
     };
 
@@ -314,7 +308,7 @@ const EmployeeBenefitDialog = (() => {
                             <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
                             <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
                         </div>`,
-                        `<div class="form-group col-4">
+                    `<div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                             <select name="currency_code" class="data-input" data-field="currency_code"></select>
                         </div>`,
@@ -339,15 +333,20 @@ const EmployeeBenefitDialog = (() => {
                             <label for="remarks" class="form-label" vslang="titles.Remark"></label>
                             <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                         </div>`,
-                    `</div>`
+                    `</div>`,
                 ].join("");
             },
             contentCreated: (me) => {
-                const taxOptionField = me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+                const taxOptionField =
+                    me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField =
+                    me.divModal.querySelector(".flat_tax_rate");
 
                 taxOptionField.addEventListener("change", () => {
-                    flatTaxRateField.classList.toggle("d-none", taxOptionField.value !== "3");
+                    flatTaxRateField.classList.toggle(
+                        "d-none",
+                        taxOptionField.value !== "3"
+                    );
                 });
             },
             prepareFormOptions: {
@@ -365,7 +364,9 @@ const EmployeeBenefitDialog = (() => {
                 // flatTaxRateField.classList.add("d-none");
 
                 Object.keys(data).forEach((key) => {
-                    const input = me.divModal.querySelector(`[data-field="${key}"]`);
+                    const input = me.divModal.querySelector(
+                        `[data-field="${key}"]`
+                    );
                     if (input) {
                         input.value = data[key];
                     }
@@ -396,7 +397,7 @@ const EmployeeBenefitDialog = (() => {
                     data: "currency_codes",
                     textField: "code",
                     valueField: "code",
-                }
+                },
             ],
             buttons: [
                 {
@@ -412,19 +413,28 @@ const EmployeeBenefitDialog = (() => {
                         p.id = me.dataOptions.id;
 
                         vsapi
-                            .call(`${main_view.base_url}/hr/employee/benefit/save`, p, btn)
+                            .call(
+                                `${main_view.base_url}/hr/employee/benefit/save`,
+                                p,
+                                btn
+                            )
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
-                                    if(me.dataOptions.id > 0)
-                                    {
-                                        cv_interact.success("Updated employee benefit successfully");
-                                    }
-                                    else{
-                                        cv_interact.success("Added employee benefit successfully");
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Updated employee benefit successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "Added employee benefit successfully"
+                                        );
                                     }
                                 } else {
-                                    cv_interact.error(res.error_message || "An error occurred.");
+                                    cv_interact.error(
+                                        res.error_message ||
+                                            "An error occurred."
+                                    );
                                 }
                             });
                     },
