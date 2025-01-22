@@ -10,7 +10,7 @@ var LeaveComponent = (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
     // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elFilter_session = mThis.self.querySelector('#el_leave_session');
+    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_leave");
 
     mThis.cols = [
@@ -141,7 +141,7 @@ var LeaveComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.LeaveRequestListView.showPage();
+                    mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                 }
             };
 
@@ -309,7 +309,7 @@ var LeaveComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.LeaveRequestListView.showPage();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
 
@@ -321,7 +321,7 @@ var LeaveComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.LeaveRequestListView.showPage();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
         cv_interact.confirm('Delete this leave request?',{
@@ -345,12 +345,11 @@ var LeaveComponent = (function () {
 
     mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/leave/form-options`, null, null, null)
+            .then(res => {
             const d = res.status_code == 200 ? res.data : {};
-
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
-            VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
-            // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
+            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',true,'All Types',null);
         })
     }
 

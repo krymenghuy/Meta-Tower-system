@@ -151,7 +151,7 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage();
+                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
                 },
             });
         };
@@ -208,7 +208,7 @@ var EmployeeBenefitComponent = new (function () {
         EmployeeBenefitDialog.show({
             id,
             btn,
-            onClose: () => mThis.EmployeeBenefitListView.showPage(),
+            onClose: () => mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
         });
     };
 

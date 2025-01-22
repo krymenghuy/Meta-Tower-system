@@ -9,6 +9,7 @@ var BenefitComponent =  (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddBenefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_benefit_search");
+    mThis.elBenefitType = mThis.self.querySelector("#el_benefit_type");
 
     mThis.cols = [
         {
@@ -96,7 +97,7 @@ var BenefitComponent =  (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.BenefitListView.showPage();
+                    mThis.BenefitListView.showPage(mThis.getDataFormFilter());
                 },
             };
             BenefitDialog.show(op);
@@ -143,11 +144,7 @@ var BenefitComponent =  (function () {
     };
 
     mThis.editBenefit = (id, btn) => {
-        BenefitDialog.show({
-            id,
-            btn,
-            onClose: () => mThis.BenefitListView.showPage(),
-        });
+        BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getDataFormFilter()),});
     };
 
     mThis.deleteBenefit = (id, menuLink) => {
@@ -168,13 +165,7 @@ var BenefitComponent =  (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(
-                            `${main_view.base_url}/hr/benefit/delete`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
+                        .call( `${main_view.base_url}/hr/benefit/delete`, op, false, false, false)
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
@@ -190,10 +181,7 @@ var BenefitComponent =  (function () {
     };
 
     mThis.getDataFormFilter = () => {
-        let filters = {
-            search_value: mThis.elSearch.value,
-
-        };
+        let filters = { search_value: mThis.elSearch.value};
         console.log(39292,mThis.elSearch);
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             filters[el.dataset.field] = el.value;
@@ -202,15 +190,16 @@ var BenefitComponent =  (function () {
     };
     mThis.prepareFormOptions = () => {
         vsapi
-            .call(`${main_view.base_url}/hr/bdp/form-options`, null, null, null)
+            .call(`${main_view.base_url}/hr/benefit/form-options`,null,null,null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elBenefitType,d.benefit_types,"id","name",true,"All Types",null);
             });
     };
     mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.prepareFormOptions();
+        mThis.prepareFormOptions();
         mThis.BenefitListView.showPage();
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);

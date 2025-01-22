@@ -93,8 +93,11 @@ class Dashboard
 
         $warning_staff_count = DB::table('emp_warnings AS ew')
 
-            ->distinct('ew.emp_id')
-            ->count('ew.emp_id');
+            ->distinct('ew.id')
+            ->count('ew.id');
+        $exit_form_count = DB::table('exit_forms as ef')
+            ->count('id');
+
 
         return (object) [
             'new_staff_count' => (object) [
@@ -127,6 +130,9 @@ class Dashboard
                 'count' => $warning_staff_count,
                 'title' => 'Warnings',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'exit_form_count' => (object) [
+                'count' => $exit_form_count,
             ]
         ];
     }

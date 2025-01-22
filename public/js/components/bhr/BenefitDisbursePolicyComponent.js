@@ -148,7 +148,7 @@ var BenefitDisbursePolicyComponent =  (function () {
         BdpDialog.show({
             id,
             btn,
-            onClose: () => mThis.BdpListView.showPage(),
+            onClose: () => mThis.BdpListView.showPage(mThis.getDataFormFilter()),
         });
     };
 
