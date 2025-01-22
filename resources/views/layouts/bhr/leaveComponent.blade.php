@@ -6,7 +6,7 @@
                     <select id="el_status" class="data-input filter-field " data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center w-50">
-                    <select id="el_leave_session" class="data-input filter-field " data-field="session"></select>
+                    <select id="el_leave_type" class="data-input filter-field " data-field="leave_type_id"></select>
                     <!-- <select id="el_leave_type" class="form-control rounded-5 data-input filter-field" data-field="session">
                         <option value="">All Sessions</option>
                         <option value="morning">Morning</option>

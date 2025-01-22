@@ -184,7 +184,7 @@ var PositionComponent =  (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PositionListView.showPage();
+                mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
         PositionDialog.show(op);

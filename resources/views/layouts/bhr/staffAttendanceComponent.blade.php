@@ -1,6 +1,6 @@
 <div id="_main_staffAttendanceComponent" style="display:none;padding:20px 0 0">
         <div class="shadow rounded-2 mt-2">
-            <div id="container_scan_filter" class="row px-4 py-2">
+            <div id="container_scan_filter" class="row px-4">
                 <div class="col-sm-12 col-md-6 col-lg-3">
                     <div class="form-group">
                         <label for="branch_id" class="form-label" style="color: #cab567;" vslang="titles.LC Branch"></label>
@@ -34,21 +34,19 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="d-flex w-100 shadow rounded-2 px-4 mt-2 py-2">
-            <div class="d-flex justify-content-start gap-3 w-50">
-                <div class="d-flex align-items-center w-50">
-                    <input type="text" class="form-control data-input filter-field btn_search" id="_staff_attendance_search"
-                    placeholder="Search">
-                </div>
-            </div>
-            <div class="d-flex w-50 justify-content-end">
-                <button type="button" class="btn_add" id="_btnAddStaffAttendance">
-                    <i class="fa-solid px-1 fa-clipboard-user"></i>
-                    <span>Create Attendance</span>
-                </button>
+            <div class="d-flex w-100 px-4 py-3 justify-content-between">
+                    <div class="d-flex align-items-center w-25">
+                        <input type="text" class="form-control data-input filter-field btn_search" id="_staff_attendance_search"
+                        placeholder="Search">
+                    </div>
+                    <div class="d-flex w-50 justify-content-end">
+                        <button type="button" class="btn_add" id="_btnAddStaffAttendance">
+                            <i class="fa-solid px-1 fa-clipboard-user"></i>
+                            <span>Create Attendance</span>
+                        </button>
+                    </div>
             </div>
         </div>
-    <div id="_staff_attendance_list" class="mt-3 px-3"></div>
+    <div id="_staff_attendance_list" class="mt-4 px-4"></div>
 </div>
 

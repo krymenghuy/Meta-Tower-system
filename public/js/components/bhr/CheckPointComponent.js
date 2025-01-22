@@ -147,7 +147,7 @@ var CheckPointComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.CheckPointListView.showPage();
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             },
         };
         ExitFormItemDialog.show(op);
