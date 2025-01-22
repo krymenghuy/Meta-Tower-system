@@ -72,7 +72,7 @@ var PayrollComponent = new (function () {
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
-            data: (data) => {
+            data: (data) => { 
                 let x_rate = data.exchange_rate;
                 if (x_rate > 1) {
                     x_rate = VSMoney.formatAmount(x_rate,null,null,{minimumFractionDigits: 2,

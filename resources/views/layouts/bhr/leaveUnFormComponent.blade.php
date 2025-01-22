@@ -1,7 +1,7 @@
 <div id="_main_leave_unform_component" style="display:none;padding:20px 0 0;">
     <div id="_divFilter_leave" class="px-4">
         <div class="d-flex w-100 gap-2 mt-4">
-            <div class="d-flex justify-content-end gap-3 w-50">
+            <div class="d-flex justify-content-between gap-3 w-50">
                 {{-- <div class="d-flex align-items-center w-50">
                     <select id="el_leave_session" class="data-input filter-field " data-field="session"></select>
                     <!-- <select id="el_leave_type" class="form-control rounded-5 data-input filter-field" data-field="session">
@@ -10,14 +10,14 @@
                         <option value="afternoon">Afternoon</option>
                     </select> -->
                 </div> --}}
-                <div class="d-flex justify-content-between w-100">
-                    <div class="d-flex align-items-center" style="min-width: 300px;">
+                <div class="d-flex justify-content-between w-100 gap-2">
+                    <div class="d-flex align-items-start w-50">
                         <input type="text" class="form-control filter-field btn_search" id="_search_uninform_leave"
                             placeholder="Search">
                     </div>
-                </div>
-                <div class="d-flex align-items-start w-50">
-                    <select id="el_wark_shift" class="data-input filter-field " data-field="status"></select>
+                    <div class="d-flex align-items-start w-50">
+                        <select id="el_wark_shift" class="data-input filter-field " data-field="status"></select>
+                    </div>
                 </div>
             </div>
             <div class="d-flex justify-content-end w-50 gap-3">

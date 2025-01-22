@@ -128,14 +128,13 @@ class Leave
         }
         $search_value = $d->search_value ?? null;
         $status_id = $d->status_id ?? null;
-        $leave_type_id = $d->leave_type_id ?? null;
+        $leave_type = $d->leave_type_id ?? null;
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
 
         $str_search = '1=1';
         $str_status = '2=2';
         $str_dates = '3=3';
-        $str_leave_type_id = '4=4';
 
         if ($search_value) {
             $skip_rows = 0;
@@ -144,9 +143,6 @@ class Leave
         }
         if ($status_id) {
             $str_status = 'l.status_id = \'' . $status_id . '\'';
-        }
-        if ($leave_type_id) {
-           $str_leave_type_id = 'l.leave_type_id = \'' . $leave_type_id . '\'';
         }
 
         // Determine date filter: use today's date if no date range is provided, otherwise use specified range
@@ -179,14 +175,15 @@ class Leave
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->whereRaw($str_search)
             ->whereRaw($str_status)
-            ->whereRaw($str_leave_type_id)
             ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.title, l.leave_type_id, lt.name as leave_type,'
             . $col_dates
                 . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo,'
                 . $leave_days_calc)
             ->orderBy('l.id', 'DESC');
-
+        if ($leave_type) {
+            $query->where('l.leave_type_id', $leave_type);
+        }
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
 
@@ -225,10 +222,7 @@ class Leave
         $end_date = $d->date ?? date('d-M-Y');
 
         $str_search = '1=1';
-        $str_status = '2=2';
         $str_work_shift = '5=5';
-        $str_dates = '3=3';
-        $str_leave_type_id = '4=4';
 
         if ($search_value) {
             $skip_rows = 0;

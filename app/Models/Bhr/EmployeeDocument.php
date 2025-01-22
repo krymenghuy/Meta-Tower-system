@@ -31,7 +31,7 @@ class EmployeeDocument
 
         $v_rule = [
             'emp_id' => '1|number',
-            'name' => '0|string|0-150',
+            'description' => '0|string|0-150',
             'document_type_id' => '0|number',
             'ext' => '0|string',
             'file_name' => '1|string',
@@ -70,8 +70,8 @@ class EmployeeDocument
 
         $inputs['file_name'] = $res->file_name;
 
-        if (empty($inputs['name'])) {
-            $inputs['name'] = $res->file_name;
+        if (empty($inputs['description'])) {
+            $inputs['description'] = $res->file_name;
         }
 
         $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
@@ -93,7 +93,7 @@ class EmployeeDocument
 
         $query = DB::table('emp_documents as ed')
             ->join('document_types as dt', 'dt.id', '=', 'ed.document_type_id')
-            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.name,ed.file_name')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.description,ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->where('ed.emp_id', $emp_id);
 
@@ -118,7 +118,7 @@ class EmployeeDocument
     {
         $row = DB::table('emp_documents as ed')
             ->join('document_types as dt', 'dt.id', '=' , 'ed.document_type_id')
-            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.name,ed.file_name')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name,ed.emp_id,ed.description,ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->first();
         return $row;
@@ -227,7 +227,7 @@ class EmployeeDocument
 
         $rows = DB::table('emp_documents as ed')
             ->join('document_types as dt', 'dt.id', '=', 'ed.document_type_id')
-            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name, ed.emp_id, ed.name, ed.file_name')
+            ->selectRaw('ed.id,dt.id as doc_id, dt.name as doc_name, ed.emp_id, ed.description, ed.file_name')
             ->where('ed.branch_id', $ss->branch_id)
             ->get();
 

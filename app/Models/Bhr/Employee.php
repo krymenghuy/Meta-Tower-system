@@ -985,8 +985,19 @@ class Employee //extends Model
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
 
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
 
+            // Ensure new effective_date is after the latest effective_date
+            if (strtotime($inputs['effective_date']) <= strtotime($latest_effective_date)) {
+                return DV::error('The effective date must be later than the previous resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
         $events = [
             'active.20' => 'Resignation'
         ];
@@ -1048,7 +1059,19 @@ class Employee //extends Model
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
 
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
+
+            // Ensure the rejoin date is after the latest resignation's effective date
+            if (strtotime($rejoin_date) <= strtotime($latest_effective_date)) {
+                return DV::error('The rejoin date must be after the latest resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
 
         $events = [
             'active.10' => 'Rejoin'
@@ -1262,7 +1285,6 @@ class Employee //extends Model
 
     static function createPromotion($arr, $ss = null)
     {
-        $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [

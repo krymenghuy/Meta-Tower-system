@@ -79,7 +79,7 @@ var CheckPointComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.CheckPointListView.showPage();
+                    mThis.CheckPointListView.showPage(mThis.getFilterData());
                 },
             };
             ExitFormItemDialog.show(op);
@@ -147,7 +147,7 @@ var CheckPointComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.CheckPointListView.showPage();
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             },
         };
         ExitFormItemDialog.show(op);
@@ -157,7 +157,7 @@ var CheckPointComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.CheckPointListView.showPage();
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             },
         };
         cv_interact.confirm(
@@ -182,7 +182,7 @@ var CheckPointComponent = new (function () {
                                 cv_interact.success(
                                     "Checkpoint delete successfully"
                                 );
-                                mThis.CheckPointListView.showPage();
+                                mThis.CheckPointListView.showPage(mThis.getFilterData());
                             }
                             else {
                                 cv_interact.error(res.error_message);

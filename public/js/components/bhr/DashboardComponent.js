@@ -343,7 +343,7 @@ var DashboardComponent =  (function () {
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                 style="color:orange; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">4</span>
+                               <span class="p-1">${data.cards.exit_form_count.count}</span>
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start"
