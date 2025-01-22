@@ -53,11 +53,11 @@ class Payroll
         $err = self::checkDuplicateName($d->name,$id);
         if($err) return DV::error($err);
 
-        if(!$id)
-        {
-            $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
+        $err = self::validatePayrollDates($d->start_date,$d->end_date,$id);
             if($err) return DV::error($err);
 
+        if(!$id)
+        {
             $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
             if($checkExist){
                 return DV::error($inputs['name'].' is already exist!');
@@ -83,37 +83,16 @@ class Payroll
             return 'Start Date and End Date is not correct!';
         }
 
-        $test = DB::table('payrolls as p')
-            ->whereRaw("date(p.start_date) >= '$start_date'")
-            ->whereRaw($str_id)
-            ->select('id')
-            ->first();
-        if ($test) {
-            return 'Start Date is not correct!';
-        }
+        $start = convertDate($start_date);
+        $end = convertDate($end_date);
+        $count_days = dateDiff_days($start, $end) + 1 ;
 
-        $test = DB::table('payrolls as p')
-            ->whereRaw("date(p.end_date) >= '$end_date'")
-            ->whereRaw($str_id)
-            ->select('id')
-            ->first();
-        if ($test) {
-            return 'End Date is not correct!';
-        }
-
-        $start = new DateTime($start_date);
-        $end = new DateTime($end_date);
-        $interval = $start->diff($end);
-
-        $test = $interval->days;
+        $test = $count_days;
         if ($test > 31) {
             return 'The difference between Start Date and End Date cannot be longer than 31 days!';
         }
-
         return null;
     }
-
-
     static function checkDuplicateName($name,$id){
         $str_id = '1 = 1';
         if($id){
@@ -209,6 +188,10 @@ class Payroll
             ->where('p.branch_id', $ss->branch_id)
             ->orderBy('id', 'DESC')
             ->first();
+
+        $date = new DateTime($row->end_date);
+        $date->modify('+1 day');
+        $row->end_date = $date->format('d-M-Y');
         return $row;
     }
 

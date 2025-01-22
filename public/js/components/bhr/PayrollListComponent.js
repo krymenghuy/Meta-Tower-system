@@ -401,8 +401,7 @@ var PayrollListComponent = new (function () {
 
             div_BFT = benefit_flat_rate
             .map(value => {
-                const formattedAmount = value.BFT.replace(/,/g, ' ').trim();
-                return `${formattedAmount} (${value.BFTR} %)`;
+                return `${VSMoney.formatAmount(value.BFT,data.currency_code)} (${value.BFTR} %)`;
             })
             .join(' & ');
 
@@ -544,15 +543,15 @@ var PayrollListComponent = new (function () {
                                 <td>${VSMoney.formatAmount(data.p_salary,data.currency_code)}</td>
                             </tr>
                              <tr>
-                                <td>Days</td>
-                                <td>${data.count_day}</td>
+                                <td>Period</td>
+                                <td>${data.count_day} days</td>
                             </tr>
                             <tr>
-                                <td>Taxable BFT</td>
+                                <td>Taxable Benefits</td>
                                 <td class="text-success">${VSMoney.formatAmount(data.benefit_taxable, data.currency_code)}</td>
                             </tr>
                             <tr>
-                                <td>BFT</td>
+                                <td>Other Benefits</td>
                                 <td class="text-success">${div_BFT || 0.00}</td>
                             </tr>
                             <tr>
@@ -584,11 +583,11 @@ var PayrollListComponent = new (function () {
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Nontax BFT</td>
+                                <td>Nontaxable Benefits</td>
                                 <td class="text-success">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Tax Flat Rate</td>
+                                <td>Benefit Tax</td>
                                 <td class="text-danger">${VSMoney.formatAmount( (data.taxable_benefits || data.benefit_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
