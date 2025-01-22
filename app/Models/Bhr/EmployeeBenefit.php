@@ -47,12 +47,12 @@ class EmployeeBenefit
 
         $inputs = $res->values;
 
-        if (!$id) {
-            $checkExist = DB::table('emp_benefits')->where('emp_id', $inputs['emp_id'])->where('benefit_id', $inputs['benefit_id'])->take(1)->value('id');
-            if ($checkExist) {
-                return DV::error('Benefit already exists');
-            }
-        }
+        // if (!$id) {
+        //     $checkExist = DB::table('emp_benefits')->where('emp_id', $inputs['emp_id'])->where('benefit_id', $inputs['benefit_id'])->take(1)->value('id');
+        //     if ($checkExist) {
+        //         return DV::error('Benefit already exists');
+        //     }
+        // }
 
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
