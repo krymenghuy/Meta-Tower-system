@@ -434,7 +434,6 @@ class Employee //extends Model
     }
     static function savePayrollListBenefit($arr, $ss)
     {
-
         $v_rule = [
             // 'id' => '0|identity=1',
             'payroll_id' => '1|number',
