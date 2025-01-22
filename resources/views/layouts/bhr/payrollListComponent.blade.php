@@ -1,7 +1,7 @@
 <div id="_main_payrollListComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content" class="p-0">
-        <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
-            <div class="d-flex align-items-center w-50 px-3 gap-2">
+    <div id="sub_content">
+        <div class="d-flex justify-content-between w-100 p-4 mt-2 rounded-2 shadow" id="_divFilter">
+            <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center justify-content-end  w-50 ">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
                 </div>
@@ -44,11 +44,11 @@
 
             </div>
         </div>
-        <div id="_payrollList_list" class="px-3 mt-3"></div>
+        <div id="_payrollList_list" class="px-4 mt-3"></div>
     </div>
 
-    <div class="d-none row px-3 bg-white" id="pay_slip">
-        <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
+    <div class="d-none row bg-white" id="pay_slip">
+        <div class="d-flex w-100 bg-white rounded-3 shadow p-4 justify-content-between">
             <div class="d-flex justify-content-start  px-3 w-25">
                 <button id="_btn_backTo_payrollList" style="background-color:#2b3991;"
                     class="btn text-white shadow rounded-4" type="button">
@@ -63,9 +63,7 @@
             </div>
         </div>
 
-        <div id="payment_info" class="payment_details p-2" style="height:520px; overflow-y:auto">
-        </div>
-
+        <div id="payment_info" class="payment_details px-4 mt-3" style="height:500px; overflow-y:auto; overflow-x:hidden; scrollbar-width: none;"></div>
     </div>
 
 
