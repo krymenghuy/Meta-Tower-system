@@ -95,7 +95,6 @@ class PayrollList
                         e.apply_payroll_tax,
                         pl.deduction,
                         pl.tax_rate,
-                        pl.bias,
                         pl.tax_base,
                         pl.benefit_tax,
                         pl.total_salary,
@@ -495,7 +494,7 @@ class PayrollList
 
                 $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance');
+                ->sum('allowance');
 
                 $row->apply_payroll_tax = DB::table('employees')
                 ->where('id', $row->emp_id)
@@ -505,13 +504,13 @@ class PayrollList
                     ->where('emp_id', $row->emp_id)
                     ->where('payroll_id', $row->payroll_id)
                     ->where('tax_option_id', 1)
-                    ->selectRaw('emp_benefit_id,used_amount');
+                    ->sum('used_amount');
 
                 $row->benefit_non_tax = DB::table('payroll_list_benefits')
                     ->where('emp_id', $row->emp_id)
                     ->where('payroll_id', $row->payroll_id)
                     ->where('tax_option_id', 2)
-                    ->selectRaw('emp_benefit_id,used_amount');
+                    ->sum('used_amount');
 
                 $row->benefit_flat_rate = DB::table('payroll_list_benefits')
                     ->where('emp_id', $row->emp_id)
@@ -519,39 +518,13 @@ class PayrollList
                     ->where('tax_option_id', 3)
                     ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate');
 
-                $emp_allowance_count = DB::table('tax_allowances')
-                    ->where('emp_id', $row->emp_id)
-                    ->count('id');
-
                 $emp_benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $row->emp_id)
                     ->count('id');
 
-                $row->emp_allowance_count = $emp_allowance_count;
                 $row->emp_benefit_count = $emp_benefit_count;
                 $used_amount = [];
                 $flat_tax_rates = [];
-
-                if ($emp_allowance_count > 1) {
-                    $row->allowance = $row->allowance->get();
-                    $row->allowance = $row->allowance->sum('allowance');
-                }else {
-                    $row->allowance = $row->allowance->first();
-                    $row->allowance = $row->allowance->allowance ?? 0;
-                }
-
-                if ($emp_benefit_count > 1) {
-                    $row->benefit_taxable = $row->benefit_taxable->get();
-                    $row->benefit_non_tax = $row->benefit_non_tax->get();
-
-                    $row->benefit_taxable = $row->benefit_taxable->sum('used_amount');
-                    $row->benefit_non_tax = $row->benefit_non_tax->sum('used_amount');
-                }else {
-                    $row->benefit_taxable = $row->benefit_taxable->first();
-                    $row->benefit_non_tax = $row->benefit_non_tax->first();
-                    $row->benefit_taxable = $row->benefit_taxable->used_amount ?? 0;
-                    $row->benefit_non_tax = $row->benefit_non_tax->used_amount ?? 0;
-                }
 
                 if ($emp_benefit_count > 1) {
                     $benefitFlatRates = $row->benefit_flat_rate->get();
@@ -607,15 +580,19 @@ class PayrollList
             $payroll_total = 0;
             $day_in_month = 0;
 
-            $full_salary = $payroll->salary ?? 0;
+            $full_benefit_taxable = $payroll->benefit_taxable ?? 0;
+            $full_salary = $payroll->salary  + $full_benefit_taxable;
+
             $day_in_month = days_in_month($payroll->month, $payroll->year);
             $payroll_start_date = convertDate($payroll->start_date);
             $payroll_end_date = convertDate($payroll->end_date);
 
             $payroll_days = dateDiff_days($payroll_start_date, $payroll_end_date) + 1;
-            $salary = ($full_salary/$day_in_month) * $payroll_days;
-            $benefit_taxable = ($payroll->benefit_taxable/$day_in_month) * $payroll_days;
+            $salary = ($payroll->salary/$day_in_month) * $payroll_days;
+            $benefit_taxable = ($full_benefit_taxable/$day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax/$day_in_month) * $payroll_days;
+
+            // \Log::info(['benefit_taxable' => $benefit_taxable, 'benefit_non_tax' => $benefit_non_tax]);
 
             if ($payroll->emp_benefit_count > 1) {
                 $benefit_flat_rate_data = [] ;
@@ -639,6 +616,8 @@ class PayrollList
             $count_days_resign = -1;
             $count_days_rejoin = -1;
             $salary_used = $salary;
+            // Last salary + last benefit taxable
+            $last_salary_b = $salary;
 
             $resign = self::count_days_resign($payroll->emp_id, $payroll_start_date, $payroll_end_date);
                 if($resign->error){
@@ -675,16 +654,20 @@ class PayrollList
                 $count_days = ($count_days_resign < 0 ? 0 : $count_days_resign) + ($count_days_rejoin < 0 ? 0 : $count_days_rejoin);
             }
 
-            // \Log::info(['count_day '. $count_days . 'emp_id '.$payroll->emp_id]);
-
             $allowance = $payroll->allowance;
             $allowance_used = ($allowance/$day_in_month) * $payroll_days;
             $allowance_per_day = $allowance_used / $payroll_days;
             $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
             $deduction = $payroll->deduction;
 
-            if ($payroll->apply_payroll_tax == 0)
+            if ($payroll->apply_payroll_tax == 1)
             {
+                if($payroll->payroll_currency != Money::$national_currency){
+                    if ($payroll->exchange_rate == 0) {
+                        $payroll->exchange_rate =1;
+                    }
+                    $full_salary = Money::convert($ss,$full_salary,$payroll->payroll_currency,Money::$national_currency,(1/$payroll->exchange_rate));
+                }
                 $tax_info = DB::table('tax_brackets')
                             ->where('lower_amount', '<=', $full_salary)
                             ->where(function($query) use ($full_salary) {
@@ -692,6 +675,21 @@ class PayrollList
                                     ->orWhere('upper_amount', '=', -1);
                             })
                             ->first(['rate', 'bias']);
+                if($tax_info == null){
+                    $issues_count++;
+                    $fail_emps[] = (object)[
+                        'id' => $payroll->emp_id,
+                        'code' => $payroll->emp_code,
+                        'name' => $payroll->emp_name,
+                        'issue'=>'Tax bracket not found'
+                        ];
+                }else{
+                    if($payroll->payroll_currency != Money::$national_currency){
+                        $tax_info->bias = Money::convert($ss,$tax_info->bias,Money::$national_currency,$payroll->payroll_currency,$payroll->exchange_rate);
+                        $last_allowance = Money::convert($ss,$tax_info->bias,Money::$national_currency,$payroll->payroll_currency,$payroll->exchange_rate);
+                    }
+                }
+
                 $tax_rate = $tax_info->rate ?? 0;
                 $bias = $tax_info->bias ?? 0;
                 $bias_used = ($bias/$day_in_month) * $payroll_days;
@@ -702,13 +700,13 @@ class PayrollList
                 {
                     $salary_used = $salary + $benefit_taxable;
                     $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
+                    $last_salary_b = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
-                    $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
+                    $payroll->tax_base = ($last_salary_b - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
-                    $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
+                    $payroll->total = $last_salary_b - ($payroll->tax_base + $deduction);
                 }
 
                 if ($benefit_non_tax > 0)
@@ -808,7 +806,7 @@ class PayrollList
             if(isset($payroll->benefit_flat_rate_data)) {
                 foreach($payroll->benefit_flat_rate_data as $data)
                 {
-                    $flat_rate_details .= number_format($data['benefit_flat_rate'], 2).'@'. $data['flat_tax_rate']. '|';
+                    $flat_rate_details .= formatNumber($data['benefit_flat_rate'], 2).'@'. $data['flat_tax_rate']. '|';
 
                 }
             }
@@ -816,11 +814,12 @@ class PayrollList
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
                 'count_day' => $count_days,
-                'p_salary' => $last_salary,
+                'p_salary' => $last_salary_b,
                 'benefit_taxable' => $benefit_taxable,
                 'benefit_non_tax' => $benefit_non_tax,
                 'benefit_flat_rate' => $flat_rate_details,
                 'p_allowance' => $last_allowance,
+                'tax_rate' => $tax_rate,
                 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
@@ -1118,6 +1117,7 @@ class PayrollList
                         pl.benefit_non_tax,
                         pl.benefit_flat_rate,
                         pl.count_day,
+                        pl.currency_code,
                         e.apply_payroll_tax,
                         plb.tax_option_id,
                         plb.flat_tax_rate,
