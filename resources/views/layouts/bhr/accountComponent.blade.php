@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div id="_account_list" class="px-4"></div>
+        <div id="_account_list" class=" mt-4 px-4"></div>
     </div>
 
     <div class="d-none" id="view_transaction">

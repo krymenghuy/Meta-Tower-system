@@ -819,8 +819,8 @@ class PayrollList
                 'benefit_non_tax' => $benefit_non_tax,
                 'benefit_flat_rate' => $flat_rate_details,
                 'p_allowance' => $last_allowance,
-                'tax_rate' => $tax_rate,
-                'p_bias' => $last_bias,
+                // 'tax_rate' => $tax_rate,
+                // 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
             // \Log::info(json_encode($flat_rate_details));

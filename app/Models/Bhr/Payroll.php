@@ -258,54 +258,79 @@ class Payroll
 
     function updateAuthorize($id = null, $ss = null)
     {
-            $ss = $ss ?? $this->userInfo;
-            if(self::isEmpty($id)){
-                 return DV::error('Cannot authorize because the payroll is empty');
-            }
-            if(self::isAuthorized($id)){
-                return DV::error('The payroll is already Authorized');
-            }
+        $ss = $ss ?? $this->userInfo;
+        if (self::isEmpty($id)) {
+            return DV::error('Cannot authorize because the payroll is empty');
+        }
+        if (self::isAuthorized($id)) {
+            return DV::error('The payroll is already Authorized');
+        }
 
-            $total = DB::table('payrolls as p')
-                ->where('id', $id)
-                ->selectRaw('total as amount')
-                ->first();
-            if (!$total || $total->amount <= 0) {
-                return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
-            }
+        $total = DB::table('payrolls as p')
+        ->where('id', $id)
+        ->selectRaw('total as amount')
+        ->first();
+        if (!$total || $total->amount <= 0) {
+            return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
+        }
 
-            $default_account = DB::table('accounts as a')
-                ->where('a.id', 1)
-                ->selectRaw('balance as amount, a.id as account_id')->first();
-            if(!$default_account) return DV::error('Master payroll account is not yet created!');
+        $default_account = DB::table('accounts as a')
+        ->where('a.id', 1)
+        ->selectRaw('balance as amount, a.id as account_id')->first();
+        if (!$default_account) return DV::error('Master payroll account is not yet created!');
 
-            if($total){
+        if ($total) {
 
-                $total->trx_type = "1";
-                $total->account_id =1;
-                $total->from_account_id = 1;
-            }
+            $total->trx_type = "1";
+            $total->account_id = 1;
+            $total->from_account_id = 1;
+        }
 
-            $total = Transaction::deposit((array)$total, $ss)->data;
-            $new_balance = $total['transaction']['amount'] + $default_account->amount;
-            $query = DB::table('accounts')
-            ->where('id', 1)->update(['balance'=> $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
+        $total = Transaction::deposit((array)$total, $ss)->data;
+        $new_balance = $total['transaction']['amount'] + $default_account->amount;
+        $query = DB::table('accounts')
+        ->where('id', 1)->update(['balance' => $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
 
-            $x = DB::table('payrolls')->where('id', $id)->update([
-                'authorized' => 1,
-                'update_user'=>$ss->full_name,
-                'update_date'=>getNowTime(),
-                'update_uid'=>$ss->user_id
-            ]);
-            return DV::depends($x, ['Payroll  authorize', 'updated']);
-
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'authorized' => 1,
+            'update_user' => $ss->full_name,
+            'update_date' => getNowTime(),
+            'update_uid' => $ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  authorize', 'updated']);
+    }
+    function reverseTransactions($id){
+        
+    }
+    function reset($id){
+        $authorized = self::isAuthorized($id); 
+        if(!$authorized)return DV::error("Payroll is not yet authorized");
+      
+        if(self::isDisbursed($id)){
+           $res = $this->reverseTransactions($id);
+           if($res->status_code != 200){
+                return $res;
+           }
+        }
+        DB::table('payrolls')->where('id', $id)->update(['authorized' => 0]);
+        return DV::depends(1);   
     }
     function updateDisburse($id = null, $ss = null)
     {
 
-        $check = DB::table('payrolls')->where('id', $id)->value('authorized');
-        if(!$check){
-            return DV::error('Not Authorized');
+        if (self::isEmpty($id)) {
+            return DV::error('Cannot disburse payroll because the ID is empty');
+        }
+        $payroll = DB::table('payrolls')->where('id', $id)->select('authorized', 'disbursed')->first();
+
+        if (!$payroll) {
+            return DV::error('Payroll not found');
+        }
+        if (!$payroll->authorized) {
+            return DV::error('Cannot disburse payroll because it is not authorized');
+        }
+        if ($payroll->disbursed) {
+            return DV::error('Cannot disburse payroll because it has already been disbursed');
         }
         $ss = $ss ? $ss : $this->userInfo;
         $x = DB::table('payrolls')->where('id', $id)->update([
