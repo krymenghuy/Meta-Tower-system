@@ -73,7 +73,7 @@ class Employee //extends Model
             'emp_type_id' => '1|number',
             // 'branch_id' => '1|number',
             'salary' => '0|number',
-            'currency_code' => '0|string|0-5',
+            'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
@@ -846,10 +846,6 @@ class Employee //extends Model
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
             'employees' => $emps,
-            'payroll_taxes' => [
-                ['id' => '0', 'name' => 'non tax '],
-                ['id' => '1', 'name' => 'tax'],
-            ],
         ];
     }
     function getFormOptionPromotion($id, $ss)

@@ -386,7 +386,7 @@ var PayrollComponent = new (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${mThis.base_url}/hr/payroll/reset`, p)
+                        .call(`${mThis.base_url}/hr/payroll/update-authorize`, p)
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Authorized successfully");

@@ -423,7 +423,7 @@ class Account
             'status'=>'0|string|10',
             'account_id' => '0|number',
             'from_account_id' => '1|number',
-            'to_account_id' => '1|number',
+            'to_account_id' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
