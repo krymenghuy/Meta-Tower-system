@@ -259,6 +259,7 @@ class Payroll
     function updateAuthorize($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
+        $master_account_id = 1;
         if (self::isEmpty($id)) {
             return DV::error('Cannot authorize because the payroll is empty');
         }
@@ -268,7 +269,7 @@ class Payroll
 
         $total = DB::table('payrolls as p')
         ->where('id', $id)
-        ->selectRaw('total as amount')
+        ->selectRaw('id,total as amount')
         ->first();
         if (!$total || $total->amount <= 0) {
             return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
@@ -283,7 +284,8 @@ class Payroll
 
             $total->trx_type = "1";
             $total->account_id = 1;
-            $total->from_account_id = 1;
+            $total->payroll_id = $total->id;
+            $total->to_account_id = $master_account_id;
         }
 
         $total = Transaction::deposit((array)$total, $ss)->data;
@@ -299,21 +301,61 @@ class Payroll
         ]);
         return DV::depends($x, ['Payroll  authorize', 'updated']);
     }
-    function reverseTransactions($id){
+    // function reverseTransactions($id){
         
-    }
-    function reset($id){
-        $authorized = self::isAuthorized($id); 
-        if(!$authorized)return DV::error("Payroll is not yet authorized");
-      
-        if(self::isDisbursed($id)){
-           $res = $this->reverseTransactions($id);
-           if($res->status_code != 200){
-                return $res;
-           }
+    // }
+    function reset($id = null, $ss = null){
+        $ss = $ss ?? $this->userInfo;
+
+        $notAuthorized = DB::table('payrolls')->where('id', $id)->value('authorized');
+        if ($notAuthorized != 1){
+            return DV::error('Payroll is not authorizad yet!');
         }
-        DB::table('payrolls')->where('id', $id)->update(['authorized' => 0]);
-        return DV::depends(1);   
+        $isDisbursed = DB::table('payrolls')->where('id', $id)->value('disbursed');
+        if ($isDisbursed === 1){
+            return DV::error('Payroll is already disbursed!');
+        }
+        $master_account_id = 1;
+        $total = DB::table('payrolls as p')
+        ->where('id', $id)
+        ->selectRaw('id,total as amount')
+            ->first();
+        if (!$total || $total->amount <= 0) {
+            return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
+        }
+
+        $default_account = DB::table('accounts as a')
+        ->where('a.id',
+            1
+        )
+        ->selectRaw('balance as amount, a.id as account_id')->first();
+        if (!$default_account) return DV::error('Master payroll account is not yet created!');
+
+        if ($total) {
+
+            $total->trx_type = 2;
+            $total->account_id = 1;
+            $total->payroll_id = $total->id;
+            $total->from_account_id = $master_account_id;
+            $total->amount = $default_account->amount;
+        }
+
+        $total = Account::withdraw((array)$total, $ss)->data;
+        $from_account_id = $total['transaction']['from_account_id'];
+        $amount = $total['transaction']['amount'];
+        if(!$total){
+            return DV::error('Failed to reverse transaction');
+        }
+        if($total){
+            $update_balance = Account::updateBalance($from_account_id, 'accounts', 'out', $amount, $total['trx_id'], $ss);
+        }
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'authorized' => 0,
+            'update_user' => $ss->full_name,
+            'update_date' => getNowTime(),
+            'update_uid' => $ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  authorize', 'reset']);
     }
     function updateDisburse($id = null, $ss = null)
     {
