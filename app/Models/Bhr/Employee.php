@@ -846,6 +846,10 @@ class Employee //extends Model
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
             'employees' => $emps,
+            'payroll_taxes' => [
+                ['id' => '0', 'name' => 'non tax '],
+                ['id' => '1', 'name' => 'tax'],
+            ],
         ];
     }
     function getFormOptionPromotion($id, $ss)

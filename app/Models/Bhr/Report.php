@@ -238,7 +238,6 @@ class Report
                     pl.benefit_flat_rate,
                     pl.deduction,
                     pl.tax_rate,
-                    pl.bias,
                     pl.tax_base,
                     pl.benefit_tax,
                     pl.total_salary,
@@ -360,7 +359,7 @@ class Report
     }
 
 
-    function getBranchInfo($branch_id = 0)
+    function getBranchInfo($branch_id = 0,$ss)
     {
         $branch_ids = getAccessBranches($ss, $branch_id);
         $rows = DB::table('um_branches AS b')->whereIn('b.branch_id', $branch_ids)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();

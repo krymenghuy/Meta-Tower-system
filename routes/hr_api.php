@@ -172,6 +172,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
     Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
+    Route::post('/reset', [PayrollController::class, 'reset']);
+    Route::post('/reverse', [PayrollController::class, 'reverseTransactions']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {

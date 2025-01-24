@@ -637,10 +637,10 @@ var EmployeeComponent = new (function () {
                                             <P class="px-2">:</p>
                                             <P class="text-nowrap" style="color:#cab54a;">${
                                                 data.apply_payroll_tax == "0"
-                                                    ? "Have Tax"
+                                                    ? "Non Tax"
                                                     : ""
                                             }${
-                                                data.apply_payroll_tax == "1" ? "Non Tax" : ""
+                                                data.apply_payroll_tax == "1" ? "Have Tax" : ""
                                             }</p>
                                         </div>
                                         <div class="d-flex">
@@ -3328,15 +3328,20 @@ const EmployeeDialog = (() => {
                         '<label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label> <span></span>',
                         '<input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />',
                         "</div>",
-                        '<div class="form-group col-6">',
+                        '<div class="form-group col-4">',
                         '<label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>',
                         '<span class="text-danger">*</span>',
                         '<select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>',
                         "</div>",
-                        '<div class="form-group col-6">',
+                        '<div class="form-group col-4">',
                         '<label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>',
                         '<span class="text-danger">*</span>',
                         '<input name="joining_date"  class="form-control data-input" data-field="joining_date" />',
+                        "</div>",
+                        '<div class="form-group col-4">',
+                        '<label for="apply_payroll_tax" class="form-label text-primary-custom" vslang="titles.Apply Payroll Tax"></label>',
+                        '<span class="text-danger">*</span>',
+                        '<select name="apply_payroll_tax" class="form-control data-input" data-field="apply_payroll_tax"></select>',
                         "</div>",
 
                         '<div class="form-group col-4">',
@@ -3544,6 +3549,12 @@ const EmployeeDialog = (() => {
                         data: "cities",
                         textField: "city_name",
                         valueField: "birth_city_id",
+                    },
+                    {
+                        name: "apply_payroll_tax",
+                        data: "payroll_taxes",
+                        textField: "name",
+                        valueField: "id",
                     },
                     {
                         name: "spouse_emp_id",

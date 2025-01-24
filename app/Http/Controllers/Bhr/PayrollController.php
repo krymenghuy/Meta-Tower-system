@@ -28,14 +28,23 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
-    public function getPayrollList(Request $req)
+    public function reset(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $war = new Payroll();
-        return JDV::result($war->getPayrollListAll($req->all(), $ss));
+        return JDV::result($war->reset($req->all(), $ss));
+    }
+    public function reverseTransactions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new Payroll();
+        return JDV::result($war->reverseTransactions($req->all(), $ss));
     }
 
     public function getPayrollListPaginate(Request $req)
