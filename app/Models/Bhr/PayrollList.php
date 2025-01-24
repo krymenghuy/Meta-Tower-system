@@ -231,7 +231,6 @@ class PayrollList
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
     function getDetails($id, $ss)
     {
         $ss = $ss ?? $this->userInfo;
