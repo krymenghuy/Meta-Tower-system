@@ -301,9 +301,9 @@ class Payroll
         ]);
         return DV::depends($x, ['Payroll  authorize', 'updated']);
     }
-    // function reverseTransactions($id){
+    function reverseTransactions($id){
 
-    // }
+    }
     function reset($id = null, $ss = null){
         $ss = $ss ?? $this->userInfo;
 
