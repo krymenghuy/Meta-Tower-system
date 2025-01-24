@@ -822,7 +822,6 @@ class PayrollList
                 // 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
-            // \Log::info(json_encode($flat_rate_details));
 
             $payroll_total = DB::table('payroll_list')
                 ->where('payroll_id', $payroll->payroll_id)
@@ -993,7 +992,9 @@ class PayrollList
             $payroll_account = Employee::getPayrollAccount($emp->emp_id);
             if (!$payroll_account){
                 return DV::error('Staff named ?? does not have payroll account yet!::'.$emp->name);
-            }else $emp->account = $payroll_account;
+            }else {
+                $emp->account_id = $payroll_account->account_id;
+            }
             // if (!isset($payroll_account->account_id)) {
             //     $emp_id_no_account[] = $emp_id;
             // }
@@ -1030,14 +1031,13 @@ class PayrollList
         $failed_count = 0;
         $failed_emps = 0;
         foreach ($payrollEntries as $trx) {
-            $to_account = $trx->account;
             $trx->trx_type = 3;
-            $trx->account_id = $to_account->id ?? $to_account->account_id;
+            $trx->account_id = $trx->account_id;
             $trx->from_account_id = $master_account_id;
-            $trx->to_account_id =  $trx->account_id; //Why need this one?
+            $trx->to_account_id =  $trx->account_id;
             $trx_inputs = (array)$trx;
             $transfer = Transaction::createTransaction($trx_inputs, $ss);
-            $trx_error = $třansfer->error ?? null;
+            $trx_error = $transfer->error ?? null;
             if ($trx_error) {
                 $results[] = DV::error('Disbursement failed for staff named ??::'.$trx->name.'. Tracked issue: ' .$trx_error);
                 continue;
@@ -1050,6 +1050,7 @@ class PayrollList
             );
 
             unset($trx_inputs['account_id']);
+            unset($trx_inputs['emp_id']);
             $res = Account::withdraw($trx_inputs, $ss);
             if ($res->status === 'Error') {
                 $results[] = DV::error('Withdrawal failed for staff named ??::'.$trx->name. '. Tracked issue: '. ($res->error_message ?? '' ) );
