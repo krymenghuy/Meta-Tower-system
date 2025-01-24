@@ -302,7 +302,7 @@ class Payroll
         return DV::depends($x, ['Payroll  authorize', 'updated']);
     }
     // function reverseTransactions($id){
-        
+
     // }
     function reset($id = null, $ss = null){
         $ss = $ss ?? $this->userInfo;
@@ -324,12 +324,12 @@ class Payroll
             return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
         }
 
-        $default_account = DB::table('accounts as a')
-        ->where('a.id',
-            1
-        )
-        ->selectRaw('balance as amount, a.id as account_id')->first();
-        if (!$default_account) return DV::error('Master payroll account is not yet created!');
+        $payroll_amount = DB::table('payrolls as p')
+        ->where('p.id', $id)
+        ->selectRaw('total')->first();
+
+        if (!$payroll_amount) return DV::error('Payroll not found!');
+        if($payroll_amount->total <= 0) return DV::error('Payroll total is zero!');
 
         if ($total) {
 
@@ -337,7 +337,7 @@ class Payroll
             $total->account_id = 1;
             $total->payroll_id = $total->id;
             $total->from_account_id = $master_account_id;
-            $total->amount = $default_account->amount;
+            $total->amount = $payroll_amount->total;
         }
 
         $total = Account::withdraw((array)$total, $ss)->data;
