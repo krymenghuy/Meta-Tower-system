@@ -886,7 +886,7 @@ const TransferDialog = (() => {
                                                 }
                                             }).catch(err => {
                                                 // console.log('Error during transfer:', err);
-                                                cv_interact.error($res.error_message || 'Error in processing transfer');
+                                                cv_interact.error(res.error_message || 'Error in processing transfer');
                                             });
                                         } else {
                                             cv_interact.info('Transfer cancelled!');

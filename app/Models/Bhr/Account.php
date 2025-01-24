@@ -329,8 +329,8 @@ class Account
         $transfer = Transaction::createTransaction((array)$trx, $ss);
 
         if ($transfer) {
-            $transfer_amount = $transfer['transaction']['amount'];
-            $updateBalance_acc = Account::updateBalance($to_account_id, 'accounts', 'in', $transfer_amount, $transfer['trx_id'], $ss);
+            $transfer_amount = $transfer->transaction['amount'];
+            $updateBalance_acc = Account::updateBalance($to_account_id, 'accounts', 'in', $transfer_amount, $transfer->trx_id, $ss);
         } else {
             return DV::error('Error saving transaction');
         }
