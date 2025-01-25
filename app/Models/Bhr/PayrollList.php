@@ -93,8 +93,9 @@ class PayrollList
                         b.name as branch_name,
                         pl.salary,
                         e.apply_payroll_tax,
-                        pl.deduction,
                         pl.tax_rate,
+                        pl.bias,
+                        pl.deduction,
                         pl.tax_base,
                         pl.benefit_tax,
                         pl.total_salary,
@@ -391,39 +392,64 @@ class PayrollList
 
         foreach ($employees as $emp) {
             $emp_salary = $emp->salary;
-            $emp_salary = Money::convert($ss,$emp->salary,$emp->salary_currency,$currency_code,$exchange_rate);
-
-            if ($emp->apply_payroll_tax == 0) {
-                $taxInfo = DB::table('tax_brackets')
-                    ->where(function ($query) use ($emp_salary) {
-                        $query->whereRaw('lower_amount <= ?', [$emp_salary])
-                              ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp_salary]);
-                    })
-                    ->select('rate', 'bias')
-                    ->first();
-
+            $tax_base = $emp_salary;
+            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
+            if($payroll_list_benefit){
+                if($payroll_list_benefit->tax_option_id == 2)
+                {
+                    $tax_base = $emp_salary + $payroll_list_benefit->used_amount;
+                    if($emp->salary_currency != $currency_code){
+                        $tax_base = Money::convert($ss,$tax_base,$payroll_list_benefit->currency_code,$currency_code,$exchange_rate);
+                    }
+                }
+            }
+            if($emp->salary_currency != $currency_code){
+                $emp_salary = Money::convert($ss,$emp_salary,$emp->salary_currency,$currency_code,$exchange_rate);
+            }
+            if ($emp->apply_payroll_tax == 1)
+            {
+                if($currency_code != Money::$national_currency){
+                    if($exchange_rate == 0){
+                        $exchange_rate = 1;
+                    }
+                    $tax_base = Money::convert($ss,$tax_base,Money::$national_currency,$currency_code,(1/$exchange_rate));
+                    $taxInfo = DB::table('tax_brackets')
+                        ->where(function ($query) use ($tax_base) {
+                            $query->whereRaw('lower_amount <= ?', [$tax_base])
+                                ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$tax_base]);
+                        })
+                        ->select('rate', 'bias')
+                        ->first();
+                    $taxInfo->bias = Money::convert($ss,$taxInfo->bias,Money::$national_currency,$currency_code,$exchange_rate);
+                }else{
+                    $taxInfo = DB::table('tax_brackets')
+                        ->where(function ($query) use ($tax_base) {
+                            $query->whereRaw('lower_amount <= ?', [$tax_base])
+                                ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$tax_base]);
+                        })
+                        ->select('rate', 'bias')
+                        ->first();
+                }
                 $emp->tax_rate = (object) [
-                    'rate' => $taxInfo->rate ?? 0,
-                    'bias' => $taxInfo->bias ?? 0
+                    'rate' => $taxInfo->rate ,
+                    'bias' => $taxInfo->bias
                 ];
             } else {
                 $emp->tax_rate = (object) ['rate' => 0, 'bias' => 0];
             }
-
             $inputs = [
                 'payroll_id' => $payroll_id,
                 'emp_id' => $emp->emp_id,
                 'salary' => $emp_salary,
                 'currency_code' => $currency_code,
+                'tax_rate' => $emp->tax_rate->rate,
+                'bias' => $emp->tax_rate->bias
             ];
 
             $test_id = DB::table('payroll_list')
                 ->where('emp_id', $emp->emp_id)
                 ->where('payroll_id', $payroll_id)
                 ->value('id');
-
-              $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
-            // \Log::info((array)$payroll_list_benefit);
 
             $test_id =saveData($ss, 'payroll_list', ['id' => $test_id], $inputs, [], 1);
 
@@ -615,8 +641,6 @@ class PayrollList
             $count_days_resign = -1;
             $count_days_rejoin = -1;
             $salary_used = $salary;
-            // Last salary + last benefit taxable
-            $last_salary_b = $salary;
 
             $resign = self::count_days_resign($payroll->emp_id, $payroll_start_date, $payroll_end_date);
                 if($resign->error){
@@ -699,13 +723,13 @@ class PayrollList
                 {
                     $salary_used = $salary + $benefit_taxable;
                     $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary_b = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
+                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
-                    $payroll->tax_base = ($last_salary_b - $last_allowance) * ($tax_rate / 100) - $last_bias;
+                    $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
-                    $payroll->total = $last_salary_b - ($payroll->tax_base + $deduction);
+                    $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
                 }
 
                 if ($benefit_non_tax > 0)
@@ -813,7 +837,7 @@ class PayrollList
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
                 'count_day' => $count_days,
-                'p_salary' => $last_salary_b,
+                'p_salary' => $last_salary,
                 'benefit_taxable' => $benefit_taxable,
                 'benefit_non_tax' => $benefit_non_tax,
                 'benefit_flat_rate' => $flat_rate_details,
@@ -1044,10 +1068,7 @@ class PayrollList
             }
             $tr= $transfer->transaction;
             $transfer_amount = $tr['amount'] ?? 0;
-            $updateBalance_acc = Account::updateBalance(
-                $tr['account_id'], 'accounts', 'in',
-                $transfer_amount, $transfer->trx_id, $ss
-            );
+            $updateBalance_acc = Account::updateBalance($tr['account_id'], 'accounts', 'in',$transfer_amount, $transfer->trx_id, $ss);
 
             unset($trx_inputs['account_id']);
             unset($trx_inputs['emp_id']);
