@@ -142,8 +142,8 @@ class PayrollList
             unset($row->emp_photo);
             //Tax allowance currency must be the same as National Currency
             $row->allowance = DB::table('tax_allowances')
-                ->where('emp_id', $row->emp_id)
-                ->selectRaw('id,allowance');
+            ->where('emp_id', $row->emp_id)
+            ->selectRaw('id,allowance,currency_code as allowance_currency');
 
             $row->benefit_taxable = DB::table('payroll_list_benefits')
                 ->where('emp_id', $row->emp_id)
@@ -178,10 +178,23 @@ class PayrollList
 
             if ($emp_allowance_count > 1) {
                 $row->allowance = $row->allowance->get();
+                foreach ($row->allowance as $allowance) {
+                    if ($allowance->allowance_currency != $row->currency_code) {
+                        $allowance->allowance = Money::convert($ss,$allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1/$row->exchange_rate));
+                    }
+                }
                 $row->allowance = $row->allowance->sum('allowance');
-            }else {
-                $row->allowance = $row->allowance->first();
-                $row->allowance = $row->allowance->allowance ?? 0;
+            } else {
+                $allowance = $row->allowance->first();
+                if ($allowance) {
+                    if ($allowance->allowance_currency != $row->currency_code) {
+                        $row->allowance = Money::convert($ss,$allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1/$row->exchange_rate));
+                    } else {
+                        $row->allowance = $allowance->allowance;
+                    }
+                } else {
+                    $row->allowance = 0;
+                }
             }
 
             if ($emp_benefit_count > 1) {
@@ -361,6 +374,9 @@ class PayrollList
         $payroll_info = DB::table('payrolls')->where('id', $payroll_id)->selectRaw('currency_code, exchange_rate')->first();
         $currency_code = $payroll_info->currency_code;
         $exchange_rate = $payroll_info->exchange_rate;
+        if($exchange_rate == 0){
+            $exchange_rate = 1;
+        }
 
          $employees = DB::table('employees as e')
             ->where(function ($query) use ($start_date, $end_date) {
@@ -394,17 +410,21 @@ class PayrollList
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
             $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id,$ss);
+
             if($payroll_list_benefit){
-                if($payroll_list_benefit->tax_option_id == 2)
+                $tax_option_id = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->value('tax_option_id');
+
+                if($tax_option_id == 1)
                 {
                     $tax_base = $emp_salary + $payroll_list_benefit->used_amount;
-                    if($emp->salary_currency != $currency_code){
-                        $tax_base = Money::convert($ss,$tax_base,$payroll_list_benefit->currency_code,$currency_code,$exchange_rate);
+                    if($emp->salary_currency != $currency_code || $payroll_list_benefit->currency_code != $currency_code){
+
+                        $tax_base = Money::convert($ss,$tax_base,$payroll_list_benefit->currency_code,$currency_code,(1/$exchange_rate));
                     }
                 }
             }
             if($emp->salary_currency != $currency_code){
-                $emp_salary = Money::convert($ss,$emp_salary,$emp->salary_currency,$currency_code,$exchange_rate);
+                $emp_salary = Money::convert($ss,$emp_salary,$emp->salary_currency,$currency_code,(1/$exchange_rate));
             }
             if ($emp->apply_payroll_tax == 1)
             {
@@ -412,7 +432,7 @@ class PayrollList
                     if($exchange_rate == 0){
                         $exchange_rate = 1;
                     }
-                    $tax_base = Money::convert($ss,$tax_base,Money::$national_currency,$currency_code,(1/$exchange_rate));
+                    $tax_base = Money::convert($ss,$tax_base,Money::$national_currency,$currency_code,$exchange_rate);
                     $taxInfo = DB::table('tax_brackets')
                         ->where(function ($query) use ($tax_base) {
                             $query->whereRaw('lower_amount <= ?', [$tax_base])
@@ -420,7 +440,8 @@ class PayrollList
                         })
                         ->select('rate', 'bias')
                         ->first();
-                    $taxInfo->bias = Money::convert($ss,$taxInfo->bias,Money::$national_currency,$currency_code,$exchange_rate);
+                    $taxInfo->bias = Money::convert($ss,$taxInfo->bias,Money::$national_currency,$currency_code,(1/$exchange_rate));
+                    // \Log::info('bias : '.json_encode($taxInfo->bias));
                 }else{
                     $taxInfo = DB::table('tax_brackets')
                         ->where(function ($query) use ($tax_base) {
@@ -497,6 +518,8 @@ class PayrollList
                         e.name as emp_name,
                         el.name as emp_role,
                         pl.salary,
+                        pl.tax_rate,
+                        pl.bias,
                         p.currency_code as payroll_currency,
                         p.exchange_rate,
                         pl.deduction,
@@ -518,12 +541,12 @@ class PayrollList
             foreach ($payrolls as $row) {
 
                 $row->allowance = DB::table('tax_allowances')
-                ->where('emp_id', $row->emp_id)
-                ->sum('allowance');
+                    ->where('emp_id', $row->emp_id)
+                    ->selectRaw('id,allowance,currency_code as allowance_currency');
 
                 $row->apply_payroll_tax = DB::table('employees')
-                ->where('id', $row->emp_id)
-                ->value('apply_payroll_tax');
+                    ->where('id', $row->emp_id)
+                    ->value('apply_payroll_tax');
 
                 $row->benefit_taxable = DB::table('payroll_list_benefits')
                     ->where('emp_id', $row->emp_id)
@@ -547,9 +570,35 @@ class PayrollList
                     ->where('emp_id', $row->emp_id)
                     ->count('id');
 
+                $emp_allowance_count = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->count('id');
+
+                $row->emp_allowance_count = $emp_allowance_count;
                 $row->emp_benefit_count = $emp_benefit_count;
                 $used_amount = [];
                 $flat_tax_rates = [];
+
+                if ($emp_allowance_count > 1) {
+                    $row->allowance = $row->allowance->get();
+                    foreach ($row->allowance as $allowance) {
+                        if ($allowance->allowance_currency != $row->payroll_currency) {
+                            $allowance->allowance = Money::convert($ss,$allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1/$row->exchange_rate));
+                        }
+                    }
+                    $row->allowance = $row->allowance->sum('allowance');
+                } else {
+                    $allowance = $row->allowance->first();
+                    if ($allowance) {
+                        if ($allowance->allowance_currency != $row->payroll_currency) {
+                            $row->allowance = Money::convert($ss,$allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1/$row->exchange_rate));
+                        } else {
+                            $row->allowance = $allowance->allowance;
+                        }
+                    } else {
+                        $row->allowance = 0;
+                    }
+                }
 
                 if ($emp_benefit_count > 1) {
                     $benefitFlatRates = $row->benefit_flat_rate->get();
@@ -685,36 +734,9 @@ class PayrollList
 
             if ($payroll->apply_payroll_tax == 1)
             {
-                if($payroll->payroll_currency != Money::$national_currency){
-                    if ($payroll->exchange_rate == 0) {
-                        $payroll->exchange_rate =1;
-                    }
-                    $full_salary = Money::convert($ss,$full_salary,$payroll->payroll_currency,Money::$national_currency,(1/$payroll->exchange_rate));
-                }
-                $tax_info = DB::table('tax_brackets')
-                            ->where('lower_amount', '<=', $full_salary)
-                            ->where(function($query) use ($full_salary) {
-                                $query->where('upper_amount', '>=', $full_salary)
-                                    ->orWhere('upper_amount', '=', -1);
-                            })
-                            ->first(['rate', 'bias']);
-                if($tax_info == null){
-                    $issues_count++;
-                    $fail_emps[] = (object)[
-                        'id' => $payroll->emp_id,
-                        'code' => $payroll->emp_code,
-                        'name' => $payroll->emp_name,
-                        'issue'=>'Tax bracket not found'
-                        ];
-                }else{
-                    if($payroll->payroll_currency != Money::$national_currency){
-                        $tax_info->bias = Money::convert($ss,$tax_info->bias,Money::$national_currency,$payroll->payroll_currency,$payroll->exchange_rate);
-                        $last_allowance = Money::convert($ss,$tax_info->bias,Money::$national_currency,$payroll->payroll_currency,$payroll->exchange_rate);
-                    }
-                }
 
-                $tax_rate = $tax_info->rate ?? 0;
-                $bias = $tax_info->bias ?? 0;
+                $tax_rate = $payroll->tax_rate ?? 0;
+                $bias = $payroll->bias ?? 0;
                 $bias_used = ($bias/$day_in_month) * $payroll_days;
                 $bias_per_day = $bias_used / $payroll_days;
                 $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;

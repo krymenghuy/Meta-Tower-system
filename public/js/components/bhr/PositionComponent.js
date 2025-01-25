@@ -233,7 +233,7 @@ var PositionComponent =  (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems( mThis.elDepartment, d.departments, "id", "name", true, "All Department", null);
                 console.log(38484,mThis.elDepartment);
-                
+
             });
     };
 
