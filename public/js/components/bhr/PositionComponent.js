@@ -259,7 +259,8 @@ const PositionDialog = (()=>{
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
+                 return [
+                     `<div class="row">
                  <div class="form-group col-md-6">
                      <label for="department" class="form-label" vslang="titles.Department"></label>
                      <span class="text-danger" >*</span>
@@ -280,13 +281,17 @@ const PositionDialog = (()=>{
                         <span class="text-danger" >*</span>
                         <input  type="number" class="form-control data-input" data-field="salary">
                  </div>
-                 <div class="form-group col-4">
-                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                    <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                <div class="form-group col-4">
+                    <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
+                    <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                        <option value="${main_view.national_currency}">${main_view.national_currency}</option>
+                        <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
+                    </select>
                 </div>
 
 
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
 
             configSelect:[
@@ -302,12 +307,12 @@ const PositionDialog = (()=>{
                 textField:"level",
                 valueField:'id'
                },
-               {
-                name: "currency_code",
-                data: "currency_codes",
-                textField: "code",
-                valueField: "code",
-                }
+            //    {
+            //     name: "currency_code",
+            //     data: "currency_codes",
+            //     textField: "code",
+            //     valueField: "code",
+            //     }
             ],
             buttons:[
                {

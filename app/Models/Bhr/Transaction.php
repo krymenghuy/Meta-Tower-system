@@ -66,10 +66,27 @@ class Transaction
 
         $id = null;
         $inputs = $res->values;
+        $d = (object) $inputs;
         $inputs['status'] = $status;
 
         $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
         if ($id) {
+            $updateBalance_emp = Account::updateBalance(
+                $d->from_account_id,
+                'accounts',
+                'out',
+                $d->amount,
+                $id,
+                $ss
+            );
+            $updateBalance_master = Account::updateBalance(
+                $d->to_account_id,
+                'accounts',
+                'in',
+                $d->amount,
+                $id,
+                $ss
+            );
             return  (object)['error'=>null,'transaction' => $inputs,'trx_id'=>bin2hex($id)];
         }
         return (object)['error' => 'Error saving transaction'];

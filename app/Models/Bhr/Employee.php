@@ -478,7 +478,7 @@ class Employee //extends Model
                 'e.id',
                 'e.name',
                 'a.id as account_id',
-                'a.account_number'
+                'a.account_number',
             ])
             ->first();
     }

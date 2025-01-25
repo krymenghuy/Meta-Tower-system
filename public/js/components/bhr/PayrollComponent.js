@@ -104,7 +104,7 @@ var PayrollComponent = new (function () {
             className: "align-middle w-12",
             data: (data) => {
                 let x_rate = data.exchange_rate;
-                if (x_rate > 1) {
+                if (x_rate >= 1) {
                     x_rate = VSMoney.formatAmount(x_rate, null, null, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -292,6 +292,11 @@ var PayrollComponent = new (function () {
                     name: "change_authorize",
                 },
                 {
+                    html: '<span class="ps-2"> Reset Authorize </span>',
+                    icon: '<i class="fa fa-reply"></i>',
+                    name: "reset_authorize",
+                },
+                {
                     html: '<span class="ps-2"> Disburse </span>',
                     icon: '<i class="fa-solid fa-square-check"></i>',
                     name: "change_disbursed",
@@ -331,6 +336,9 @@ var PayrollComponent = new (function () {
                 switch (name) {
                     case "change_authorize":
                         mThis.changeAuthorize(id, menuLink);
+                        break;
+                    case "reset_authorize":
+                        mThis.resetAuthorize(id, menuLink);
                         break;
                     case "change_disbursed":
                         mThis.changeDisbursed(id, menuLink);
@@ -391,6 +399,43 @@ var PayrollComponent = new (function () {
                             if (res.status_code === 200) {
                                 cv_interact.success("Authorized successfully");
                                 mThis.PayrollListView.showPage();
+                            } else cv_interact.error(res.error_message);
+                        });
+                }
+            }
+        );
+    };
+    mThis.resetAuthorize = (id, menuLink) => {
+        const p = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PayrollListView.showPage();
+            },
+        };
+        cv_interact.confirm(
+            "Reset Authorize?",
+            {
+                title: "Reset Authorize",
+                context: "reset",
+                confirmButtonText: "Reset Authorize",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${mThis.base_url}/hr/payroll/reset`,
+                            p,
+                            false
+                        )
+                        
+                        .then((res) => {
+                            console.log(2929,res);
+                            console.log(404040,p);
+                            
+                            if (res.status_code === 200) {
+                                cv_interact.success("Reset authorized successfully");
+                                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
                             } else cv_interact.error(res.error_message);
                         });
                 }
