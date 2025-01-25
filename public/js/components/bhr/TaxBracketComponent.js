@@ -34,16 +34,11 @@ var TaxBracketComponent = (function () {
             className: "align-middle text-dark",
             data: (data, index, tr) => {
                 const lowerAmount = data.lower_amount;
-                const upperAmount = data.upper_amount > 12000000 ? 'ឡើងទៅ' : data.upper_amount;
+                const upperAmount = data.upper_amount == -1 ? 'ឡើងទៅ' : `ដល់ ${data.upper_amount} រៀល`;
 
-                if (data.upper_amount > 12000000) {
-                    return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ${upperAmount}</p>`;
-                } else {
-                    return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ដល់ ${upperAmount} រៀល</p>`;
-                }
+                return `<p class="p-0 m-0">ប្រាក់ខែចាប់ពី ${lowerAmount} ${upperAmount}</p>`;
             }
         },
-
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -233,7 +228,7 @@ var TaxBracketComponent = (function () {
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);
     };
-    
+
     return mThis;
 })();
 

@@ -242,6 +242,7 @@ class Employee //extends Model
         $payroll_currency = null;
         $benefit_currency = null;
         $flat_tax_rate = 0;
+        $result = [];
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
@@ -303,7 +304,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
 
@@ -338,7 +339,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                         }
@@ -362,7 +363,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                                 $result =  [
@@ -397,7 +398,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,$exchange_rate);
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                                 $result =  [
@@ -418,18 +419,18 @@ class Employee //extends Model
                 }
             }
         }
-        $result =  [
-            "emp_id" => $emp_benefit->emp_id ?? $emp_id,
-            "payroll_id" => $payroll_id,
-            "withdraw_rate" => $withdraw_rate,
-            "benefit_id" => $last_benefit_id,
-            "full_amount" => $full_amount,
-            "tax_option_id" => $tax_option_id,
-            "flat_tax_rate" => $flat_tax_rate,
-            "used_amount" => $used_amount,
-            "emp_benefit_id" => null,
-            "currency_code" => $payroll_currency
-        ];
+        // $result =  [
+        //     "emp_id" => $emp_benefit->emp_id ?? $emp_id,
+        //     "payroll_id" => $payroll_id,
+        //     "withdraw_rate" => $withdraw_rate,
+        //     "benefit_id" => $last_benefit_id,
+        //     "full_amount" => $full_amount,
+        //     "tax_option_id" => $tax_option_id,
+        //     "flat_tax_rate" => $flat_tax_rate,
+        //     "used_amount" => $used_amount,
+        //     "emp_benefit_id" => null,
+        //     "currency_code" => $payroll_currency
+        // ];
         return (object)$result;
     }
     static function savePayrollListBenefit($arr, $ss)
