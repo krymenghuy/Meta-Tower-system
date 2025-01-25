@@ -16,6 +16,7 @@ var PayrollListComponent = new (function () {
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_payrollList");
     mThis.payment_info = mThis.self.querySelector("#payment_info");
     mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
+    mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -247,6 +248,28 @@ var PayrollListComponent = new (function () {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
                             cv_interact.success('Salary disbursements were successful!');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                        } else cv_interact.error(res.error_message);
+                    });
+                }
+            });
+        };
+        mThis.btnReverse.onclick = function (e) {
+            e.preventDefault();
+
+            const op = {
+                payroll_id: mThis.elFilter.value
+            };
+
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>', {
+                title: 'Reverse Payroll List',
+                context: 'update',
+                confirmButtonText: "Reverse Payroll List?"
+            }, function (confirmation) {
+                if (confirmation) {
+                    vsapi.call([main_view.base_url, '/hr/payroll/reverse'].join(''), op, false, null).then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Salary reverse to master account successful!');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });

@@ -3114,7 +3114,7 @@ const AddTaxAllowance = (() => {
                             <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
                             <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
                                 <option value="${main_view.national_currency}">${main_view.national_currency}</option>
-                                <option value="USD">USD</option>
+                                <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
                             </select>
                         </div>
                         <div class="form-group col-12">
@@ -3192,13 +3192,6 @@ const AddTaxAllowance = (() => {
                 //         valueField: "code",
                 //     }
                 // ],
-                onShow: (me) => {
-                    const currencySelect =
-                        document.getElementById("currency_code");
-                    if (currencySelect) {
-                        currencySelect.value = main_view.national_currency;
-                    }
-                },
             });
 
         dialog.show(op);
