@@ -39,6 +39,11 @@
                         <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"> <span
                                 class="tool-tiptext fs-6">Disburse</span></i>
                     </button>
+                    <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
+                        style="width: 40px; height: 40px;" id="_btnReverseTransactions">
+                        <i class="fa-solid fa-refresh tool-tip fs-6" style="color: #fff;"> <span
+                                class="tool-tiptext fs-6">Reverse</span></i>
+                    </button>
                 </div>
 
 

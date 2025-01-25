@@ -290,30 +290,44 @@ class Account
             'amount' => $d->amount
         ]);
     }
+    static function getProps($id, $cols = 'id,account_number,currency_code,balance')
+    {
+        return DB::table('accounts')->where('id', $id)->selectRaw($cols)->first();
+    }
 
-    function transfer($arr, $ss) {
+    //transfer money out $arr = [$to_account, $from_account,$amount , $currency, $remarks]
+    function transfer($arr, $from_account_id = null, $ss=null) {
+        $ss = $ss ?? $this->userInfo;
+        $from_account_id = $from_account_id ?? $this->id;
         $d = (object) $arr;
-        $transfer_amount = 0;
+        $from_account =(object) $d->from_account ?? null;
+        $to_account = $d->to_account ?? null;
+        $from_account_number=$from_account->account_number ??null;
 
-        $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
-        $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
-        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
-        $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
-
-        if (!$from_account_id || !$to_account_id) {
-            return DV::error('Account not found');
+        if(!$from_account_id && !$from_account_number){
+            return DV::error('No origin account');
+        }elseif(!$from_account_id){
+            $from_account = DB::table('accounts')->where('account_type', $from_account->account_type)->where('account_number', $from_account->account_number)->selectRaw('id, account_number, balance, currency_code')->first();
+            $from_account_id = $from_account->id;
+        }
+        if(($from_account->balance ?? 0) == 0){
+            $from_account = DB::table('accounts')->where('id', $from_account_id)->selectRaw('id, account_number, balance, currency_code')->first();
+            
+        }
+        $emp = DB::table('accounts as a')->join('employees as emp', 'emp.id' , '=', 'a.emp_id')->where('account_type', $to_account->account_type)->where('account_number', $to_account->taccount_number)->selectRaw('emp.id as emp_id, emp.name, emp.code, a.id as account_id, a.currency')->first();
+        if(!$emp){
+            return DV::error('Desination account does not exist!');
+        }
+        $emp_id = $emp->emp_id;
+        $emp_name = $emp->name;
+        $exchange_rate = $d->exchange_rate;
+        $org_amount = $d->amount ?? 0;
+        $converted_amount = $d->amount ?? 0;
+        if ($from_account->currency_code != $from_account->to_account_currency_code) {
+            $converted_amount = Money::convert($ss, $org_amount, $from_account->currency_code, $to_account->currency_code, $exchange_rate);
         }
 
-        $amount_in = $d->amount;
-        $amount_out = $d->amount;
-
-        if ($d->currency_code === 'KHR' && $d->to_account_currency_code === 'USD') {
-            $amount_out = $amount_in * $d->exchange_rate;
-        } elseif ($d->currency_code === 'USD' && $d->to_account_currency_code === 'KHR') {
-            $amount_out = $amount_in / $d->exchange_rate;
-        }
-
-        if($d->balance < $amount_out) {
+        if($from_account->balance < $converted_amount) {
             return DV::error('Insufficient balance');
         }
 

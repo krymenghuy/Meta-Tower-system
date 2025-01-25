@@ -10,6 +10,7 @@ const main_view = new function(){
     this.currency = {symbol: '<span class="fs-6 fw-bold hl-1">៛</span>', name :'KHR'};
     this.base_currency = 'KHR';
     this.national_currency = 'KHR';
+    this.payroll_currency = 'USD';
     this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
     //this.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
     this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');

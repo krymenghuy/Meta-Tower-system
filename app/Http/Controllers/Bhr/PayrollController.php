@@ -34,8 +34,9 @@ class PayrollController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $war = new Payroll();
-        return JDV::result($war->reset($req->all(), $ss));
+        $var = new Payroll();
+        $id = $req->id?? $req->payroll_id;
+        return JDV::result($var->reset($id, $ss));
     }
     public function reverseTransactions(Request $req)
     {
@@ -43,8 +44,9 @@ class PayrollController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $war = new Payroll();
-        return JDV::result($war->reverseTransactions($req->all(), $ss));
+        $var = new Payroll();
+        $id = $req->id?? $req->payroll_id;
+        return JDV::result($var->reverseTransactions($id, $ss));
     }
 
     public function getPayrollListPaginate(Request $req)
