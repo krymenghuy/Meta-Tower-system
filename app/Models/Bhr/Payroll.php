@@ -392,23 +392,57 @@ class Payroll
     function reset($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-
-        $payroll = self::getProps($id, 'id, name');
-        if (!$payroll) return DV::error('The provided payroll ID does not exist');
-        $notAuthorized = !self::isAuthorized($id);
+        $notAuthorized = DB::table('payrolls')->where('id', $id)->value('authorized');
         if ($notAuthorized != 1) {
             return DV::error('Payroll is not authorizad yet!');
         }
-
-        if (self::isDisbursed($id)) {
-            $res = $this->reverseTransactions($id);
-            if ($res->status_code != 200) {
-                return $res;
-            }
+        $isDisbursed = DB::table('payrolls')->where('id', $id)->value('disbursed');
+        if ($isDisbursed === 1) {
+            return DV::error('Payroll is already disbursed!');
         }
-        DB::table('payrolls')->where('id', $id)->update(['authorized', 0]);
-        return DV::success();
+        $master_account_id = 1;
+        $total = DB::table('payrolls as p')
+        ->where('id', $id)
+            ->selectRaw('id,total as amount')
+            ->first();
+        if (!$total || $total->amount <= 0) {
+            return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
+        }
+
+        $payroll_amount = DB::table('payrolls as p')
+        ->where('p.id', $id)
+            ->selectRaw('total')->first();
+
+        if (!$payroll_amount) return DV::error('Payroll not found!');
+        if ($payroll_amount->total <= 0) return DV::error('Payroll total is zero!');
+
+        if ($total) {
+
+            $total->trx_type = 2;
+            $total->account_id = 1;
+            $total->payroll_id = $total->id;
+            $total->from_account_id = $master_account_id;
+            $total->amount = $payroll_amount->total;
+        }
+
+        $total = Account::withdraw((array)$total, $ss)->data;
+        $from_account_id = $total['transaction']['from_account_id'];
+        $amount = $total['transaction']['amount'];
+        if (!$total) {
+            return DV::error('Failed to reverse transaction');
+        }
+        if ($total) {
+            $update_balance = Account::updateBalance($from_account_id, 'accounts', 'out', $amount, $total['trx_id'], $ss);
+        }
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'authorized' => 0,
+            'update_user' => $ss->full_name,
+            'update_date' => getNowTime(),
+            'update_uid' => $ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  authorize', 'reset']);
     }
+
     function updateDisburse($id = null, $ss = null)
     {
 

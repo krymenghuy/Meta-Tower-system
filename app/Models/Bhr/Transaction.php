@@ -44,7 +44,7 @@ class Transaction
         return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
     }
 
-    static function createTransaction($arr,$ss = null,$status='in'){
+    static function create($arr, $update_balance = false,$ss = null,$status='in'){
         $ss = $ss ?? Transaction::$userInfo;
         $v_rule = [
             // 'id' => '0|identity=1',

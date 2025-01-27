@@ -38,6 +38,16 @@ class PayrollController extends Controller
         $id = $req->id?? $req->payroll_id;
         return JDV::result($var->reset($id, $ss));
     }
+    public function resetStatus(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $var = new Payroll();
+        $id = $req->id?? $req->payroll_id;
+        return JDV::result($var->resetStatus($id, $ss));
+    }
     public function reverseTransactions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
