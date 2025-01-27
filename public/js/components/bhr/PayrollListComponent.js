@@ -269,7 +269,7 @@ var PayrollListComponent = new (function () {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/hr/payroll/reverse'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Salary reverse to master account successful!');
+                            cv_interact.success('Salary reverse to master account successfully!');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });

@@ -296,7 +296,7 @@ class Account
     }
 
     //transfer money out $arr = [$to_account, $from_account,$amount , $currency, $remarks]
-    function transfer($arr, $from_account_id = null, $ss=null) {
+    function transfer($arr,$ss=null) {
         $ss = $ss ?? $this->userInfo;
         $from_account_id = $from_account_id ?? $this->id;
         $d = (object) $arr;
@@ -304,22 +304,27 @@ class Account
         $to_account = $d->to_account ?? null;
         $from_account_number=$from_account->account_number ??null;
 
-        if(!$from_account_id && !$from_account_number){
-            return DV::error('No origin account');
-        }elseif(!$from_account_id){
-            $from_account = DB::table('accounts')->where('account_type', $from_account->account_type)->where('account_number', $from_account->account_number)->selectRaw('id, account_number, balance, currency_code')->first();
-            $from_account_id = $from_account->id;
-        }
-        if(($from_account->balance ?? 0) == 0){
-            $from_account = DB::table('accounts')->where('id', $from_account_id)->selectRaw('id, account_number, balance, currency_code')->first();
+        // if(!$from_account_id && !$from_account_number){
+        //     return DV::error('No origin account');
+        // }elseif(!$from_account_id){
+        //     $from_account = DB::table('accounts')->where('account_type', $from_account->account_type)->where('account_number', $from_account->account_number)->selectRaw('id, account_number, balance, currency_code')->first();
+        //     $from_account_id = $from_account->id;
+        // }
+        // if(($from_account->balance ?? 0) == 0){
+        //     $from_account = DB::table('accounts')->where('id', $from_account_id)->selectRaw('id, account_number, balance, currency_code')->first();
             
-        }
-        $emp = DB::table('accounts as a')->join('employees as emp', 'emp.id' , '=', 'a.emp_id')->where('account_type', $to_account->account_type)->where('account_number', $to_account->taccount_number)->selectRaw('emp.id as emp_id, emp.name, emp.code, a.id as account_id, a.currency')->first();
-        if(!$emp){
-            return DV::error('Desination account does not exist!');
-        }
-        $emp_id = $emp->emp_id;
-        $emp_name = $emp->name;
+        // }
+        // $emp = DB::table('accounts as a')->join('employees as emp', 'emp.id' , '=', 'a.emp_id')->where('account_type', $to_account->account_type)->where('account_number', $to_account->taccount_number)->selectRaw('emp.id as emp_id, emp.name, emp.code, a.id as account_id, a.currency')->first();
+        // if(!$emp){
+        //     return DV::error('Desination account does not exist!');
+        // }
+        $from_account_info = DB::table('accounts')->where('account_number', $from_account->account_number)->selectRaw('id, balance, currency_code, emp_id')->first();
+        $to_account_info = DB::table('accounts')->where('account_number', $to_account->account_number)->selectRaw('id, balance, currency_code,emp_id')->first();
+        $from_account->account_id = $from_account_info->id;
+        $from_account->balance = $from_account_info->balance;
+        $to_account->account_id = $to_account_info->id;
+        // $emp_id = $emp->emp_id;
+        // $emp_name = $emp->name;
         $exchange_rate = $d->exchange_rate;
         $org_amount = $d->amount ?? 0;
         $converted_amount = $d->amount ?? 0;
@@ -330,21 +335,25 @@ class Account
         if($from_account->balance < $converted_amount) {
             return DV::error('Insufficient balance');
         }
+        $this->createTransaction([],true);
+        $this->createTransaction([]);
+
+
 
         $trx = $d;
         $trx->trx_type = 3;
-        $trx->emp_id = $emp_id;
-        $trx->from_account_id = $from_account_id;
-        $trx->to_account_id = $to_account_id;
-        $trx->account_id = $to_account_id;
-        $trx->remarks = " From $d->account_type $d->account_number";
-        $trx->amount = $amount_in;
+        $trx->emp_id = $from_account->emp_id;
+        $trx->from_account_id = $from_account->account_id;
+        $trx->to_account_id = $to_account->account_id;
+        // $trx->account_id = $emp->account_id;
+        // $trx->remarks = " From {$d->account_type} to {$d->account_number}";
+        $trx->amount = $converted_amount;
 
-        $transfer = Transaction::createTransaction((array)$trx, $ss);
+        $transfer = Transaction::save((array)$trx, $ss);
 
         if ($transfer) {
             $transfer_amount = $transfer->transaction['amount'];
-            $updateBalance_acc = Account::updateBalance($to_account_id, 'accounts', 'in', $transfer_amount, $transfer->trx_id, $ss);
+            $updateBalance_acc = Account::updateBalance($from_account_id->account_id, 'accounts', 'in', $transfer_amount, $transfer->trx_id, $ss);
         } else {
             return DV::error('Error saving transaction');
         }
@@ -357,7 +366,7 @@ class Account
         $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
         $withdrawData['emp_id'] = $emp_id;
         $withdrawData['account_id'] = $from_account_id;
-        $withdrawData['amount'] = $amount_out;
+        $withdrawData['amount'] = $converted_amount;
         $withdrawData['remarks'] = " To $d->to_account_type $d->to_account_number";
 
         $res = Account::withdraw($withdrawData, $ss);
@@ -378,15 +387,76 @@ class Account
                 'from_account_number' => $d->account_number,
                 'to_account_type' => $d->to_account_type,
                 'to_account_number' => $d->to_account_number,
-                'emp_name' => $emp_name,
-                'amount_in' => $amount_in,
-                'amount_out' => $amount_out,
+                'emp_name' => $from_account->emp_name,
+                'amount_in' => $transfer_amount,
+                'amount_out' => $converted_amount,
             ]);
         }
 
         return DV::error('Error transferring account');
     }
 
+    function createTransaction($arr, $update_balance = true, $id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $v_rule = [
+            // 'id' => '0|identity=1',
+            'amount' => '1|positive',
+            'currency_code'=>'1|string|10',
+            'exchange_rate'=>'0|number|default=1',
+           'remarks' => '0|string|250',
+            'trx_type' => '1|choice|1,2,3',
+            'status' => '0|choice|in,out',
+            'to_account_id' => '0|number|exists=accounts.id',
+        ];
+
+        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-']], $ss->lang);
+        if ($res->error) {
+            return (object)['error' => $res->error];
+        }
+        $des_currency = null;
+        $id = null;
+        $inputs = $res->values;
+        $d = (object) $inputs;
+        $exchange_rate = $d->exchange_rate ?? 1;
+        unset($inputs['exchange_rate']);
+        $inputs['account_id'] = $id;
+        $this_account = self::getProps($id, 'id,balance, currency_code');
+        if (!$this_account) {
+            return DV::error('Source account information does not exist');
+        }
+        $des_currency = $this_account->currency_code;
+        if($d->trx_type ==1){
+            $inputs['to_account_id'] = $id;
+        }else if($d->trx_type ==2){
+            $inputs['from_account_id'] = $id;
+        }else{
+            $inputs['from_account_id'] = $id;
+           // $inputs['to_account_id'] = $d->to_account_id;
+            $to_account = self::getProps($d->to_account_id, 'id,balance, currency_code');
+            if(!$to_account){
+                return DV::error('In caase of transfer, you must spectify destination account');           
+             }
+             if($to_account->id ===$id){
+                return DV::error('The source and desintation accounts cannot be the same!');
+             }
+            $des_currency = $to_account->currency_code;  
+        }
+        $converted_amount = $d->amount;
+        if($d->currency_code != $des_currency){
+            $converted_amount = Money::convert($ss,$d->amount,$d->currency_code, $des_currency,$exchange_rate);
+        }
+        $inputs['amount'] = $converted_amount;
+        $trx_id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
+        if ($trx_id) {
+            if($update_balance){
+                $x = Account::updateBalance($converted_amount ,$d->status,$trx_id,$id,$ss);
+            }
+            return DV::depends(1,['transaction'=>$inputs,'trx_id'=>bin2hex($trx_id)]);
+        }
+        return DV::error('Error saving transaction');
+    }
 
     function getAccountInfo($arr, $ss) {
         $d = (object) $arr;
@@ -404,27 +474,30 @@ class Account
         ]);
 
     }
-    static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
+    // Assuming that the $amount is in the same currency as the account's currency
+    static function updateBalance( $amount,$status, $trx_id, $account_id ,$ss)
     {
-        if(!$account_id || !$trx_id){
-            return DV::error('Invalid account id');
+        if(!$account_id){
+             return 'Invalid account id';
         }
+        $amount = $amount ?? 0;
         if(!$amount){
-            $amount = 0;
+            return null;
         }
-        $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
-        if($status==='in'){
-            $newBalance = (float)$lastBalance + (float)$amount;
-        }else if($status==='out'){
-            $newBalance = (float)$lastBalance - (float)$amount;
-        }else{
-            $newBalance = (float)$amount;
+        if($trx_id){
+            $trx = DB::table('transactions as t')->where('id', $trx_id)->where('status',$status)->selectRaw('amount')->first();
+            if (!$trx)
+                return 'Transaction is not found!';
+            if(abs($trx->amount) != abs($amount)){
+                return 'The amount provided is not correct!'; 
+             }
         }
-        $lastBalanceDate = date('Y-m-d');
-        $query = DB::table($table_name)
-            ->where('id', $account_id)
-            ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
-        return $query;
+     
+        $amount = abs($amount);
+        if($status ==='out') $amount = -$amount;
+        $nowTime = getNowTime();
+        $x = DB::statement(DB::raw("Update accounts set balance = balance + ($amount), balance_date = '$nowTime' WHERE id = $account_id"));
+        return null;
     }
 
     static function withdraw($arr,$ss){
