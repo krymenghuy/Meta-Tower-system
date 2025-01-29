@@ -887,7 +887,6 @@ class PayrollList
         ]);
     }
 
-    //disbursePayrollList()
     function disburseOne($id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
