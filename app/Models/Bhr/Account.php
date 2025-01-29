@@ -312,7 +312,7 @@ class Account
         // }
         // if(($from_account->balance ?? 0) == 0){
         //     $from_account = DB::table('accounts')->where('id', $from_account_id)->selectRaw('id, account_number, balance, currency_code')->first();
-            
+
         // }
         // $emp = DB::table('accounts as a')->join('employees as emp', 'emp.id' , '=', 'a.emp_id')->where('account_type', $to_account->account_type)->where('account_number', $to_account->taccount_number)->selectRaw('emp.id as emp_id, emp.name, emp.code, a.id as account_id, a.currency')->first();
         // if(!$emp){
@@ -436,12 +436,12 @@ class Account
            // $inputs['to_account_id'] = $d->to_account_id;
             $to_account = self::getProps($d->to_account_id, 'id,balance, currency_code');
             if(!$to_account){
-                return DV::error('In caase of transfer, you must spectify destination account');           
+                return DV::error('In caase of transfer, you must spectify destination account');
              }
              if($to_account->id ===$id){
                 return DV::error('The source and desintation accounts cannot be the same!');
              }
-            $des_currency = $to_account->currency_code;  
+            $des_currency = $to_account->currency_code;
         }
         $converted_amount = $d->amount;
         if($d->currency_code != $des_currency){
@@ -489,10 +489,10 @@ class Account
             if (!$trx)
                 return 'Transaction is not found!';
             if(abs($trx->amount) != abs($amount)){
-                return 'The amount provided is not correct!'; 
+                return 'The amount provided is not correct!';
              }
         }
-     
+
         $amount = abs($amount);
         if($status ==='out') $amount = -$amount;
         $nowTime = getNowTime();
