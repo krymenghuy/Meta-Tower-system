@@ -5,6 +5,7 @@ var AccountMenagmentComponent =  (function () {
     mThis.self = mThis.jm[0];
     mThis.title_prop = "Payroll Account ";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
+    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
     mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
@@ -134,6 +135,28 @@ var AccountMenagmentComponent =  (function () {
                 },
             };
             AccountDialog.show(op);
+        };
+        mThis.btnAddAccountMissing.onclick = function (e) {
+            e.preventDefault();
+
+            const op = {
+                account_id: mThis.divFilter.value,
+            };
+
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Create account missing? </span><small>This process will create accounts missing</small>', {
+                title: 'Create account missing',
+                context: 'save account missing',
+                confirmButtonText: "Create account missing?"
+            }, function (confirmation) {
+                if (confirmation) {
+                    vsapi.call([main_view.base_url, '/hr/account/save-missing-account-payroll'].join(''), op, false, null).then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Create missing account successfully!');
+                            mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                        } else cv_interact.error(res.error_message);
+                    });
+                }
+            });
         };
 
         mThis.btnBack.onclick = function (e) {
@@ -488,7 +511,7 @@ var AccountMenagmentComponent =  (function () {
         // p.search_value = mThis.elSearch.value;
         // p.sort_by = mThis.elSortBy.value;
 
-
+        p.account_id = mThis.divFilter.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {

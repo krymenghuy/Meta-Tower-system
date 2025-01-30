@@ -688,7 +688,9 @@ var PayrollListComponent = new (function () {
             confirmButtonText:"Disburse"
         }, e =>{
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`,p,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`, p, false, false, false).then(res => {
+        console.log(3994, p);
+                    
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());

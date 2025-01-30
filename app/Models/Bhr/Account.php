@@ -14,9 +14,9 @@ class Account
     protected $id = null;
     protected $userInfo = null;
 
-     protected $fk_tables = [
-        'transactions'=>'account_id',
-     ];
+    protected $fk_tables = [
+        'transactions' => 'account_id',
+    ];
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -24,7 +24,7 @@ class Account
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = []  , $id = null, $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -35,34 +35,34 @@ class Account
             'emp_id' => '1|number',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
-            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+            'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
             'account_type' => '1|choice|Payroll,Wallet',
         ];
-        $res = validateObject($arr, $v_rule, true, ['balance'=>['.'],'account_number'=>['-']], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['balance' => ['.'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
-        $emp = Employee::getProps($emp_id,'id,code,name');
+        $emp = Employee::getProps($emp_id, 'id,code,name');
         if (!$emp) return DV::error('Employee ID does not exist');
-        $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
+        $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
         $account_number = $inputs['account_number'];
         if (!$account_number) {
             if ($inputs['account_type'] === 'Payroll') {
-                $account_number = $emp->code.'-P';
+                $account_number = $emp->code . '-P';
             } elseif ($inputs['account_type'] === 'Wallet') {
-                $account_number = $emp->code.'-W';
+                $account_number = $emp->code . '-W';
             } else {
                 $account_number = $emp->code;
             }
         }
         $inputs['account_number'] = $account_number;
 
-        if(!$account_number) $account_number = $emp->code;
+        if (!$account_number) $account_number = $emp->code;
         $inputs['account_number'] = $account_number;
 
 
         if (empty($id)) {
-            if(self::accountNumberExists($account_number,$id)) return DV::error('Account number ?? already exists::'.$account_number);
+            if (self::accountNumberExists($account_number, $id)) return DV::error('Account number ?? already exists::' . $account_number);
 
             $existingAccount = DB::table('accounts')
                 ->where('branch_id', $branch_id)
@@ -75,13 +75,14 @@ class Account
             }
         }
 
-        $id = saveData($ss,'accounts', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
 
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
 
-    static function accountNumberExists($account_number, $account_type, $id = null) {
-        $str_id = $id > 0 ? 'id <> '.$id : '1=1';
+    static function accountNumberExists($account_number, $account_type, $id = null)
+    {
+        $str_id = $id > 0 ? 'id <> ' . $id : '1=1';
 
         $exists = DB::table('accounts')
             ->where('account_number', $account_number)
@@ -90,28 +91,118 @@ class Account
 
         return $exists;
     }
+    function createAccountPayrollMissing($ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
 
+        $employeesWithoutAccount = DB::table('employees')
+        ->leftJoin('accounts', 'employees.id', '=', 'accounts.emp_id')
+        ->whereNull('accounts.id')
+        ->select('employees.id', 'employees.code', 'employees.name')
+        ->get();
 
-   function PayrollList($arr, $ss)
-   {
-       $d = (object) $arr;
-       $branch_id = $ss->branch_id;
+        if ($employeesWithoutAccount->isEmpty()) {
+            return DV::error('No employees without accounts');
+        }
 
-       $current_page = $d->current_page ?? 1;
-       $per_page = $d->per_page ?? 10;
-       if (!is_numeric($current_page))  $current_page = 1;
-       $skip_rows = ($current_page - 1) * $per_page;
-       $search_value = $d->search_value ?? null;
-       $sort_by = $d->sort_by ?? 'a.id';
-       $sort_order = $d->sort_order ?? 'asc';
-       $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+        foreach ($employeesWithoutAccount as $emp) {
+            $inputs = [
+                'emp_id' => $emp->id,
+                'account_number' => $emp->code . '-P',
+                'balance' => 0.0,
+                'currency_code' => Money::$national_currency,
+                'account_type' => 'Payroll',
+            ];
 
-       $str_search = '1=1';
+            if (self::accountNumberExists($inputs['account_number'], $inputs['account_type'])) {
+                return DV::error('Account number already exists for employee ' . $emp->code);
+            }
+            $accountData = [
+                'emp_id' => $inputs['emp_id'],
+                'account_number' => $inputs['account_number'],
+                'balance' => $inputs['balance'],
+                'currency_code' => $inputs['currency_code'],
+                'account_type' => $inputs['account_type'],
+                'branch_id' => $branch_id
+            ];
 
-       $query = DB::table('accounts as a')
-           ->join('employees as e', 'e.id', '=', 'a.emp_id')
-           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-           ->selectRaw('
+            $saved = saveData($ss, 'accounts', [], $accountData, [], 1);
+            if (!$saved) {
+                return DV::error('Failed to create account for employee  ' . $emp->code);
+            }
+        }
+
+        return DV::depends(1);
+    }
+    function createAccountWalletMissing($ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+
+        $employeesWithoutWalletAccount = DB::table('employees')
+        ->leftJoin('accounts', function ($join) {
+            $join->on('employees.id', '=', 'accounts.emp_id')
+            ->where('accounts.account_type', 'Wallet');
+        })
+            ->whereNull('accounts.id')
+            ->select('employees.id', 'employees.code', 'employees.name')
+            ->get();
+
+        if ($employeesWithoutWalletAccount->isEmpty()) {
+            return DV::error('No employees without wallet accounts');
+        }
+
+        foreach ($employeesWithoutWalletAccount as $emp) {
+            $inputs = [
+                'emp_id' => $emp->id,
+                'account_number' => $emp->code . '-W',
+                'balance' => 0.0,
+                'currency_code' => Money::$national_currency,
+                'account_type' => 'Wallet',
+            ];
+
+            if (self::accountNumberExists($inputs['account_number'], $inputs['account_type'])) {
+                return DV::error('Wallet account number already exists for employee ' . $emp->code);
+            }
+
+            $accountData = [
+                'emp_id' => $inputs['emp_id'],
+                'account_number' => $inputs['account_number'],
+                'balance' => $inputs['balance'],
+                'currency_code' => $inputs['currency_code'],
+                'account_type' => $inputs['account_type'],
+                'branch_id' => $branch_id
+            ];
+
+            $saved = saveData($ss, 'accounts', [], $accountData, [], 1);
+            if (!$saved) {
+                return DV::error('Failed to create wallet account for employee ' . $emp->code);
+            }
+        }
+
+        return DV::depends(1);
+    }
+    function PayrollList($arr, $ss)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if (!is_numeric($current_page))  $current_page = 1;
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value = $d->search_value ?? null;
+        $sort_by = $d->sort_by ?? 'a.id';
+        $sort_order = $d->sort_order ?? 'asc';
+        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+
+        $str_search = '1=1';
+
+        $query = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->selectRaw('
                a.id,
                a.emp_id,
                e.name as emp_name,
@@ -123,46 +214,43 @@ class Account
                ' . $balance_date . ',
                e.photo_file_name as emp_photo
            ')
-           ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Payroll');
+            ->where('a.branch_id', $branch_id)
+            ->where('a.account_type', 'Payroll');
 
-           if ($search_value) {
+        if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('e.name', 'LIKE', '%' . $search_value . '%');
         }
 
-       $query->orderBy($sort_by, $sort_order);
-       $count = $query->count('a.id');
-       $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $query->orderBy($sort_by, $sort_order);
+        $count = $query->count('a.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-       foreach ($rows as $row) {
-           $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-           unset($row->emp_photo);
-       }
+        foreach ($rows as $row) {
+            $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+            unset($row->emp_photo);
+        }
 
-       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-   }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 
-   function WalletList($arr, $ss)
-   {
-       $d = (object) $arr;
-       $branch_id = $ss->branch_id;
+    function WalletList($arr, $ss)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
 
-       $current_page = $d->current_page ?? 1;
-       $per_page = $d->per_page ?? 10;
-       if (!is_numeric($current_page))  $current_page = 1;
-       $skip_rows = ($current_page - 1) * $per_page;
-       $search_value = $d->search_value ?? null;
-       $sort_by = $d->sort_by ?? 'a.id';
-       $sort_order = $d->sort_order ?? 'asc';
-       $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-
-       $str_search = '1=1';
-
-       $query = DB::table('accounts as a')
-           ->join('employees as e', 'e.id', '=', 'a.emp_id')
-           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-           ->selectRaw('
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if (!is_numeric($current_page))  $current_page = 1;
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value = $d->search_value ?? null;
+        $sort_by = $d->sort_by ?? 'a.id';
+        $sort_order = $d->sort_order ?? 'asc';
+        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+        $query = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->selectRaw('
                a.id,
                a.emp_id,
                e.name as emp_name,
@@ -174,34 +262,34 @@ class Account
                ' . $balance_date . ',
                e.photo_file_name as emp_photo
            ')
-           ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Wallet');
+            ->where('a.branch_id', $branch_id)
+            ->where('a.account_type', 'Wallet');
 
 
-       if ($search_value) {
-        $search_value = escape_like_str($search_value);
-        $query->where('e.name', 'LIKE', '%' . $search_value . '%');
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->where('e.name', 'LIKE', '%' . $search_value . '%');
         }
 
-       $query->orderBy($sort_by, $sort_order);
-       $count = $query->count('a.id');
-       $rows = $query->skip($skip_rows)->take($per_page)->get();
+        $query->orderBy($sort_by, $sort_order);
+        $count = $query->count('a.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-       foreach ($rows as $row) {
-           $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-           unset($row->emp_photo);
-       }
+        foreach ($rows as $row) {
+            $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+            unset($row->emp_photo);
+        }
 
-       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-   }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 
 
-   function getDetails($id, $ss)
-   {
-       $primaryAccount = DB::table('accounts as a')
-           ->join('employees as e', 'e.id', '=', 'a.emp_id')
-           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-           ->selectRaw('
+    function getDetails($id, $ss)
+    {
+        $primaryAccount = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->selectRaw('
                a.id,
                a.emp_id,
                e.name as emp_name,
@@ -211,31 +299,31 @@ class Account
                a.currency_code,
                a.balance
            ')
-           ->where('a.id', $id)
-           ->first();
+            ->where('a.id', $id)
+            ->first();
 
-       if ($primaryAccount) {
-           $primaryAccount->image_url = Employee::profilePicture($primaryAccount->emp_id);
+        if ($primaryAccount) {
+            $primaryAccount->image_url = Employee::profilePicture($primaryAccount->emp_id);
 
-           $otherAccount = DB::table('accounts as a')
-               ->select('id', 'account_type', 'account_number', 'currency_code', 'balance')
-               ->where('a.emp_id', $primaryAccount->emp_id)
-               ->where('a.id', '<>', $id)
-               ->first();
+            $otherAccount = DB::table('accounts as a')
+                ->select('id', 'account_type', 'account_number', 'currency_code', 'balance')
+                ->where('a.emp_id', $primaryAccount->emp_id)
+                ->where('a.id', '<>', $id)
+                ->first();
 
-           if ($otherAccount) {
-               $primaryAccount->w_id = $otherAccount->id;
-               $primaryAccount->w_account_type = $otherAccount->account_type;
-               $primaryAccount->w_account_number = $otherAccount->account_number;
-               $primaryAccount->w_currency_code = $otherAccount->currency_code;
-               $primaryAccount->w_balance = $otherAccount->balance;
-           }
+            if ($otherAccount) {
+                $primaryAccount->w_id = $otherAccount->id;
+                $primaryAccount->w_account_type = $otherAccount->account_type;
+                $primaryAccount->w_account_number = $otherAccount->account_number;
+                $primaryAccount->w_currency_code = $otherAccount->currency_code;
+                $primaryAccount->w_balance = $otherAccount->balance;
+            }
 
-           return $primaryAccount;
-       }
+            return $primaryAccount;
+        }
 
-       return null;
-   }
+        return null;
+    }
 
 
 
@@ -245,7 +333,7 @@ class Account
         $ss = $ss ?? $this->userInfo;
 
         $delete = DB::table('accounts')->where('id', $id)->delete();
-        return DV::depends($delete,null,'Error deleting account');
+        return DV::depends($delete, null, 'Error deleting account');
     }
 
     function getFormOptions($id, $ss)
@@ -262,11 +350,12 @@ class Account
                 ['id' => 'a.balance', 'name' => 'By  Balance'],
             ],
             'currency_codes' => Money::options_currency($ss),
-            'employees' => GeneralSettings::options_employee([10, 20],$ss),
+            'employees' => GeneralSettings::options_employee([10, 20], $ss),
             'accounts' => $account,
         ];
     }
-    function ConfirmTransfer($arr, $ss) {
+    function ConfirmTransfer($arr, $ss)
+    {
         $d = (object) $arr;
 
         $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
@@ -278,7 +367,7 @@ class Account
             return DV::error('Account not found');
         }
 
-        if($d->balance < $d->amount) {
+        if ($d->balance < $d->amount) {
             return DV::error('Insufficient balance');
         }
         return DV::depends(1, [
@@ -295,170 +384,179 @@ class Account
         return DB::table('accounts')->where('id', $id)->selectRaw($cols)->first();
     }
 
+    static function getMasterAccount(){
+        return DB::table('accounts as a')->where('id', 1)->selectRaw('a.id, \'Company accounts\' as name, a.balance, a.currency_code, a.account_number')->first();
+
+    }
     //transfer money out $arr = [$to_account, $from_account,$amount , $currency, $remarks]
-    function transfer($arr,$ss=null) {
+    function transfer($arr, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $from_account_id = $from_account_id ?? $this->id;
         $d = (object) $arr;
-        $from_account =(object) $d->from_account ?? null;
-        $to_account = $d->to_account ?? null;
-        $from_account_number=$from_account->account_number ??null;
-
-        // if(!$from_account_id && !$from_account_number){
-        //     return DV::error('No origin account');
-        // }elseif(!$from_account_id){
-        //     $from_account = DB::table('accounts')->where('account_type', $from_account->account_type)->where('account_number', $from_account->account_number)->selectRaw('id, account_number, balance, currency_code')->first();
-        //     $from_account_id = $from_account->id;
-        // }
-        // if(($from_account->balance ?? 0) == 0){
-        //     $from_account = DB::table('accounts')->where('id', $from_account_id)->selectRaw('id, account_number, balance, currency_code')->first();
-
-        // }
-        // $emp = DB::table('accounts as a')->join('employees as emp', 'emp.id' , '=', 'a.emp_id')->where('account_type', $to_account->account_type)->where('account_number', $to_account->taccount_number)->selectRaw('emp.id as emp_id, emp.name, emp.code, a.id as account_id, a.currency')->first();
-        // if(!$emp){
-        //     return DV::error('Desination account does not exist!');
-        // }
-        $from_account_info = DB::table('accounts')->where('account_number', $from_account->account_number)->selectRaw('id, balance, currency_code, emp_id')->first();
-        $to_account_info = DB::table('accounts')->where('account_number', $to_account->account_number)->selectRaw('id, balance, currency_code,emp_id')->first();
-        $from_account->account_id = $from_account_info->id;
-        $from_account->balance = $from_account_info->balance;
-        $to_account->account_id = $to_account_info->id;
-        // $emp_id = $emp->emp_id;
-        // $emp_name = $emp->name;
-        $exchange_rate = $d->exchange_rate;
-        $org_amount = $d->amount ?? 0;
-        $converted_amount = $d->amount ?? 0;
-        if ($from_account->currency_code != $from_account->to_account_currency_code) {
-            $converted_amount = Money::convert($ss, $org_amount, $from_account->currency_code, $to_account->currency_code, $exchange_rate);
+        $from_account_id = $d->from_account_id ?? null;
+        $to_account_id = $d->to_account_id ?? null;
+        $from_account = (object)($d->from_account ?? null);
+        $to_account = (object)($d->to_account ?? null);
+        $exchange_rate = $d->exchange_rate ?? 1;
+        if (!$from_account_id) {
+            //check if know only account number / don't know account id 
+            if ($from_account->account_number == 1) {
+                $from_account = self::getMasterAccount();
+            } else {
+                $from_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('account_number', $from_account->account_number)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            }
+            if (!$from_account) return DV::error('Source account id not found!');
+            $from_account_id = $from_account->id;
+        } else {
+            if ($from_account_id == 1) {
+                $from_account = self::getMasterAccount();
+            } else {
+                $from_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $from_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            }
+            if (!$from_account) return DV::error('Source account id not found!');
         }
-
-        if($from_account->balance < $converted_amount) {
+        if (!$to_account_id) {
+            if ($to_account->account_number == 1) {
+                $to_account = self::getMasterAccount();
+            } else {
+                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('account_number', $to_account->account_number)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            }
+            if (!$to_account) return DV::error('Destination account id not found!');
+            $to_account_id = $to_account->id;
+        } else {
+            if($to_account_id == 1){
+                $to_account = self::getMasterAccount();
+            }else{
+                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            }
+            if (!$to_account) return DV::error('Destination account id not found!');
+        }
+        if (!$from_account_id && !$to_account_id) {
+            return DV::error('Both accounts do not exist!');
+        }
+        $converted_amount = $d->amount;
+        if ($from_account->currency_code != $to_account->currency_code) {
+            $converted_amount = Money::convert($ss, $d->amount, $from_account->currency_code, $to_account->currency_code, $exchange_rate);
+        }
+        if ($from_account->balance < $d->amount) {
             return DV::error('Insufficient balance');
         }
-        $this->createTransaction([],true);
-        $this->createTransaction([]);
-
-
-
-        $trx = $d;
-        $trx->trx_type = 3;
-        $trx->emp_id = $from_account->emp_id;
-        $trx->from_account_id = $from_account->account_id;
-        $trx->to_account_id = $to_account->account_id;
-        // $trx->account_id = $emp->account_id;
-        // $trx->remarks = " From {$d->account_type} to {$d->account_number}";
-        $trx->amount = $converted_amount;
-
-        $transfer = Transaction::save((array)$trx, $ss);
-
-        if ($transfer) {
-            $transfer_amount = $transfer->transaction['amount'];
-            $updateBalance_acc = Account::updateBalance($from_account_id->account_id, 'accounts', 'in', $transfer_amount, $transfer->trx_id, $ss);
-        } else {
-            return DV::error('Error saving transaction');
-        }
-
-        $withdrawData = (array)$trx;
-        unset($withdrawData['account_id']);
-        unset($withdrawData['emp_id']);
-        unset($withdrawData['remarks']);
-
-        $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
-        $withdrawData['emp_id'] = $emp_id;
-        $withdrawData['account_id'] = $from_account_id;
-        $withdrawData['amount'] = $converted_amount;
-        $withdrawData['remarks'] = " To $d->to_account_type $d->to_account_number";
-
-        $res = Account::withdraw($withdrawData, $ss);
-
-        if ($res->status == 'Error') {
-            return $res;
-        }
-
-        $trx = (object)$res->data;
-
-        if ($trx) {
-            $updateBalance_def = Account::updateBalance($from_account_id, 'accounts', 'out', $trx->transaction['amount'], $trx->trx_id, $ss);
-        }
-
-        if ($updateBalance_acc && $updateBalance_def) {
-            return DV::depends(1, [
-                'from_account_type' => $d->account_type,
-                'from_account_number' => $d->account_number,
-                'to_account_type' => $d->to_account_type,
-                'to_account_number' => $d->to_account_number,
-                'emp_name' => $from_account->emp_name,
-                'amount_in' => $transfer_amount,
-                'amount_out' => $converted_amount,
-            ]);
-        }
-
-        return DV::error('Error transferring account');
+        $remarks = null;
+        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id];
+        self::createTransaction($inputs, true, $from_account_id, $ss);
+        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id];
+        self::createTransaction($inputs, true, $to_account_id, $ss);
+        return DV::depends(1);
+        //rollback amount when one of the transactions fails
     }
+    function transferTo($arr, $id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $v_rule = [
+            'amount' => '1|positive',
+            'exchange_rate' => '0|number|default=1',
+            'remarks' => '0|string|250',
+            'to_account_id' => '0|number|exists=accounts.id',
+            'to_account' => '0|array',
+        ];
+        
+        $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number'=>['-']], $ss->lang);
+        if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (object)$inputs;
+        $to_account = null;
+        if (!$d->to_account_id) {
+            $to_account = (object)$d->to_account;
+            if ($to_account->account_number == 1) {
+                $to_account = self::getMasterAccount();
+            } else {
+                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('account_number', $to_account->account_number)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            }
+            // $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('account_number', $to_account->account_number)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            if (!$to_account) return DV::error('Destination account id not found!');
+            $d->to_account_id = $to_account->id;
+        } else {
+            if ($d->to_account_id == 1) {
+                $to_account = self::getMasterAccount();
+            } else {
+                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $d->to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();            
+            }
+            // $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $d->to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
+            if (!$to_account) return DV::error('Destination account id not found!');
+        }
+        $inputs['to_account_id'] = $d->to_account_id;
+        $inputs['from_account_id'] = $id;
 
+        return $this->transfer($inputs, $ss);
+    }
     function createTransaction($arr, $update_balance = true, $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $v_rule = [
-            // 'id' => '0|identity=1',
             'amount' => '1|positive',
-            'currency_code'=>'1|string|10',
-            'exchange_rate'=>'0|number|default=1',
-           'remarks' => '0|string|250',
+            'exchange_rate' => '0|number|default=1',
+            'remarks' => '0|string|250',
             'trx_type' => '1|choice|1,2,3',
             'status' => '0|choice|in,out',
             'to_account_id' => '0|number|exists=accounts.id',
+            'from_account_id' => '0|number|exists=accounts.id',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-']], $ss->lang);
-        if ($res->error) {
-            return (object)['error' => $res->error];
-        }
-        $des_currency = null;
-        $id = null;
+        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
+        if ($res->error) return DV::error($res->error);
+        $from_account = null;
+        $to_account = null;
         $inputs = $res->values;
         $d = (object) $inputs;
-        $exchange_rate = $d->exchange_rate ?? 1;
         unset($inputs['exchange_rate']);
         $inputs['account_id'] = $id;
         $this_account = self::getProps($id, 'id,balance, currency_code');
         if (!$this_account) {
             return DV::error('Source account information does not exist');
         }
-        $des_currency = $this_account->currency_code;
-        if($d->trx_type ==1){
+        if ($d->trx_type == 1) {
             $inputs['to_account_id'] = $id;
-        }else if($d->trx_type ==2){
+        } else if ($d->trx_type == 2) {
             $inputs['from_account_id'] = $id;
-        }else{
-            $inputs['from_account_id'] = $id;
-           // $inputs['to_account_id'] = $d->to_account_id;
-            $to_account = self::getProps($d->to_account_id, 'id,balance, currency_code');
-            if(!$to_account){
-                return DV::error('In caase of transfer, you must spectify destination account');
-             }
-             if($to_account->id ===$id){
-                return DV::error('The source and desintation accounts cannot be the same!');
-             }
-            $des_currency = $to_account->currency_code;
+        } else {
+            if ($d->status === 'out') {
+                $inputs['from_account_id'] = $id;
+                $to_account = self::getProps($d->to_account_id, 'id, currency_code');
+                $from_account = $this_account;
+                if (!$to_account) {
+                    return DV::error('In case of transfer out, you must spectify destination account');
+                }
+                if ($to_account->id === $id) {
+                    return DV::error('The source and desintation accounts cannot be the same!');
+                }
+            } else if ($d->status === 'in') {
+                $inputs['to_account_id'] = $id;
+                $to_account = $this_account;
+                $from_account = self::getProps($d->from_account_id, 'id,balance, currency_code');
+                if (!$from_account) {
+                    return DV::error('In case of transfer in, you must spectify source account');
+                }
+                if ($from_account->id === $id) {
+                    return DV::error('The source and desintation accounts cannot be the same!');
+                }
+            } else return DV::error('Invalid status. NOTE: it must be in or out');
         }
-        $converted_amount = $d->amount;
-        if($d->currency_code != $des_currency){
-            $converted_amount = Money::convert($ss,$d->amount,$d->currency_code, $des_currency,$exchange_rate);
-        }
-        $inputs['amount'] = $converted_amount;
+        $inputs['currency_code'] = $this_account->currency_code;
         $trx_id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
         if ($trx_id) {
-            if($update_balance){
-                $x = Account::updateBalance($converted_amount ,$d->status,$trx_id,$id,$ss);
+            if ($update_balance) {
+                $x = Account::updateBalance($d->amount, $d->status, null, $id, $ss);
             }
-            return DV::depends(1,['transaction'=>$inputs,'trx_id'=>bin2hex($trx_id)]);
+            return DV::depends(1, ['transaction' => $inputs, 'trx_id' => bin2hex($trx_id)]);
         }
         return DV::error('Error saving transaction');
     }
 
-    function getAccountInfo($arr, $ss) {
+    function getAccountInfo($arr, $ss)
+    {
         $d = (object) $arr;
 
         $account_type = DB::table('accounts')->where('account_number', $d->account_number)->value('account_type');
@@ -472,55 +570,55 @@ class Account
             'currency_code' => $currency_code
 
         ]);
-
     }
     // Assuming that the $amount is in the same currency as the account's currency
-    static function updateBalance( $amount,$status, $trx_id, $account_id ,$ss)
+    static function updateBalance($amount, $status, $trx_id, $account_id, $ss)
     {
-        if(!$account_id){
-             return 'Invalid account id';
+        if (!$account_id) {
+            return 'Invalid account id';
         }
         $amount = $amount ?? 0;
-        if(!$amount){
+        if (!$amount) {
             return null;
         }
-        if($trx_id){
-            $trx = DB::table('transactions as t')->where('id', $trx_id)->where('status',$status)->selectRaw('amount')->first();
+        if ($trx_id) {
+            $trx = DB::table('transactions as t')->where('id', $trx_id)->where('status', $status)->selectRaw('amount')->first();
             if (!$trx)
                 return 'Transaction is not found!';
-            if(abs($trx->amount) != abs($amount)){
+            if (abs($trx->amount) != abs($amount)) {
                 return 'The amount provided is not correct!';
-             }
+            }
         }
 
         $amount = abs($amount);
-        if($status ==='out') $amount = -$amount;
+        if ($status === 'out') $amount = -$amount;
         $nowTime = getNowTime();
-        $x = DB::statement(DB::raw("Update accounts set balance = balance + ($amount), balance_date = '$nowTime' WHERE id = $account_id"));
-        return null;
+        $x = DB::statement(DB::raw("Update accounts set balance = balance + ($amount), last_balance_date = '$nowTime' WHERE id = $account_id"));
+        return $x;
     }
 
-    static function withdraw($arr,$ss){
+    static function withdraw($arr, $ss)
+    {
         $v_rule = [
             'emp_id' => '0|number',
             'payroll_id' => '0|number',
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
-            'status'=>'0|string|10',
+            'status' => '0|string|10',
             'account_id' => '0|number',
             'from_account_id' => '1|number',
             'to_account_id' => '0|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['status'] = 'out';
 
-        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
+        $id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
         $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
+        return DV::depends($hex_trx_id, ['transaction' => $inputs, 'trx_id' => $hex_trx_id], 'Failed to save transaction');
     }
 
     function printTransaction($arr, $ss)
