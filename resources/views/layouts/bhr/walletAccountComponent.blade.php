@@ -17,6 +17,10 @@
                     <i class="fas fa-plus"></i>
                     <span>Add Account</span>
                 </button>
+                <button type="button" class="btn_add" id="_btnWalletAddAccountMissing">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Account Missing</span>
+                </button>
             </div>
         </div>
 

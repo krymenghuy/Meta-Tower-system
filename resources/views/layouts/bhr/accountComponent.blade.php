@@ -19,6 +19,10 @@
                     <i class="fas fa-user"></i>
                     <span>Add Account</span>
                 </button>
+                <button type="button" class="btn btn-primary btn_add" id="_btnAddAccountMissing">
+                    <i class="fas fa-user"></i>
+                    <span>Add All Account</span>
+                </button>
             </div>
         </div>
 

@@ -110,9 +110,9 @@ class Payroll
     static function isDisbursed($id)
     {
         if (!$id) return false;
-        $x = DB::table('payrolls as p')->where('id', $id)->value('disbursed');
+        $x = DB::table('payroll_list as p')->where('payroll_id', $id)->where('disbursed', 1)->selectRaw('id')->first();
         if (!$x) return false;
-        return $x == 1;
+        return true;
     }
     static function isAuthorized($id)
     {
@@ -319,128 +319,76 @@ class Payroll
     }
     function reverseTransactions($id, $ss = null)
     {
-        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $master_account_id = 1;
-        $payroll = self::getProps($id, 'id,name,currency_code, total,exchange_rate');
-        if (!$payroll) return DV::error('The provided payroll ID does not exist');
-        $err = self::getReverseError($id);
-        if ($err) return DV::error($err);
-
-        $payrollEntries = DB::table('transactions as trx')
-            ->join('accounts as a', 'a.id', '=', 'trx.account_id')
-            ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
-            ->where('a.account_type', 'Payroll')
-            ->where('trx.payroll_id', $id)
-            ->selectRaw('emp.id,emp.name, emp.code,trx.account_id, trx.amount, a.balance,trx.trx_type, trx.status')
-            ->get();
-
-        if ($payrollEntries->isEmpty()) {
-            return DV::error('There are no transactions to be reversed.');
+        $authorized = self::isAuthorized($id);
+        if (!$authorized) {
+            return DV::error('Payroll is not authorizad yet!');
         }
-
-        $success_count = 0;
-        $failed_count = 0;
-        $failed_emps = [];
-
-        foreach ($payrollEntries as $trx) {
-
-
-
-            //   'emp_id' => '1|number',
-            //   'payroll_id' => '0|number',
-            //   'amount' => '1|number',
-            //   'remarks' => '0|string|250',
-            //   'trx_type' => '1|number',
-            //   'status'=>'0|string|10',
-            //   'account_id' => '1|number',
-            //   'from_account_id' => '1|number',
-            //   'to_account_id' => '1|number',
-            $trx->trx_type = 3;
-            $trx->to_account_id = $master_account_id;
-            $trx->from_account_id = $trx->account_id;
-            $trx_inputs = (array)$trx;
-
-            $reverse = Transaction::createTransaction($trx_inputs, $ss);
-            $trx_error = $reverse->error ?? null;
-
-            if ($trx_error) {
-                $failed_count++;
-                $failed_emps[] = (object)[
-                    'id' => $trx->emp_id,
-                    'name' => $trx->name,
-                    'code' => $trx->code,
-                    'issue' => 'Reversal failed: ' . $trx_error
+        $isDisbursed = self::isDisbursed($id);
+        if ($isDisbursed) {
+            $rows = DB::table('transactions')->where('payroll_id', $id)->selectRaw('id, account_id, amount, currency_code')->get();
+            $success_count = 0;
+            $failed_count = 0;
+            foreach ($rows as $row) {
+                $inputs = [
+                    'to_account_id' => 1,
+                    'remarks' => null,
+                    'amount' => $row->amount,
+                    'trx_type' => 3,
+                    'status' => 'out'
                 ];
-                continue;
+                $account = new Account($row->account_id, $ss);
+                $res = $account->transferTo($inputs);
+                if ($res->status_code == 200) {
+                    $success_count++;
+                } else {
+                    $failed_count++;
+                }
             }
-
-            DB::table('payroll_list')->where('id', $trx->id)->update([
-                'disbursed' => 0, // Mark as not disbursed
-                'trx_id' => null,
-            ]);
-            $success_count++;
+            if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
+                DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'disbursed' => 0]);
+                DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
+                return DV::depends(1);
+            }
+            return DV::error("Failed to reset payroll!");
         }
-
-        return DV::depends(1, [
-            'success_count' => $success_count,
-            'failed_count' => $failed_count,
-            'failed_emps' => $failed_emps
-        ]);
     }
 
     function reset($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $notAuthorized = DB::table('payrolls')->where('id', $id)->value('authorized');
-        if ($notAuthorized != 1) {
+        $authorized = self::isAuthorized($id);
+        if (!$authorized) {
             return DV::error('Payroll is not authorizad yet!');
         }
-        $isDisbursed = DB::table('payrolls')->where('id', $id)->value('disbursed');
-        if ($isDisbursed === 1) {
-            return DV::error('Payroll is already disbursed!');
+        $isDisbursed = self::isDisbursed($id);
+        if ($isDisbursed) {
+            $rows = DB::table('transactions')->where('payroll_id', $id)->selectRaw('id, account_id, amount, currency_code')->get();
+            $success_count = 0;
+            $failed_count = 0;
+            foreach ($rows as $row) {
+                $inputs = [
+                    'to_account_id' => 1,
+                    'remarks' => null,
+                    'amount' => $row->amount,
+                    'trx_type' => 3,
+                    'status' => 'out'
+                ];
+                $account = new Account($row->account_id, $ss);
+                $res = $account->transferTo($inputs);
+                if ($res->status_code == 200) {
+                    $success_count++;
+                } else {
+                    $failed_count++;
+                }
+            }
+            if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
+                DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'disbursed' => 0]);
+                DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
+                return DV::depends(1);
+            }
+            return DV::error("Failed to reset payroll!");
         }
-        $master_account_id = 1;
-        $total = DB::table('payrolls as p')
-        ->where('id', $id)
-            ->selectRaw('id,total as amount')
-            ->first();
-        if (!$total || $total->amount <= 0) {
-            return DV::error('The payroll total is zero. You may need to click Calculate button on Payroll List');
-        }
-
-        $payroll_amount = DB::table('payrolls as p')
-        ->where('p.id', $id)
-            ->selectRaw('total')->first();
-
-        if (!$payroll_amount) return DV::error('Payroll not found!');
-        if ($payroll_amount->total <= 0) return DV::error('Payroll total is zero!');
-
-        if ($total) {
-
-            $total->trx_type = 2;
-            $total->account_id = 1;
-            $total->payroll_id = $total->id;
-            $total->from_account_id = $master_account_id;
-            $total->amount = $payroll_amount->total;
-        }
-
-        $total = Account::withdraw((array)$total, $ss)->data;
-        $from_account_id = $total['transaction']['from_account_id'];
-        $amount = $total['transaction']['amount'];
-        if (!$total) {
-            return DV::error('Failed to reverse transaction');
-        }
-        if ($total) {
-            $update_balance = Account::updateBalance($from_account_id, 'accounts', 'out', $amount, $total['trx_id'], $ss);
-        }
-        $x = DB::table('payrolls')->where('id', $id)->update([
-            'authorized' => 0,
-            'update_user' => $ss->full_name,
-            'update_date' => getNowTime(),
-            'update_uid' => $ss->user_id
-        ]);
-        return DV::depends($x, ['Payroll  authorize', 'reset']);
     }
 
     function updateDisburse($id = null, $ss = null)
