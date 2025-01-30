@@ -176,15 +176,16 @@ var WalletAccountComponent = (function () {
             e.preventDefault();
 
             const op = {
-                account_id: mThis.divFilter.value,
+                //account_id: mThis.divFilter.value,
+                account_type:"Wallet"
             };
 
             cv_interact.confirm(
-                'html:<span class="d-block fw-semibold text-success">Create account missing? </span><small>This process will create accounts missing</small>',
+                'html:<span class="d-block fw-semibold text-success">Create wallet accounts for all staff? </span><small>This process will create wallet account for staff who do not have a wallet account yet!</small>',
                 {
-                    title: "Create account missing",
-                    context: "save account missing",
-                    confirmButtonText: "Create account missing?",
+                    title: "Create Wallet Accounts",
+                    context: "update",
+                    confirmButtonText: "Bulk Create",
                 },
                 function (confirmation) {
                     if (confirmation) {
@@ -192,7 +193,7 @@ var WalletAccountComponent = (function () {
                             .call(
                                 [
                                     main_view.base_url,
-                                    "/hr/account/save-missing-account-wallet",
+                                    "/hr/account/bulk-create",
                                 ].join(""),
                                 op,
                                 false,
@@ -200,12 +201,16 @@ var WalletAccountComponent = (function () {
                             )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    cv_interact.success(
-                                        "Create missing account successfully!"
-                                    );
-                                    mThis.WalletAccountListView.showPage(
-                                        mThis.getDataFormFilter()
-                                    );
+                                    const d = res.data ?? {};
+                                    const success_count = d.success_count ?? 0;
+                                    if(success_count > 0) {
+                                        mThis.WalletAccountListView.showPage(
+                                            mThis.getDataFormFilter()
+                                        );
+                                        cv_interact.success(`${success_count} wallet accounts have been creted!`);
+                                    }
+                                    else cv_interact.info('No wallet accounts were created. This is maybe because all staffs already have a wallet account!');
+                                   
                                 } else cv_interact.error(res.error_message);
                             });
                     }

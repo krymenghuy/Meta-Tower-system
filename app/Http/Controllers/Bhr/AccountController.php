@@ -27,7 +27,7 @@ class AccountController extends Controller
         $res = $account->save($req->all());
         return JDV::raw($res);
     }
-    public function saveMissingAccountPayroll(Request $req)
+    public function bulkCreateAccounts(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -35,20 +35,21 @@ class AccountController extends Controller
         }
         $id = $req->account_id ?? $req->id;
         $account = new Account($id, $ss);
-        $res = $account->createAccountPayrollMissing();
+        $res = $account->bulkCreateAccounts($req->account_type);
         return JDV::raw($res);
     }
-    public function saveMissingAccountWallet(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $id = $req->account_id ?? $req->id;
-        $account = new Account($id, $ss);
-        $res = $account->createAccountWalletMissing();
-        return JDV::raw($res);
-    }
+
+    // public function saveMissingAccountWallet(Request $req)
+    // {
+    //     $ss = AuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+    //     $id = $req->account_id ?? $req->id;
+    //     $account = new Account($id, $ss);
+    //     $res = $account->createAccountWalletMissing();
+    //     return JDV::raw($res);
+    // }
 
     public function getPayrollAccountListPaginate(Request $req)
     {

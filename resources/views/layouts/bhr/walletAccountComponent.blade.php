@@ -15,11 +15,11 @@
                 </div>
                 <button type="button" class="btn_add" id="_btnWalletAddAccount">
                     <i class="fas fa-plus"></i>
-                    <span>Add Account</span>
+                    <span vslang="titles.Create Wallet"></span>
                 </button>
                 <button type="button" class="btn_add" id="_btnWalletAddAccountMissing">
                     <i class="fas fa-plus"></i>
-                    <span>Add Account Missing</span>
+                    <span vslang="titles.Bulk Create"></span>
                 </button>
             </div>
         </div>

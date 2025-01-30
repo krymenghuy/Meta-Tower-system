@@ -17,11 +17,11 @@
                 </div>
                 <button type="button" class="btn btn-primary btn_add" id="_btnAddAccount">
                     <i class="fas fa-user"></i>
-                    <span>Add Account</span>
+                    <span vslang="titles.Create Account"></span>
                 </button>
                 <button type="button" class="btn btn-primary btn_add" id="_btnAddAccountMissing">
                     <i class="fas fa-user"></i>
-                    <span>Add All Account</span>
+                    <span vslang="titles.Bulk Create"></span>
                 </button>
             </div>
         </div>
