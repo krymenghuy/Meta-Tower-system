@@ -16,7 +16,7 @@ use App\Http\Controllers\Umt\ApplicationController;
 use App\Http\Controllers\Umt\ModuleController;
 use App\Http\Controllers\Umt\PermissionController;
 use App\Http\Controllers\Umt\ReportController;
-use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\MoneyController;
 
 Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(function(){
     Route::get('/lang', [UserController::class, 'getLang']);
@@ -222,26 +222,19 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
 
     //Route::post('/permissions', [UMController::class, 'getPermissionsByLoginName']);
 });
- 
+  
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('money')->group(function(){
+    Route::post('/x-rate/options-month', [MoneyController::class,'options_x_month']);
+    Route::post('/x-rate/list', [MoneyController::class,'getExchangeRateList']);
+    Route::post('/x-rate/save', [MoneyController::class,'saveExchangeRate']);
+    Route::post('/x-rate/delete', [MoneyController::class,'deleteExchangeRate']);
+    Route::post('/x-date/details', [MoneyController::class,'getExchangeRateDetails']);
 
-//begin::Currency APIs
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('currency')->group(function(){
-    // Route::post('options-month', [CurrencyController::class,'getComboItems_x_month']);
-    Route::post('save', [CurrencyController::class,'saveCurrency']);
-    Route::post('delete', [CurrencyController::class,'deleteCurrency']);
-    Route::post('list', [CurrencyController::class,'getCurrencies']);
-});
-
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exchange-rate')->group(function(){
-    Route::post('options-month', [CurrencyController::class,'getComboItems_x_month']);
-    Route::post('/currency-pairs/list', [CurrencyController::class,'getCurrencyPairs']);
-    Route::post('/currency-pair/create', [CurrencyController::class,'createCurrencyPair']);
-    Route::post('/currency-pair/delete', [CurrencyController::class,'deleteCurrencyPair']);
-    Route::post('/details', [CurrencyController::class,'getExchangeRateInfo']);
-    Route::post('/delete', [CurrencyController::class,'deleteExchangeRate']);
-    Route::post('/list', [CurrencyController::class,'getExchangeRates']);
-    Route::post('/save', [CurrencyController::class,'saveExchangeRate']);
-    Route::post('/apply', [CurrencyController::class,'applyExchangeRate']);
-    Route::post('/form-options', [CurrencyController::class,'getFormOptions']);
+    Route::post('/currency/list', [MoneyController::class,'getCurrencies']);
+    Route::post('/currency/details', [MoneyController::class,'getCurrencyDetails']);
+    Route::post('/currency/delete', [MoneyController::class,'deleteCurrency']);
+    
+    Route::post('/x-rate/form-options', [MoneyController::class,'getFormOptions_exchange_rate']);
+    Route::post('/currency/form-options', [MoneyController::class,'getFormOptions_currency']);
 });
 //begin::Currency APIs
