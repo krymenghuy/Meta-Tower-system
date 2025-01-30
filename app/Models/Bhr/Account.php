@@ -91,98 +91,105 @@ class Account
 
         return $exists;
     }
-    function createAccountPayrollMissing($ss = null)
+
+    static function employeeHasAccount($emp_id, $account_type){
+        $row = DB::table('accounts')->where('emp_id',$emp_id)->where('account_type',$account_type)->selectRaw('id')->first();
+        return $row? true:false;
+    }
+    //$account_type = {'Payroll','Wallet'}
+    function bulkCreateAccounts($account_type, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-
-        $employeesWithoutAccount = DB::table('employees')
-        ->leftJoin('accounts', 'employees.id', '=', 'accounts.emp_id')
-        ->whereNull('accounts.id')
-        ->select('employees.id', 'employees.code', 'employees.name')
+        $bin_subs_id = hex2bin($ss->subs_id);
+        if(!in_array(strtolower($account_type), ['payroll','wallet'])) return DV::error('The account type must be Payroll or Wallet');
+        $emps = DB::table('employees as e')
+        ->where('e.subs_id',$bin_subs_id)
+        ->select('e.id', 'e.code', 'e.name')
         ->get();
+        if ($emps->isEmpty()) return DV::error('It looks like all employees already have a ?? account!::'.$account_type); 
 
-        if ($employeesWithoutAccount->isEmpty()) {
-            return DV::error('No employees without accounts');
-        }
-
-        foreach ($employeesWithoutAccount as $emp) {
+        $success_count = 0;
+        $emp_count = 0;
+        $lowerAccountType = strtolower($account_type);
+        foreach ($emps as $emp) {
             $inputs = [
                 'emp_id' => $emp->id,
-                'account_number' => $emp->code . '-P',
-                'balance' => 0.0,
+                'account_number' => $emp->code . ($lowerAccountType === 'payroll'? '-P':'-W'),
+                'balance' => 0.00,
                 'currency_code' => Money::$national_currency,
-                'account_type' => 'Payroll',
+                'account_type' => $account_type
             ];
 
-            if (self::accountNumberExists($inputs['account_number'], $inputs['account_type'])) {
-                return DV::error('Account number already exists for employee ' . $emp->code);
+            if (!self::employeeHasAccount($emp->id,$account_type)) {
+                // $accountData = [
+                //     'emp_id' => $inputs['emp_id'],
+                //     'account_number' => $inputs['account_number'],
+                //     'balance' => $inputs['balance'],
+                //     'currency_code' => $inputs['currency_code'],
+                //     'account_type' => $inputs['account_type']
+                //     //,'branch_id'=>$branch_id // *** NO need of this branch_id
+                // ];
+    
+                $acc_id = saveData($ss, 'accounts', ['id'=>null], $inputs, [], 1,false);
+                if ($acc_id) $success_count++;
             }
-            $accountData = [
-                'emp_id' => $inputs['emp_id'],
-                'account_number' => $inputs['account_number'],
-                'balance' => $inputs['balance'],
-                'currency_code' => $inputs['currency_code'],
-                'account_type' => $inputs['account_type'],
-                'branch_id' => $branch_id
-            ];
-
-            $saved = saveData($ss, 'accounts', [], $accountData, [], 1);
-            if (!$saved) {
-                return DV::error('Failed to create account for employee  ' . $emp->code);
-            }
+            // else{
+            //      //account number based on Employee ID already exist
+            // }
+            $emp_count++;   
         }
-
-        return DV::depends(1);
+        return DV::depends(1,['success_count'=>$success_count,'emp_count'=>$emp_count],'Failed to bulk create accounts');
     }
-    function createAccountWalletMissing($ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
 
-        $employeesWithoutWalletAccount = DB::table('employees')
-        ->leftJoin('accounts', function ($join) {
-            $join->on('employees.id', '=', 'accounts.emp_id')
-            ->where('accounts.account_type', 'Wallet');
-        })
-            ->whereNull('accounts.id')
-            ->select('employees.id', 'employees.code', 'employees.name')
-            ->get();
+    // function createAccountWalletMissing($ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $branch_id = $ss->branch_id;
 
-        if ($employeesWithoutWalletAccount->isEmpty()) {
-            return DV::error('No employees without wallet accounts');
-        }
+    //     $employeesWithoutWalletAccount = DB::table('employees')
+    //     ->leftJoin('accounts', function ($join) {
+    //         $join->on('employees.id', '=', 'accounts.emp_id')
+    //         ->where('accounts.account_type', 'Wallet');
+    //     })
+    //         ->whereNull('accounts.id')
+    //         ->select('employees.id', 'employees.code', 'employees.name')
+    //         ->get();
 
-        foreach ($employeesWithoutWalletAccount as $emp) {
-            $inputs = [
-                'emp_id' => $emp->id,
-                'account_number' => $emp->code . '-W',
-                'balance' => 0.0,
-                'currency_code' => Money::$national_currency,
-                'account_type' => 'Wallet',
-            ];
+    //     if ($employeesWithoutWalletAccount->isEmpty()) {
+    //         return DV::error('No employees without wallet accounts');
+    //     }
 
-            if (self::accountNumberExists($inputs['account_number'], $inputs['account_type'])) {
-                return DV::error('Wallet account number already exists for employee ' . $emp->code);
-            }
+    //     foreach ($employeesWithoutWalletAccount as $emp) {
+    //         $inputs = [
+    //             'emp_id' => $emp->id,
+    //             'account_number' => $emp->code . '-W',
+    //             'balance' => 0.0,
+    //             'currency_code' => Money::$national_currency,
+    //             'account_type' => 'Wallet',
+    //         ];
 
-            $accountData = [
-                'emp_id' => $inputs['emp_id'],
-                'account_number' => $inputs['account_number'],
-                'balance' => $inputs['balance'],
-                'currency_code' => $inputs['currency_code'],
-                'account_type' => $inputs['account_type'],
-                'branch_id' => $branch_id
-            ];
+    //         if (self::accountNumberExists($inputs['account_number'], $inputs['account_type'])) {
+    //             return DV::error('Wallet account number already exists for employee ' . $emp->code);
+    //         }
 
-            $saved = saveData($ss, 'accounts', [], $accountData, [], 1);
-            if (!$saved) {
-                return DV::error('Failed to create wallet account for employee ' . $emp->code);
-            }
-        }
+    //         $accountData = [
+    //             'emp_id' => $inputs['emp_id'],
+    //             'account_number' => $inputs['account_number'],
+    //             'balance' => $inputs['balance'],
+    //             'currency_code' => $inputs['currency_code'],
+    //             'account_type' => $inputs['account_type'],
+    //             'branch_id' => $branch_id
+    //         ];
 
-        return DV::depends(1);
-    }
+    //         $saved = saveData($ss, 'accounts', [], $accountData, [], 1);
+    //         if (!$saved) {
+    //             return DV::error('Failed to create wallet account for employee ' . $emp->code);
+    //         }
+    //     }
+
+    //     return DV::depends(1);
+    // }
+
     function PayrollList($arr, $ss)
     {
         $d = (object) $arr;

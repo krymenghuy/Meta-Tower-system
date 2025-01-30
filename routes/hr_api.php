@@ -246,8 +246,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('salary-histor
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
 
     Route::post('/save', [AccountController::class, 'saveAccount']);
-    Route::post('/save-missing-account-payroll', [AccountController::class, 'saveMissingAccountPayroll']);
-    Route::post('/save-missing-account-wallet', [AccountController::class, 'saveMissingAccountWallet']);
+    Route::post('/bulk-create', [AccountController::class, 'bulkCreateAccounts']);
+    //Route::post('/save-missing-account-wallet', [AccountController::class, 'saveMissingAccountWallet']);
     Route::post('/payroll-account-list-paginate', [AccountController::class, 'getPayrollAccountListPaginate']);
     Route::post('/wallet-account-list-paginate', [AccountController::class, 'getWalletAccountListPaginate']);
     Route::post('/details', [AccountController::class, 'getDetails']);

@@ -138,21 +138,24 @@ var AccountMenagmentComponent =  (function () {
         };
         mThis.btnAddAccountMissing.onclick = function (e) {
             e.preventDefault();
-
             const op = {
-                account_id: mThis.divFilter.value,
+                account_type:'Payroll'
             };
 
-            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Create account missing? </span><small>This process will create accounts missing</small>', {
-                title: 'Create account missing',
-                context: 'save account missing',
-                confirmButtonText: "Create account missing?"
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>', {
+                title: 'Bulk Create Accounts',
+                context: 'update', //NOTE that now "context" can be "delete" for red color, and "update" for Green color
+                confirmButtonText: "Bulk Create"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/account/save-missing-account-payroll'].join(''), op, false, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/account/bulk-create'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Create missing account successfully!');
-                            mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                            const d = res.data;
+                            if(d.success_count > 0){
+                                mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                                cv_interact.success(`${d.success_count} have been created!`);
+                            }
+                            else cv_interact.info('No account were created! Maybe because all staff already have an account!'); 
                         } else cv_interact.error(res.error_message);
                     });
                 }
