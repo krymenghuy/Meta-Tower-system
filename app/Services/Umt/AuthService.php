@@ -75,6 +75,7 @@ class AuthService {
   /** getAppAuthData() is for Web-based session only. getAppAuthData() return authenticated user information, and permissions, accessible modules for one app only */
   static function getAuthData($app_id){
     $current_user = Session::get('user');
+    if(!$current_user) return null;
     unset($current_user->access_token);
     unset($current_user->hpwd);
      if($app_id){
