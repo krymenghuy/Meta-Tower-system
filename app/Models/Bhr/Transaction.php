@@ -18,32 +18,6 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    static function deposit($arr, $ss ){
-        $v_rule = [
-            'emp_id' => '0|number',
-            'payroll_id' => '0|number',
-            'amount' => '1|number',
-            'remarks' => '0|string|250',
-            'trx_type' => '1|number',
-            'status'=>'0|string|10',
-            'account_id' => '1|number',
-            'from_account_id' => '0|number',
-            'to_account_id' => '0|number',
-
-
-        ];
-
-        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-
-        $inputs = $res->values;
-        $inputs['status'] = 'in';
-
-        $id = saveData($ss,'transactions', ['id' => null], $inputs, [], 1,false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
-    }
-
     static function create($arr, $update_balance = false,$ss = null,$status='in'){
         $ss = $ss ?? Transaction::$userInfo;
         $v_rule = [

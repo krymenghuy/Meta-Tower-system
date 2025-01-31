@@ -153,7 +153,7 @@ var AccountMenagmentComponent =  (function () {
                             const d = res.data;
                             if(d.success_count > 0){
                                 mThis.AccountListView.showPage(mThis.getDataFormFilter());
-                                cv_interact.success(`${d.success_count} have been created!`);
+                                cv_interact.success(`${d.success_count} accounts have been created!`);
                             }
                             else cv_interact.info('No account were created! Maybe because all staff already have an account!'); 
                         } else cv_interact.error(res.error_message);

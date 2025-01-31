@@ -290,7 +290,7 @@ class Payroll
             $total->to_account_id = $master_account_id;
         }
 
-        $total = Transaction::deposit((array)$total, $ss)->data;
+        $total = Account::deposit((array)$total, $ss)->data;
         $new_balance = $total['transaction']['amount'] + $default_account->amount;
         $query = DB::table('accounts')
             ->where('id', 1)->update(['balance' => $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
@@ -326,12 +326,13 @@ class Payroll
         }
         $isDisbursed = self::isDisbursed($id);
         if ($isDisbursed) {
-            $rows = DB::table('transactions')->where('payroll_id', $id)->selectRaw('id, account_id, amount, currency_code')->get();
+            $rows = DB::table('transactions')->where('payroll_id', $id)->where('status', 'in')->selectRaw('id, account_id, amount, currency_code')->get();
             $success_count = 0;
             $failed_count = 0;
             foreach ($rows as $row) {
                 $inputs = [
                     'to_account_id' => 1,
+                    'payroll_id' => $id,
                     'remarks' => null,
                     'amount' => $row->amount,
                     'trx_type' => 3,
@@ -341,6 +342,8 @@ class Payroll
                 $res = $account->transferTo($inputs);
                 if ($res->status_code == 200) {
                     $success_count++;
+                    DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
+                    DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
                 } else {
                     $failed_count++;
                 }
@@ -378,6 +381,8 @@ class Payroll
                 $res = $account->transferTo($inputs);
                 if ($res->status_code == 200) {
                     $success_count++;
+                    DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
+                    DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
                 } else {
                     $failed_count++;
                 }
