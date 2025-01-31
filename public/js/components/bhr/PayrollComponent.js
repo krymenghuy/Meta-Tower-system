@@ -292,12 +292,12 @@ var PayrollComponent = new (function () {
                     name: "change_authorize",
                 },
                 {
-                    html: '<span class="ps-2"> Reset Authorize </span>',
+                    html: '<span class="ps-2"> Reset</span>',
                     icon: '<i class="fa fa-reply"></i>',
                     name: "reset_authorize",
                 },
                 {
-                    html: '<span class="ps-2"> Disburse </span>',
+                    html: '<span class="ps-2"> Disburse All</span>',
                     icon: '<i class="fa-solid fa-square-check"></i>',
                     name: "change_disbursed",
                 },
@@ -327,13 +327,13 @@ var PayrollComponent = new (function () {
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "change_authorize":
-                        mThis.changeAuthorize(id, menuLink);
+                        mThis.authorizePayroll(id, menuLink);
                         break;
                     case "reset_authorize":
-                        mThis.resetAuthorize(id, menuLink);
+                        mThis.resetPayroll(id, menuLink);
                         break;
                     case "change_disbursed":
-                        mThis.changeDisbursed(id, menuLink);
+                        mThis.disbursePayroll_all(id, menuLink);
                         break;
                     case "edit_payroll":
                         mThis.editPayroll(id, menuLink);
@@ -368,7 +368,7 @@ var PayrollComponent = new (function () {
         });
     };
 
-    mThis.changeAuthorize = (id, menuLink) => {
+    mThis.authorizePayroll = (id, menuLink) => {
         let p = {
             id: id,
             btn: menuLink,
@@ -386,7 +386,7 @@ var PayrollComponent = new (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${mThis.base_url}/hr/payroll/update-authorize`, p)
+                        .call(`${mThis.base_url}/hr/payroll/authorize`, p)
                         .then((res) => {
                             if (res.status_code === 200) {
                                 cv_interact.success("Authorized successfully");
@@ -397,7 +397,7 @@ var PayrollComponent = new (function () {
             }
         );
     };
-    mThis.resetAuthorize = (id, menuLink) => {
+    mThis.resetPayroll = (id, menuLink) => {
         const p = {
             id: id,
             btn: menuLink,
@@ -406,11 +406,11 @@ var PayrollComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Reset Authorize?",
+            'html:<span class="d-block">Are you sure you want to reset this payroll?</span> <small>This action will reverse all payroll transactions from staff payroll accounts back to the master payroll account!</small>',
             {
-                title: "Reset Authorize",
-                context: "reset",
-                confirmButtonText: "Reset Authorize",
+                title: "Reset Payroll",
+                context: "delete",
+                confirmButtonText: "Reset Now",
             },
             function (e) {
                 if (e) {
@@ -427,7 +427,7 @@ var PayrollComponent = new (function () {
                             console.log(404040,p);
                             
                             if (res.status_code === 200) {
-                                cv_interact.success("Reset authorized successfully");
+                                cv_interact.success("Payroll has been reset!");
                                 mThis.PayrollListView.showPage(mThis.getDataFormFilter());
                             } else cv_interact.error(res.error_message);
                         });
@@ -435,8 +435,8 @@ var PayrollComponent = new (function () {
             }
         );
     };
-    mThis.changeDisbursed = (id, menuLink) => {
-        let p = {
+    mThis.disbursePayroll_all = (id, menuLink) => {
+        const p = {
             id: id,
             btn: menuLink,
             onClose: () => {
@@ -453,10 +453,10 @@ var PayrollComponent = new (function () {
             function (e) {
                 if (e) {
                     vsapi
-                        .call(`${mThis.base_url}/hr/payroll/update-disburse`, p)
+                        .call(`${mThis.base_url}/hr/payroll/disburse-all`, p,false)
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Disbursed successfully");
+                                cv_interact.success("Payroll disbursement was successful!");
                                 mThis.PayrollListView.showPage();
                             } else cv_interact.error(res.error_message);
                         });

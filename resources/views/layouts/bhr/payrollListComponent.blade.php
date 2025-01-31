@@ -49,7 +49,7 @@
 
             </div>
         </div>
-        <div id="_payrollList_list" class="px-4 mt-3"></div>
+        <div id="_payrollList_list" class="px-4 mt-3 h-100"></div>
     </div>
 
     <div class="d-none row bg-white" id="pay_slip">
