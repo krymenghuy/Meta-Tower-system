@@ -10,6 +10,7 @@ var EmployeeBenefitComponent = new (function () {
     mThis.title_prop = "Employee Benefits";
 
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
+    mThis.btnImport = mThis.self.querySelector("#_btn_import_benefit");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_bonus");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");

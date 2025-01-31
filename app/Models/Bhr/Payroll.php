@@ -214,7 +214,7 @@ class Payroll
          'payroll_id'=>$id,
          'description'=>"disbursement by $ss->full_name at $nowTime",
          'total'=>$payroll->total,
-         'currency'=>$payroll->currency_code,
+         'currency_code'=>$payroll->currency_code,
          'head_count'=>$payroll->head_count
        ];
        $disburse_id = saveData($ss,'payroll_disbursements',['id'=>null],$inputs,[],1,false,'binary');
@@ -382,18 +382,18 @@ class Payroll
             ->selectRaw('balance as amount, a.id as account_id')->first();
         if (!$default_account) return DV::error('Master payroll account is not yet created!');
 
-        if ($total) {
+        // if ($total) {
 
-            $total->trx_type = "1";
-            $total->account_id = 1;
-            $total->payroll_id = $total->id;
-            $total->to_account_id = $master_account_id;
-        }
+        //     $total->trx_type = "1";
+        //     $total->account_id = 1;
+        //     $total->payroll_id = $total->id;
+        //     $total->to_account_id = $master_account_id;
+        // }
 
-        $total = Account::deposit((array)$total, $ss)->data;
-        $new_balance = $total['transaction']['amount'] + $default_account->amount;
-        $x = DB::table('accounts')
-            ->where('id', 1)->update(['balance' => $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
+        // $total = Account::deposit((array)$total, $ss)->data;
+        // $new_balance = $total['transaction']['amount'] + $default_account->amount;
+        // $x = DB::table('accounts')
+        //     ->where('id', 1)->update(['balance' => $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
 
         $x = DB::table('payrolls')->where('id', $id)->update([
             'authorized' => 1,
@@ -449,7 +449,7 @@ class Payroll
                 }
             }
             if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
-                DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'disbursed' => 0]);
+                DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
                 return DV::depends(1);
             }
@@ -496,13 +496,11 @@ class Payroll
                 $cnt++;
             }
             if ($success_count > 0 || $cnt == 0) {
-                \Log::info('disbursed: 1');
                 DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'disbursed' => 0, 'last_disburse_id'=>null]);
                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
                 return DV::depends(1);
             }else return DV::error("Failed to reset payroll!");
         }
-        \Log::info('not disbursed: 0');
         DB::table('payrolls')->where('id', $id)->update(['authorized' => 0, 'disbursed' => 0, 'last_disburse_id'=>null]);
         DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
         return DV::depends(1); 
@@ -894,7 +892,7 @@ class Payroll
         $ss = $ss ?? $this->userInfo;
         
         if (!$payroll_id)  return DV::error('No payroll ID provided');
-        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed');
+        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed,start_date,end_date');
         if (!$payroll) return DV::error('Payroll period not found'); 
         $start_date = convertDate($payroll->start_date);
         $end_date = convertDate($payroll->end_date);

@@ -101,7 +101,8 @@ class AccountController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->getFormOptions($req->id, $ss));
+        $id = $req->id;
+        return JDV::result($this->account->getFormOptions($id, $ss));
     }
 
     public function transfer(Request $req)
