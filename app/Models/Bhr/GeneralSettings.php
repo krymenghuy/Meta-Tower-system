@@ -68,7 +68,10 @@ class GeneralSettings //extends Model
         $rows = DB::table('loc_countries')->where('name','Cambodia')->select('id','name_kh','name','nationality')->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
     }
-
+    static function options_department($ss)
+    {
+        return DB::table('departments')->selectRaw('id,name')->get();
+    }
 
 
     static function options_mobile_app($ss){

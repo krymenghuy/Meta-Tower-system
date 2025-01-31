@@ -13,6 +13,10 @@
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-50 gap-2">
+            <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_import_benefit">
+                <i class="fa-solid fa-download"></i>
+                <span>Import Benefit</span>
+            </button>
             <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_add_benefit">
                 <i class="fa-solid fa-layer-group"></i>
                 <span>Add Benefit</span>

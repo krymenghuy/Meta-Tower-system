@@ -31,8 +31,8 @@ class Account
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-
-            'emp_id' => '1|number',
+            'id' => '0|identity=1',
+            'emp_id' => '0|number',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
             'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
@@ -43,7 +43,7 @@ class Account
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
         $emp = Employee::getProps($emp_id, 'id,code,name');
-        if (!$emp) return DV::error('Employee ID does not exist');
+        // if (!$emp) return DV::error('Employee ID does not exist');
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
         $account_number = $inputs['account_number'];
         if (!$account_number) {
@@ -92,21 +92,22 @@ class Account
         return $exists;
     }
 
-    static function employeeHasAccount($emp_id, $account_type){
-        $row = DB::table('accounts')->where('emp_id',$emp_id)->where('account_type',$account_type)->selectRaw('id')->first();
-        return $row? true:false;
+    static function employeeHasAccount($emp_id, $account_type)
+    {
+        $row = DB::table('accounts')->where('emp_id', $emp_id)->where('account_type', $account_type)->selectRaw('id')->first();
+        return $row ? true : false;
     }
     //$account_type = {'Payroll','Wallet'}
     function bulkCreateAccounts($account_type, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $bin_subs_id = hex2bin($ss->subs_id);
-        if(!in_array(strtolower($account_type), ['payroll','wallet'])) return DV::error('The account type must be Payroll or Wallet');
+        if (!in_array(strtolower($account_type), ['payroll', 'wallet'])) return DV::error('The account type must be Payroll or Wallet');
         $emps = DB::table('employees as e')
-        ->where('e.subs_id',$bin_subs_id)
-        ->select('e.id', 'e.code', 'e.name')
-        ->get();
-        if ($emps->isEmpty()) return DV::error('It looks like all employees already have a ?? account!::'.$account_type); 
+            ->where('e.subs_id', $bin_subs_id)
+            ->select('e.id', 'e.code', 'e.name')
+            ->get();
+        if ($emps->isEmpty()) return DV::error('It looks like all employees already have a ?? account!::' . $account_type);
 
         $success_count = 0;
         $emp_count = 0;
@@ -114,13 +115,13 @@ class Account
         foreach ($emps as $emp) {
             $inputs = [
                 'emp_id' => $emp->id,
-                'account_number' => $emp->code . ($lowerAccountType === 'payroll'? '-P':'-W'),
+                'account_number' => $emp->code . ($lowerAccountType === 'payroll' ? '-P' : '-W'),
                 'balance' => 0.00,
                 'currency_code' => Money::$national_currency,
                 'account_type' => $account_type
             ];
 
-            if (!self::employeeHasAccount($emp->id,$account_type)) {
+            if (!self::employeeHasAccount($emp->id, $account_type)) {
                 // $accountData = [
                 //     'emp_id' => $inputs['emp_id'],
                 //     'account_number' => $inputs['account_number'],
@@ -129,16 +130,16 @@ class Account
                 //     'account_type' => $inputs['account_type']
                 //     //,'branch_id'=>$branch_id // *** NO need of this branch_id
                 // ];
-    
-                $acc_id = saveData($ss, 'accounts', ['id'=>null], $inputs, [], 1,false);
+
+                $acc_id = saveData($ss, 'accounts', ['id' => null], $inputs, [], 1, false);
                 if ($acc_id) $success_count++;
             }
             // else{
             //      //account number based on Employee ID already exist
             // }
-            $emp_count++;   
+            $emp_count++;
         }
-        return DV::depends(1,['success_count'=>$success_count,'emp_count'=>$emp_count],'Failed to bulk create accounts');
+        return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');
     }
 
     // function createAccountWalletMissing($ss = null)
@@ -193,51 +194,78 @@ class Account
     function PayrollList($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
+        $ss = $ss ?? $this->userInfo;
+        $bin_subs_id = hex2bin($ss->subs_id);
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page))  $current_page = 1;
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
-        $sort_by = $d->sort_by ?? 'a.id';
-        $sort_order = $d->sort_order ?? 'asc';
+        $department_id = $d->department_id ?? null;
+        $is_master_account = $d->is_master_account ?? null;
         $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-
-        $str_search = '1=1';
-
-        $query = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('
-               a.id,
-               a.emp_id,
-               e.name as emp_name,
-               pos.title as position,
-               a.account_type,
-               a.account_number,
-               a.balance,
-               a.currency_code,
-               ' . $balance_date . ',
-               e.photo_file_name as emp_photo
-           ')
-            ->where('a.branch_id', $branch_id)
-            ->where('a.account_type', 'Payroll');
-
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->where('e.name', 'LIKE', '%' . $search_value . '%');
+        $query = null;
+        if ($is_master_account == 1) {
+            $query = DB::table('accounts as a')
+                ->where('a.subs_id', $bin_subs_id)
+                ->where('account_type', 'payroll')
+                ->where('a.id', '=', 1)
+                ->selectRaw('a.id,
+                   a.emp_id,
+                   null as emp_name,
+                   null as position,
+                   null as department_id,
+                   a.account_type,
+                   a.account_number,
+                   a.balance,
+                   a.currency_code,
+                   ' . $balance_date . ',
+                   null as emp_photo');
+        } else {
+            $query = DB::table('accounts as a')
+                ->join('employees as e', 'e.id', '=', 'a.emp_id')
+                ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+                ->selectRaw('
+                   a.id,
+                   a.emp_id,
+                   e.name as emp_name,
+                   pos.title as position,
+                   pos.department_id,
+                   a.account_type,
+                   a.account_number,
+                   a.balance,
+                   a.currency_code,
+                   ' . $balance_date . ',
+                   e.photo_file_name as emp_photo
+               ')
+                ->where('a.account_type', 'Payroll');
+            if ($search_value) {
+                $search_value = escape_like_str($search_value);
+                $query->where('e.name', 'LIKE', '%' . $search_value . '%');
+            }
+            if ($is_master_account != 1) {
+                $query->where('a.id', '!=', 1);
+            } else {
+                $query->where('a.id', 1);
+            }
+            if ($department_id) {
+                $query->where('pos.department_id', $department_id);
+            }
         }
 
-        $query->orderBy($sort_by, $sort_order);
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-            unset($row->emp_photo);
+            if ($is_master_account == 1) {
+                //change to put company logo
+                $row->image_url = '';
+                unset($row->emp_photo);
+            } else {
+                $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+                unset($row->emp_photo);
+            }
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -293,6 +321,7 @@ class Account
 
     function getDetails($id, $ss)
     {
+        $branch_id = $ss->branch_id;
         $primaryAccount = DB::table('accounts as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
@@ -329,7 +358,7 @@ class Account
             return $primaryAccount;
         }
 
-        return null;
+        return $primaryAccount;
     }
 
 
@@ -350,12 +379,7 @@ class Account
             $account = self::getDetails($id, $ss);
         }
         return (object) [
-
-            'sort_by' => [
-                ['id' => 'e.name', 'name' => 'By Name'],
-                ['id' => 'a.account_number', 'name' => 'By Account Number'],
-                ['id' => 'a.balance', 'name' => 'By  Balance'],
-            ],
+            'departments' => GeneralSettings::options_department($ss),
             'currency_codes' => Money::options_currency($ss),
             'employees' => GeneralSettings::options_employee([10, 20], $ss),
             'accounts' => $account,
@@ -391,9 +415,9 @@ class Account
         return DB::table('accounts')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    static function getMasterAccount(){
+    static function getMasterAccount()
+    {
         return DB::table('accounts as a')->where('id', 1)->selectRaw('a.id, \'Company accounts\' as name, a.balance, a.currency_code, a.account_number')->first();
-
     }
     //transfer money out $arr = [$to_account, $from_account,$amount , $currency, $remarks]
     function transfer($arr, $ss = null)
@@ -433,9 +457,9 @@ class Account
             if (!$to_account) return DV::error('Destination account id not found!');
             $to_account_id = $to_account->id;
         } else {
-            if($to_account_id == 1){
+            if ($to_account_id == 1) {
                 $to_account = self::getMasterAccount();
-            }else{
+            } else {
                 $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
             }
             if (!$to_account) return DV::error('Destination account id not found!');
@@ -469,10 +493,10 @@ class Account
             'remarks' => '0|string|250',
             'to_account_id' => '0|number|exists=accounts.id',
             'to_account' => '0|array',
-            
+
         ];
-        
-        $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number'=>['-']], $ss->lang);
+
+        $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object)$inputs;
@@ -491,7 +515,7 @@ class Account
             if ($d->to_account_id == 1) {
                 $to_account = self::getMasterAccount();
             } else {
-                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $d->to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();            
+                $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $d->to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
             }
             // $to_account = DB::table('accounts as a')->join('employees as emp', 'emp.id', '=', 'a.emp_id')->where('a.id', $d->to_account_id)->selectRaw('a.id, emp.name, a.balance, a.currency_code, a.account_number')->first();
             if (!$to_account) return DV::error('Destination account id not found!');

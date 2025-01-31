@@ -1,4 +1,4 @@
-var AccountMenagmentComponent =  (function () {
+var AccountMenagmentComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_accountComponent");
@@ -8,7 +8,8 @@ var AccountMenagmentComponent =  (function () {
     mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
-    mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
+    mThis.elSortByDepartment = mThis.self.querySelector("#el_sort_by_department");
+    mThis.elSortByAccount = mThis.self.querySelector("#el_sort_by_account");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
@@ -16,12 +17,12 @@ var AccountMenagmentComponent =  (function () {
     const formattedNumber = (number) => {
         number = Number(number) || 0;
         return number
-            .toLocaleString('en-US', {
+            .toLocaleString("en-US", {
                 useGrouping: true,
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             })
-            .replace(/,/g, ' ');
+            .replace(/,/g, " ");
     };
 
     mThis.cols = [
@@ -56,7 +57,9 @@ var AccountMenagmentComponent =  (function () {
             title: "Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-1 m-0 text-center rounded-5 m-0 border text-white w-50 bg-success">${data.account_type ?? ""}</p>`;
+                return `<p class="p-1 m-0 text-center rounded-5 m-0 border text-white w-50 bg-success">${
+                    data.account_type ?? ""
+                }</p>`;
             },
         },
         {
@@ -76,7 +79,9 @@ var AccountMenagmentComponent =  (function () {
                 } else if (data.currency_code === "KHR") {
                     currency_codeSymbol = "៛";
                 }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(
+                    data.balance ?? 0
+                )}</p>`;
             },
         },
 
@@ -101,7 +106,9 @@ var AccountMenagmentComponent =  (function () {
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_account_action"
-                    }" data-id="${data.id}" data-emp_id="${data.emp_id}" data-statusid="${
+                    }" data-id="${data.id}" data-emp_id="${
+                data.emp_id
+            }" data-statusid="${
                 data.status_id
             }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
@@ -112,7 +119,6 @@ var AccountMenagmentComponent =  (function () {
             </div>`,
         },
     ];
-
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -139,57 +145,77 @@ var AccountMenagmentComponent =  (function () {
         mThis.btnAddAccountMissing.onclick = function (e) {
             e.preventDefault();
             const op = {
-                account_type:'Payroll'
+                account_type: "Payroll",
             };
 
-            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>', {
-                title: 'Bulk Create Accounts',
-                context: 'update', //NOTE that now "context" can be "delete" for red color, and "update" for Green color
-                confirmButtonText: "Bulk Create"
-            }, function (confirmation) {
-                if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/account/bulk-create'].join(''), op, false, null).then(res => {
-                        if (res.status_code === 200) {
-                            const d = res.data;
-                            if(d.success_count > 0){
-                                mThis.AccountListView.showPage(mThis.getDataFormFilter());
-                                cv_interact.success(`${d.success_count} accounts have been created!`);
-                            }
-                            else cv_interact.info('No account were created! Maybe because all staff already have an account!'); 
-                        } else cv_interact.error(res.error_message);
-                    });
+            cv_interact.confirm(
+                'html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>',
+                {
+                    title: "Bulk Create Accounts",
+                    context: "update", //NOTE that now "context" can be "delete" for red color, and "update" for Green color
+                    confirmButtonText: "Bulk Create",
+                },
+                function (confirmation) {
+                    if (confirmation) {
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/hr/account/bulk-create",
+                                ].join(""),
+                                op,
+                                false,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    const d = res.data;
+                                    if (d.success_count > 0) {
+                                        mThis.AccountListView.showPage(
+                                            mThis.getDataFormFilter()
+                                        );
+                                        cv_interact.success(
+                                            `${d.success_count} accounts have been created!`
+                                        );
+                                    } else
+                                        cv_interact.info(
+                                            "No account were created! Maybe because all staff already have an account!"
+                                        );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    }
                 }
-            });
+            );
         };
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            const sub_content_account = mThis.self.querySelector("#sub_content_account");
+            const sub_content_account = mThis.self.querySelector(
+                "#sub_content_account"
+            );
             sub_content_account.classList.remove("d-none");
-            const view_transaction = mThis.self.querySelector("#view_transaction");
+            const view_transaction =
+                mThis.self.querySelector("#view_transaction");
             view_transaction.classList.add("d-none");
-
         };
 
         const pr_tbl = mThis.AccountListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 230) + 'px';
+        sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
-        }
-
+            sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.AccountListView.showPage(mThis.getDataFormFilter());
-            }
-       });
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.AccountListView.showPage(mThis.getDataFormFilter());
+            };
+        });
 
         mThis.initAlready = true;
     };
@@ -251,7 +277,9 @@ var AccountMenagmentComponent =  (function () {
             <div class="transaction_card overflow-y-auto overflow-x-hidden">
                 <div class="transaction_header">
                     <div class="transaction_logo">
-                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
+                        <img src="${
+                            main_view.base_url
+                        }/assets/images/logo/lc_logo.svg" alt="Company Logo">
                     </div>
                     <div class="transaction_title">
                         <h4>Transaction</h4>
@@ -261,42 +289,56 @@ var AccountMenagmentComponent =  (function () {
                     <div class="row cols-2 mb-0">
                         <div class="col-2">
                             <div class="transaction_image">
-                                <img src="${employee.image_url}" alt="Profile Image">
+                                <img src="${
+                                    employee.image_url
+                                }" alt="Profile Image">
                             </div>
                         </div>
                         <div class="col-5 p_profile_left">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Employee Name</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${employee.emp_name}</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.emp_name
+                                }</p>
                             </div>
 
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Account Number</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap">${employee.account_number}</p>
+                                <p class="text-nowrap">${
+                                    employee.account_number
+                                }</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Balance</p>
                                 <p class="px-3">:</p>
-                                <p class="text-nowrap text-capitalize">${employee.balance}</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.balance
+                                }</p>
                             </div>
                         </div>
                         <div class="col-5 p_profile_right">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Account Type</p>
                                 <p class="px-4">:</p>
-                                <p class="text-nowrap">${employee.account_type}</p>
+                                <p class="text-nowrap">${
+                                    employee.account_type
+                                }</p>
                             </div>
                              <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Account Currency</p>
                                 <p class="px-4">:</p>
-                                <p class="text-nowrap text-capitalize">${employee.currency_code}</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.currency_code
+                                }</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Last Balance Date</p>
                                 <p class="px-4">:</p>
-                                <p class="text-nowrap text-capitalize">${employee.last_balance_date}</p>
+                                <p class="text-nowrap text-capitalize">${
+                                    employee.last_balance_date
+                                }</p>
                             </div>
                         </div>
                     </div>
@@ -316,23 +358,43 @@ var AccountMenagmentComponent =  (function () {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${transactions.map(trx => `
+                                ${transactions
+                                    .map(
+                                        (trx) => `
                                     <tr>
-                                        <td>${trx.trx_type === 1 ? 'Deposit' : trx.trx_type === 2 ? 'Withdrawal' : 'Transfer'}</td>
+                                        <td>${
+                                            trx.trx_type === 1
+                                                ? "Deposit"
+                                                : trx.trx_type === 2
+                                                ? "Withdrawal"
+                                                : "Transfer"
+                                        }</td>
                                         <td>${trx.from_account_number}</td>
                                         <td>${trx.to_account_number}</td>
-                                        <td class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
-                                            ${Number(trx.amount).toLocaleString('en-US').replace(/,/g, ' ')}
+                                        <td class="${
+                                            trx.status === "in"
+                                                ? "text-success"
+                                                : "text-danger"
+                                        }">
+                                            ${Number(trx.amount)
+                                                .toLocaleString("en-US")
+                                                .replace(/,/g, " ")}
                                         </td>
                                         <td>${trx.created_at}</td>
                                         <td>
-                                            <span class="${trx.status === 'in' ? 'text-success' : 'text-danger'}">
+                                            <span class="${
+                                                trx.status === "in"
+                                                    ? "text-success"
+                                                    : "text-danger"
+                                            }">
                                                 ${trx.status}
                                             </span>
                                         </td>
                                         <td>${trx.remarks}</td>
                                     </tr>
-                                `).join('')}
+                                `
+                                    )
+                                    .join("")}
                             </tbody>
 
                         </table>
@@ -344,11 +406,10 @@ var AccountMenagmentComponent =  (function () {
         mThis._transaction_info.innerHTML = html;
     };
 
-
-    mThis.btnPrintTransaction.addEventListener('click', () => {
+    mThis.btnPrintTransaction.addEventListener("click", () => {
         windowPrintTransaction(mThis._transaction_info.innerHTML);
         // window.print();
-    })
+    });
 
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
@@ -368,7 +429,12 @@ var AccountMenagmentComponent =  (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-
+                {
+                    html: '<span class="ps-2  " vslang="titles.Deposit Amount">Deposit Amount</span>',
+                    icon: `<i class="fa fa-calculator"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "deposit_amount",
+                },
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
@@ -401,6 +467,10 @@ var AccountMenagmentComponent =  (function () {
                         mThis.transfer(id, menuLink);
                         break;
                     }
+                    case "deposit_amount": {
+                        mThis.deposit_amount(id, menuLink);
+                        break;
+                    }
                     case "view_transaction": {
                         mThis.viewTransaction(id, menuLink);
                         break;
@@ -427,17 +497,28 @@ var AccountMenagmentComponent =  (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-
                 mThis.AccountListView.showPage();
             },
         };
 
         TransferDialog.show(op);
     };
+    mThis.deposit_amount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage();
+            },
+        };
+
+        DepositDialog.show(op);
+    };
 
     mThis.viewTransaction = (id, menuLink) => {
-
-        const sub_content_account = mThis.self.querySelector("#sub_content_account");
+        const sub_content_account = mThis.self.querySelector(
+            "#sub_content_account"
+        );
         sub_content_account.classList.add("d-none");
         const view_transaction = mThis.self.querySelector("#view_transaction");
         view_transaction.classList.remove("d-none");
@@ -446,19 +527,36 @@ var AccountMenagmentComponent =  (function () {
         let op = {
             emp_id: emp_id,
             account_id: id,
-        }
+        };
 
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/account/print-transaction`,
+                op,
+                false,
+                false,
+                false
+            )
+            .then((res) => {
+                if (res.status_code == 200) {
+                    let d = res.data;
+                    // console.log(555,d);
 
-        vsapi.call(`${main_view.base_url}/hr/account/print-transaction`,op,false,false,false).then(res => {
+                    mThis.renderTransaction(d);
+                }
+            });
+    };
+    mThis.editAccount = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage();
+            },
+        };
 
-            if(res.status_code == 200){
-                let d = res.data;
-                // console.log(555,d);
-
-                mThis.renderTransaction(d)
-            }
-        })
-    }
+        AccountDialog.show(op);
+    };
     mThis.editAccount = (id, menuLink) => {
         let op = {
             id: id,
@@ -501,8 +599,7 @@ var AccountMenagmentComponent =  (function () {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted successfully");
                                 mThis.AccountListView.showPage();
-                            }
-                            else cv_interact.error(res.error_message);
+                            } else cv_interact.error(res.error_message);
                         });
                 }
             }
@@ -512,12 +609,14 @@ var AccountMenagmentComponent =  (function () {
     mThis.getDataFormFilter = () => {
         let p = {};
         // p.search_value = mThis.elSearch.value;
-        // p.sort_by = mThis.elSortBy.value;
+        p.sort_by_department = mThis.elSortByDepartment.value;
+        // p.sort_by_branch = mThis.elSortByBranch.value;
+        p.sort_by_account = mThis.elSortByAccount.value;
 
         p.account_id = mThis.divFilter.value;
 
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
@@ -537,9 +636,13 @@ var AccountMenagmentComponent =  (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 // console.log(1111, this.elSortBy);
 
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
-
-
+                VSUtil.setComboItems(
+                    mThis.elSortByDepartment,
+                    d.departments,
+                    "id",
+                    "name",
+                    true
+                );
             });
     };
 
@@ -552,7 +655,6 @@ var AccountMenagmentComponent =  (function () {
         mThis.jm.fadeIn(200);
     };
     return mThis;
-
 })();
 
 const AccountDialog = (() => {
@@ -567,7 +669,7 @@ const AccountDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                    `<div class="row">
+                        `<div class="row">
                         <div class="form-group col-12">
                             <label for="employee" class="form-label" vslang="titles.Employee"></label>
                             <select name="employee" class=" data-input"  data-field="emp_id"></select>
@@ -621,7 +723,7 @@ const AccountDialog = (() => {
                         data: "currency_codes",
                         textField: "code",
                         valueField: "code",
-                    }
+                    },
                 ],
                 buttons: [
                     {
@@ -636,7 +738,6 @@ const AccountDialog = (() => {
                         label: "<span>Save</span>",
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
-
                             const p = me.getData();
 
                             p.id = me.dataOptions.id;
@@ -656,12 +757,14 @@ const AccountDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if(me.dataOptions.id > 0)
-                                        {
-                                            cv_interact.success('Updated payroll account successfully');
-                                        }
-                                        else{
-                                        cv_interact.success('Added payroll account successfully');
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated payroll account successfully"
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Added payroll account successfully"
+                                            );
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -701,8 +804,123 @@ const AccountDialog = (() => {
                     }
                 },
             });
-// console.log(333,op);
+        // console.log(333,op);
 
+        dialog.show(op);
+    };
+
+    return self;
+})();
+const DepositDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
+                            <div class="form-group col-6">
+                                <label for="ballance" class="form-label" vslang="titles.Balance"></label>
+                                <input name="ballance" class="form-control data-input" data-field="balance"  />
+                            </div>
+                            <div class="form-group col-6">
+                                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                                    <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="remarks" class="form-label" vslang="titles.Remark"></label>
+                                <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                            </div>
+                        </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    const currency_codeField = me.controls.currency_code;
+                    if (currency_codeField && !currency_codeField.value) {
+                        currency_codeField.value = "KHR";
+                    }
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id;
+
+                            // console.log(555,p);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/account/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Updated balance successfully"
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "Added balance successfully"
+                                            );
+                                        }
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Edit Account",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/account/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+
+                onPrepareForm: (me) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
         dialog.show(op);
     };
 
@@ -714,7 +932,8 @@ const TransferDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog ||
+        dialog =
+            dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg",
                 backdrop: "static",
@@ -758,8 +977,7 @@ const TransferDialog = (() => {
                         </div>
                     `;
                 },
-                contentCreated: (me) => {
-                },
+                contentCreated: (me) => {},
                 prepareFormOptions: {
                     createTitle: "Add Account",
                     modifyTitle: "Transfer",
@@ -779,19 +997,29 @@ const TransferDialog = (() => {
                     let to_account = me.controls.to_account_number;
                     let from_account_info = me.controls.from_account_info;
                     let to_account_info = me.controls.to_account_info;
-                    const exchange_rate = me.divModal.querySelector(".exchange_rate");
-                    exchange_rate.classList.add('d-none');
+                    const exchange_rate =
+                        me.divModal.querySelector(".exchange_rate");
+                    exchange_rate.classList.add("d-none");
 
                     // account.onchange = (e) => {
-                        // console.log(1111,e);
+                    // console.log(1111,e);
 
-                        let p ={'account_number': account.value};
-                        vsapi.call([main_view.base_url, '/hr/account/get-info'].join(''), p, null, null).then(res => {
+                    let p = { account_number: account.value };
+                    vsapi
+                        .call(
+                            [main_view.base_url, "/hr/account/get-info"].join(
+                                ""
+                            ),
+                            p,
+                            null,
+                            null
+                        )
+                        .then((res) => {
                             if (res.status_code == 200) {
                                 let d = res.data;
                                 me.account_type = d.account_type;
                                 me.currency_code = d.currency_code;
-                                let div = '';
+                                let div = "";
                                 div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
                                             <div>
                                                 <label for="account_type" class="form-label">Account Type</label>
@@ -812,20 +1040,30 @@ const TransferDialog = (() => {
                                         </div>`;
                                 from_account_info.innerHTML = div;
                             }
-
                         });
 
                     // };
 
                     to_account.onchange = (e) => {
-                        let p ={'account_number': to_account.value};
-                        vsapi.call([main_view.base_url, '/hr/account/get-info'].join(''), p, null, null).then(res => {
-                            if (res.status_code == 200) {
-                                let d = res.data;
-                                me.to_account_type = d.account_type;
-                                me.to_account_currency_code = d.currency_code;
-                                let div = '';
-                                div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
+                        let p = { account_number: to_account.value };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/hr/account/get-info",
+                                ].join(""),
+                                p,
+                                null,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    let d = res.data;
+                                    me.to_account_type = d.account_type;
+                                    me.to_account_currency_code =
+                                        d.currency_code;
+                                    let div = "";
+                                    div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
                                             <div>
                                                 <label for="account_type" class="form-label">Account Type</label>
                                                 <span class = "mx-2">:</span>
@@ -842,17 +1080,19 @@ const TransferDialog = (() => {
                                                 <span class = "text-primary">${d.currency_code}</span>
                                             </div>
                                         </div>`;
-                                to_account_info.innerHTML = div;
-                                if(me.to_account_currency_code == me.currency_code){
-                                    exchange_rate.classList.add('d-none');
+                                    to_account_info.innerHTML = div;
+                                    if (
+                                        me.to_account_currency_code ==
+                                        me.currency_code
+                                    ) {
+                                        exchange_rate.classList.add("d-none");
+                                    } else {
+                                        exchange_rate.classList.remove(
+                                            "d-none"
+                                        );
+                                    }
                                 }
-                                else{
-                                    exchange_rate.classList.remove('d-none');
-
-                                }
-                            }
-
-                        });
+                            });
                     };
                 },
 
@@ -872,63 +1112,110 @@ const TransferDialog = (() => {
                             p.account_type = me.account_type;
                             p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
-                            p.to_account_currency_code = me.to_account_currency_code;
+                            p.to_account_currency_code =
+                                me.to_account_currency_code;
                             p.id = me.dataOptions.id;
                             // console.log(1234, p);
 
-                            if(me.to_account_currency_code != me.currency_code){
-                                if(!me.controls.exchange_rate.value){
-                                    cv_interact.error('Please enter exchange rate');
+                            if (
+                                me.to_account_currency_code != me.currency_code
+                            ) {
+                                if (!me.controls.exchange_rate.value) {
+                                    cv_interact.error(
+                                        "Please enter exchange rate"
+                                    );
                                     return;
                                 }
                             }
 
-                            vsapi.call([main_view.base_url, '/hr/account/get-confirm'].join(''), p, null, null).then(res => {
-                                if (res.status_code === 200 && res.data) {
-                                    const confirmationMessage = `Are you sure to transfer? to [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/account/get-confirm",
+                                    ].join(""),
+                                    p,
+                                    null,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200 && res.data) {
+                                        const confirmationMessage = `Are you sure to transfer? to [${res.data.to_account_number}] (${res.data.to_account_type}) - ${res.data.emp_name}`;
 
-                                    cv_interact.confirm(confirmationMessage, {
-                                        title: 'Confirm or Cancel Transfer',
-                                        context: 'Cancel',
-                                        confirmButtonText: "Transfer"
-                                    }, function (confirmation) {
-                                        if (confirmation) {
-                                            // console.log('Transfer data to be sent:', p);
+                                        cv_interact.confirm(
+                                            confirmationMessage,
+                                            {
+                                                title: "Confirm or Cancel Transfer",
+                                                context: "Cancel",
+                                                confirmButtonText: "Transfer",
+                                            },
+                                            function (confirmation) {
+                                                if (confirmation) {
+                                                    // console.log('Transfer data to be sent:', p);
 
-                                            vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
-                                                // console.log('Transfer response:', res);
+                                                    vsapi
+                                                        .call(
+                                                            [
+                                                                main_view.base_url,
+                                                                "/hr/account/transfer",
+                                                            ].join(""),
+                                                            p,
+                                                            null,
+                                                            null
+                                                        )
+                                                        .then((res) => {
+                                                            // console.log('Transfer response:', res);
 
-                                                if (res.status_code === 200 && res.data) {
-                                                    let formattedData = `
+                                                            if (
+                                                                res.status_code ===
+                                                                    200 &&
+                                                                res.data
+                                                            ) {
+                                                                let formattedData = `
                                                         Transfer Successful
                                                         From: ${res.data.from_account_number}
                                                         To: ${res.data.to_account_number}
                                                     `;
-                                                    cv_interact.success(formattedData);
-                                                    AccountMenagmentComponent.AccountListView.showPage();
-                                                    me.hide(false);
+                                                                cv_interact.success(
+                                                                    formattedData
+                                                                );
+                                                                AccountMenagmentComponent.AccountListView.showPage();
+                                                                me.hide(false);
+                                                            } else {
+                                                                cv_interact.error(
+                                                                    res.error_message ||
+                                                                        "Error in processing transfer"
+                                                                );
+                                                            }
+                                                        })
+                                                        .catch((err) => {
+                                                            // console.log('Error during transfer:', err);
+                                                            cv_interact.error(
+                                                                res.error_message ||
+                                                                    "Error in processing transfer"
+                                                            );
+                                                        });
                                                 } else {
-                                                    cv_interact.error(res.error_message || 'Error in processing transfer');
+                                                    cv_interact.info(
+                                                        "Transfer cancelled!"
+                                                    );
                                                 }
-                                            }).catch(err => {
-                                                // console.log('Error during transfer:', err);
-                                                cv_interact.error(res.error_message || 'Error in processing transfer');
-                                            });
-                                        } else {
-                                            cv_interact.info('Transfer cancelled!');
-                                        }
-                                    });
-                                } else {
-                                    cv_interact.error(res.error_message || 'Error fetching confirmation data');
-                                }
-                            }).catch(err => {
-                                // console.log('Error fetching confirmation:', err);
-                                cv_interact.error('Error in processing confirmation');
-                            });
-
-
-                        }
-
+                                            }
+                                        );
+                                    } else {
+                                        cv_interact.error(
+                                            res.error_message ||
+                                                "Error fetching confirmation data"
+                                        );
+                                    }
+                                })
+                                .catch((err) => {
+                                    // console.log('Error fetching confirmation:', err);
+                                    cv_interact.error(
+                                        "Error in processing confirmation"
+                                    );
+                                });
+                        },
                     },
                 ],
             });
@@ -938,14 +1225,11 @@ const TransferDialog = (() => {
     return self;
 })();
 
-
-function windowPrintTransaction(html=null)
-{
+function windowPrintTransaction(html = null) {
     let HtmlString = null;
     HtmlString = html ? html : HtmlString;
-    if(HtmlString)
-    {
-        let myWindow = window.open('','PRINT');
+    if (HtmlString) {
+        let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
@@ -974,8 +1258,6 @@ function windowPrintTransaction(html=null)
             myWindow.focus();
             myWindow.print();
             myWindow.close();
-        },500);
-    }
-    else
-        cv_interact.warning('Select run report before print!');
+        }, 500);
+    } else cv_interact.warning("Select run report before print!");
 }
