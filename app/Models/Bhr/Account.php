@@ -406,6 +406,7 @@ class Account
         $from_account = (object)($d->from_account ?? null);
         $to_account = (object)($d->to_account ?? null);
         $exchange_rate = $d->exchange_rate ?? 1;
+        $payroll_id = $d->payroll_id ?? null;
         if (!$from_account_id) {
             //check if know only account number / don't know account id 
             if ($from_account->account_number == 1) {
@@ -450,9 +451,9 @@ class Account
             return DV::error('Insufficient balance');
         }
         $remarks = null;
-        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id];
+        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id];
         self::createTransaction($inputs, true, $from_account_id, $ss);
-        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id];
+        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id];
         self::createTransaction($inputs, true, $to_account_id, $ss);
         return DV::depends(1);
         //rollback amount when one of the transactions fails
@@ -463,10 +464,12 @@ class Account
         $id = $id ?? $this->id;
         $v_rule = [
             'amount' => '1|positive',
+            'payroll_id' => '0|number',
             'exchange_rate' => '0|number|default=1',
             'remarks' => '0|string|250',
             'to_account_id' => '0|number|exists=accounts.id',
             'to_account' => '0|array',
+            
         ];
         
         $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number'=>['-']], $ss->lang);
@@ -504,6 +507,7 @@ class Account
         $id = $id ?? $this->id;
         $v_rule = [
             'amount' => '1|positive',
+            'payroll_id' => '0|number',
             'exchange_rate' => '0|number|default=1',
             'remarks' => '0|string|250',
             'trx_type' => '1|choice|1,2,3',
@@ -626,6 +630,32 @@ class Account
         $id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
         $hex_trx_id = bin2hex($id);
         return DV::depends($hex_trx_id, ['transaction' => $inputs, 'trx_id' => $hex_trx_id], 'Failed to save transaction');
+    }
+    static function deposit($arr, $ss)
+    {
+        $v_rule = [
+            'emp_id' => '0|number',
+            'payroll_id' => '0|number',
+            'amount' => '1|number',
+            'remarks' => '0|string|250',
+            'trx_type' => '1|number',
+            'status' => '0|string|10',
+            'account_id' => '1|number',
+            'from_account_id' => '0|number',
+            'to_account_id' => '0|number',
+
+
+        ];
+
+        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-']], $ss->lang);
+        if ($res->error) return DV::error($res->error);
+
+        $inputs = $res->values;
+        $inputs['status'] = 'in';
+
+        $id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
+        $hex_trx_id = bin2hex($id);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs, 'trx_id' => $hex_trx_id]);
     }
 
     function printTransaction($arr, $ss)

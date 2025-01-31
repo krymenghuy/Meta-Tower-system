@@ -918,6 +918,7 @@ class PayrollList
         }
         $trx_inputs = [
             'to_account_id' => $to_account->account_id,
+            'payroll_id' => $to_account->payroll_id,
             'amount' => $emp->amount,
             'exchange_rate' => $payroll->exchange_rate,
             'remarks' => $emp->remarks
@@ -948,8 +949,6 @@ class PayrollList
     {
         $ss = $ss ?? $this->userInfo;
         $master_account_id = 1;
-        $transfer_amount = 0;
-
         $payroll = Payroll::getProps($payroll_id, 'id,name,currency_code, total,exchange_rate');
         if (!$payroll) return DV::error('The provided payroll ID does not exist');
         if (!Payroll::isAuthorized($payroll_id)) {
@@ -1006,7 +1005,7 @@ class PayrollList
             // if (!isset($payroll_account->account_id)) {
             //     $emp_id_no_account[] = $emp_id;
             // }
-            $trx_inputs = ['to_account_id' => $emp->account_id, 'amount' => $emp->amount, 'exchange_rate' => $emp->exchange_rate, 'remarks' => null];
+            $trx_inputs = ['to_account_id' => $emp->account_id, 'amount' => $emp->amount, 'exchange_rate' => $emp->exchange_rate, 'remarks' => null, 'payroll_id'=>$payroll_id];
             $account = new Account(1, $ss);
             $res = $account->transferTo($trx_inputs);
             if ($res->status_code === 200) {

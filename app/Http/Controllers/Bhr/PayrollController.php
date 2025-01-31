@@ -35,7 +35,7 @@ class PayrollController extends Controller
             return JDV::raw($ss);
         }
         $var = new Payroll();
-        $id = $req->id?? $req->payroll_id;
+        $id = $req->id;
         return JDV::result($var->reset($id, $ss));
     }
     public function resetStatus(Request $req)

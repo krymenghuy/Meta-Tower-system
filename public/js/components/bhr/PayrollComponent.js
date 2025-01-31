@@ -418,7 +418,8 @@ var PayrollComponent = new (function () {
                         .call(
                             `${mThis.base_url}/hr/payroll/reset`,
                             p,
-                            false
+                            false,
+                            null
                         )
                         
                         .then((res) => {
