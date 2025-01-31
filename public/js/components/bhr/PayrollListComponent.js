@@ -17,18 +17,8 @@ var PayrollListComponent = new (function () {
     mThis.payment_info = mThis.self.querySelector("#payment_info");
     mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
     mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
-
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString('en-US', {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, ' ');
-    };
-
+    mThis.div_payrollList = mThis.self.querySelector('#_payrollList_list');
+ 
     mThis.cols = [
 
         {
@@ -181,8 +171,8 @@ var PayrollListComponent = new (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PayrollList_ListView = new ListView('_payrollList_list',{
-            fetchApi : `${main_view.base_url}/hr/payroll-list/list-paginate`,
+        mThis.PayrollList_ListView = new ListView(mThis.div_payrollList,{
+            fetchApi : `${main_view.base_url}/hr/payroll/staff/list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -198,7 +188,7 @@ var PayrollListComponent = new (function () {
         mThis.btnCalculate.onclick = function (e) {
             e.preventDefault();
             const op = {
-                payroll_id: mThis.getFilterData().payroll_id,
+                payroll_id: mThis.getFilterData().payroll_id
             };
 
             cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
@@ -207,7 +197,7 @@ var PayrollListComponent = new (function () {
                 confirmButtonText: "Calculate"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/payroll/calculate'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
                             const d = res.data || {};
                             const error_count = d.error_count || 0;
@@ -245,7 +235,7 @@ var PayrollListComponent = new (function () {
                 confirmButtonText: "Disburse"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, false, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/payroll/disburse-all'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
                             cv_interact.success('Salary disbursements were successful!');
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
@@ -646,7 +636,7 @@ var PayrollListComponent = new (function () {
         let op = {
             id: id,
         }
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/pay-slip`,op,false,false,false).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/payroll/staff/pay-slip`,op,false,false,false).then(res => {
             console.log(666,res);
 
             if(res.status_code == 200){
@@ -688,7 +678,7 @@ var PayrollListComponent = new (function () {
             confirmButtonText:"Disburse"
         }, e =>{
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`, p, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll/disburse-one`, p, false, false, false).then(res => {
         console.log(3994, p);
                     
                     if(res.status_code == 200){
@@ -718,7 +708,7 @@ var PayrollListComponent = new (function () {
             confirmButtonText:"Remove"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll/staff/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.info('The staff has been removed from payroll!');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
@@ -751,7 +741,7 @@ var PayrollListComponent = new (function () {
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/payroll/staff/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             let payroll_id = null;
             const today = new Date();
@@ -824,11 +814,11 @@ const AddDeductionDialog = (() => {
             contentCreated: (me) => {
             },
             prepareFormOptions: {
-                createTitle: 'Insert Payroll ',
-                modifyTitle: 'Add Deduction ',
+                createTitle: 'Add Deduction',
+                modifyTitle: 'Edit Deduction ',
                 targetProp: 'payroll_list',
                 api: {
-                    endpoint: [main_view.base_url, '/hr/payroll-list/form-options'].join(''),
+                    endpoint: [main_view.base_url, '/hr/payroll/staff/form-options'].join(''),
                     params: (op) => {
                         return { 'id': op.id };
                     }
@@ -870,7 +860,7 @@ const AddDeductionDialog = (() => {
                         const p = me.getData();
                         p.id = me.dataOptions.id; // Get "id" from op
 
-                        vsapi.call([main_view.base_url, '/hr/payroll-list/save'].join(''), p, btn, null)
+                        vsapi.call([main_view.base_url, '/hr/payroll/staff/save'].join(''), p, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
@@ -940,7 +930,7 @@ const PayRollImportDailog = (()=>{
 
                     p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/payroll/import-staff'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          const successCount = res.data.success_count ?? 0;
                           if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
@@ -956,7 +946,7 @@ const PayRollImportDailog = (()=>{
                modifyTitle:'Edit',
                targetProp: 'payroll_list',
                api:{
-                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
+                 endpoint: [main_view.base_url,'/hr/payroll/staff/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }

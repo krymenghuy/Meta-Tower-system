@@ -163,34 +163,37 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
+    Route::post('/import-staff', [PayrollController::class, 'importStaffList']);
+    Route::post('/calculate', [PayrollController::class, 'calculatePayroll']);
     Route::post('/save', [PayrollController::class, 'savePayroll']);
+    Route::post('disburse-one', [PayrollListController::class, 'disburseOne']);
+    Route::post('disburse-all', [PayrollController::class, 'disburseAll']);
     Route::post('/list-paginate', [PayrollController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollController::class, 'getDetails']);
     Route::post('/delete', [PayrollController::class, 'deletePayroll']);
     Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
-    Route::post('/update-authorize', [PayrollController::class, 'updateAuthorize']);
-    Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
+    Route::post('/authorize', [PayrollController::class, 'authorizePayroll']);
+    //Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
+    Route::post('/staff-list', [PayrollController::class, 'getStaffList']);
     Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
     Route::post('/reset', [PayrollController::class, 'reset']);
     Route::post('/reset-reverse', [PayrollController::class, 'resetStatus']);
     Route::post('/reverse', [PayrollController::class, 'reverseTransactions']);
-
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
-    Route::post('/save', [PayrollListController::class, 'savePayrollList']);
-    Route::post('/list-paginate', [PayrollListController::class, 'getList']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff')->group(function () {
+    Route::post('/save', [PayrollListController::class, 'addStaff']);
+    Route::post('/list', [PayrollListController::class, 'getList']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
-    Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
+    Route::post('/delete', [PayrollListController::class, 'removeStaff']);
     Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
-    Route::post('/import', [PayrollListController::class, 'importPayrollList']);
-    Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
+    //Route::post('/import', [PayrollListController::class, 'importPayrollList']);
+    //Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
     Route::post('disburse', [PayrollListController::class, 'disburseOne']);
-    Route::post('disburse-all', [PayrollListController::class, 'disburseAll']);
+    //Route::post('disburse-all', [PayrollController::class, 'disburseAll']);
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
-    Route::post('/list', [PayrollListController::class, 'getListPayrollList']);
-
+    Route::post('/list', [PayrollController::class, 'getStaffList']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {
