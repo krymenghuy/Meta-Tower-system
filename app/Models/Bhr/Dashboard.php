@@ -242,41 +242,42 @@ static function countEmployee($arr, $ss)
     
     
     public static function getEmployeeDataForBarChart($ss)
-    {
-        $start_date = Carbon::now()->subMonths(12)->startOfMonth()->format('Y-m-d');
-        $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
-    
-        $data = DB::table('employees AS e')
-            ->selectRaw('
-                DATE_FORMAT(e.joining_date, "%Y-%m") AS month,
-                COUNT(e.id) AS employee_count,
-                SUM(e.salary) AS total_salary
-            ')
-            ->whereBetween('e.joining_date', [$start_date, $end_date])
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
-    
-        $labels = [];
-        $employee_counts = [];
-        $total_salaries = [];
-    
-        foreach ($data as $item) {
-            // Convert "2024-01" to "Jan 2024"
-            $month_name = Carbon::createFromFormat('Y-m', $item->month)->format('M Y');
-            $labels[] = $month_name;
-            $employee_counts[] = $item->employee_count;
-            $total_salaries[] = $item->total_salary;
-        }
-    
-        // Return the data for the bar chart
-        return (object)[
-            'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
-            'labels' => $labels,
-            'employee_counts' => $employee_counts,
-            'total_salaries' => $total_salaries
-        ];
+{
+    $start_date = Carbon::now()->subMonths(12)->startOfMonth()->format('Y-m-d');
+    $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+    $data = DB::table('payrolls AS p')
+        ->selectRaw('
+            DATE_FORMAT(p.start_date, "%Y-%m") AS month,
+            SUM(p.head_count) AS employee_count,
+            SUM(p.total) AS total_salary
+        ')
+        ->whereBetween('p.start_date', [$start_date, $end_date])
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+    $labels = [];
+    $employee_counts = [];
+    $total_salaries = [];
+
+    foreach ($data as $item) {
+        // Convert "2024-01" to "Jan 2024"
+        $month_name = Carbon::createFromFormat('Y-m', $item->month)->format('M Y');
+        $labels[] = $month_name;
+        $employee_counts[] = $item->employee_count;
+        $total_salaries[] = $item->total_salary;
     }
+
+    // Return the data for the bar chart
+    return (object)[
+        'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
+        'labels' => $labels,
+        'employee_counts' => $employee_counts,
+        'total_salaries' => $total_salaries
+    ];
+}
+
     
     function getOnLevels($arr, $ss)
     {

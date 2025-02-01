@@ -670,7 +670,7 @@ var EmployeeComponent = new (function () {
     //     new VSDropdownMenu(menuOptopns);
     // };
     this.setActionsProfileInfo = () => {
-        addEventListener("click", (e) => {
+        onclick = (e) => {
             let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
             if (btn) {
                 mThis.editEmployee(btn.dataset.id, btn);
@@ -687,7 +687,7 @@ var EmployeeComponent = new (function () {
             if (btn) {
                 mThis.movement(btn.dataset.id, btn);
             }
-        });
+        };
     };
 
     this.renderCardLeft = (employeeId) => {
