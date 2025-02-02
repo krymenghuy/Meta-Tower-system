@@ -2,6 +2,7 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\CompanyProfile;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -40,32 +41,34 @@ class Account
         ];
         $res = validateObject($arr, $v_rule, true, ['balance' => ['.'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
+
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
         $emp = Employee::getProps($emp_id, 'id,code,name');
-        // if (!$emp) return DV::error('Employee ID does not exist');
+
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
         $account_number = $inputs['account_number'];
-        if (!$account_number) {
-            if ($inputs['account_type'] === 'Payroll') {
-                $account_number = $emp->code . '-P';
-            } elseif ($inputs['account_type'] === 'Wallet') {
-                $account_number = $emp->code . '-W';
-            } else {
-                $account_number = $emp->code;
-            }
-        }
-        $inputs['account_number'] = $account_number;
 
-        if (!$account_number) $account_number = $emp->code;
-        $inputs['account_number'] = $account_number;
+        // Only assign '-P' or '-W' if account_number is empty and not manually set to '1'
+        // if (empty($account_number) || $account_number !== '1') {
+        //     if ($inputs['account_type'] === 'Payroll') {
+        //         $account_number = $emp->code . '-P';
+        //     } elseif ($inputs['account_type'] === 'Wallet') {
+        //         $account_number = $emp->code . '-W';
+        //     } else {
+        //         $account_number = $emp->code;
+        //     }
+        // }
 
+        $inputs['account_number'] = $account_number;
 
         if (empty($id)) {
-            if (self::accountNumberExists($account_number, $id)) return DV::error('Account number ?? already exists::' . $account_number);
+            if (self::accountNumberExists($account_number, $id)) {
+                return DV::error('Account number ?? already exists::' . $account_number);
+            }
 
             $existingAccount = DB::table('accounts')
-                ->where('branch_id', $branch_id)
+            ->where('branch_id', $branch_id)
                 ->where('emp_id', $inputs['emp_id'])
                 ->where('account_type', $inputs['account_type'])
                 ->first();
@@ -79,6 +82,7 @@ class Account
 
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
+
 
     static function accountNumberExists($account_number, $account_type, $id = null)
     {
@@ -259,7 +263,7 @@ class Account
         foreach ($rows as $row) {
             if ($is_master_account == 1) {
                 //change to put company logo
-                $row->image_url = '';
+                $row->image_url = CompanyProfile::logoUrl($ss);
                 unset($row->emp_photo);
             } else {
                 $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
@@ -357,11 +361,25 @@ class Account
 
             return $primaryAccount;
         }
+        if ($id == 1) {
+            $companyAccount = DB::table('accounts as a')
+            ->select('id', 'account_number', 'currency_code', 'balance')
+                ->where('a.id', 1)
+                ->first();
 
+            return (object) [
+                'id' => 1,
+                'emp_name' => 'Company',
+                'position' => 'Company',
+                'account_type' => 'Payroll',
+                'account_number' => $companyAccount->account_number ?? '1',
+                'currency_code' => $companyAccount->currency_code ?? 'USD',
+                'balance' => $companyAccount->balance ?? 0,
+                'image_url' => CompanyProfile::logoUrl($ss),
+            ];
+        }
         return $primaryAccount;
     }
-
-
 
     function delete($id = null, $ss = null)
     {
@@ -632,54 +650,39 @@ class Account
         return $x;
     }
 
-    static function withdraw($arr, $ss)
+    function withdraw($amount, $currency, $remarks = null, $id = null, $ss)
     {
-        $v_rule = [
-            'emp_id' => '0|number',
-            'payroll_id' => '0|number',
-            'amount' => '1|number',
-            'remarks' => '0|string|250',
-            'trx_type' => '1|number',
-            'status' => '0|string|10',
-            'account_id' => '0|number',
-            'from_account_id' => '1|number',
-            'to_account_id' => '0|number',
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $inputs = [
+            'amount' => $amount,
+            'currency' => $currency,
+            'trx_type' => 2,
+            'status' => 'out',
+            'account_id' => $id,
+            'from_account_id' => $id,
+            'remarks' => $remarks
         ];
-
-        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-        $inputs['status'] = 'out';
-
-        $id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs, 'trx_id' => $hex_trx_id], 'Failed to save transaction');
+        $transaction = new Account(1, $ss);
+        $res = $transaction->createTransaction($inputs, $ss);
+        return $res;
     }
-    static function deposit($arr, $ss)
+    function deposit($amount, $currency,$remarks = null,$id = null, $ss)
     {
-        $v_rule = [
-            'emp_id' => '0|number',
-            'payroll_id' => '0|number',
-            'amount' => '1|number',
-            'remarks' => '0|string|250',
-            'trx_type' => '1|number',
-            'status' => '0|string|10',
-            'account_id' => '1|number',
-            'from_account_id' => '0|number',
-            'to_account_id' => '0|number',
-
-
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $inputs = [
+            'amount' => $amount,
+            'currency' => $currency,
+            'trx_type' => 1,
+            'status' => 'in',
+            'account_id' => $id,
+            'to_account_id' => $id,
+            'remarks' => $remarks
         ];
-
-        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-']], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-
-        $inputs = $res->values;
-        $inputs['status'] = 'in';
-
-        $id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs, 'trx_id' => $hex_trx_id]);
+        $transaction = new Account(1, $ss);
+        $res = $transaction->createTransaction($inputs, $ss);
+        return $res;
     }
 
     function printTransaction($arr, $ss)

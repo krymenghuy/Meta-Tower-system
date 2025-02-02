@@ -5,10 +5,14 @@ var AccountMenagmentComponent = (function () {
     mThis.self = mThis.jm[0];
     mThis.title_prop = "Payroll Account ";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddAccount");
-    mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnAddAccountMissing");
+    mThis.btnAddAccountMissing = mThis.self.querySelector(
+        "#_btnAddAccountMissing"
+    );
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_sdl_search_account");
-    mThis.elSortByDepartment = mThis.self.querySelector("#el_sort_by_department");
+    mThis.elSortByDepartment = mThis.self.querySelector(
+        "#el_sort_by_department"
+    );
     mThis.elSortByAccount = mThis.self.querySelector("#el_sort_by_account");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
@@ -423,14 +427,14 @@ var AccountMenagmentComponent = (function () {
     });
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_account_action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Deposit Amount">Deposit Amount</span>',
+                    html: '<span class="ps-2" vslang="titles.Deposit Amount">Deposit Amount</span>',
                     icon: `<i class="fa fa-calculator"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "deposit_amount",
@@ -460,6 +464,14 @@ var AccountMenagmentComponent = (function () {
                     name: "delete_account",
                 },
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+
+                // Ensure 'deposit_amount' is part of the menu and exists before hiding it
+                if (menu.deposit_amount) {
+                    menu.deposit_amount.style.display = "block";
+                }
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -490,7 +502,7 @@ var AccountMenagmentComponent = (function () {
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
     mThis.transfer = (id, menuLink) => {
         let op = {
@@ -508,7 +520,7 @@ var AccountMenagmentComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.AccountListView.showPage();
+                mThis.AccountListView.showPage(mThis.getDataFormFilter());
             },
         };
 
@@ -818,19 +830,26 @@ const DepositDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-6">
-                                <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                                <input name="ballance" class="form-control data-input" data-field="balance"  />
+                            <div class="form-group col-12">
+                                <label for="balance" class="form-label" vslang="titles.Balance"></label>
+                                <input name="balance" class="form-control data-input" data-field="balance"  />
                             </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-12">
                                     <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                                     <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
+                                <select class="modal-select data-input" name="account_type" data-field="account_type">
+                                    <option value="Payroll">Payroll</option>
+                                    <option value="Wallet">Wallet</option>
+                                </select>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="remarks" class="form-label" vslang="titles.Remark"></label>
@@ -900,8 +919,8 @@ const DepositDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Account",
-                    modifyTitle: "Edit Account",
+                    createTitle: "Make Deposit",
+                    modifyTitle: "Edit Deposit",
                     targetProp: "accounts",
                     api: {
                         endpoint: [

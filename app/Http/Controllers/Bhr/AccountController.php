@@ -114,6 +114,34 @@ class AccountController extends Controller
         $res = ($this->account->transfer($req->all(), $ss));
         return JDV::raw($res);
     }
+    public function deposit(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->accuont_id;
+        $amount = $req->amount;
+        $currency = $req->currency_code;
+        $remarks = $req->remarks;
+        
+        $res = ($this->account->deposit($amount, $currency, $remarks, $id, $ss));
+        return JDV::raw($res);
+    }
+    public function withdraw(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->accuont_id;
+        $amount = $req->amount;
+        $currency = $req->currency_code;
+        $remarks = $req->remarks;
+
+        $res = ($this->account->withdraw($amount, $currency, $remarks, $id, $ss));
+        return JDV::raw($res);
+    }
     public function transferTo(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
