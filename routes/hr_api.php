@@ -251,8 +251,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/save', [AccountController::class, 'saveAccount']);
     Route::post('/bulk-create', [AccountController::class, 'bulkCreateAccounts']);
     //Route::post('/save-missing-account-wallet', [AccountController::class, 'saveMissingAccountWallet']);
-    Route::post('/payroll-account-list-paginate', [AccountController::class, 'getPayrollAccountListPaginate']);
-    Route::post('/wallet-account-list-paginate', [AccountController::class, 'getWalletAccountListPaginate']);
+    Route::post('/payroll-account/list', [AccountController::class, 'getPayrollAccountList']);
+    Route::post('/wallet-account/list', [AccountController::class, 'getWalletAccountList']);
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
@@ -264,6 +264,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/get-confirm', [AccountController::class, 'getConfirmTransfer']);
     Route::post('/print-transaction', [AccountController::class, 'printTransaction']);
     Route::post('/transaction/create', [AccountController::class, 'createTransactions']);
+    Route::post('/deposit/form-options', [AccountController::class, 'getFormOptions_deposit']);
+    
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 

@@ -35,7 +35,7 @@ class LocaleManager{
         {
             $out=''; 
             $x=0;
-            $dd = explode('?',$str);
+            $dd = explode('??',$str);
             foreach ($dd as $part) 
             {
                 $out.=$part;

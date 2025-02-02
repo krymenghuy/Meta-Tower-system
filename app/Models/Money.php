@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Money
 {
     // The base currency for all conversions
-    public static $base_currency = 'USD',$national_currency = 'KHR';
-
-
+    public static $base_currency = 'KHR',$national_currency = 'KHR';
     /**
      * Get a list of currencies for a given subscription.
      */

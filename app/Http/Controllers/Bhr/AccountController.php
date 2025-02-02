@@ -38,35 +38,26 @@ class AccountController extends Controller
         $res = $account->bulkCreateAccounts($req->account_type);
         return JDV::raw($res);
     }
+ 
 
-    // public function saveMissingAccountWallet(Request $req)
-    // {
-    //     $ss = AuthService::verifyAuth($req, -1);
-    //     if ($ss->status_code !== 200) {
-    //         return JDV::raw($ss);
-    //     }
-    //     $id = $req->account_id ?? $req->id;
-    //     $account = new Account($id, $ss);
-    //     $res = $account->createAccountWalletMissing();
-    //     return JDV::raw($res);
-    // }
-
-    public function getPayrollAccountListPaginate(Request $req)
+    public function getPayrollAccountList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->PayrollList($req->all(), $ss));
+        $req['account_type'] = 'Payroll';
+        return JDV::result($this->account->getList($req->all(), $ss));
     }
 
-    public function getWalletAccountListPaginate(Request $req)
+    public function getWalletAccountList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->WalletList($req->all(), $ss));
+        $req['account_type'] = 'Wallet';
+        return JDV::result($this->account->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -162,16 +153,7 @@ class AccountController extends Controller
         $res = ($this->account->getAccountInfo($req->all(), $ss));
         return JDV::raw($res);
     }
-
-    public function getConfirmTransfer(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $res = ($this->account->ConfirmTransfer($req->all(), $ss));
-        return JDV::raw($res);
-    }
+ 
     public function createTransactions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -182,6 +164,7 @@ class AccountController extends Controller
         $res=($this->account->createTransaction($req->all(),true, $id, $ss));
         return JDV::raw($res);
     }
+
     public function printTransaction(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -190,5 +173,16 @@ class AccountController extends Controller
         }
         $res = ($this->account->printTransaction($req->all(), $ss));
         return JDV::raw($res);
+    }
+
+    function getFormOptions_deposit(Request $req){
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $acc = new Account();
+        $id =$req->id ?? $req->account_id;
+        $data =  $acc->getFormOptions_deposit($id,$ss);
+        return JDV::result($data);
     }
 }
