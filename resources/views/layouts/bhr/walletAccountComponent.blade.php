@@ -1,17 +1,17 @@
 <div id="_main_walletAccountComponent" style="display:none;padding:20px 0 0">
     <div id="sub_wallet_content" class="p-0">
-            <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter">
+            <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_wla_divFilter">
             <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center w-50 gap-2 pl-3">
                     <input type="text" class="form-control filter-field btn_search"
-                        id="_sdl_search_wallet_account"data-field="search_value" placeholder="Search here">
+                        id="_wla_search_wallet_account"data-field="search_value" placeholder="Search account">
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-50 pr-3">
                 <div class="d-flex align-items-center justify-content-end gap-2 w-30">
                     <label for="" class="form-label text-nowrap" vslang="titles."></label>
-                    <select type="id" id="el_sort_by" class="data-input filter-field"
-                        data-field="sort_by"></select>
+                    <select type="id" id="_wla_filter_department" class="data-input filter-field"
+                        data-field="department_id"></select>
                 </div>
                 <button type="button" class="btn_add" id="_btnWalletAddAccount">
                     <i class="fas fa-plus"></i>

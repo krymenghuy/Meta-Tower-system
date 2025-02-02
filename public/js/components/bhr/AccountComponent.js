@@ -17,18 +17,8 @@ var AccountMenagmentComponent = (function () {
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_account");
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
-
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString("en-US", {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, " ");
-    };
-
+    mThis.divListView = mThis.self.querySelector('#_account_list');
+ 
     mThis.cols = [
         {
             title: "No",
@@ -77,15 +67,7 @@ var AccountMenagmentComponent = (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(
-                    data.balance ?? 0
-                )}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
             },
         },
 
@@ -126,19 +108,18 @@ var AccountMenagmentComponent = (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        mThis.AccountListView = new ListView("_account_list", {
-            fetchApi: `${main_view.base_url}/hr/account/payroll-account-list-paginate`,
+        mThis.AccountListView = new ListView(mThis.divListView, {
+            fetchApi: `${main_view.base_url}/hr/account/payroll-account/list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
+
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
-            let op = {
+            const op = {
                 btn: e.target,
                 onClose: () => {
                     mThis.AccountListView.showPage();
@@ -176,7 +157,7 @@ var AccountMenagmentComponent = (function () {
                                     const d = res.data;
                                     if (d.success_count > 0) {
                                         mThis.AccountListView.showPage(
-                                            mThis.getDataFormFilter()
+                                            mThis.getFilterData()
                                         );
                                         cv_interact.success(
                                             `${d.success_count} accounts have been created!`
@@ -217,7 +198,7 @@ var AccountMenagmentComponent = (function () {
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                mThis.AccountListView.showPage(mThis.getFilterData());
             };
         });
 
@@ -419,7 +400,7 @@ var AccountMenagmentComponent = (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.AccountListView) {
-                mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                mThis.AccountListView.showPage(mThis.getFilterData());
             } else {
                 console.error("Payroll account is not defined");
             }
@@ -434,13 +415,13 @@ var AccountMenagmentComponent = (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Deposit Amount">Deposit Amount</span>',
+                    html: '<span class="ps-2" vslang="titles.Deposit Cash">Deposit Cash</span>',
                     icon: `<i class="fa fa-calculator"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "deposit_amount",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
+                    html: '<span class="ps-2  " vslang="titles.View Transactios">View Transaction</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_transaction",
@@ -452,7 +433,7 @@ var AccountMenagmentComponent = (function () {
                     name: "transfer",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify Account">Modify Account</span>',
+                    html: '<span class="ps-2  " vslang="titles.Account Details"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_account",
@@ -520,7 +501,7 @@ var AccountMenagmentComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.AccountListView.showPage(mThis.getDataFormFilter());
+                mThis.AccountListView.showPage(mThis.getFilterData());
             },
         };
 
@@ -559,7 +540,7 @@ var AccountMenagmentComponent = (function () {
             });
     };
     mThis.editAccount = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
             btn: menuLink,
             onClose: () => {
@@ -618,25 +599,33 @@ var AccountMenagmentComponent = (function () {
         );
     };
 
-    mThis.getDataFormFilter = () => {
-        let p = {};
+    mThis.setDefaultFilter = ()=>{
+        if(!mThis.rem_filter) return;
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+             const f = el.dataset.field;
+             el.value = mThis.rem_filter[f] ?? '';
+        });
+    };
+
+    mThis.getFilterData = () => {
+        const p = {};
         // p.search_value = mThis.elSearch.value;
-        p.sort_by_department = mThis.elSortByDepartment.value;
+       // p.sort_by_department = mThis.elSortByDepartment.value;
         // p.sort_by_branch = mThis.elSortByBranch.value;
-        p.sort_by_account = mThis.elSortByAccount.value;
+        //p.sort_by_account = mThis.elSortByAccount.value;
+        //p.account_id = mThis.divFilter.value;
 
-        p.account_id = mThis.divFilter.value;
-
-        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        // console.log(222, main_filters);
-
+        mThis.rem_filter = main_filters;    
         return p;
     };
-    mThis.prepareFormOptions = () => {
+
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/account/form-options`,
@@ -646,25 +635,29 @@ var AccountMenagmentComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                // console.log(1111, this.elSortBy);
-
                 VSUtil.setComboItems(
                     mThis.elSortByDepartment,
                     d.departments,
                     "id",
                     "name",
-                    true
+                    '',
+                    '(All Departments)'
                 );
+                onFinish();
             });
     };
 
     mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.AccountListView.showPage();
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(200);
+        mThis.prepareFormOptions(()=>{
+            if (mThis.rem_filter){
+                mThis.setDefaultFilter();
+            } else  mThis.AccountListView.showPage();
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
+        });
+      
     };
     return mThis;
 })();
@@ -688,33 +681,37 @@ const AccountDialog = (() => {
                         </div>
                         <div class="form-group  col-12 d.none">
                             <div id="info"></div>
-                        </div>
-                        <div class="form-group col-6">
+                        </div>`,
+                        `<div class="form-group col-6">
                             <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                            <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            <select class="modal-select data-input" name="account_type" data-field="account_type" disabled>
                                 <option value="Payroll">Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
-                        </div>
-                        <div class="form-group col-6">
+                        </div>`,
+                        //  `<div class="form-group col-6">
+                        //     <label for="account_name" class="form-label" vslang="titles.Account Name"></label>
+                        //     <input name="account_name" class="form-control data-input" data-field="account_name" placeholder="" placeholder="AUTO"/>
+                        // </div>`,
+                        `<div class="form-group col-6">
                             <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                            <input name="account_number" class="form-control data-input" data-field="account_number" />
-                        </div>
-                        <div class="form-group col-6">
+                            <input name="account_number" class="form-control data-input" data-field="account_number" placeholder="AUTO" />
+                        </div>`,
+                        `<div class="form-group col-6">
                             <label for="ballance" class="form-label" vslang="titles.Balance"></label>
                             <input name="ballance" class="form-control data-input" data-field="balance"  />
-                        </div>
-                        <div class="form-group col-6">
+                        </div>`,
+                        `<div class="form-group col-6">
                                 <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                                 <select name="currency_code" class="data-input" data-field="currency_code"></select>
-                        </div>
-                    </div>`,
+                        </div>`,
+                    `</div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
                     if (currency_codeField && !currency_codeField.value) {
-                        currency_codeField.value = "KHR";
+                        currency_codeField.value = VSMoney.getCurrency().code;
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
@@ -769,15 +766,15 @@ const AccountDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Updated payroll account successfully"
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "Added payroll account successfully"
-                                            );
-                                        }
+                                        // if (me.dataOptions.id > 0) {
+                                        //     cv_interact.success(
+                                        //         "Updated payroll account successfully"
+                                        //     );
+                                        // } else {
+                                        //     cv_interact.success(
+                                        //         "Added payroll account successfully"
+                                        //     );
+                                        // }
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -785,7 +782,7 @@ const AccountDialog = (() => {
                 ],
                 prepareFormOptions: {
                     createTitle: "Add Account",
-                    modifyTitle: "Edit Account",
+                    modifyTitle: "Account Details",
                     targetProp: "accounts",
                     api: {
                         endpoint: [
@@ -803,6 +800,12 @@ const AccountDialog = (() => {
 
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
+                    me.controls.account_number.setAttribute('readOnly',true);
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    me.controls.currency_code.setAttribute('disabled',true);
+                    me.controls.employee.setAttribute('disabled',me.dataOptions.id > 0);
+                    // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';
+                    // me.controls.account_name.setAttribute('readonly',true);
 
                     const balanceField = me.divModal.querySelector(
                         '[data-field="balance"]'
@@ -823,6 +826,7 @@ const AccountDialog = (() => {
 
     return self;
 })();
+
 const DepositDialog = (() => {
     const self = {};
     let dialog = null;
@@ -835,33 +839,42 @@ const DepositDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row">
-                            <div class="form-group col-12">
-                                <label for="balance" class="form-label" vslang="titles.Balance"></label>
-                                <input name="balance" class="form-control data-input" data-field="balance"  />
-                            </div>
-                            <div class="form-group col-12">
-                                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                                    <select name="currency_code" class="data-input" data-field="currency_code"></select>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                                <select class="modal-select data-input" name="account_type" data-field="account_type">
-                                    <option value="Payroll">Payroll</option>
-                                    <option value="Wallet">Wallet</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="remarks" class="form-label" vslang="titles.Remark"></label>
-                                <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                            </div>
-                        </div>`,
+                        '<div class="row">',
+                            '<div class="form-group col-6">',
+                                '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
+                                '<input name="balance" class="form-control data-input" data-field="amount"  />',
+                            '</div>',
+                            '<div class="form-group col-6">',
+                              '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
+                              '<input name="currency_code" class="data-input form-control" data-field="currency_code" readonly/>',
+                            '</div>',
+                            '<div class="form-group col-12">',
+                              '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
+                              '<input name="account_number" class="data-input form-control" data-field="account_number"/>',
+                            '</div>',
+                          
+                            '<div class="form-group col-12">',
+                               '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
+                               '<input name="account_name" class="data-input form-control" data-field="account_name" readonly/>',
+                            '</div>',
+                            // <div class="form-group col-12">
+                            //     <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
+                            //     <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            //         <option value="Payroll">Payroll</option>
+                            //         <option value="Wallet">Wallet</option>
+                            //     </select>
+                            // </div>
+                            '<div class="form-group col-md-12">',
+                                '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
+                                '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
+                            '</div>',
+                        '</div>',
                     ].join("");
                 },
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
                     if (currency_codeField && !currency_codeField.value) {
-                        currency_codeField.value = "KHR";
+                        currency_codeField.value = VSMoney.getCurrency().code;
                     }
                 },
                 configSelect: [
@@ -882,7 +895,7 @@ const DepositDialog = (() => {
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: '<span vslang="titles.Submit">Submit</span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -904,40 +917,40 @@ const DepositDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Updated balance successfully"
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "Added balance successfully"
-                                            );
-                                        }
+                                        cv_interact.success(
+                                            "Updated balance successfully"
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Make Deposit",
-                    modifyTitle: "Edit Deposit",
-                    targetProp: "accounts",
+                    createTitle: "Deposit Cash",
+                    modifyTitle: "Deposit Cash",
+                    targetProp: "account",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/account/form-options",
+                            "/hr/account/deposit/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
+                       onResponse: (me, res)=>{
+                         console.log('result from api "/form-options": ', res);
+                       }
                 },
 
-                onPrepareForm: (me) => {
+                onPrepareForm: (me,acc) => {
                     LocaleManager.translateZone(me.divModal);
+                    me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
+                    me.controls.account_number.value = acc.account_number;
+                    me.controls.currency_code.value = acc.currency_code;
+                    me.controls.account_name.setAttribute('readonly',true);
+                    me.controls.account_number.setAttribute('readonly',true);
+                    me.controls.currency_code.setAttribute('readonly',true);
                 },
             });
         dialog.show(op);
