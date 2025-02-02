@@ -516,8 +516,17 @@ var WalletAccountComponent = (function () {
             });
     };
 
+    mThis.setDefaultFilter = ()=>{
+        if(!mThis.rem_filter) return;
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+             const f = el.dataset.field;
+             el.value = mThis.rem_filter[f] ?? '';
+        });
+    };
+
     mThis.getFilterData = ()=>{
-        const els = mThis.divFilter.querySelectorAll('.filter-field');
+        const els = mThis.divFilter.querySelectorAll('.filter-field';)
         const p = {};
         els.forEach(el =>{
             const f = el.dataset.field;
@@ -531,8 +540,9 @@ var WalletAccountComponent = (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             if(mThis.rem_filter){
-
-            }else mThis.WalletAccountListView.showPage(mThis.getFilterData());
+                 mThis.setDefaultFilter();
+            }
+            mThis.WalletAccountListView.showPage(mThis.getFilterData());
             mThis.jm.siblings().hide();
             mThis.jm.fadeIn(200);
         });
