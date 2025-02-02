@@ -652,8 +652,9 @@ var AccountMenagmentComponent = (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             if (mThis.rem_filter){
-                mThis.setDefaultFilter();
-            } else  mThis.AccountListView.showPage();
+                mThis.setDefaultFilter();   
+            }  
+            mThis.AccountListView.showPage();
             mThis.jm.siblings().hide();
             mThis.jm.fadeIn(200);
         });
