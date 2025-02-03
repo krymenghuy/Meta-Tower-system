@@ -140,6 +140,12 @@ var EmployeeComponent = new (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2" vslang="titles.View Profile">View Profile</span>',
+                    icon: `<i class="fa-solid text-success fa-eye"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_profile",
+                },
+                {
                     html: '<span class="ps-2  " vslang="titles.Modify Employee">Modify Employee</span>',
                     icon: `<i class="fa-solid text-success fa-pen-to-square"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -199,7 +205,7 @@ var EmployeeComponent = new (function () {
                             menu[item].style.display =
                                 menu[item].dataset.mnuaction === "set_resign" ||
                                 menu[item].dataset.mnuaction ===
-                                    "edit_employee" ||
+                                    "edit_employee" || menu[item].dataset.mnuaction === "view_profile" ||
                                 menu[item].dataset.mnuaction ===
                                     "create_contract"
                                     ? "block"
@@ -244,6 +250,10 @@ var EmployeeComponent = new (function () {
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case "view_profile": {
+                        mThis.view_see_info(id, menuLink);
+                        break;
+                    }
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
                         break;
@@ -2469,6 +2479,17 @@ var EmployeeComponent = new (function () {
             },
         };
         EmployeeDialog.show(op);
+    };
+    mThis.view_see_info = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            },
+        };
+        console.log(93838, op);
+        
     };
     mThis.CreateContract = (id) => {
         if (!mThis.el_branch.value) {
