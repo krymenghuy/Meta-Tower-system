@@ -1,20 +1,22 @@
 "use strict";
 
 var EmployeeBenefitComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children(
         "#_main_employee_benefit_component"
     );
-    this.self = this.jm[0];
-    this.title_prop = "Employee Benefits";
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Employee Benefits";
 
-    this.btnAdd = this.self.querySelector("#_btn_add_benefit");
-    this.divFilter = this.self.querySelector("#_divFilter_employee_benefit");
-    this.elSearch = this.self.querySelector("#_sdl_search_bonus");
-    this.elBenefit = this.self.querySelector("#el_benefit");
+    mThis.btnAdd = mThis.self.querySelector("#_btn_add_benefit");
+    mThis.btnImport = mThis.self.querySelector("#_btn_import_benefit");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_employee_benefit");
+    mThis.elSearch = mThis.self.querySelector("#_sdl_search_bonus");
+    mThis.elBenefit = mThis.self.querySelector("#el_benefit");
+    mThis.elTaxOption = mThis.self.querySelector("#el_tax_option");
 
-    this.cols = [
+    mThis.cols = [
         {
             title: "Name",
             className: "align-middle text-start w-15",
@@ -60,21 +62,27 @@ var EmployeeBenefitComponent = new (function () {
         {
             title: "Amount",
             className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    main_view.currency.symbol + data.amount ?? ""
-                }</p>`;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.amount ?? 0)}</p>`;
             },
         },
         {
             title: "Balance",
             className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    main_view.currency.symbol + data.balance ?? ""
-                }</p>`;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
         {
@@ -123,7 +131,7 @@ var EmployeeBenefitComponent = new (function () {
         },
     ];
 
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
 
         mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
@@ -144,7 +152,7 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage();
+                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
                 },
             });
         };
@@ -159,7 +167,7 @@ var EmployeeBenefitComponent = new (function () {
         }
         mThis.elSearch.addEventListener(
             "keyup",
-            this.debounce(() => {
+            mThis.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             }, 300)
         );
@@ -171,7 +179,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.setActionListeners = () => {
+    mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
             if (btn) {
@@ -185,7 +193,7 @@ var EmployeeBenefitComponent = new (function () {
         });
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             benefit_id: mThis.elBenefit.value,
             search_value: mThis.elSearch.value,
@@ -197,15 +205,15 @@ var EmployeeBenefitComponent = new (function () {
         return filters;
     };
 
-    this.editBenefit = (id, btn) => {
+    mThis.editBenefit = (id, btn) => {
         EmployeeBenefitDialog.show({
             id,
             btn,
-            onClose: () => mThis.EmployeeBenefitListView.showPage(),
+            onClose: () => mThis.EmployeeBenefitListView.showPage(mThis.getFilterData()),
         });
     };
 
-    this.deleteBenefit = (id, menuLink) => {
+    mThis.deleteBenefit = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -214,7 +222,7 @@ var EmployeeBenefitComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Benefit?",
+            "Delete this benefit?",
             {
                 title: "Delete Benefit",
                 context: "delete",
@@ -232,13 +240,13 @@ var EmployeeBenefitComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.EmployeeBenefitListView.showPage(
                                     mThis.getFilterData()
                                 );
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
@@ -246,7 +254,7 @@ var EmployeeBenefitComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/employee/benefit/form-options`,
@@ -257,34 +265,29 @@ var EmployeeBenefitComponent = new (function () {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(
-                    mThis.elBenefit,
-                    d.benefits,
-                    "id",
-                    "name",
-                    true,
-                    "All Benefits",
-                    null
-                );
-                console.log(1111, mThis.elBenefit);
+                VSUtil.setComboItems(mThis.elBenefit, d.benefits, "id", "name", true, "All Benefits", null);
+                VSUtil.setComboItems(mThis.elTaxOption, d.tax_options, "id", "name", true, "All Tax Option", null);
+
             });
     };
 
-    this.debounce = (func, delay) => {
+    mThis.debounce = (func, delay) => {
         let timeout;
         return function (...args) {
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), delay);
+            timeout = setTimeout(() => func.apply(mThis, args), delay);
         };
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         mThis.prepareFormOptions();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+
     };
+    return mThis;
 })();
 const EmployeeBenefitDialog = (() => {
     const self = {};
@@ -302,11 +305,15 @@ const EmployeeBenefitDialog = (() => {
                             <label for="employee" class="form-label" vslang="titles.Employee"></label>
                             <select name="employee" class="data-input" data-field="emp_id"></select>
                         </div>`,
-                    `    <div class="form-group col-md-6">
+                    `    <div class="form-group col-md-4">
                             <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
                             <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
                         </div>`,
-                    `    <div class="form-group col-md-6">
+                    `<div class="form-group col-4">
+                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                        </div>`,
+                    `    <div class="form-group col-md-4">
                             <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
                             <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
                                 <option value="">(Select Tax Option)</option>
@@ -327,15 +334,20 @@ const EmployeeBenefitDialog = (() => {
                             <label for="remarks" class="form-label" vslang="titles.Remark"></label>
                             <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                         </div>`,
-                    `</div>`
+                    `</div>`,
                 ].join("");
             },
             contentCreated: (me) => {
-                const taxOptionField = me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
+                const taxOptionField =
+                    me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField =
+                    me.divModal.querySelector(".flat_tax_rate");
 
                 taxOptionField.addEventListener("change", () => {
-                    flatTaxRateField.classList.toggle("d-none", taxOptionField.value !== "3");
+                    flatTaxRateField.classList.toggle(
+                        "d-none",
+                        taxOptionField.value !== "3"
+                    );
                 });
             },
             prepareFormOptions: {
@@ -353,7 +365,9 @@ const EmployeeBenefitDialog = (() => {
                 // flatTaxRateField.classList.add("d-none");
 
                 Object.keys(data).forEach((key) => {
-                    const input = me.divModal.querySelector(`[data-field="${key}"]`);
+                    const input = me.divModal.querySelector(
+                        `[data-field="${key}"]`
+                    );
                     if (input) {
                         input.value = data[key];
                     }
@@ -379,6 +393,12 @@ const EmployeeBenefitDialog = (() => {
                     textField: "name",
                     valueField: "id",
                 },
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                },
             ],
             buttons: [
                 {
@@ -394,19 +414,28 @@ const EmployeeBenefitDialog = (() => {
                         p.id = me.dataOptions.id;
 
                         vsapi
-                            .call(`${main_view.base_url}/hr/employee/benefit/save`, p, btn)
+                            .call(
+                                `${main_view.base_url}/hr/employee/benefit/save`,
+                                p,
+                                btn
+                            )
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
-                                    if(me.dataOptions.id > 0)
-                                    {
-                                        cv_interact.success("Updated Employee Benefit Successfully");
-                                    }
-                                    else{
-                                        cv_interact.success("Added Employee Benefit Successfully");
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Updated employee benefit successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "Added employee benefit successfully"
+                                        );
                                     }
                                 } else {
-                                    cv_interact.error(res.error_message || "An error occurred.");
+                                    cv_interact.error(
+                                        res.error_message ||
+                                            "An error occurred."
+                                    );
                                 }
                             });
                     },

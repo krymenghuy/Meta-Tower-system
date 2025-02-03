@@ -7,7 +7,8 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-100">
             <button type="button" class="btn_add" id="_btnAddJobLevel">
-                <span>Create Job Level</span>
+                <i class="fas fa-line-chart mr-2"></i>
+                <span>Add Job Level</span>
             </button>
         </div>
     </div>

@@ -15,7 +15,11 @@
                 </div>
                 <button type="button" class="btn_add" id="_btnWalletAddAccount">
                     <i class="fas fa-plus"></i>
-                    <span>Add Account</span>
+                    <span vslang="titles.Create Wallet"></span>
+                </button>
+                <button type="button" class="btn_add" id="_btnWalletAddAccountMissing">
+                    <i class="fas fa-plus"></i>
+                    <span vslang="titles.Bulk Create"></span>
                 </button>
             </div>
         </div>
@@ -23,18 +27,25 @@
         <div id="_wallet_account_list" class="m-4"></div>
     </div>
 
-    <div class="d-none " id="view_wallet_transaction_info">
-        <div class="d-flex px-3 pt-3" id="btn_back">
-            <button id="_btn_backTo_wallet_account" style="background-color:#2b3991; width:100px;"
-                class="btn text-white shadow rounded-4 m-2 p-2" type="button">
-                <i class="fa-solid fa-angles-left "></i>
-                <span class="" vslang="buttons.Back">Back</span>
-            </button>
+    <div class="d-none" id="view_wallet_transaction">
+        <div class="d-flex w-100 bg-white rounded-3 shadow p-2 justify-content-between">
+            <div class="d-flex px-3 pt-3" id="btn_back">
+                <button id="_btn_backTo_wallet_account" style="background-color:#2b3991; width:100px;"
+                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                    <i class="fa-solid fa-angles-left"></i>
+                    <span class="" vslang="buttons.Back">Back</span>
+                </button>
+            </div>
+            <div class="d-flex px-3 pt-3">
+                <button id="_print_transaction" style="background-color:#2b3991; width:100px;"
+                    class="btn text-white shadow rounded-4 m-2 p-2" type="button" id="_print_transaction">
+                    <i class="fa-solid fa-print"></i>
+                    <span class="" vslang="buttons.Print">Print</span>
+                </button>
+            </div>
         </div>
-        <div id="wallet_transaction_info" class="m-4"> </div>
-
+        <div id="_wallet_transaction_info" class="m-4" style="height:500px; overflow-y:auto;"> </div>
     </div>
 
 </div>
-<style>
-</style>
+

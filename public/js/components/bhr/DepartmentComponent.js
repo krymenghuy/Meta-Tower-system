@@ -1,16 +1,15 @@
 "use strict";
-
 var DepartmentComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_departmentComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Departments";
-    this.btnAdd = this.self.querySelector("#_btnAddDepartment");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    // this.elStatus = this.self.querySelector("#el_status");
-    this.elSearch = this.self.querySelector("#_search_department");
-    this.cols = [
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_departmentComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Departments";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddDepartment");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    // mThis.elStatus = mThis.self.querySelector("#el_status");
+    mThis.elSearch = mThis.self.querySelector("#_search_department");
+    mThis.cols = [
         {
             title: "#",
             className: "align-middle",
@@ -68,7 +67,7 @@ var DepartmentComponent = new (function () {
         },
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.DepartmentListView = new ListView("_dep_list", {
@@ -111,11 +110,11 @@ var DepartmentComponent = new (function () {
 
         const pr_tbl = mThis.DepartmentListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 210) + 'px';
+        sh_parent.style.height = (window.innerHeight - 230) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
         }
 
 
@@ -123,7 +122,7 @@ var DepartmentComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
@@ -134,7 +133,7 @@ var DepartmentComponent = new (function () {
         return p;
     };
 
-    this.setActionListeners = () => {
+    mThis.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-department-modify");
             if (btn) {
@@ -148,7 +147,7 @@ var DepartmentComponent = new (function () {
         });
     };
 
-    this.editDepartment = (id, menuLink) => {
+    mThis.editDepartment = (id, menuLink) => {
         console.log(234, id);
 
         let op = {
@@ -161,7 +160,7 @@ var DepartmentComponent = new (function () {
         DepartmentDialog.show(op);
     };
 
-    this.deleteDepartment = (id, menuLink) => {
+    mThis.deleteDepartment = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -170,7 +169,7 @@ var DepartmentComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Department?",
+            "Delete this department?",
             {
                 title: "Delete Department",
                 context: "delete",
@@ -188,18 +187,18 @@ var DepartmentComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.DepartmentListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
             }
         );
     };
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/department/form-options`,
@@ -213,16 +212,16 @@ var DepartmentComponent = new (function () {
             });
     };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.DepartmentListView.showPage(mThis.getFilterData(),null,()=>{
             mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
+            mThis.jm.fadeIn(200);
         });
-
     };
+    return mThis;
 })();
 
 const DepartmentDialog = (()=>{
@@ -285,11 +284,11 @@ const DepartmentDialog = (()=>{
                          me.hide(true,p);
                          if(me.dataOptions.id > 0)
                          {
-                            cv_interact.success('Updated Department Successfully');
+                            cv_interact.success('Updated department successfully');
                          }
                          else
                          {
-                            cv_interact.success('Added Department Successfully');
+                            cv_interact.success('Added department successfully');
                          }
                        }else cv_interact.error(res.error_message);
                     });
@@ -323,20 +322,20 @@ const DepartmentDialog = (()=>{
     return self;
 })();
 // const DepartmentDialog = new (function () {
-//     const mThis = this;
-//     this.self = main_view.VSAppContent.querySelector("#dlg_sdl_add_Department");
-//     this.modal = new bootstrap.Modal(this.self);
-//     this.base_url = main_view.base_url;
-//     this.options = {};
+//     const mThis = mThis;
+//     mThis.self = main_view.VSAppContent.querySelector("#dlg_sdl_add_Department");
+//     mThis.modal = new bootstrap.Modal(mThis.self);
+//     mThis.base_url = main_view.base_url;
+//     mThis.options = {};
 
-//     this.btnSave = this.self.querySelector("#dlg_sdl_add_department_btn_save");
-//     // this.elStatusId = this.self.querySelector("#_sdl_status_id");
-//     this.elTitle = mThis.self.querySelector(".modal-title");
-//     this.div_department_info = mThis.self.querySelector(
+//     mThis.btnSave = mThis.self.querySelector("#dlg_sdl_add_department_btn_save");
+//     // mThis.elStatusId = mThis.self.querySelector("#_sdl_status_id");
+//     mThis.elTitle = mThis.self.querySelector(".modal-title");
+//     mThis.div_department_info = mThis.self.querySelector(
 //         "#_sdl_department_info"
 //     );
 
-//     this.btnSave.onclick = (e) => {
+//     mThis.btnSave.onclick = (e) => {
 //         e.preventDefault();
 //         let p = mThis.getDataForm();
 //         console.log(77777, p);
@@ -361,7 +360,7 @@ const DepartmentDialog = (()=>{
 //             });
 //     };
 
-//     this.prepareData = (id, def, onFinish) => {
+//     mThis.prepareData = (id, def, onFinish) => {
 //         if (!def) def = {};
 //         console.log(555555, id);
 //         vsapi
@@ -386,7 +385,7 @@ const DepartmentDialog = (()=>{
 //             });
 //     };
 
-//     this.show = (options = {}) => {
+//     mThis.show = (options = {}) => {
 //         mThis.options = options;
 //         let id = options.id ?? null;
 //         console.log(123);
@@ -402,7 +401,7 @@ const DepartmentDialog = (()=>{
 //         });
 //     };
 
-//     this.getDataForm = () => {
+//     mThis.getDataForm = () => {
 //         const div = mThis.self;
 //         let p = { id: mThis.options.id };
 
@@ -414,7 +413,7 @@ const DepartmentDialog = (()=>{
 //         return p;
 //     };
 
-//     this.setData = (d = {}) => {
+//     mThis.setData = (d = {}) => {
 //         const div = mThis.self;
 //         div.querySelectorAll(".data-input").forEach((el) => {
 //             const data_member = el.dataset.field;

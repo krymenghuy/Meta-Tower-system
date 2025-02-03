@@ -12,7 +12,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-100">
             <button type="button" class="btn_add" id="_btnAddBenefitDisburse">
-                <span>Create Benefit Disburse</span>
+                <span><i class="fa fa-exchange mr-2"></i>Add Special Plan</span>
             </button>
         </div>
 

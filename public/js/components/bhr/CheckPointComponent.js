@@ -1,16 +1,16 @@
 "use strict";
 
 var CheckPointComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_check_point_component");
-    this.self = this.jm[0];
-    this.title_prop = "Check Points";
-    this.btnAdd = this.self.querySelector("#_btnAddCheckPoint");
-    this.elSearch = this.self.querySelector("#_check_point_search");
-    this.divFilter = this.self.querySelector("#container_check_point");
-    this.elCheckPoint = this.self.querySelector("#el_checkPoint");
-    this.cols = [
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_check_point_component");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Check Points";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddCheckPoint");
+    mThis.elSearch = mThis.self.querySelector("#_check_point_search");
+    mThis.divFilter = mThis.self.querySelector("#container_check_point");
+    mThis.elCheckPoint = mThis.self.querySelector("#el_checkPoint");
+    mThis.cols = [
         {
             title: "#",
             className: "align-middle",
@@ -54,7 +54,7 @@ var CheckPointComponent = new (function () {
             },
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
         mThis.CheckPointListView = new ListView("_check_point_list", {
             fetchApi: `${mThis.base_url}/hr/check-point/list-paginate`,
@@ -79,18 +79,18 @@ var CheckPointComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.CheckPointListView.showPage();
+                    mThis.CheckPointListView.showPage(mThis.getFilterData());
                 },
             };
             ExitFormItemDialog.show(op);
         };
         const pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 220 + "px";
+        sh_parent.style.height = window.innerHeight - 230 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 230 + "px";
         };
         mThis.initDropdownMenus(pr_tbl);
 
@@ -106,19 +106,19 @@ var CheckPointComponent = new (function () {
             if (mThis.CheckPointListView) {
                 mThis.CheckPointListView.showPage(mThis.getFilterData());
             } else {
-                console.error("Exit Form is not defined");
+                console.error("Exit form is not defined");
             }
         }, 200);
     });
 
-    this.setFilterPeriod = (p) => {
+    mThis.setFilterPeriod = (p) => {
         return p;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
-            check_point_cat_id: mThis.elCheckPoint.value,
+            category_id: mThis.elCheckPoint.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const field = el.dataset.field;
@@ -126,7 +126,7 @@ var CheckPointComponent = new (function () {
         });
         return filters;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
@@ -142,28 +142,28 @@ var CheckPointComponent = new (function () {
             console.log(123, btn);
         });
     };
-    this.edit_exit_form = (id, menulink) => {
+    mThis.edit_exit_form = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.CheckPointListView.showPage();
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             },
         };
         ExitFormItemDialog.show(op);
     };
-    this.delete_exit_form = (id, menulink) => {
+    mThis.delete_exit_form = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.CheckPointListView.showPage();
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             },
         };
         cv_interact.confirm(
-            "Delete this Item Status?",
+            "Delete this checkpoint?",
             {
-                title: "Delete this Item Status?",
+                title: "Delete checkpoint",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -180,12 +180,12 @@ var CheckPointComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Item Status Delete Successfully"
+                                    "Checkpoint delete successfully"
                                 );
-                                mThis.CheckPointListView.showPage();
+                                mThis.CheckPointListView.showPage(mThis.getFilterData());
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
@@ -193,7 +193,7 @@ var CheckPointComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi.call(
             `${main_view.base_url}/hr/check-point/form-options`,
             null,
@@ -209,20 +209,23 @@ var CheckPointComponent = new (function () {
                     "id",
                     "name",
                     true,
-                    "All Check Point Category",
+                    "All Category",
                     null
                 );
-                console.log(1111, mThis.elCheckPoint);
             });
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.CheckPointListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
+
     };
+    return mThis;
 })();
 
 const ExitFormItemDialog = (() => {
@@ -240,7 +243,7 @@ const ExitFormItemDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-md-12">
                                 <label for="category_name" class="form-label" vslang="titles.Category"></label>
-                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id"></select>
+                                <select name="category_name" class="form-control data-input" data-field="category_id"></select>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="name" class="form-label" vslang="titles.name"></label>
@@ -288,10 +291,10 @@ const ExitFormItemDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                            cv_interact.success('Updated checkpoints successfully');
                                         }
                                         else{
-                                        cv_interact.success('Added Checkpoints Category Successfully');
+                                        cv_interact.success('Create checkpoints successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -304,7 +307,7 @@ const ExitFormItemDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Check Point",
+                    createTitle: "Create Check Point",
                     modifyTitle: "Edit Check Point",
                     targetProp: "check_points",
                     api: {

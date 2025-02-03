@@ -1,19 +1,19 @@
 "use strict";
+var LeaveUnFormComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Uninformed Leaves";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_leave_unform_component");
+    mThis.self = mThis.jm[0];
+    // mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
+    // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
+    mThis.elFilter_wark_shift = mThis.self.querySelector('#el_wark_shift');
+    // mThis.elFilter_session = mThis.self.querySelector('#el_leave_session');
+    mThis.elSearch = mThis.self.querySelector("#_search_uninform_leave");
+    mThis.divListView = mThis.self.querySelector('#_leave_unform_list');
 
-var LeaveUnFormComponent = new function () {
-    let mThis = this;
-    this.title_prop = "Uninformed Leaves";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_leave_unform_component");
-    this.self = this.jm[0];
-    // this.btnAdd = this.self.querySelector("#_btnAddLeave");
-    this.divFilter = this.self.querySelector("#_divFilter_leave");
-    // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
-    this.elFilter_wark_shift = this.self.querySelector('#el_wark_shift');
-    this.elFilter_session = this.self.querySelector('#el_leave_session');
-    this.elSearch = this.self.querySelector("#_search_uninform_leave");
-
-    this.cols = [
+    mThis.cols = [
 
         {
             title: "Day",
@@ -22,7 +22,7 @@ var LeaveUnFormComponent = new function () {
                 const employees = data.employees;
                 let rows = '';
 
-                let day = `<div class="d-flex align-items-center " style=" min-width:205px; height:72px;"><span class="text-primary-custom">${data.day}</span></div>`;
+                const day = `<div class="d-flex align-items-center " style=" min-width:205px; height:72px;"><span class="text-primary-custom">${data.day}</span></div>`;
                 employees.forEach((d,i) => {
                     rows = [rows,day].join('');
                 });
@@ -43,7 +43,7 @@ var LeaveUnFormComponent = new function () {
                     employees.forEach((d,i) => {
                         rows = [rows,`
                         <div style="display: flex; align-items: center; height: 72px;">
-                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                            <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;">
                                 <img class="h-100" src="${d.image_url}" alt="" />
                             </div>
                             <div>
@@ -58,10 +58,10 @@ var LeaveUnFormComponent = new function () {
                 }
                 rows = [rows,`</div>`].join('');
 
-                return rows;    
+                return rows;
 
                 // return `<div style="display: flex; align-items: center;">
-                //             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;"> 
+                //             <div class="overflow-hidden rounded-circle p-auto d-flex justify-content-center border bg-white border-4 me-2" style="width: 50px; height: 50px;">
                 //                 <img class="h-100" src="${data.image_url}" alt="" />
                 //             </div>
                 //             <div>
@@ -117,7 +117,7 @@ var LeaveUnFormComponent = new function () {
                 //         </div>`;
             }
         },
-        
+
         // {
         //     className: 'col_action align-middle',
         //     data: function (data, row, display) {
@@ -135,10 +135,10 @@ var LeaveUnFormComponent = new function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.LeaveRequestListView = new ListView('_leave_unform_list',{
+        mThis.LeaveRequestListView = new ListView(mThis.divListView,{
             fetchApi : `${main_view.base_url}/hr/leave/uninformed`,
             perPage: 3,
             apiCluster: main_view.apiCluster,
@@ -165,11 +165,11 @@ var LeaveUnFormComponent = new function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 240) + 'px';
+        sh_parent.style.height = (window.innerHeight - 210) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
         }
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
@@ -191,7 +191,7 @@ var LeaveUnFormComponent = new function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             work_shift_id: mThis.elFilter_wark_shift.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
@@ -207,7 +207,7 @@ var LeaveUnFormComponent = new function () {
         return p;
     };
 
-    this.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
@@ -265,7 +265,7 @@ var LeaveUnFormComponent = new function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.changeStatus = (id, lnk)=>{
+    mThis.changeStatus = (id, lnk)=>{
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -316,7 +316,7 @@ var LeaveUnFormComponent = new function () {
         });
     }
 
-    this.editLeaveRequest = (id, menuLink) => {
+    mThis.editLeaveRequest = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -329,7 +329,7 @@ var LeaveUnFormComponent = new function () {
         LeaveRequestDialog.show(op);
     }
 
-    this.deleteLeaveRequest = (id, menuLink) => {
+    mThis.deleteLeaveRequest = (id, menuLink) => {
         const op = {
             id: id,
             btn: menuLink,
@@ -337,7 +337,7 @@ var LeaveUnFormComponent = new function () {
                 mThis.LeaveRequestListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Leave Request?',{
+        cv_interact.confirm('Delete this leave request?',{
             title: 'Delete Leave Request',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -345,37 +345,41 @@ var LeaveUnFormComponent = new function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/leave/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.success('Deleted successfully');
                         mThis.LeaveRequestListView.showPage();
                     }
+
                 })
+            }
+            else {
+                cv_interact.error(res.error_message);
             }
         });
     }
 
-    this.prepareFormOptions = (onFinish) => {
+    mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elFilter_wark_shift,d.work_shifts,'id','name',true,'All Work Shifts',d.work_shifts[0].id);
-            VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
+            // VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
             // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
             onFinish(null);
         })
     }
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
                 mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(250);
+                mThis.jm.hide().fadeIn(200);
             });
         });
-    }
-
-};
+    };
+    return mThis;
+})();
 
 

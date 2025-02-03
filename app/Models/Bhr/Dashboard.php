@@ -30,8 +30,8 @@ class Dashboard
         ];
     }
 
-    
-    
+
+
     public static function getDashboardCards($arr, $ss) {
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
@@ -39,18 +39,18 @@ class Dashboard
         $to_date = convertDate(Carbon::now());
         $dateCheck = [$from_date, $to_date];
         $moreWheres = "emp.joining_date >= '$from_date' AND emp.joining_date <= '$to_date'"; //"emp.joining_date >= '2024-09-19' AND emp.joining_date <= '2024-12-18'"
-    
+
         $employee_rows = DB::table('employees AS emp')
             ->whereRaw($moreWheres)
             ->select('emp.id', 'emp.status_id', 'emp.emp_type_id', 'emp.joining_date')
             ->orderBy('emp.joining_date', 'ASC')
             ->get();
-    
+
         $new_staff_count = 0;
         $new_probation_count = 0;
         $new_intern_count = 0;
         $terminated_staff_count = 0;
-    
+
         foreach ($employee_rows as $emp) {
             if ($emp->status_id == 10) {
                 switch ($emp->emp_type_id) {
@@ -68,8 +68,8 @@ class Dashboard
                 $terminated_staff_count++;
             }
         }
-    
-        
+
+
 
         $staff_counts = DB::table('employees as emp')
         ->join('resignations as res', 'emp.id', '=', 'res.emp_id')
@@ -78,11 +78,11 @@ class Dashboard
             SUM(CASE WHEN res.effective_date >= '$from_date' AND res.effective_date <= '$to_date' THEN 1 ELSE 0 END) as resigned_count,
             SUM(CASE WHEN res.effective_date >= '$from_date' AND res.effective_date > '$to_date' THEN 1 ELSE 0 END) as resigning_count")
         ->first();
-    
+
         $resigned_staff_count = $staff_counts->resigned_count;
         $resigning_staff_count = $staff_counts->resigning_count;
-    
-    
+
+
         $warning_rows = DB::table('emp_warnings AS ew')
             ->join('employees AS emp', 'ew.emp_id', '=', 'emp.id')
             ->whereBetween('ew.warning_date', [$from_date, $to_date])
@@ -90,12 +90,15 @@ class Dashboard
             ->groupBy('ew.warning_type')
             ->orderByRaw("MIN(ew.warning_date) ASC")
             ->get();
-    
+
         $warning_staff_count = DB::table('emp_warnings AS ew')
-            
-            ->distinct('ew.emp_id')
-            ->count('ew.emp_id');
-    
+
+            ->distinct('ew.id')
+            ->count('ew.id');
+        $exit_form_count = DB::table('exit_forms as ef')
+            ->count('id');
+
+
         return (object) [
             'new_staff_count' => (object) [
                 'count' => $new_staff_count,
@@ -127,12 +130,15 @@ class Dashboard
                 'count' => $warning_staff_count,
                 'title' => 'Warnings',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'exit_form_count' => (object) [
+                'count' => $exit_form_count,
             ]
         ];
     }
-    
-    
-    
+
+
+
 
 static function countEmployee($arr, $ss)
 {
@@ -143,7 +149,7 @@ static function countEmployee($arr, $ss)
     $rows = DB::table('employees AS emp')
         ->join('emp_types AS t', 'emp.emp_type_id', '=', 't.id') // Join with emp_types table
         // ->where('emp.branch_id', $branch_id) // Filter by branch
-        ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date]) // Filter by joining date
+        // ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date])
         ->selectRaw("t.name AS category, COUNT(emp.id) AS count") // Group by employment type
         ->groupBy('t.name')
         ->get();
@@ -199,32 +205,32 @@ static function countEmployee($arr, $ss)
             $currentDate->copy()->startOfMonth()->subMonths(1),
             $currentDate->copy()->startOfMonth(),
         ];
-    
+
         $staffCounts = [];
-    
+
         foreach ($startDates as $startDate) {
             $endDate = $startDate->copy()->endOfMonth();
-    
+
             $count = DB::table('employees')
                 ->whereRaw("DATE(joining_date) BETWEEN ? AND ?", [$startDate, $endDate])
                 ->count();
-    
+
             $staffCounts[] = (object)[
                 'month' => $startDate->format('F Y'),
                 'count' => $count
             ];
         }
-    
+
         return (object)[
             'title' => 'Total Staff (Last 3 Months)',
             'labels' => array_column($staffCounts, 'month'),
             'values' => array_column($staffCounts, 'count'),
-            'colors' => ['#1E90FF', '#32CD32', '#FF4500'] 
+            'colors' => ['#1E90FF', '#32CD32', '#FF4500']
         ];
     }
     public static function getBenefits($arr, $ss)
     {
-        
+
         $data = DB::table('emp_benefits as eb')
             ->join('benefits as b', 'eb.benefit_id', '=', 'b.id')
             ->selectRaw('
@@ -236,60 +242,56 @@ static function countEmployee($arr, $ss)
             ->groupBy('b.name', 'b.type_id', 'eb.update_user')
             ->orderBy('b.name')
             ->get();
-    
+
         return $data;
     }
-    
-    
+
     public static function getEmployeeDataForBarChart($ss)
-{
-    $start_date = Carbon::now()->subMonths(12)->startOfMonth()->format('Y-m-d');
-    $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+    {
+        $data = DB::table('payrolls as p')
+            ->selectRaw('
+                p.month,
+                p.year,
+                SUM(p.total) as total_salary,
+                MAX(p.head_count) as max_head_count
+            ')
+            ->groupBy('p.month', 'p.year')
+            ->orderByRaw('p.year ASC, p.month ASC')
+            ->limit(12)
+            ->get();
 
-    $data = DB::table('payrolls AS p')
-        ->selectRaw('
-            DATE_FORMAT(p.start_date, "%Y-%m") AS month,
-            SUM(p.head_count) AS employee_count,
-            SUM(p.total) AS total_salary
-        ')
-        ->whereBetween('p.start_date', [$start_date, $end_date])
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+        $labels = [];
+        $employee_counts = [];
+        $total_salaries = [];
 
-    $labels = [];
-    $employee_counts = [];
-    $total_salaries = [];
+        foreach ($data as $item) {
+            // Convert "2024-01" to "Jan 2024"
+            $month_name = Carbon::createFromFormat('Y-m', $item->year . '-' . $item->month)->format('M Y');
+            $labels[] = $month_name;
+            $employee_counts[] = $item->max_head_count;
+            $total_salaries[] = $item->total_salary;
+        }
 
-    foreach ($data as $item) {
-        // Convert "2024-01" to "Jan 2024"
-        $month_name = Carbon::createFromFormat('Y-m', $item->month)->format('M Y');
-        $labels[] = $month_name;
-        $employee_counts[] = $item->employee_count;
-        $total_salaries[] = $item->total_salary;
+        return (object)[
+            'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
+            'labels' => $labels,
+            'employee_counts' => $employee_counts,
+            'total_salaries' => $total_salaries
+        ];
     }
 
-    // Return the data for the bar chart
-    return (object)[
-        'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
-        'labels' => $labels,
-        'employee_counts' => $employee_counts,
-        'total_salaries' => $total_salaries
-    ];
-}
 
-    
     function getOnLevels($arr, $ss)
     {
         $subs_id = $ss->subs_id ?? null;
         $d = (object) $arr;
-    
+
         $today = date('Y-m-d');
         $start_date = date('Y-m-d', strtotime('-9 days'));
         $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
         $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-    
+
         $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
             ->whereRaw("l.start_date >= ? AND l.start_date <= ?", [$start_date, $today])
@@ -298,30 +300,35 @@ static function countEmployee($arr, $ss)
             )
             ->groupByRaw('DATE(l.start_date)')
             ->orderBy('leave_date', 'DESC');
-    
+
         $rows = $query->get();
-    
+
         foreach ($rows as $row) {
             $row->formatted_date = date('d-M-Y', strtotime($row->leave_date));
         }
-    
+
         return $rows;
     }
-    public static function getTotalWalletAndPayrollData($arr, $ss) {
+    public static function getTotalWalletAndPayrollData($arr, $ss)
+    {
         $d = (object) $arr;
-        $totalWalletsQuery = DB::table('accounts')
-            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id'); 
-        $totalWallets = $totalWalletsQuery->count();
-    
-        $totalWalletBalance = $totalWalletsQuery->sum('accounts.balance');
-    
-        $totalPayrollsQuery = DB::table('accounts')
-            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id');
-    
-        $totalPayrolls = $totalPayrollsQuery->count();
-    
-        $totalPayrollBalance = $totalPayrollsQuery->sum('accounts.balance');
-    
+
+        $totalWallets = DB::table('accounts')
+            ->where('account_type', 'wallet')
+            ->count();
+
+        $totalWalletBalance = DB::table('accounts')
+            ->where('account_type', 'wallet')
+            ->sum('balance');
+
+        $totalPayrolls = DB::table('accounts')
+            ->where('account_type', 'payroll')
+            ->count();
+
+        $totalPayrollBalance = DB::table('accounts')
+            ->where('account_type', 'payroll')
+            ->sum('balance');
+
         return (object) [
             'wallets' => (object) [
                 'total_count' => $totalWallets,
@@ -332,7 +339,6 @@ static function countEmployee($arr, $ss)
                 'total_count' => $totalPayrolls,
                 'total_balance' => $totalPayrollBalance,
                 'currency' => 'KHR'
-
             ]
         ];
     }

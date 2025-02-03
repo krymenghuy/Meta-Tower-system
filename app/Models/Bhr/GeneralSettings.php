@@ -68,7 +68,10 @@ class GeneralSettings //extends Model
         $rows = DB::table('loc_countries')->where('name','Cambodia')->select('id','name_kh','name','nationality')->take(1)->get();
         return isset($rows[0])?$rows[0]:null;
     }
-
+    static function options_department($ss)
+    {
+        return DB::table('departments')->selectRaw('id,name')->get();
+    }
 
 
     static function options_mobile_app($ss){
@@ -100,7 +103,7 @@ class GeneralSettings //extends Model
     static function options_exit_form($ss){
         return DB::table('forms as f')->selectRaw('id,name')->get();
     }
-   
+
     static function options_pmt_status($ss=null){
        return [
         (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
@@ -108,7 +111,7 @@ class GeneralSettings //extends Model
         (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
        ];
     }
-   
+
     static function options_calendar_month($ss=null)
     {
         $months = [
@@ -201,8 +204,13 @@ class GeneralSettings //extends Model
     static function options_leave_type($ss){
         return DB::table('leave_types')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
     }
-    static function options_position($ss){
-        return DB::table('positions')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS position')->get();
+    static function options_position($ss) {
+        $q = DB::table('positions')
+            ->where('subs_id', hex2bin($ss->subs_id))
+            ->where('inactive', 0)
+            ->selectRaw('id, title');
+
+        return $q->get();
     }
     static function options_emp_type($ss){
         return DB::table('emp_types')->selectRaw('id,name AS emp_type')->get();
@@ -242,7 +250,7 @@ class GeneralSettings //extends Model
         return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
     }
     static function loc_options_city($ss){
-        return DB::table('loc_cities')->selectRaw('country_id,name')->orderByRaw('name ASC')->get();
+        return DB::table('loc_cities')->selectRaw('id as birth_city_id,name as city_name')->orderByRaw('name ASC')->get();
 
     }
 

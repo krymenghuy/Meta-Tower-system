@@ -1,6 +1,4 @@
 'use strict';
-
-
 const main_view = new function () {
     this.secure_endpoint = [this.base_url, '/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     this.base_url = window.location.origin;
@@ -113,7 +111,7 @@ var ScanAttendanceComponent = new function () {
 
     this.renderEmployee = (d) => {
         console.log(555,d);
-       
+
         const html = `<div class="d-flex">
             <div class="d-flex align-items-center justify-content-center w-50">
                 <div class="container-image-logo-dialog">
@@ -162,7 +160,7 @@ var ScanAttendanceComponent = new function () {
     this.number_employee=0;
     this.renderTableEmployee = () => {
         let per_page = mThis.number_employee <=3 ? mThis.number_employee : 3;
-        let rows = null; 
+        let rows = null;
         let html = `<table class="table border header-light-blue header-uppercase" id="tbl_astr__table">
                 <thead>
                     <tr>
@@ -188,7 +186,7 @@ var ScanAttendanceComponent = new function () {
                     ${rows = null,
                         d.map( s =>{
                             rows = [rows,`<tr class="text-nowrap" data-id="">
-                                
+
                                 <td class="align-middle Employee-ID">${s.code}</td>
                                 <td class="align-middle Employee-Name">
                                     <p class="pb-0 mb-1 text-capitalize">${s.name}</p>
@@ -207,15 +205,15 @@ var ScanAttendanceComponent = new function () {
                             </tr>`].join('');
                         }),rows ?? ''
                     }
-                        
+
                     </tbody>
                     `;
                 }
                 else{
                     html += `<tbody><tr><td colspan="100%" class="text-center"> <span>No data to display</span> </td></tr> </tbody>`;
                 }
-            
-                    
+
+
                 html+= '</table>';
                 mThis.employeeTable.innerHTML = html;
                 mThis.number_employee ++;
@@ -225,8 +223,8 @@ var ScanAttendanceComponent = new function () {
             }
 
         });
-        
-        
+
+
     }
 }
 

@@ -1,15 +1,14 @@
 "use strict";
-
-var CheckPointCategoryComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_exitCheckpoints_component");
-    this.self = this.jm[0];
-    this.title_prop = "Check Point Category";
-    this.btnAdd = this.self.querySelector("#_btnAddExitCheckpoints");
-    this.elSearch = this.self.querySelector("#_exitCheckpoints_search");
-    this.divFilter = this.self.querySelector("#container_exitCheckpoints");
-    this.cols = [
+var CheckPointCategoryComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_exitCheckpoints_component");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Check Point Category";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddExitCheckpoints");
+    mThis.elSearch = mThis.self.querySelector("#_exitCheckpoints_search");
+    mThis.divFilter = mThis.self.querySelector("#container_exitCheckpoints");
+    mThis.cols = [
         {
             title: "#",
             className: "align-middle",
@@ -67,7 +66,7 @@ var CheckPointCategoryComponent = new (function () {
             },
         },
     ];
-    this.init = function () {
+    mThis.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitCheckpointsListView = new ListView("_exitCheckpoints_list", {
             fetchApi: `${mThis.base_url}/hr/check-point-category/list-paginate`,
@@ -126,11 +125,11 @@ var CheckPointCategoryComponent = new (function () {
         }, 200);
     });
 
-    this.setFilterPeriod = (p) => {
+    mThis.setFilterPeriod = (p) => {
         return p;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         const filters = {
             search_value: mThis.elSearch.value,
         };
@@ -140,7 +139,7 @@ var CheckPointCategoryComponent = new (function () {
         });
         return filters;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
@@ -156,7 +155,7 @@ var CheckPointCategoryComponent = new (function () {
             console.log(123, btn);
         });
     };
-    this.edit_check_points = (id, menulink) => {
+    mThis.edit_check_points = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -166,7 +165,7 @@ var CheckPointCategoryComponent = new (function () {
         };
         ExitCheckpointsDialog.show(op);
     };
-    this.delete_check_points = (id, menulink) => {
+    mThis.delete_check_points = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -175,9 +174,9 @@ var CheckPointCategoryComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Exit check point?",
+            "Delete this exit check point?",
             {
-                title: "Delete this Exit exit check point?",
+                title: "Delete this exit check point",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -194,12 +193,12 @@ var CheckPointCategoryComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Exit check point Delete Successfully"
+                                    "Exit check point delete successfully"
                                 );
                                 mThis.ExitCheckpointsListView.showPage();
                             }
                             else {
-                                cv_interact.error(res.message);
+                                cv_interact.error(res.error_message);
                             }
                         });
                 }
@@ -207,7 +206,7 @@ var CheckPointCategoryComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/check-point-category/form-options`,
@@ -219,14 +218,15 @@ var CheckPointCategoryComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
             });
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.ExitCheckpointsListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 const ExitCheckpointsDialog = (() => {
     const self = {};
@@ -279,11 +279,11 @@ const ExitCheckpointsDialog = (() => {
                                         me.hide(true, jl);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success('Updated Checkpoints Category Successfully');
+                                            cv_interact.success('Updated checkpoints category successfully');
                                         }
                                         else
                                         {
-                                            cv_interact.success('Added Checkpoints Category Successfully');
+                                            cv_interact.success('Create category successfully');
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });
@@ -296,8 +296,8 @@ const ExitCheckpointsDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Checkpoints Category",
-                    modifyTitle: "Edit Checkpoints Category",
+                    createTitle: "Create Category",
+                    modifyTitle: "Edit Category",
                     targetProp: "check_point_categories",
                     api: {
                         endpoint: [

@@ -20,29 +20,29 @@ function employeeAttendance(div, data = null) {
         border-collapse: collapse;
         width: 100%;
       }
-  
+
       th, td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
       }
-  
+
       th {
         background-color: #f2f2f2;
       }
-  
+
       .employee-name {
         background-color: #e0e0e0;
       }
-  
+
       .totals {
         font-weight: bold;
         background-color: #d0d0d0;
       }
-    </style>  
-    
+    </style>
+
   <h5 class="text-primary">Monthly Employee Attendance Sheet</h5>
-  
+
   <table>
     <thead>
       <tr>
@@ -107,29 +107,29 @@ function employeeBenefitsReport(div, data = null) {
         border-collapse: collapse;
         width: 100%;
       }
-  
+
       th, td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
       }
-  
+
       th {
         background-color: #f2f2f2;
       }
-  
+
       .employee-name {
         background-color: #e0e0e0;
       }
-  
+
       .totals {
         font-weight: bold;
         background-color: #d0d0d0;
       }
-    </style>  
-    
+    </style>
+
   <h2>Monthly Employee Attendance Sheet</h2>
-  
+
   <table>
     <thead>
       <tr>
@@ -202,11 +202,7 @@ function employeeCV(div, d = null) {
                         font-family: Arial, sans-serif;
                         line-height: 1.6;
                     }
-                    h1, h2, h3, h4, h5, h6 {
-                        margin: 10px 0;
-                        color: #333;
-                    }
-                    h5 {
+                    .section_header>h5 {
                         font-size: 18px;
                         color: #555;
                         margin-bottom: 10px;
@@ -245,19 +241,19 @@ function employeeCV(div, d = null) {
                         font-size: 14px;
                         color: #555;
                     }
-                    .section {
+                    .section_header {
                         margin-top: 20px;
                     }
                     .sub_info {
                         color: #666;
                         font-size: 14px;
                     }
-                    .list-group {
+                    .info_cv_group {
                         list-style: none;
                         padding: 0;
                         margin: 0;
                     }
-                    .list-group li {
+                    .info_cv_group li {
                         background: #f5f5f5;
                         border: 1px solid #ddd;
                         padding: 10px;
@@ -266,7 +262,6 @@ function employeeCV(div, d = null) {
                         color: #333;
                     }
                     .two-column {
-                        display: flex;
                         gap: 20px;
                         margin-top: 10px;
                     }
@@ -285,54 +280,54 @@ function employeeCV(div, d = null) {
                         </div>
                     </div>`;
 
-        html += `<div class="section">
+        html += `<div class="section_header">
                     <h5>About Me</h5>
                     <p class="sub_info">My name’s ${data.name}. I excelent in problem-solving, teamwork, and designing scalable applications. With a proven track record of delivering high-quality projects on time, I specialize in creating intuitive user interfaces and robust backend systems. My ability to adapt to challenges and communicate effectively enables me to thrive in dynamic environments. I am passionate about leveraging technology to solve real-world problems and committed to continuous learning and professional growth.</p>
                 </div>`;
 
         if (data.skills && data.skills.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Technical Skills</h5>
                         <div class="two-column">`;
             data.skills.forEach((skill) => {
-                html += `<div><ul class="list-group">
+                html += `<div><ul class="info_cv_group">
                             <li>${skill.skill} (${skill.rate}%) - ${skill.description}</li>
                         </ul></div>`;
             });
             html += `</div></div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Technical Skills</h5>
                         <p class="sub_info">No skills data available.</p>
                     </div>`;
         }
 
         if (data.experiences && data.experiences.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Professional Experience</h5>`;
             data.experiences.forEach((experience) => {
                 html += `
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>
-                            <h6>${experience.position} at ${experience.organization} (${experience.period_type})</h6>
+                            <h6>${experience.position} at ${experience.organization} (${experience.period})</h6>
                             <p>${experience.description}</p>
                         </li>
                     </ul>`;
             });
             html += `</div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Professional Experience</h5>
                         <p class="sub_info">No professional experience data available.</p>
                     </div>`;
         }
 
         if (data.educations && data.educations.length > 0) {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Education</h5>`;
             data.educations.forEach((education) => {
                 html += `
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>
                             <h6>${education.edu_level} in ${education.major}</h6>
                             <p>${education.school} (${education.start_year} - ${education.finish_year})</p>
@@ -341,15 +336,15 @@ function employeeCV(div, d = null) {
             });
             html += `</div>`;
         } else {
-            html += `<div class="section">
+            html += `<div class="section_header">
                         <h5>Education</h5>
                         <p class="sub_info">No education data available.</p>
                     </div>`;
         }
 
-        html += `<div class="section">
+        html += `<div class="section_header">
                     <h5>Additional Information</h5>
-                    <ul class="list-group">
+                    <ul class="info_cv_group">
                         <li>Languages: ${data.nationality}</li>
                         <li>Country: ${data.country}</li>
                         <li>Address: ${data.address}</li>
@@ -391,20 +386,20 @@ function paySlipReport(div, d = null) {
     if (data)
         html = `<title>Pay Slip</title>
                 <style>
-                    .payment_card {
+                    .paySlip_card {
                         border: 1px solid #ccc;
                         border-radius: 5px;
                         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                         padding: 10px;
                         width: 98%;
                     }
-                    .payment_details {
+                    .paySlip_details {
                         display: flex;
                         justify-content: center;
                         height: 510px;
                     }
 
-                    .payment-header {
+                    .paySlip-header {
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -413,11 +408,11 @@ function paySlipReport(div, d = null) {
                         padding-bottom: 20px;
                     }
 
-                    .payment-title {
+                    .paySlip-title {
                         text-align: center;
                         flex-grow: 1;
                     }
-                    .payment_profile {
+                    .paySlip_profile {
                         gap: 10px;
                         justify-content: center;
                         border: 1px solid #ccc;
@@ -425,7 +420,7 @@ function paySlipReport(div, d = null) {
                         border-radius: 5px;
                     }
 
-                    .payment_img {
+                    .paySlip_img {
                         display: flex;
                         justify-content: center;
                         width: 80px;
@@ -435,24 +430,24 @@ function paySlipReport(div, d = null) {
 
                     }
 
-                    .payment_table{
+                    .paySlip_table{
                         display: flex;
                         padding: 10px;
                     }
 
                 </style>
-                <div class="payment_card overflow-y-auto overflow-x-hidden">
-                    <div class="payment-header">
-                        <div class="payment-title">
+                <div class="paySlip_card overflow-y-auto overflow-x-hidden">
+                    <div class="paySlip-header">
+                        <div class="paySlip-title">
                             <h4>Pay Slip : ${data.duration}</h4>
                         </div>
 
                     </div>
 
-                    <div class="payment_profile">
+                    <div class="paySlip_profile">
                         <div class="row cols-2 mb-0">
                             <div class="col-2">
-                                <div class="payment_img" data-id="" data-imageurl="">
+                                <div class="paySlip_img" data-id="" data-imageurl="">
                                 <img src="${
                                     data.image_url
                                 }" alt="Profile Image">
@@ -516,7 +511,7 @@ function paySlipReport(div, d = null) {
                         </div>
                     </div>
 
-                    <div class="payment_table row "style="display: flex !important">
+                    <div class="paySlip_table row "style="display: flex !important">
                     <div class="col-6">
                         <table class="table">
                             <thead>
@@ -971,11 +966,6 @@ function jsonToTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative min-height-top">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -983,14 +973,8 @@ function jsonToTable(div, d) {
             }</p>
         </div>
     </div>
-    <style>
-        table th, td{
-            border-collapse: collapse;
-            border: 1px solid #c4dae3 !important;
-        } 
-    </style>
     <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
-        <table class="table table-bordered">
+        <table class="table table-bordered table_reports">
             <thead>
                 <tr>
                     ${
@@ -1054,11 +1038,6 @@ function referralFeeTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${
@@ -1173,11 +1152,6 @@ function employeeListByBranchTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${
@@ -1299,11 +1273,6 @@ function nonTuitionFeeTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1477,11 +1446,6 @@ function incomeByCategoryTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1629,11 +1593,6 @@ function totalPaymentByYear(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute overflow-hidden">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 pb-0 mb-0 get-subtitle fs-5">${
@@ -1655,7 +1614,7 @@ function totalPaymentByYear(div, d) {
                 table th, td{
                     border-collapse: collapse;
                     border: 1px solid #c4dae3 !important;
-                } 
+                }
                 </style>
                 <table class="table table-bordered">
                     <thead>
@@ -1747,11 +1706,6 @@ function totalStudentPaymentHistory(div, d) {
     const html = [
         `
     <div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -1926,11 +1880,6 @@ function leaveStudent(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2070,11 +2019,6 @@ function attendanceList(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2200,11 +2144,6 @@ function studentPaymentHistory(div, d) {
 
     let html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2437,7 +2376,7 @@ function studentPaymentHistory(div, d) {
                 }),
                 total ?? "")
             }
-            
+
         </div>`,
     ];
     div.html(html);
@@ -2622,11 +2561,6 @@ function incomeByClassTable(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt="" />
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -2956,11 +2890,6 @@ function studentChangeCampus(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3063,11 +2992,6 @@ function crossYearPayment(div, d) {
 
     const html = [
         `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url ?? ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3159,11 +3083,6 @@ function upgradeFee(div, d) {
         merge_name = null;
 
     const html = `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${
-                company_info.logo_url || ""
-            }" alt=""/>
-        </div>
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase">${d.title || ""}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
@@ -3325,7 +3244,7 @@ function footerHtml(d) {
                 }</td>
                 <td style="background-color:#0d6efd;color:#ffffff" class="bg-primary text-center text-white">${
                     fee_total.transfer ?? ""
-                }</td>   
+                }</td>
                 <td style="background-color:#0d6efd;color:#ffffff" class="bg-primary text-center text-white">${
                     fee_total.cheque ?? ""
                 }</td>
@@ -3457,16 +3376,67 @@ function windowPrint(html, style) {
             myWindow.print();
             myWindow.close();
         }, 500);
-    } else cv_interact.warning("Select Run Report Before Print!");
+    } else cv_interact.warning("Select run report before print!");
 }
 function windowPrintExitForm(html, style) {
-    if (html) {
+    console.log(3834838, html);
+    if (html) { 
+    
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
                 <title>Exit Form</title>
-                
+
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/vsstyle.css"/>
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/css_for_print_invoice.css"/>
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/font-awesome/6.2.0/css/all.min.css" media="print//"/>
+                <link rel="stylesheet" type="text/css" href="${
+                    main_view.base_url
+                }/assets/css/ksm_style.css" media="print//"/>
+                <style>
+                    *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:14px;
+                    }
+                    ${style}
+                </style>
+            </head>
+            <body>
+                ${html.replace(/table-responsive/g, "")}
+            </body>
+        </html>`);
+        myWindow.document.close();
+        console.log(window.document);
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        }, 200);
+    }
+}
+function windowPrintBenfit(html, style) {
+    console.log(3834838, html);
+    if (html) { 
+    
+        let myWindow = window.open("", "PRINT");
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>Benefits</title>
+
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3553,7 +3523,7 @@ function windowPrintRole(html = null, style = null) {
             myWindow.print();
             myWindow.close();
         }, 500);
-    } else cv_interact.warning("Select Run Report Before Print!");
+    } else cv_interact.warning("Select run report before print!");
 }
 
 function khmerNum(number) {
@@ -3563,7 +3533,6 @@ function khmerNum(number) {
 
 function exportToExcel() {
     if (HtmlString) {
-        console.log(3333, HtmlString);
         const numTable = (HtmlString.match(new RegExp("<table", "g")) || [])
                 .length,
             numTh = (HtmlString.match(new RegExp("count-th", "g")) || [])
@@ -3755,23 +3724,20 @@ function exportToExcel() {
         link.click();
         document.body.removeChild(link);
     } else {
-        cv_interact.warning("Select Run Report Before Print!");
+        cv_interact.warning("Select run report before print!");
     }
 }
 
 function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
     HTML = HTML ?? null;
     HtmlString = `<div class="d-block position-relative">
-        <div class="height-logo-report position-absolute float-start">
-            <img style="max-width: 100px; max-height: 100px;" class=" object-fit-scale set-min-size-logo" src="${main_view.base_url}/assets/images/logo/photo_report.png" alt=""/>
-        </div>
+
         <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
             <h4 class="text-center text-uppercase"> ${name}</h4>
             <p class="text-center w-100 fs-5-1 get-subtitle fs-5"></p>
         </div>
     </div>`;
     HtmlString += `<table class"table">${HTML}</table>`;
-    // console.log(3333,HtmlString);
     if (HtmlString) {
         const numTable = (HtmlString.match(/<table/g) || []).length,
             numTh = (HtmlString.match(/count-th/g) || []).length;
@@ -3962,7 +3928,7 @@ function ComponentExportToExcel(HTML, name = "Referral Fee Component") {
         link.click();
         document.body.removeChild(link);
     } else {
-        cv_interact.warning("Select Run Report Before Print!");
+        cv_interact.warning("Select run report before print!");
     }
 }
 
@@ -3973,7 +3939,7 @@ function windowPrintInvoice(html, style) {
         <html>
             <head>
                 <title>Student Receipt</title>
-                
+
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

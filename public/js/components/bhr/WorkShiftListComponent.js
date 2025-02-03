@@ -1,15 +1,14 @@
 "use strict";
-
-var WorkShiftListComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_workShiftListComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Shift List";
-    this.btnAdd = this.self.querySelector("#_btnAddWorkShift");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_work_shift_list_search");
-    this.cols = [
+var WorkShiftListComponent = (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_workShiftListComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Shift List";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddWorkShift");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_work_shift_list_search");
+    mThis.cols = [
         {
             title: "NO",
             className: "align-middle",
@@ -54,7 +53,7 @@ var WorkShiftListComponent = new (function () {
             },
         },
     ];
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.WorkShiftListsView = new ListView("_work_shift_lists", {
             fetchApi: `${mThis.base_url}/hr/work-shifts/list-paginate`,
@@ -104,7 +103,7 @@ var WorkShiftListComponent = new (function () {
             }
         }, 200);
     });
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
@@ -116,7 +115,7 @@ var WorkShiftListComponent = new (function () {
 
         return p;
     };
-    this.initDropdownMenus = () => {
+    mThis.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-work-shift-modify");
             if (btn) {
@@ -129,7 +128,7 @@ var WorkShiftListComponent = new (function () {
             console.log(123, btn);
         });
     };
-    this.editWorkShift = (id, menulink) => {
+    mThis.editWorkShift = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -139,7 +138,7 @@ var WorkShiftListComponent = new (function () {
         };
         WorkShiftListDialog.show(op);
     };
-    this.deleteWorkShift = (id, menulink) => {
+    mThis.deleteWorkShift = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -148,9 +147,9 @@ var WorkShiftListComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Work Shift?",
+            "Delete this work shift?",
             {
-                title: "Delete this Work Shift?",
+                title: "Delete Shift",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -166,7 +165,7 @@ var WorkShiftListComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success("Deleted successfully");
                                 mThis.WorkShiftListsView.showPage();
                             } else {
                                 // Display an error if the deletion fails
@@ -189,7 +188,7 @@ var WorkShiftListComponent = new (function () {
             }
         );
     };
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.WorkShiftListsView.showPage(
@@ -197,10 +196,11 @@ var WorkShiftListComponent = new (function () {
             null,
             () => {
                 mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(250);
+                mThis.jm.hide().fadeIn(200);
             }
         );
     };
+    return mThis;
 })();
 const WorkShiftListDialog = (() => {
     const self = {};

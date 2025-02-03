@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Models\Bhr;
-
 
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
-
 use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use App\Models\Umt\Branch;
-
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Money;
 
 class Employee //extends Model
 {
@@ -48,11 +45,12 @@ class Employee //extends Model
 
     function checkUniqueEmployeeByNID($nid, $id = null)
     {
+        if(!$nid) return null;
         $str_id = '1=1';
         if (!$nid) return 'National ID cannot be empty';
         if ($id > 0) $str_id = "emp.id <> $id";
         $x = DB::table('employees as emp')->where('emp.nid', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if ($x) return 'National ID "' . $nid . '" has been used by another employee';
+        if ($x) return 'National ID ?? has been used by another employee::'. $nid;
         return null;
     }
 
@@ -75,11 +73,12 @@ class Employee //extends Model
             'emp_type_id' => '1|number',
             // 'branch_id' => '1|number',
             'salary' => '0|number',
+            'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid' => '1|string|1-100',
-            'nid_expiry_date' => '1|date',
+            'nid_expiry_date' => '0|date',
             'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
@@ -88,7 +87,7 @@ class Employee //extends Model
             'spouse_emp_id' => '0|number',
             'spouse_occ_code' => '0|string|0-100',
             'passport_number' => '0|string|0-100',
-            'passport_expiry_date' => '1|date',
+            'passport_expiry_date' => '0|date',
 
         ];
 
@@ -99,9 +98,22 @@ class Employee //extends Model
             return DV::error($res->error);
         }
 
-
         $inputs = $res->values;
         $d = (object) $inputs;
+
+        $nid = $d->nid ?? null;
+        if($nid){
+            $expire_date = $d->nid_expiry_date ?? null;
+            if (!$expire_date) return DV::error('Expiry Date for National ID Card is required');
+            else $inputs['nid_expiry_date'] = convertDate($expire_date);
+        }
+        $passport_number = $d->passport_number;
+        if($passport_number){
+            $expire_date = $d->passport_expiry_date ?? null;
+            if (!$expire_date) return DV::error('Expiry Date for passport is required');
+            else $inputs['passport_expiry_date'] = convertDate($expire_date);
+        }
+
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
@@ -124,11 +136,18 @@ class Employee //extends Model
             if ($position) {
                 $inputs['salary'] = $position->salary;
             } else {
-                return DV::error('Position not found');
+                $inputs['salary'] = $inputs['salary'] ?? 0;
             }
-        } else if ($d->emp_type_id != '3') {
+        } elseif ($d->emp_type_id != '3') {
+            $inputs['salary'] = $inputs['salary'] ?? 0;
+        }
 
-            $inputs['salary'] = null;
+        $currency_code =DB::table('positions')->where('id', $d->position_id)->first(['currency_code']);
+
+        if ($currency_code) {
+            $inputs['currency_code'] = $currency_code->currency_code;
+        } else {
+            $inputs['currency_code'] = null;
         }
         //error_log('Saving data: ' . json_encode($inputs)); //Please remove uused log
         $save = !$emp_id;
@@ -220,19 +239,32 @@ class Employee //extends Model
         $tax_option_id = 0;
         $used_amount = 0;
         $benefit_count = 0;
+        $payroll_currency = null;
+        $benefit_currency = null;
+        $flat_tax_rate = 0;
+        $result = [];
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
-            ->selectRaw('p.month, p.year')
+            ->selectRaw('p.month, p.year, p.currency_code,exchange_rate')
             ->first();
 
-        if ($payroll) {
+        $payroll_currency = $payroll->currency_code ?? null;
+        $exchange_rate = $payroll->exchange_rate ?? 1;
 
+        if ($payroll) {
             $bdps = DB::table('benefit_disburse_policies')
-                ->where('target_month', $payroll->month)
-                ->where('target_year', $payroll->year)
+                ->where(function ($query) use ($payroll) {
+                    $query->where('target_month', $payroll->month)
+                        ->where('target_year', $payroll->year)
+                        ->orWhere(function ($query) {
+                            $query->where('target_month', 0);
+                                    // ->where('target_year', 0);
+                        });
+                })
                 ->selectRaw('id, withdraw_rate, benefit_id')
                 ->get();
+
             foreach ($bdps as $bdp) {
                 $withdraw_rate = $bdp->withdraw_rate ?? 0;
                 $benefit_id = $bdp->benefit_id;
@@ -244,10 +276,10 @@ class Employee //extends Model
                     ->selectRaw('id, withdraw_rate, emp_id, target_month, target_year, benefit_id')
                     ->first();
 
-                $emp_benefit = DB::table('emp_benefits')
+                    $emp_benefit = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
                     ->where('benefit_id', $benefit_id)
-                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id');
+                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id,currency_code');
 
                 $benefit_count = DB::table('emp_benefits')
                     ->where('emp_id', $emp_id)
@@ -260,12 +292,22 @@ class Employee //extends Model
 
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
-
+                                $benefit_currency = $emp_benefit->currency_code ?? null;
+                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
                                 $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
                                 $last_benefit_id = $emp_benefit->benefit_id;
+
+                                if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                    }
+                                }
+
                                 $result =  [
                                     "emp_id" => $emp_id,
                                     "payroll_id" => $payroll_id,
@@ -273,8 +315,10 @@ class Employee //extends Model
                                     "benefit_id" => $last_benefit_id,
                                     "full_amount" => $full_amount,
                                     "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
+                                    "currency_code" => $payroll_currency
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
@@ -282,26 +326,46 @@ class Employee //extends Model
                     }else{
                         $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
+                        $benefit_currency = $emp_benefit->currency_code ?? null;
+                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
+
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
+
+                            if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                    }
+                                }
                         }
                     }
                 }
                 else{
                     if($benefit_count > 1){
                         $rows = $emp_benefit->get();
-
                         if ($emp_benefit) {
                             foreach($rows as $emp_benefit){
 
+                                $benefit_currency = $emp_benefit->currency_code ?? null;
+                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
                                 $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                                 $full_amount = $emp_benefit->amount ?? 0;
                                 $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                                 $used_amount = $full_amount * ($withdraw_rate / 100);
                                 $last_benefit_id = $emp_benefit->benefit_id;
+
+                                if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                    }
+                                }
                                 $result =  [
                                     "emp_id" => $emp_id,
                                     "payroll_id" => $payroll_id,
@@ -309,78 +373,99 @@ class Employee //extends Model
                                     "benefit_id" => $last_benefit_id,
                                     "full_amount" => $full_amount,
                                     "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
                                     "used_amount" => $used_amount,
                                     "emp_benefit_id" => $emp_benefit->id,
+                                    "currency_code" => $payroll_currency
                                 ];
                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                             }
+
                         }
                     }else{
                         $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
                         $emp_benefit = $emp_benefit->first();
+                        $id = $emp_id;
+                        $benefit_currency = $emp_benefit->currency_code ?? null;
+                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
+
                         if ($emp_benefit) {
                             $full_amount = $emp_benefit->amount ?? 0;
                             $tax_option_id = $emp_benefit->tax_option_id ?? 0;
                             $used_amount = $full_amount * ($withdraw_rate / 100);
                             $last_benefit_id = $emp_benefit->benefit_id;
+                            if($benefit_currency)
+                                {
+                                    if($benefit_currency != $payroll_currency)
+                                    {
+                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                    }
+                                }
+                                $result =  [
+                                    "emp_id" => $emp_benefit->emp_id ?? $emp_id,
+                                    "payroll_id" => $payroll_id,
+                                    "withdraw_rate" => $withdraw_rate,
+                                    "benefit_id" => $last_benefit_id,
+                                    "full_amount" => $full_amount,
+                                    "tax_option_id" => $tax_option_id,
+                                    "flat_tax_rate" => $flat_tax_rate,
+                                    "used_amount" => $used_amount,
+                                    "emp_benefit_id" => null,
+                                    "currency_code" => $payroll_currency
+                                ];
+                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
                         }
                     }
                 }
             }
         }
-        $result =  [
-            "emp_id" => $emp_id,
-            "payroll_id" => $payroll_id,
-            "withdraw_rate" => $withdraw_rate,
-            "benefit_id" => $last_benefit_id,
-            "full_amount" => $full_amount,
-            "tax_option_id" => $tax_option_id,
-            "used_amount" => $used_amount,
-            "emp_benefit_id" => null,
-        ];
-        if($benefit_count <=1)
-        $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-
+        // $result =  [
+        //     "emp_id" => $emp_benefit->emp_id ?? $emp_id,
+        //     "payroll_id" => $payroll_id,
+        //     "withdraw_rate" => $withdraw_rate,
+        //     "benefit_id" => $last_benefit_id,
+        //     "full_amount" => $full_amount,
+        //     "tax_option_id" => $tax_option_id,
+        //     "flat_tax_rate" => $flat_tax_rate,
+        //     "used_amount" => $used_amount,
+        //     "emp_benefit_id" => null,
+        //     "currency_code" => $payroll_currency
+        // ];
         return (object)$result;
     }
     static function savePayrollListBenefit($arr, $ss)
     {
         $v_rule = [
-            'id' => '0|identity=1',
+            // 'id' => '0|identity=1',
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
             'benefit_id' => '1|number',
             'full_amount' => '1|number',
             'withdraw_rate' => '0|number',
             'tax_option_id' => '1|number',
+            'flat_tax_rate' => '0|number',
             'used_amount' => '0|number',
             'emp_benefit_id' => '0|number',
+            'currency_code' => '0|number'
         ];
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
 
-        $inputs['id'] = $inputs['id'] ?? null;
-
-        $existing = DB::table('payroll_list_benefits')
+        $existing_id = DB::table('payroll_list_benefits')
             ->where('payroll_id', $inputs['payroll_id'])
             ->where('emp_id', $inputs['emp_id'])
             ->where('benefit_id', $inputs['benefit_id'])
-            ->first();
+            ->where('emp_benefit_id', $inputs['emp_benefit_id'])
+            ->value('id');
+        $id = $existing_id ?? null;
 
-        if ($existing) {
-            return DV::depends(1, ['message' => 'Record already exists', 'id' => $existing->id]);
-        }
-
-        $id = saveData($ss, 'payroll_list_benefits', ['id' => $inputs['id']], $inputs, [], 1);
+        $id = saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
         }
-
         return DV::error('Error saving payroll list benefit!');
     }
 
@@ -394,7 +479,7 @@ class Employee //extends Model
                 'e.id',
                 'e.name',
                 'a.id as account_id',
-                'a.account_number'
+                'a.account_number',
             ])
             ->first();
     }
@@ -412,7 +497,6 @@ class Employee //extends Model
             ])
             ->first();
     }
-
 
     function deleteProfilePicture($id = null, $ss = null)
     {
@@ -523,6 +607,7 @@ class Employee //extends Model
             emp.position_id,
             p.title as position,
             emp.salary,
+            emp.currency_code,
             emp.emp_type_id,
             el.name as type,
             emp.work_shift_id,
@@ -550,6 +635,8 @@ class Employee //extends Model
         }
         foreach ($rows as &$row) {
             $row->nationality = Country::nationality($row->nationality_id, $countries);
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
+
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -673,6 +760,7 @@ class Employee //extends Model
                 emp.position_id,
                 p.title as position,
                 emp.salary,
+                emp.currency_code,
                 emp.emp_type_id,
                 el.name as type,
                 emp.work_shift_id,
@@ -695,6 +783,7 @@ class Employee //extends Model
             $row->image_url = $img;
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
         } else {
             $row = null; // Or handle the case where employee is not found
         }
@@ -753,7 +842,7 @@ class Employee //extends Model
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'positions' => GeneralSettings::options_position($ss),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
@@ -768,7 +857,7 @@ class Employee //extends Model
         }
         return (object) [
             'branches' => GeneralSettings::options_branch($ss),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'positions' => GeneralSettings::options_position($ss),
             'employee' => $employee,
         ];
     }
@@ -897,8 +986,19 @@ class Employee //extends Model
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
 
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
 
+            // Ensure new effective_date is after the latest effective_date
+            if (strtotime($inputs['effective_date']) <= strtotime($latest_effective_date)) {
+                return DV::error('The effective date must be later than the previous resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
         $events = [
             'active.20' => 'Resignation'
         ];
@@ -955,11 +1055,24 @@ class Employee //extends Model
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
+        $rejoin_date = $inputs['rejoin_date'];
         $emp = self::getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
+        $latest_resignation = DB::table('resignations')
+        ->where('emp_id', $id)
+        ->orderBy('effective_date', 'DESC')
+        ->first();
 
+        if ($latest_resignation) {
+            $latest_effective_date = $latest_resignation->effective_date;
+
+            // Ensure the rejoin date is after the latest resignation's effective date
+            if (strtotime($rejoin_date) <= strtotime($latest_effective_date)) {
+                return DV::error('The rejoin date must be after the latest resignation\'s effective date (' . $latest_effective_date . ').');
+            }
+        }
 
         $events = [
             'active.10' => 'Rejoin'
@@ -996,7 +1109,7 @@ class Employee //extends Model
         $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
         if ($rejoin_id) {
 
-            DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
+            DB::table('employees')->where('id', $id)->update(['status_id' => 10, 'last_rejoin_date' => $rejoin_date]);
 
             return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
         }
@@ -1027,17 +1140,29 @@ class Employee //extends Model
 
         if ($change_branch) {
             $resBranch = self::changeBranch($ss, $id, $promo_id, $change_branch);
-            if ($resBranch) $event_names[] = 'Change Branch';
+            if ($resBranch->status_code == 200) {
+                $event_names[] = 'Change Branch';
+            } else {
+                return $resBranch;
+            }
         }
 
         if ($change_position) {
             $resPosition = self::changePosition($ss, $id, $promo_id, $change_position);
-            if ($resPosition) $event_names[] = 'Change Position';
+            if ($resPosition->status_code == 200) {
+                $event_names[] = 'Change Position';
+            } else {
+                return $resPosition;
+            }
         }
 
         if ($change_salary) {
             $resSalary = self::changeSalary($ss, $id, $promo_id, $change_salary);
-            if ($resSalary) $event_names[] = 'Change Salary';
+            if ($resSalary ->status_code == 200) {
+                $event_names[] = 'Change Salary';
+            } else {
+                return $resSalary;
+            }
         }
 
         foreach ($event_names as $event_name) {
@@ -1076,13 +1201,14 @@ class Employee //extends Model
 
         if (!$arr) return;
 
-        $v_rule = [
-            'branch_id' => '1|number',
+         $v_rule = [
+            'branch_id' => '0|number',
+            'to_branch_id' => '1|number',
             'effective_date' => '1|date',
             'remarks' => '0|string|1-300',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -1092,7 +1218,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $emp_id;
 
         $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
-        $branch_id = $arr['branch_id'];
+        $branch_id = $arr['to_branch_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
         return DV::depends(1, null);
     }
@@ -1101,7 +1227,8 @@ class Employee //extends Model
     {
         if (!$arr) return;
         $v_rule = [
-            'position_id' => '1|number',
+            'position_id' => '0|number',
+            'to_position_id' => '1|number',
             'start_date' => '1|date',
             'remarks' => '0|string|0-300'
         ];
@@ -1115,7 +1242,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $emp_id;
 
         $id = saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
-        $position_id = $arr['position_id'];
+        $position_id = $arr['to_position_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
 
 
@@ -1124,15 +1251,23 @@ class Employee //extends Model
     static function changeSalary($ss, $emp_id, $promo_id, $arr)
     {
         if (!$arr) return;
+
+        if (empty($arr['new_salary'])) {
+            return DV::error('new salary is required.');
+        }
+
         $v_rule = [
             'org_position_id' => '0|number',
             'new_position_id' => '0|number',
             'org_salary' => '0|decimal',
-            'new_salary' => '0|decimal',
-
-
+            'new_salary' => '1|decimal'
         ];
+
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
         $inputs = $res->values;
         $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
         $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
@@ -1142,17 +1277,15 @@ class Employee //extends Model
         $inputs['org_salary'] = $org_salary;
         $inputs['org_position_id'] = $org_position_id;
 
-
         $id = saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
         $salary = $arr['new_salary'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
 
-
         return DV::depends(1, null);
     }
+
     static function createPromotion($arr, $ss = null)
     {
-        $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
@@ -1222,29 +1355,30 @@ class Employee //extends Model
         if ($today >= $effective_date) return true;
         return false;
     }
+
     static function contractFormOptions($id, $director_id = 0, $ss)
     {
         $emp = null;
-        $director = null;
 
         if ($id) {
             $emp = Employee::getDetails($id, $ss);
         }else return DV::error('Branch Can not be Empty!');
 
-        $branch = self::getBranchInfo($emp->branch_id);
-        $emp->branch_name = $branch->name;
-        $emp->branch_address = $branch->address_kh;
-        $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
-        $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
-        $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
-        $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
-        $emp->emp_name = $emp->name_kh;
-        $emp->emp_phone = $emp->phone_number;
-        $emp->emp_nid = $emp->nid;
-        $emp->emp_position = $emp->position;
-        $emp->emp_sex = $emp->sex;
-        $emp->emp_address = $emp->address;
-
+        $branch = self::getBranchInfo($emp->branch_id ?? null);
+        if ($branch){
+            $emp->branch_name = $branch->name ?? '(Branch not found)';
+            $emp->branch_address = $branch->address_kh ?? '(address not available)';
+            $emp->com_rep_name = $branch->director ? $branch->director->name_kh : null;
+            $emp->com_rep_sex = $branch->director ? $branch->director->sex : null;
+            $emp->com_rep_nid = $branch->director ? $branch->director->nid : null;
+            $emp->com_rep_phone = $branch->director ? $branch->director->phone_number : null;
+            $emp->emp_name = $emp->name_kh;
+            $emp->emp_phone = $emp->phone_number;
+            $emp->emp_nid = $emp->nid;
+            $emp->emp_position = $emp->position;
+            $emp->emp_sex = $emp->sex;
+            $emp->emp_address = $emp->address;
+        }
         return (object)[
             'contractInfo' => $emp,
         ];

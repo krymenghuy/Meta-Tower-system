@@ -18,34 +18,8 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    static function deposit($arr, $ss ){
-        $v_rule = [
-            'emp_id' => '0|number',
-            'payroll_id' => '0|number',
-            'amount' => '1|number',
-            'remarks' => '0|string|250',
-            'trx_type' => '1|number',
-            'status'=>'0|string|10',
-            'account_id' => '1|number',
-            'from_account_id' => '1|number',
-
-
-        ];
-
-        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-
-        $inputs = $res->values;
-        $inputs['status'] = 'in';
-
-        $id = saveData($ss,'transactions', ['id' => null], $inputs, [], 1,false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
-    }
-
-    static function createTransaction($arr,$ss = null,$status='in'){
+    static function create($arr, $update_balance = false,$ss = null,$status='in'){
         $ss = $ss ?? Transaction::$userInfo;
-        $branch_id = $ss->branch_id;
         $v_rule = [
             // 'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -61,19 +35,35 @@ class Transaction
 
         $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
         if ($res->error) {
-            return ['error' => $res->error];
+            return (object)['error' => $res->error];
         }
 
         $id = null;
         $inputs = $res->values;
+        $d = (object) $inputs;
         $inputs['status'] = $status;
 
         $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
         if ($id) {
-            return ( ['transaction' => $inputs,'trx_id'=>bin2hex($id)] );
+            $updateBalance_emp = Account::updateBalance(
+                $d->from_account_id,
+                'accounts',
+                'out',
+                $d->amount,
+                $id,
+                $ss
+            );
+            $updateBalance_master = Account::updateBalance(
+                $d->to_account_id,
+                'accounts',
+                'in',
+                $d->amount,
+                $id,
+                $ss
+            );
+            return  (object)['error'=>null,'transaction' => $inputs,'trx_id'=>bin2hex($id)];
         }
-
-        return ['error' => 'Error saving transaction'];
+        return (object)['error' => 'Error saving transaction'];
     }
 
     //getTransactionListPaginate. please name it to getList()

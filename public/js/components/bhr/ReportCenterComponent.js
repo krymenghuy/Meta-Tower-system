@@ -12,7 +12,6 @@ var ReportCenterComponent = new (function () {
     };
 
     this.filter_fields = [
-       
         {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/reports/options-receiver`,
@@ -72,7 +71,7 @@ var ReportCenterComponent = new (function () {
             required: false,
             dot_object: "emp_types",
         },
-        
+
         {
             type: "date",
             name: "start_date",
@@ -113,7 +112,6 @@ var ReportCenterComponent = new (function () {
                     </button>
                 </div>
                 <div id="_div_filter_top" style="height:  ; max-width: 80% overflow-y: scroll;"></div>
-
                 <div>
                     <div class="d-flex justify-content-end gap-2">
                         <button id="_rpt_pdf" class="btn-print" type="button">
@@ -136,17 +134,19 @@ var ReportCenterComponent = new (function () {
                             <div class="row gy-2 w-100 h-100">
                                 <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                                     <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
-                                    <ul class="del-marker h-100" style=" max-height: ${ window.innerHeight - 160 + "px"}; ">  `,
-                                        mThis.renderReportType(data),
-                                    `</ul>
+                                    <ul class="del-marker h-100" style=" max-height: ${
+                                        window.innerHeight - 160 + "px"
+                                    }; ">  `,
+            mThis.renderReportType(data),
+            `</ul>
                                 </div>`,
-                                
-                            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
-                            //     <div class="h-img-report">
-                            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
-                            //     </div>
-                            //  </div>`,
-                            `</div>
+
+            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
+            //     <div class="h-img-report">
+            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
+            //     </div>
+            //  </div>`,
+            `</div>
                         </div>
                         <div class="d-flex col-lg-6">
                             <div class="gy-2 w-100 h-100">
@@ -158,7 +158,6 @@ var ReportCenterComponent = new (function () {
                                         <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
                                             placeholder="Search report...">
                                         </div>
-
                                         <div class="row w-75 mx-auto my-3">
                                             <div class="col-lg-3">
                                                 <div class="border p-4 rounded-4 text-center">
@@ -185,7 +184,6 @@ var ReportCenterComponent = new (function () {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 
@@ -205,7 +203,6 @@ var ReportCenterComponent = new (function () {
         mThis.controlPanel(mThis.self);
         LocaleManager.translateZone(mThis.self);
     };
-
 
     this.controlPanel = (container) => {
         const reportTable = container.find("#_rpt_table").children();
@@ -263,7 +260,9 @@ var ReportCenterComponent = new (function () {
                     item.code
                 }" data-permissionid="${item.permission_id}">
                 <i class="fa-brands text-primary-custom fa-pushed"></i>
-                <span class="text-capitalize text-primary-custom">${item.name || ""}</span>
+                <span class="text-capitalize text-primary-custom">${
+                    item.name || ""
+                }</span>
             </li>`,
             ].join("");
         });
@@ -289,7 +288,7 @@ var ReportCenterComponent = new (function () {
 
     this.renderFilters = (div, p) => {
         p = p || {};
-        
+
         let html = null,
             inner_html = null;
         if (p.param) {
@@ -387,7 +386,7 @@ var ReportCenterComponent = new (function () {
         div.find("[data-select='datepicker']").each(function () {
             DateTimePicker.init($(this));
         });
-        div.find("select.modal-select2").select2();
+        // div.find("select.modal-select2").select2();
         LocaleManager.translateZone("_rpt_input_filter");
     };
 
@@ -417,7 +416,6 @@ var ReportCenterComponent = new (function () {
             let data = [];
             vsapi.call(item.api, item.param, null, false).then((res) => {
                 if (res.status_code === 200) {
-                    
                     data = res.data;
                     data = item.dot_object ? data[item.dot_object] : data;
                     const el = div.find(`#${item.dom_id}`);
@@ -447,7 +445,7 @@ var ReportCenterComponent = new (function () {
                             has = true;
                             all_text = "All Level";
                         } else if (code === "referral" && item.text == "name") {
-                            console.log(1234,item.api);
+                            console.log(1234, item.api);
                         }
                         VSUtil.setComboItems(
                             el,
@@ -508,7 +506,6 @@ var ReportCenterComponent = new (function () {
     };
 
     this.runReport = (div, code) => {
-
         div.find("#_rpt_btn_report").on("click", function (e) {
             e.preventDefault();
             let p = {};
@@ -551,7 +548,7 @@ var ReportCenterComponent = new (function () {
                 if (btn) btn.click();
                 else if (btn) btn.click();
             };
-        });     
+        });
 
         div.find("#_rpt_btn_list").on("click", function (e) {
             e.preventDefault();
@@ -583,10 +580,8 @@ var ReportCenterComponent = new (function () {
             return;
         }
         mThis.isBusy = true;
-        console.log(14,p.code);
-        
-        switch (p.code) {
 
+        switch (p.code) {
             case "employee_list_by_branch":
                 end_point = "hr/reports/employee/list-by-branch";
                 break;
@@ -646,7 +641,7 @@ var ReportCenterComponent = new (function () {
 
             console.log(JSON.stringify(end_point));
             console.log(JSON.stringify(p, null, 2));
-           p.staff ?  p.emp_id = p.staff : '';
+            p.staff ? (p.emp_id = p.staff) : "";
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
                 .then((res) => {
@@ -660,11 +655,8 @@ var ReportCenterComponent = new (function () {
                         );
                         mThis.isBusy = false;
                     }
-                    console.log(555,d);
-
 
                     if (d && !$.isEmptyObject(d)) {
-                        
                         switch (d.form) {
                             case "simple":
                                 jsonToTable(containerTable, d);
@@ -729,7 +721,7 @@ var ReportCenterComponent = new (function () {
     this.getValueWhenClick = (div) => {
         div.on("click", "li.report-name", function (e) {
             e.preventDefault();
-            mThis.permissionID = e.currentTarget.dataset.permissionid;            
+            mThis.permissionID = e.currentTarget.dataset.permissionid;
             let params = $(this).data("filter").replaceAll("'", '"');
             params = JSON.parse(params);
             mThis.options.params = [];

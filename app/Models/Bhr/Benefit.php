@@ -55,7 +55,7 @@ class Benefit //extends Model
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
-
+        $search_type = $d->type_id ?? null;
         $query = DB::table('benefits as b')
             ->selectRaw('b.id, b.name,b.type_id,' . $last_update . ',b.update_user');
 
@@ -64,6 +64,9 @@ class Benefit //extends Model
         }
         if ($search_value) {
             $query->where('b.name', 'like', '%' . $search_value . '%');
+        }
+        if ($search_type) {
+            $query->where('b.type_id', $search_type);
         }
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
@@ -103,6 +106,10 @@ class Benefit //extends Model
         }
         return (object) [
             'benefits' => $benefits,
+            'benefit_types' => [
+                ['id' => '1', 'name' => 'remuneration '],
+                ['id' => '2', 'name' => 'fringe'],
+            ],
         ];
     }
 

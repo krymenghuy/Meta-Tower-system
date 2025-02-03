@@ -9,7 +9,7 @@
     //        });
     //    });
     //};
-    let num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+    const num_lock_key_values = ['`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
     /* jquery function without options as argument*/
     $.fn.dateFormatter = function () {
         //Turn off browser's password autocomplete that annoy date field
@@ -101,12 +101,12 @@
 ////    }
 ////});
 
-let _datepicker_inputs = $('.datepicker');
+const _datepicker_inputs = $('.datepicker');
 _datepicker_inputs.dateFormatter();
 _datepicker_inputs.attr('autocomplete','chrome-off"');
 
 /*Input.text behavior, Textbox behavior */
-$('input').on('focus', function (event, ui) {
+$('input[type="text"]').on('focus', function (event, ui) {
     _datepicker_inputs.attr('autocomplete',false);
     $(this)
     .one('mouseup', function () {

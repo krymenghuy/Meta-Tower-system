@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 use App\Models\Bhr\Event;
 use App\Models\Bhr\Employee;
+use App\Models\Money;
 
 class EmployeeBenefit
 {
@@ -33,6 +34,7 @@ class EmployeeBenefit
             'flat_tax_rate' => '0|number',
             'balance' => '0|number|default=0',
             'amount' => '1|number',
+            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
             'remarks' => '0|string|1-250',
         ];
 
@@ -45,12 +47,12 @@ class EmployeeBenefit
 
         $inputs = $res->values;
 
-        if (!$id) {
-            $checkExist = DB::table('emp_benefits')->where('emp_id', $inputs['emp_id'])->where('benefit_id', $inputs['benefit_id'])->take(1)->value('id');
-            if ($checkExist) {
-                return DV::error('Benefit already exists');
-            }
-        }
+        // if (!$id) {
+        //     $checkExist = DB::table('emp_benefits')->where('emp_id', $inputs['emp_id'])->where('benefit_id', $inputs['benefit_id'])->take(1)->value('id');
+        //     if ($checkExist) {
+        //         return DV::error('Benefit already exists');
+        //     }
+        // }
 
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
@@ -70,8 +72,8 @@ class EmployeeBenefit
 
         $search_value = $d->search_value ?? null;
         $search_benefit_id = $d->benefit_id ?? null;
+        $search_tax_option = $d->tax_option_id ?? null;
         $str_srch = '1=1';
-        $str_where = "2=2";
         if ($search_value) {
             $skip_rows = 0;
             $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR b.remarks LIKE '%" . $search_value . "%' OR b.amount LIKE '%" . $search_value . "%')";
@@ -92,14 +94,19 @@ class EmployeeBenefit
                 eb.flat_tax_rate,
                 eb.balance,
                 eb.amount,
+                eb.currency_code,
                 eb.remarks,
                 emp.photo_file_name as emp_photo
             ')
+            ->orderBy('id', 'DESC')
             ->where('eb.branch_id', $branch_id)
             ->whereRaw($str_srch);
 
         if ($search_benefit_id) {
             $query->where('eb.benefit_id', $search_benefit_id);
+        }
+        if ($search_tax_option) {
+            $query->where('eb.tax_option_id', $search_tax_option);
         }
         $clone_query = clone $query;
 
@@ -141,6 +148,7 @@ class EmployeeBenefit
             eb.balance,
             eb.amount,
             eb.remarks,
+            eb.currency_code,
             emp.photo_file_name as emp_photo
         ')
             ->where('eb.branch_id', $branch_id)->where('eb.id', $id)->take(1)->first();
@@ -167,7 +175,13 @@ class EmployeeBenefit
         return (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
+            'currency_codes' => Money::options_currency($ss),
             'emp_benefits' => $emp_benefits,
+            'tax_options' => [
+                ['id' => '1', 'name' => 'taxable'],
+                ['id' => '2', 'name' => 'none taxable'],
+                ['id' => '3', 'name' => 'flat rate'],
+            ],
         ];
     }
 }

@@ -8,6 +8,9 @@ const main_view = new function(){
 
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
     this.currency = {symbol: '<span class="fs-6 fw-bold hl-1">៛</span>', name :'KHR'};
+    this.base_currency = 'KHR';
+    this.national_currency = 'KHR';
+    this.payroll_currency = 'USD';
     this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
     //this.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
     this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');
@@ -45,8 +48,8 @@ const main_view = new function(){
     }
     /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
     this.backend_channel_name = ['bhr.backend.',this.branch_id].join('');
- 
-    // // event onShowComponent() is triggered when any component is shown 
+
+    // // event onShowComponent() is triggered when any component is shown
     // this.onShowComponent =  (component)=>{
     //     main_view.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
     //    if(!component) return;
@@ -54,12 +57,12 @@ const main_view = new function(){
     //    switch(component.id){
     //     case 200:{
     //         let btn = main_view.divTitle.querySelector('.btn-db-fitler');
-    //         if(btn) return;   
+    //         if(btn) return;
     //           main_view.divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
     //           btn = main_view.divTitle.querySelector('.btn-db-fitler');
     //           if(btn){
     //              main_view.initDashboardFilter(btn);
-    //           } 
+    //           }
     //         break;
     //     }
     //     default:{
@@ -67,9 +70,9 @@ const main_view = new function(){
     //         if(div) div.remove();
     //     }
     //    }
-    
+
     // };
- 
+
     this.init = ()=>{
      //BEGIN:: process side menus click using VSRoute
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
@@ -397,13 +400,13 @@ window.addEventListener('DOMContentLoaded',function(){
     //       ["role_name", user.role_name]
     //     ]]);
     // }
- 
-    main_view.init();
 
+    main_view.init();
     //VSRoute.onShowComponent = main_view.onShowComponent;
 
     LocaleManager.translateZone(main_view.appContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
+    VSMoney.init();
 
     // if(typeof AuthManager =='undefined'){
     //     VSRoute.loadScript(main_view.auth_script_url).then(()=>{
@@ -424,16 +427,16 @@ window.addEventListener('DOMContentLoaded',function(){
     // }
 });
 
-const inputs = main_view.VSAppContent.querySelectorAll("input");
- inputs.forEach(el =>{
-    el.onselect = function(e){
+const inputs = main_view.VSAppContent.querySelectorAll('input[type="text"], input[type="number"]');
+inputs.forEach(el => {
+    el.onselect = function(e) {
         e.preventDefault();
-    }
+    };
 
-    el.onfocus = function(e){
+    el.onfocus = function(e) {
         e.preventDefault();
-    }
- });
+    };
+});
 
 // window.oncontextmenu = function(){
 //     return false;

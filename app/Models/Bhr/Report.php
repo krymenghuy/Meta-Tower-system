@@ -238,11 +238,10 @@ class Report
                     pl.benefit_flat_rate,
                     pl.deduction,
                     pl.tax_rate,
-                    pl.bias,
                     pl.tax_base,
                     pl.benefit_tax,
                     pl.total_salary,
-                    pl.disburse,
+                    pl.disbursed,
                     emp.photo_file_name as emp_photo')
             ->whereRaw($str_branch_id);
 
@@ -269,7 +268,7 @@ class Report
 
         $start_date = date('d-M-Y', strtotime($start_date));
         $end_date = date('d-M-Y', strtotime($end_date));
-        $title = 'Payroll List';
+        $title = 'Payroll List Report';
         $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
 
         return (object)[
@@ -294,7 +293,7 @@ class Report
         $d = (object)$filter;
         $campus_id = $d->campus_id ?? null;
         $branch_id = $d->branch_id ?? $campus_id;
-        $branch_ids = getAccessBranches($ss, $branch_id);
+        $staff = $d->staff ?? null;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
 
@@ -308,11 +307,13 @@ class Report
             ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
             ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
             ->selectRaw(
-                'b.id, emp.id as emp_id, emp.name as name, b.currency,
+                'b.id, emp.id as emp_id, emp.name as name, b.currency_code as currency,
             b.benefit_id, bc.name as benefit_type, b.tax_option_id, b.flat_tax_rate, b.balance, b.amount, b.remarks, b.update_user, b.updated_at, ' . $col_create_date . ', emp.photo_file_name as emp_photo'
             )
             ->whereRaw($str_branch_id);
-
+        if ($staff) {
+            $query->where('emp.id', $staff);
+        }
         if ($start_date && $end_date) {
             $query->whereBetween('b.create_date', [$start_date, $end_date]);
         }
@@ -358,7 +359,7 @@ class Report
     }
 
 
-    function getBranchInfo($branch_id = 0)
+    function getBranchInfo($branch_id = 0,$ss)
     {
         $branch_ids = getAccessBranches($ss, $branch_id);
         $rows = DB::table('um_branches AS b')->whereIn('b.branch_id', $branch_ids)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
@@ -444,70 +445,62 @@ class Report
 
     function getWalletAccountList($filter, $ss = null)
     {
-        $header_list = ['Employee', 'Account Type', 'Account Number', 'Balance', 'Last Balance Date', 'Currency'];
-        $key_list = ['emp_name', 'account_type', 'account_number', 'balance', 'last_balance_date', 'currency'];
+        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency Code', 'Balance Date'];
+        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency_code', 'last_balance_date'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
-        $d = (object)$filter;
+        $d = (object) $filter;
 
-        $campus_id = isset($d->campus_id) ? (int)$d->campus_id : null;
-        $staff = isset($d->staff) ? (int)$d->staff : null;
-        $branch_id = isset($d->branch_id) ? (int)$d->branch_id : $campus_id;
-        $employee_name = isset($d->name) ? $d->name : null;
+        $campus_id = isset($d->campus_id) ? (int) $d->campus_id : null;
+        $branch_id = isset($d->branch_id) ? (int) $d->branch_id : $campus_id;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
+        $staff = $d->staff ?? null;
+        $branch_condition = $branch_id ? ['emp.branch_id' => $branch_id] : [];
+        $date_condition = $start_date && $end_date ? [$start_date, $end_date] : null;
 
-        $balance_date = DBX::formatDate('wac.last_balance_date', 'last_balance_date');
+        $col_balance_date = DBX::formatTime('acc.last_balance_date', 'last_balance_date');
 
-        $query = DB::table('wallet_accounts as wac')
-            ->join('employees as emp', 'emp.id', '=', 'wac.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->selectRaw('
-            wac.id,
-            wac.emp_id,
-            emp.name as emp_name,
+        $query = DB::table('accounts as acc')
+        ->join('employees as emp', 'emp.id', '=', 'acc.emp_id')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw("
+            emp.id,
+            emp.work_shift_id,
             pos.title as position_id,
-            wac.account_type,
-            wac.account_number,
-            wac.balance,
-            wac.currency,
-            ' . $balance_date . ',
-            emp.photo_file_name as emp_photo
-        ')
-            ->where('wac.account_type', 'Wallet');
-
-        if ($branch_id) {
-            $query->where('emp.branch_id', $branch_id);
-        }
-
+            acc.account_number,
+            acc.balance,
+            $col_balance_date,
+            acc.currency_code,
+            emp.name,
+            emp.code,
+            acc.account_type
+        ")
+        ->where($branch_condition)
+            ->where('acc.account_type', 'Wallet');
         if ($staff) {
             $query->where('emp.id', $staff);
         }
-
-        if ($employee_name) {
-            $query->where('emp.name', 'LIKE', '%' . $employee_name . '%');
-        }
-
-        if ($start_date && $end_date) {
-            $query->whereBetween('emp.created_at', [$start_date, $end_date]);
+        if ($date_condition) {
+            $query->whereBetween('emp.created_at', $date_condition);
         }
 
         $rows = $query->get();
 
         foreach ($rows as $row) {
-            $row->employee = $row->employee . "<br><small>" . $row->emp_position . "</small>";
             unset($row->id);
         }
 
         $groupedData['data'] = $rows;
 
+        $title = 'Employee Wallet Account Report';
         $start_date = date('d-M-Y', strtotime($start_date));
         $end_date = date('d-M-Y', strtotime($end_date));
-        $title = 'Wallet Account List';
-        $sub_title = ($start_date && $end_date) ? "$start_date to $end_date" : 'N/A to N/A';
-        return (object)[
+        $sub_title = $start_date && $end_date ? "$start_date to $end_date" : 'N/A to N/A';
+
+        return (object) [
             'title' => $title,
             'sub_title' => $sub_title,
             'form' => 'simple',
@@ -519,8 +512,8 @@ class Report
 
     function getEmployeeAccountReport($filter, $ss = null)
     {
-        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency', 'Balance Date'];
-        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency', 'last_balance_date'];
+        $header_list = ['Code', 'Name', 'Position', 'Account Type', 'Account Number', 'Balance', 'Currency Code', 'Balance Date'];
+        $key_list = ['code', 'name', 'position_id', 'account_type', 'account_number', 'balance', 'currency_code', 'last_balance_date'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
@@ -531,7 +524,7 @@ class Report
         $branch_id = isset($d->branch_id) ? (int) $d->branch_id : $campus_id;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-
+        $staff = $d->staff ?? null;
         $branch_condition = $branch_id ? ['emp.branch_id' => $branch_id] : [];
         $date_condition = $start_date && $end_date ? [$start_date, $end_date] : null;
 
@@ -547,13 +540,15 @@ class Report
             acc.account_number,
             acc.balance,
             $col_balance_date,
-            acc.currency,
+            acc.currency_code,
             emp.name,
             emp.code,
             acc.account_type
         ")
             ->where($branch_condition);
-
+        if ($staff) {
+            $query->where('emp.id', $staff);
+        }
         if ($date_condition) {
             $query->whereBetween('emp.created_at', $date_condition);
         }
@@ -760,9 +755,9 @@ class Report
             ->get();
 
         $emp_exp = DB::table('emp_experiences as exp')
-            ->join('positions as pos', 'pos.id', '=', 'exp.position_id')
+            // ->join('positions as pos', 'pos.id', '=', 'exp.position_id')
             ->join('organizations as org', 'org.id', '=', 'exp.organization_id')
-            ->selectRaw('pos.title as position, org.name as organization, exp.period_type, exp.description')
+            ->selectRaw('exp.position as position, org.name as organization, exp.period, exp.description')
             ->where('exp.emp_id', $emp_id)
             ->get();
 
@@ -899,11 +894,9 @@ class Report
         $branch_id = isset($d->branch_id) ? (int) $d->branch_id : $campus_id;
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
-
+        $staff = $d->staff ?? null;
         $branch_condition = $branch_id ? ['emp.branch_id' => $branch_id] : [];
-
         $col_attendance_date = DBX::formatDate('at.attendance_date', 'attendance_date');
-
         $query = DB::table('emp_attendances as at')
             ->join('employees as emp', 'emp.id', '=', 'at.emp_id')
             ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
@@ -922,6 +915,9 @@ class Report
         ")
             ->where($branch_condition)
             ->whereBetween('at.attendance_date', [$start_date, $end_date]);
+        if ($staff) {
+            $query->where('emp.id', $staff);
+        }
         $rows = $query->get();
         foreach ($rows as $row) {
             unset($row->id);

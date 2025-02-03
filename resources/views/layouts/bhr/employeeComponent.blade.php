@@ -162,12 +162,7 @@
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0;">
     <div id="sub_content" class="">
         <div class="d-flex justify-content-between shadow p-3 mt-2 rounded-2 w-100" id="div_filter_filed">
-            <div class="d-flex align-items-start justify-content-start w-25">
-                <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
-                    <span>Add Employee </span>
-                </button>
-            </div>
-            <div class="d-flex align-items-center justify-content-end w-75 gap-3">
+            <div class="d-flex align-items-center justify-content-start w-75 gap-3">
                 <div class="d-flex w-25 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control filter-field btn_search" id="_search_employee"
@@ -190,6 +185,11 @@
                     <select type="id" id="filter_employee_type" class="data-input filter-field"
                         data-field="emp_type"></select>
                 </div>
+            </div>
+            <div class="d-flex align-items-start justify-content-end w-25">
+                <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
+                    <span><i class="fa fa-person mr-2"></i>Add Employee </span>
+                </button>
             </div>
         </div>
         <div id="_employee_list" class="mt-3 px-3" style="height:70vh"></div>

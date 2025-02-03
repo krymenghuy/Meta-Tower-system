@@ -6,7 +6,7 @@ class StyleProvider
 {
     protected static $bundles = [
             'bhr-style'=>[
-                'output_file'=>'/dist/css/dmsstyle.css?v=18',
+                'output_file'=>'/dist/css/lc_hr_style.css?v=18',
                 'files' => [
                     'assets/css/vsstyle.css',/** Must be set before bootstrap**/
                     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',

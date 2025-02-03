@@ -4,8 +4,6 @@ namespace App\Models\Bhr;
 
 use App\Models\DBX;
 use App\Models\DV;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -33,7 +31,6 @@ class CheckPointCategory //extends Model
     {
         $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
-        $branchId = $ss->branch_id;
 
         $validationRules = [
             'id' => '0|identity=1',
@@ -79,14 +76,13 @@ class CheckPointCategory //extends Model
     public function getListPaginate($arr, $ss = null)
     {
         $data = (object) $arr;
-        $branchId = $ss->branch_id;
         $currentPage = $data->current_page ?? 1;
         $perPage = $data->per_page ?? 10;
         $skipRows = ($currentPage - 1) * $perPage;
         $col_update_date = DBX::formatDate('cpc.update_date', 'update_date');
         $query = DB::table('check_point_categories as cpc')
-            ->selectRaw('cpc.id, cpc.name, '.$col_update_date.'')
-            ->orderBy('cpc.id', 'desc');
+            ->selectRaw('cpc.id, cpc.name, ' . $col_update_date . '');
+            // ->orderBy('cpc.id', 'desc');
 
         if (!empty($data->search_value)) {
             $searchValue = $data->search_value;

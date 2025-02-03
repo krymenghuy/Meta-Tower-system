@@ -1,19 +1,19 @@
 "use strict";
 
-var LeaveComponent = new function () {
-    let mThis = this;
-    this.title_prop = "Leave Requests";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_leave_component");
-    this.self = this.jm[0];
-    this.btnAdd = this.self.querySelector("#_btnAddLeave");
-    this.divFilter = this.self.querySelector("#_divFilter_leave");
-    // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
-    this.elFilter_status = this.self.querySelector('#el_status');
-    this.elFilter_session = this.self.querySelector('#el_leave_session');
-    this.elSearch = this.self.querySelector("#_search_leave");
+var LeaveComponent = (function () {
+    const mThis = {};
+    mThis.title_prop = "Leave Requests";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_leave_component");
+    mThis.self = mThis.jm[0];
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddLeave");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_leave");
+    // mThis.elFilter_leaveType = mThis.self.querySelector('#el_leave_type');
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
+    mThis.elSearch = mThis.self.querySelector("#_search_leave");
 
-    this.cols = [
+    mThis.cols = [
 
         {
             title: "Employee ID",
@@ -83,7 +83,7 @@ var LeaveComponent = new function () {
             className: 'status text-nowrap text-center align-start',
             data: function (data, index, tr) {
                 let cls_class = 'text-danger text-center';
-                let bg_color = ''; // Default background color 
+                let bg_color = ''; // Default background color
 
                 if ((data.status || '').toLowerCase() === 'approved') {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
@@ -122,7 +122,7 @@ var LeaveComponent = new function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.LeaveRequestListView = new ListView('_leave_request_list',{
@@ -141,7 +141,7 @@ var LeaveComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.LeaveRequestListView.showPage();
+                    mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                 }
             };
 
@@ -149,7 +149,6 @@ var LeaveComponent = new function () {
         };
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
-        console.log(122,mThis.tblLeaves);
 
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
@@ -180,7 +179,7 @@ var LeaveComponent = new function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
@@ -195,7 +194,7 @@ var LeaveComponent = new function () {
         return p;
     };
 
-    this.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_leave_action",
@@ -253,7 +252,7 @@ var LeaveComponent = new function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.changeStatus = (id, lnk)=>{
+    mThis.changeStatus = (id, lnk)=>{
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -304,28 +303,28 @@ var LeaveComponent = new function () {
         });
     }
 
-    this.editLeaveRequest = (id, menuLink) => {
+    mThis.editLeaveRequest = (id, menuLink) => {
 
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.LeaveRequestListView.showPage();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
 
         LeaveRequestDialog.show(op);
     }
 
-    this.deleteLeaveRequest = (id, menuLink) => {
+    mThis.deleteLeaveRequest = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.LeaveRequestListView.showPage();
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-        cv_interact.confirm('Delete this Leave Request?',{
+        cv_interact.confirm('Delete this leave request?',{
             title: 'Delete Leave Request',
             context: 'delete',
             confirmButtonText:"Delete"
@@ -333,39 +332,38 @@ var LeaveComponent = new function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/leave/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
+                        cv_interact.success('Deleted successfully');
                         mThis.LeaveRequestListView.showPage();
                     }
                 })
             }
             else {
-                cv_interact.error(res.message);
+                cv_interact.error(res.error_message);
             }
         });
     }
 
-    this.prepareFormOptions = () => {
+    mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/leave/form-options`, null, null, null)
+            .then(res => {
             const d = res.status_code == 200 ? res.data : {};
-
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
-            VSUtil.setComboItems(mThis.elFilter_session,d.sessions,'id','session',true,'All Sessions',null);
-            // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All',null);
+            VSUtil.setComboItems(mThis.elLeaveType,d.leave_types,'id','leave_type',true,'All Types',null);
         })
     }
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
             mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
+            mThis.jm.hide().fadeIn(200);
         });
     }
-
-};
+    return mThis;
+})();
 
 //begin::LeaveRequestDialog using GeneralDialog
 const LeaveRequestDialog = (()=>{
@@ -461,11 +459,11 @@ const LeaveRequestDialog = (()=>{
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
                                         {
-                                            cv_interact.success("Updated Leave Request Successfully");
+                                            cv_interact.success("Updated leave request successfully");
                                         }
                                         else
                                         {
-                                            cv_interact.success("Added Leave Request Successfully");
+                                            cv_interact.success("Added leave request successfully");
                                         }
                                     } else cv_interact.error(res.error_message);
                                 });

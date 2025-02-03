@@ -48,6 +48,10 @@ use App\Http\Controllers\Bhr\EmployeeDocumentController;
 use App\Http\Controllers\Bhr\ExitItemController;
 use App\Http\Controllers\Bhr\FormController;
 use App\Http\Controllers\Bhr\ContractController;
+use App\Http\Controllers\Bhr\DocumentTypeController;
+use App\Http\Controllers\Bhr\OrganizationController;
+use App\Http\Controllers\Bhr\SchoolController;
+
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -157,32 +161,39 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
     Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
+    Route::post('/import-staff', [PayrollController::class, 'importStaffList']);
+    Route::post('/calculate', [PayrollController::class, 'calculatePayroll']);
     Route::post('/save', [PayrollController::class, 'savePayroll']);
+    Route::post('disburse-one', [PayrollListController::class, 'disburseOne']);
+    Route::post('disburse-all', [PayrollController::class, 'disburseAll']);
     Route::post('/list-paginate', [PayrollController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollController::class, 'getDetails']);
     Route::post('/delete', [PayrollController::class, 'deletePayroll']);
     Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
-    Route::post('/update-authorize', [PayrollController::class, 'updateAuthorize']);
-    Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
+    Route::post('/authorize', [PayrollController::class, 'authorizePayroll']);
+    //Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
+    Route::post('/staff-list', [PayrollController::class, 'getStaffList']);
     Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
+    Route::post('/reset', [PayrollController::class, 'reset']);
+    Route::post('/reset-reverse', [PayrollController::class, 'resetStatus']);
+    Route::post('/reverse', [PayrollController::class, 'reverseTransactions']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
 
-    Route::post('/save', [PayrollListController::class, 'savePayrollList']);
-    Route::post('/list-paginate', [PayrollListController::class, 'getPayrollListPaginate']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff')->group(function () {
+    Route::post('/save', [PayrollListController::class, 'addStaff']);
+    Route::post('/list', [PayrollListController::class, 'getList']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
-    Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
+    Route::post('/delete', [PayrollListController::class, 'removeStaff']);
     Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
-    Route::post('/import', [PayrollListController::class, 'importPayrollList']);
-    Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
-    Route::post('disburse', [PayrollListController::class, 'disbursePayrollList']);
-    Route::post('disburse-all', [PayrollListController::class, 'disburseAllPayrollList']);
+    //Route::post('/import', [PayrollListController::class, 'importPayrollList']);
+    //Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
+    Route::post('disburse', [PayrollListController::class, 'disburseOne']);
+    //Route::post('disburse-all', [PayrollController::class, 'disburseAll']);
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
-    Route::post('/list', [PayrollListController::class, 'getListPayrollList']);
-
+    Route::post('/list', [PayrollController::class, 'getStaffList']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {
@@ -238,19 +249,24 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('salary-histor
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
 
     Route::post('/save', [AccountController::class, 'saveAccount']);
+    Route::post('/bulk-create', [AccountController::class, 'bulkCreateAccounts']);
+    //Route::post('/save-missing-account-wallet', [AccountController::class, 'saveMissingAccountWallet']);
     Route::post('/payroll-account-list-paginate', [AccountController::class, 'getPayrollAccountListPaginate']);
     Route::post('/wallet-account-list-paginate', [AccountController::class, 'getWalletAccountListPaginate']);
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
     Route::post('/transfer', [AccountController::class, 'transfer']);
+    Route::post('/transferTo', [AccountController::class, 'transferTo']);
     Route::post('/get-info', [AccountController::class, 'getAccountInfo']);
     Route::post('/get-confirm', [AccountController::class, 'getConfirmTransfer']);
+    Route::post('/print-transaction', [AccountController::class, 'printTransaction']);
+    Route::post('/transaction/create', [AccountController::class, 'createTransactions']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 
     Route::post('/save', [TaxAllowanceController::class, 'saveTaxAllowance']);
-    Route::post('/list-paginate', [TaxAllowanceController::class, 'getTaxAllowanceListPaginate']);
+    Route::post('/list-paginate', [TaxAllowanceController::class, 'getList']);
     Route::post('/list-all', [TaxAllowanceController::class, 'listAll']);
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
@@ -333,7 +349,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
-    
+
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->group(function(){
     Route::post('/list',[ReportController::class,'getReportList']);
@@ -376,9 +392,9 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-policy')->group(function(){
     Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
-    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getBenefitDisbursePolicyListPaginate']);
+    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getList']);
     Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
-    Route::post('/delete', [BenefitDisbursePolicyController::class, 'deleteBenefitDisbursePolicy']);
+    Route::post('/delete', [BenefitDisbursePolicyController::class, 'delete']);
     Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
 });
 
@@ -416,11 +432,12 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->group(function(){
     Route::post('/save', [ExitFormController::class, 'saveExitForm']);
     Route::post('/save-item', [ExitFormController::class, 'saveExitItem']);
+    Route::post('/update-checkbox', [ExitFormController::class, 'updateCheckboxItem']);
     Route::post('/list-paginate', [ExitFormController::class, 'getList']);
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
     Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
-    Route::post('/list-all', [ExitFormController::class, 'getAllList']);
+    Route::post('/checkpoints', [ExitFormController::class, 'getCheckpoints']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-category')->group(function(){
     Route::post('/save', [CheckPointCategoryController::class, 'save']);
@@ -429,4 +446,28 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check-point-ca
     Route::post('/delete', [CheckPointCategoryController::class, 'delete']);
     Route::post('/form-options', [CheckPointCategoryController::class, 'getFormOptions']);
     Route::post('/list-all', [CheckPointCategoryController::class, 'getAllList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('school')->group(function () {
+    Route::post('/save', [SchoolController::class, 'save']);
+    Route::post('/list-paginate', [SchoolController::class, 'getList']);
+    Route::post('/list-all', [SchoolController::class, 'schoolList']);
+    Route::post('/details', [SchoolController::class, 'getDetails']);
+    Route::post('/delete', [SchoolController::class, 'delete']);
+    Route::post('/form-options', [SchoolController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('organization')->group(function () {
+    Route::post('/save', [OrganizationController::class, 'save']);
+    Route::post('/list-paginate', [OrganizationController::class, 'getList']);
+    Route::post('/list-all', [OrganizationController::class, 'getOrganization']);
+    Route::post('/details', [OrganizationController::class, 'getDetails']);
+    Route::post('/delete', [OrganizationController::class, 'delete']);
+    Route::post('/form-options', [OrganizationController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('document-type')->group(function () {
+    Route::post('/save', [DocumentTypeController::class, 'save']);
+    Route::post('/list-paginate', [DocumentTypeController::class, 'getList']);
+    Route::post('/list-all', [DocumentTypeController::class, 'listDocumentType']);
+    Route::post('/details', [DocumentTypeController::class, 'getDetails']);
+    Route::post('/delete', [DocumentTypeController::class, 'delete']);
+    Route::post('/form-options', [DocumentTypeController::class, 'getFormOptions']);
 });

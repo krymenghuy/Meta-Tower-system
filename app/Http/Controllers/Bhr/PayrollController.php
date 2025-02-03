@@ -28,14 +28,71 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
-    public function getPayrollList(Request $req)
+    public function getStaffList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->payroll_id ?? $req->id;
+        $payroll = new Payroll($id,$ss);
+        $data = $payroll->getStaffList($req->all(),$id,$ss);
+        return JDV::result($data);
+    }
+
+    public function disburseAll(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $war = new Payroll();
-        return JDV::result($war->getPayrollList($req->all(), $ss));
+        $id = $req->payroll_id ?? $req->id;
+        $payroll = new Payroll($id,$ss);
+        $res = $payroll->disburseAll($id,$ss);
+        return JDV::raw($res);
+    }
+    public function reset(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $var = new Payroll();
+        $id = $req->id;
+        return JDV::result($var->reset($id, $ss));
+    }
+   
+    public function calculatePayroll(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->payroll_id;
+        $payroll = new Payroll($id,$ss);
+        $res =  $payroll->calculate($id, $ss);
+        return JDV::raw($res);
+    }
+
+    public function importStaffList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->payroll_id;
+        $payroll = new Payroll($id,$ss);
+        $res = $payroll->importStaffList($id, $ss);
+        return JDV::raw($res);
+    }
+
+    public function reverseTransactions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $var = new Payroll();
+        $id = $req->id?? $req->payroll_id;
+        return JDV::result($var->reverseTransactions($id, $ss));
     }
 
     public function getPayrollListPaginate(Request $req)
@@ -83,7 +140,7 @@ class PayrollController extends Controller
         return JDV::result($this->payrollModel->getFormOptions($req->id,$ss));
     }
 
-    public function updateAuthorize(Request $req)
+    public function authorizePayroll(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -92,25 +149,11 @@ class PayrollController extends Controller
 
         $id = $req->id ? $req->id : $req->id;
         $payroll = new Payroll($id, $ss);
-        $res = $payroll->updateAuthorize($id,$ss);
+        $res = $payroll->authorize($id,$ss);
 
         return JDV::raw($res);
     }
-
-    public function updateDisburse(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-
-        $id = $req->id ? $req->id : $req->id;
-        $payroll = new Payroll($id, $ss);
-        $res = $payroll->updateDisburse($id,$ss);
-
-        return JDV::raw($res);
-    }
-
+ 
     public function getEndDate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);

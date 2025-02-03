@@ -5,8 +5,6 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
-
 class Education //extends Model
 {
     protected $id = null;
@@ -17,42 +15,47 @@ class Education //extends Model
         $this->userInfo = $userInfo;
     }
 
-    function save($arr ,$ss = null, $id = null){
+    function save($arr , $id = null, $ss = null){
         $ss = $ss ?? $this->userInfo;
-       // $branch_id = $ss->branch_id;
+        $id = $id ?? $this->id;
         $v_rule = [
-            'id' => '0|identity=1',
+            //'id' => '0|identity=1',
             'emp_id' => '1|number',
             'school_id' => '1|number',
             'edu_level_id' => '1|number',
             'period' => '0|string|0-150',
-            'start_year' => '0|year',
-            'finish_year' => '0|year',
+            'start_year' => '0|positive',
+            'finish_year' => '0|positive',
             'major' => '0|string|0-150',
             'diploma' => '0|string|1-150'
 
         ];
         $edu_char = ['$','#','@','!','.','-','_','=','?'];
-        // $checkUnque = ["$branch_id|emp_educations|emp_id|school_id|period|id=id|text=Employee Eduction is already Save "];
-
-
         $res = validateObject($arr,$v_rule,true,['period'=>$edu_char],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
-        $id = $res->id;
-
         $inputs = $res->values;
-
+        $d = (object)$inputs;
+        $start_year = $d->start_year;
+        $finish_year = $d->finish_year;
+        $period = $d->period;
+        // if (!is_numeric($start_year)) return DV::error('Either start year is not correct!');
+        // if (!is_numeric($finish_year)) $inputs['finish_year'] = null;
+        if ($start_year && $finish_year){
+           $period = $start_year.' to '.$finish_year;
+        } else if ($start_year && !$finish_year){
+            $period = $start_year.' until now';
+        } else if (!$finish_year || !$start_year){
+            if(!$period) return DV::error('At least enter start year for this Education Information');
+        }  
+        $inputs['period'] = $period;
         $id = saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
-        if($id > 0 ){
-            return DV::depends(1,['emp_educations'=>$inputs,'id'=>$id]);
-
-        }
-        return DV::error('Error saving data');
-
+        return DV::depends($id,['emp_educations'=>$inputs,'id'=>$id], 'Failed to save education');
     }
-    function getListAll($arr,$ss){
-        $branch_id = $ss->branch_id;
+
+    function getListAll($arr,$ss = null){
+        $ss = $ss ?? $this->userInfo;
         $d = (object) $arr;
+
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -61,12 +64,11 @@ class Education //extends Model
         $emp_id = $d->emp_id ?? null;
         $skip_rows = ($current_page -1) * $per_page;
         $query  = DB::table('emp_educations as e')
-            ->join('employees as emp', 'emp.id', '=','e.emp_id')
+            //->join('employees as emp', 'emp.id', '=','e.emp_id') //no need "employees", it is BIG table
             ->join('schools as s','s.id','=','e.school_id')
             ->join('edu_levels as l','l.id','=','e.edu_level_id')
-            ->where('e.branch_id',$branch_id)
             ->where('e.emp_id',$emp_id)
-            ->selectRaw('e.id,emp.id as emp_id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
+            ->selectRaw('e.id,e.emp_id,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
             ->orderBy('e.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('e.id');

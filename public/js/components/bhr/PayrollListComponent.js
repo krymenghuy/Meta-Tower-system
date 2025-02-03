@@ -1,35 +1,25 @@
 "use strict";
-
 var PayrollListComponent = new (function () {
-    const mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_payrollListComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Payroll List";
-    this.elFilter = this.self.querySelector('#el_filter_payrollList');
-    this.elFilterBranch = this.self.querySelector('#el_filter_branch');
-    this.btnImport = this.self.querySelector("#_btnImport");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_payroll_list");
-    this.elFilterDisburse = this.self.querySelector("#el_filter_disburse");
-    this.btnCalculate = this.self.querySelector("#_btnCalculate");
-    this.btnDisburse = this.self.querySelector("#_btnDisburse");
-    this.btnBack = this.self.querySelector("#_btn_backTo_payrollList");
-    this.payment_info = this.self.querySelector("#payment_info");
-    this.btnPrint = this.self.querySelector("#_btnPrint");
-
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString('en-US', {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, ' ');
-    };
-
-    this.cols = [
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_payrollListComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Payroll List";
+    mThis.elFilter = mThis.self.querySelector('#el_filter_payrollList');
+    mThis.elFilterBranch = mThis.self.querySelector('#el_filter_branch');
+    mThis.btnImport = mThis.self.querySelector("#_btnImport");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_payroll_list");
+    mThis.elFilterDisburse = mThis.self.querySelector("#el_filter_disburse");
+    mThis.btnCalculate = mThis.self.querySelector("#_btnCalculate");
+    mThis.btnDisburse = mThis.self.querySelector("#_btnDisburse");
+    mThis.btnBack = mThis.self.querySelector("#_btn_backTo_payrollList");
+    mThis.payment_info = mThis.self.querySelector("#payment_info");
+    mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
+    mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
+    mThis.div_payrollList = mThis.self.querySelector('#_payrollList_list');
+ 
+    mThis.cols = [
 
         {
             title: "",
@@ -58,28 +48,40 @@ var PayrollListComponent = new (function () {
             title: "Salary",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
+                //return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
             }
         },
         {
             title: "Taxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_taxable ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_taxable), data.currency_code)}</p>`;
             }
         },
         {
             title: "Nontaxable BFT",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_non_tax ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</p>`;
             }
         },
         {
             title: "BFT (Flat Tax)",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_flat_rate ?? '0.00')} (${data.flat_tax_rate ?? '0.00'}%)</p>`;
+                if (!data.used_amount || Object.keys(data.used_amount).length === 0) {
+                    return `<p class="p-0 m-0">${VSMoney.formatAmount(0, data.currency_code)}</p>`;
+                }
+
+                const flatTaxDetails = Object.entries(data.used_amount)
+                    .map(([taxRate, amount]) => {
+                        const formattedAmount = VSMoney.formatAmount(amount, data.currency_code);
+                        return `${formattedAmount} (${taxRate}%)`;
+                    })
+                    .join('<br>');
+
+                return `<p class="p-0 m-0">${flatTaxDetails}</p>`;
             }
         },
 
@@ -87,17 +89,16 @@ var PayrollListComponent = new (function () {
             title: "Deduction",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.deduction ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.deduction, data.currency_code)}</p>`;
             }
         },
         {
             title: "Allowance",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.allowance ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.allowance, data.currency_code)}</p>`;
             }
         },
-
         {
             title: "Tax Rate",
             className: "align-middle text-nowrap",
@@ -109,16 +110,15 @@ var PayrollListComponent = new (function () {
             title: "Bias",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
             }
         },
-
 
         {
             title: "Tax Base",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.tax_base ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</p>`;
             }
         },
         // {
@@ -132,14 +132,14 @@ var PayrollListComponent = new (function () {
             title: "Benefit Tax",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_tax ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount((data.taxable_benefit || data.benefit_tax), data.currency_code)}</p>`;
             }
         },
         {
             title: "Total",
             className: "align-middle text-nowrap",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0 ${data.disbursed == '1' ? 'text-success' : ''}">${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>`;
             }
         },
         {
@@ -152,7 +152,9 @@ var PayrollListComponent = new (function () {
                         `<a href="javascript:void(0)"`,
                            `class="btn_payroll_list_action"`,
                            `data-id="${data.id}"`,
-                           `data-disburse="${data.disburse}"`,
+                           `data-empid="${data.emp_id}"`,
+                           `data-payrollid="${data.payroll_id}"`,
+                           `data-disbursed="${data.disbursed || 0}"`,
                            `aria-haspopup="true"`,
                            `aria-expanded="false">`,
                            //'<span class="d-flex justify-item-center align-items-center p-1 bg-primary fw-semibold rounded-3 text-white">',(index+1),'</span>',
@@ -166,30 +168,36 @@ var PayrollListComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PayrollList_ListView = new ListView('_payrollList_list',{
-            fetchApi : `${main_view.base_url}/hr/payroll-list/list-paginate`,
+        mThis.PayrollList_ListView = new ListView(mThis.div_payrollList,{
+            fetchApi : `${main_view.base_url}/hr/payroll/staff/list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
+            rowCreated:(data,index,tr)=>{
+               tr.dataset.id = data.id;
+               tr.dataset.payrollid = data.payroll_id;
+               tr.dataset.empid = data.emp_id;
+            },
             tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
+
         mThis.btnCalculate.onclick = function (e) {
             e.preventDefault();
-            let op = {
-                payroll_id: mThis.getFilterData().payroll_id,
+            const op = {
+                payroll_id: mThis.getFilterData().payroll_id
             };
 
-            cv_interact.confirm('Calculate this Payroll List?', {
+            cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
                 title: 'Calculate Payroll List',
                 context: 'calculate',
                 confirmButtonText: "Calculate"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/payroll/calculate'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
                             const d = res.data || {};
                             const error_count = d.error_count || 0;
@@ -217,28 +225,43 @@ var PayrollListComponent = new (function () {
         mThis.btnDisburse.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
-                payroll_id: mThis.getFilterData().payroll_id,
+            const op = {
+                payroll_id: mThis.elFilter.value
             };
 
-            cv_interact.confirm('Disburse this Payroll List?', {
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
                 title: 'Disburse Payroll List',
-                context: 'disburse',
+                context: 'update',
                 confirmButtonText: "Disburse"
             }, function (confirmation) {
                 if (confirmation) {
-                    vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
+                    vsapi.call([main_view.base_url, '/hr/payroll/disburse-all'].join(''), op, false, null).then(res => {
                         if (res.status_code === 200) {
-                            if (res.data && res.data.message === 'Payroll List Already Disbursed') {
-                                cv_interact.error('Payroll List Already Disbursed');
-                            } else {
-                                cv_interact.success('Disbursed Successfully');
-                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            }
-                        } else {
-                            cv_interact.error(res.error_message);
-                            // alert(res.data);
-                        }
+                            cv_interact.success('Salary disbursements were successful!');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                        } else cv_interact.error(res.error_message);
+                    });
+                }
+            });
+        };
+        mThis.btnReverse.onclick = function (e) {
+            e.preventDefault();
+
+            const op = {
+                payroll_id: mThis.elFilter.value
+            };
+
+            cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>', {
+                title: 'Reverse Payroll List',
+                context: 'update',
+                confirmButtonText: "Reverse Payroll List?"
+            }, function (confirmation) {
+                if (confirmation) {
+                    vsapi.call([main_view.base_url, '/hr/payroll/reverse'].join(''), op, false, null).then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Salary reverse to master account successfully!');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                        } else cv_interact.error(res.error_message);
                     });
                 }
             });
@@ -247,7 +270,7 @@ var PayrollListComponent = new (function () {
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
+            const op = {
                 id: null,
                 payroll_id: PayrollListComponent.elFilter.value,
                 // btn: e.target,
@@ -268,11 +291,11 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 215) + 'px';
+        sh_parent.style.height = (window.innerHeight - 230) + 'px';
         sh_parent.classList.add("overflow-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
         }
 
         mThis.initDropdownMenus(pr_tbl);///
@@ -296,7 +319,7 @@ var PayrollListComponent = new (function () {
 
     };
 
-    this.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_payroll_list_action",
@@ -304,7 +327,7 @@ var PayrollListComponent = new (function () {
             //menuItemClass:"",
             menus:[
                 {
-                    html: '<span class="ps-2  " vslang="titles.View Pay Slip">View Pay Slip</span>',
+                    html: '<span class="ps-2 " vslang="titles.View Pay Slip">View Pay Slip</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "pay_slip",
@@ -332,7 +355,7 @@ var PayrollListComponent = new (function () {
             onShow: (me, container) => {
 
                 const menu = me.getActiveMenus(container);
-                const disburse = container.dataset.disburse;
+                const disburse = container.dataset.disbursed;
 
 
                 if (disburse == 1) {
@@ -357,7 +380,9 @@ var PayrollListComponent = new (function () {
                     }
 
                     case 'disburse_payroll_list':{
-                      mThis.disbursePayrollList(id, menuLink);
+                      const id = menuLink.dataset.id;
+                      //const payroll_id = menuLink.dataset.payrollid;
+                      mThis.disburseOne(id, null, null, menuLink);
                       break;
                     }
                     case 'delete_payroll_list':{
@@ -374,7 +399,7 @@ var PayrollListComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.renderPayment = (data) => {
+    mThis.renderPayment = (data) => {
        let html = '';
        let benefit_flat_rate = null;
        let div_BFT  = '';
@@ -388,8 +413,11 @@ var PayrollListComponent = new (function () {
             });
 
             div_BFT = benefit_flat_rate
-                .map(value => `${value.BFT} (${value.BFTR} %)`)
-                .join(' & ');
+            .map(value => {
+                return `${VSMoney.formatAmount(value.BFT,data.currency_code)} (${value.BFTR} %)`;
+            })
+            .join(' & ');
+
         }
 
 
@@ -525,23 +553,23 @@ var PayrollListComponent = new (function () {
                         <tbody>
                             <tr>
                                 <td> Salary </td>
-                                <td>${formattedNumber(data.p_salary || 0.00)}</td>
+                                <td>${VSMoney.formatAmount(data.p_salary,data.currency_code)}</td>
                             </tr>
                              <tr>
-                                <td>Days</td>
-                                <td>${data.count_day}</td>
+                                <td>Period</td>
+                                <td>${data.count_day} days</td>
                             </tr>
                             <tr>
-                                <td>Taxable BFT</td>
-                                <td class="text-success">${formattedNumber(data.benefit_taxable || 0.00)}</td>
+                                <td>Taxable Benefits</td>
+                                <td class="text-success">${VSMoney.formatAmount(data.benefit_taxable, data.currency_code)}</td>
                             </tr>
                             <tr>
-                                <td>BFT</td>
-                                <td class="text-success">${div_BFT}</td>
+                                <td>Other Benefits</td>
+                                <td class="text-success">${div_BFT || 0.00}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
-                                <td class="text-danger">${formattedNumber(data.deduction || 0.00)}</td>
+                                <td class="text-danger">${VSMoney.formatAmount(data.deduction, data.currency_code)}</td>
                             </tr>
 
                         </tbody>
@@ -560,7 +588,7 @@ var PayrollListComponent = new (function () {
 
                             <tr>
                                 <td>Allowance</td>
-                                <td>${formattedNumber(data.p_allowance || 0.00)}</td>
+                                <td>${VSMoney.formatAmount(data.p_allowance, data.currency_code)}</td>
                             </tr>
 
                              <tr>
@@ -568,51 +596,47 @@ var PayrollListComponent = new (function () {
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Nontax BFT</td>
-                                <td class="text-success">${formattedNumber(data.benefit_non_tax || 0.00)}</td>
+                                <td>Nontaxable Benefits</td>
+                                <td class="text-success">${VSMoney.formatAmount((data.nontaxable_benefit || data.benefit_non_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
-                                <td>Benefit Tax Flat Rate</td>
-                                <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
+                                <td>Benefit Tax</td>
+                                <td class="text-danger">${VSMoney.formatAmount( (data.taxable_benefits || data.benefit_tax), data.currency_code)}</td>
                             </tr>
                             <tr>
                                 <td>Tax Base</td>
-                                <td class ="text-danger">${formattedNumber(data.tax_base || 0.00)}</td>
+                                <td class ="text-danger">${VSMoney.formatAmount(data.tax_base, data.currency_code)}</td>
                             </tr>
                         </tbody>
 
                     </table>
                     </div>
                        <div class="col-12 d-flex justify-content-center pb-1">
-                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
+                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${VSMoney.formatAmount(data.total_salary, data.currency_code)}</p>
                        </div>
                 </div>
 
             </div>`;
 
-        this.payment_info.innerHTML = html;
-        // let btnPrint = this.payment_info.querySelector('#_btnPrint');
-        console.log(444, this.payment_info);
-
-
-
+        mThis.payment_info.innerHTML = html;
     };
-    this.btnPrint.addEventListener('click', () => {
-        windowPrintPayrollList(this.payment_info.innerHTML);
+
+    mThis.btnPrint.addEventListener('click', () => {
+        windowPrintPayrollList(mThis.payment_info.innerHTML);
         // window.print();
     })
 
 
-    this.viewPayment = (id, menuLink) => {
+    mThis.viewPayment = (id, menuLink) => {
 
-        const sub_content = this.self.querySelector("#sub_content");
+        const sub_content = mThis.self.querySelector("#sub_content");
         sub_content.classList.add("d-none");
-        const pay_slip = this.self.querySelector("#pay_slip");
+        const pay_slip = mThis.self.querySelector("#pay_slip");
         pay_slip.classList.remove("d-none");
         let op = {
             id: id,
         }
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/pay-slip`,op,false,false,false).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/payroll/staff/pay-slip`,op,false,false,false).then(res => {
             console.log(666,res);
 
             if(res.status_code == 200){
@@ -624,7 +648,7 @@ var PayrollListComponent = new (function () {
         })
 
     }
-    this.addDeduction = (id, menuLink) => {
+    mThis.addDeduction = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -638,27 +662,27 @@ var PayrollListComponent = new (function () {
         AddDeductionDialog.show(op);
     }
 
-    this.disbursePayrollList = (id, menuLink) => {
-        console.log(123, id);
-
-        let op = {
+    mThis.disburseOne = (id, emp_id,payroll_id, menuLink) => {
+        const p = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            }
+            //emp_id:emp_id,
+            //payroll_id:payroll_id
+            // btn: menuLink,
+            // onClose: () => {
+            //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            // }
         };
-        cv_interact.confirm('Disburse this Payroll ?',{
+        cv_interact.confirm('Disburse this payroll ?',{
             title: 'Disburse Payroll List',
             context: 'disburse',
             confirmButtonText:"Disburse"
-        },function(e){
+        }, e =>{
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`,op,false,false,false).then(res => {
-                    console.log(321,res);
-
+                vsapi.call(`${main_view.base_url}/hr/payroll/disburse-one`, p, false, false, false).then(res => {
+        console.log(3994, p);
+                    
                     if(res.status_code == 200){
-                        cv_interact.success('Disbursed Successfully');
+                        cv_interact.success('Disbursed successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                     else{
@@ -670,7 +694,7 @@ var PayrollListComponent = new (function () {
 
     }
 
-    this.deletePayrollList = (id, menuLink) => {
+    mThis.deletePayrollList = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -684,7 +708,7 @@ var PayrollListComponent = new (function () {
             confirmButtonText:"Remove"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll/staff/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.info('The staff has been removed from payroll!');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
@@ -692,19 +716,19 @@ var PayrollListComponent = new (function () {
                 })
             }
             else {
-                cv_interact.error(res.message);
+                cv_interact.error(res.error_message);
             }
         });
 
     }
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
 
         let p = {};
 
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        p.disburse = mThis.elFilterDisburse.value;
+        p.disbursed = mThis.elFilterDisburse.value;
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -716,8 +740,8 @@ var PayrollListComponent = new (function () {
         return p;
     };
 
-    this.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/hr/payroll/staff/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             let payroll_id = null;
             const today = new Date();
@@ -729,31 +753,31 @@ var PayrollListComponent = new (function () {
                     payroll_id = payroll.id;
 
                 }
-                console.log(333, payroll);
+
 
             });
-            console.log(1111,payroll_id);
 
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
-            VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
+            VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
     };
 
-    this.show = function (option) {
+    mThis.show = function (option) {
         mThis.option = option;
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(() => {
             mThis.elFilter.value = option.payroll_id;
-            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+            mThis.elFilter.dispatchEvent(new Event('change'));
+           // mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
         });
-
     };
+    return mThis;
 });
 
 const AddDeductionDialog = (() => {
@@ -790,11 +814,11 @@ const AddDeductionDialog = (() => {
             contentCreated: (me) => {
             },
             prepareFormOptions: {
-                createTitle: 'Insert Payroll ',
-                modifyTitle: 'Add Deduction ',
+                createTitle: 'Add Deduction',
+                modifyTitle: 'Edit Deduction ',
                 targetProp: 'payroll_list',
                 api: {
-                    endpoint: [main_view.base_url, '/hr/payroll-list/form-options'].join(''),
+                    endpoint: [main_view.base_url, '/hr/payroll/staff/form-options'].join(''),
                     params: (op) => {
                         return { 'id': op.id };
                     }
@@ -836,14 +860,14 @@ const AddDeductionDialog = (() => {
                         const p = me.getData();
                         p.id = me.dataOptions.id; // Get "id" from op
 
-                        vsapi.call([main_view.base_url, '/hr/payroll-list/save'].join(''), p, btn, null)
+                        vsapi.call([main_view.base_url, '/hr/payroll/staff/save'].join(''), p, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Added Deduction Successfully");
+                                        cv_interact.success("Added deduction successfully");
                                     } else {
-                                        cv_interact.success("Added Deduction Successfully");
+                                        cv_interact.success("Added deduction successfully");
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -864,7 +888,6 @@ const AddDeductionDialog = (() => {
 
 
 const PayRollImportDailog = (()=>{
-
     const self = {};
     let dialogImport = null;
      self.show = (op)=>{
@@ -907,7 +930,7 @@ const PayRollImportDailog = (()=>{
 
                     p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/payroll/import-staff'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          const successCount = res.data.success_count ?? 0;
                           if(successCount > 0) cv_interact.success([successCount, ' staff have been enlisted to this payroll'].join(''));
@@ -923,7 +946,7 @@ const PayRollImportDailog = (()=>{
                modifyTitle:'Edit',
                targetProp: 'payroll_list',
                api:{
-                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
+                 endpoint: [main_view.base_url,'/hr/payroll/staff/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
@@ -935,8 +958,8 @@ const PayRollImportDailog = (()=>{
 
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
-                 me.controls.payroll_name.value = me.dataOptions.payroll_id; //here
-                 me.controls.payroll_name.setAttribute('disbaled',true);
+                 me.controls.payroll_name.value = me.dataOptions.payroll_id;
+                 me.controls.payroll_name.setAttribute('disabled',true);
             }
 
         });
@@ -985,5 +1008,5 @@ function windowPrintPayrollList(html=null)
         },500);
     }
     else
-        cv_interact.warning('Select Run Report Before Print!');
+        cv_interact.warning('Select run report before print!');
 }

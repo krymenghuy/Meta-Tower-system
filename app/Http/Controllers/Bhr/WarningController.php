@@ -24,8 +24,10 @@ class WarningController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return $this->warnings->saveWarnings($req->all(), $ss);
+        $is = $res->warning_id ?? $req->id;
+        $warning = new Warning($is, $ss);
+        $res = $warning->save($req->all());
+        return JDV::raw($res);
     }
 
     public function getWarningListPaginate(Request $req)

@@ -1,24 +1,31 @@
 <div id="_main_employee_benefit_component" style="display:none; padding: 20px 0 0">
-    <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_divFilter_employee_benefit">
-        <div class="d-flex align-items-center w-50 gap-2">
+    <div class="d-flex justify-content-between w-100 p-4 rounded-2 shadow" id="_divFilter_employee_benefit">
+        <div class="d-flex align-items-center justify-content-start gap-2 w-50">
+            <div class="d-flex align-items-center w-50 gap-2">
+                <input type="text" class="form-control filter-field btn_search" id="_sdl_search_bonus"
+                    placeholder="Search Benefits">
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
+                <select type="id" id="el_benefit" class="data-input filter-field" data-field="benefit_id"></select>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
+                <select type="id" id="el_tax_option" class="data-input filter-field" data-field="tax_option_id"></select>
+            </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-end w-50 gap-2">
+            <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_import_benefit">
+                <i class="fa-solid fa-download"></i>
+                <span>Import Benefit</span>
+            </button>
             <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_add_benefit">
                 <i class="fa-solid fa-layer-group"></i>
                 <span>Add Benefit</span>
             </button>
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-            <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
-                <select type="id" id="el_benefit" class="data-input filter-field" data-field="benefit_id"></select>
-            </div>
-            <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field btn_search" id="_sdl_search_bonus"
-                    placeholder="Search Benefits">
-            </div>
-        </div>
     </div>
 
     <div class="">
-        <div id="_employee_bonus_list" class="mt-4 p-3"></div>
+        <div id="_employee_bonus_list" class="mt-4 px-4"></div>
     </div>
 </div>
 <style>

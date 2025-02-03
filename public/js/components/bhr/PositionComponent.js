@@ -1,16 +1,16 @@
 "use strict";
+var PositionComponent =  (function () {
+    const mThis = {};
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_positionComponent");
+    mThis.self = mThis.jm[0];
+    mThis.title_prop = "Positions";
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddPosition");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_search_position");
+    mThis.elDepartment = mThis.self.querySelector("#el_department");
 
-var PositionComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_positionComponent");
-    this.self = this.jm[0];
-    this.title_prop = "Positions";
-    this.btnAdd = this.self.querySelector("#_btnAddPosition");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_search_position");
-
-    this.cols = [
+    mThis.cols = [
         {
             title: "",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -35,18 +35,14 @@ var PositionComponent = new (function () {
         {
             title: "Salary",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data) => {
-                const formattedSalary = data.salary
-                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                          .format(data.salary)
-                          .replace(',', '.')
-                    : "";
-
-                return `
-                    <span class="text-primary-custom" style="font-weight: bold;">
-                        ${formattedSalary} <span class="text-danger">(KHR)</span>
-                    </span>
-                `;
+            data: (data, index, tr) => {
+                let currency_codeSymbol = "";
+                if (data.currency_code === "USD") {
+                    currency_codeSymbol = "$";
+                } else if (data.currency_code === "KHR") {
+                    currency_codeSymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.salary ?? 0)}</p>`;
             },
         },
 
@@ -73,7 +69,7 @@ var PositionComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.PositionListView = new ListView("_position_list", {
@@ -102,11 +98,11 @@ var PositionComponent = new (function () {
         };
         const listContainer = mThis.PositionListView.getListContainer();
         const sh_parent = listContainer;
-        sh_parent.style.height = (window.innerHeight - 210) + 'px';
+        sh_parent.style.height = (window.innerHeight - 230) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
         }
 
         mThis.elSearch.addEventListener("keyup", (e) => {
@@ -127,7 +123,7 @@ var PositionComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
@@ -140,7 +136,7 @@ var PositionComponent = new (function () {
         return p;
     };
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_position_action",
@@ -181,20 +177,20 @@ var PositionComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editPosition = (id, menuLink) => {
+    mThis.editPosition = (id, menuLink) => {
         console.log(234, id);
 
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PositionListView.showPage();
+                mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
         PositionDialog.show(op);
     };
 
-    this.deletePosition = (id, menuLink) => {
+    mThis.deletePosition = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -203,7 +199,7 @@ var PositionComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Position?",
+            "Delete this position?",
             {
                 title: "Delete Position",
                 context: "delete",
@@ -229,18 +225,27 @@ var PositionComponent = new (function () {
             }
         );
     };
+    mThis.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/position/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems( mThis.elDepartment, d.departments, "id", "name", true, "All Department", null);
+                console.log(38484,mThis.elDepartment);
 
+            });
+    };
 
-    this.show = function () {
+    mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.PositionListView.showPage(mThis.getFilterData(),null,()=>{
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
-
-        });
-
+        mThis.PositionListView.showPage(mThis.getFilterData());
+        mThis.prepareFormOptions();
+        mThis.jm.siblings().hide();
+        mThis.jm.fadeIn(200);
     };
+    return mThis;
 })();
 
 const PositionDialog = (()=>{
@@ -250,34 +255,43 @@ const PositionDialog = (()=>{
      self.show = (op)=>{
 
         dialog = new GeneralDialog({
-            cssClass:'modal-md',
+            cssClass:'modal-lg',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
-                 <div class="form-group col-md-12">
+                 return [
+                     `<div class="row">
+                 <div class="form-group col-md-6">
                      <label for="department" class="form-label" vslang="titles.Department"></label>
                      <span class="text-danger" >*</span>
                      <select name="department" class="data-input"  data-field="department_id"></select>
                  </div>
-                 <div class="form-group col-md-12">
+                 <div class="form-group col-md-6">
                      <label for="job_level" class="form-label" vslang="titles.Job Level"></label>
                      <span class="text-danger" >*</span>
                      <select name="job_level" class="data-input"  data-field="job_level_id"></select>
                  </div>
-                 <div class="form-group col-md-6">
+                 <div class="form-group col-md-4">
                      <label for="title" class="form-label" vslang="titles.Position"></label>
                      <span class="text-danger" >*</span>
                      <input type="text" class="form-control data-input" data-field="title">
                  </div>
-                 <div class="form-group col-md-6">
+                 <div class="form-group col-md-4">
                         <label for="salary" class="form-label" vslang="titles.Salary"></label>
                         <span class="text-danger" >*</span>
                         <input  type="number" class="form-control data-input" data-field="salary">
                  </div>
+                <div class="form-group col-4">
+                    <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
+                    <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                        <option value="${main_view.national_currency}">${main_view.national_currency}</option>
+                        <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
+                    </select>
+                </div>
 
 
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
 
             configSelect:[
@@ -292,7 +306,13 @@ const PositionDialog = (()=>{
                 data:"job_levels",
                 textField:"level",
                 valueField:'id'
-               }
+               },
+            //    {
+            //     name: "currency_code",
+            //     data: "currency_codes",
+            //     textField: "code",
+            //     valueField: "code",
+            //     }
             ],
             buttons:[
                {
@@ -335,7 +355,6 @@ const PositionDialog = (()=>{
             //      console.log('result from api "/form-options": ', res);
             //    }
             },
-
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
             }

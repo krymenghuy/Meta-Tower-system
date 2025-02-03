@@ -1,18 +1,18 @@
 "use strict";
 
-var DashboardComponent = new (function () {
-    const mThis = this;
-    this.title_prop = "Dashboard";
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_dashboardComponent");
-    this.self = this.jm[0];
-    this.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
-    this.dbCards = this.self.querySelector("#db_cards");
-    this.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
-    this.dashboard_Bottom_left = mThis.self.querySelector(
+var DashboardComponent =  (function () {
+    const mThis = {};
+    mThis.title_prop = "Dashboard";
+    mThis.base_url = main_view.base_url;
+    mThis.jm = main_view.appContent.children("#_main_dashboardComponent");
+    mThis.self = mThis.jm[0];
+    mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
+    mThis.dbCards = mThis.self.querySelector("#db_cards");
+    mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
+    mThis.dashboard_Bottom_left = mThis.self.querySelector(
         "#_dashboard_bottom_left"
     );
-    this.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
+    mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -26,7 +26,7 @@ var DashboardComponent = new (function () {
     };
 
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
-    this.onShow = (options) => {
+    mThis.onShow = (options) => {
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector(".btn-db-fitler");
@@ -40,22 +40,22 @@ var DashboardComponent = new (function () {
     };
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
-    this.onHide = (options) => {
+    mThis.onHide = (options) => {
         mThis.removeFilterButton();
     };
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
     };
 
-    this.removeFilterButton = () => {
+    mThis.removeFilterButton = () => {
         const divTitle = main_view.divTitle;
         const div = divTitle.querySelector("div.div-db-filter");
         if (div) div.remove();
     };
 
-    this.createFilterButton = (btn) => {
+    mThis.createFilterButton = (btn) => {
         mThis.filterConfig = null;
         mThis.filterConfig = new FilterPanel({
             triggerButton: btn,
@@ -74,7 +74,7 @@ var DashboardComponent = new (function () {
                     // "valueField":"value",
                     // "textField":"label",
                     data: [
-                        { value: "this_month", label: "This month" },
+                        { value: "mThis_month", label: "This month" },
                         { value: "last_month", label: "Last month" },
                     ],
                 },
@@ -102,18 +102,18 @@ var DashboardComponent = new (function () {
         });
     };
 
-    this.renderDBChartAllTop = (data) => {
+    mThis.renderDBChartAllTop = (data) => {
         data = data ? data : {};
         let html = [
             `<div class="chart-row py-3">`,
-            `<div class="col-md-3">
-                    <div class="chart-container dashboard_chart ">
-                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
-                            ${data.doughnutChart.title}
-                        </span>
-                        <canvas id="doughnutChart"></canvas>
-                    </div>
-                </div>`,
+            `<div class="col-md-3">`,
+                    '<div class="chart-container dashboard_chart ">',
+                        '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
+                            data.doughnutChart.title,
+                        '</span>',
+                        '<canvas id="doughnutChart"></canvas>',
+                    '</div>',
+                `</div>`,
             `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
@@ -128,11 +128,11 @@ var DashboardComponent = new (function () {
             `<div class="d-flex align-items-center p-2 mb-1">`,
 
             `<div class="bg--icon">`,
-            `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
+            `<img class="img--size" src="`,main_view.base_url,`/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
             `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count}</span>`,
-            `<div class="text-primary mt-1" style="">${data.cards.new_staff_count.title}</div>`,
+            `<div class="text-primary mt-1" style="">`,data.cards.new_staff_count.title,`</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -176,7 +176,7 @@ var DashboardComponent = new (function () {
             `</div>`,
             `</div>`,
 
-            `</div>`,
+            `</div>`
         ].join("");
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
@@ -184,7 +184,7 @@ var DashboardComponent = new (function () {
         // mThis.renderCompareChart(data.pieCharts);
     };
 
-    this.renderChartEmployee = (data) => {
+    mThis.renderChartEmployee = (data) => {
         data = data ? data : {};
 
         const ctx = document.getElementById("doughnutChart").getContext("2d");
@@ -236,7 +236,7 @@ var DashboardComponent = new (function () {
             },
         });
     };
-    this.employeeSalaryChart = (data) => {
+    mThis.employeeSalaryChart = (data) => {
         const ctx = document
             .getElementById("employeeSalaryChart")
             .getContext("2d");
@@ -325,7 +325,7 @@ var DashboardComponent = new (function () {
         new Chart(ctx, config);
     };
 
-    this.renderDBCards = (data) => {
+    mThis.renderDBCards = (data) => {
         let html = [
             `<div class="col-md-3">
                  <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
@@ -333,20 +333,20 @@ var DashboardComponent = new (function () {
                             <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                 <path class="circle-bg" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
                                     fill="none" stroke="#eee" stroke-width="4" />
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="orange" stroke-width="4" 
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none" stroke="orange" stroke-width="4"
                                     stroke-dasharray="75, 100" stroke-linecap="round" />
                             </svg>
-                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                 style="color:orange; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">4</span>
+                               <span class="p-1">${data.cards.exit_form_count.count}</span>
                             </div>
                         </div>
-                        <span class="fw-semibold fs-6 text-primary-custom text-start" 
+                        <span class="fw-semibold fs-6 text-primary-custom text-start"
                             style="color: #2b3991; font-size: 1.2rem;">Exit Forms <small class="text-danger">(Pending)</small></span>
                     </div>
 
@@ -357,21 +357,21 @@ var DashboardComponent = new (function () {
                             <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                 <path class="circle-bg" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
                                     fill="none" stroke="#eee" stroke-width="4" />
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#cab54a" stroke-width="4" 
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none" stroke="#cab54a" stroke-width="4"
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
-                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                            <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                 style="color: #2b3991; font-size: 1rem; font-weight: bold;">
                                <span class="p-1">${data.cards.intern_staff_count.count}</span>
                                 <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                             </div>
                         </div>
-                        <span class="fw-semibold fs-6 text-primary-custom text-start" 
+                        <span class="fw-semibold fs-6 text-primary-custom text-start"
                             style="color: #2b3991; font-size: 1.2rem;">${data.cards.intern_staff_count.title}</span>
                     </div>
 
@@ -382,21 +382,21 @@ var DashboardComponent = new (function () {
                   <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                       <path class="circle-bg" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831" 
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
                           fill="none" stroke="#eee" stroke-width="4" />
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#f44336" stroke-width="4" 
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none" stroke="#f44336" stroke-width="4"
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
-                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                       style="color: #f44336; font-size: 1rem; font-weight: bold;">
                      <span class="p-1">${data.cards.warning_staff_count.count}</span>
                       <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                   </div>
               </div>
-              <span class="fw-semibold fs-6 text-primary-custom text-start" 
+              <span class="fw-semibold fs-6 text-primary-custom text-start"
                   style="color: #2b3991; font-size: 1.2rem;">${data.cards.warning_staff_count.title}</span>
           </div>
 
@@ -407,40 +407,40 @@ var DashboardComponent = new (function () {
                   <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                       <path class="circle-bg" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831" 
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
                           fill="none" stroke="#eee" stroke-width="4" />
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
-                          a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#32bcd3" stroke-width="4" 
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none" stroke="#32bcd3" stroke-width="4"
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
-                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                  <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                       style="color: #32bcd3; font-size: 1rem; font-weight: bold;">
                      <span class="p-1">${data.cards.probation_staff_count.count}</span>
                       <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                   </div>
               </div>
-              <span class="fw-semibold fs-6 text-primary-custom text-start" 
+              <span class="fw-semibold fs-6 text-primary-custom text-start"
                   style="color: #2b3991; font-size: 1.2rem;">${data.cards.probation_staff_count.title}</span>
           </div>
 
             </div>`,
         ].join("");
-        this.dbCards.innerHTML = html;
+        mThis.dbCards.innerHTML = html;
     };
 
-    this.renderDBCardBottom = (data) => {
+    mThis.renderDBCardBottom = (data) => {
         data = data ? data : {};
 
-        const tableLeave = this.renderDBCardOnLeave(data.onLeave);
-        const tableBenefit = this.renderDBCardBenefit(data.benefits);
+        const tableLeave = mThis.renderDBCardOnLeave(data.onLeave);
+        const tableBenefit = mThis.renderDBCardBenefit(data.benefits);
         let html = [
             `<div class="card-row  py-2 p-1">`,
             `<div class="col-md-3">
                     <div class="card-container dashboard_chart">
                         <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                            Absences over last 10 days 
+                            Absences over last 10 days
                         </span>
                         ${tableLeave}
                     </div>
@@ -453,15 +453,15 @@ var DashboardComponent = new (function () {
                                 <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                     <path class="circle-bg" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
                                         fill="none" stroke="#08b9d5" stroke-width="4" />
                                     <path class="circle" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#9219ff" stroke-width="4" 
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="#9219ff" stroke-width="4"
                                         stroke-dasharray="75, 100" stroke-linecap="round" />
                                 </svg>
-                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
                                     <p class="fs-6 m-0">${
                                         data.accounts.payrolls.total_count || 0
@@ -474,7 +474,7 @@ var DashboardComponent = new (function () {
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                     <p class="fs-6" style="color: #2b3991;">$ ${
-                                        data.accounts.payrolls.total_count || 0
+                                        data.accounts.payrolls.total_balance || 0
                                     }</p>
                                 </div>
                             </div>
@@ -485,15 +485,15 @@ var DashboardComponent = new (function () {
                                 <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                     <path class="circle-bg" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
                                         fill="none" stroke="#eee" stroke-width="4" />
                                     <path class="circle" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
-                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#00e5ff" stroke-width="4" 
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="#00e5ff" stroke-width="4"
                                         stroke-dasharray="75, 100" stroke-linecap="round" />
                                 </svg>
-                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
                                     <p class="fs-6 m-0">${
                                         data.accounts.wallets.total_count || 0
@@ -512,8 +512,8 @@ var DashboardComponent = new (function () {
                                 </div>
                             </div>
                         </div>
-                    
-                    
+
+
                     <div class="text-center mt-auto">
                         <small class="text-muted">Data from the last 90 days</small>
                     </div>
@@ -535,7 +535,7 @@ var DashboardComponent = new (function () {
         mThis.db_card_bottom.innerHTML = html;
     };
 
-    this.renderDBCardOnLeave = (data) => {
+    mThis.renderDBCardOnLeave = (data) => {
         const rowsHtml = (data || [])
             .map(
                 (item) => `
@@ -571,9 +571,8 @@ var DashboardComponent = new (function () {
         </div>
     `;
     };
-    this.renderDBCardBenefit = (data) => {
-        console.log(123456, data);
 
+    mThis.renderDBCardBenefit = (data) => {
         const rowsHtml = (data || [])
             .map(
                 (item) => `
@@ -632,7 +631,7 @@ var DashboardComponent = new (function () {
     `;
     };
 
-    this.loadCards = (onFinish) => {
+    mThis.loadCards = (onFinish) => {
         const p = {};
 
         vsapi
@@ -653,10 +652,10 @@ var DashboardComponent = new (function () {
                 onFinish();
             });
     };
-    this.prepareFormOptions = (data, onFinish) => {
+    mThis.prepareFormOptions = (data, onFinish) => {
         mThis.loadCards(onFinish);
     };
-    this.setDashboardScroll = () => {
+    mThis.setDashboardScroll = () => {
         const parent = mThis.self;
         parent.style.height = window.innerHeight - 100 + "px";
         parent.classList.add("overflow-y-auto");
@@ -665,14 +664,15 @@ var DashboardComponent = new (function () {
             parent.style.height = window.innerHeight - 100 + "px";
         };
     };
-    this.show = (options) => {
+    mThis.show = (options) => {
         mThis.setDashboardScroll();
         mThis.init();
         options = options || {};
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
             mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(250);
+            mThis.jm.fadeIn(200);
         });
     };
+    return mThis;
 })();
