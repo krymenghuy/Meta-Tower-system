@@ -212,8 +212,10 @@ class GeneralSettings //extends Model
 
         return $q->get();
     }
-    static function options_emp_type($ss){
-        return DB::table('emp_types')->selectRaw('id,name AS emp_type')->get();
+    static function options_emp_type($min_level,$ss){
+        $str_min_level = '1=1';
+        if($min_level) $str_min_level = "h_order >$min_level";
+        return DB::table('emp_types')->whereRaw($str_min_level)->selectRaw('id,name AS emp_type')->get();
     }
     static function options_organization($ss){
         return DB::table('organizations')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS organization')->get();
@@ -345,14 +347,12 @@ class GeneralSettings //extends Model
   static function options_warning_types($ss =null){
     return DB::table('warning_types as t')->selectRaw('id, name as warning_types')->get();
   }
-  static function select_options($arr,$ss){
-    $d = (object)$arr;
-    $str_where = '1=1';
 
+  static function select_options($arr,$ss){
     $res = [
         'branches' => self::options_branch($ss),
         'leave_types' => self::options_leave_type($ss),
-        'emp_types' => self::options_emp_type($ss),
+        'emp_types' => self::options_emp_type(null,$ss),
         'payrolls' => self::options_payroll($ss),
         'employees' => self::options_employees($ss),
     ];

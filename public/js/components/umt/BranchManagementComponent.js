@@ -232,11 +232,17 @@ var BranchManagementComponent = new function(){
             cssClass:"bg-white box-shadow ",
             //menuItemClass:"",
             menus:[
-                {
-                html:'<span class="ps-2  " vslang="titles.Asign Branch">Asign User</span>',
+                // {
+                // html:'<span class="ps-2  " vslang="titles.Asign Branch">Asign User</span>',
+                // icon:`<i class="fa-solid fa-user-pen fs-5 text-info"></i>`,
+                // cssClass:"border-bottom pb-2",
+                // name:"asign_user"
+                // },
+                 {
+                html:'<span class="ps-2  " vslang="titles.Set Director"></span>',
                 icon:`<i class="fa-solid fa-user-pen fs-5 text-info"></i>`,
                 cssClass:"border-bottom pb-2",
-                name:"asign_user"
+                name:"set_director"
                 },
                 {
                 html:'<span class="ps-2  " vslang="titles.Modify Branch">Modify Branch</span>',

@@ -77,8 +77,13 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->g
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff')->group(function () {
+    Route::post('/promotion/form-options', [EmployeeController::class, 'getFormOptions_non_staff']);
+    Route::post('/promote',[EmployeeController::class,'promoteNonStaff']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
     Route::post('/save', [EmployeeController::class, 'saveEmployee']);
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
     Route::post('/find', [EmployeeController::class, 'findEmployee']);
@@ -103,10 +108,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-promoti
     Route::post('/promote',[EmployeeController::class,'promoteStaff']);
     Route::post('/form-options',[EmployeeController::class,'getFormOptionPromotion']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff-promotion')->group(function () {
-    Route::post('/promote',[EmployeeController::class,'promoteNonStaff']);
-});
-
+  
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
     Route::post('/save', [EventController::class, 'createEvent']);
     Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
@@ -351,9 +353,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
-});
-Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
-
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->group(function(){
     Route::post('/list',[ReportController::class,'getReportList']);
