@@ -3,28 +3,16 @@ var WalletAccountComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_walletAccountComponent");
     mThis.self = mThis.jm[0];
-    mThis.title_prop = "Wallet Account";
+    mThis.title_prop = "Wallet Accounts";
     mThis.btnAdd = mThis.self.querySelector("#_btnWalletAddAccount");
     mThis.btnAddAccountMissing = mThis.self.querySelector("#_btnWalletAddAccountMissing");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter");
-    mThis.elSearch = mThis.self.querySelector("#_sdl_search_wallet_account");
-    mThis.elSortBy = mThis.self.querySelector("#el_sort_by");
+    mThis.divFilter = mThis.self.querySelector("#_wla_divFilter");
+    mThis.elSearch = mThis.self.querySelector("#_wla_search_wallet_account");
+    mThis.elFilter_department = mThis.self.querySelector("#_wla_filter_department");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_wallet_account");
     mThis._wallet_transaction_info = mThis.self.querySelector("#_wallet_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
-
-
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString('en-US', {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, ' ');
-    };
-
+  
     mThis.cols = [
         {
             title: "No",
@@ -74,14 +62,8 @@ var WalletAccountComponent = (function () {
         {
             title: "Balance",
             className: "align-middle",
-            data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+            data: (data, index, tr) => {  
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
             },
         },
         {
@@ -125,7 +107,7 @@ var WalletAccountComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.WalletAccountListView = new ListView("_wallet_account_list", {
-            fetchApi: `${main_view.base_url}/hr/account/wallet-account-list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/account/wallet-account/list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -145,6 +127,7 @@ var WalletAccountComponent = (function () {
 
             WalletAccountDialog.show(op);
         };
+
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             const sub_wallet_content = mThis.self.querySelector("#sub_wallet_content");
@@ -164,14 +147,14 @@ var WalletAccountComponent = (function () {
         }
 
         mThis.initDropdownMenus(pr_tbl);
-
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
+        const filter_fields = mThis.divFilter.querySelectorAll('.filter-field');
+        filter_fields.forEach(el =>{
             el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.WalletAccountListView.showPage(mThis.getDataFormFilter());
+               e.preventDefault();
+               mThis.WalletAccountListView.showPage(mThis.getFilterData());
             }
         });
+
         mThis.btnAddAccountMissing.onclick = function (e) {
             e.preventDefault();
 
@@ -205,7 +188,7 @@ var WalletAccountComponent = (function () {
                                     const success_count = d.success_count ?? 0;
                                     if(success_count > 0) {
                                         mThis.WalletAccountListView.showPage(
-                                            mThis.getDataFormFilter()
+                                            mThis.getFitlerData()
                                         );
                                         cv_interact.success(`${success_count} wallet accounts have been creted!`);
                                     }
@@ -381,7 +364,7 @@ var WalletAccountComponent = (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.WalletAccountListView) {
-                mThis.WalletAccountListView.showPage(mThis.getDataFormFilter());
+                mThis.WalletAccountListView.showPage(mThis.getFitlerData());
             } else {
                 console.error("Wallet account is not defined");
             }
@@ -396,19 +379,19 @@ var WalletAccountComponent = (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
+                    html: '<span class="ps-2  " vslang="titles.View Transactions"></span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_wallet_transaction",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Modify Account">Modify Account</span>',
+                    html: '<span class="ps-2  " vslang="titles.Wallet Details"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_wallet_account",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Wallet"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_wallet_account",
@@ -515,24 +498,8 @@ var WalletAccountComponent = (function () {
             }
         })
     }
-
-    mThis.getDataFormFilter = () => {
-        let p = {};
-        // p.search_value = mThis.elSearch.value;
-        // p.sort_by = mThis.elSortBy.value;
-
-
-        p.account_id = mThis.divFilter.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-        // console.log(222, main_filters);
-
-        return p;
-    };
-    mThis.prepareFormOptions = () => {
+ 
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
                 `${main_view.base_url}/hr/account/form-options`,
@@ -542,21 +509,44 @@ var WalletAccountComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                // console.log(1111, mThis.elSortBy);
-
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
-
-
+                // console.log(1111, mThis.elFilter_department);
+               VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
+               onFinish();
+                  
             });
     };
 
+    mThis.setDefaultFilter = ()=>{
+        if(!mThis.rem_filter) return;
+        const main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+             const f = el.dataset.field;
+             el.value = mThis.rem_filter[f] ?? '';
+        });
+    };
+
+    mThis.getFilterData = ()=>{
+        const els = mThis.divFilter.querySelectorAll('.filter-field';)
+        const p = {};
+        els.forEach(el =>{
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        mThis.rem_filter = p;
+        return p;
+    }
     mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.WalletAccountListView.showPage();
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(200);
+        mThis.prepareFormOptions(()=>{
+            if(mThis.rem_filter){
+                 mThis.setDefaultFilter();
+            }
+            mThis.WalletAccountListView.showPage(mThis.getFilterData());
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
+        });
+       
     };
     return mThis;
 })();
@@ -583,14 +573,14 @@ const WalletAccountDialog = (() => {
                         </div>
                         <div class="form-group col-6">
                             <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                            <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            <select class="modal-select data-input" name="account_type" data-field="account_type" disabled>
                                 <option value="Payroll">Payroll</option>
                                 <option value="Wallet">Wallet</option>
                             </select>
                         </div>
                         <div class="form-group col-6">
                             <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                            <input name="account_number" class="form-control data-input" data-field="account_number" />
+                            <input name="account_number" class="form-control data-input" data-field="account_number" placeholder="AUTO"/>
                         </div>
                         <div class="form-group col-6">
                             <label for="ballance" class="form-label" vslang="titles.Balance"></label>
@@ -606,7 +596,7 @@ const WalletAccountDialog = (() => {
                 contentCreated: (me) => {
                     const currency_codeField = me.controls.currency_code;
                     if (currency_codeField && !currency_codeField.value) {
-                        currency_codeField.value = "KHR";
+                        currency_codeField.value = VSMoney.getCurrency().code;
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
@@ -672,8 +662,8 @@ const WalletAccountDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Account",
-                    modifyTitle: "Edit Account",
+                    createTitle: "Add Wallet",
+                    modifyTitle: "Wallet Details",
                     targetProp: "accounts",
                     api: {
                         endpoint: [
@@ -688,10 +678,16 @@ const WalletAccountDialog = (() => {
                     //      console.log('result from api "/form-options": ', res);
                     //    }
                 },
-
+           "extendMethod":{
+            "setData":(me,data)=>{
+                me.controls.account_type.setAttribute('disabled',true);
+            }
+           },
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
-
+                    me.controls.account_number.setAttribute('readOnly',true);
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                    me.controls.currency_code.setAttribute('disabled',true);
                     const balanceField = me.divModal.querySelector(
                         '[data-field="balance"]'
                     );

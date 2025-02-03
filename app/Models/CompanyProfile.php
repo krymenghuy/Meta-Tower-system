@@ -157,7 +157,7 @@ class CompanyProfile //extends Model
   
   static function logoUrl($ss){
     $customer_id = $ss->subscriber_id;
-    if(!$customer_id) return "";
+    if(!$customer_id) return '';
     $bin_customer_id = hex2bin($customer_id);
     $branch = DB::table('um_customers')->where('id',$bin_customer_id)->selectRaw('logo_file_name')->first();
     if(!$branch) return "";

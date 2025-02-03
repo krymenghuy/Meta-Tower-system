@@ -782,7 +782,7 @@ var EmployeeComponent = new (function () {
                 mThis.movement(btn.dataset.id, btn);
                 return;
             }
-        };
+        });
     };
 
     mThis.renderCardLeft = (employeeId) => {
@@ -2476,13 +2476,15 @@ var EmployeeComponent = new (function () {
             return;
         }
         const op = {
-            id: mThis.el_branch.value,
+            branch_id: mThis.el_branch.value,
             emp_id: id,
             // branch_id: mThis.el_branch.value,
             onClose: () => {
                 mThis.EmployeeListView.showPage();
             },
         };
+        console.log(89,op);
+        
 
         CreateContractDialog.show(op);
 
