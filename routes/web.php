@@ -51,7 +51,7 @@ Route::get('/get-enc-data/{q}', function ($q) {
     return response()->json($m_str);
 });
 
-Route::get('create-contract', [ContractController::class, 'createContract']);
+Route::get('create-contract/{q}', [ContractController::class, 'createContract']);
   
 Route::get('test-event',function(){
     $d = (object)['branch_id'=>1,'sender_id'=>1,'message'=>"some message for testing event here","channel"=>Config::get('app.pusher_channel_prefix')];
