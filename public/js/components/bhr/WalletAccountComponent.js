@@ -526,7 +526,7 @@ var WalletAccountComponent = (function () {
     };
 
     mThis.getFilterData = ()=>{
-        const els = mThis.divFilter.querySelectorAll('.filter-field';)
+        const els = mThis.divFilter.querySelectorAll('.filter-field');
         const p = {};
         els.forEach(el =>{
             const f = el.dataset.field;

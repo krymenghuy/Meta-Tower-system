@@ -33,6 +33,15 @@ class Employee //extends Model
           return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
     }
 
+    static function log($ss, $emp_id, $action_name, $message = ''){
+       $inputs = [
+         'emp_id'=>$emp_id,
+         'action_name'=>$action_name,
+         'description'=>$message
+       ];
+       saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);   
+    }
+
     function checkUniqueEmployeeByPhone($phone_number, $id = null)
     {
         $str_id = "1=1";
@@ -74,7 +83,7 @@ class Employee //extends Model
             // 'branch_id' => '1|number',
             'salary' => '0|number',
             'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
-            'work_shift_id' => '1|number',
+            'work_shift_id' => '1|number|exists=work_shifts.id',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid' => '1|string|1-100',
@@ -88,19 +97,15 @@ class Employee //extends Model
             'spouse_occ_code' => '0|string|0-100',
             'passport_number' => '0|string|0-100',
             'passport_expiry_date' => '0|date',
-
         ];
 
         $checkUnique = null;
-
         $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
+        if ($res->error) return DV::error($res->error);
+        
         $inputs = $res->values;
         $d = (object) $inputs;
-
+        if($d->currency_code !== Money::$base_currency) return DV::error('The salary currency must be ??::'.Money::$base_currency);
         $nid = $d->nid ?? null;
         if($nid){
             $expire_date = $d->nid_expiry_date ?? null;
@@ -128,38 +133,47 @@ class Employee //extends Model
             $inputs['name_kh'] = $d->name_kh;
         }
         unset($inputs['photo']);
-        $employee_created = !$emp_id;
+        $created = !$emp_id;
         $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
-
-        if ($d->emp_type_id == '3' && !empty($d->position_id)) {
-            $position = DB::table('positions')->where('id', $d->position_id)->first(['salary']);
-            if ($position) {
-                $inputs['salary'] = $position->salary;
-            } else {
-                $inputs['salary'] = $inputs['salary'] ?? 0;
+        $salary = $d->salary ?? 0;
+        if ($d->emp_type_id == '3' && $d->position_id >0){
+            if($created && !$salary){
+                $position = DB::table('positions')->where('id', $d->position_id)->selectRaw('id,salary,currency_code')->first();
+                if(!$position) return DV::error('Position ID does not exist');
+                $inputs['salary'] = $position->salary ?? 0;
             }
+           
         } elseif ($d->emp_type_id != '3') {
             $inputs['salary'] = $inputs['salary'] ?? 0;
         }
 
-        $currency_code =DB::table('positions')->where('id', $d->position_id)->first(['currency_code']);
-
-        if ($currency_code) {
-            $inputs['currency_code'] = $currency_code->currency_code;
-        } else {
-            $inputs['currency_code'] = null;
+        $inputs['salary'] = $salary;
+        $currency_code = Money::$base_currency;
+        $inputs['currency_code'] = $currency_code;
+        $org_joining_date = null;
+        $change_joining_date = false;
+        if(!$created){
+            $emp = self::getProps($emp_id,'id,joining_date');
+            $input_joining_date = convertDate($d->joining_date);
+            $org_joining_date = convertDate($emp->joining_date);
+            $change_joining_date =  $input_joining_date != $org_joining_date;
+            unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id']);
         }
-        //error_log('Saving data: ' . json_encode($inputs)); //Please remove uused log
-        $save = !$emp_id;
-        $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
-        if ($save) {
+        $emp_id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
+        if ($emp_id && $created) {
             $prefix = 'LC';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
-            $new_code = $res->code;
+            //$new_code = $res->code;
+        }else if($emp_id){
+          //If user has changed the joining date, that can cause the seniority payment to be wrong
+          if($change_joining_date){
+              $message = "$ss->full_name changed joining date from $org_joining_date to $input_joining_date at ".getNowTime();
+              Employee::log($ss,$id,'change_joining_date',$message);
+          }
         }
-        if ($id > 0) {
-            $new_code = null;
 
+        if ($emp_id > 0) {
+            //$new_code = null;
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
@@ -168,13 +182,11 @@ class Employee //extends Model
 
                 DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
             }
-            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
-            return DV::depends(1, ['employees' => $inputs, 'id' => $id]);
+            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $emp_id, 'store' => 'employees.photo_file_name']);
+            return DV::depends(1, ['employees' => $inputs, 'id' => $emp_id]);
         }
-
         return DV::error('Failed to save employee');
     }
-
 
     // function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
     //     $id = $id ?? $this->id;
@@ -921,21 +933,21 @@ class Employee //extends Model
         $d = (object)$arr;
         $remarks = $d->remarks;
         $event_date = $d->event_date;
-
-        if ($event_date) {
-            $event_date = date('Y-m-d', strtotime($event_date));
-        }
-
+        
+        $emp_type_info = DB::table('emp_types')->where('id',$emp_type_id)->selectRaw('id,name,h_order')->first();
+        if(!$emp_type_info) return DV::error('The provided employee type does not exist');
+        $h_order = $emp_type_info->h_order;
+        $emp = self::getProps($id,'id,code,name,emp_type_id');
+        if(!$emp) return DV::error('The provided employee ID does not exist');
+        $org_h_order = DB::table('emp_types')->where('id',$emp->emp_type_id)->value('h_order') ?? 0;
+        if($org_h_order > $h_order) return DV::error('Cannot promote status backward');
+        if($emp->emp_type_id == $emp_type_id) return DV::error('The old and new statuses are same');
+        if ($event_date) $event_date = date('Y-m-d', strtotime($event_date));
         $events = [
             '1.2' => 'promote intern to probation',
             '1.3' => 'Promote intern to staff',
             '2.3' => 'Promote probation to staff'
         ];
-
-        $emp = self::getProps($id, 'emp_type_id');
-        if (!$emp) {
-            return DV::error('Employee ID not found!');
-        }
 
         $key = $emp->emp_type_id . '.' . $emp_type_id;
         $event_name = $events[$key] ?? null;
@@ -946,11 +958,8 @@ class Employee //extends Model
             $event_id = Event::createEvent($event_arr, $ss);
             $event_id = $event_id->status_code == 200 ? $event_id->data['id'] : '';
         }
-
-        $save_emp_type_id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
-
-        if ($save_emp_type_id) {
-
+        $id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
+        if ($id) {
             $impact = $emp_type_id > $emp->emp_type_id ? 'Positive' : ($emp_type_id < $emp->emp_type_id ? 'Negative' : 'Neutral');
             $inputs = [
                 'emp_id' => $id,
@@ -959,14 +968,13 @@ class Employee //extends Model
                 'remarks' => $remarks,
                 'event_date' => $event_date
             ];
-
             saveData($ss, 'emp_events', [], $inputs, [], 1, false);
-
-            return DV::depends($save_emp_type_id, ['Employee', 'updated']);
+            return DV::depends($id, ['Employee', 'updated']);
         }
 
         return DV::error('Failed to update employee.');
     }
+
     public function setResignStatus($arr = [], $id = null, $ss = null, $status_id)
     {
         $ss = $ss ?? $this->userInfo;
@@ -1194,10 +1202,13 @@ class Employee //extends Model
                 'event_date' => $event_date,
             ];
 
-            saveData($ss, 'emp_events', [], $inputs, [], 1, false);
+            $event_id = saveData($ss, 'emp_events', ['id'=>null], $inputs, [], 1, false);
+            if(!$event_id){
+                \Log::error('Employee->promoteStaff(): Failed to create record in table "emp_events"');
+            }
         }
 
-        return DV::success(['message' => 'Employee promotion updated successfully.']);
+        return DV::success(['message' => 'Employee promotion was successful']);
     }
 
     static function changeBranch($ss, $emp_id, $promo_id, $arr)
@@ -1290,8 +1301,7 @@ class Employee //extends Model
 
     static function createPromotion($arr, $ss = null)
     {
-        $branch_id = $ss->branch_id;
-
+          
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -1386,6 +1396,12 @@ class Employee //extends Model
         return (object)[
             'contractInfo' => $emp,
         ];
+    }
+
+    static function getFormOptions_non_staff($emp_id, $ss){
+        $emp = self::getProps($emp_id,'emp_type_id');
+        $min_level = DB::table('emp_types as t')->where('t.id',($emp? $emp->emp_type_id : null))->value('h_order');
+        return (object)['types'=>GeneralSettings::options_emp_type($min_level,$ss)];
     }
 
     static function getBranchInfo($branch_id)

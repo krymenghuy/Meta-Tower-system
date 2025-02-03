@@ -2203,7 +2203,7 @@ var EmployeeComponent = new (function () {
     };
 
     mThis.promoteToStaff = (id, menuLink) => {
-        let op = {
+       const op = {
             id: id,
             btn: menuLink,
             onClose: () => {
@@ -2242,7 +2242,7 @@ var EmployeeComponent = new (function () {
                     {
                         name: "type",
                         data: "types",
-                        textField: "name",
+                        textField: "emp_type",
                         valueField: "id",
                     },
                 ],
@@ -2251,9 +2251,9 @@ var EmployeeComponent = new (function () {
                     modifyTitle: "Promote",
                     targetProp: "Promote",
                     api: {
-                        endpoint: `${main_view.base_url}/hr/employee/form-options`,
+                        endpoint: `${main_view.base_url}/hr/non-staff/promotion/form-options`,
                         params: (op) => {
-                            return { id: op.id };
+                            return { id: op.id};
                         },
                         onResponse: (me, res) => {
                             if (op.id) {
@@ -2276,14 +2276,12 @@ var EmployeeComponent = new (function () {
                     },
                     {
                         cssClass: "btn btn-primary",
-                        label: "<span>Promote Now</span",
+                        label: '<span vslang="DataTransferItemList.Promote Now"></span>',
                         click: (me, btn, divModal) => {
-                            let p = me.getData();
-                            //  p.emp_id = op.id;
-                            console.log(111, p);
+                            const p = me.getData();
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/hr/non-staff-promotion/promote`,
+                                    `${main_view.base_url}/hr/non-staff/promote`,
                                     p,
                                     btn,
                                     false
