@@ -643,7 +643,7 @@ var PayrollListComponent = new (function () {
                 let d = res.data;
                 console.log(555,d);
 
-                mThis.renderPayment(d)
+                mThis.renderPayment(d);
             }
         })
 
