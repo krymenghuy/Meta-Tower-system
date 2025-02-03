@@ -73,6 +73,13 @@ const main_view = new function(){
 
     // };
 
+    this.getEncryptData = (qstring,onFinish)=>{
+        let p = {'data':qstring};
+        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
+            onFinish(res.data || res);
+        }); 
+    };
+
     this.init = ()=>{
      //BEGIN:: process side menus click using VSRoute
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
