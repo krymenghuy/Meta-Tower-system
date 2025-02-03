@@ -2485,7 +2485,7 @@ var EmployeeComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.EmployeeListView.showPage();
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
         console.log(93838, op);
