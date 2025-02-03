@@ -7,8 +7,8 @@ var BranchManagementComponent = new function(){
     this.self = this.jm[0];
     this.btnNewBranch = mThis.self.querySelector('#_bm_btn_new');
     this.elSearch = mThis.self.querySelector('#_um_search_branch');
-    this.elfilter_user_role = mThis.self.querySelector('#_um_filter_user_role');
-    this.elfilter_user_branch = mThis.self.querySelector('#_um_filter_user_branch');
+    this.elFilter_user_role = mThis.self.querySelector('#_um_filter_user_role');
+    this.elFilter_user_branch = mThis.self.querySelector('#_um_filter_user_branch');
     this.btnPdf = mThis.self.querySelector('#_um_btn_pdf');
     this.btnPdf.style.display = 'none';
     this.containerPagination = mThis.self.querySelector('#container_pagination_um');
@@ -693,7 +693,7 @@ var BranchManagementComponent = new function(){
                 let op = {
                     user_id: btn.dataset.id,
                     default:{
-                        user_class: mThis.elfilter_user_role.value
+                        user_class: mThis.elFilter_user_role.value
                     },
                     open: 'add-user',
                     onClose: () => {
@@ -1002,9 +1002,9 @@ var BranchManagementComponent = new function(){
             if(res.status_code === 200)
             {
                 const d = res.data ?? [],
-                el = mThis.elfilter_user_role;
+                el = mThis.elFilter_user_role;
                 // VSUtil.setComboItems(el,d.roles,'id','role_name',true,'All Roles',null);
-                // VSUtil.setComboItems(mThis.elfilter_user_branch,d.branches,'id','branch_name',true,'All Branches',null);
+                // VSUtil.setComboItems(mThis.elFilter_user_branch,d.branches,'id','branch_name',true,'All Branches',null);
                 if(typeof onFinish === 'function') onFinish();
             }
         });
