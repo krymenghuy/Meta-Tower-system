@@ -29,11 +29,10 @@ class Account
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $base_currency =  Money::$base_currency;
         $v_rule = [
-            'id' => '0|identity=1',
-            'emp_id' => '0|number',
+            'emp_id' => '0|number|exists=employees.id',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
             'currency_code' => "1|choice|$base_currency|default=" .$base_currency,
@@ -47,8 +46,10 @@ class Account
         $account_type = $d->account_type;
         $emp_id = $d->emp_id;
         $emp = Employee::getProps($emp_id, 'id,code,name');
+        if(!$emp) return DV::error('Employee ID deos not exist');
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
 
+        $account_number = null;
         $created = !$id;
         if ($created) {
             if ( strtolower($account_type)=== 'payroll') {
@@ -66,7 +67,6 @@ class Account
         }else{
             unset($inputs['balance'], $inputs['emp_id'],$inputs['currency_code'], $inputs['account_number']);
         }
-
         if (self::accountNumberExists($account_number, $id)) {
             return DV::error('Account number ?? already exists::' . $account_number);
         }
