@@ -133,8 +133,6 @@ const CreateContractDialog = (()=>{
                 let op = me.getData();
                     
                 const queryString = new URLSearchParams(op).toString();
-                console.log(123456,queryString);
-
                 const url = `${main_view.base_url}/create-contract?${queryString}`;
                 window.open(url, '_blank', 'noopener,noreferrer');
                 me.modal.hide(true, op);

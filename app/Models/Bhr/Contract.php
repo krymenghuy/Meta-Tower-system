@@ -71,25 +71,19 @@ class Contract
     }
     
     
-    static function createContract($arr,$emp_id)
+    static function createContract($arr,$emp_id,$ss)
     {
         $d = (object)$arr;
-        $com_rep_branch = $d->id ?? null;
-        if (!$com_rep_branch) {
-            return DV::error('Please, Select branch.');
-        }
-        if (!$emp_id) {
-            return DV::error('Please, Select Employee.');
-        }
         $emp = DB::table('employees as e')
             ->join('positions as p','p.id','=','e.position_id')
             ->where('e.id', $emp_id)
-            ->selectRaw('e.id,e.code,e.name, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,p.salary,e.joining_date ')
+            ->selectRaw('e.id,e.code,e.name,e.branch_id, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,p.salary,e.joining_date ')
             ->first();
-      
-        
-        $branch = self::getBranchInfo($com_rep_branch);
+        if(!$emp) return DV::error('employee id ?? does not exists::'.$emp_id);
+
+        $branch = self::getBranchInfo($emp->branch_id);
         if($branch){
+
             $director =$d->branch_name ?? $branch->director;
             $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
             $com_rep_nid = $d->com_rep_nid ?? $director->nid ?? ' (ID Card Number Not found)'; 
@@ -105,19 +99,17 @@ class Contract
             $emp_nid = $d->emp_nid ?? $emp->nid ?? '';
             $emp_phone = $d->emp_phone ?? $emp->phone_number ?? '';
             $emp_address = $d->emp_address ?? $emp->address ?? '';
+        }else{
+            return DV::error('branch not fount.');
         }
       
-        // Fetch employee data from the database
         
-        
-        
-        // Define placeholders and default values
         $joiningDate = $emp->joining_date ?? null;
         $data = [
             'com_address' => $com_address,
             'com_city' => $branch->city ?? '(city)',
             'com_rep_branch' => $com_rep_name,
-            'com_rep_name' => $director,
+            'com_rep_name' => $director->name,
             'com_rep_sex' => self::getSex($com_rep_sex),
             'com_rep_dob' => getKhmerDate($branch->director->date_of_birth ?? '(date_of_birth)'),
             'com_rep_nid' =>  $com_rep_nid,

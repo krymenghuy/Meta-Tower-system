@@ -259,7 +259,8 @@ var EmployeeComponent = new (function () {
                         break;
                     }
                     case "create_contract": {
-                        mThis.CreateContract(id, menuLink);
+                        const branch_id = menuLink.dataset.branchid;
+                        mThis.CreateContract(id, branch_id,menuLink);
                         break;
                     }
                     case "delete_employee": {
@@ -341,7 +342,7 @@ var EmployeeComponent = new (function () {
                     `<span>${status}</span>`,
                     `</div>`,
                     `<div class="dropdown">`,
-                    `<a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
+                    `<a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-branchid="${d.branch_id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
                     `<i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>`,
                     `</a>`,
                     `</div>`,
@@ -2487,20 +2488,15 @@ var EmployeeComponent = new (function () {
         detail.click();
     };
     
-    mThis.CreateContract = (id) => {
-        if (!mThis.el_branch.value) {
-            cv_interact.error("Branch is empty. Please select branch!");
-            return;
-        }
+    mThis.CreateContract = (id,branch_id,menuLink) => {
         const op = {
-            branch_id: mThis.el_branch.value,
             emp_id: id,
-            // branch_id: mThis.el_branch.value,
             onClose: () => {
                 mThis.EmployeeListView.showPage();
             },
         };
         console.log(89,op);
+
         
 
         CreateContractDialog.show(op);
