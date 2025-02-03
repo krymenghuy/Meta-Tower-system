@@ -2481,29 +2481,27 @@ var EmployeeComponent = new (function () {
         EmployeeDialog.show(op);
     };
     mThis.view_see_info = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.EmployeeListView.showPage();
-            },
-        };
-        console.log(93838, op);
-        
+        const card = VSUtil.closestLimited(menuLink, ".employee-card");    
+        const detail= card.querySelector('.see-detail');
+        console.log(123,detail);
+        detail.click();
     };
+    
     mThis.CreateContract = (id) => {
         if (!mThis.el_branch.value) {
             cv_interact.error("Branch is empty. Please select branch!");
             return;
         }
         const op = {
-            id: mThis.el_branch.value,
+            branch_id: mThis.el_branch.value,
             emp_id: id,
             // branch_id: mThis.el_branch.value,
             onClose: () => {
                 mThis.EmployeeListView.showPage();
             },
         };
+        console.log(89,op);
+        
 
         CreateContractDialog.show(op);
 
