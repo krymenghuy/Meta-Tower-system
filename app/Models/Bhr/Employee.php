@@ -836,6 +836,10 @@ class Employee //extends Model
 
         $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
+            'payroll_taxes'=>[
+                ['id' => '0', 'name' => 'non tax'],
+                ['id' => '1', 'name' => 'tax'],
+            ],
 
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),

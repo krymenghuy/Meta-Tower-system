@@ -8,7 +8,7 @@ namespace App\Models;
 //use Sanitizer;
 use App\Models\Umt\Subscription;
 use App\Models\PublicStorage;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CompanyProfile //extends Model
 {
