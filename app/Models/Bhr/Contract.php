@@ -71,55 +71,60 @@ class Contract
     }
     
     
-    static function createContract($arr,$emp_id,$ss)
+    static function createContract($id, $ss)
     {
-        $d = (object)$arr;
+
         $emp = DB::table('employees as e')
-            ->join('positions as p','p.id','=','e.position_id')
-            ->where('e.id', $emp_id)
-            ->selectRaw('e.id,e.code,e.name,e.branch_id, e.name_kh, e.nid, e.marital_status, e.sex, e.date_of_birth, e.phone_number, e.address,p.title as position,p.salary,e.joining_date ')
+            ->join('positions as p', 'p.id', '=', 'e.position_id')
+            ->where('e.id', $id)
+            ->selectRaw('e.id, e.code, e.name, e.branch_id, e.name_kh, e.nid, e.marital_status, 
+                         e.sex, e.date_of_birth, e.phone_number, e.address, 
+                         p.title as position, p.salary, e.joining_date')
             ->first();
-        if(!$emp) return DV::error('employee id ?? does not exists::'.$emp_id);
-
-        $branch = self::getBranchInfo($emp->branch_id);
-        if($branch){
-
-            $director =$d->branch_name ?? $branch->director;
-            $com_rep_name = $d->com_rep_name ?? $director->name ?? '<Director Name>';
-            $com_rep_nid = $d->com_rep_nid ?? $director->nid ?? ' (ID Card Number Not found)'; 
-            $com_rep_sex = $branch->director->sex ?? '(sex)';
-            $com_rep_phone = $d->com_rep_phone ?? $director->phone_number  ?? '';
-            $com_address = $d->branch_address ?? $branch->address_kh ?? '';
-    
-            $emp_branch = $d->branch_name ?? $emp->branch ?? ''; 
-            $emp_name = $d->name_kh ?? $emp->name_kh ?? '(khmer name)';
-            $emp_sex = $emp->sex ?? '(Sex)';
-            $emp_position = $d->emp_position ?? $emp->position ?? '';
-            $emp_salary = $emp->salary ?? '';
-            $emp_nid = $d->emp_nid ?? $emp->nid ?? '';
-            $emp_phone = $d->emp_phone ?? $emp->phone_number ?? '';
-            $emp_address = $d->emp_address ?? $emp->address ?? '';
-        }else{
-            return DV::error('branch not fount.');
-        }
-      
         
+        if (!$emp) {
+            return DV::error("Employee ID {$id} does not exist.");
+        }
+    
+        $branch = self::getBranchInfo($emp->branch_id);
+        if (!$branch) {
+            return DV::error('Branch not found.');
+        }
+    
+        // Ensure $branch->director is an object before accessing properties
+        $director = $branch->director ?? null;
+        $com_rep_branch = $branch->name?? null;
+        $com_rep_name = $director->name ?? '<Director Name>';
+        $com_rep_nid = $director->nid ?? '(ID Card Number Not Found)';
+        $com_rep_sex = $director->sex ?? '(Sex)';
+        $com_rep_phone = $director->phone_number ?? '';
+        $com_address = $branch->address_kh ?? '';
+    
+        $emp_branch = $branch->branch_name ?? '';
+        $emp_name = $emp->name_kh ?? '(Khmer Name)';
+        $emp_sex = $emp->sex ?? '(Sex)';
+        $emp_position = $emp->position ?? '';
+        $emp_salary = $emp->salary ?? '';
+        $emp_nid = $emp->nid ?? '';
+        $emp_phone = $emp->phone_number ?? '';
+        $emp_address = $emp->address ?? '';
+    
         $joiningDate = $emp->joining_date ?? null;
         $data = [
             'com_address' => $com_address,
-            'com_city' => $branch->city ?? '(city)',
-            'com_rep_branch' => $com_rep_name,
-            'com_rep_name' => $director->name,
+            'com_city' => $branch->city ?? '(City)',
+            'com_rep_branch' => $com_rep_branch,
+            'com_rep_name' => $com_rep_name,
             'com_rep_sex' => self::getSex($com_rep_sex),
-            'com_rep_dob' => getKhmerDate($branch->director->date_of_birth ?? '(date_of_birth)'),
-            'com_rep_nid' =>  $com_rep_nid,
+            'com_rep_dob' => getKhmerDate($director->date_of_birth ?? '(Date of Birth)'),
+            'com_rep_nid' => $com_rep_nid,
             'com_rep_phone' => $com_rep_phone,
             'emp_name' => $emp_name,
             'emp_code' => $emp->code ?? '(ID)',
             'emp_sex' => self::getSex($emp_sex),
             'emp_phone' => $emp_phone,
             'emp_nid' => $emp_nid,
-            'start_date' => $joiningDate ? getKhmerDate($joiningDate): '',
+            'start_date' => $joiningDate ? getKhmerDate($joiningDate) : '',
             'end_date' => $joiningDate ? getKhmerDate(self::calculateEndDate($joiningDate)) : '',
             'position' => $emp_position,
             'salary_level' => $emp_salary,
@@ -132,31 +137,26 @@ class Contract
             'emp_dob' => getKhmerDate($emp->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
         ];
-
+    
         // Define the template path
-        $base_path = base_path();
-        // $base_path = str_replace('\\',"/",$base_path);
-        // $templatePath = $base_path . '/storage/doc_templates/staff_contract_unlimited.docx';
         $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
         if (!file_exists($templatePath)) {
-            \Log::info("Contract Template file not found at {$templatePath}");
-            return;
+            \Log::error("Contract Template file not found at {$templatePath}");
+            return DV::error('Contract template not found.');
         }
-        
-        
+    
         // Load the template
         $templateProcessor = new TemplateProcessor($templatePath);
- 
+        
         // Replace placeholders with actual values
         foreach ($data as $key => $value) {
             $templateProcessor->setValue($key, $value);
-          
         }
-
+    
         // Create a temporary file in memory
         $tempFile = tempnam(sys_get_temp_dir(), 'contract');
         $templateProcessor->saveAs($tempFile);
-
+    
         // Set headers for force download
         $fileName = 'contract_' . $data['emp_code'] . '.docx';
         header('Content-Description: File Transfer');
@@ -166,12 +166,17 @@ class Contract
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         header('Content-Length: ' . filesize($tempFile));
-
-        // Output the file and delete it afterward
+    
+        // Prevent buffer issues
+        ob_clean();
+        flush();
         readfile($tempFile);
+        
+        // Delete temporary file
         unlink($tempFile);
         exit;
     }
+    
     
     
  

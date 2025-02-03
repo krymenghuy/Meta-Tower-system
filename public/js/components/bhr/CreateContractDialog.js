@@ -131,11 +131,14 @@ const CreateContractDialog = (()=>{
                 cssClass:"btn btn-sm btn-primary",
                 click:(me)=>{
                 let op = me.getData();
-                    
                 const queryString = new URLSearchParams(op).toString();
-                const url = `${main_view.base_url}/create-contract?${queryString}`;
-                window.open(url, '_blank', 'noopener,noreferrer');
-                me.modal.hide(true, op);
+                main_view.getEncryptData(queryString,d=>{
+                    const url = `${main_view.base_url}/create-contract/${d}`;
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                    me.modal.hide(true, op);
+                    
+                });
+                
 
                 
                 }

@@ -259,8 +259,7 @@ var EmployeeComponent = new (function () {
                         break;
                     }
                     case "create_contract": {
-                        const branch_id = menuLink.dataset.branchid;
-                        mThis.CreateContract(id, branch_id,menuLink);
+                        mThis.CreateContract(id,menuLink);
                         break;
                     }
                     case "delete_employee": {
@@ -2486,23 +2485,15 @@ var EmployeeComponent = new (function () {
         detail.click();
     };
     
-    mThis.CreateContract = (id,branch_id,menuLink) => {
+    mThis.CreateContract = (id,menuLink) => {
         const op = {
-            emp_id: id,
+            id: id,
             onClose: () => {
                 mThis.EmployeeListView.showPage();
             },
         };
-        console.log(89,op);
-
-        
-
         CreateContractDialog.show(op);
 
-        // const queryString = new URLSearchParams(op).toString();
-        // const url = `${main_view.base_url}/create-contract?${queryString}`;
-
-        // window.open(url, '_blank', 'noopener,noreferrer');
     };
 
     mThis.deleteEmployee = (id, menuLink) => {
