@@ -15,9 +15,9 @@ class EmployeeController extends Controller
        $ss = AuthService::verifyAuth($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
 
-       $id = $req->employee_id?$req->employee_id:$req->id;
+       $id = $req->id ?? $req->employee_id;
        $employee = new Employee($id,$ss);
-       $res = $employee->save($req->all());
+       $res = $employee->save($req->all(),$id,$ss);
        return JDV::raw($res);
     }
 
@@ -217,6 +217,15 @@ class EmployeeController extends Controller
     $data = new Employee();
     
     return JDV::result($data->contractFormOptions($id,$director_id,$ss)); 
+}
+
+public function getFormOptions_non_staff(Request $req){
+    $ss = AuthService::verifyAuth($req, -1);
+    if ($ss->status_code !== 200) {
+        return JDV::raw($ss);
+    }
+    $emp_id =$req->id;
+    return JDV::result(Employee::getFormOptions_non_staff($emp_id,$ss)); 
 }
 
 }

@@ -11,12 +11,12 @@ class WorkShift
 {
     protected $id = null;
     protected $userInfo = null;
-
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+    
     function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
