@@ -1073,14 +1073,17 @@ class Payroll
                         p.currency_code,
                         e.photo_file_name as emp_photo')->where('p.id',$id);
 
-        // if ($search_value) {
-        //     $search_value = escape_like_str($search_value);
-        //     $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or e.phone_number like '%{$search_value}%'");
-        // }
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or e.phone_number like '%{$search_value}%'");
+        }
 
-        // if (!is_null($disbursed)) {
-        //     $query->where('pl.disbursed', $disbursed);
-        // }
+        if (!is_null($branch_id)) {
+            $query->where('e.branch_id', $branch_id);
+        }
+        if (!is_null($disbursed)) {
+            $query->where('pl.disbursed', $disbursed);
+        }
         $query->orderBy($sort_by, $sort_order);
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
