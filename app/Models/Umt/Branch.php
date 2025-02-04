@@ -33,7 +33,7 @@ class Branch //extends Model
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
         $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
         foreach($query as $q){
-            $q->director_name = DB::table('employees')->where('id',$$q->director_id)->value('name');
+            $q->director_name = DB::table('employees')->where('id',$ccccccccccccccccccccccccccccccccccccccccq->director_id)->value('name');
         }
         $count_query = clone $query;
         $count = $count_query->count('b.id');
