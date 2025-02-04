@@ -421,11 +421,11 @@ var PayrollComponent = new (function () {
                             false,
                             null
                         )
-                        
+
                         .then((res) => {
                             console.log(2929,res);
                             console.log(404040,p);
-                            
+
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
                                 mThis.PayrollListView.showPage(mThis.getDataFormFilter());
@@ -596,7 +596,7 @@ const AddPayRollListDailog = (() => {
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
                         { length: 11 },
-                        (_, i) => currentYear - 1 + i
+                        (_, i) => currentYear + i
                     );
 
                     return [

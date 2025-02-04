@@ -12,7 +12,7 @@ var WalletAccountComponent = (function () {
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_wallet_account");
     mThis._wallet_transaction_info = mThis.self.querySelector("#_wallet_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
-  
+
     mThis.cols = [
         {
             title: "No",
@@ -62,7 +62,7 @@ var WalletAccountComponent = (function () {
         {
             title: "Balance",
             className: "align-middle",
-            data: (data, index, tr) => {  
+            data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance,data.currency_code)}</p>`;
             },
         },
@@ -188,12 +188,12 @@ var WalletAccountComponent = (function () {
                                     const success_count = d.success_count ?? 0;
                                     if(success_count > 0) {
                                         mThis.WalletAccountListView.showPage(
-                                            mThis.getFitlerData()
+                                            mThis.getFilterData()
                                         );
                                         cv_interact.success(`${success_count} wallet accounts have been creted!`);
                                     }
                                     else cv_interact.info('No wallet accounts were created. This is maybe because all staffs already have a wallet account!');
-                                   
+
                                 } else cv_interact.error(res.error_message);
                             });
                     }
@@ -498,7 +498,7 @@ var WalletAccountComponent = (function () {
             }
         })
     }
- 
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
@@ -512,7 +512,7 @@ var WalletAccountComponent = (function () {
                 // console.log(1111, mThis.elFilter_department);
                VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
                onFinish();
-                  
+
             });
     };
 
@@ -546,7 +546,7 @@ var WalletAccountComponent = (function () {
             mThis.jm.siblings().hide();
             mThis.jm.fadeIn(200);
         });
-       
+
     };
     return mThis;
 })();

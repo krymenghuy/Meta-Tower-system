@@ -60,7 +60,7 @@ class Account
                 $account_number = $emp->code;
             }
             if (self::employeeHasAccount($emp_id, $account_type)){
-               $emp = Employee::getProps($emp_id,'name'); 
+               $emp = Employee::getProps($emp_id,'name');
                return DV::error("Employee ?? already has ?? account!::$emp->name; $account_type");
             }
             $inputs['account_number'] = $account_number;
@@ -70,7 +70,7 @@ class Account
         if (self::accountNumberExists($account_number, $id)) {
             return DV::error('Account number ?? already exists::' . $account_number);
         }
-  
+
         $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
@@ -129,12 +129,12 @@ class Account
         }
         return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');
     }
- 
+
     function getList($arr, $ss)
     {
         $d = (object) $arr;
         $is_master_account = $d->is_master_account ?? 0;
-        $branch_id = $d->branch_id ?? null; 
+        $branch_id = $d->branch_id ?? null;
         $account_type = $d->account_type ?? 'Standard';
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -183,7 +183,7 @@ class Account
                 if($department_id) $query->where('pos.department_id',$department_id);
             }
         }
-       
+
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
@@ -279,7 +279,7 @@ class Account
                a.currency_code,
                a.balance')->where('a.id', $id)->first();
         }
-        
+
         if ($row) {
             if($id > 1) $row->image_url = Employee::profilePicture($row->emp_id); else $row->image_url = '';
             // $otherAccount = DB::table('accounts as a')
@@ -300,7 +300,7 @@ class Account
 
         return $row;
     }
- 
+
 
     function delete($id = null)
     {
@@ -378,7 +378,7 @@ class Account
         $payroll_id = $d->payroll_id ?? null;
         $disburse_id = $d->disburse_id ?? null;
         if (!$from_account_id) {
-            //check if know only account number / don't know account id 
+            //check if know only account number / don't know account id
             if ($from_account->account_number == 1) {
                 $from_account = self::getMasterAccount();
             } else {
@@ -697,12 +697,12 @@ class Account
     }
 
     function getFormOptions_deposit($id,$ss){
-     
+
        $target_account = null;
        if($id){
          $acc = new Account($id,$ss);
          $target_account = $acc->getDetails($id);
-       }  
+       }
        return (object)[
           'account'=>$target_account
        ];
