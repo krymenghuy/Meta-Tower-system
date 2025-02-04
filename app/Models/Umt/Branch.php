@@ -31,8 +31,10 @@ class Branch //extends Model
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.website ,b.address,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
-        
+        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
+        foreach($query as $q){
+            $q->director_name = DB::table('employees')->where('id',$$q->director_id)->value('name');
+        }
         $count_query = clone $query;
         $count = $count_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -43,7 +45,7 @@ class Branch //extends Model
     static function details($id,$ss){
         $ss = $ss ?? AuthService::user();
         $subs_id = $ss->subs_id;
-        return DB::table(DBX::$branch_table.' as b')->where('b.subs_id',hex2bin($subs_id))->where('b.id',$id)->selectRaw('b.id,b.name,b.director_id,b.website ,b.address,b.address_kh,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone')->first();
+        return DB::table(DBX::$branch_table.' as b')->where('b.subs_id',hex2bin($subs_id))->where('b.id',$id)->selectRaw('b.id,b.name,b.director_id,b.website,director_id,b.address,b.address_kh,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone')->first();
     }
 
     function save($arr,$id = null, $ss = null){

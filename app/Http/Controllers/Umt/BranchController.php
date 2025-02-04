@@ -13,9 +13,8 @@ class BranchController extends Controller
     function getBranchList(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        //$arr = ['subs_id','role_id','search_value']
-        $rows = Branch::list($req->all(), $ss);
-        return JDV::result($rows); 
+        $rows = Branch::list($req->all(),$ss);
+        return JDV::result($rows);
     }
 
     function deleteBranch(Request $req){

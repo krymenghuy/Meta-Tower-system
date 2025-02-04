@@ -212,7 +212,7 @@ class EmployeeController extends Controller
     if ($ss->status_code !== 200) {
         return JDV::raw($ss);
     }
-    $id = $req->id ?? $req->branch_id;
+    $id = $req->id;
     $director_id = $req->director_id;
     $data = new Employee();
     
