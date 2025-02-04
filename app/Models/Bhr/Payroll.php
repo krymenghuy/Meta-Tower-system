@@ -322,7 +322,7 @@ class Payroll
         if ($payroll->authorized == 1) return DV::error('Cannot change currency because the payroll is already authorized1');
         DB::table('payrolls')->where('id', $id)->update(['currency_code' => $new_currency, 'exchange_rate' => $exchange_rate]);
         DB::table('payroll_list')->where('payroll_id', $id)->update(['currency_code' => $new_currency]);
-        $pl = new \App\Models\Bhr\PayrollList();
+        $pl = new PayrollList();
         $res = $pl->calculatePayrollList($id, $ss);
         return $res;
     }
@@ -427,7 +427,7 @@ class Payroll
                     'amount' => $row->amount,
                     'exchange_rate'=>$row->exchange_rate,
                     'trx_type' => 3,
-                    'status' => 'out'
+                    'status' => 'out',
                 ];
                 $account = new Account($row->account_id, $ss);
                 $res = $account->transferTo($inputs);
@@ -448,8 +448,47 @@ class Payroll
         } else{
             return DV::error('Payroll has not been disbursed to any staff');
         }
-       
+
     }
+    // function reverseTransactions($id, $ss = null)
+    // {
+    //     $ss = $ss ?? $this->userInfo;
+    //     $authorized = self::isAuthorized($id);
+    //     if (!$authorized) {
+    //         return DV::error('Payroll is not authorizad yet!');
+    //     }
+    //     $isDisbursed = self::isDisbursed($id);
+    //     if ($isDisbursed) {
+    //         $rows = DB::table('transactions')->where('payroll_id', $id)->where('status', 'in')->selectRaw('id, account_id, amount, currency_code')->get();
+    //         $success_count = 0;
+    //         $failed_count = 0;
+    //         foreach ($rows as $row) {
+    //             $inputs = [
+    //                 'to_account_id' => 1,
+    //                 'payroll_id' => $id,
+    //                 'remarks' => null,
+    //                 'amount' => $row->amount,
+    //                 'trx_type' => 3,
+    //                 'status' => 'out'
+    //             ];
+    //             $account = new Account($row->account_id, $ss);
+    //             $res = $account->transferTo($inputs);
+    //             if ($res->status_code == 200) {
+    //                 $success_count++;
+    //                 DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
+    //                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
+    //             } else {
+    //                 $failed_count++;
+    //             }
+    //         }
+    //         if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
+    //             DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
+    //             DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
+    //             return DV::depends(1);
+    //         }
+    //         return DV::error("Failed to reset payroll!");
+    //     }
+    // }
 
     function reset($id = null, $ss = null)
     {
