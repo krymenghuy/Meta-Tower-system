@@ -201,56 +201,7 @@ class Account
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-    // function WalletList($arr, $ss)
-    // {
-    //     $d = (object) $arr;
-    //     $branch_id = $ss->branch_id;
-
-    //     $current_page = $d->current_page ?? 1;
-    //     $per_page = $d->per_page ?? 10;
-    //     if (!is_numeric($current_page))  $current_page = 1;
-    //     $skip_rows = ($current_page - 1) * $per_page;
-    //     $search_value = $d->search_value ?? null;
-    //     $sort_by = $d->sort_by ?? 'a.id';
-    //     $sort_order = $d->sort_order ?? 'asc';
-    //     $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-    //     $query = DB::table('accounts as a')
-    //         ->join('employees as e', 'e.id', '=', 'a.emp_id')
-    //         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-    //         ->selectRaw('
-    //            a.id,
-    //            a.emp_id,
-    //            e.name as emp_name,
-    //            pos.title as position,
-    //            a.account_type,
-    //            a.account_number,
-    //            a.balance,
-    //            a.currency_code,
-    //            ' . $balance_date . ',
-    //            e.photo_file_name as emp_photo
-    //        ')
-    //         ->where('a.account_type', 'Wallet');
-
-
-    //     if ($search_value) {
-    //         $search_value = escape_like_str($search_value);
-    //         $query->where('e.name', 'LIKE', '%' . $search_value . '%');
-    //     }
-
-    //     $query->orderBy($sort_by, $sort_order);
-    //     $count = $query->count('a.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-    //     foreach ($rows as $row) {
-    //         $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-    //         unset($row->emp_photo);
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
-
-
+  
     function getDetails($id)
     {
         $row = null;
@@ -364,6 +315,7 @@ class Account
     {
         return DB::table('accounts as a')->where('id', 1)->selectRaw('a.id, \'Company accounts\' as name, a.balance, a.currency_code, a.account_number')->first();
     }
+
     //transfer money out $arr = [$to_account, $from_account,$amount , $currency,exchange_rate, $remarks]
     function transfer($arr, $ss = null)
     {
@@ -440,7 +392,7 @@ class Account
             'remarks' => '0|string|250',
             'to_account_id' => '0|number|exists=accounts.id',
             'to_account' => '0|array',
-            'disburse_id' => '0|number'
+            'disburse_id' => '0|string|0-128'
         ];
 
         $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
@@ -486,7 +438,7 @@ class Account
             'status' => '0|choice|in,out',
             'to_account_id' => '0|number|exists=accounts.id',
             'from_account_id' => '0|number|exists=accounts.id',
-            'disburse_id' => '0|number',
+            'disburse_id' => '0|string|0-128',
         ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
