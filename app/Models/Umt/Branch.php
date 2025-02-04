@@ -31,14 +31,18 @@ class Branch //extends Model
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
-        foreach($query as $q){
-            $q->director_name = DB::table('employees')->where('id',$ccccccccccccccccccccccccccccccccccccccccq->director_id)->value('name');
-        }
+        $query = DB::table(DBX::$branch_table . ' as b')
+        ->where('b.subs_id', $bin_subs_id)
+        ->whereRaw($str_search)
+        ->selectRaw('b.id, b.name, b.name_kh, b.address_kh, b.address,b.branch_type, b.shortcut, b.email, b.phone_number, b.first_cp_name, b.second_cp_name, b.first_cp_phone, b.second_cp_phone, b.update_user, b.updated_at, b.director_id');
+
+        
         $count_query = clone $query;
         $count = $count_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        
+        foreach ($rows as $row) {
+            $row->director_name = DB::table('employees')->where('id', $row->director_id)->value('name');
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -133,5 +137,27 @@ class Branch //extends Model
         'branches'=>$branches,
       ];
     }
+     static function setDirector($arr, $ss){
+        $d = (object)$arr;
+        $branch_id = $d->branch_id ?? null;
+        if (empty($d->id) || empty($branch_id)) {
+            return ['success' => 0, 'message' => 'Invalid director or branch ID'];
+        }
+        $exist = DB::table('um_branches')->where('director_id',$d->id)->where('id','!=',$branch_id)->exists();
+        if($exist){
+            return DV::error('This employee is already a director of another branch');
+        }
+       
+    
+        $updated = DB::table('um_branches')->where('id', $branch_id)->update(['director_id' => $d->id]);
+    
+        if ($updated) {
+            return DV::success(['message' => 'Director assigned successfully']);
+        } else {
+            return DV::error('No changes made or branch not found');
+        }
+
+    }
+
   
 }
