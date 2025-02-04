@@ -15,7 +15,7 @@ class Account
     protected $id = null;
     protected $userInfo = null;
 
-    protected $fk_tables = [
+    protected static $fk_tables = [
         'transactions' => 'account_id',
     ];
 
@@ -46,7 +46,7 @@ class Account
         $account_type = $d->account_type;
         $emp_id = $d->emp_id;
         $emp = Employee::getProps($emp_id, 'id,code,name');
-        if(!$emp) return DV::error('Employee ID deos not exist');
+        // if(!$emp) return DV::error('Employee ID deos not exist');
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
 
         $account_number = null;
@@ -60,7 +60,7 @@ class Account
                 $account_number = $emp->code;
             }
             if (self::employeeHasAccount($emp_id, $account_type)){
-               $emp = Employee::getProps($emp_id,'name'); 
+               $emp = Employee::getProps($emp_id,'name');
                return DV::error("Employee ?? already has ?? account!::$emp->name; $account_type");
             }
             $inputs['account_number'] = $account_number;
@@ -70,7 +70,7 @@ class Account
         if (self::accountNumberExists($account_number, $id)) {
             return DV::error('Account number ?? already exists::' . $account_number);
         }
-  
+
         $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
@@ -129,12 +129,12 @@ class Account
         }
         return DV::depends(1, ['success_count' => $success_count, 'emp_count' => $emp_count], 'Failed to bulk create accounts');
     }
- 
+
     function getList($arr, $ss)
     {
         $d = (object) $arr;
         $is_master_account = $d->is_master_account ?? 0;
-        $branch_id = $d->branch_id ?? null; 
+        $branch_id = $d->branch_id ?? null;
         $account_type = $d->account_type ?? 'Standard';
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -152,7 +152,7 @@ class Account
                a.emp_id,
                \'Master Account\' as emp_name,
                null AS \'NA\',
-               a.account_type,
+               \'Master Account\' as account_type,
                a.account_number,
                a.balance,
                a.currency_code,
@@ -183,7 +183,7 @@ class Account
                 if($department_id) $query->where('pos.department_id',$department_id);
             }
         }
-       
+
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
@@ -191,7 +191,8 @@ class Account
             if ($is_master_account == 1) {
                 //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
                 $c_id = getCurrentSubs(true)->subscriber_id;
-                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id'=>$c_id]);
+                $subs_id = $ss->subs_id;
+                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id'=>$c_id, 'subs_id'=>$subs_id]);
                 unset($row->emp_photo);
             } else {
                 $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
@@ -200,66 +201,17 @@ class Account
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-    // function WalletList($arr, $ss)
-    // {
-    //     $d = (object) $arr;
-    //     $branch_id = $ss->branch_id;
-
-    //     $current_page = $d->current_page ?? 1;
-    //     $per_page = $d->per_page ?? 10;
-    //     if (!is_numeric($current_page))  $current_page = 1;
-    //     $skip_rows = ($current_page - 1) * $per_page;
-    //     $search_value = $d->search_value ?? null;
-    //     $sort_by = $d->sort_by ?? 'a.id';
-    //     $sort_order = $d->sort_order ?? 'asc';
-    //     $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
-    //     $query = DB::table('accounts as a')
-    //         ->join('employees as e', 'e.id', '=', 'a.emp_id')
-    //         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-    //         ->selectRaw('
-    //            a.id,
-    //            a.emp_id,
-    //            e.name as emp_name,
-    //            pos.title as position,
-    //            a.account_type,
-    //            a.account_number,
-    //            a.balance,
-    //            a.currency_code,
-    //            ' . $balance_date . ',
-    //            e.photo_file_name as emp_photo
-    //        ')
-    //         ->where('a.account_type', 'Wallet');
-
-
-    //     if ($search_value) {
-    //         $search_value = escape_like_str($search_value);
-    //         $query->where('e.name', 'LIKE', '%' . $search_value . '%');
-    //     }
-
-    //     $query->orderBy($sort_by, $sort_order);
-    //     $count = $query->count('a.id');
-    //     $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-    //     foreach ($rows as $row) {
-    //         $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-    //         unset($row->emp_photo);
-    //     }
-
-    //     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    // }
-
-
+  
     function getDetails($id)
     {
         $row = null;
         if($id ==1){
-            $row = DB::table('accounts as a')
+            return$row = DB::table('accounts as a')
             ->selectRaw(
               'a.id,
                a.emp_id,
                \'Master Account\' as account_name,
-               a.account_type,
+               \'Master Account\' as account_type,
                a.account_number,
                a.currency_code,
                a.balance')
@@ -278,7 +230,7 @@ class Account
                a.currency_code,
                a.balance')->where('a.id', $id)->first();
         }
-        
+
         if ($row) {
             if($id > 1) $row->image_url = Employee::profilePicture($row->emp_id); else $row->image_url = '';
             // $otherAccount = DB::table('accounts as a')
@@ -299,11 +251,14 @@ class Account
 
         return $row;
     }
- 
+
 
     function delete($id = null)
     {
         $id = $id ?? $this->id;
+        if ($id == 1){
+            return DV::error('Cannot delete master account');
+        }
         foreach(self::$fk_tables as $table =>$field){
             DB::table($table)->where($field,$id)->delete();
         }
@@ -315,7 +270,7 @@ class Account
     {
         $account = null;
         if ($id) {
-            $account = self::getDetails($id, $ss);
+            $account = self::getDetails($id);
         }
         return (object) [
             'departments' => GeneralSettings::options_department($ss),
@@ -360,6 +315,7 @@ class Account
     {
         return DB::table('accounts as a')->where('id', 1)->selectRaw('a.id, \'Company accounts\' as name, a.balance, a.currency_code, a.account_number')->first();
     }
+
     //transfer money out $arr = [$to_account, $from_account,$amount , $currency,exchange_rate, $remarks]
     function transfer($arr, $ss = null)
     {
@@ -372,8 +328,9 @@ class Account
         $to_account = (object)($d->to_account ?? null);
         $exchange_rate = $d->exchange_rate ?? 1;
         $payroll_id = $d->payroll_id ?? null;
+        $disburse_id = $d->disburse_id ?? null;
         if (!$from_account_id) {
-            //check if know only account number / don't know account id 
+            //check if know only account number / don't know account id
             if ($from_account->account_number == 1) {
                 $from_account = self::getMasterAccount();
             } else {
@@ -416,9 +373,9 @@ class Account
             return DV::error('Insufficient balance');
         }
         $remarks = null;
-        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id];
+        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $from_account_id, $ss);
-        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id];
+        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $to_account_id, $ss);
         return DV::depends(1);
         //rollback amount when one of the transactions fails
@@ -434,7 +391,8 @@ class Account
             'exchange_rate' => '0|number|default=1',
             'remarks' => '0|string|250',
             'to_account_id' => '0|number|exists=accounts.id',
-            'to_account' => '0|array'
+            'to_account' => '0|array',
+            'disburse_id' => '0|string|0-128'
         ];
 
         $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
@@ -480,6 +438,7 @@ class Account
             'status' => '0|choice|in,out',
             'to_account_id' => '0|number|exists=accounts.id',
             'from_account_id' => '0|number|exists=accounts.id',
+            'disburse_id' => '0|string|0-128',
         ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
@@ -590,8 +549,8 @@ class Account
         $res = $transaction->createTransaction($inputs, $ss);
         return $res;
     }
-    
-  function deposit($amount, $currency_code,$remarks,$id = null, $ss)
+
+    function deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -602,12 +561,16 @@ class Account
             'status' => 'in',
             'account_id' => $id,
             'to_account_id' => $id,
-            'remarks' => $remarks
+            'remarks' => $remarks,
+            'account_number' => $account_number,
+            'account_name' => $account_name,
         ];
         $transaction = new Account($id, $ss);
         $res = $transaction->createTransaction($inputs, $ss);
+
         return $res;
     }
+
 
     function printTransaction($arr, $ss)
     {
@@ -686,12 +649,12 @@ class Account
     }
 
     function getFormOptions_deposit($id,$ss){
-     
+
        $target_account = null;
        if($id){
          $acc = new Account($id,$ss);
          $target_account = $acc->getDetails($id);
-       }  
+       }
        return (object)[
           'account'=>$target_account
        ];

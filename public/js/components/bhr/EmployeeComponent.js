@@ -14,6 +14,7 @@ var EmployeeComponent = new (function () {
     mThis.elEmployeeType = mThis.self.querySelector("#filter_employee_type");
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_employee");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_employee");
+    mThis.btnPrintCV = mThis.self.querySelector("#_print_emp_cv");
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
     mThis.elSearch = mThis.self.querySelector("#_search_employee");
     mThis.profile_card_center = mThis.self.querySelector(
@@ -82,6 +83,9 @@ var EmployeeComponent = new (function () {
             sub_content.classList.remove("d-none");
             // mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
+        mThis.btnPrintCV.onclick = function (e) {
+            window.print();
+        }
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
         mThis.div_filter_fields
