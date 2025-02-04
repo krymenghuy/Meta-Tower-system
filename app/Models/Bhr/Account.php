@@ -201,7 +201,7 @@ class Account
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-  
+
     function getDetails($id)
     {
         $row = null;
@@ -280,31 +280,31 @@ class Account
         ];
     }
 
-    // function ConfirmTransfer($arr, $ss)
-    // {
-    //     $d = (object) $arr;
+    function confirmTransfer($arr, $ss)
+    {
+        $d = (object) $arr;
 
-    //     $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
-    //     $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
-    //     $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
-    //     $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
+        $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
+        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
+        $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
+        $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
 
-    //     if (!$from_account_id || !$to_account_id) {
-    //         return DV::error('Account not found');
-    //     }
+        if (!$from_account_id || !$to_account_id) {
+            return DV::error('Account not found');
+        }
 
-    //     if ($d->balance < $d->amount) {
-    //         return DV::error('Insufficient balance');
-    //     }
-    //     return DV::depends(1, [
-    //         'emp_name' => $emp_name,
-    //         'from_account_type' => $d->account_type,
-    //         'from_account_number' => $d->account_number,
-    //         'to_account_type' => $d->to_account_type,
-    //         'to_account_number' => $d->to_account_number,
-    //         'amount' => $d->amount
-    //     ]);
-    // }
+        if ($d->balance < $d->amount) {
+            return DV::error('Insufficient balance');
+        }
+        return DV::depends(1, [
+            'emp_name' => $emp_name,
+            'from_account_type' => $d->account_type,
+            'from_account_number' => $d->account_number,
+            'to_account_type' => $d->to_account_type,
+            'to_account_number' => $d->to_account_number,
+            'amount' => $d->amount
+        ]);
+    }
 
     static function getProps($id, $cols = 'id,account_number,currency_code,balance')
     {
@@ -373,6 +373,9 @@ class Account
             return DV::error('Insufficient balance');
         }
         $remarks = null;
+        if($payroll_id){
+            $remarks = DB::table('payrolls')->where('id', $payroll_id)->selectRaw('name')->first()->name;
+        }
         $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $from_account_id, $ss);
         $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
@@ -571,7 +574,6 @@ class Account
         return $res;
     }
 
-
     function printTransaction($arr, $ss)
     {
         $d = (object) $arr;
@@ -592,7 +594,50 @@ class Account
             $str_account_id = 'a.id=' . $account_id;
         }
 
-        $query = DB::table('accounts as a')
+        if ($account_id == 1) {
+            $query = DB::table('accounts as a')
+                ->selectRaw('a.id as account_id, a.account_number,a.balance, ' . $last_balance_date . ',a.currency_code')
+                ->first();
+            $query->account_type = 'Master Account';
+            $query->emp_name = 'Master Account';
+
+            if ($query) {
+                $query = [$query];
+            } else {
+                $query = [];
+            }
+
+            foreach ($query as $row) {
+                $threeMonthsAgo = now()->subMonths(3);
+                $row->trx = DB::table('transactions as t')
+                    ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
+                    ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
+                    ->where('t.account_id', $row->account_id)
+                    ->where('t.created_at', '>=', $threeMonthsAgo)
+                    ->selectRaw('
+                        t.trx_type,
+                        t.from_account_id,
+                        t.to_account_id,
+                        fa.account_number as from_account_number,
+                        ta.account_number as to_account_number,
+                        t.amount,
+                        ' . $date . ',
+                        t.status,
+                        t.remarks
+                    ')
+                    ->orderBy('t.created_at', 'desc')
+                    ->get();
+            }
+
+            return [
+                'status' => 'OK',
+                'status_code' => 200,
+                'data' => $query,
+            ];
+        }
+
+        else{
+            $query = DB::table('accounts as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->whereRaw($str_emp_id)
             ->whereRaw($str_account_id)
@@ -609,43 +654,41 @@ class Account
             ')
             ->orderBy('e.id');
 
-        $rows = $query->get();
+            $rows = $query->get();
 
-        foreach ($rows as $row) {
-            $threeMonthsAgo = now()->subMonths(3); // Get the date 3 months ago
+            foreach ($rows as $row) {
+                $threeMonthsAgo = now()->subMonths(3);
+                $row->trx = DB::table('transactions as t')
+                    ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
+                    ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
+                    ->where('t.account_id', $row->account_id)
+                    ->where('t.created_at', '>=', $threeMonthsAgo)
+                    ->selectRaw('
+                        t.trx_type,
+                        t.from_account_id,
+                        t.to_account_id,
+                        fa.account_number as from_account_number,
+                        ta.account_number as to_account_number,
+                        t.amount,
+                        ' . $date . ',
+                        t.status,
+                        t.remarks
+                    ')
+                    ->orderBy('t.created_at', 'desc')
+                    ->get();
 
-            $row->trx = DB::table('transactions as t')
-                ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id')
-                ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')
-                ->where('t.account_id', $row->account_id)
-                ->where('t.emp_id', $row->emp_id)
-                ->where('t.created_at', '>=', $threeMonthsAgo) // Filter by the last 3 months
-                ->selectRaw('
-                    t.trx_type,
-                    t.from_account_id,
-                    t.to_account_id,
-                    fa.account_number as from_account_number,
-                    ta.account_number as to_account_number,
-                    t.amount,
-                    ' . $date . ',
-                    t.status,
-                    t.remarks
-                ')
-                ->orderBy('t.created_at', 'desc')
-                ->get();
+                $row->image_url = $row->emp_photo
+                    ? Employee::profilePicture($row->emp_id)
+                    : '';
 
-            $row->image_url = $row->emp_photo
-                ? Employee::profilePicture($row->emp_id)
-                : '';
-
-            unset($row->emp_photo);
+                unset($row->emp_photo);
+            }
+            return [
+                'status' => 'OK',
+                'status_code' => 200,
+                'data' => $rows,
+            ];
         }
-
-        return [
-            'status' => 'OK',
-            'status_code' => 200,
-            'data' => $rows,
-        ];
     }
 
     function getFormOptions_deposit($id,$ss){

@@ -38,7 +38,7 @@ class AccountController extends Controller
         $res = $account->bulkCreateAccounts($req->account_type);
         return JDV::raw($res);
     }
- 
+
 
     public function getPayrollAccountList(Request $req)
     {
@@ -155,7 +155,16 @@ class AccountController extends Controller
         $res = ($this->account->getAccountInfo($req->all(), $ss));
         return JDV::raw($res);
     }
- 
+
+    public function getConfirmTransfer(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return ($this->account->confirmTransfer($req->all(), $ss));
+    }
+
     public function createTransactions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -187,4 +196,6 @@ class AccountController extends Controller
         $data =  $acc->getFormOptions_deposit($id,$ss);
         return JDV::result($data);
     }
+
+
 }
