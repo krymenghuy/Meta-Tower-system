@@ -841,35 +841,35 @@ const DepositDialog = (() => {
                 createContent: () => {
                     return [
                         '<div class="row">',
-                            '<div class="form-group col-6">',
-                                '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
-                                '<input name="balance" class="form-control data-input" data-field="amount"  />',
-                            '</div>',
-                            '<div class="form-group col-6">',
-                              '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
-                              '<input name="currency_code" class="data-input form-control" data-field="currency_code" readonly/>',
-                            '</div>',
-                            '<div class="form-group col-12">',
-                              '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
-                              '<input name="account_number" class="data-input form-control" data-field="account_number"/>',
-                            '</div>',
-                          
-                            '<div class="form-group col-12">',
-                               '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
-                               '<input name="account_name" class="data-input form-control" data-field="account_name" readonly/>',
-                            '</div>',
-                            // <div class="form-group col-12">
-                            //     <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                            //     <select class="modal-select data-input" name="account_type" data-field="account_type">
-                            //         <option value="Payroll">Payroll</option>
-                            //         <option value="Wallet">Wallet</option>
-                            //     </select>
-                            // </div>
-                            '<div class="form-group col-md-12">',
-                                '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
-                                '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
-                            '</div>',
-                        '</div>',
+                        '<div class="form-group col-6">',
+                        '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
+                        '<input name="balance" class="form-control data-input" data-field="balance" />',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
+                        '<input name="currency_code" class="data-input form-control" data-field="currency_code" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-12">',
+                        '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
+                        '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
+                        "</div>",
+
+                        '<div class="form-group col-12">',
+                        '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
+                        '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-12">',
+                        '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
+                        '<select class="modal-select data-input" name="account_type" data-field="account_type" disabled>',
+                        '<option value="Payroll">Payroll</option>',
+                        '<option value="Wallet">Wallet</option>',
+                        "</select>",
+                        "</div>",
+                        '<div class="form-group col-md-12">',   
+                        '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
+                        '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
+                        "</div>",
+                        "</div>",
                     ].join("");
                 },
                 contentCreated: (me) => {
@@ -946,12 +946,12 @@ const DepositDialog = (() => {
 
                 onPrepareForm: (me,acc) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
-                    me.controls.account_number.value = acc.account_number;
-                    me.controls.currency_code.value = acc.currency_code;
-                    me.controls.account_name.setAttribute('readonly',true);
-                    me.controls.account_number.setAttribute('readonly',true);
-                    me.controls.currency_code.setAttribute('readonly',true);
+                    // me.controls.account_name.value = acc.account_name ?? acc.emp_name ?? '';
+                    // me.controls.account_number.value = acc.account_number;
+                    // me.controls.currency_code.value = acc.currency_code;
+                    // me.controls.account_name.setAttribute('readonly',true);
+                    // me.controls.account_number.setAttribute('readonly',true);
+                    // me.controls.currency_code.setAttribute('readonly',true);
                 },
             });
         dialog.show(op);
