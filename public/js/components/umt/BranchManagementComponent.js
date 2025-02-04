@@ -78,13 +78,12 @@ var BranchManagementComponent = new function(){
     this.setDirector = (id, lnk) => {
         if (!lnk || !lnk.dataset) return;
     
-        let op = {
+        const op = {
             role:'employee',
             title:'Find Staff',
             singleSelect:true,
             branch_id: id,
             onClose:(d)=>{
-                
                 // d.student_id = btn.dataset.id;
                 // d.referal_id = btn.dataset.referalid;
                 // d.referrer_id = d.id;

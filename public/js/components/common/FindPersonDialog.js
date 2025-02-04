@@ -247,7 +247,6 @@ const FindPersonDialog = (()=>{
                      cv_interact.warning('No one is selected!');
                      return;
                   } 
-                  console.log(999,JSON.stringify(p));
                   if(me.dataOptions.singleSelect) p=p[0];
                   if(me.dataOptions.role == 'employee'){
                      p.branch_id = me.dataOptions.branch_id;
