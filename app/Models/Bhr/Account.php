@@ -15,7 +15,7 @@ class Account
     protected $id = null;
     protected $userInfo = null;
 
-    protected $fk_tables = [
+    protected static $fk_tables = [
         'transactions' => 'account_id',
     ];
 
@@ -46,7 +46,7 @@ class Account
         $account_type = $d->account_type;
         $emp_id = $d->emp_id;
         $emp = Employee::getProps($emp_id, 'id,code,name');
-        if(!$emp) return DV::error('Employee ID deos not exist');
+        // if(!$emp) return DV::error('Employee ID deos not exist');
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']);
 
         $account_number = null;
@@ -152,7 +152,7 @@ class Account
                a.emp_id,
                \'Master Account\' as emp_name,
                null AS \'NA\',
-               a.account_type,
+               \'Master Account\' as account_type,
                a.account_number,
                a.balance,
                a.currency_code,
@@ -191,7 +191,8 @@ class Account
             if ($is_master_account == 1) {
                 //$subs_id = $row->subs_id ? bin2hex($row->subs_id) : null;
                 $c_id = getCurrentSubs(true)->subscriber_id;
-                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id'=>$c_id]);
+                $subs_id = $ss->subs_id;
+                $row->image_url = CompanyProfile::logoUrl((object)['subscriber_id'=>$c_id, 'subs_id'=>$subs_id]);
                 unset($row->emp_photo);
             } else {
                 $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
@@ -254,12 +255,12 @@ class Account
     {
         $row = null;
         if($id ==1){
-            $row = DB::table('accounts as a')
+            return$row = DB::table('accounts as a')
             ->selectRaw(
               'a.id,
                a.emp_id,
                \'Master Account\' as account_name,
-               a.account_type,
+               \'Master Account\' as account_type,
                a.account_number,
                a.currency_code,
                a.balance')
@@ -304,6 +305,9 @@ class Account
     function delete($id = null)
     {
         $id = $id ?? $this->id;
+        if ($id == 1){
+            return DV::error('Cannot delete master account');
+        }
         foreach(self::$fk_tables as $table =>$field){
             DB::table($table)->where($field,$id)->delete();
         }
@@ -315,7 +319,7 @@ class Account
     {
         $account = null;
         if ($id) {
-            $account = self::getDetails($id, $ss);
+            $account = self::getDetails($id);
         }
         return (object) [
             'departments' => GeneralSettings::options_department($ss),
@@ -372,6 +376,7 @@ class Account
         $to_account = (object)($d->to_account ?? null);
         $exchange_rate = $d->exchange_rate ?? 1;
         $payroll_id = $d->payroll_id ?? null;
+        $disburse_id = $d->disburse_id ?? null;
         if (!$from_account_id) {
             //check if know only account number / don't know account id 
             if ($from_account->account_number == 1) {
@@ -416,9 +421,9 @@ class Account
             return DV::error('Insufficient balance');
         }
         $remarks = null;
-        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id];
+        $inputs = ['amount' => $d->amount, 'currency_code' => $from_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'out', 'to_account_id' => $to_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $from_account_id, $ss);
-        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id];
+        $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $to_account_id, $ss);
         return DV::depends(1);
         //rollback amount when one of the transactions fails
@@ -434,7 +439,8 @@ class Account
             'exchange_rate' => '0|number|default=1',
             'remarks' => '0|string|250',
             'to_account_id' => '0|number|exists=accounts.id',
-            'to_account' => '0|array'
+            'to_account' => '0|array',
+            'disburse_id' => '0|number'
         ];
 
         $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
@@ -480,6 +486,7 @@ class Account
             'status' => '0|choice|in,out',
             'to_account_id' => '0|number|exists=accounts.id',
             'from_account_id' => '0|number|exists=accounts.id',
+            'disburse_id' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
@@ -590,8 +597,8 @@ class Account
         $res = $transaction->createTransaction($inputs, $ss);
         return $res;
     }
-    
-  function deposit($amount, $currency_code,$remarks,$id = null, $ss)
+
+    function deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -602,12 +609,16 @@ class Account
             'status' => 'in',
             'account_id' => $id,
             'to_account_id' => $id,
-            'remarks' => $remarks
+            'remarks' => $remarks,
+            'account_number' => $account_number,
+            'account_name' => $account_name,
         ];
         $transaction = new Account($id, $ss);
         $res = $transaction->createTransaction($inputs, $ss);
+
         return $res;
     }
+
 
     function printTransaction($arr, $ss)
     {
