@@ -136,6 +136,7 @@ class ScriptProvider
                 'js/components/umt/ChangeRoleDialog.js',
                 'js/components/umt/CreateBranchDialog.js',
                 'js/components/umt/CreateLoginDialog.js',
+                'js/components/umt/FindUserDialog.js',
                 'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementComponent.js',
                 'js/components/bhr/CreateContractDialog.js',
