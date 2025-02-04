@@ -341,7 +341,7 @@ class PayrollList
                 ['id' => 'e.salary', 'name' => 'By Salary'],
 
             ],
-            'disburse_statuses' => [
+            'disbursed' => [
                 ['id' => 0, 'name' => 'Pending'],
                 ['id' => 1, 'name' => 'Disbursed'],
             ],
