@@ -570,12 +570,11 @@ class Account
         $res = $transaction->createTransaction($inputs, $ss);
         return $res;
     }
-
-
+ 
     function printTransaction($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $last_balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
         $date = DBX::formatDate('t.created_at', 'created_at');
         $str_emp_id = '1=1';
@@ -649,7 +648,6 @@ class Account
     }
 
     function getFormOptions_deposit($id,$ss){
-
        $target_account = null;
        if($id){
          $acc = new Account($id,$ss);
