@@ -711,7 +711,7 @@ class Report
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
         $d = (object)$filter;
-        $emp_id = isset($d->emp_id) ? $d->emp_id : null;
+        $emp_id = $d->emp_id ?? $d->employee_id ?? null;
         $branch_id = isset($d->branch_id) ? $d->branch_id : (isset($d->campus_id) ? $d->campus_id : null);
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
