@@ -39,11 +39,8 @@ var BranchManagementComponent = new function(){
                    mThis.userListView.showPage(mThis.getFilterData());           
                 }
             }
-           
             CreateBranchDialog.show(op); 
-
         };
-
         let timeOut = null;
         mThis.elSearch.onkeyup = function(e)
         {
@@ -53,9 +50,6 @@ var BranchManagementComponent = new function(){
                 mThis.userListView.showPage(mThis.getFilterData());
             },250);
         }
-
-        
-
         mThis.btnPdf.onclick = function(e)
         {
             e.preventDefault();
@@ -81,7 +75,32 @@ var BranchManagementComponent = new function(){
         mThis.initDropdownMenus(mThis.listContainer);
         mThis.initAlready = true;
     }
-
+    this.setDirector = (id, lnk) => {
+        if (!lnk || !lnk.dataset) return;
+    
+        const op = {
+            role:'employee',
+            title:'Find Staff',
+            singleSelect:true,
+            branch_id: id,
+            onClose:(d)=>{
+                // d.student_id = btn.dataset.id;
+                // d.referal_id = btn.dataset.referalid;
+                // d.referrer_id = d.id;
+                // console.log(222,);
+                // vsapi.call(`${main_view.base_url}/api/student/set-referrer`,d,false,false,false).then(res =>{
+                //     if(res.status_code ==200){
+                //         EnrolledStudentsComponent.studentListView.showPage(mThis.getFilterData());
+                //         cv_interact.success('Referrer has been updated!');
+                //     }else cv_interact.error(res.error_message);
+                // });
+            }
+        }
+    
+        FindPersonDialog.show(op);
+        return;
+    };
+    
     this.assignUser = (id, lnk)=>{
         if (lnk) {
                 console.log(12,lnk);
@@ -236,25 +255,25 @@ var BranchManagementComponent = new function(){
                 // html:'<span class="ps-2  " vslang="titles.Asign Branch">Asign User</span>',
                 // icon:`<i class="fa-solid fa-user-pen fs-5 text-info"></i>`,
                 // cssClass:"border-bottom pb-2",
-                // name:"asign_user"
+                // name:"assign_user"
                 // },
                  {
                 html:'<span class="ps-2  " vslang="titles.Set Director"></span>',
                 icon:`<i class="fa-solid fa-user-pen fs-5 text-info"></i>`,
                 cssClass:"border-bottom pb-2",
-                name:"set_director"
+                name:"set_director",
                 },
                 {
                 html:'<span class="ps-2  " vslang="titles.Modify Branch">Modify Branch</span>',
                 icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                 cssClass:"border-bottom pb-2",
-                name:"edit_branch"
+                name:"edit_branch",
                 },
                 {
                 html:'<span class="ps-2  " vslang="titles.Delete Branch">Delete Branch</span>',
                 icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                 cssClass:"border-bottom pb-2",
-                name:"delete_branch"
+                name:"delete_branch",
                 },
                     
             ],
@@ -268,16 +287,20 @@ var BranchManagementComponent = new function(){
             // },
             onClick:(menuLink, id, name)=>{
                 switch(name){
-                    case 'asign_user':{
+                    case 'assign_user':{
                         mThis.assignUser(id, menuLink); //Not yet defined
                         break;
                       }
+                    case 'set_director':{
+                        mThis.setDirector(id,menuLink);
+                        break;
+                    }
                     case 'edit_branch':{
-                      mThis.editBranch(id, menuLink); //Not yet defined
+                      mThis.editBranch(id, menuLink);
                       break;
                     }
                     case 'delete_branch':{
-                        mThis.deleteBranch(id, menuLink); //Not yet defined
+                        mThis.deleteBranch(id, menuLink); 
                         break;
                       }
                     default:{
@@ -415,21 +438,28 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
-                                <span class="text-capitalize">Name</span>
+                                <span class="text-capitalize">Branch</span>
                             </h6>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
-                                <span class="text-capitalize">Website</span>
+                                <span class="text-capitalize">Branch Type</span>
                             </h6>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
-                                <span class="text-capitalize">Phone Number</span>
+                                <span class="text-capitalize">Director</span>
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-block">
+                            <h6 class="text-nowrap">
+                                <span class="text-capitalize">Contact Info</span>
                             </h6>
                         </div>
                     </div>
@@ -443,11 +473,11 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
-                                <span class="text-capitalize">Fst cp Name</span>
+                                <span class="text-capitalize">Last Update</span>
                             </h6>
                         </div>
                     </div>
-                    <div class="col">
+                  <!--  <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
                                 <span class="text-capitalize">Fst cp Phone</span>
@@ -468,6 +498,7 @@ var BranchManagementComponent = new function(){
                             </h6>
                         </div>
                     </div>
+                -->
                     <div class="col">
                         <div class="d-block">
                             <h6 class="text-nowrap">
@@ -495,39 +526,53 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.name || 'N/A'}</span>
+                                <span class="text-capitalize">${branch.name}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-block">
+                            <p class="text-nowrap m-0">
+                                <span class="text-capitalize">${branch.branch_type}</span>
                             </p>
                         </div>
                     </div>
                     <div class="col" >
                         <div class="d-block" >
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">`,branch.website?`<a href="javascript:void(0)" data-link ="${branch.website||'#'}" onClick= class="webite-view"> View <i class="fas fa-eye text-info fs-6"></i></a>`: 'N/A',`</span>
+                                <span class="text-capitalize">`,branch.director_name,`</span>
                             </p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.phone_number || 'N/A'}</span>
+                                <span class="text-capitalize">${branch.phone_number}</span>
+                            </p>
+                              <p class="text-nowrap m-0">
+                                <span class="text-primary">${branch.email}</span>
                             </p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
-                            <p class="text-nowrap m-0">
-                            <span class="text-capitalize">`,branch.address?`<a href="javascript:void(0)" data-link ="#" class="address-view"><i class="fa-solid fa-map-location-dot fs-6"></i> Address </a>`: 'N/A',`</span>
+                            <p class="text-truncate m-0" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="`, branch.address,`">
+                                <span class="text-capitalize">`, branch.address,`</span>
                             </p>
                         </div>
                     </div>
+
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.first_cp_name || 'N/A'}</span>
+                                <span class="text-capitalize">${branch.update_user}</span>
+                            </p>
+                            <p class="text-nowrap m-0">
+                                <small class="text-warning">${branch.updated_at}</small>
                             </p>
                         </div>
                     </div>
-                    <div class="col">
+                  <!--  <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
                                 <span class="text-capitalize">${branch.first_cp_phone || 'N/A'}</span>
@@ -548,6 +593,7 @@ var BranchManagementComponent = new function(){
                             </p>
                         </div>
                     </div>
+                -->
                     <div class="col">
                         <div class="d-flex align-items-center justify-content-end h-100">
                         <div class="d-flex flex-row width-locked-icon">

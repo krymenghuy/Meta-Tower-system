@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models\Umt;
-
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,27 +20,38 @@ class Branch //extends Model
 
     static function list($arr, $ss){
         $d = (object)$arr;
-        $bin_subs_id = hex2bin($ss->subs_id)??null;
-        //$subs_id = isset($d->subs_id)? $d->subs_id:null;
-        $search_value = isset($d->search_value)? $d->search_value:null;
+        $subs_id =  $ss->subs_id ?? getCurrentSubsId(true);
+        $bin_subs_id = hex2bin($subs_id);
+        $search_value = $d->search_value ?? null;
 
-        $current_page = isset($d->current_page) ? $d->current_page : 1;
-        $per_page = isset($d->per_page) ? $d->per_page : 10;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) $current_page = 1;
         $skip_rows = ($current_page - 1) * $per_page;
-
+        
+        $audit_info = DBX::query_user_info('b','updated_at',true,'created_at');
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
-        foreach($query as $q){
-            $q->director_name = DB::table('employees')->where('id',$$q->director_id)->value('name');
-        }
+
+        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
         $count_query = clone $query;
         $count = $count_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        
+        foreach($rows as &$row){
+            $director_id = $row->director_id ?? null;
+            $row->director_name = $director_id ? self::getDirectorName($director_id): '';
+
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+ static function getDirectorName($director_id){
+    try{
+        $name = DB::table('employees as e')->where('id',$director_id)->value('name');
+        return $name;
+    }catch (\Exception $e) {
+        return '';
+    }
+ }
     static function details($id,$ss){
         $ss = $ss ?? AuthService::user();
         $subs_id = $ss->subs_id;
@@ -74,35 +84,13 @@ class Branch //extends Model
         $subs_id = $inputs['subs_id'];
 
         $branch_id = $id;
-        $action = 'create';
-        if($branch_id) $action = 'update';
+        $action = $id ? 'update':'create';
         $inputs['phone_number'] = str_replace(' ','',$inputs['phone_number']);
-        
-        $data = [
-            'name' =>  $inputs['name'],
-            'name_kh' =>  $inputs['name'],
-            'website' => $inputs['website'],
-            'address' => $inputs['address'],
-            'phone_number' => $inputs['phone_number'],
-            'first_cp_name' =>  $inputs['first_cp_name'],
-            'first_cp_phone' => $inputs['first_cp_phone'],
-            'second_cp_name' => $inputs['second_cp_name'],
-            'second_cp_phone' => $inputs['second_cp_phone'],
-            'subs_id'=> $inputs['subs_id']
-        ];
-        // if( $action == 'create')
-        // $branch_id = DB::table(DBX::$branch_table)->insert($data);
-        // else
-        // $branch_id = DB::table(DBX::$branch_table)->update($data)->where('id',$branch_id);
-
         $branch_id = saveData($ss,DBX::$branch_table,['id'=>$branch_id],$inputs,[],0);
-
-        return DV::success(['branch_id'=>$branch_id]);
+        return DV::depends($branch_id, ['branch_id'=>$branch_id]);
         // return DV::depends($id); 
     }
-
-  
-
+ 
     function delete($id,$ss=null){
         $ss = $ss ?? AuthService::user();
         $subs_id = $ss->subs_id;
@@ -132,6 +120,25 @@ class Branch //extends Model
         'users'=>UMTSettings::options_user(null,$ss),
         'branches'=>$branches,
       ];
+
     }
+
+      function setDirector($arr, $id=null, $ss=null){
+        $ss = $ss ?? $this->userInfo;
+        $table = DBX::$branch_table;
+        $emp_table = 'employees';
+
+        $d = (object)$arr;
+        if (!$id) return DV::error('No branch ID provided!');
+        $emp_id = $d->emp_id ?? $d->director_id ?? null;
+        $branch = DB::table($table)->where('id',$id)->first();
+        if(!$branch) return DV::error('Branch ID does not exist!');
+        $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+        if(!$emp) return DV::error('Employee identity does not exist');
+        $x = DB::table($table)->where('id', $id)->update(['director_id' => $emp_id]);
+        return DV::depends(1,null,'Failed to update branch director');
+    }
+
   
 }
+

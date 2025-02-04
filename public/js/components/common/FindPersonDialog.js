@@ -4,7 +4,7 @@ const FindContext = (()=>{
 
     self.fetchApis = {
         "staff":`${main_view.base_url}/api/employee/find`,
-        "employee":`${main_view.base_url}/api/employee/find`,
+        "employee":`${main_view.base_url}/hr/employee/list`,
         // "parent":`${main_view.base_url}/api/guardian/find`,
         //"user":`${main_view.base_url}/api/user/find`  
     };  
@@ -39,14 +39,14 @@ const FindContext = (()=>{
                         data:"sex"
                      },
                      {
-                        title:"Phone Number",
-                        data:"phone_number"
+                        title:"Email",
+                        data:"email"
                      },
                      {
                         title:"Position",
                         name:"position",
                         data:(data,index,tr)=>{
-                           return [`<span class="text-primary">`,data.position,` </span>`].join('');
+                           return [`<span class="text-primary">`,data.position_id,` </span>`].join('');
                         } 
                      },
                    ];
@@ -215,7 +215,7 @@ const FindPersonDialog = (()=>{
             //     }
             // },
             prepareFormOptions:{
-               createTitle: "Find Soneone",
+               createTitle: "Find Someone",
             },
             onPrepareForm:(me,data,fields,divModal)=>{
                const context = FindContext.getContext(me.dataOptions.role);
@@ -248,6 +248,16 @@ const FindPersonDialog = (()=>{
                      return;
                   } 
                   if(me.dataOptions.singleSelect) p=p[0];
+                  if(me.dataOptions.role == 'employee'){
+                     p.branch_id = me.dataOptions.branch_id;
+                     vsapi.call(`${main_view.base_url}/api/branch/set-director`,p,null).then(res => {
+                        if(res.status_code === 200)
+                        {
+                           cv_interact.success('success!');
+                        }
+                     });
+                  }
+                  
                   me.hide(true,p);
                 }
               }  

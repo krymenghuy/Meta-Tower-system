@@ -159,6 +159,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('branch')->grou
     Route::post('/list', [BranchController::class, "getBranchList"]);
     Route::post('/delete', [BranchController::class, "deleteBranch"]);
     Route::post('/save', [BranchController::class, "saveBranch"]);
+    Route::post('/set-director', [BranchController::class, "setDirector"]);
     Route::post('/form-options', [BranchController::class, "getFormOptions"]);
 });
 

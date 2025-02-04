@@ -453,9 +453,9 @@ class Account
         unset($inputs['exchange_rate']);
         $inputs['account_id'] = $id;
         $this_account = self::getProps($id, 'id,balance, currency_code');
-        if (!$this_account) {
-            return DV::error('Source account information does not exist');
-        }
+        // if (!$this_account) {
+        //     return DV::error('Source account information does not exist');
+        // }
         if ($d->trx_type == 1) {
             $inputs['to_account_id'] = $id;
         } else if ($d->trx_type == 2) {
@@ -559,7 +559,7 @@ class Account
         $id = $id ?? $this->id;
         $inputs = [
             'amount' => $amount,
-            'currency' => $currency_code,
+            'currency_code' => $currency_code,
             'trx_type' => 1,
             'status' => 'in',
             'account_id' => $id,
@@ -569,15 +569,15 @@ class Account
             'account_name' => $account_name,
         ];
         $transaction = new Account($id, $ss);
+        unset($res->currency_code);
         $res = $transaction->createTransaction($inputs, $ss);
-
         return $res;
     }
 
     function printTransaction($arr, $ss)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $last_balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
         $date = DBX::formatDate('t.created_at', 'created_at');
         $str_emp_id = '1=1';
@@ -692,7 +692,6 @@ class Account
     }
 
     function getFormOptions_deposit($id,$ss){
-
        $target_account = null;
        if($id){
          $acc = new Account($id,$ss);
