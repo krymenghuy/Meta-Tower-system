@@ -122,26 +122,21 @@ class Branch //extends Model
       ];
 
     }
-     static function setDirector($arr, $ss){
-        $d = (object)$arr;
-        $branch_id = $d->branch_id ?? null;
-        if (empty($d->id) || empty($branch_id)) {
-            return ['success' => 0, 'message' => 'Invalid director or branch ID'];
-        }
-        $exist = DB::table('um_branches')->where('director_id',$d->id)->where('id','!=',$branch_id)->exists();
-        if($exist){
-            return DV::error('This employee is already a director of another branch');
-        }
-       
-    
-        $updated = DB::table('um_branches')->where('id', $branch_id)->update(['director_id' => $d->id]);
-    
-        if ($updated) {
-            return DV::success(['message' => 'Director assigned successfully']);
-        } else {
-            return DV::error('No changes made or branch not found');
-        }
 
+      function setDirector($arr, $id=null, $ss=null){
+        $ss = $ss ?? $this->userInfo;
+        $table = DBX::$branch_table;
+        $emp_table = 'employees';
+
+        $d = (object)$arr;
+        if (!$id) return DV::error('No branch ID provided!');
+        $emp_id = $d->emp_id ?? $d->director_id ?? null;
+        $branch = DB::table($table)->where('id',$id)->first();
+        if(!$branch) return DV::error('Branch ID does not exist!');
+        $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+        if(!$emp) return DV::error('Employee identity does not exist');
+        $x = DB::table($table)->where('id', $id)->update(['director_id' => $emp_id]);
+        return DV::depends(1,null,'Failed to update branch director');
     }
 
   
