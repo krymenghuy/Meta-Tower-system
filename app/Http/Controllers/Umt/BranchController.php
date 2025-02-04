@@ -42,4 +42,11 @@ class BranchController extends Controller
         $data = Branch::getFormOptions($id,$user_id,$ss);
         return JDV::result($data); 
     }
+    function setDirector(Request $req){
+        $ss = AuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $rows = Branch::setDirector($req->all(),$ss);
+        return JDV::raw($rows);
+    }
+
 }

@@ -84,8 +84,10 @@ var EmployeeComponent = new (function () {
             // mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
         mThis.btnPrintCV.onclick = function (e) {
+            e.preventDefault();
+
             window.print();
-        }
+        };
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
         mThis.div_filter_fields

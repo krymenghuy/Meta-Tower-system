@@ -4,7 +4,7 @@ const FindContext = (()=>{
 
     self.fetchApis = {
         "student":`${main_view.base_url}/api/student/search`,
-        "parent":`${main_view.base_url}/api/guardian/find`,
+        "employee":`${main_view.base_url}/hr/employee/list`,
         "user":`${main_view.base_url}/api/user/find`  
     };  
 
@@ -12,8 +12,8 @@ const FindContext = (()=>{
        switch(role){
           case  'student':
             return "Find Students";
-          case 'parent':
-             return 'Find Parents'  
+          case 'employee':
+             return 'Find Employees'  
        }
        return "Title";
     };
@@ -57,13 +57,13 @@ const FindContext = (()=>{
                    ];
                    
                }
-            case 'parent':{
+            case 'employee':{
 
                 return [
-                    // {
-                    //     title:"ID",
-                    //     data:"code"
-                    //  },
+                    {
+                        title:"ID",
+                        data:"code"
+                     },
                      {
                         title:"Name",
                         data:"name"
@@ -72,18 +72,15 @@ const FindContext = (()=>{
                         title:"Sex",
                         data:"sex"
                      },
+                   
                      {
-                        title:"Role",
-                        data:"role"
+                        title:"Email",
+                        data:"email"
                      },
                      {
-                        title:"Phone Number",
-                        data:"phone_number"
-                     },
-                     {
-                        title:"Family ID",
-                        name:"family_code",
-                        data:"family_code"
+                        title:"Position",
+                        name:"position",
+                        data:"position_id"
                      }
                    ];
             }
@@ -248,7 +245,7 @@ const FindPersonDialog = (()=>{
             //     }
             // },
             prepareFormOptions:{
-               createTitle: "Find Soneone",
+               createTitle: "Find Someone",
             },
             onPrepareForm:(me,data,fields,divModal)=>{
                const context = FindContext.getContext(me.dataOptions.role);

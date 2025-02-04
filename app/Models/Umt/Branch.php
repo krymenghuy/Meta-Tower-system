@@ -31,6 +31,7 @@ class Branch //extends Model
         
         $audit_info = DBX::query_user_info('b','updated_at',true,'created_at');
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
+
         $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
         $count_query = clone $query;
         $count = $count_query->count('b.id');
@@ -38,6 +39,7 @@ class Branch //extends Model
         foreach($rows as &$row){
             $director_id = $row->director_id ?? null;
             $row->director_name = $director_id ? self::getDirectorName($director_id): '';
+
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -118,5 +120,30 @@ class Branch //extends Model
         'users'=>UMTSettings::options_user(null,$ss),
         'branches'=>$branches,
       ];
-    } 
+
+    }
+     static function setDirector($arr, $ss){
+        $d = (object)$arr;
+        $branch_id = $d->branch_id ?? null;
+        if (empty($d->id) || empty($branch_id)) {
+            return ['success' => 0, 'message' => 'Invalid director or branch ID'];
+        }
+        $exist = DB::table('um_branches')->where('director_id',$d->id)->where('id','!=',$branch_id)->exists();
+        if($exist){
+            return DV::error('This employee is already a director of another branch');
+        }
+       
+    
+        $updated = DB::table('um_branches')->where('id', $branch_id)->update(['director_id' => $d->id]);
+    
+        if ($updated) {
+            return DV::success(['message' => 'Director assigned successfully']);
+        } else {
+            return DV::error('No changes made or branch not found');
+        }
+
+    }
+
+  
 }
+
