@@ -3968,7 +3968,7 @@ const PrintCV = (() => {
                         label: '<span><i class="fa-solid text-success fa-check"></i></span>',
                         cssClass: "btn btn-sm btn-outline",
                         click: (me) => {
-                            window.open('', '_blank');
+                            window.print(me.controls._div_print_cv.innerHTML);
                         },
                     },
                 ],
