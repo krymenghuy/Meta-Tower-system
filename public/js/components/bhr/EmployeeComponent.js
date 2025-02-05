@@ -91,10 +91,10 @@ var EmployeeComponent = new (function () {
                 employee_id:mThis.employee_id,
             }
             PrintCV.show(op);
-           
+
         };
-        
-        
+
+
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
         mThis.div_filter_fields
@@ -128,7 +128,7 @@ var EmployeeComponent = new (function () {
 
         mThis.initAlready = true;
     };
-    
+
 
     mThis.getFilterData = () => {
         const p = {};
@@ -1511,18 +1511,12 @@ var EmployeeComponent = new (function () {
                             <td><small>${d.qty}</small></td>
                             <td>
                                 <small>
-                                    ${VSMoney.formatAmount(
-                                        d.amount,
-                                        d.currency_code
-                                    )}
+                                    ${VSMoney.formatAmount(d.amount,d.currency_code)}
                                 </small>
                             </td>
                             <td>
                                 <small>
-                                    ${VSMoney.formatAmount(
-                                        d.allowance,
-                                        d.currency_code
-                                    )}
+                                    ${VSMoney.formatAmount(d.allowance,d.currency_code)}
                                 </small>
                             </td>
                             <td class="text-start">
@@ -2494,12 +2488,12 @@ var EmployeeComponent = new (function () {
         EmployeeDialog.show(op);
     };
     mThis.view_see_info = (id, menuLink) => {
-        const card = VSUtil.closestLimited(menuLink, ".employee-card");    
+        const card = VSUtil.closestLimited(menuLink, ".employee-card");
         const detail= card.querySelector('.see-detail');
         console.log(123,detail);
         detail.click();
     };
-    
+
     mThis.CreateContract = (id,menuLink) => {
         const op = {
             id: id,
@@ -3131,9 +3125,7 @@ const AddTaxAllowance = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                            <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
-                                <option value="${main_view.national_currency}">${main_view.national_currency}</option>
-                                <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
+                            <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
                             </select>
                         </div>
                         <div class="form-group col-12">
@@ -3202,15 +3194,17 @@ const AddTaxAllowance = (() => {
                         },
                     },
                 },
-                // configSelect: [
-
-                //     {
-                //         name: "currency_code",
-                //         data: "currency_codes",
-                //         textField: "code",
-                //         valueField: "code",
-                //     }
-                // ],
+                onPrepareForm: (me, data) => {
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    }
+                ],
             });
 
         dialog.show(op);
@@ -3936,24 +3930,26 @@ const PrintCV = (() => {
         cv_dialog =
         cv_dialog ||
             new GeneralDialog({
-                
+
                 cssClass: "modal-xl d-flex justify-content-center",
                 createContent: () => {
                     return [
                         `<div name="_div_print_cv">
 
-                   
+
 
                     </div>`,
                     ].join("");
                 },
                 onPrepareForm: (me,data) => {
-                    employeeCV(me.controls._div_print_cv, data);
-        
 
-               
+
+                    employeeCV(me.controls._div_print_cv, data);
+
+
+
                 },
-                
+
                 buttons: [
                     {
                         label: '<span>Back</span>',
@@ -3978,11 +3974,11 @@ const PrintCV = (() => {
                     api: {
                         endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
                         params: (op) => {
-                            return { employee_id: op.employee_id }; 
+                            return { id: op.employee_id }; // Pass ID to fetch data for edit
                         },
                         onResponse: (me, res) => {
                             console.log(123,res);
-                            
+
                         },
                     },
                 },
