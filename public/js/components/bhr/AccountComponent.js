@@ -18,7 +18,7 @@ var AccountMenagmentComponent = (function () {
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
     mThis.divListView = mThis.self.querySelector('#_account_list');
- 
+
     mThis.cols = [
         {
             title: "No",
@@ -621,7 +621,7 @@ var AccountMenagmentComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        mThis.rem_filter = main_filters;    
+        mThis.rem_filter = main_filters;
         return p;
     };
 
@@ -652,13 +652,13 @@ var AccountMenagmentComponent = (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             if (mThis.rem_filter){
-                mThis.setDefaultFilter();   
-            }  
+                mThis.setDefaultFilter();
+            }
             mThis.AccountListView.showPage();
             mThis.jm.siblings().hide();
             mThis.jm.fadeIn(200);
         });
-      
+
     };
     return mThis;
 })();
@@ -841,35 +841,36 @@ const DepositDialog = (() => {
                 createContent: () => {
                     return [
                         '<div class="row">',
-                        '<div class="form-group col-6">',
-                        '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
-                        '<input name="balance" class="form-control data-input" data-field="balance" />',
-                        "</div>",
-                        '<div class="form-group col-6">',
-                        '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
-                        '<input name="currency_code" class="data-input form-control" data-field="currency_code" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-12">',
-                        '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
-                        '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
-                        "</div>",
+                            '<div class="form-group col-6">',
+                                '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
+                                '<input name="balance" class="form-control data-input" data-field="balance"  />',
+                            '</div>',
+                            '<div class="form-group col-6">',
+                              '<label for="currency" class="form-label" vslang="titles.Currency"></label>',
+                              '<input name="currency" class="data-input form-control" data-field="currency_code" disabled/>',
+                            '</div>',
+                            '<div class="form-group col-12">',
+                              '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
+                              '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
+                            '</div>',
 
-                        '<div class="form-group col-12">',
-                        '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
-                        '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-12">',
-                        '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
+                            '<div class="form-group col-12">',
+                               '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
+                               '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
+                            '</div>',
+                            '<div class="form-group col-12">',
+                                '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
                         '<select class="modal-select data-input" name="account_type" data-field="account_type" disabled>',
-                        '<option value="Payroll">Payroll</option>',
-                        '<option value="Wallet">Wallet</option>',
-                        "</select>",
-                        "</div>",
-                        '<div class="form-group col-md-12">',   
-                        '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
-                        '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
-                        "</div>",
-                        "</div>",
+                                    '<option valuse="1">Master Account</option>',
+                                    '<option value="Payroll">Payroll</option>',
+                                    '<option value="Wallet">Wallet</option>',
+                                '</select>',
+                            '</div>',
+                            '<div class="form-group col-md-12">',
+                                '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
+                                '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
+                            '</div>',
+                        '</div>',
                     ].join("");
                 },
                 contentCreated: (me) => {
@@ -1115,14 +1116,11 @@ const TransferDialog = (() => {
                                         </div>`;
                                     to_account_info.innerHTML = div;
                                     if (
-                                        me.to_account_currency_code ==
-                                        me.currency_code
+                                        me.to_account_currency_code == me.currency_code
                                     ) {
                                         exchange_rate.classList.add("d-none");
                                     } else {
-                                        exchange_rate.classList.remove(
-                                            "d-none"
-                                        );
+                                        exchange_rate.classList.remove("d-none");
                                     }
                                 }
                             });
@@ -1145,8 +1143,7 @@ const TransferDialog = (() => {
                             p.account_type = me.account_type;
                             p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
-                            p.to_account_currency_code =
-                                me.to_account_currency_code;
+                            p.to_account_currency_code = me.to_account_currency_code;
                             p.id = me.dataOptions.id;
                             // console.log(1234, p);
 
