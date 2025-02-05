@@ -29,6 +29,7 @@ var EmployeeComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector(
         "#container_pagination"
     );
+    mThis.employee_id = null;
     mThis.store_filter = {};
     const div = mThis.self.querySelector("#_employee_list");
 
@@ -83,11 +84,17 @@ var EmployeeComponent = new (function () {
             sub_content.classList.remove("d-none");
             // mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
+
         mThis.btnPrintCV.onclick = function (e) {
             e.preventDefault();
-
-            window.print();
+            const op = {
+                employee_id:mThis.employee_id,
+            }
+            PrintCV.show(op);
+           
         };
+        
+        
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
         mThis.div_filter_fields
@@ -121,6 +128,7 @@ var EmployeeComponent = new (function () {
 
         mThis.initAlready = true;
     };
+    
 
     mThis.getFilterData = () => {
         const p = {};
@@ -428,6 +436,7 @@ var EmployeeComponent = new (function () {
         seeProfileInfo.forEach((link) => {
             link.addEventListener("click", (e) => {
                 const employeeId = e.target.dataset.id;
+                mThis.employee_id = employeeId;
                 const employeeData = data.find((emp) => emp.id == employeeId);
 
                 if (employeeData) {
@@ -3917,5 +3926,72 @@ const AddEmployeeDocumentDialog = (() => {
         dialog.show(op);
     };
 
+    return self;
+})();
+const PrintCV = (() => {
+    const self = {};
+    let cv_dialog = null;
+
+    self.show = (op) => {
+        cv_dialog =
+        cv_dialog ||
+            new GeneralDialog({
+                
+                cssClass: "modal-xl d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div name="_div_print_cv">
+
+                   
+
+                    </div>`,
+                    ].join("");
+                },
+                onPrepareForm: (me,data) => {
+                   
+                    
+                    employeeCV(me.controls._div_print_cv, data);
+        
+
+               
+                },
+                
+                buttons: [
+                    {
+                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            window.print(me.controls._div_print_cv.innerHTML);
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "Print CV",
+                    modifyTitle: "",
+                    targetProp: "emp_skill",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
+                        params: (op) => {
+                            return { id: op.employee_id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            console.log(123,res);
+                            
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        cv_dialog.show(op);
+    };
     return self;
 })();

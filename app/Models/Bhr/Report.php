@@ -722,7 +722,7 @@ class Report
     function getPrintEmployeeCV($filter, $ss = null)
     {
         $d = (object)$filter;
-        $emp_id = isset($d->emp_id) ? $d->emp_id : null;
+        $emp_id = $d->emp_id ?? $d->employee_id ?? null;
         $branch_id = isset($d->branch_id) ? $d->branch_id : (isset($d->campus_id) ? $d->campus_id : null);
         $query = DB::table('employees as emp')
             ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
