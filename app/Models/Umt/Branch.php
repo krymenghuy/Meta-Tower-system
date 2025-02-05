@@ -133,11 +133,18 @@ class Branch //extends Model
         $emp_id = $d->emp_id ?? $d->director_id ?? null;
         $branch = DB::table($table)->where('id',$id)->first();
         if(!$branch) return DV::error('Branch ID does not exist!');
-        $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+
+        try{
+            $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+        }catch(\Exception $e){
+            $emp = null;
+        }
         if(!$emp) return DV::error('Employee identity does not exist');
         $x = DB::table($table)->where('id', $id)->update(['director_id' => $emp_id]);
         return DV::depends(1,null,'Failed to update branch director');
     }
+  
+    
 
   
 }

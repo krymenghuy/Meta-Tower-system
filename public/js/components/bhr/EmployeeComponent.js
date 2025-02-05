@@ -3948,8 +3948,6 @@ const PrintCV = (() => {
                     ].join("");
                 },
                 onPrepareForm: (me,data) => {
-                   
-                    
                     employeeCV(me.controls._div_print_cv, data);
         
 
@@ -3958,17 +3956,17 @@ const PrintCV = (() => {
                 
                 buttons: [
                     {
-                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
-                        cssClass: "btn btn-sm btn-outline",
+                        label: '<span>Back</span>',
+                        cssClass: "btn btn-sm btn-warning",
                         click: (me) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
-                        cssClass: "btn btn-sm btn-outline",
+                        label: '<span>Print</span>',
+                        cssClass: "btn btn-sm btn-success",
                         click: (me) => {
-                            window.print(me.controls._div_print_cv.innerHTML);
+                            windowPrintCV(me.controls._div_print_cv.innerHTML,null);
                         },
                     },
                 ],
@@ -3976,11 +3974,11 @@ const PrintCV = (() => {
                 prepareFormOptions: {
                     createTitle: "Print CV",
                     modifyTitle: "",
-                    targetProp: "emp_skill",
+                    targetProp: "data",
                     api: {
                         endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
                         params: (op) => {
-                            return { id: op.employee_id }; // Pass ID to fetch data for edit
+                            return { employee_id: op.employee_id }; 
                         },
                         onResponse: (me, res) => {
                             console.log(123,res);
