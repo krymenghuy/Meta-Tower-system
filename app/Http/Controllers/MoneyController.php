@@ -10,7 +10,7 @@ use App\Models\ExchangeRateProvider;
 
 class MoneyController extends Controller
 {
-    
+
     //Exhcnage rate update period = {'intra-day','daily','monthly'}
     protected static $update_period ='daily';
     //Create/Update currency
@@ -40,7 +40,7 @@ class MoneyController extends Controller
         $data = $cur->getList($ss);
         return JDV::result($data);
     }
-     
+
     function getCurrencyDetails(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
@@ -67,8 +67,8 @@ class MoneyController extends Controller
         $data = $x->getFormOptions($id,$ss);
         return JDV::result($data);
     }
-  
-    
+
+
     function getExchangeRateDetails(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
@@ -86,7 +86,7 @@ class MoneyController extends Controller
         $res = $x->delete($id);
         return JDV::raw($res);
     }
-  
+
     function saveExchangeRate(Request $req){
             $ss = AuthService::verifyAuth($req,-1);
             if($ss->status_code !=200) return JDV::raw($ss);
@@ -103,12 +103,19 @@ class MoneyController extends Controller
             $data = $x->getList($req->all(),$ss);
             return JDV::result($data);
     }
-   
+
     function options_x_month(Request $req){
             $ss = AuthService::verifyAuth($req,-1);
             if($ss->status_code !=200) return JDV::raw($ss);
             $data = ExchangeRateProvider::options_x_month($ss);
             return JDV::result($data);
     }
-  
+
+    function options_currency(Request $req){
+        $ss = AuthService::verifyAuth($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss);
+        $data = Currency::options_currency($ss);
+        return JDV::result($data);
+}
+
 }

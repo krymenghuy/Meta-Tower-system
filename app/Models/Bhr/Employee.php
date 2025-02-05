@@ -39,7 +39,7 @@ class Employee //extends Model
          'action_name'=>$action_name,
          'description'=>$message
        ];
-       saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);   
+       saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
     }
 
     function checkUniqueEmployeeByPhone($phone_number, $id = null)
@@ -102,7 +102,7 @@ class Employee //extends Model
         $checkUnique = null;
         $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
-        
+
         $inputs = $res->values;
         $d = (object) $inputs;
         if($d->currency_code !== Money::$base_currency) return DV::error('The salary currency must be ??::'.Money::$base_currency);
@@ -142,7 +142,7 @@ class Employee //extends Model
                 if(!$position) return DV::error('Position ID does not exist');
                 $inputs['salary'] = $position->salary ?? 0;
             }
-           
+
         } elseif ($d->emp_type_id != '3') {
             $inputs['salary'] = $inputs['salary'] ?? 0;
         }
@@ -854,6 +854,7 @@ class Employee //extends Model
             ],
 
             'nationalities' => GeneralSettings::options_nationality($ss),
+            'currency_codes' => Money::options_currency($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
@@ -933,7 +934,7 @@ class Employee //extends Model
         $d = (object)$arr;
         $remarks = $d->remarks;
         $event_date = $d->event_date;
-        
+
         $emp_type_info = DB::table('emp_types')->where('id',$emp_type_id)->selectRaw('id,name,h_order')->first();
         if(!$emp_type_info) return DV::error('The provided employee type does not exist');
         $h_order = $emp_type_info->h_order;
@@ -1301,7 +1302,7 @@ class Employee //extends Model
 
     static function createPromotion($arr, $ss = null)
     {
-          
+
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',

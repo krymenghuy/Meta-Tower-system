@@ -11,17 +11,6 @@ var PayrollComponent = new (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_payroll");
 
-    // const formattedNumber = (number) => {
-    //     number = Number(number) || 0;
-    //     return number
-    //         .toLocaleString('en-US', {
-    //             useGrouping: true,
-    //             minimumFractionDigits: 2,
-    //             maximumFractionDigits: 2,
-    //         })
-    //         .replace(/,/g, ' ');
-    // };
-
     const monthNames = [
         "Jan",
         "Feb",
@@ -92,13 +81,9 @@ var PayrollComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(
-                    data.total,
-                    data.currency_code
-                )}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.total,data.currency_code)}</p>`;
             },
         },
-
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
@@ -646,9 +631,10 @@ const AddPayRollListDailog = (() => {
                             <label for="end_date" class="form-label" vslang="titles.End Date"></label>
                             <input name="end_date" class="form-control data-input form_input" data-field="end_date" />
                         </div>
-                       <div class="form-group col-4">
-                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                        <div class="form-group col-4">
+                            <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
+                            <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                            </select>
                         </div>
                         <div class="form-group col-4">
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
@@ -665,7 +651,14 @@ const AddPayRollListDailog = (() => {
                     DateTimePicker.init(me.controls.end_date);
                 },
 
-                configSelect: [],
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    }
+                ],
 
                 buttons: [
                     {
@@ -731,8 +724,7 @@ const AddPayRollListDailog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(1234567, data);
-
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
                     const { payrolls } = data;
                     if (payrolls) {
                         me.controls.name.value = payrolls.name;
@@ -740,10 +732,7 @@ const AddPayRollListDailog = (() => {
                         me.controls.year.value = payrolls.year;
                         me.controls.start_date.value = payrolls.start_date;
                         me.controls.end_date.value = payrolls.end_date;
-                        me.controls.currency_code.value =
-                            payrolls.currency_code;
-                        me.controls.exchange_rate.value =
-                            payrolls.exchange_rate;
+                        me.controls.exchange_rate.value = payrolls.exchange_rate;
                         me.controls.p_number.value = payrolls.p_number;
                         // me.controls.total.value = payrolls.total;
                     } else {
@@ -788,14 +777,7 @@ const AddPayRollListDailog = (() => {
 
                     LocaleManager.translateZone(me.divModal);
                 },
-                configSelect: [
-                    {
-                        name: "currency_code",
-                        data: "currency_codes",
-                        textField: "code",
-                        valueField: "code",
-                    },
-                ],
+
             });
 
         dialogAdd.show(op);
