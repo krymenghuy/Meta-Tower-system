@@ -249,11 +249,14 @@ const FindPersonDialog = (()=>{
                   } 
                   if(me.dataOptions.singleSelect) p=p[0];
                   if(me.dataOptions.role == 'employee'){
-                     p.branch_id = me.dataOptions.branch_id;
+                     p.id = me.dataOptions.branch_id;
+                     p.emp_id = me.dataOptions.emp_id;
+                     console.log(10,p);
+                     
                      vsapi.call(`${main_view.base_url}/api/branch/set-director`,p,null).then(res => {
                         if(res.status_code === 200)
                         {
-                           cv_interact.success('success!');
+                           cv_interact.success('Employee has been set to director success!');
                         }
                      });
                   }

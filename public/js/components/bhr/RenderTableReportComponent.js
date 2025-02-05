@@ -189,7 +189,8 @@ function employeeBenefitsReport(div, data = null) {
 function employeeCV(div1, d = null) {
     const div = div1 instanceof jQuery ? div1 : $(div1);
     
-    const data = d.header ? d:d.data[0];
+    const data = d.data[0];
+    
     let html = "";
     if (data) {
         html = `<title>Employee CV</title>
@@ -380,6 +381,48 @@ this.viewEmployeeCV = (id, menuLink) => {
             }
         });
 };
+function windowPrintCV(html,style)
+{
+    if(html)
+    {
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>CV Print</title>
+                
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print_invoice.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/font-awesome/6.2.0/css/all.min.css" media="print//"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css" media="print//"/>
+                <style>
+                    *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:14px;
+                    }
+                    ${style}
+                </style>
+            </head>
+            <body>
+                ${html.replace(/table-responsive/g,'')}
+            </body>
+        </html>`);
+        myWindow.document.close();
+        
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },200);
+    }
+}
+
 
 function paySlipReport(div, d = null) {
     const data = d.data[0] || null;
