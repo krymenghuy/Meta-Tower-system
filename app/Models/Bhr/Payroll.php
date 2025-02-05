@@ -1212,8 +1212,7 @@ class Payroll
         $pl_id = saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1,false);
         return DV::depends($pl_id,null,'Failed to add staff to payroll list');
     }
-
-
+ 
     static function getResigInfo($emp_id, $payroll_start_date, $payroll_end_date)
     {
         $q_date = DBX::convertToDate('r.effective_date');
