@@ -32,7 +32,7 @@ class Branch //extends Model
         $audit_info = DBX::query_user_info('b','updated_at',true,'created_at');
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
 
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
+        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.director_id,b.branch_type,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
         $count_query = clone $query;
         $count = $count_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
