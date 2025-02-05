@@ -29,6 +29,7 @@ var EmployeeComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector(
         "#container_pagination"
     );
+    mThis.employee_id = null;
     mThis.store_filter = {};
     const div = mThis.self.querySelector("#_employee_list");
 
@@ -83,11 +84,17 @@ var EmployeeComponent = new (function () {
             sub_content.classList.remove("d-none");
             // mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
+
         mThis.btnPrintCV.onclick = function (e) {
             e.preventDefault();
+            const op = {
+                employee_id:mThis.employee_id,
+            }
+            PrintCV.show(op);
 
-            window.print();
         };
+
+
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
         mThis.div_filter_fields
@@ -121,6 +128,7 @@ var EmployeeComponent = new (function () {
 
         mThis.initAlready = true;
     };
+
 
     mThis.getFilterData = () => {
         const p = {};
@@ -428,6 +436,7 @@ var EmployeeComponent = new (function () {
         seeProfileInfo.forEach((link) => {
             link.addEventListener("click", (e) => {
                 const employeeId = e.target.dataset.id;
+                mThis.employee_id = employeeId;
                 const employeeData = data.find((emp) => emp.id == employeeId);
 
                 if (employeeData) {
@@ -1502,18 +1511,12 @@ var EmployeeComponent = new (function () {
                             <td><small>${d.qty}</small></td>
                             <td>
                                 <small>
-                                    ${VSMoney.formatAmount(
-                                        d.amount,
-                                        d.currency_code
-                                    )}
+                                    ${VSMoney.formatAmount(d.amount,d.currency_code)}
                                 </small>
                             </td>
                             <td>
                                 <small>
-                                    ${VSMoney.formatAmount(
-                                        d.allowance,
-                                        d.currency_code
-                                    )}
+                                    ${VSMoney.formatAmount(d.allowance,d.currency_code)}
                                 </small>
                             </td>
                             <td class="text-start">
@@ -2485,12 +2488,12 @@ var EmployeeComponent = new (function () {
         EmployeeDialog.show(op);
     };
     mThis.view_see_info = (id, menuLink) => {
-        const card = VSUtil.closestLimited(menuLink, ".employee-card");    
+        const card = VSUtil.closestLimited(menuLink, ".employee-card");
         const detail= card.querySelector('.see-detail');
         console.log(123,detail);
         detail.click();
     };
-    
+
     mThis.CreateContract = (id,menuLink) => {
         const op = {
             id: id,
@@ -3122,9 +3125,7 @@ const AddTaxAllowance = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                            <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
-                                <option value="${main_view.national_currency}">${main_view.national_currency}</option>
-                                <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
+                            <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
                             </select>
                         </div>
                         <div class="form-group col-12">
@@ -3193,15 +3194,17 @@ const AddTaxAllowance = (() => {
                         },
                     },
                 },
-                // configSelect: [
-
-                //     {
-                //         name: "currency_code",
-                //         data: "currency_codes",
-                //         textField: "code",
-                //         valueField: "code",
-                //     }
-                // ],
+                onPrepareForm: (me, data) => {
+                    me.controls.currency_code.value = VSMoney.getCurrency().code;
+                },
+                configSelect: [
+                    {
+                        name: "currency_code",
+                        data: "currency_codes",
+                        textField: "code",
+                        valueField: "code",
+                    }
+                ],
             });
 
         dialog.show(op);
@@ -3917,5 +3920,72 @@ const AddEmployeeDocumentDialog = (() => {
         dialog.show(op);
     };
 
+    return self;
+})();
+const PrintCV = (() => {
+    const self = {};
+    let cv_dialog = null;
+
+    self.show = (op) => {
+        cv_dialog =
+        cv_dialog ||
+            new GeneralDialog({
+
+                cssClass: "modal-xl d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div name="_div_print_cv">
+
+
+
+                    </div>`,
+                    ].join("");
+                },
+                onPrepareForm: (me,data) => {
+
+
+                    employeeCV(me.controls._div_print_cv, data);
+
+
+
+                },
+
+                buttons: [
+                    {
+                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
+                        click: (me) => {
+                            window.open('', '_blank');
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "Print CV",
+                    modifyTitle: "",
+                    targetProp: "emp_skill",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
+                        params: (op) => {
+                            return { id: op.employee_id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            console.log(123,res);
+
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        cv_dialog.show(op);
+    };
     return self;
 })();

@@ -841,36 +841,34 @@ const DepositDialog = (() => {
                 createContent: () => {
                     return [
                         '<div class="row">',
-                            '<div class="form-group col-6">',
-                                '<label for="balance" class="form-label" vslang="titles.Amount"></label>',
-                                '<input name="balance" class="form-control data-input" data-field="balance"  />',
-                            '</div>',
-                            '<div class="form-group col-6">',
-                              '<label for="currency" class="form-label" vslang="titles.Currency"></label>',
-                              '<input name="currency" class="data-input form-control" data-field="currency_code" disabled/>',
-                            '</div>',
-                            '<div class="form-group col-12">',
-                              '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
-                              '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
-                            '</div>',
-
-                            '<div class="form-group col-12">',
-                               '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
-                               '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
-                            '</div>',
-                            '<div class="form-group col-12">',
-                                '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
+                        '<div class="form-group col-6">',
+                        '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
+                        '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
+                        '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-12">',
+                        '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',
                         '<select class="modal-select data-input" name="account_type" data-field="account_type" disabled>',
-                                    '<option valuse="1">Master Account</option>',
-                                    '<option value="Payroll">Payroll</option>',
-                                    '<option value="Wallet">Wallet</option>',
-                                '</select>',
-                            '</div>',
-                            '<div class="form-group col-md-12">',
-                                '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
-                                '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
-                            '</div>',
-                        '</div>',
+                        '<option value="Payroll">Payroll</option>',
+                        '<option value="Wallet">Wallet</option>',
+                        "</select>",
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="amount" class="form-label" vslang="titles.Amount"></label>',
+                        '<input name="amount" class="form-control data-input" data-field="amount" />',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="currency_code" class="form-label" vslang="titles.Currency"></label>',
+                        '<input name="currency_code" class="data-input form-control" data-field="currency_code" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-md-12">',
+                        '<label for="remarks" class="form-label" vslang="titles.Remarks"></label>',
+                        '<textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>',
+                        "</div>",
+                        "</div>",
                     ].join("");
                 },
                 contentCreated: (me) => {
@@ -910,7 +908,7 @@ const DepositDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/account/save",
+                                        "/hr/account/deposit",
                                     ].join(""),
                                     p,
                                     btn,
@@ -1181,7 +1179,9 @@ const TransferDialog = (() => {
                                             },
                                             function (confirmation) {
                                                 if (confirmation) {
-                                                    // console.log('Transfer data to be sent:', p);
+                                                    p.from_account = {'account_number':p.account_number}
+                                                    p.to_account = {'account_number':p.to_account_number}
+                                                    // console.log('Transfer data to be sent:', JSON.stringify(p));
 
                                                     vsapi
                                                         .call(

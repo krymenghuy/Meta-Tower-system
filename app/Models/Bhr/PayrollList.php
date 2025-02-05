@@ -24,38 +24,32 @@ class PayrollList
         $this->userInfo = $userInfo;
     }
 
-    // function addStaff($arr = [], $id = null, $ss = null)
-    // {
-    //     $id = $id ?? $this->id;
-    //     $ss = $ss ?? $this->userInfo;
+    function addDeduction($arr = [], $id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
 
-    //     $v_rule = [
-    //         'payroll_id' => '1|number|exists=payrolls.id',
-    //         'emp_id' => '1|number',
-    //         // 'salary' => '0|number',
-    //         // 'benefit' => '0|number',
-    //         'deduction' => '0|number',
-    //         'disbursed' => '0|number|default = 0',
-    //         // 'tax_base' => '0|number',
-    //         // 'allowance' => '0|number',
-    //         // 'tax_rate' => '0|number',
-    //         // 'total_salary' => '0|number',
-    //     ];
+        $v_rule = [
+            'payroll_id' => '1|number|exists=payrolls.id',
+            'emp_id' => '1|number',
+            'deduction' => '1|number',
 
-    //     $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-    //     if ($res->error) {
-    //         return DV::error($res->error);
-    //     }
+        ];
 
-    //     $inputs = $res->values;
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
 
-    //     $id = saveData($ss, 'payroll_list', ['id' => $id], $inputs, [], 1);
-    //     if ($id > 0) {
-    //         return DV::depends(1, ['payroll_list' => $inputs, 'id' => $id]);
-    //     }
+        $inputs = $res->values;
 
-    //     return DV::error('Error saving payroll');
-    // }
+        $id = saveData($ss, 'payroll_list', ['id' => $id], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['payroll_list' => $inputs, 'id' => $id]);
+        }
+
+        return DV::error('Error saving payroll');
+    }
 
     // function getList($arr, $ss)
     // {
@@ -352,7 +346,7 @@ class PayrollList
             'payroll_list' => $payroll_list,
         ];
     }
-  
+
     // function disburseOne($id, $ss = null)
     // {
     //     $ss = $ss ?? $this->userInfo;
@@ -426,7 +420,7 @@ class PayrollList
         $x = DB::table('payroll_list as l')->where('l.id', $id)->value('disbursed');
         return $x == 1;
     }
-    
+
     function paySlip($id, $ss)
     {
         $ss = $ss ?? $this->userInfo;

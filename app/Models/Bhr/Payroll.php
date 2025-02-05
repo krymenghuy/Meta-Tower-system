@@ -284,10 +284,11 @@ class Payroll
          $disburse_id = self::createDisburseTrack($payroll,$payroll_id,$ss);
          if(!$disburse_id) return DV::error('Failed to create disbursement track!');
          $bin_disburse_id = hex2bin($disburse_id);
-
+         DB::beginTransaction();
          foreach ($payrollEntries as &$emp) {
              $payroll_account = Employee::getPayrollAccount($emp->emp_id);
              if (!$payroll_account) {
+                DB::rollback();
                  return DV::error('Staff named ?? does not have payroll account yet!::' . $emp->name);
              } else {
                  $emp->account_id = $payroll_account->account_id;
@@ -302,6 +303,7 @@ class Payroll
                  $success_count++;
                  DB::table('payroll_list')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->update(['disbursed' => 1]);
              } else {
+                DB::rollback();
                  $failed_count++;
                  $failed_emps[] = [
                      'emp_id' => $emp->emp_id,
@@ -312,8 +314,13 @@ class Payroll
                  ];
              }
          }
-         if ($success_count > 0) {
-             DB::table('payrolls')->where('id', $payroll_id)->update(['disbursed' => 1, 'last_disburse_id'=>$bin_disburse_id]);
+         if($failed_count > 0){
+             DB::rollback();
+             return DV::error('Failed to disburse the following staffs::' . json_encode($failed_emps));
+
+         }else{
+            DB::table('payrolls')->where('id', $payroll_id)->update(['disbursed' => 1, 'last_disburse_id'=>$bin_disburse_id]);
+            DB::commit();
          }
          return DV::depends(1, ['success_count' => $success_count, 'failed_count' => $failed_count, 'failed_emps' => $failed_emps]);
      }

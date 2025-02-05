@@ -18,7 +18,7 @@ var PayrollListComponent = new (function () {
     mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
     mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
     mThis.div_payrollList = mThis.self.querySelector('#_payrollList_list');
- 
+
     mThis.cols = [
 
         {
@@ -38,7 +38,6 @@ var PayrollListComponent = new (function () {
                                 <span class="text-nowrap">${data.emp_name ?? ''}</span>
                                 <br/>
                                 <small class="text-dark">${data.emp_position ?? ''}</small>
-
                             </div>
                         </div>`;
             }
@@ -332,12 +331,12 @@ var PayrollListComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "pay_slip",
                 },
-                {
-                    html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
-                    icon:`<i class="fa-solid fa-square-check"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"disburse_payroll_list"
-                },
+                // {
+                //     html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
+                //     icon:`<i class="fa-solid fa-square-check"></i>`,
+                //     cssClass:"border-bottom pb-2",
+                //     name:"disburse_payroll_list"
+                // },
                 {
                     html:'<span class="ps-2  " vslang="titles.Add Deduction">Add Deduction</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
@@ -680,7 +679,7 @@ var PayrollListComponent = new (function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/payroll/disburse-one`, p, false, false, false).then(res => {
         console.log(3994, p);
-                    
+
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
@@ -860,7 +859,7 @@ const AddDeductionDialog = (() => {
                         const p = me.getData();
                         p.id = me.dataOptions.id; // Get "id" from op
 
-                        vsapi.call([main_view.base_url, '/hr/payroll/staff/save'].join(''), p, btn, null)
+                        vsapi.call([main_view.base_url, '/hr/payroll/staff/add-deduction'].join(''), p, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
                                     me.hide(true, p);

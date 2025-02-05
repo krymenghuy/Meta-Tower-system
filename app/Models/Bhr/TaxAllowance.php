@@ -42,17 +42,17 @@ class TaxAllowance
         $inputs = $res->values;
         $qty = $inputs['qty'] ?? 1;
         $currency_code = $inputs['currency_code'] ?? null;
-        if($currency_code != Money::$national_currency) return DV::error('Tax Allowance must be national currency (??)::'.Money::$national_currency);   
+        if($currency_code != Money::$national_currency) return DV::error('Tax Allowance must be national currency (??)::'.Money::$national_currency);
         $inputs['allowance'] = $qty * $inputs['amount'];
 
         $id = saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['tax_allowances' => $inputs, 'id' => $id], 'Failed to save allowance');
     }
- 
+
     function getList($arr, $ss)
     {
         $d = (object) $arr;
-         
+
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -63,13 +63,13 @@ class TaxAllowance
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-         
+
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
             ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.emp_id', $emp_id);
- 
+
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('em.name', 'like', '%' . $search_value . '%');
@@ -87,13 +87,13 @@ class TaxAllowance
         $d = (object) $arr;
         $emp_id = $d->emp_id ?? null;
         $search_value = $d->search_value ?? null;
-         
+
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
             ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.currency_code,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.emp_id', $emp_id);
- 
+
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('em.name', 'like', '%' . $search_value . '%');

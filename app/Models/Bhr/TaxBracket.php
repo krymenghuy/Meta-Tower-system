@@ -105,7 +105,7 @@ class TaxBracket
             $tax_bracket = self::getDetails($id, $ss);
         }
         return (object) [
-
+            'currency_codes' => Money::options_currency($ss),
             'tax_bracket' => $tax_bracket,
         ];
 

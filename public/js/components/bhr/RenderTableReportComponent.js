@@ -186,9 +186,10 @@ function employeeBenefitsReport(div, data = null) {
     togglePanelTable(div);
     HtmlString = html;
 }
-function employeeCV(div, d = null) {
-    const data = d.data[0] || null;
-
+function employeeCV(div1, d = null) {
+    const div = div1 instanceof jQuery ? div1 : $(div1);
+    
+    const data = d.header ? d:d.data[0];
     let html = "";
     if (data) {
         html = `<title>Employee CV</title>
@@ -353,7 +354,7 @@ function employeeCV(div, d = null) {
                 </div>
             </div>`;
     }
-
+    
     div.html(html);
     togglePanelTable(div);
     HtmlString = html;
@@ -3305,7 +3306,9 @@ function returnEmptyTD(length) {
  * This function toggle filter on report component
  */
 function togglePanelTable(div) {
+    if(!div || div.length===0 ) return;
     let zoom = 100;
+    
     div.find("table.table").on("wheel", function (e) {
         if (e.originalEvent.shiftKey) {
             e.originalEvent.deltaY > 0 ? (zoom -= 0.7) : (zoom += 0.7);
