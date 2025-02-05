@@ -26,6 +26,10 @@ const FindContext = (()=>{
             case 'employee':
                {
                    return [
+                     {
+                        title:"Emp_ID",
+                        data:"id"
+                     },
                     {
                         title:"ID",
                         data:"code"
@@ -168,7 +172,7 @@ const FindPersonDialog = (()=>{
                         tds.forEach(td=>{
                            item[td.dataset.name] = td.textContent;
                         });
-                       
+                        item.emp_id = tr.dataset.id;
                         item.id = tr.dataset.id;
                         ps.push(item);
                      }
@@ -242,16 +246,19 @@ const FindPersonDialog = (()=>{
                 cssClass:"btn btn-primary",
                 click:(me)=>{
                   me.context = me.context || FindContext.getContext(me.dataOptions.role);  
+                  
                   let p = me.getSelection(me.controls.tblPersons,me.context.columns);
+
                   if (!p || !p[0]){
                      cv_interact.warning('No one is selected!');
                      return;
                   } 
+
                   if(me.dataOptions.singleSelect) p=p[0];
                   if(me.dataOptions.role == 'employee'){
+                     
                      p.id = me.dataOptions.branch_id;
-                     p.emp_id = me.dataOptions.emp_id;
-                     console.log(10,p);
+                     console.log(19,p);
                      
                      vsapi.call(`${main_view.base_url}/api/branch/set-director`,p,null).then(res => {
                         if(res.status_code === 200)
@@ -260,14 +267,13 @@ const FindPersonDialog = (()=>{
                         }
                      });
                   }
-                  
+
                   me.hide(true,p);
                 }
               }  
             ],
         
          });
-        
         dialog.show(op);
      }
 
