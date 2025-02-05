@@ -308,12 +308,13 @@ class AuthService {
         $default_app =null;
         $default_app_id = $default_app_id ?? $row->default_app_id;
         $apps = User::getAccessibleApps($row->id);
+        \Log::info(json_encode($apps)); 
  
         $app_count = isset($apps[0])? $apps->count() : 0;
         if($app_count === 0) return DV::error('It seems you dont have access to any applications');
         if($app_count === 1 && !$default_app_id){
             $default_app = $apps[0];
-            $default_app_id = $apps[0]->id;
+            $default_app_id = $apps[0]->id ?? $apps[0]->app_id;
         } else if ($app_count > 1){
              $founds = $apps->filter(function($x) use($default_app_id){
                 return $x->app_id === $default_app_id;
