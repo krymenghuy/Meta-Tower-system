@@ -3952,17 +3952,17 @@ const PrintCV = (() => {
 
                 buttons: [
                     {
-                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>',
-                        cssClass: "btn btn-sm btn-outline",
+                        label: '<span>Back</span>',
+                        cssClass: "btn btn-sm btn-warning",
                         click: (me) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
-                        cssClass: "btn btn-sm btn-outline",
+                        label: '<span>Print</span>',
+                        cssClass: "btn btn-sm btn-success",
                         click: (me) => {
-                            window.open('', '_blank');
+                            windowPrintCV(me.controls._div_print_cv.innerHTML,null);
                         },
                     },
                 ],
@@ -3970,7 +3970,7 @@ const PrintCV = (() => {
                 prepareFormOptions: {
                     createTitle: "Print CV",
                     modifyTitle: "",
-                    targetProp: "emp_skill",
+                    targetProp: "data",
                     api: {
                         endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
                         params: (op) => {

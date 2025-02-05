@@ -32,7 +32,7 @@ class Branch //extends Model
         $audit_info = DBX::query_user_info('b','updated_at',true,'created_at');
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
 
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
+        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.director_id,b.branch_type,b.name,b.name_kh,b.address_kh,b.address,b.shortcut,email,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,'.$audit_info);
         $count_query = clone $query;
         $count = $count_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -133,11 +133,18 @@ class Branch //extends Model
         $emp_id = $d->emp_id ?? $d->director_id ?? null;
         $branch = DB::table($table)->where('id',$id)->first();
         if(!$branch) return DV::error('Branch ID does not exist!');
-        $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+
+        try{
+            $emp = DB::table($emp_table)->where('id',$emp_id)->selectRaw('id,name,code')->first();
+        }catch(\Exception $e){
+            $emp = null;
+        }
         if(!$emp) return DV::error('Employee identity does not exist');
         $x = DB::table($table)->where('id', $id)->update(['director_id' => $emp_id]);
         return DV::depends(1,null,'Failed to update branch director');
     }
+  
+    
 
   
 }
