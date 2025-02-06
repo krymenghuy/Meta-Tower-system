@@ -35,8 +35,8 @@ class Leave
             'remarks' => '0|string|250',
             'status_id' => '0|choice|1,2,3|default=1',
         ];
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
