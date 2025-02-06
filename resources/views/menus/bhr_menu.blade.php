@@ -376,7 +376,7 @@ function v_display($mod_id, $module_ids = null)
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(242); ?>>
-                            <a href="AccountMenagmentComponent" modid="242" class="menu-item kt-menu__link">
+                            <a href="AccountManagementComponent" modid="242" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/mobile_setting.svg') }}" />
