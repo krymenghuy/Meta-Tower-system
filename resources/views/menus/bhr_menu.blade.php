@@ -166,8 +166,8 @@ function v_display($mod_id, $module_ids = null)
         </div>
 
         <ul class="kt-menu__nav" id="_dms_aside_menus">
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(200); ?>>
-                <a href="DashboardComponent" modid="200" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
+                <a href="DashboardComponent" modid="238" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
@@ -186,7 +186,6 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" />                    </span>
  
                                 <span class="kt-menu__link-text font-color " vslang="menus.Employees"></span>
- 
                             </a>
             </li>
  
