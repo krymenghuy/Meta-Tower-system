@@ -401,9 +401,9 @@ var EmployeeComponent = new (function () {
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3 pe-3">
-                                    <div class="text-dark">Joining Date : <span class="text-muted">${
+                                    <small class="text-dark">Joining Date: <span class="text-muted">${
                                         d.joining_date || "?"
-                                    }</span></div>
+                                    }</span></small>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
                                         d.id
                                     }" aria-haspopup="true" aria-expanded="false">
@@ -589,7 +589,7 @@ var EmployeeComponent = new (function () {
                                         }</p>
                                     </div>
                                     <div class="d-flex">
-                                        <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
+                                        <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport Expiry</p>
                                         <p class="pl-5 pr-2">:</p>
                                         <p class="text-nowrap text-white">${
                                             data.passport_expiry_date ??

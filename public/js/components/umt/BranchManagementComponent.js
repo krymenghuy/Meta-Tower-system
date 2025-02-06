@@ -333,7 +333,7 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <p class="text-truncate m-0" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="`, branch.address,`">
-                                <span class="text-capitalize">`, branch.address,`</span>
+                                <span class="text-capitalize">`, branch.address ? branch.address:'<span class="text-danger">Not yet</span>',`</span>
                             </p>
                         </div>
                     </div>
