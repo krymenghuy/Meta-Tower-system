@@ -12,8 +12,11 @@
                 </div> --}}
                 <div class="d-flex justify-content-between w-100 gap-2">
                     <div class="d-flex align-items-start w-50">
-                        <input type="text" class="form-control filter-field btn_search" id="_search_uninform_leave"
-                            placeholder="Search">
+                        <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_search_uninform_leave"
+                            placeholder="search...">
+                            <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                    </div>
                     </div>
                     <div class="d-flex align-items-start w-50">
                         <select id="el_wark_shift" class="data-input filter-field " data-field="status"></select>

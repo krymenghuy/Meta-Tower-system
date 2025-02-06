@@ -3,8 +3,11 @@
         <div class="d-flex align-items-start w-100">
             <div class="d-flex align-items-center w-50">
                 <div class="d-flex align-items-start w-75">
-                    <input type="text" class="form-control btn_search filter-field" id="_search_emp_movement"
-                        placeholder="Search">
+                    <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_search_emp_movement" placeholder="Search...">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                    </div>
+                    
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end w-50 gap-3">

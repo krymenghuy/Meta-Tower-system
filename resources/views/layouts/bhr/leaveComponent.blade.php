@@ -29,10 +29,11 @@
         </div>
         <div class="d-block w-100 mt-3">
             <div class="d-flex justify-content-between w-100">
-                <div class="d-flex align-items-center" style="min-width: 300px;">
-                    <input type="text" class="form-control filter-field btn_search" id="_search_leave"  placeholder="Search here....">
+                <div class="d-flex align-items-center position-relative" style="min-width: 300px;">
+                    <input type="text" class="form-control filter-field btn_search ps-5" id="_search_leave" placeholder="Search here....">
+                    <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-4"></i> 
                 </div>
-                <button type="button" class="btn_add d-flex gap-2" id="_btnAddLeave">
+                <button type="button" class="btn_add d-flex gap-2 align-items-center" id="_btnAddLeave">
                     <i class="fa-solid fa-person-walking-arrow-right fs-5 text-white"></i>
                     <span>Leave Request</span>
                 </button>

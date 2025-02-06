@@ -2,8 +2,10 @@
     <div id="sub_content_account" class="p-0">
         <div class="d-flex p-3 justify-content-between rounded-2 shadow" id="_divFilter">
                 <div class="d-flex align-items-center w-25 gap-2 pl-3">
-                    <input type="text" class="form-control filter-field btn_search" data-field="search_value"
-                        id="_sdl_search_account" placeholder="Search here">
+                    <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_sdl_search_account" placeholder="Search...">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center gap-2 w-25">
                     <select id="el_sort_by_department" class="data-input filter-field"

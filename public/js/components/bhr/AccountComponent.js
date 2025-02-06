@@ -1,4 +1,4 @@
-var AccountMenagmentComponent = (function () {
+var AccountManagementComponent = (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_accountComponent");
@@ -1209,7 +1209,7 @@ const TransferDialog = (() => {
                                                                 cv_interact.success(
                                                                     formattedData
                                                                 );
-                                                                AccountMenagmentComponent.AccountListView.showPage();
+                                                                AccountManagementComponent.AccountListView.showPage();
                                                                 me.hide(false);
                                                             } else {
                                                                 cv_interact.error(
