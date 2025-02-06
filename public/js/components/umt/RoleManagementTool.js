@@ -1209,7 +1209,12 @@ this.ModulePanel = new function(){
                ].join('');
               },
               //showCancelButton:true,
-              buttons:[
+               buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => me.hide(false),
+                },
                    {
                      label:"<span>Save</span>",
                      click:(me,dataOptions, divModal)=>{
@@ -1504,7 +1509,12 @@ this.PermissionPanel = new function(){
                 me.org_actions = d.actions; //remember original actions if any , especially useful in case of Editing existing permission
              } 
            },
-           buttons:[
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => me.hide(false),
+                },
                 {
                   label:"<span>Save</span>",
                   click:(me,btn, divModal)=>{

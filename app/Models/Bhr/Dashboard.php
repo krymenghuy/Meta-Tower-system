@@ -94,7 +94,9 @@ class Dashboard
             ->distinct('ew.id')
             ->count('ew.id');
         $exit_form_count = DB::table('exit_forms as ef')
-            ->count('id');
+        ->join('employees as emp', 'ef.emp_id', '=', 'emp.id')
+        ->where('emp.status_id', 20)
+        ->count();
 
 
         return (object) [

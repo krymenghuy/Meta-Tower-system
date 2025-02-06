@@ -144,6 +144,16 @@ var EmployeeBenefitComponent = new (function () {
                 },
             });
         };
+        mThis.btnImport.onclick = (e) => {
+            e.preventDefault();
+            EmployeeBenefitImportDialog.show({
+                onClose: () => {
+                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+                },
+            });
+            console.log(383838,);
+            
+        };
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
         const sh_parent = pr_tbl;

@@ -1225,10 +1225,6 @@ const TransferDialog = (() => {
                                                                     "Error in processing transfer"
                                                             );
                                                         });
-                                                } else {
-                                                    cv_interact.info(
-                                                        "Transfer cancelled!"
-                                                    );
                                                 }
                                             }
                                         );
