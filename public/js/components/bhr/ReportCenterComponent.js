@@ -427,11 +427,11 @@ var ReportCenterComponent = new (function () {
                             all_text = null,
                             default_id = null;
                         if (
-                            code === "total_student_payment_history" &&
-                            item.text == "level"
+                            code === "print_employee_CV" &&
+                            item.text == "employee_name"
                         ) {
-                            has = true;
-                            all_text = "All Level";
+                            
+                            default_id = data[0]?.id;
                         } else if (
                             code === "income_by_class" &&
                             item.text == "level"
@@ -447,15 +447,7 @@ var ReportCenterComponent = new (function () {
                         } else if (code === "referral" && item.text == "name") {
                             console.log(1234, item.api);
                         }
-                        VSUtil.setComboItems(
-                            el,
-                            data || [],
-                            item.value,
-                            item.text,
-                            has,
-                            all_text,
-                            null
-                        );
+                        VSUtil.setComboItems(el,data || [],item.value,item.text,'','All',default_id);
                         if (el.hasClass("fee_type_id")) {
                             el.find("option").each(function () {
                                 const option = this;

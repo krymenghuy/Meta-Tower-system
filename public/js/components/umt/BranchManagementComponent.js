@@ -541,7 +541,7 @@ var BranchManagementComponent = new function(){
                     <div class="col" >
                         <div class="d-block" >
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">`,branch.director_name,`</span>
+                                <span class="text-capitalize">`,branch.director_name?branch.director_name: '<span class="text-danger">Not yet</span>',`</span>
                             </p>
                         </div>
                     </div>
@@ -558,7 +558,7 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <p class="text-truncate m-0" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="`, branch.address,`">
-                                <span class="text-capitalize">`, branch.address,`</span>
+                                <span class="text-capitalize">`, branch.address ? branch.address:'<span class="text-danger">Not yet</span>',`</span>
                             </p>
                         </div>
                     </div>
