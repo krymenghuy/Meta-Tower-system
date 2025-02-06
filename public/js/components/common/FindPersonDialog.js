@@ -242,33 +242,17 @@ const FindPersonDialog = (()=>{
                  }
                },
                {
-                label:"<span>OK</span>",
-                cssClass:"btn btn-primary",
+                label:'<span vslang="DataTransferItemList.OK"></span>',
+                cssClass:'btn btn-primary',
                 click:(me)=>{
                   me.context = me.context || FindContext.getContext(me.dataOptions.role);  
-                  
-                  let p = me.getSelection(me.controls.tblPersons,me.context.columns);
-
+                  const p = me.getSelection(me.controls.tblPersons,me.context.columns);
                   if (!p || !p[0]){
                      cv_interact.warning('No one is selected!');
                      return;
-                  } 
-
-                  if(me.dataOptions.singleSelect) p=p[0];
-                  if(me.dataOptions.role == 'employee'){
-                     
-                     p.id = me.dataOptions.branch_id;
-                     console.log(19,p);
-                     
-                     vsapi.call(`${main_view.base_url}/api/branch/set-director`,p,null).then(res => {
-                        if(res.status_code === 200)
-                        {
-                           cv_interact.success('Employee has been set to director success!');
-                        }
-                     });
                   }
-
-                  me.hide(true,p);
+                  const d = me.dataOptions.singleSelect ? p[0]: p;
+                  me.hide(true,d);
                 }
               }  
             ],
