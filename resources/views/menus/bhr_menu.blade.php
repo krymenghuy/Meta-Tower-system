@@ -232,7 +232,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="LeaveComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                            src="{{ asset('assets/images/bhr/pc.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Leaves Management"></span>
                 </a>
@@ -629,7 +629,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/logout.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/log_out.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Log Out">Log
                         Out</span>
