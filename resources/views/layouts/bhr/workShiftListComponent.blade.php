@@ -117,8 +117,11 @@
 <div id="_main_workShiftListComponent" style="display:none;padding:20px 0 0 ">
     <div class="d-flex justify-content-between w-100 p-4 rounded-2 shadow" id="_divFilter">
         <div class="d-flex align-items-start justify-content-start w-25">
-            <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
-                placeholder="Search Work Shift....">
+            <div class="position-relative w-100">
+                <input type="text" class="form-control filter-field btn_search ps-5" id="_work_shift_list_search" placeholder="Search...">
+                <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+            </div>
+            
         </div>
         <div class="d-flex align-items-center justify-content-end w-50">
             <button type="button" class="btn_add" id="_btnAddWorkShift">

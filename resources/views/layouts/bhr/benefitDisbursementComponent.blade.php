@@ -3,8 +3,10 @@
 
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field btn_search" id="_benefit_disburse_search"
-                    placeholder="Search benefit disburse ...">
+                <div class="position-relative w-100">
+                    <input type="text" class="form-control filter-field btn_search ps-5" id="_benefit_disburse_search" placeholder="Search...">
+                    <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                </div>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
                 <select type="id" id="el_benefit" class="data-input filter-field" data-field="benefit_id"></select>

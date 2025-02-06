@@ -35,16 +35,18 @@
                 </div>
             </div>
             <div class="d-flex w-100 px-4 py-3 justify-content-between">
-                    <div class="d-flex align-items-center w-25">
-                        <input type="text" class="form-control data-input filter-field btn_search" id="_staff_attendance_search"
-                        placeholder="Search">
+                <div class="d-flex align-items-center w-25">
+                    <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_staff_attendance_search" placeholder="Search...">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
                     </div>
-                    <div class="d-flex w-50 justify-content-end">
-                        <button type="button" class="btn_add" id="_btnAddStaffAttendance">
-                            <i class="fa-solid px-1 fa-clipboard-user"></i>
-                            <span>Create Attendance</span>
-                        </button>
-                    </div>
+                </div>
+                <div class="d-flex w-50 justify-content-end">
+                    <button type="button" class="btn_add" id="_btnAddStaffAttendance">
+                        <i class="fa-solid px-1 fa-clipboard-user"></i>
+                        <span>Create Attendance</span>
+                    </button>
+                </div>
             </div>
         </div>
     <div id="_staff_attendance_list" class="mt-4 px-4"></div>

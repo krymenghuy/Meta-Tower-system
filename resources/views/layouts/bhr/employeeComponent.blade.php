@@ -164,10 +164,12 @@
         <div class="d-flex justify-content-between shadow p-3 mt-2 rounded-2 w-100" id="div_filter_filed">
             <div class="d-flex align-items-center justify-content-start w-75 gap-3">
                 <div class="d-flex w-25 gap-3">
-                    <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field btn_search" id="_search_employee"
-                            placeholder="Search">
+                    <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_search_employee" placeholder="Search...">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
                     </div>
+
+
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="el_branch" class="data-input  filter-field"
