@@ -153,29 +153,29 @@ var ReportCenterComponent = new (function () {
                                 <div class="bg-white border d-flex justify-content-center border-info h-100">
                                     <div id="" class=" my-auto rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                                         <h6 class="text-uppercase w-50 mt-4 mx-auto fs-4 text-center" style="color:#eccf67;">Veiw Report History</h6>
-                                        <div class="container w-50 mx-auto d-flex align-items-center">
+                                        <div class="d-none container w-50 mx-auto align-items-center">
                                             <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -60px; z-index: 9;"></i>
                                         <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
                                             placeholder="Search report...">
                                         </div>
                                         <div class="row w-75 mx-auto my-3">
                                             <div class="col-lg-3">
-                                                <div class="border p-4 rounded-4 text-center">
+                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="attendance_report">
+                                                    <span class="p-2 border rounded-5"> A </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="employee_benefits_report">
+                                                    <span class="p-2 border rounded-5"> P </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="wallet_account_list">
                                                     <span class="p-2 border rounded-5"> E </span>
                                                 </div>
                                             </div>
                                             <div class="col-lg-3">
-                                                <div class="border p-4 rounded-4 text-center">
-                                                    <span class="p-2 border rounded-5"> E </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="border p-4 rounded-4 text-center">
-                                                    <span class="p-2 border rounded-5"> E </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="border p-4 rounded-4 text-center">
+                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="print_employee_CV">
                                                     <span class="p-2 border rounded-5"> E </span>
                                                 </div>
                                             </div>
@@ -197,12 +197,34 @@ var ReportCenterComponent = new (function () {
         </div>
         <div id="_rpt_table" class="container-table overflow-hover-auto" ></div>`,
         ].join("");
+        mThis.setEvent(mThis.self);
 
         mThis.self.html(html);
         mThis.getValueWhenClick(mThis.self.find("#_rpt_name"));
         mThis.controlPanel(mThis.self);
         LocaleManager.translateZone(mThis.self);
     };
+    this.setEvent = (div)=>{
+        div = div[0];        
+        div.onclick = function(e){
+            e.preventDefault();
+            let btn = VSUtil.getElementByClass(e.target,'btn-run-report');
+            console.log(12,btn);
+            
+            if(btn){
+                const code =  btn.dataset.code;
+                div.querySelectorAll('.report-name').forEach(btn=>{
+                    if(btn.dataset.code == code){
+
+                        btn.click();
+                    }
+                })
+                
+            }
+        }
+        
+    }
+
 
     this.controlPanel = (container) => {
         const reportTable = container.find("#_rpt_table").children();

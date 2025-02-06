@@ -222,6 +222,7 @@ const FindPersonDialog = (()=>{
                createTitle: "Find Someone",
             },
             onPrepareForm:(me,data,fields,divModal)=>{
+               me.controls.search_value.value = '';
                const context = FindContext.getContext(me.dataOptions.role);
                me.context = context;
                divModal.querySelector('.modal-header').classList.add('border-0','pb-0');
