@@ -423,6 +423,7 @@ var BranchManagementComponent = new function(){
             }
         });
     }
+    
 
     this.show = (options) => {
         mThis.init(); //NOTE: initOnce init one time only
