@@ -382,7 +382,10 @@ class Account
         self::createTransaction($inputs, true, $from_account_id, $ss);
         $inputs = ['amount' => $converted_amount, 'currency_code' => $to_account->currency_code, 'exchange_rate' => $exchange_rate, 'remarks' => $remarks, 'trx_type' => 3, 'status' => 'in', 'from_account_id' => $from_account->id, 'payroll_id' => $payroll_id, 'disburse_id' => $disburse_id];
         self::createTransaction($inputs, true, $to_account_id, $ss);
-        return DV::depends(1);
+        return DV::depends(1,(object)[
+            'from_account_number' => $from_account->account_number,
+            'to_account_number' => $to_account->account_number
+        ]);
         //rollback amount when one of the transactions fails
     }
 

@@ -82,13 +82,12 @@ var BranchManagementComponent = new function(){
             title:'Find Staff',
             singleSelect:true,
             branch_id: id,
-            emp_id: lnk.dataset.directorid,
 
             onClose:(d)=>{
+                mThis.userListView.showPage(mThis.getFilterData());
                 // d.student_id = btn.dataset.id;
                 // d.referal_id = btn.dataset.referalid;
                 // d.referrer_id = d.id;
-                // console.log(222,);
                 // vsapi.call(`${main_view.base_url}/api/student/set-referrer`,d,false,false,false).then(res =>{
                 //     if(res.status_code ==200){
                 //         EnrolledStudentsComponent.studentListView.showPage(mThis.getFilterData());
@@ -97,6 +96,7 @@ var BranchManagementComponent = new function(){
                 // });
             }
         }
+        
     
         FindPersonDialog.show(op);
         return;
@@ -600,7 +600,7 @@ var BranchManagementComponent = new function(){
                         <div class="d-flex flex-row width-locked-icon">
                           ${branch.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
                         </div>
-                            <button class="btn_um_action btn btn-sm btn-outline-primary-custom rounded-5 text-nowrap" type="button" data-directorid="${branch.director_id}"  data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
+                            <button class="btn_um_action btn btn-sm btn-outline-primary-custom rounded-5 text-nowrap" type="button"   data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
                                 <span class=" " vslang="buttons.Action">Action</span>
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>

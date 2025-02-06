@@ -63,27 +63,15 @@ var EmployeeBenefitComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.amount ?? 0)}</p>`;
-            },
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.amount, data.currency_code)}</p>`;
+            }
         },
         {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
-            },
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
+            }
         },
         {
             title: "Remarks",
@@ -321,7 +309,7 @@ const EmployeeBenefitDialog = (() => {
                         </div>`,
                     `<div class="form-group col-4">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                            <select name="currency_code" class="data-input" data-field="currency_code"></select>
+                            <select name="currency_code" class="data-input" data-field="currency_code" disabled></select>
                         </div>`,
                     `    <div class="form-group col-md-4">
                             <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
@@ -371,8 +359,7 @@ const EmployeeBenefitDialog = (() => {
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                // const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
-                // flatTaxRateField.classList.add("d-none");
+                me.controls.currency_code.value = VSMoney.getCurrency().code;
 
                 Object.keys(data).forEach((key) => {
                     const input = me.divModal.querySelector(

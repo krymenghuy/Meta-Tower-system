@@ -108,7 +108,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-promoti
     Route::post('/promote',[EmployeeController::class,'promoteStaff']);
     Route::post('/form-options',[EmployeeController::class,'getFormOptionPromotion']);
 });
-  
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
     Route::post('/save', [EventController::class, 'createEvent']);
     Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
@@ -196,6 +196,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff
     //Route::post('disburse-all', [PayrollController::class, 'disburseAll']);
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
     Route::post('/list', [PayrollController::class, 'getStaffList']);
+    Route::post('/add-deduction', [PayrollListController::class, 'addDeduction']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {
@@ -267,7 +268,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/print-transaction', [AccountController::class, 'printTransaction']);
     Route::post('/transaction/create', [AccountController::class, 'createTransactions']);
     Route::post('/deposit/form-options', [AccountController::class, 'getFormOptions_deposit']);
-    
+
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 

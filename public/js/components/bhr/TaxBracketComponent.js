@@ -50,7 +50,7 @@ var TaxBracketComponent = (function () {
             title: "Bias",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.bias, data.currency_code)}</p>`;
             }
         },
         {
@@ -252,13 +252,18 @@ const TaxBracketDialog = (()=>{
                   <label for="upper_amount" class="form-label" vslang="titles.Upper Amount"></label>
                   <input name="upper_amount" class="form-control data-input" data-field="upper_amount" />
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group col-4">
                   <label for="rate" class="form-label" vslang="titles.Rate"></label>
                   <input name="rate" class="form-control data-input" data-field="rate" />
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group col-4">
                   <label for="bias" class="form-label" vslang="titles.Bias"></label>
                   <input name="bias" class="form-control data-input" data-field="bias" />
+                </div>
+                <div class="form-group col-4">
+                    <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
+                    <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
+                    </select>
                 </div>
 
               </div>`].join('');
@@ -304,15 +309,21 @@ const TaxBracketDialog = (()=>{
             //      console.log('result from api "/form-options": ', res);
             //    }
             },
-
+            configSelect: [
+                {
+                    name: "currency_code",
+                    data: "currency_codes",
+                    textField: "code",
+                    valueField: "code",
+                }
+            ],
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
+                 me.controls.currency_code.value = VSMoney.getCurrency().code;
             }
-
         });
 
         dialog.show(op);
      }
-
     return self;
 })();

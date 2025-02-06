@@ -30,8 +30,6 @@ class Dashboard
         ];
     }
 
-
-
     public static function getDashboardCards($arr, $ss) {
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;

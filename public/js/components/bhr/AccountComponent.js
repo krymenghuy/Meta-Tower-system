@@ -18,7 +18,7 @@ var AccountMenagmentComponent = (function () {
     mThis._transaction_info = mThis.self.querySelector("#_transaction_info");
     mThis.btnPrintTransaction = mThis.self.querySelector("#_print_transaction");
     mThis.divListView = mThis.self.querySelector('#_account_list');
- 
+
     mThis.cols = [
         {
             title: "No",
@@ -621,7 +621,7 @@ var AccountMenagmentComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        mThis.rem_filter = main_filters;    
+        mThis.rem_filter = main_filters;
         return p;
     };
 
@@ -652,13 +652,13 @@ var AccountMenagmentComponent = (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
             if (mThis.rem_filter){
-                mThis.setDefaultFilter();   
-            }  
+                mThis.setDefaultFilter();
+            }
             mThis.AccountListView.showPage();
             mThis.jm.siblings().hide();
             mThis.jm.fadeIn(200);
         });
-      
+
     };
     return mThis;
 })();
@@ -1114,14 +1114,11 @@ const TransferDialog = (() => {
                                         </div>`;
                                     to_account_info.innerHTML = div;
                                     if (
-                                        me.to_account_currency_code ==
-                                        me.currency_code
+                                        me.to_account_currency_code == me.currency_code
                                     ) {
                                         exchange_rate.classList.add("d-none");
                                     } else {
-                                        exchange_rate.classList.remove(
-                                            "d-none"
-                                        );
+                                        exchange_rate.classList.remove("d-none");
                                     }
                                 }
                             });
@@ -1144,8 +1141,7 @@ const TransferDialog = (() => {
                             p.account_type = me.account_type;
                             p.currency_code = me.currency_code;
                             p.to_account_type = me.to_account_type;
-                            p.to_account_currency_code =
-                                me.to_account_currency_code;
+                            p.to_account_currency_code = me.to_account_currency_code;
                             p.id = me.dataOptions.id;
                             // console.log(1234, p);
 
@@ -1183,7 +1179,9 @@ const TransferDialog = (() => {
                                             },
                                             function (confirmation) {
                                                 if (confirmation) {
-                                                    // console.log('Transfer data to be sent:', p);
+                                                    p.from_account = {'account_number':p.account_number}
+                                                    p.to_account = {'account_number':p.to_account_number}
+                                                    // console.log('Transfer data to be sent:', JSON.stringify(p));
 
                                                     vsapi
                                                         .call(

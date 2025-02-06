@@ -36,13 +36,7 @@ var PositionComponent =  (function () {
             title: "Salary",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data, index, tr) => {
-                let currency_codeSymbol = "";
-                if (data.currency_code === "USD") {
-                    currency_codeSymbol = "$";
-                } else if (data.currency_code === "KHR") {
-                    currency_codeSymbol = "៛";
-                }
-                return `<p class="p-0 m-0">${currency_codeSymbol} ${formattedNumber(data.salary ?? 0)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.salary, data.currency_code)}</p>`;
             },
         },
 
@@ -283,9 +277,7 @@ const PositionDialog = (()=>{
                  </div>
                 <div class="form-group col-4">
                     <label for="currency_code" class="form-label" vslang="titles.Currency">Currency</label>
-                    <select id="currency_code" class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
-                        <option value="${main_view.national_currency}">${main_view.national_currency}</option>
-                        <option value="${main_view.payroll_currency}">${main_view.payroll_currency}</option>
+                    <select  class="modal-select data-input" name="currency_code" data-field="currency_code" disabled>
                     </select>
                 </div>
 
@@ -307,12 +299,12 @@ const PositionDialog = (()=>{
                 textField:"level",
                 valueField:'id'
                },
-            //    {
-            //     name: "currency_code",
-            //     data: "currency_codes",
-            //     textField: "code",
-            //     valueField: "code",
-            //     }
+               {
+                name: "currency_code",
+                data: "currency_codes",
+                textField: "code",
+                valueField: "code",
+                }
             ],
             buttons:[
                {
@@ -357,6 +349,7 @@ const PositionDialog = (()=>{
             },
             onPrepareForm:(me, data)=>{
                  LocaleManager.translateZone(me.divModal);
+                 me.controls.currency_code.value = VSMoney.getCurrency().code;
             }
 
         });

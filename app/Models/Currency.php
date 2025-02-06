@@ -32,7 +32,7 @@ class Currency //extends Model
           $id = saveData($ss,'currencies',['id'=>$id],$inputs,[],1,false);
           return DV::depends($id);
     }
-    
+
     static function options_currency($ss){
         $subs_id = $ss->subs_id;
         $bin_subs_id = hex2bin($subs_id);
@@ -60,5 +60,8 @@ class Currency //extends Model
              'currency'=>$currency,
              'countries'=>DB::table('loc_countries asc')->selectRaw('id,name,name_kh')->get()
         ];
+
     }
+
+
 }

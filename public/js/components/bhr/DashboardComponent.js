@@ -270,7 +270,7 @@ var DashboardComponent =  (function () {
                     yAxisID: "y",
                 },
                 {
-                    label: "Total Salary Paid ($)",
+                    label: "Total Salary Paid (រៀល)",
                     data: data.total_salaries,
                     backgroundColor: "#cab54a",
                     borderColor: "#fff",
@@ -463,9 +463,9 @@ var DashboardComponent =  (function () {
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle"
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${
-                                        data.accounts.payrolls.total_count || 0
-                                    }</p>
+                                    <p class="fs-6 m-0">
+                                    ${data.accounts.payrolls.total_count || 0}
+                                    </p>
                                     <small>Payrolls</small>
                                 </div>
                             </div>
@@ -473,9 +473,10 @@ var DashboardComponent =  (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${
-                                        data.accounts.payrolls.total_balance || 0
-                                    }</p>
+                                    <p class="fs-6" style="color: #2b3991;">
+                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.payrolls.total_balance || 0)}
+
+                                    </p>
                                 </div>
                             </div>
 
@@ -505,14 +506,12 @@ var DashboardComponent =  (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${
-                                        data.accounts.wallets.total_balance ||
-                                        0.0
-                                    }</p>
+                                    <p class="fs-6" style="color: #2b3991;">
+                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.wallets.total_balance || 0)}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-
 
                     <div class="text-center mt-auto">
                         <small class="text-muted">Data from the last 90 days</small>
@@ -588,16 +587,12 @@ var DashboardComponent =  (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.benefit_type == 1 ? "Remuneration" : ""} ${
-                    item.benefit_type == 2 ? "Fringe" : ""
-                }
+                            ${item.benefit_type == 1 ? "Remuneration" : ""} ${item.benefit_type == 2 ? "Fringe" : ""}
                         </span>
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${
-                                item.total_amount || 0.0
-                            } <span class="text-danger">KHR</span>
+                             ${VSMoney.symbol('KHR') + VSMoney.formatAmount(item.total_amount || 0.0)}
                         </span>
                     </td>
                     <td class="align-middle">
