@@ -88,6 +88,7 @@ var BranchManagementComponent = new function(){
                 vsapi.call(`${main_view.base_url}/api/branch/set-director`,data,false,null).then(res => {
                    if(res.status_code === 200)
                    {
+                    mThis.userListView.showPage(mThis.getFilterData());
                       cv_interact.success('Branch director has been set successfully!');
                    }else cv_interact.warning(res.error_message);
                 });

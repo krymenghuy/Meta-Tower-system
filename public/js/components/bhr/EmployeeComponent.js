@@ -3974,7 +3974,7 @@ const PrintCV = (() => {
                     api: {
                         endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
                         params: (op) => {
-                            return { id: op.employee_id }; // Pass ID to fetch data for edit
+                            return { employee_id: op.employee_id }; 
                         },
                         onResponse: (me, res) => {
                             console.log(123,res);
