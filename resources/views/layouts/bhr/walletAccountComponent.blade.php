@@ -3,8 +3,10 @@
             <div class="d-flex justify-content-between w-100 p-3 mt-2 rounded-2 shadow" id="_wla_divFilter">
             <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center w-50 gap-2 pl-3">
-                    <input type="text" class="form-control filter-field btn_search"
-                        id="_wla_search_wallet_account"data-field="search_value" placeholder="Search account">
+                    <div class="position-relative w-100">
+                        <input type="text" class="form-control filter-field btn_search ps-5" id="_wla_search_wallet_account" placeholder="Search...">
+                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-50 pr-3">
