@@ -81,10 +81,18 @@ var BranchManagementComponent = new function(){
             role:'employee',
             title:'Find Staff',
             singleSelect:true,
-            branch_id: id,
+            onClose:(emp,canceled)=>{
+                console.log('test::',emp);
+                //This "id" is branch_id
+                const data = {"branch_id":id,"emp_id":emp.id};
+                vsapi.call(`${main_view.base_url}/api/branch/set-director`,data,false,null).then(res => {
+                   if(res.status_code === 200)
+                   {
+                      cv_interact.success('Branch director has been set successfully!');
+                   }else cv_interact.warning(res.error_message);
+                });
 
-            onClose:(d)=>{
-                mThis.userListView.showPage(mThis.getFilterData());
+                //mThis.userListView.showPage(mThis.getFilterData());
                 // d.student_id = btn.dataset.id;
                 // d.referal_id = btn.dataset.referalid;
                 // d.referrer_id = d.id;
@@ -96,8 +104,6 @@ var BranchManagementComponent = new function(){
                 // });
             }
         }
-        
-    
         FindPersonDialog.show(op);
         return;
     };
@@ -230,7 +236,7 @@ var BranchManagementComponent = new function(){
                         vsapi.call(`${main_view.base_url}/api/branch/delete`,op,null).then(res => {
                             if(res.status_code === 200)
                             {
-                               cv_interact.success('success!');
+                               cv_interact.info('Branch was deleted!');
                                 mThis.userListView.showPage(mThis.getFilterData(), mThis.userListView.current_page);
                             }
                             else
@@ -527,31 +533,31 @@ var BranchManagementComponent = new function(){
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.name}</span>
+                                <span class="text-capitalize">${branch.name ?? 'N/A'}</span>
                             </p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.branch_type}</span>
+                                <span class="text-capitalize">${branch.branch_type ?? 'N/A'}</span>
                             </p>
                         </div>
                     </div>
                     <div class="col" >
                         <div class="d-block" >
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">`,branch.director_name,`</span>
+                                <span class="text-capitalize">`,(branch.director_name ??  'N/A'),`</span>
                             </p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="d-block">
                             <p class="text-nowrap m-0">
-                                <span class="text-capitalize">${branch.phone_number}</span>
+                                <span class="text-capitalize">${branch.phone_number ?? ''}</span>
                             </p>
                               <p class="text-nowrap m-0">
-                                <span class="text-primary">${branch.email}</span>
+                                <span class="text-primary">${branch.email ?? ''}</span>
                             </p>
                         </div>
                     </div>
@@ -908,7 +914,7 @@ var BranchManagementComponent = new function(){
     
                             vsapi.call(`${main_view.base_url}/api/user/role-change`,p,false,false,false).then(res=>{
                                 if (res.status_code === 200) {
-                                    cv_interact.success('Success!');
+                                    cv_interact.success('Role has been changed successfully!');
                                     mThis.userListView.showPage(mThis.getFilterData());
                                     me.hide();
                                 }
