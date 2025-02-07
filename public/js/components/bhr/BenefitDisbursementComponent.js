@@ -127,6 +127,7 @@ var BenefitDisbursementComponent =  (function () {
                     mThis.BenefitDisburseListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(276)) return;
             BenefitDisburseDialog.show(op);
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
@@ -199,6 +200,7 @@ var BenefitDisbursementComponent =  (function () {
                 mThis.BenefitDisburseListView.showPage();
             },
         };
+        if (!AuthManager.allowed(277)) return;
         BenefitDisburseDialog.show(op);
     };
     mThis.deleteBenefitDisburse = (id, menulink) => {
@@ -209,6 +211,7 @@ var BenefitDisbursementComponent =  (function () {
                 mThis.BenefitDisburseListView.showPage();
             },
         };
+        if (!AuthManager.allowed(278)) return;
         cv_interact.confirm(
             "Delete this benefit disburse?",
             {

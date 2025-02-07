@@ -189,7 +189,7 @@ var PayrollListComponent = new (function () {
             const op = {
                 payroll_id: mThis.getFilterData().payroll_id
             };
-
+            if (!AuthManager.allowed(480)) return;
             cv_interact.confirm('html:<span class="fw-semibold d-block">Calculate this payroll list?</span><small>This process will calculate net payment including their salary and other benefits for all staffs in the payroll</small>', {
                 title: 'Calculate Payroll List',
                 context: 'calculate',
@@ -227,7 +227,7 @@ var PayrollListComponent = new (function () {
             const op = {
                 payroll_id: mThis.elFilter.value
             };
-
+            if (!AuthManager.allowed(481)) return;
             cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Disburse this payroll list? </span><small>This process will transfer cash to all employee`s payroll accounts</small>', {
                 title: 'Disburse Payroll List',
                 context: 'update',
@@ -249,7 +249,7 @@ var PayrollListComponent = new (function () {
             const op = {
                 payroll_id: mThis.elFilter.value
             };
-
+            if (!AuthManager.allowed(482)) return;
             cv_interact.confirm('html:<span class="d-block fw-semibold text-success">Reverse this payroll list? </span><small>This process will transfer cash back to all master accounts</small>', {
                 title: 'Reverse Payroll List',
                 context: 'update',
@@ -277,7 +277,7 @@ var PayrollListComponent = new (function () {
                     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
-
+            if (!AuthManager.allowed(213)) return;
             PayRollImportDailog.show(op);
         };
         mThis.btnBack.onclick = function (e) {
@@ -701,6 +701,7 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
+        if (!AuthManager.allowed(215)) return;
         cv_interact.confirm('Remove this staff from payroll?',{
             title: 'Remove Staff from Payroll',
             context: 'delete',

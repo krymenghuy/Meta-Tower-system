@@ -6,7 +6,7 @@ namespace App\Models\Umt;
 // use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
 use App\Models\DBX;
-use DB;
+use Illuminate\Support\Facades\DB;
 class Permission //extends Model
 {
     //use HasFactory;

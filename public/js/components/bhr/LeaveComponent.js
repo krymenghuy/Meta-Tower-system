@@ -144,7 +144,7 @@ var LeaveComponent = (function () {
                     mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                 }
             };
-
+            if (!AuthManager.allowed(240)) return;
             LeaveRequestDialog.show(op);
         };
 
@@ -285,8 +285,7 @@ var LeaveComponent = (function () {
                     id: id,
                     status_id: d.value
                 };
-                console.log(123,p);
-
+                if (!AuthManager.allowed(321)) return;
                 vsapi.call(`${mThis.base_url}/hr/leave/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
@@ -312,7 +311,7 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
-
+        if (!AuthManager.allowed(241)) return;
         LeaveRequestDialog.show(op);
     }
 
@@ -324,6 +323,7 @@ var LeaveComponent = (function () {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
         };
+        if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this leave request?',{
             title: 'Delete Leave Request',
             context: 'delete',

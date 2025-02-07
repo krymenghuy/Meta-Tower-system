@@ -213,7 +213,7 @@ var PayrollComponent = new (function () {
                 },
             };
             // content.parentElement.classList.add('d-none');
-
+            if (!AuthManager.allowed(473)) return;
             AddPayRollListDailog.show(op);
         };
 
@@ -361,6 +361,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        if (!AuthManager.allowed(474)) return;
         cv_interact.confirm(
             "Authorize this payroll?",
             {
@@ -390,6 +391,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        if (!AuthManager.allowed(475)) return;
         cv_interact.confirm(
             'html:<span class="d-block">Are you sure you want to reset this payroll?</span> <small>This action will reverse all payroll transactions from staff payroll accounts back to the master payroll account!</small>',
             {
@@ -428,6 +430,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        if (!AuthManager.allowed(476)) return;
         cv_interact.confirm(
             "Disburse this payroll?",
             {
@@ -458,6 +461,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        if (!AuthManager.allowed(477)) return;
         AddPayRollListDailog.show(op);
     };
     mThis.deletePayroll = (id, menuLink) => {
@@ -468,6 +472,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        if (!AuthManager.allowed(478)) return;
         cv_interact.confirm(
             "Delete this payroll?",
             {
