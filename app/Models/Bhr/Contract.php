@@ -17,7 +17,7 @@ class Contract
         $city = City::getById($row->city_id);
         $row->city = $city ? $city->name : '';
         $row->director = self::getBranchDirector($row->director_id);
-        return $row; 
+        return $row;
     }
 
     static function getBranchDirector($director_id){
@@ -28,7 +28,7 @@ class Contract
     static function getSex($sex){
        if($sex ==='M') return 'ប្រុស';
        else if ($sex ==='F') return 'ស្រី';
-       else 'មិនប្រាប់';  
+       else 'មិនប្រាប់';
     }
     static function calculateEndDate($startDate)
     {
@@ -40,57 +40,57 @@ class Contract
     static function convertToKhmerWords($number) {
         $khmerDigits = ['0' => 'សូន្យ', '1' => 'មួយ', '2' => 'ពីរ', '3' => 'បី', '4' => 'បួន', '5' => 'ប្រាំ', '6' => 'ប្រាំមួយ', '7' => 'ប្រាំពីរ', '8' => 'ប្រាំបី', '9' => 'ប្រាំបួន'];
         $khmerUnits = ['', 'ម៉ឺន', 'សែន', 'លាន', 'កោដិ'];
-    
+
         // Convert the number to an integer if it ends with .00
         if (strpos($number, '.') !== false) {
             $number = rtrim(rtrim($number, '0'), '.'); // Remove trailing .00 or .0
         }
-    
+
         // Split the number into integer and decimal parts
         $parts = explode('.', strval($number));
         $integerPart = $parts[0];
-    
+
         // Convert the integer part
         $integerInWords = '';
         $length = strlen($integerPart);
-    
+
         for ($i = 0; $i < $length; $i++) {
             $digit = $integerPart[$i];
             $position = $length - $i - 1;
-    
+
             if ($digit !== '0') {
                 $integerInWords .= $khmerDigits[$digit] . ' ' . ($khmerUnits[$position % 4] ?? '') . ' ';
             }
-    
+
             if ($position % 4 === 0 && $position !== 0) {
                 $integerInWords .= 'លាន ';
             }
         }
-    
+
         return trim($integerInWords);
     }
-    
-    
+
+
     static function createContract($id, $ss)
     {
 
         $emp = DB::table('employees as e')
             ->join('positions as p', 'p.id', '=', 'e.position_id')
             ->where('e.id', $id)
-            ->selectRaw('e.id, e.code, e.name, e.branch_id, e.name_kh, e.nid, e.marital_status, 
-                         e.sex, e.date_of_birth, e.phone_number, e.address, 
+            ->selectRaw('e.id, e.code, e.name, e.branch_id, e.name_kh, e.nid, e.marital_status,
+                         e.sex, e.date_of_birth, e.phone_number, e.address,
                          p.title as position, p.salary, e.joining_date')
             ->first();
-        
+
         if (!$emp) {
             return DV::error("Employee ID {$id} does not exist.");
         }
-    
+
         $branch = self::getBranchInfo($emp->branch_id);
         if (!$branch) {
             return DV::error('Branch not found.');
         }
-    
+
         // Ensure $branch->director is an object before accessing properties
         $director = $branch->director ?? null;
         $com_rep_branch = $branch->name?? null;
@@ -99,7 +99,7 @@ class Contract
         $com_rep_sex = $director->sex ?? '(Sex)';
         $com_rep_phone = $director->phone_number ?? '';
         $com_address = $branch->address_kh ?? '';
-    
+
         $emp_branch = $branch->branch_name ?? '';
         $emp_name = $emp->name_kh ?? '(Khmer Name)';
         $emp_sex = $emp->sex ?? '(Sex)';
@@ -108,7 +108,7 @@ class Contract
         $emp_nid = $emp->nid ?? '';
         $emp_phone = $emp->phone_number ?? '';
         $emp_address = $emp->address ?? '';
-    
+
         $joiningDate = $emp->joining_date ?? null;
         $data = [
             'com_address' => $com_address,
@@ -137,26 +137,26 @@ class Contract
             'emp_dob' => getKhmerDate($emp->date_of_birth ?? null),
             'signature_date' => getKhmerDate(null),
         ];
-    
+
         // Define the template path
         $templatePath = base_path('/storage/doc_templates/staff_contract_unlimited.docx');
         if (!file_exists($templatePath)) {
             \Log::error("Contract Template file not found at {$templatePath}");
             return DV::error('Contract template not found.');
         }
-    
+
         // Load the template
         $templateProcessor = new TemplateProcessor($templatePath);
-        
+
         // Replace placeholders with actual values
         foreach ($data as $key => $value) {
             $templateProcessor->setValue($key, $value);
         }
-    
+
         // Create a temporary file in memory
         $tempFile = tempnam(sys_get_temp_dir(), 'contract');
         $templateProcessor->saveAs($tempFile);
-    
+
         // Set headers for force download
         $fileName = 'contract_' . $data['emp_code'] . '.docx';
         header('Content-Description: File Transfer');
@@ -166,18 +166,18 @@ class Contract
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         header('Content-Length: ' . filesize($tempFile));
-    
+
         // Prevent buffer issues
         ob_clean();
         flush();
         readfile($tempFile);
-        
+
         // Delete temporary file
         unlink($tempFile);
         exit;
     }
-    
-    
-    
- 
+
+
+
+
 }

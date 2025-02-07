@@ -354,8 +354,8 @@ var AccountManagementComponent = (function () {
                                                 ? "Withdrawal"
                                                 : "Transfer"
                                         }</td>
-                                        <td>${trx.from_account_number}</td>
-                                        <td>${trx.to_account_number}</td>
+                                       <td>${trx.from_account_number ?? 'N/A'}</td>
+                                        <td>${trx.to_account_number ?? 'N/A'}</td>
                                         <td class="${
                                             trx.status === "in"
                                                 ? "text-success"
@@ -375,7 +375,7 @@ var AccountManagementComponent = (function () {
                                                 ${trx.status}
                                             </span>
                                         </td>
-                                        <td>${trx.remarks}</td>
+                                        <td>${trx.remarks ?? 'N/A'}</td>
                                     </tr>
                                 `
                                     )

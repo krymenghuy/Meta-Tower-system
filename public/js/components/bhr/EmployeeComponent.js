@@ -78,13 +78,15 @@ var EmployeeComponent = new (function () {
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
+            mThis.goBack();
+            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+        };
+        mThis.goBack = () => {
             let view_see_info = mThis.self.querySelector("#view_see_info__");
             view_see_info.classList.add("d-none");
             let sub_content = mThis.self.querySelector("#sub_content");
             sub_content.classList.remove("d-none");
-            // mThis.EmployeeListView.showPage(mThis.getFilterData());
-        };
-
+        }
         mThis.btnPrintCV.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -2506,12 +2508,9 @@ var EmployeeComponent = new (function () {
     };
 
     mThis.deleteEmployee = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.EmployeeListView.showPage();
-            },
+
         };
         cv_interact.confirm(
             "Delete this employee?",
@@ -2533,10 +2532,10 @@ var EmployeeComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
+                                mThis.goBack();
+                                EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
                                 cv_interact.success("Deleted successfully");
-                                EmployeeComponent.self
-                                    .querySelector("#_btn_backTo_employee")
-                                    .click();
+
                             } else cv_interact.error(res.error_message);
                         });
                 }
@@ -3974,7 +3973,7 @@ const PrintCV = (() => {
                     api: {
                         endpoint: `${main_view.base_url}/hr/reports/employee/print-employee-cv`,
                         params: (op) => {
-                            return { employee_id: op.employee_id }; 
+                            return { employee_id: op.employee_id };
                         },
                         onResponse: (me, res) => {
                             console.log(123,res);

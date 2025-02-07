@@ -61,4 +61,12 @@ class EmployeeBenefitController extends Controller
         $id = $req->id;
         return JDV::result($this->benefitModel->getFormOptions($id, $ss));
     }
+
+    // public function importBenefit(Request $req)
+    // {
+    //     $ss = AuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) return JDV::raw($ss);
+    //     $res = $this->benefitModel->importBenefit($req->all(), $ss);
+    //     return JDV::raw($res);
+    // }
 }
