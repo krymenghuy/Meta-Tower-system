@@ -253,7 +253,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="StaffAttendanceComponent" modid="275" class="menu-item kt-menu__link">
  
                     <span class="kt-menu__link-icon">
-                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/classroom.svg') }}" />
+                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/daily.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Daily Attendance"></span>
                 </a>
@@ -264,7 +264,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/bhr/paycard.svg') }}" />
+                            src="{{ asset('assets/images/bhr/content-settings.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color" vslang="menus.Shift Management">
                         Workshift Management
@@ -277,7 +277,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="WorkShiftListComponent" modid="277" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                    src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
+                                    src="{{ asset('assets/images/bhr/data-funnel.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Shift List">
                                     Shift List
@@ -288,7 +288,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="WorkshiftComponent" modid="278" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                    src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
+                                    src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Attendance Tracking">
                                     Attendance Tracks
@@ -302,7 +302,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(252); ?>>
                 <a href="EmployeeMovementComponent" modid="252" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/rotate.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/money-change.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Employee Movement"></span>
                 </a>
@@ -313,7 +313,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/bhr/resize-svgrepo-com.svg') }}" />
+                            src="{{ asset('assets/images/bhr/subttasks.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.Employee Benefits"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
@@ -324,7 +324,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="BenefitComponent" modid="262" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/notebook.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Benefit List"></span>
                             </a>

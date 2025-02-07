@@ -9,12 +9,18 @@ use App\Models\DBX;
 use App\Models\Bhr\Event;
 use App\Models\Bhr\Employee;
 use App\Models\Money;
+use App\Models\PublicStorage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EmployeeBenefit
 {
     protected $id = null;
     protected $userInfo = null;
-
+    protected static $emp_benefit ='emp_benefit';
+    protected static $xlsx_keys = [
+        'emp_id','benefit_id','tax_option_id','flat_tax_rate','balance',
+        'amount','currency_code','remarks',
+    ];
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -60,7 +66,114 @@ class EmployeeBenefit
         }
         return DV::error('Error Saving Employee Benefit');
     }
-
+    
+    static function convertImportedEmployeeBenefit($rows){
+        $result = [];
+        foreach($rows as $index=>$row){
+            if($index>=0){
+                $keeper=[];
+                $key=0;
+                foreach($row as $index=>$value){
+                    if($key<=count(self::$xlsx_keys)){
+                        if($index>=0){
+                            $keeper[self::$xlsx_keys[$key]] = strNoSpace($value);
+                        }
+                    }
+                    $key++;
+                }
+                $result[] = $keeper;
+            }
+        }
+        return $result;
+    }
+    static function readExcel($ss,$file_name,$start_index=null){
+        $fullPath = PublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'document').$file_name ;
+        $reader = IOFactory::createReader('Xlsx');
+        $spreadsheet = $reader->load($fullPath);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $_data = $worksheet->toArray();
+        $_data = array_filter($_data, function ($record) {
+            return array_filter($record, function ($value) {
+                return $value !== null && $value !== '' && $value !== false;
+            }) !== [];
+        });
+        $i=$start_index?$start_index:1;
+        $c = null;
+        do {
+            if (!isset($_data[$i])) break;
+            $c = $_data[$i];
+            $data_tracking[] = $c;
+            $i++;
+        } while ($c);
+        return $data_tracking;
+    }
+    public function importBenefits($arr, $ss,$id=null)
+    {
+        $v_rule = [
+            'file' => '1|string',
+        ];
+        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $base64 = str_replace('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,','',$inputs['file']);
+        $x = PublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'xlsx',$base64,'document');//(object)['status'=>'OK']; //
+        if($x->status =='OK'){
+            $import_id = saveData($ss,'imported_files',['id' => null],[
+                'type' =>$x->file_type,
+                'file_name' => 'Imported from Excel by '.$ss->full_name.' on '. date('d M Y H:i', time()), //$file_name,
+                'imported_date' => date('Y-m-d H:i:s'),
+                'title' => 'Import Employee Benefit',
+                // 'status_id'=> 1
+            ],[],1);
+            $file_name = $x->file_name;
+            $rows = self::readExcel($ss,$x->file_name,2);
+            $data = self::convertImportedEmployeeBenefit($rows);
+            
+            $success = 0;
+            DB::beginTransaction();
+            try {
+                foreach($data as $row){
+                    $arr = (array)$row;
+                    $employee = DB::table('employees')->where('code', $arr['emp_code'])->first();
+                    if ($employee) {
+                        $arr['emp_id'] = $employee->id; // Assign the emp_id
+                    }
+                    $v_rule = [
+                        'emp_id' => '1|number|exists=employees.id',
+                        'benefit_id' => '1|number',
+                        'tax_option_id' => '1|choice|1,2,3|default=1',
+                        'flat_tax_rate' => '0|number',
+                        'balance' => '0|number|default=0',
+                        'amount' => '1|number',
+                        'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+                        'remarks' => '0|string|1-250',
+                    ];
+                    $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+                    $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
+                    if ($res->error) {
+                        return DV::error($res->error);
+                    }
+                    $inputs = $res->values;
+                    $id = saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
+                    if ($id > 0) {
+                        $success ++;
+                    }else{
+                        return DV::error('Error Saving Employee Benefit');
+                    }
+                }
+               
+                DB::commit();
+                return DV::depends($success,'Successfully imported');
+            }
+            catch (\Exception $e) {
+                DB::rollback();
+                $file_name = basename($x->file_name);
+                PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'documents',$file_name);
+                \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
+                return DV::error('There were some problem during importing. This is likely due to incorrect data format in Excel.');
+            }
+        }
+    }
 
     function getAllBenefitList($arr, $ss = null)
     {
@@ -184,4 +297,6 @@ class EmployeeBenefit
             ],
         ];
     }
+  
+
 }
