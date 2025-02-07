@@ -109,6 +109,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                     mThis.BdpListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(279)) return;
             BdpDialog.show(op);
         };
         const pr_tbl = mThis.BdpListView.getListContainer();
@@ -145,6 +146,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     };
 
     mThis.editBfp = (id, btn) => {
+        if (!AuthManager.allowed(280)) return;
         BdpDialog.show({
             id,
             btn,
@@ -160,6 +162,7 @@ var BenefitDisbursePolicyComponent =  (function () {
                 mThis.BdpListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(281)) return;
         cv_interact.confirm(
             "Delete this benefit disbursement policy?",
             {

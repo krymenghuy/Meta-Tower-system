@@ -102,6 +102,7 @@ var WarningComponent = (function () {
                     mThis.WarningListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(244)) return;
             WarningDialog.show(op);
         };
         const pr_tbl = mThis.WarningListView.getListContainer();
@@ -203,6 +204,7 @@ var WarningComponent = (function () {
                 mThis.WarningListView.showPage();
             },
         };
+        if (!AuthManager.allowed(245)) return;
         WarningDialog.show(op);
     };
     mThis.deleteWarning = (id, menulink) => {
@@ -213,6 +215,7 @@ var WarningComponent = (function () {
                 mThis.WarningListView.showPage();
             },
         };
+        if (!AuthManager.allowed(246)) return;
         cv_interact.confirm(
             "Delete this warning?",
             {

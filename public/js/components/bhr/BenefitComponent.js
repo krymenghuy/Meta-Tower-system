@@ -100,6 +100,7 @@ var BenefitComponent =  (function () {
                     mThis.BenefitListView.showPage(mThis.getDataFormFilter());
                 },
             };
+            if (!AuthManager.allowed(270)) return;
             BenefitDialog.show(op);
         };
         const pr_tbl = mThis.BenefitListView.getListContainer();
@@ -144,6 +145,7 @@ var BenefitComponent =  (function () {
     };
 
     mThis.editBenefit = (id, btn) => {
+        if (!AuthManager.allowed(271)) return;
         BenefitDialog.show({ id, btn, onClose: () => mThis.BenefitListView.showPage(mThis.getDataFormFilter()),});
     };
 
@@ -155,6 +157,7 @@ var BenefitComponent =  (function () {
                 mThis.BenefitListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(272)) return;
         cv_interact.confirm(
             "Delete this Benefit ?",
             {

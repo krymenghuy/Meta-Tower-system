@@ -88,6 +88,7 @@ var PositionComponent =  (function () {
                     mThis.PositionListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(219)) return;
             PositionDialog.show(op);
         };
         const listContainer = mThis.PositionListView.getListContainer();
@@ -181,6 +182,7 @@ var PositionComponent =  (function () {
                 mThis.PositionListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(220)) return;
         PositionDialog.show(op);
     };
 
@@ -192,6 +194,7 @@ var PositionComponent =  (function () {
                 mThis.PositionListView.showPage();
             },
         };
+        if (!AuthManager.allowed(221)) return;
         cv_interact.confirm(
             "Delete this position?",
             {

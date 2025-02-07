@@ -929,6 +929,7 @@ this.PermissionPanel = new function(){
                     prn_id: item_id,
                     status_id: statusInfo.status_id
                 };
+                
                 vsapi.call(`${main_view.base_url}/api/role/permissions/set-status`,p,false,false).then(res =>{
                      if(res.status_code ==200){
                         return;
@@ -939,6 +940,8 @@ this.PermissionPanel = new function(){
         });
      
             let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
+                console.log(JSON.stringify(p,null,2));
+
             vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);

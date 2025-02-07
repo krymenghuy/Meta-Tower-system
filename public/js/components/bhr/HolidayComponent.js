@@ -103,6 +103,7 @@ var HolidayComponent = (function () {
                     mThis.HolidayListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(260)) return;
             HolidayDialog.show(op);
         };
         const listContainer = mThis.HolidayListView.getListContainer();
@@ -163,6 +164,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage();
             },
         };
+        if (!AuthManager.allowed(262)) return;
         HolidayDialog.show(op);
     };
 
@@ -175,7 +177,7 @@ var HolidayComponent = (function () {
                 mThis.HolidayListView.showPage();
             },
         };
-
+        if (!AuthManager.allowed(263)) return;
         cv_interact.confirm(
             "Delete this holiday?",
             {

@@ -125,6 +125,7 @@ var AccountManagementComponent = (function () {
                     mThis.AccountListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(315)) return;
             AccountDialog.show(op);
         };
         mThis.btnAddAccountMissing.onclick = function (e) {
@@ -132,7 +133,7 @@ var AccountManagementComponent = (function () {
             const op = {
                 account_type: "Payroll",
             };
-
+            if (!AuthManager.allowed(210)) return;
             cv_interact.confirm(
                 'html:<span class="d-block fw-semibold text-success">Create accounts for all staff? </span><small>This process will create payroll account for staff who do not have an account yet!</small>',
                 {
@@ -504,7 +505,7 @@ var AccountManagementComponent = (function () {
                 mThis.AccountListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(326)) return;
         DepositDialog.show(op);
     };
 
@@ -521,7 +522,7 @@ var AccountManagementComponent = (function () {
             emp_id: emp_id,
             account_id: id,
         };
-
+        if (!AuthManager.allowed(328)) return;
         vsapi
             .call(
                 `${main_view.base_url}/hr/account/print-transaction`,
@@ -547,18 +548,7 @@ var AccountManagementComponent = (function () {
                 mThis.AccountListView.showPage();
             },
         };
-
-        AccountDialog.show(op);
-    };
-    mThis.editAccount = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.AccountListView.showPage();
-            },
-        };
-
+        if (!AuthManager.allowed(211)) return;
         AccountDialog.show(op);
     };
 
@@ -571,6 +561,7 @@ var AccountManagementComponent = (function () {
                 mThis.AccountListView.showPage();
             },
         };
+        if (!AuthManager.allowed(212)) return;
         cv_interact.confirm(
             "Delete this account?",
             {
@@ -903,7 +894,7 @@ const DepositDialog = (() => {
                             p.id = me.dataOptions.id;
 
                             // console.log(555,p);
-
+                            if (!AuthManager.allowed(326)) return;
                             vsapi
                                 .call(
                                     [

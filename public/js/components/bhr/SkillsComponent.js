@@ -38,6 +38,7 @@ var SkillsComponent = (function () {
                     mThis.SkillListView.showPage(mThis.getFilterData());
                 }
             };
+            if (!AuthManager.allowed(201)) return;
             SkillDialog.show(op);
         };
         mThis.divFilter.addEventListener('change', (e) => {
@@ -184,6 +185,7 @@ var SkillsComponent = (function () {
                 mThis.SkillListView.showPage();
             }
         };
+        if (!AuthManager.allowed(202)) return;
         SkillDialog.show(op);
     }
 
@@ -195,7 +197,7 @@ var SkillsComponent = (function () {
                 mThis.SkillListView.showPage(mThis.getFilterData());
             }
         };
-
+        if (!AuthManager.allowed(203)) return;
         cv_interact.confirm(
             'Delete this skill?',
             {

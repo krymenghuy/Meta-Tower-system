@@ -17,6 +17,8 @@ use App\Http\Controllers\Umt\ModuleController;
 use App\Http\Controllers\Umt\PermissionController;
 use App\Http\Controllers\Umt\ReportController;
 use App\Http\Controllers\MoneyController;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(function(){
     Route::get('/lang', [UserController::class, 'getLang']);
