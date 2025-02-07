@@ -340,7 +340,7 @@ var WalletAccountComponent = (function () {
                                                 ${trx.status}
                                             </span>
                                         </td>
-                                        <td>${trx.remarks}</td>
+                                        <td>${trx.remarks ?? 'N/A'}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>

@@ -28,8 +28,21 @@ class BenefitDisbursePolicy
             'withdraw_rate' => '1|number|default=100',
         ];
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) return DV::error($res->error); 
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
+
+        if(!$id){
+            $exists = DB::table('benefit_disburse_policies')
+                ->where('benefit_id', $inputs['benefit_id'])
+                ->where('target_month', $inputs['target_month'])
+                ->where('target_year', $inputs['target_year'])
+                ->exists();
+
+            if ($exists) {
+                return DV::error('Policy already exists');
+            }
+        }
+
         $id = saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['sender' => $inputs, 'id' => $id]);
     }
@@ -39,7 +52,7 @@ class BenefitDisbursePolicy
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
-        if (!is_numeric($current_page)) $current_page = 1; 
+        if (!is_numeric($current_page)) $current_page = 1;
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;

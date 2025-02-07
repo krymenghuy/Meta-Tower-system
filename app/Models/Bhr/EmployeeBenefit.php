@@ -76,7 +76,7 @@ class EmployeeBenefit
         $str_srch = '1=1';
         if ($search_value) {
             $skip_rows = 0;
-            $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR b.remarks LIKE '%" . $search_value . "%' OR b.amount LIKE '%" . $search_value . "%')";
+            $str_srch = "(emp.name LIKE '%" . $search_value . "%'  OR eb.amount LIKE '%" . $search_value . "%')";
         }
         $query = DB::table('emp_benefits as eb')
             ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
@@ -184,4 +184,9 @@ class EmployeeBenefit
             ],
         ];
     }
+
+    // function importBenefit()
+    // {
+
+    // }
 }
