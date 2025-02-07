@@ -3,8 +3,6 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -35,9 +33,9 @@ class BenefitDisbursement
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'benefit_id' => '1|number',
-            'target_month' => '0|number|min=1|max=12',
-            'target_year' => '0|number|min=1900|max=2100',
-            'withdraw_rate' => '0|number'
+            'target_month' => '1|number|default=0',
+            'target_year' => '1|number|default=0',
+            'withdraw_rate' => '1|number|default=100',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
@@ -47,25 +45,18 @@ class BenefitDisbursement
 
         $inputs = $res->values;
 
-        $inputs['target_month'] = intval($arr['target_month'] ?? date('m'));
-        $inputs['target_year'] = intval($arr['target_year'] ?? date('Y'));
-
-        $emp_id = $arr['emp_id'] ?? null;
-        if (!$emp_id) {
-            return DV::error('Employee is required for saving benefit disbursement!');
-        }
-
         if(!$id) {
-            $existingBenefitDisbursement = DB::table('benefit_disbursements')
-            ->where('emp_id', $emp_id)
-            ->where('benefit_id', $inputs['benefit_id'])
-            ->first();
+            $exists = DB::table('benefit_disbursements')
+                ->where('emp_id', $inputs['emp_id'])
+                ->where('benefit_id', $inputs['benefit_id'])
+                ->where('target_month', $inputs['target_month'])
+                ->where('target_year', $inputs['target_year'])
+                ->exists();
 
-            if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
-                return DV::error('This employee already has a benefit of this type.');
+            if ($exists) {
+                return DV::error('Disbursement already exists');
             }
         }
-
         $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
 
         return DV::depends($id, ['id' => $id], 'Save failed');

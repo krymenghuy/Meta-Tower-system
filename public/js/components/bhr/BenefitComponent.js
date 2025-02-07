@@ -184,8 +184,11 @@ var BenefitComponent =  (function () {
     };
 
     mThis.getDataFormFilter = () => {
-        let filters = { search_value: mThis.elSearch.value};
-        console.log(39292,mThis.elSearch);
+        const filters = {
+            search_value: mThis.elSearch.value,
+            type_id: mThis.elBenefitType.value,
+
+        };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             filters[el.dataset.field] = el.value;
         });

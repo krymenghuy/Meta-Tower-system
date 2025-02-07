@@ -61,7 +61,7 @@ use App\Services\Umt\AuthService;
 //             }
 //      }
 // }
- 
+
 function getAccessBranches($ss=null,$filter_branch_id = null){
     if(!$ss) $ss = AuthService::user();
     if(!$ss) return [0];
@@ -220,6 +220,7 @@ function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field
     $new_code = $prefix.$branch_id.formatNumber($next_num,$len);
 
     $x = DB::table($target_table)->whereRaw($str_where)->update(['code'=>$new_code]);
+    \Log::info('str'.json_encode($str_where));
     if($x || $x===1){
        $updated = DB::table($code_control_table)->whereRaw($where_branch)->update(['last_id'=>$next_num]);
        if (!$updated) DB::table($code_control_table)->insert(['branch_id'=>$branch_id,'prefix'=>$def_prefix,'last_id'=>$next_num]);
@@ -364,7 +365,7 @@ function makeJsonResponse($data) {
         11 => 'វិច្ឆិកា',
         12 => 'ធ្នូ',
     ];
- 
+
     // Extract day, month, and year components
     list($year, $month, $day) = explode('-', $date);
 
@@ -396,14 +397,14 @@ function convertToKhmerNumerals($number) {
         '8' => '៨',
         '9' => '៩',
      ];
-     
+
     // Split the number into individual digits and convert each to Khmer numeral
     foreach (str_split($number) as $digit) {
         $result .= $khmerNumerals[$digit];
     }
     return $result;
 }
- 
+
  //daysInMonth()
  function days_in_month($month, $year){
     // calculate number of days in a month
@@ -883,9 +884,9 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
 /** createUUID version 4. NOTE that 3A, for example, is converted to be ":", causing error in php code */
 function createUUID($remove_hyphens = false) {
     $undesirableHex = [
-        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', 
-        '2A', '2B', '2C', '2D', '2E', '2F', '3A', '3B', '3C', '3D', 
-        '3E', '3F', '40', '5B', '5C', '5D', '5E', '5F', '60', '7B', 
+        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+        '2A', '2B', '2C', '2D', '2E', '2F', '3A', '3B', '3C', '3D',
+        '3E', '3F', '40', '5B', '5C', '5D', '5E', '5F', '60', '7B',
         '7C', '7D', '7E'
     ];
     do {
@@ -900,7 +901,7 @@ function containsUndesirableHex($hex, $undesirableHex) {
     }
     return false;
 }
- 
+
 function createUUIDV1()
 {
     // Generate a Version 1 UUID (time-based)
@@ -916,7 +917,7 @@ function createUUIDV1()
 
     return $uuid;
 }
- 
+
  //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
  //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
  //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
