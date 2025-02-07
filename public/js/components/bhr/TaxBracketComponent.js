@@ -110,6 +110,7 @@ var TaxBracketComponent = (function () {
                     mThis.TaxBracketListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(253)) return;
             TaxBracketDialog.show(op);
         };
         const pr_tbl = mThis.TaxBracketListView.getListContainer();
@@ -168,7 +169,6 @@ var TaxBracketComponent = (function () {
     };
 
     mThis.editTaxBracket = (id, menuLink) => {
-        console.log(234, id);
 
         let op = {
             id: id,
@@ -177,6 +177,7 @@ var TaxBracketComponent = (function () {
                 mThis.TaxBracketListView.showPage();
             },
         };
+        if (!AuthManager.allowed(254)) return;
         TaxBracketDialog.show(op);
     };
 
@@ -188,6 +189,7 @@ var TaxBracketComponent = (function () {
                 mThis.TaxBracketListView.showPage();
             },
         };
+        if (!AuthManager.allowed(255)) return;
         cv_interact.confirm(
             "Delete this tax bracket?",
             {

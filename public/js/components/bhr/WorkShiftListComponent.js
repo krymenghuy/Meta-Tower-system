@@ -79,6 +79,7 @@ var WorkShiftListComponent = (function () {
                     mThis.WorkShiftListsView.showPage();
                 },
             };
+            if (!AuthManager.allowed(267)) return;
             WorkShiftListDialog.show(op);
         };
         const listContainer = mThis.WorkShiftListsView.getListContainer();
@@ -136,6 +137,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
+        if (!AuthManager.allowed(268)) return;
         WorkShiftListDialog.show(op);
     };
     mThis.deleteWorkShift = (id, menulink) => {
@@ -146,6 +148,7 @@ var WorkShiftListComponent = (function () {
                 mThis.WorkShiftListsView.showPage();
             },
         };
+        if (!AuthManager.allowed(269)) return;
         cv_interact.confirm(
             "Delete this work shift?",
             {

@@ -92,6 +92,7 @@ var DepartmentComponent = new (function () {
                     mThis.DepartmentListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(216)) return;
             DepartmentDialog.show(op);
         };
         mThis.elSearch.addEventListener("keyup", (e) => {
@@ -157,6 +158,7 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage();
             },
         };
+        if (!AuthManager.allowed(217)) return;
         DepartmentDialog.show(op);
     };
 
@@ -168,6 +170,7 @@ var DepartmentComponent = new (function () {
                 mThis.DepartmentListView.showPage();
             },
         };
+        if (!AuthManager.allowed(218)) return;
         cv_interact.confirm(
             "Delete this department?",
             {

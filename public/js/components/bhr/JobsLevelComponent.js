@@ -86,6 +86,7 @@ var JobsLevelComponent = new (function () {
                     mThis.JobLevelListView.showPage();
                 },
             };
+            if (!AuthManager.allowed(204)) return;
             JobLevelDialog.show(op);
         };
         const pr_tbl = mThis.JobLevelListView.getListContainer();
@@ -146,6 +147,7 @@ var JobsLevelComponent = new (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
+        if (!AuthManager.allowed(205)) return;
         JobLevelDialog.show(op);
     };
     mThis.deleteJobLevel = (id, menulink) => {
@@ -156,6 +158,7 @@ var JobsLevelComponent = new (function () {
                 mThis.JobLevelListView.showPage();
             },
         };
+        if (!AuthManager.allowed(206)) return;
         cv_interact.confirm(
             "Delete this job level?",
             {

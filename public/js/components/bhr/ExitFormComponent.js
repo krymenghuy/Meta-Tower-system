@@ -116,6 +116,7 @@ var ExitFormComponent = (function () {
                 },
                 
             };
+            if (!AuthManager.allowed(282)) return;
             ExitFormDialog.show(op);
         };
 
@@ -196,7 +197,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
-
+        if (!AuthManager.allowed(283)) return;
         ExitFormDialog.show(op);
     };
 
@@ -208,6 +209,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
+        if (!AuthManager.allowed(284)) return;
         cv_interact.confirm(
             "Delete this exit form?",
             {
@@ -250,6 +252,7 @@ var ExitFormComponent = (function () {
                 mThis.ExitFormListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(285)) return;
         ViewExitFormDialog.show(op);
     };
 
@@ -630,7 +633,7 @@ const ViewExitFormDialog = (() => {
                                 id: me.dataOptions.form_id,
                             };
                             console.log(1010, p);
-
+                            if (!AuthManager.allowed(286)) return;
                             vsapi
                                 .call(
                                     `${main_view.base_url}/hr/exit-form/details`,
