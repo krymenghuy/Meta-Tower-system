@@ -7,6 +7,7 @@ use App\Models\Bhr\EmployeeBenefit;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 class EmployeeBenefitController extends Controller
 {
     protected $benefitModel;
@@ -61,12 +62,15 @@ class EmployeeBenefitController extends Controller
         $id = $req->id;
         return JDV::result($this->benefitModel->getFormOptions($id, $ss));
     }
-
-    // public function importBenefit(Request $req)
-    // {
-    //     $ss = AuthService::verifyAuth($req, -1);
-    //     if ($ss->status_code !== 200) return JDV::raw($ss);
-    //     $res = $this->benefitModel->importBenefit($req->all(), $ss);
-    //     return JDV::raw($res);
-    // }
+    public function import(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $res = $this->benefitModel->importBenefits($req->all(), $ss);
+        return JDV::result($res);
+    }
+    
+    
 }

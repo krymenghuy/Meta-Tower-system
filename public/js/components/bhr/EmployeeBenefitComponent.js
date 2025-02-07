@@ -147,14 +147,24 @@ var EmployeeBenefitComponent = new (function () {
         };
         mThis.btnImport.onclick = (e) => {
             e.preventDefault();
-            if (!AuthManager.allowed(325)) return;
-            EmployeeBenefitImportDialog.show({
-                onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
-                },
+            FileChooser.chooseFile({
+                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            },(d) => {
+                if(d){
+                    vsapi.call(`${main_view.base_url}/hr/employee/benefit/import-emp-benefits`,{
+                        file: d.dataUrl
+                    },false).then(res => {
+                        if(res.status_code === 200){
+                            mThis.EmployeeBenefitListView.showPage(null);
+                            cv_interact.success('Employees Benefit Were Import Successfully!');
+                        }
+                        else{
+                            cv_interact.error(res.error_message );
+                        }
+                    });
+                }
             });
-            console.log(383838,);
-
+            
         };
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
