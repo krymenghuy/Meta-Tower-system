@@ -136,6 +136,7 @@ var EmployeeBenefitComponent = new (function () {
         });
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(273)) return;
             EmployeeBenefitDialog.show({
                 id: null,
                 btn: e.target,
@@ -215,6 +216,7 @@ var EmployeeBenefitComponent = new (function () {
     };
 
     mThis.editBenefit = (id, btn) => {
+        if (!AuthManager.allowed(274)) return;
         EmployeeBenefitDialog.show({
             id,
             btn,
@@ -230,6 +232,7 @@ var EmployeeBenefitComponent = new (function () {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(275)) return;
         cv_interact.confirm(
             "Delete this benefit?",
             {

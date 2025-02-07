@@ -87,6 +87,7 @@ var CheckPointCategoryComponent =  (function () {
         });
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(298)) return;
             ExitCheckpointsDialog.show({
                 id: null,
                 btn: e.target,
@@ -163,6 +164,7 @@ var CheckPointCategoryComponent =  (function () {
                 mThis.ExitCheckpointsListView.showPage();
             },
         };
+        if (!AuthManager.allowed(299)) return;
         ExitCheckpointsDialog.show(op);
     };
     mThis.delete_check_points = (id, menulink) => {
@@ -173,6 +175,7 @@ var CheckPointCategoryComponent =  (function () {
                 mThis.ExitCheckpointsListView.showPage();
             },
         };
+        if (!AuthManager.allowed(300)) return;
         cv_interact.confirm(
             "Delete this exit check point?",
             {

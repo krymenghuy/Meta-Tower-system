@@ -72,7 +72,7 @@ var EmployeeComponent = new (function () {
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
-
+            if (!AuthManager.allowed(207)) return;
             EmployeeDialog.show(op);
         };
 
@@ -90,6 +90,7 @@ var EmployeeComponent = new (function () {
             const op = {
                 employee_id:mThis.employee_id,
             }
+            if (!AuthManager.allowed(317)) return;
             PrintCV.show(op);
 
         };
@@ -899,6 +900,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(224)) return;
                         AddSkillDialog.show(op);
                     });
 
@@ -919,7 +921,7 @@ var EmployeeComponent = new (function () {
                                 mThis.renderCardLeft.showPage();
                             },
                         };
-                        console.log("Edit operation:", op);
+                        if (!AuthManager.allowed(230)) return;
                         AddSkillDialog.show(op);
                     });
                 });
@@ -1106,6 +1108,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(225)) return;
                         AddEducation.show(op);
                     });
 
@@ -1127,7 +1130,7 @@ var EmployeeComponent = new (function () {
                                     mThis.renderCardCenter.showPage();
                                 },
                             };
-                            console.log("Edit operation:", op);
+                            if (!AuthManager.allowed(231)) return;
                             AddEducation.show(op);
                         });
                     });
@@ -1142,6 +1145,7 @@ var EmployeeComponent = new (function () {
                             const emp_id = e.target
                                 .closest("a")
                                 .getAttribute("data-empid");
+                            if (!AuthManager.allowed(236)) return;
                             cv_interact.confirm(
                                 "Delete this education?",
                                 {
@@ -1246,6 +1250,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(318)) return;
                         AddSchool.show(op);
                     });
             });
@@ -1364,6 +1369,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(226)) return;
                         AddExperience.show(op);
                     });
                 document
@@ -1384,7 +1390,7 @@ var EmployeeComponent = new (function () {
                                     mThis.renderCardRight.showPage();
                                 },
                             };
-                            console.log("Edit operation:", op);
+                            if (!AuthManager.allowed(232)) return;
                             AddExperience.show(op);
                         });
                     });
@@ -1399,7 +1405,7 @@ var EmployeeComponent = new (function () {
                             const emp_id = e.target
                                 .closest("a")
                                 .getAttribute("data-empid");
-
+                            if (!AuthManager.allowed(237)) return;
                             // Confirm deletion
                             cv_interact.confirm(
                                 "Delete this experience?",
@@ -1462,6 +1468,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(319)) return;
                         AddOrganization.show(op);
                     });
             });
@@ -1563,6 +1570,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(227)) return;
                         AddTaxAllowance.show(op);
                     });
 
@@ -1585,7 +1593,7 @@ var EmployeeComponent = new (function () {
                                     mThis.renderCardTaxAllowance.showPage();
                                 },
                             };
-                            console.log("Edit operation:", op);
+                            if (!AuthManager.allowed(234)) return;
                             AddTaxAllowance.show(op);
                         });
                     });
@@ -1606,6 +1614,7 @@ var EmployeeComponent = new (function () {
                                 btn: e.target,
                                 onClose: () => {},
                             };
+                            if (!AuthManager.allowed(239)) return;
                             cv_interact.confirm(
                                 "Delete this tax allowance?",
                                 {
@@ -1737,6 +1746,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(228)) return;
                         AddEmployeeDocumentDialog.show(op);
                     });
                 document
@@ -1755,6 +1765,7 @@ var EmployeeComponent = new (function () {
                                 btn: e.target,
                                 onClose: () => {},
                             };
+                            if (!AuthManager.allowed(238)) return;
                             cv_interact.confirm(
                                 "Delete this document?",
                                 {
@@ -1801,6 +1812,7 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
+                        if (!AuthManager.allowed(320)) return;
                         AddDocumentType.show(op);
                     });
             });
@@ -1814,6 +1826,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(229)) return;
         mThis.MovementDialog =
             mThis.MovementDialog ||
             new GeneralDialog({
@@ -2112,6 +2125,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(223)) return;
         mThis.ResignDialog =
             mThis.ResignDialog ||
             new GeneralDialog({
@@ -2215,7 +2229,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-
+        if (!AuthManager.allowed(485)) return;
         mThis.PromoteDialog =
             mThis.PromoteDialog ||
             new GeneralDialog({
@@ -2391,6 +2405,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
+        if (!AuthManager.allowed(486)) return;
         mThis.RejoinDialog =
             mThis.RejoinDialog ||
             new GeneralDialog({
@@ -2485,9 +2500,11 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             },
         };
+        if (!AuthManager.allowed(208)) return;
         EmployeeDialog.show(op);
     };
     mThis.view_see_info = (id, menuLink) => {
+        if (!AuthManager.allowed(222)) return;
         const card = VSUtil.closestLimited(menuLink, ".employee-card");
         const detail= card.querySelector('.see-detail');
         console.log(123,detail);
@@ -2501,6 +2518,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             },
         };
+        if (!AuthManager.allowed(316)) return;
         CreateContractDialog.show(op);
 
     };
@@ -2513,6 +2531,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             },
         };
+        if (!AuthManager.allowed(209)) return;
         cv_interact.confirm(
             "Delete this employee?",
             {
