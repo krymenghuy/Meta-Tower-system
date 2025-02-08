@@ -18,12 +18,13 @@ class SkillController extends Controller
 
     public function saveSkill(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->skill_id ?? $req->id;
+        $prn_code = $id ? 201 : 202;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        $id = $req->skill_id ?? $req->id;
         $skill = new Skill($id, $ss);
         $res = $skill->save($req->all());
         return JDV::raw($res);
@@ -50,7 +51,7 @@ class SkillController extends Controller
 
     public function deleteSkill(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 203);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
