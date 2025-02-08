@@ -86,6 +86,7 @@ class Attendance
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
+        $attendance_date = DBX::formatDate('a.attendance_date', 'attendance_date');
 
         // Query Construction
         $query = DB::table('employees as emp')
@@ -94,9 +95,9 @@ class Attendance
             ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->selectRaw('
-            emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, 
-            emp.date_of_birth as dob, ws.name as work_shift, 
-            a.attendance_date, a.scan_time, a.scan_action, 
+            emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,
+            emp.date_of_birth as dob, ws.name as work_shift,
+            ' . $attendance_date . ', a.scan_time, a.scan_action,
             p.title as position
         ')
             ->when(!empty($filter->search_value), function ($q) use ($filter) {
@@ -387,7 +388,7 @@ class Attendance
         $file_name = $employee->photo_file_name;
         $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
         $image = PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
-     
+
         $image_url = validateUrl($image, $defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
         $scan_status = null;

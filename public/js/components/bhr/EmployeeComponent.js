@@ -501,39 +501,27 @@ var EmployeeComponent = new (function () {
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${
-                                            data.name
-                                        }</p>
+                                        <p class="text-white text-capitalize">${data.name}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Name KH</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white text-capitalize">${
-                                            data.name_kh
-                                        }</p>
+                                        <p class="text-white text-capitalize">${data.name_kh}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Sex</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white">${
-                                            data.sex == "M" ? "Male" : ""
-                                        }${data.sex == "F" ? "Female" : ""}${
-                                            data.sex == "O" ? "Other" : ""
-                                        }</p>
+                                        <p class="text-white">${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap  width-p">Nationality</p>
                                         <p class="px-2">:</p>
-                                        <p class="text-white">${
-                                            data.nationality
-                                        }</p>
+                                        <p class="text-white">${data.nationality}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap text-white">${
-                                            data.marital_status
-                                        }</p>
+                                        <P class="text-nowrap text-white">${data.marital_status}</p>
                                     </div>
                                 </div>`,
 
@@ -541,38 +529,27 @@ var EmployeeComponent = new (function () {
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p">Staff Type</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap" style="color:#cab54a;">${
-                                            data.type
-                                        }</p>
+                                        <P class="text-nowrap" style="color:#cab54a;">${data.type}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Position</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap" style="color:#cab54a;">${
-                                            data.position
-                                        }</p>
+                                        <P class="text-nowrap" style="color:#cab54a;">${data.position}</p>
                                     </div>
-
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Email</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-white" style="text-align:left; overflow:hidden; white-space:wrap; text-overflow:ellipsis; word-wrap:break-word; white-space:nowrap;" >${
-                                            data.email
-                                        }</p>
+                                        <P class="text-white" style="text-align:left; overflow:hidden; white-space:wrap; text-overflow:ellipsis; word-wrap:break-word; white-space:nowrap;" >${data.email}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p">Phone Number</p>
                                         <P class="px-2">:</p>
-                                        <P class="text-nowrap text-white">${
-                                            data.phone_number
-                                        }</p>
+                                        <P class="text-nowrap text-white">${data.phone_number}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap  width-p">Husband/Wife Name</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-white">${
-                                            data.spouse_name ?? "not yet"
-                                        }</p>
+                                        <P class="text-white">${data.spouse_name ?? "not yet"}</p>
                                     </div>
                                 </div>`,
 
@@ -580,45 +557,32 @@ var EmployeeComponent = new (function () {
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${
-                                            data.nid
-                                        }</p>
+                                        <p class="text-nowrap text-white">${data.nid ?? "not have yet"}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport ID</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${
-                                            data.passport_number
-                                        }</p>
+                                        <p class="text-nowrap text-white">${data.passport_number ?? "not have yet"}</p>
                                     </div>
                                     <div class="d-flex">
                                         <p class="text-nowrap    width-p" vslang="titles.Passport ID">Passport Expiry</p>
                                         <p class="pl-5 pr-2">:</p>
-                                        <p class="text-nowrap text-white">${
-                                            data.passport_expiry_date ??
-                                            "not yet have"
-                                        }</p>
+                                        <p class="text-nowrap text-white">${data.passport_expiry_date ??"not have yet"}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-nowrap text-white">${
-                                            data.nssf_id
-                                        }</p>
+                                        <P class="text-nowrap text-white">${data.nssf_id ?? "not have yet"}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-white">${
-                                            data.spouse_occ_code ?? "ទទេ"
-                                        }</p>
+                                        <P class="text-white">${data.spouse_occ_code ?? "ទទេ"}</p>
                                     </div>
                                     <div class="d-flex">
                                         <P class="text-nowrap width-p " vslang="titles.Country">Country</p>
                                         <P class="pl-5 pr-2">:</p>
-                                        <P class="text-white">${
-                                            data.city_name ?? "ទទេ"
-                                        }</p>
+                                        <P class="text-white">${data.city_name ?? "ទទេ"}</p>
                                     </div>
 
                                 </div>
@@ -1846,6 +1810,10 @@ var EmployeeComponent = new (function () {
 
                             <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox"  value="salary" />
                             <label for="change_salary" class="text-primary-custom">Change Salary</label>
+
+                            <input data-target="div_work_shift" name="change_work_shift" class="mb-2 change-option " type="checkbox"  value="work_shift" />
+                            <label for="change_work_shift" class="text-primary-custom">Change Work Shift</label>
+
                         </div>
                     </div>
 
@@ -1924,6 +1892,33 @@ var EmployeeComponent = new (function () {
                             </div>
                         </div>
                     </div>
+                    <div name="div_work_shift" class="p-3 " style="display:none;">
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <label class="form-label" vslang="titles.Current Work Shift"></label>
+                                <span class="text-danger" >*</span>
+                                <select name="work_shift" id="work_shift" class="form-control data-input" data-field="work_shift_id" disabled>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="form-label" vslang="titles.To Work Shift"></label>
+                                <span class="text-danger" >*</span>
+                                <select name="to_work_shift" id="to_work_shift" class="form-control data-input" data-field="to_work_shift_id" >
+
+                                </select>
+                            </div>
+                            <div class=" form-group col-md-3">
+                                <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                                <span class="text-danger" >*</span>
+                                <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
+                            </div>
+                            <div id="remarks" class="form-group col-md-3">
+                                <label class="form-label" vslang="titles.Remarks"></label>
+                                <input name="work_shift_remarks" class="form-control  data-input" placeholder="" data-field="remarks">
+                            </div>
+                        </div>
+
+                    </div>
                 `;
                 },
                 // overrideMethod:{
@@ -1974,6 +1969,12 @@ var EmployeeComponent = new (function () {
                         textField: "title",
                         valueField: "id",
                     },
+                    {
+                        name: "to_work_shift_id",
+                        data: "work_shifts",
+                        textField: "name",
+                        valueField: "id",
+                    },
                 ],
                 buttons: [
                     {
@@ -1993,37 +1994,40 @@ var EmployeeComponent = new (function () {
                             d.emp_id = p.emp_id;
                             let change_branch = {},
                                 change_position = {},
-                                change_salary = {};
+                                change_salary = {},
+                                change_work_shift = {};
 
                             if (me.controls.change_branch.checked) {
                                 change_branch.branch_id = p.branch_id || null;
-                                change_branch.to_branch_id =
-                                    p.to_branch_id || null;
+                                change_branch.to_branch_id = p.to_branch_id || null;
 
-                                change_branch.remarks =
-                                    me.controls.branch_remarks.value;
+                                change_branch.remarks = me.controls.branch_remarks.value;
                                 change_branch.effective_date = p.effective_date;
                             }
                             if (me.controls.change_position.checked) {
                                 change_position.position_id = p.position_id;
-                                change_position.to_position_id =
-                                    p.to_position_id;
-                                change_position.remarks =
-                                    me.controls.position_remarks.value;
+                                change_position.to_position_id = p.to_position_id;
+                                change_position.remarks = me.controls.position_remarks.value;
                                 change_position.start_date = p.start_date;
                             }
                             if (me.controls.change_salary.checked) {
                                 change_salary.new_salary = p.new_salary;
-                                change_salary.remarks =
-                                    me.controls.salary_remarks.value;
+                                change_salary.remarks = me.controls.salary_remarks.value;
                                 change_salary.org_salary = p.salary;
                                 change_salary.org_position_id = p.position_id;
                                 change_salary.new_position_id = p.position_id;
+                            }
+                            if (me.controls.change_work_shift.checked) {
+                                change_work_shift.work_shift_id = p.work_shift_id;
+                                change_work_shift.to_work_shift_id = p.to_work_shift_id;
+                                change_work_shift.remarks = me.controls.work_shift_remarks.value;
+                                change_work_shift.effective_date = p.effective_date;
                             }
 
                             d.change_branch = change_branch;
                             d.change_position = change_position;
                             d.change_salary = change_salary;
+                            d.change_work_shift = change_work_shift;
 
                             vsapi
                                 .call(
@@ -2096,6 +2100,15 @@ var EmployeeComponent = new (function () {
                                 d.employee.position_id
                             );
                             me.controls.org_salary.value = d.employee.salary;
+                            VSUtil.setComboItems(
+                                me.controls.work_shift,
+                                d.work_shifts,
+                                "id",
+                                "name",
+                                null,
+                                null,
+                                d.employee.work_shift_id
+                            )
                         });
                     // me.controls.branch.value = data.employee.branch_id;
                     // me.controls.position.value = data.employee.position_id;
@@ -2499,7 +2512,7 @@ var EmployeeComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.EmployeeListView.showPage();
+                EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
             },
         };
         if (!AuthManager.allowed(208)) return;
@@ -3696,10 +3709,6 @@ const EmployeeDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
-                    //     if(me.dataOptions.id>0){
-                    //         me.controls.salary.setAttribute('readonly',true);
-
-                    // }else me.controls.salary.removeAttribute('readonly');
                 },
                 //onClose: (canceled) => {},
             });
