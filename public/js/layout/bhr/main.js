@@ -391,6 +391,22 @@ const main_view = new function(){
         mThis.btnNotif.textContent = d;
         mThis.btnNotif.dataset.count = d;
     }
+
+
+    mThis.setContentView = (viewInstance, title_prop = null) => {
+        const siblings = Array.from(viewInstance.parentElement.children);
+        
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== viewInstance && div.style.display !== 'none') {
+                div.style.display = 'none';
+            }
+        });
+        viewInstance.style.display = 'block';
+        // Set the title if provided
+        if (title_prop) mThis.setTitle(title_prop);
+    };
+
 };
 
 window.addEventListener('DOMContentLoaded',function(){

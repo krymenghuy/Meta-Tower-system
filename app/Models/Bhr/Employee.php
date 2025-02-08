@@ -739,6 +739,7 @@ class Employee //extends Model
         return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
         // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
+
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
@@ -749,7 +750,6 @@ class Employee //extends Model
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
-
             ->selectRaw('
                 emp.code,
                 emp.id,
@@ -771,6 +771,7 @@ class Employee //extends Model
                 '.DBX::formatDate('nid_expiry_date','nid_expiry_date').',
                 emp.position_id,
                 p.title as position,
+                p.title as position_title,
                 emp.salary,
                 emp.currency_code,
                 emp.emp_type_id,
@@ -799,7 +800,6 @@ class Employee //extends Model
         } else {
             $row = null; // Or handle the case where employee is not found
         }
-
         return $row;
     }
 
@@ -837,6 +837,7 @@ class Employee //extends Model
     {
         return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
+
     function getFormOptions($id, $ss)
     {
         $employee = null;
@@ -852,7 +853,6 @@ class Employee //extends Model
                 ['id' => '1', 'name' => 'tax'],
                 ['id' => '0', 'name' => 'non tax'],
             ],
-
             'nationalities' => GeneralSettings::options_nationality($ss),
             'currency_codes' => Money::options_currency($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
@@ -1144,7 +1144,8 @@ class Employee //extends Model
         if (!$change_branch && !$change_position && !$change_salary && !$change_work_shift) {
             return DV::error('No Promotion Request!');
         }
-
+         
+        DB::beginTransaction();
         // Create promotion record
         $promo_id = self::createPromotion($arr, $ss);
         if (!$promo_id) return DV::error('Failed to create promotion');
@@ -1158,6 +1159,7 @@ class Employee //extends Model
             if ($resBranch->status_code == 200) {
                 $event_names[] = 'Change Branch';
             } else {
+                DB::rollBack();
                 return $resBranch;
             }
         }
@@ -1167,6 +1169,7 @@ class Employee //extends Model
             if ($resPosition->status_code == 200) {
                 $event_names[] = 'Change Position';
             } else {
+                DB::rollBack();
                 return $resPosition;
             }
         }
@@ -1176,6 +1179,7 @@ class Employee //extends Model
             if ($resSalary ->status_code == 200) {
                 $event_names[] = 'Change Salary';
             } else {
+                DB::rollBack();
                 return $resSalary;
             }
         }
@@ -1184,9 +1188,11 @@ class Employee //extends Model
             if ($resWorkShift ->status_code == 200) {
                 $event_names[] = 'Change Work Shift';
             } else {
+                DB::rollBack();
                 return $resWorkShift;
             }
         }
+        DB::commit();
 
         foreach ($event_names as $event_name) {
             $event_data = [
@@ -1218,19 +1224,16 @@ class Employee //extends Model
                 \Log::error('Employee->promoteStaff(): Failed to create record in table "emp_events"');
             }
         }
-
         return DV::success(['message' => 'Employee promotion was successful']);
     }
 
     static function changeBranch($ss, $emp_id, $promo_id, $arr)
     {
-
         if (!$arr) return;
-
          $v_rule = [
             'branch_id' => '0|number',
             'to_branch_id' => '1|number',
-            'effective_date' => '1|date',
+            'effective_date' => '0|date',
             'remarks' => '0|string|1-300',
         ];
 
@@ -1240,9 +1243,15 @@ class Employee //extends Model
         }
 
         $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'branch_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_branch_id == $emp->branch_id) return DV::Error('Please select a different branch to change');
+
         $inputs['promo_id'] = $promo_id;
         $inputs['emp_id'] = $emp_id;
-
+        $effective_date = convertDate($d->effective_date ?? date('Y-m-d'));
+        $inputs['effective_date'] = $effective_date; 
         $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
         $branch_id = $arr['to_branch_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
@@ -1255,7 +1264,7 @@ class Employee //extends Model
         $v_rule = [
             'position_id' => '0|number',
             'to_position_id' => '1|number',
-            'start_date' => '1|date',
+            'start_date' => '0|date',
             'remarks' => '0|string|0-300'
         ];
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -1264,27 +1273,30 @@ class Employee //extends Model
         }
 
         $inputs = $res->values;
+        $d = (object)$inputs;
         $inputs['promo_id'] = $promo_id;
         $inputs['emp_id'] = $emp_id;
-
+        $emp = self::getProps($emp_id,'position_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_position_id == $emp->position_id) return DV::Error('Please select a different position to change');
+        $start_date = convertDate($d->start_date ?? date('Y-m-d'));
+        $inputs['start_date'] = $start_date; 
         $id = saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
         $position_id = $arr['to_position_id'];
-        $updated = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
-
-
-        return DV::depends(1, null);
+        $x = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
+        return DV::depends($x, null, 'Failed to change staff position');
     }
+
     static function changeSalary($ss, $emp_id, $promo_id, $arr)
     {
         if (!$arr) return;
-
         if (empty($arr['new_salary'])) {
             return DV::error('new salary is required.');
         }
-
         $v_rule = [
             'org_position_id' => '0|number',
             'new_position_id' => '0|number',
+            //'effective_date'=>'0|date',
             'org_salary' => '0|decimal',
             'new_salary' => '1|decimal'
         ];
@@ -1295,6 +1307,11 @@ class Employee //extends Model
         }
 
         $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'salary, currency_code');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->new_salary == $emp->salary) return DV::Error('Please select enter a different amount of salary for change');
+
         $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
         $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
 
@@ -1305,40 +1322,49 @@ class Employee //extends Model
 
         $id = saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
         $salary = $arr['new_salary'];
-        $updated = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
-
-        return DV::depends(1, null);
+        $x = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
+        return DV::depends(1, null, 'Failed to change staff salary');
     }
 
     static function changeWorkShift($ss, $emp_id, $promo_id, $arr)
     {
         if (!$arr) return;
-
         $v_rule = [
             'work_shift_id' => '0|number',
             'to_work_shift_id' => '1|number',
-            'effective_date' => '1|date',
+            'effective_date' => '0|date',
             'remarks' => '0|string|0-300'
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
+        if ($res->error)  return DV::error($res->error);
         $inputs = $res->values;
+        $d = (object)$inputs;
+        $emp = self::getProps($emp_id,'work_shift_id');
+        if(!$emp) return DV::error('Failed to change position because the given Employee ID does not exist');
+        if($d->to_work_shift_id == $emp->work_shift_id) return DV::Error('Please select a different workshift to change');
+
         $inputs['promo_id'] = $promo_id;
         $inputs['emp_id'] = $emp_id;
+        $effective_date = convertDate($d->effective_date ?? date('Y-m-d'));
+        $inputs['effective_date'] = $effective_date; 
 
+        $emp = self::getProps($emp_id,'name,code, work_shift_id');
+        if(!$emp) return DV::error('Employee ID does not exist');
         $id = saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
-        $work_shift_id = $arr['to_work_shift_id'];
-        $updated = DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
-        return DV::depends(1, null);
+        $work_shift_id = $inputs['to_work_shift_id'];
+        if($id){
+            $emp_name =$emp->name."( $emp->code)";
+            //$emp_name = $emp_name ?? "id $id";
+            $message = "$ss->full_name changed workshift for staff $emp_name from $emp->work_shift_id to $work_shift_id at ".getNowTime();
+            self::log($ss,$id,'change_work_shift',$message); 
+            DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
+        }
+        return DV::depends($id, null,'Failed to change employee work sift');
     }
 
     static function createPromotion($arr, $ss = null)
     {
-
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -1349,7 +1375,6 @@ class Employee //extends Model
             'change_work_shift' => '0|number|default=0'
 
         ];
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return null;
@@ -1372,23 +1397,17 @@ class Employee //extends Model
             'change_salary' => $change_salary,
             'change_work_shift' => $change_work_shift
         ];
-
-
         $id = saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
         if ($id > 0) {
             return $id;
         }
-
         return null;
     }
 
     function getEmployeeList($arr, $ss = null)
     {
         $d = (object) $arr;
-
         $search_value = $d->search_value ?? null;
-
-        $str_search = '1=1';
         $query = DB::table('employees as emp')
             ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
             ->selectRaw('emp.id,emp.phone_number,emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email,emp.address,emp.joining_date')
