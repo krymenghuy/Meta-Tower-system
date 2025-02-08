@@ -135,7 +135,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
     Route::post('/list', [LeaveController::class, 'getLeaveList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit')->group(function () {
-
+    Route::post('/import-emp-benefits', [EmployeeBenefitController::class, 'import']);
     Route::post('/save', [EmployeeBenefitController::class, 'saveBenefit']);
     Route::post('/bonus-list', [EmployeeBenefitController::class, 'getBonusList']);
     Route::post('/seniority-list', [EmployeeBenefitController::class, 'getSeniorityList']);
@@ -144,6 +144,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/delete', [EmployeeBenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [EmployeeBenefitController::class, 'getFormOptions']);
     Route::post('/all-list', [EmployeeBenefitController::class, 'getAllBenefitList']);
+    Route::post('/import', [EmployeeBenefitController::class, 'importBenefit']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
 

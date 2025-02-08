@@ -162,8 +162,8 @@ class Employee //extends Model
         $emp_id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
         if ($emp_id && $created) {
             $prefix = 'LC';
-            $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
-            //$new_code = $res->code;
+            $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $emp_id], $prefix, 5, null);
+            // $new_code = $res->code;
         }else if($emp_id){
           //If user has changed the joining date, that can cause the seniority payment to be wrong
           if($change_joining_date){
@@ -173,7 +173,7 @@ class Employee //extends Model
         }
 
         if ($emp_id > 0) {
-            //$new_code = null;
+            $new_code = null;
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
