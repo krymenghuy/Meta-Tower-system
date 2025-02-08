@@ -17,11 +17,12 @@ class EmployeeBenefitController extends Controller
     }
     function saveBenefit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->emp_benefit_id ?? $req->id;
+        $prn_code = $id ? 273 : 274;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->emp_benefit_id ?? $req->id;
         $emp_benefit = new EmployeeBenefit($id, $ss);
         $res = $emp_benefit->save($req->all());
         return JDV::raw($res);
@@ -45,7 +46,7 @@ class EmployeeBenefitController extends Controller
 
     public function deleteBenefit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 275);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {
@@ -64,7 +65,7 @@ class EmployeeBenefitController extends Controller
     }
     public function import(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 325);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

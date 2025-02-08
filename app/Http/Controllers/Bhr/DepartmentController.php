@@ -18,11 +18,12 @@ class DepartmentController extends Controller
 
     public function saveDepartment(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? null;
+        $prn_code = $id ? 216 : 217;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->id ?? null;
 
         $res = $this->departmentModel->save($req->all(),$id,$ss);
         return JDV::raw($res);
@@ -48,19 +49,19 @@ class DepartmentController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->departmentModel->getDetails($req->id, $ss));
+        return JDV::result($this->departmentModel->getDetails($req->id));
     }
 
     public function deleteDepartment(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 218);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res =  $this->departmentModel->deleteDepartment($req->id, $ss);
+        $res =  $this->departmentModel->deleteDepartment($req->id);
         return JDV::raw($res);
     }
 

@@ -20,12 +20,13 @@ class WarningController extends Controller
 
     public function saveWarning(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $res->warning_id ?? $req->id;
+        $prn_code = $id ? 244 : 245;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $is = $res->warning_id ?? $req->id;
-        $warning = new Warning($is, $ss);
+        $warning = new Warning($id, $ss);
         $res = $warning->save($req->all());
         return JDV::raw($res);
     }
@@ -50,7 +51,7 @@ class WarningController extends Controller
     }
     public function deleteWarning(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 246);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

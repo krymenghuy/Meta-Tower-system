@@ -18,11 +18,12 @@ class AccountController extends Controller
 
     public function saveAccount(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 315);
+        $id = $req->account_id ?? $req->id;
+        $prn_code = $id ? 315 : 256;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->account_id ?? $req->id;
         $account = new Account($id, $ss);
         $res = $account->save($req->all());
         return JDV::raw($res);
@@ -137,7 +138,7 @@ class AccountController extends Controller
     }
     public function transferTo(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 327);
         $id = $req->id;
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
@@ -148,7 +149,7 @@ class AccountController extends Controller
 
     public function getAccountInfo(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 211);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -19,7 +19,8 @@ class BenefitDisbursementController extends Controller
     public function saveBenefitDisbursement(Request $req)
     {
         $id = $req->emp_id ?? $req->id;
-        $ss = AuthService::verifyAuth($req, -1);
+        $prn_code = $id ? 276 : 277;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->benefitDisubrsement->save($req->benefit_id,$ss, $req->all());
         return JDV::raw($res);
@@ -53,13 +54,13 @@ class BenefitDisbursementController extends Controller
 
     public function deleteBenefitDisbursement(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 278);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->benefitDisubrsement->deleteBenefitDisbursement($req->id, $ss);
+        $res = $this->benefitDisubrsement->deleteBenefitDisbursement($req->id);
         return JDV::raw($res);
 
     }
