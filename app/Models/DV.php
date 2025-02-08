@@ -124,13 +124,13 @@ class DV
     static function needPermission($prn_number, $lang = null){
         $c_user = AuthService::user();
         $lang = $lang ?? ($c_user? $c_user->lang:'en');
-        return self::error('Permission ? is required::'.$prn_number,$lang,405);
+        return self::error('Permission ?? is required::'.$prn_number,$lang,405);
     }
 
     static function permissionRequired($prn_number, $lang = null){
         $c_user = AuthService::user();
         $lang = $lang ?? ($c_user? $c_user->lang:'en');
-        return self::error('Permission ? is required::'.$prn_number,$lang,405);
+        return self::error('Permission ?? is required::'.$prn_number,$lang,405);
     }
     // //$return_type = {'text','object','boolean','bool'}
     // static function valiate($data_type,$data,$return_type='object'){
