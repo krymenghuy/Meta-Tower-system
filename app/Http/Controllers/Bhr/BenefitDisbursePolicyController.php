@@ -19,11 +19,12 @@ class BenefitDisbursePolicyController extends Controller
 
     public function saveBenefitDisbursePolicy(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->benefit_disburse_policy_id ?? $req->id;
+        $prn_code = $id ? 279 : 280;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->benefit_disburse_policy_id ?? $req->id;
         $bdp = new BenefitDisbursePolicy($id, $ss);
         $res = $bdp->save($req->all());
         return JDV::raw($res);
@@ -48,12 +49,12 @@ class BenefitDisbursePolicyController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->bdp->getDetails($req->id, $ss));
+        return JDV::result($this->bdp->getDetails($req->id));
     }
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 281);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

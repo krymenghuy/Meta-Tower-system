@@ -19,11 +19,12 @@ class WorkShiftController extends Controller
 
     public function saveWorkShift(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->work_shift_id ?? $req->id;
+        $prn_code = $id ? 267: 268;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->work_shift_id ?? $req->id;
         $workShift = new WorkShift($id, $ss);
         $res = $workShift->save($req->all());
         return JDV::raw($res);
@@ -52,7 +53,7 @@ class WorkShiftController extends Controller
 
     public function deleteWorkShift(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 269);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -424,6 +424,10 @@ class Payroll
         $master_account_id =1;
         $authorized = self::isAuthorized($id);
         if (!$authorized) return DV::error('Payroll is not authorizad yet!');
+        $isDisbursed = self::isDisbursed($id);
+        if (!$isDisbursed) {
+            return DV::error('Payroll has not been disbursed yet');
+        }
         $payroll = self::getProps($id,'last_disburse_id');
         if(!$payroll) return DV::error('Payroll ID does not exist');
         $isDisbursed = self::isDisbursed($id);

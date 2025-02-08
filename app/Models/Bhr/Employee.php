@@ -88,7 +88,7 @@ class Employee //extends Model
             'nssf_id' => '0|string|0-100',
             'nid' => '1|string|1-100',
             'nid_expiry_date' => '0|date',
-            'apply_payroll_tax' => '1|number|default = 0',
+            'apply_payroll_tax' => '1|number|default = 1',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
             'marital_status' => '1|string|0-100',
@@ -849,8 +849,8 @@ class Employee //extends Model
         $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
             'payroll_taxes'=>[
-                ['id' => '0', 'name' => 'non tax'],
                 ['id' => '1', 'name' => 'tax'],
+                ['id' => '0', 'name' => 'non tax'],
             ],
 
             'nationalities' => GeneralSettings::options_nationality($ss),
@@ -861,7 +861,7 @@ class Employee //extends Model
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
             'positions' => GeneralSettings::options_position($ss),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
-            'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
+            'work_shifts' => GeneralSettings::options_work_shift($ss),
             'employee' => $employee,
             'employees' => $emps,
         ];
@@ -875,6 +875,7 @@ class Employee //extends Model
         return (object) [
             'branches' => GeneralSettings::options_branch($ss),
             'positions' => GeneralSettings::options_position($ss),
+            'work_shifts' => GeneralSettings::options_work_shift($ss),
             'employee' => $employee,
         ];
     }
@@ -1138,8 +1139,9 @@ class Employee //extends Model
         $change_branch = $d->change_branch ?? null;
         $change_position = $d->change_position ?? null;
         $change_salary = $d->change_salary ?? null;
+        $change_work_shift = $d->change_work_shift ?? null;
 
-        if (!$change_branch && !$change_position && !$change_salary) {
+        if (!$change_branch && !$change_position && !$change_salary && !$change_work_shift) {
             return DV::error('No Promotion Request!');
         }
 
@@ -1175,6 +1177,14 @@ class Employee //extends Model
                 $event_names[] = 'Change Salary';
             } else {
                 return $resSalary;
+            }
+        }
+        if($change_work_shift){
+            $resWorkShift = self::changeWorkShift($ss, $id, $promo_id, $change_work_shift);
+            if ($resWorkShift ->status_code == 200) {
+                $event_names[] = 'Change Work Shift';
+            } else {
+                return $resWorkShift;
             }
         }
 
@@ -1300,6 +1310,32 @@ class Employee //extends Model
         return DV::depends(1, null);
     }
 
+    static function changeWorkShift($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
+
+        $v_rule = [
+            'work_shift_id' => '0|number',
+            'to_work_shift_id' => '1|number',
+            'effective_date' => '1|date',
+            'remarks' => '0|string|0-300'
+        ];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+
+        $id = saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
+        $work_shift_id = $arr['to_work_shift_id'];
+        $updated = DB::table('employees')->where('id', $emp_id)->update(['work_shift_id' => $work_shift_id]);
+        return DV::depends(1, null);
+    }
+
     static function createPromotion($arr, $ss = null)
     {
 
@@ -1310,6 +1346,7 @@ class Employee //extends Model
             'change_branch' => '0|number|default=0',
             'change_position' => '0|number|default=0',
             'change_salary' => '0|number|default=0',
+            'change_work_shift' => '0|number|default=0'
 
         ];
 
@@ -1325,6 +1362,7 @@ class Employee //extends Model
         $change_branch = !empty($d->change_branch) ? 1 : 0;
         $change_position = !empty($d->change_position) ? 1 : 0;
         $change_salary = !empty($d->change_salary) ? 1 : 0;
+        $change_work_shift = !empty($d->change_work_shift) ? 1 : 0;
 
         $promo_inputs = [
             'emp_id' => $emp_id,
@@ -1332,6 +1370,7 @@ class Employee //extends Model
             'change_branch' => $change_branch,
             'change_position' => $change_position,
             'change_salary' => $change_salary,
+            'change_work_shift' => $change_work_shift
         ];
 
 

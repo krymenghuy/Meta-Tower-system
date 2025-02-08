@@ -212,6 +212,13 @@ class GeneralSettings //extends Model
 
         return $q->get();
     }
+    static function options_work_shift($ss){
+        $q = DB::table('work_shifts')
+            ->where('subs_id', hex2bin($ss->subs_id))
+            ->selectRaw('id, name');
+
+        return $q->get();
+    }
     static function options_emp_type($min_level,$ss){
         $str_min_level = '1=1';
         if($min_level) $str_min_level = "h_order >$min_level";

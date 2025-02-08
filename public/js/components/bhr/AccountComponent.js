@@ -494,7 +494,7 @@ var AccountManagementComponent = (function () {
                 mThis.AccountListView.showPage();
             },
         };
-
+        if (!AuthManager.allowed(327)) return;
         TransferDialog.show(op);
     };
     mThis.deposit_amount = (id, menuLink) => {

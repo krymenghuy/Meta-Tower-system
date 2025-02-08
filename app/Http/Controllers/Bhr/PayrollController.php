@@ -18,11 +18,12 @@ class PayrollController extends Controller
 
     public function savePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->payroll_id ?? $req->id;
+        $prn_code = $id ? 473 : 474;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->payroll_id ?? $req->id;
         $payroll = new Payroll($id, $ss);
         $res = $payroll->save($req->all());
         return JDV::raw($res);
@@ -40,7 +41,7 @@ class PayrollController extends Controller
 
     public function disburseAll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 476);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -51,15 +52,15 @@ class PayrollController extends Controller
     }
     public function reset(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 475);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $var = new Payroll();
         $id = $req->id;
-        return JDV::result($var->reset($id, $ss));
+        return JDV::raw($var->reset($id, $ss));
     }
-   
+
     public function calculatePayroll(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -92,7 +93,7 @@ class PayrollController extends Controller
         }
         $var = new Payroll();
         $id = $req->id?? $req->payroll_id;
-        return JDV::result($var->reverseTransactions($id, $ss));
+        return JDV::raw($var->reverseTransactions($id, $ss));
     }
 
     public function getPayrollListPaginate(Request $req)
@@ -114,20 +115,20 @@ class PayrollController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->payrollModel->getDetails($req->id, $ss));
+        return JDV::result($this->payrollModel->getDetails($req->id));
     }
 
 
     public function deletePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 478);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->payrollModel->delete($req->id, $ss);
+        $res = $this->payrollModel->delete($req->id);
         return JDV::raw($res);
     }
 
@@ -142,7 +143,7 @@ class PayrollController extends Controller
 
     public function authorizePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 474);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -153,7 +154,7 @@ class PayrollController extends Controller
 
         return JDV::raw($res);
     }
- 
+
     public function getEndDate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
