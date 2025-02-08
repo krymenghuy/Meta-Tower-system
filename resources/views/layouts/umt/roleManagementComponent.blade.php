@@ -183,7 +183,7 @@ div.role-card.selected > div.card-content {
                             <div class="w-50 d-flex flex-row gap-2 justify-content-between align-items-center">
                                 <div style="min-width:250px"> <select class="modal-select2" id="prn_app_chooser"></select></div>
                                 <div><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
-                                <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap d-flex"> <i class="fa fa-print text-white pe-2"> </i><span class=" text-nowrap" vslang="buttons.Print"></span></a> 
+                                <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" text-nowrap" vslang="buttons.Print"></span></a> 
                             </div>
                             <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div>
                         </div>

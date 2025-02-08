@@ -365,6 +365,7 @@ var RoleManagementComponent = new function(){
             RoleDialog.show(op);
         });
 
+        mThis.btnPrint.style.display ='none';
         mThis.btnPrint.addEventListener('click', e =>{
             e.preventDefault();
             let op = {
@@ -604,6 +605,7 @@ const RoleTabView = new function(){
     this.btnAddRoleMember = this.divSelf.querySelector('#_um_role_add_member');
     this.btnCreateUser = this.divSelf.querySelector('#_um_role_create_user');
     this.btnPrintUser = this.divSelf.querySelector('#_um_role_print_user');
+    this.btnPrintUser.style.display = 'none';
     this.elSearchUser = this.divSelf.querySelector('#_um_role_search_user');
    
     // this.resetPassword = (user_id, lnk)=>{
@@ -765,6 +767,7 @@ this.ModulePanel = new function(){
     const that = this;
     this.divSelf =  mThis.tabBody.querySelector('#view_modules');
     this.btnPrintModule = this.divSelf.querySelector('#_um_role_print_module');
+    this.btnPrintModule.style.display = 'none';
     this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
     this.elAppFilter.onchange = e=>{
       e.preventDefault();
@@ -864,6 +867,7 @@ this.PermissionPanel = new function(){
     const that = this;
     this.divSelf =  mThis.tabBody.querySelector('#view_permissions');
     this.btnPrintPermission = this.divSelf.querySelector('#_um_role_print_permission');
+    this.btnPrintPermission.style.display = 'none';
     this.elAppFilter = mThis.self.querySelector('#prn_app_chooser');
     this.elSearchPrn = mThis.self.querySelector('#prn_search');
     this.elAppFilter.onchange = e=>{
@@ -950,7 +954,7 @@ this.PermissionPanel = new function(){
     
     this.btnPrintPermission.addEventListener('click', e =>{
         e.preventDefault();
-        let op = {
+        const op = {
             role_id: mThis.selected_role.role_id,
             action: 'gen_permissions',
             onClose:(d)=>{

@@ -320,7 +320,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(262); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(271); ?>>
                             <a href="BenefitComponent" modid="262" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
@@ -329,7 +329,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Benefit List"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(273); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(272); ?>>
                             <a href="EmployeeBenefitComponent" modid="273" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
