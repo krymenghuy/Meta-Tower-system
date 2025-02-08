@@ -17,7 +17,9 @@ class HolidayController extends Controller
     }
     function saveHoliday(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? null;
+        $prn_code = $id ? 260 : 262;
+        $ss = AuthService::verifyAuth($req, $prn_code);
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $holiday = new Holiday($req->id, $ss);
@@ -46,7 +48,7 @@ class HolidayController extends Controller
     }
     public function deleteHoliday(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 263);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

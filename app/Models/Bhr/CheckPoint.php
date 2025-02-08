@@ -23,7 +23,7 @@ class CheckPoint
         return DB::table('check_points')->where('id', $id)->selectRaw($columns)->first();
     }
 
-    public function save($check_point, $ss, $arr)
+    public function save($id, $ss, $arr)
     {
         $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;

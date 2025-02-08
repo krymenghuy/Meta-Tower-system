@@ -45,7 +45,7 @@ class EmployeeDocumentController extends Controller
 
     public function deleteEmployeeDocument(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 502);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

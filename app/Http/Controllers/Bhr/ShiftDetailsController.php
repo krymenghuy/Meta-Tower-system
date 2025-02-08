@@ -18,12 +18,13 @@ class ShiftDetailsController extends Controller
 
     public function saveShiftDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->shift_details_id ?? $req->id;
+        $prn_code = $id ? 487 : 488;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        $id = $req->shift_details_id ?? $req->id;
         $shiftDetails = new ShiftDetails($id, $ss);
         $res = $shiftDetails->save($req->all());
         return JDV::raw($res);
@@ -52,14 +53,14 @@ class ShiftDetailsController extends Controller
 
     public function deleteShiftDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 489);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->shiftDetailsModel->deleteShiftDetails($req->id, $ss);
+        $res = $this->shiftDetailsModel->deleteShiftDetails($req->id);
         return JDV::raw($res);
     }
 

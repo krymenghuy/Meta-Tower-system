@@ -17,9 +17,11 @@ class CheckPointCategoryController extends Controller
     }
     function save(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? null;
+        $prn_code = $id ? 298 : 299;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->check_point_categories->save($req->check_point_category, $ss, $req->all());
+        $res = $this->check_point_categories->save($id, $ss, $req->all());
         return JDV::raw($res);
     }
     public function getListPaginate(Request $req)
@@ -52,14 +54,14 @@ class CheckPointCategoryController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 300);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->check_point_categories->delete($req->id, $ss);
+        $res = $this->check_point_categories->delete($req->id);
         return JDV::raw($res);
     }
     public function getAllList(Request $req)

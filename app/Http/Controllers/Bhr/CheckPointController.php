@@ -17,9 +17,11 @@ class CheckPointController extends Controller
     }
     function save(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? null;
+        $prn_code = $id ? 301 : 302;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->check_points->save($req->check_point, $ss, $req->all());
+        $res = $this->check_points->save($id, $ss, $req->all());
         return JDV::raw($res);
     }
     public function getList(Request $req)
@@ -47,19 +49,19 @@ class CheckPointController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->check_points->getFormOptions($req->id, $ss));
+        return JDV::result($this->check_points->getFormOptions($req->id));
     }
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 303);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->check_points->delete($req->id, $ss);
+        $res = $this->check_points->delete($req->id);
         return JDV::raw($res);
     }
 }
