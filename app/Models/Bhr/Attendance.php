@@ -92,6 +92,7 @@ class Attendance
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
+        $attendance_date = DBX::formatDate('a.attendance_date', 'attendance_date');
 
         // Query Construction
         $scan_date = DBX::formatDate('a.attendance_date', 'attendance_date');
@@ -101,7 +102,7 @@ class Attendance
             ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
-            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action, 
+            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action,
             p.title as position')->when(!empty($search_value), function ($q) use ($search_value) {
                 //$search_value = escape_like_str($filter->search_value);
                 return $q->where(function ($subQuery) use ($search_value){
@@ -113,7 +114,7 @@ class Attendance
             if($department_id) $query->where('d.id',$department_id);
             if($emp_type_id) $query->where('emp.emp_type_id',$emp_type_id);
             if($work_shift_id) $query->where('a.work_shift_id',$work_shift_id);
-            
+
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get()
             ->groupBy(fn($item) => $item->emp_id . '_' . $item->attendance_date)
@@ -388,7 +389,7 @@ class Attendance
         $file_name = $employee->photo_file_name;
         $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
         $image = PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
-     
+
         $image_url = validateUrl($image, $defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
         $scan_status = null;

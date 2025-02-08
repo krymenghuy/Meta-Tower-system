@@ -58,9 +58,9 @@ class PayrollController extends Controller
         }
         $var = new Payroll();
         $id = $req->id;
-        return JDV::result($var->reset($id, $ss));
+        return JDV::raw($var->reset($id, $ss));
     }
-   
+
     public function calculatePayroll(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
@@ -93,7 +93,7 @@ class PayrollController extends Controller
         }
         $var = new Payroll();
         $id = $req->id?? $req->payroll_id;
-        return JDV::result($var->reverseTransactions($id, $ss));
+        return JDV::raw($var->reverseTransactions($id, $ss));
     }
 
     public function getPayrollListPaginate(Request $req)
@@ -154,7 +154,7 @@ class PayrollController extends Controller
 
         return JDV::raw($res);
     }
- 
+
     public function getEndDate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
