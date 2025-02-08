@@ -18,8 +18,8 @@ class LeaveController extends Controller
     public function save(Request $req)
     {
         $id = $req->id;
-        // $prn_code = $id ? 306:305;
-        $ss = AuthService::verifyAuth($req, -1);
+        $prn_code = $id ? 240: 241;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $save = $this->leave->save($req->all(),$id,$ss);
 
@@ -57,7 +57,7 @@ class LeaveController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 242);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -80,7 +80,7 @@ class LeaveController extends Controller
 
    public function updateStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 321);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id;

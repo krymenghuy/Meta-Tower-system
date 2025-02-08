@@ -82,6 +82,12 @@ class Attendance
 
     public function getStaffAttendanceListPaginate($filter = [], $ss = null)
     {
+        $branch_id = $filter->branch_id ?? null;
+        $department_id =$filter->department_id ?? null;
+        $emp_type_id = $filter->emp_type_id ?? null;
+        $work_shift_id = $filter->work_shift_id ?? null;
+        $search_value = escape_like_str($filter->search_value ?? null);
+
         $filter = (object) $filter;
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
@@ -89,30 +95,25 @@ class Attendance
         $attendance_date = DBX::formatDate('a.attendance_date', 'attendance_date');
 
         // Query Construction
+        $scan_date = DBX::formatDate('a.attendance_date', 'attendance_date');
+        $dob = DBX::formatDate('emp.date_of_birth','dob');
         $query = DB::table('employees as emp')
-        ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
         ->join('positions as p', 'emp.position_id', '=', 'p.id')
             ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
-            ->selectRaw('
-            emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,
-            emp.date_of_birth as dob, ws.name as work_shift,
-            ' . $attendance_date . ', a.scan_time, a.scan_action,
-            p.title as position
-        ')
-            ->when(!empty($filter->search_value), function ($q) use ($filter) {
-                $search_value = $filter->search_value;
-                return $q->where(function ($subQuery) use ($search_value) {
+            ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
+            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action,
+            p.title as position')->when(!empty($search_value), function ($q) use ($search_value) {
+                //$search_value = escape_like_str($filter->search_value);
+                return $q->where(function ($subQuery) use ($search_value){
                     $subQuery->where('emp.code', $search_value)
-                        ->orWhere('emp.name', 'LIKE', "%{$search_value}%");
+                        ->orWhere('emp.name', 'LIKE', "%{$search_value}%")->orWhere('emp.phone_number','LIKE',"%$search_value%");
                 });
-            })
-            ->when(!empty($filter->branch_id), fn($q) => $q->where('emp.branch_id', $filter->branch_id))
-            ->when(!empty($filter->department_id), fn($q) => $q->where('d.id', $filter->department_id))
-            ->when(!empty($filter->emp_type_id), fn($q) => $q->where('emp.emp_type_id', $filter->emp_type_id))
-            ->when(!empty($filter->work_shift_id), fn($q) => $q->where('emp.work_shift_id', $filter->work_shift_id));
-            // ->orderBy('a.attendance_date', 'desc')
-            // ->orderBy('emp.id', 'desc');
+            })->orderByRaw('orderByDate DESC,emp.name,emp.code,a.work_shift_id');
+            if($branch_id) $query->where('emp.branch_id',$branch_id);
+            if($department_id) $query->where('d.id',$department_id);
+            if($emp_type_id) $query->where('emp.emp_type_id',$emp_type_id);
+            if($work_shift_id) $query->where('a.work_shift_id',$work_shift_id);
 
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get()
@@ -457,7 +458,7 @@ class Attendance
             'employee_name' => $employee_name,
             'image_url' => $image_url,
             'employee_code' => $employee_code,
-            'remarks' => $scan_status === 'out' ? $out_remarks : $remarks
+            'remarks' => $scan_status === 'out' ? 'N/A' : $remarks
         ];
         return DV::depends(1, $res);
     }

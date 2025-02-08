@@ -20,11 +20,12 @@ class TaxBracketController extends Controller
 
     public function saveTaxBracket(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? $req->id;
+        $prn_code = $id ? 253: 254;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->id ?? $req->id;
         $tax = new TaxBracket($id,$ss);
         $res = $tax->save($req->all());
 
@@ -56,7 +57,7 @@ class TaxBracketController extends Controller
 
     public function deleteTaxBracket(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 255);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

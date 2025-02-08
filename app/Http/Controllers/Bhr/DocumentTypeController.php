@@ -17,7 +17,7 @@ class DocumentTypeController extends Controller
     }
     function save(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 503);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->document_types->save($req->doc, $ss, $req->all());
         return JDV::raw($res);

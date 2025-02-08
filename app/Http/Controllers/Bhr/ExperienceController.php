@@ -17,9 +17,10 @@ class ExperienceController extends Controller
     }
     public function save(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 1);
-        if ($ss->status_code != 200) return JDV::raw($ss);
         $id = $req->id ?? $req->id;
+        $prn_code = $id ? 497 : 498;
+        $ss = AuthService::verifyAuth($req, $prn_code);
+        if ($ss->status_code != 200) return JDV::raw($ss);
         $edu = $this->experience->saveExperience($req->all(), $id, $ss);
         return JDV::raw($edu);
     }
@@ -54,7 +55,7 @@ class ExperienceController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 499);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {

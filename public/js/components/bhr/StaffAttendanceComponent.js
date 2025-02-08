@@ -4,12 +4,12 @@ var StaffAttendanceComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_staffAttendanceComponent");
     mThis.self = mThis.jm[0];
-    mThis.title_prop = "Staff Attendance";
+    mThis.title_prop = "Staff Attendances";
     mThis.btnAdd = mThis.self.querySelector("#_btnAddStaffAttendance");
     mThis.elSearch = mThis.self.querySelector("#_staff_attendance_search");
     mThis.containerFilter = mThis.self.querySelector('#container_scan_filter');
-
-
+    mThis.divListView = mThis.self.querySelector('#_staff_attendance_list');
+ 
     mThis.cols = [
         {
             title: "",
@@ -80,18 +80,12 @@ var StaffAttendanceComponent = (function () {
                     .join("");
             },
         }
-
-
-
-
-
-
     ];
 
     mThis.init = function () {
         if (mThis.initAlready) return;
 
-        mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
+        mThis.StaffAttendanceListView = new ListView(mThis.divListView, {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -109,7 +103,7 @@ var StaffAttendanceComponent = (function () {
                     mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(213)) return;
+            // if (!AuthManager.allowed(247)) return;
             StaffAttendanceDialog.show(op);
         };
 

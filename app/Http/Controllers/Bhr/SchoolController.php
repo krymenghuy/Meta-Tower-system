@@ -17,7 +17,7 @@ class SchoolController extends Controller
     }
     function save(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 496);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->schools->save($req->school, $ss, $req->all());
         return JDV::raw($res);
@@ -39,7 +39,7 @@ class SchoolController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->schools->getDetails($req->id, $ss));
+        return JDV::result($this->schools->getDetails($req->id));
     }
     public function getFormOptions(Request $req)
     {
@@ -47,7 +47,7 @@ class SchoolController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->schools->getFormOptions($req->id, $ss));
+        return JDV::result($this->schools->getFormOptions($req->id));
     }
 
     public function delete(Request $req)
@@ -59,7 +59,7 @@ class SchoolController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->schools->delete($req->id, $ss);
+        $res = $this->schools->delete($req->id);
         return JDV::raw($res);
     }
     public function schoolList(Request $req)

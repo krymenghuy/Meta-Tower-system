@@ -27,7 +27,7 @@ class CheckPointCategory //extends Model
             ->first();
     }
 
-    public function save($check_point_category, $ss, $arr)
+    public function save($id, $ss, $arr)
     {
         $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;

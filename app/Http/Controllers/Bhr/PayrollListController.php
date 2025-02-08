@@ -31,10 +31,10 @@ class PayrollListController extends Controller
 
     public function removeStaff(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 215);
         if ($ss->status_code !== 200)  return JDV::raw($ss);
         $id = $req->id;
-        $res = $this->payrollListModel->removeStaff($id, $ss);
+        $res = $this->payrollListModel->removeStaff($id);
         return JDV::raw($res);
     }
 
@@ -71,7 +71,7 @@ class PayrollListController extends Controller
 
     public function addDeduction(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 214);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -16,9 +16,10 @@ class EducationController extends Controller
         $this->education = new Education();
     }
     public function save(Request $req){
-        $ss = AuthService::verifyAuth($req,1);
-        if($ss->status_code !=200) return JDV::raw($ss);
         $id = $req->id ?? $req->edu_id;
+        $prn_code = $id ? 493 : 494;
+        $ss = AuthService::verifyAuth($req,$prn_code);
+        if($ss->status_code !=200) return JDV::raw($ss);
         $edu = $this->education->save($req->all(),$id, $ss);
         return JDV::raw($edu);
     }
@@ -50,7 +51,7 @@ class EducationController extends Controller
     }
 
     public function delete(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = AuthService::verifyAuth($req,495);
         if($ss->status_code !==200) return JDV::raw($ss);
 
         if(!isset($req->id) || !is_numeric($req->id)){
