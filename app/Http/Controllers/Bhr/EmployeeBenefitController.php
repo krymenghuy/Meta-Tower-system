@@ -69,7 +69,7 @@ class EmployeeBenefitController extends Controller
             return JDV::raw($ss);
         }
         $res = $this->benefitModel->importBenefits($req->all(), $ss);
-        return JDV::result($res);
+        return JDV::raw($res);
     }
     
     
