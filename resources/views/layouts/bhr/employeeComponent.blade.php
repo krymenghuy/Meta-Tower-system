@@ -160,7 +160,7 @@
 
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0;">
-    <div id="sub_content" class="">
+    <div id="_emplist_container" style ="display:none">
         <div class="d-flex justify-content-between shadow p-3 mt-2 rounded-2 w-100" id="div_filter_filed">
             <div class="d-flex align-items-center justify-content-start w-75 gap-3">
                 <div class="d-flex w-25 gap-3">
@@ -194,11 +194,11 @@
                 </button>
             </div>
         </div>
-        <div id="_employee_list" class="mt-3 px-3" style="height:70vh"></div>
+        <div id="_employee_list" class="mt-3 px-3" style="height:45vh"></div>
         <div id="container_pagination" style="background:#f5f5f5" class="px-3  d-flex justify-content-start"></div>
     </div>
 
-    <div class="d-none" id="view_see_info__">
+    <div style ="display:none" id="_emp_profile_view">
         <div class="d-flex shadow rounded-2 justify-content-between px-3 mt-2" id="view_buttons">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:150px;"
                 class="btn text-white shadow rounded-4 m-2" type="button">
@@ -211,7 +211,7 @@
                 <span class="" vslang="buttons.Print CV">Print CV</span>
             </button>
         </div>
-        <div id="_view_profile_container">
+        <div>
             <div class="overflow-y-auto overflow-x-hidden mb-5" style="height:550px;" id="sub_view_profile">
                 <div id="profile_info_emp">
 
