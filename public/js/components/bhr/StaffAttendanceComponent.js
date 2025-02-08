@@ -109,7 +109,7 @@ var StaffAttendanceComponent = (function () {
                     mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(213)) return;
+            // if (!AuthManager.allowed(247)) return;
             StaffAttendanceDialog.show(op);
         };
 

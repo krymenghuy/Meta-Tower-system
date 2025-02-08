@@ -487,7 +487,7 @@ var WalletAccountComponent = (function () {
             emp_id: emp_id,
             account_id: id,
         }
-        if (!AuthManager.allowed(259)) return;
+        if (!AuthManager.allowed(259)) return; // add comma (259, true) it show silent mode
         vsapi.call(`${main_view.base_url}/hr/account/print-transaction`,op,false,false,false).then(res => {
 
             if(res.status_code == 200){

@@ -18,7 +18,7 @@ class AccountController extends Controller
 
     public function saveAccount(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 315);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -29,7 +29,7 @@ class AccountController extends Controller
     }
     public function bulkCreateAccounts(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 210);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -70,19 +70,19 @@ class AccountController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->account->getDetails($req->id, $ss));
+        return JDV::result($this->account->getDetails($req->id));
     }
 
     public function deleteAccount(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 212);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->account->delete($req->id, $ss);
+        $res = $this->account->delete($req->id);
         return JDV::raw($res);
     }
 
@@ -107,7 +107,7 @@ class AccountController extends Controller
     }
     public function deposit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 326);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

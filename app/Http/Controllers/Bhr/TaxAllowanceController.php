@@ -20,11 +20,12 @@ class TaxAllowanceController extends Controller
 
     public function saveTaxAllowance(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $id = $req->id ?? $req->allowance_id;
+        $prn_code = $id ? 490 : 491;
+        $ss = AuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->id ?? $req->allowance_id;
         return $this->tax_allowance->save($req->all(),$id, $ss);
     }
 
@@ -59,7 +60,7 @@ class TaxAllowanceController extends Controller
 
     public function deleteTaxAllowance(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = AuthService::verifyAuth($req, 492);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
