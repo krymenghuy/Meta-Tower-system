@@ -80,8 +80,10 @@ function getAccessBranches($ss=null,$filter_branch_id = null){
 
 
 function escape_like_str($portion) {
-    return mb_convert_encoding(trim(str_replace(['\\', '%', '_', '\''], ['\\\\', '\\%', '\\_', '\\\''], $portion)), 'UTF-8');
+    $portion = mb_substr(trim($portion), 0, 250, 'UTF-8'); // Trim and limit to 250 chars
+    return strtr($portion, ['\\' => '\\\\', '%' => '\\%', '_' => '\\_', '\'' => '\\\'']);
 }
+
 function strNoSpace($value){
     $value = preg_replace('/[^\p{Khmer}A-Za-z0-9@.\-\s]/u', '', $value);
     $value = trim($value);
