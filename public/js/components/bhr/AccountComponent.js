@@ -690,8 +690,8 @@ const AccountDialog = (() => {
                             <input name="account_number" class="form-control data-input" data-field="account_number" placeholder="AUTO" />
                         </div>`,
                         `<div class="form-group col-6">
-                            <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                            <input name="ballance" class="form-control data-input" data-field="balance"  />
+                            <label for="balance" class="form-label" vslang="titles.Balance"></label>
+                            <input name="balance" type="number" class="form-control data-input" data-field="balance"  />
                         </div>`,
                         `<div class="form-group col-6">
                                 <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
@@ -792,10 +792,9 @@ const AccountDialog = (() => {
 
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.controls.account_number.setAttribute('readOnly',true);
-                    me.controls.currency_code.value = VSMoney.getCurrency().code;
-                    me.controls.currency_code.setAttribute('disabled',true);
-                    me.controls.employee.setAttribute('disabled',me.dataOptions.id > 0);
+                    me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly,['balance','employee'],isReadOnly? null : {"balance":"0.00"});
                     // me.controls.account_name.style.display = me.dataOptions.id > 0 ? 'block':'none';
                     // me.controls.account_name.setAttribute('readonly',true);
 

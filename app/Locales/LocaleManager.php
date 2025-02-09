@@ -30,21 +30,20 @@ class LocaleManager{
         static function getLangContents(){
             return LangContentProvider::langContents();
         }
- 
-        static function replace_marks($str,$arr)
-        {
-            $out=''; 
-            $x=0;
-            $dd = explode('??',$str);
-            foreach ($dd as $part) 
-            {
-                $out.=$part;
-                if (isset($dd[$x+1])) $out.=isset($arr[$x])?$arr[$x]:'';
-                $x++;
-                 
+        static function replace_marks($str, $arr) {
+            $parts = explode('??', $str);
+            $count = count($parts);
+            
+            if ($count === 1) return $str; // No replacements needed
+        
+            $out = $parts[0];
+            
+            for ($i = 1; $i < $count; $i++) {
+                $out .= ($arr[$i - 1] ?? '') . $parts[$i];
             }
+            
             return $out;
-        }
+        }        
         static function getLangText($lang='en',$text_prop=null,$section=null){
             if (!$text_prop) return 'No translated text';
             $section = $section ?? 'validation';
@@ -80,7 +79,7 @@ class LocaleManager{
             }
         }
 
-    static function trans($text_prop,$langSection='validation',$replacements=null,$lang = null){
+    static function trans($text_prop,$langSection = 'validation',$replacements=null,$lang = null){
         if(!$lang){
             $user = AuthService::user();
             $lang = $user? $user->lang : self::$default_lang;

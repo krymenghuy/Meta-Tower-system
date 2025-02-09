@@ -495,7 +495,6 @@ var EmployeeComponent =  new function () {
     };
 
     mThis.renderProfile = (data) => {
-        console.log('here::',data);
         let html = [
             `<div class="employee-card d-flex bg-primary-custom h-info-employee mb-2" data-id="">`,
             `<div class="d-block w-100">`,
@@ -1856,9 +1855,7 @@ var EmployeeComponent =  new function () {
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.To Branch"></label>
                                 <span class="text-danger" >*</span>
-                                <select name="to_branch" id="to_branch" class="form-control data-input" data-field="to_branch_id" >
-
-                                </select>
+                                <select name="to_branch" class="form-control data-input" data-field="to_branch_id"> </select>
                             </div>`,
                             // `<div class=" form-group col-md-3">
                             //     <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
@@ -1955,7 +1952,6 @@ var EmployeeComponent =  new function () {
                         const elements = div.querySelectorAll("input.change-option");
                         elements.forEach(
                             (input) => {
-                                console.log("hh1: ", input);
                                 input.onchange = (e) => {
                                     e.preventDefault();
                                     const divTarget = me.controls[input.dataset.target];
@@ -1969,19 +1965,6 @@ var EmployeeComponent =  new function () {
                         );
                     };
                     me.setEvent(me.divModal);
-                    
-                    me.setReadOnly = (elements,yes= true)=>{
-                        elements.map(fieldName =>{
-                           const el = me.controls[fieldName];
-                           if(el){
-                             if(el.tagName ==='select'){
-                                   el.setAttribute('disabled',yes);
-                             }else{
-                                if(yes) el.setAttribute('readOnly',yes); else el.removeAttribute('readOnly');
-                             } 
-                           }
-                        });
-                    };
                 },
                 configSelect: [
                     {
@@ -2096,7 +2079,7 @@ var EmployeeComponent =  new function () {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
-                    me.setReadOnly(['org_branch','org_position','org_salary','org_work_shift'],true);
+                    me.setReadOnly(true,['org_branch','org_position','org_salary','org_work_shift']);
                     //const op = { id: me.dataOptions.id };
 
                     // vsapi.call(
@@ -2533,14 +2516,14 @@ var EmployeeComponent =  new function () {
         mThis.RejoinDialog.show(op);
     };
     mThis.editEmployee = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
             },
         };
-        if (!AuthManager.allowed(208)) return;
+        if (!AuthManager.allowed(208,false)) return;
         EmployeeDialog.show(op);
     };
 
@@ -3461,7 +3444,7 @@ const EmployeeDialog = (() => {
                             }
                             return true;
                         },
-                        //When user browse new photo and loads it in
+                        //When user browse new photo and loads it in the IMG element
                         onOpenImage: (img) => {
                             if (me.dataOptions.id > 0) {
                                 me.saveProfilePhoto(img, me.dataOptions.id);
@@ -3674,9 +3657,9 @@ const EmployeeDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {
