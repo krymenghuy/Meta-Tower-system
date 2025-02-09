@@ -1,12 +1,12 @@
 "use strict";
 var EmployeeComponent =  new function () {
     const mThis = this;
-    this.title_prop = "Employee management";
+    this.title_prop = "Employee Management";
     this.defaultPage = 'employee_list';
 
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_employeeComponent");
-    mThis.self = mThis.jm[0];
+    mThis.self = main_view.VSAppContent.querySelector ("#_main_employeeComponent");
+    //mThis.self = mThis.jm[0];
 
     mThis.elEmployeeStatus = mThis.self.querySelector("#filter_employee_status");
 
@@ -121,18 +121,29 @@ var EmployeeComponent =  new function () {
         mThis.initAlready = true;
     };
 
+    mThis.setDefaultFilter = (d = null, triggerChangeEvent = true)=>{
+       d = d || mThis.rem_filter;
+       if(d){
+        const elements =  mThis.div_filter_fields.querySelectorAll(".filter-field");
+        elements.forEach((el) => {
+                 const f = el.dataset.field;
+                 el.value = d[f];
+                 if(triggerChangeEvent && el.tagName.toLowerCase() ==='select') el.dispatchEvent(new Event('change')); 
+        });
+       }
+    };
 
     mThis.getFilterData = () => {
-        const p = {};
-        p.status_id = mThis.elEmployeeStatus.value;
-        p.emp_type_id = mThis.elEmployeeType.value;
-        p.branch_id = mThis.el_branch.value;
-        p.work_shift_id = mThis.el_work_shift.value;
-        p.search_value = mThis.elSearch.value;
-        mThis.div_filter_fields
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
-                let f = el.dataset.field;
+        const p = {"search_value":mThis.elSearch.value};
+        //NO NEED TO set these values
+        // p.status_id = mThis.elEmployeeStatus.value;
+        // p.emp_type_id = mThis.elEmployeeType.value;
+        // p.branch_id = mThis.el_branch.value;
+        // p.work_shift_id = mThis.el_work_shift.value;
+        //p.search_value = mThis.elSearch.value;
+        const elements =  mThis.div_filter_fields.querySelectorAll(".filter-field");
+        elements.forEach((el) => {
+                const f = el.dataset.field;
                 p[f] = el.value;
             });
 
@@ -149,11 +160,13 @@ var EmployeeComponent =  new function () {
        }
        switch(pageName){
          case 'employee_list':{
+            mThis.currentPage = 'employee_list';
             mThis.EmployeeListView.showPage(op);
             break;
          }
          case 'profile_view':
             {
+                mThis.currentPage = 'profile_view';
                 const emp_id = (op.emp_id || op.id || op); 
                 const p = {"id": emp_id};
                 const res = await vsapi.call([main_view.base_url, '/hr/employee/details'].join(''),p,false,null);
@@ -164,6 +177,7 @@ var EmployeeComponent =  new function () {
                 mThis.renderCardRight(emp_id);
                 mThis.renderCardTaxAllowance(emp_id);
                 mThis.renderEmpDocuments(emp_id);
+              
                 break;
             }
           default:{
@@ -2601,8 +2615,8 @@ var EmployeeComponent =  new function () {
                     d.status,
                     "id",
                     "name",
-                    null,
-                    null,
+                    "",
+                    "(All Statuses)",
                     10
                 );
                 VSUtil.setComboItems(
@@ -2610,8 +2624,8 @@ var EmployeeComponent =  new function () {
                     d.types,
                     "id",
                     "name",
-                    false,
-                    null,
+                    '',
+                    '(All Types)',
                     3
                 );
                 VSUtil.setComboItems(
@@ -2619,8 +2633,8 @@ var EmployeeComponent =  new function () {
                     d.branches,
                     "id",
                     "branch_name",
-                    true,
-                    "All Branch",
+                    '',
+                    "(All Branches)",
                     null
                 );
                 VSUtil.setComboItems(
@@ -2628,8 +2642,8 @@ var EmployeeComponent =  new function () {
                     d.work_shifts,
                     "id",
                     "name",
-                    true,
-                    "All Shift",
+                    '',
+                    "(All Shifts)",
                     null
                 );
 
@@ -2639,7 +2653,7 @@ var EmployeeComponent =  new function () {
 
     mThis.show = function () {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
+        //main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(()=>{
              mThis.showPage(mThis.defaultPage,mThis.getFilterData());
         });
@@ -3345,8 +3359,8 @@ const EmployeeDialog = (() => {
                         '<input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />',
                         "</div>",
                         '<div class="form-group col-4">',
-                        '<label for="city_name" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>',
-                        '<select name="city_name" class="form-control data-input" data-field="birth_city_id"></select>',
+                        '<label for="birth_city" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>',
+                        '<select name="birth_city" class="form-control data-input" data-field="birth_city_id"></select>',
                         "</div>",
 
                         '<div class="form-group col-4">',
@@ -3537,7 +3551,7 @@ const EmployeeDialog = (() => {
                         valueField: "id",
                     },
                     {
-                        name: "city_name",
+                        name: "birth_city",
                         data: "cities",
                         textField: "city_name",
                         valueField: "birth_city_id",
@@ -3558,36 +3572,36 @@ const EmployeeDialog = (() => {
                         valueField: "id",
                     },
                 ],
-                overrideMethod: {
+                extendMethod: {
                     setData: (me, data) => {
-                        const id = me.dataOptions.id;
-                        const fields = me.fields;
-                        //fields to be reasOnly or disabled when Editing employee
-                        const disabled_fields = [
-                            "salary",
-                            "position_id",
-                            "work_shift_id",
-                            "department_id",
-                            "emp_type_id",
-                        ];
-                        for (const name in fields) {
-                            const el = fields[name];
-                            if (id > 0) {
-                                if (disabled_fields.indexOf(name) >= 0) {
-                                    if (el.tagName.toLowerCase() === "select") {
-                                        el.setAttribute("disabled", true);
-                                    } else el.setAttribute("readonly", true);
-                                }
-                            } else {
-                                if (el.tagName.toLowerCase() === "select") {
-                                    el.setAttribute("disabled", false);
-                                } else el.removeAttribute("readonly");
-                            }
-                            el.value = data[name] ?? "";
-                        }
+                        //const id = me.dataOptions.id;
+                        // const fields = me.fields;
+                        // //fields to be reasOnly or disabled when Editing employee
+                        // const disabled_fields = [
+                        //     "salary",
+                        //     "position_id",
+                        //     "work_shift_id",
+                        //     "department_id",
+                        //     "emp_type_id",
+                        // ];
+                        // for (const name in fields) {
+                        //     const el = fields[name];
+                        //     if (id > 0) {
+                        //         if (disabled_fields.indexOf(name) >= 0) {
+                        //             if (el.tagName.toLowerCase() === "select") {
+                        //                 el.setAttribute("disabled", true);
+                        //             } else el.setAttribute("readonly", true);
+                        //         }
+                        //     } else {
+                        //         if (el.tagName.toLowerCase() === "select") {
+                        //             el.setAttribute("disabled", false);
+                        //         } else el.removeAttribute("readonly");
+                        //     }
+                        //     el.value = data[name] ?? "";
+                        // }
 
                         me.empImageBox.setImage(data.image_url);
-                        me.controls.type.value = data.emp_type_id;
+                        //me.controls.type.value = data.emp_type_id;
                     },
                 },
                 buttons: [
@@ -3600,12 +3614,10 @@ const EmployeeDialog = (() => {
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: "<span vslang='titles.Save'>Save</span>",
                         cssClass: "btn btn-sm btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
-                            console.log(12340000, p);
-
                             p.photo = me.empImageBox
                                 ? me.empImageBox.getImage()
                                 : "";
@@ -3623,22 +3635,16 @@ const EmployeeDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Updated employee successfully"
-                                            );
-                                            EmployeeComponent.self
-                                                .querySelector(
-                                                    "#_btn_backTo_employee"
-                                                )
-                                                .click();
-                                        } else {
-                                            cv_interact.success(
-                                                "Added employee successfully"
-                                            );
-                                        }
-                                        //EmployeeComponent.btnBack.click();
-                                        // EmployeeDialog.show(me.dataOptions);
+                                        if (me.dataOptions.id > 0) 
+                                            cv_interact.success( "Employee inforamtion was updated successfully");
+                                        else cv_interact.success("New employee was created successfully");
+                                        const currentPage = EmployeeComponent.currentPage;
+                                        if(currentPage ==='employee_list')
+                                           EmployeeComponent.setDefaultFilter({"search_value":p.code || p.name, "status_id":"", "emp_type_id":"", "branch_id":"","work_shift_id":""});
+                                        else if (me.dataOptions.id && currentPage ==='profile_view')
+                                           EmployeeComponent.showPage('profile_view',{"emp_id":me.dataOptions.id});   
+                                        //EmployeeComponent.showPage('employee_list',{"search_value":p.code || p.name});
+                                     
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -3664,6 +3670,8 @@ const EmployeeDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+                    const isReadOnly = me.dataOptions.id > 0;
+                    me.setReadOnly(isReadOnly, ['salary','department_id','branch_id','position','work_shift','type']);
                 },
                 //onClose: (canceled) => {},
             });
@@ -3843,7 +3851,7 @@ const AddEmployeeDocumentDialog = (() => {
                         click: (me) => me.hide(false),
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: "<span vslang='titles.Save'>Save</span>",
                         cssClass: "btn btn-primary",
                         click: (me) => {
                             const data = me.getData();
@@ -3916,11 +3924,7 @@ const PrintCV = (() => {
                 cssClass: "modal-xl d-flex justify-content-center",
                 createContent: () => {
                     return [
-                        `<div name="_div_print_cv">
-
-
-
-                    </div>`,
+                        `<div name="_div_print_cv"></div>`,
                     ].join("");
                 },
                 onPrepareForm: (me,data) => {
@@ -3941,7 +3945,7 @@ const PrintCV = (() => {
                         },
                     },
                     {
-                        label: '<span>Print</span>',
+                        label: '<span vslang="titles.Print">Print</span>',
                         cssClass: "btn btn-sm btn-success",
                         click: (me) => {
                             windowPrintCV(me.controls._div_print_cv.innerHTML,null);

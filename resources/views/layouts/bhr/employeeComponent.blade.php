@@ -165,7 +165,7 @@
             <div class="d-flex align-items-center justify-content-start w-75 gap-3">
                 <div class="d-flex w-25 gap-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="form-control filter-field btn_search ps-5" id="_search_employee" placeholder="Search...">
+                        <input type="text" class="form-control filter-field btn_search ps-5" data-field="search_value" id="_search_employee" placeholder="Search...">
                         <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
                     </div>
 
@@ -173,7 +173,7 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="el_branch" class="data-input  filter-field"
-                        data-field="el_branch"></select>
+                        data-field="branch_id"></select>
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="el_work_shift" class="data-input  filter-field"
@@ -181,11 +181,11 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="filter_employee_status" class="data-input filter-field"
-                        data-field="status"></select>
+                        data-field="status_id"></select>
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="filter_employee_type" class="data-input filter-field"
-                        data-field="emp_type"></select>
+                        data-field="emp_type_id"></select>
                 </div>
             </div>
             <div class="d-flex align-items-start justify-content-end w-25">
