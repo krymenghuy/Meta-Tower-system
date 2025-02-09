@@ -111,13 +111,14 @@ class Employee //extends Model
             $expire_date = $d->nid_expiry_date ?? null;
             if (!$expire_date) return DV::error('Expiry Date for National ID Card is required');
             else $inputs['nid_expiry_date'] = convertDate($expire_date);
-        }
+        } else $inputs['nid_expiry_date'] = null;
+        
         $passport_number = $d->passport_number;
         if($passport_number){
             $expire_date = $d->passport_expiry_date ?? null;
             if (!$expire_date) return DV::error('Expiry Date for passport is required');
             else $inputs['passport_expiry_date'] = convertDate($expire_date);
-        }
+        } else $inputs['passport_expiry_date'] = null;
 
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
