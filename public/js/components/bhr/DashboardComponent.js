@@ -9,7 +9,7 @@ var DashboardComponent =  (function () {
    
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     mThis.onShow = (options) => {
-        if (!AuthManager.allowed(254)) return; 
+        if (!AuthManager.allowed(254,true)) return; 
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector(".btn-db-fitler");
@@ -24,13 +24,13 @@ var DashboardComponent =  (function () {
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     mThis.onHide = (options) => {
-        if (!AuthManager.allowed(254)) return; 
+        if (!AuthManager.allowed(254,true)) return; 
         mThis.removeFilterButton();
     };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        if(!AuthManager.allowed(254)){
+        if(!AuthManager.allowed(254,true)){
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
@@ -653,7 +653,7 @@ var DashboardComponent =  (function () {
     };
   
     mThis.show = (options) => {
-        if (!AuthManager.allowed(254)){
+        if (!AuthManager.allowed(254,true)){
             mThis.self.innerHTML = renderUserHome();
             main_view.setContentView(mThis.self, mThis.title_prop);
             return;
@@ -671,11 +671,19 @@ var DashboardComponent =  (function () {
     };
 
     const renderUserHome = ()=>{
-        return ['<div class="d-flex mt-3 p-2 align-items-center justify-items-center">',
-         '<h3>This is fake dashboard</h3>',
-         '</div>'].join('');
+        return [
+            `<div class="container mt-4">
+                <div class="d-flex align-items-center justify-content-center p-4 user-home-header">
+                    <div class="text-center">
+                        <h1 class="text-primary-custom fw-bold">Welcome to LC</h1>
+                        <p class="text-muted">Manage your profile, settings, and more from here.</p>
+                    </div>
+                </div>
+                    <img src="../../../assets/images/logo/loc_logo.jpg" alt="Dashboard Mockup" width="250" height="auto">
+            </div>`,
+        ].join("");
      };
-
+ 
      
     return mThis;
 })();

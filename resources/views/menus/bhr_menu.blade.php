@@ -175,15 +175,6 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                 </a>
             </li>
-            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                <a href="UserHomePageComponent" modid="-1" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.User Homepage"></span>
-                </a>
-            </li> --}}
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Employee Management"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>

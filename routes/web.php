@@ -172,7 +172,7 @@ Route::get('bhr/{componentName?}',function($componentName= null){
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
        return;
     };
-    $data = ['defaultComponent' => $componentName ?? 'UserHomePageComponent'];
+    $data = ['defaultComponent' => $componentName];
     return view('bhr',$data);
 });
 
