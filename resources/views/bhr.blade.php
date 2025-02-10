@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="<?php $user = App\Services\Umt\AuthService::user();
   echo $user->lang ?? 'en';
