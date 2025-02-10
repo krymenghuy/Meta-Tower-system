@@ -24,11 +24,7 @@ class EmployeeBenefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    static function getEmpBenefitID($emp_id,$benefit_id,$date){
-        $date = convertDate($date);
-        return DB::table('emp_benefits')->where('emp_id',$emp_id)->where('benefit_id',$benefit_id)->where('effective_date',$date)->value('id');
-
-    }
+   
     public function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -70,7 +66,11 @@ class EmployeeBenefit
 
         return DV::error('Error saving Employee Benefit.');
     }
+    static function getEmpBenefitID($emp_id,$benefit_id,$date){
+        $date = convertDate($date);
+        return DB::table('emp_benefits')->where('emp_id',$emp_id)->where('benefit_id',$benefit_id)->where('effective_date',$date)->value('id');
 
+    }
     static function convertImportedEmployeeBenefit($rows){
         $result = [];
         foreach($rows as $index=>$row){
