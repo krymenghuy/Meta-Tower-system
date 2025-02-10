@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="<?php $user = App\Services\Umt\AuthService::user();
   echo $user->lang ?? 'en';
@@ -258,6 +259,7 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.bhr.dashboardComponent')
+                            @include('layouts.bhr.userHomePageComponent');
                             @include('layouts.bhr.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
                             @include('layouts.bhr.employeeComponent')
