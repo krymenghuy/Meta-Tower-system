@@ -6,7 +6,6 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
-use App\Models\Bhr\Event;
 use App\Models\Bhr\Employee;
 use App\Models\Money;
 use App\Models\PublicStorage;
@@ -158,17 +157,6 @@ class EmployeeBenefit
 
                    $emp_id = DB::table('employees')->where('code', $arr['code'])->value('id');
                    $benefit_id = DB::table('benefits')->where('name', $arr['benefit'])->value('id');
-
-                    // if (!$emp_id) {
-                    //     DB::rollback();
-                    //     return DV::error("Employee not found for code: {$arr['code']}. Import failed!");
-                    // }
-
-                    // if (!$benefit_id) {
-                    //     DB::rollback();
-                    //     return DV::error("Benefit not found: {$arr['benefit']}. Import failed!");
-                    // }
-
                     $v_rule = [
                         'emp_id' => '1|number|exists=employees.id',
                         'benefit_id' => '1|number|exists=benefits.id',
@@ -191,6 +179,16 @@ class EmployeeBenefit
                         return DV::error("Validation failed for employee {$arr['code']}. Import failed!");
                     }
                     $inputs = $res->values;
+                    $duplicate = DB::table('emp_benefits')
+                        ->where('emp_id', $emp_id)
+                        ->where('benefit_id', $benefit_id)
+                        ->where('effective_date', $inputs['effective_date'])
+                        ->exists();
+
+                    if ($duplicate) {
+                        DB::rollback();
+                        return DV::error("Duplicate record found for employee {$arr['code']} with benefit {$arr['benefit']} on {$inputs['effective_date']}!");
+                    }
                     $id = saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
                     if ($id > 0) {
                         $success++;
