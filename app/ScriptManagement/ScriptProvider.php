@@ -141,7 +141,6 @@ class ScriptProvider
                 //  'js/components/umt/RoleManagementComponent.js',
                  'js/components/umt/RoleManagementTool.js',
                 'js/components/bhr/CreateContractDialog.js',
-                'js/components/bhr/UserHomePageComponent.js'
             ]
         ],
 
