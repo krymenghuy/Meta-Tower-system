@@ -188,10 +188,19 @@
                         data-field="emp_type_id"></select>
                 </div>
             </div>
-            <div class="d-flex align-items-start justify-content-end w-25">
-                <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
-                    <span><i class="fa fa-person mr-2"></i>Add Employee </span>
-                </button>
+            <div class="d-flex align-items-start justify-content-end w-25 px-4">
+                <div class="d-flex gap-3">
+                    <button class="d-flex justify-content-center bg-primary  align-items-center border-0 rounded-circle"
+                        style="width: 40px; height: 40px;" id="_btn_add_employee">
+                        <i class="fa-solid fa-user-plus tool-tip fs-6" style="color: #fff;"><span
+                                class="tool-tiptext fs-6 ">Add Staff</span></i>
+                    </button>
+                    <button class="d-flex justify-content-center align-items-center border-0 bg-success rounded-circle"
+                        style="width: 40px; height: 40px;" id="_btnImport">
+                        <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span
+                                class="tool-tiptext fs-6">Import Staff</span></i>
+                    </button>
+                </div>
             </div>
         </div>
         <div id="_employee_list" class="mt-3 px-3" style="height:45vh"></div>

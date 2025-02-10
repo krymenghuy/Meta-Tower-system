@@ -3651,7 +3651,7 @@ const EmployeeDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Employee",
+                    createTitle: "Add Employee",
                     modifyTitle: "Edit Employee",
                     targetProp: "employee",
                     api: {

@@ -242,4 +242,14 @@ class EmployeeController extends Controller
         $emp_id = $req->id;
         return JDV::result(Employee::getFormOptions_non_staff($emp_id, $ss));
     }
+
+    public function importEmployee(Request $req){
+        $ss = AuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $emp = new Employee();
+        return JDV::raw($emp->importEmployee($req->all(),$ss));
+
+    }
 }
