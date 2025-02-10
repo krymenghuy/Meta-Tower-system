@@ -179,6 +179,16 @@ class EmployeeBenefit
                         return DV::error("Validation failed for employee {$arr['code']}. Import failed!");
                     }
                     $inputs = $res->values;
+                    $duplicate = DB::table('emp_benefits')
+                        ->where('emp_id', $emp_id)
+                        ->where('benefit_id', $benefit_id)
+                        ->where('effective_date', $inputs['effective_date'])
+                        ->exists();
+
+                    if ($duplicate) {
+                        DB::rollback();
+                        return DV::error("Duplicate record found for employee {$arr['code']} with benefit {$arr['benefit']} on {$inputs['effective_date']}!");
+                    }
                     $id = saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
                     if ($id > 0) {
                         $success++;
