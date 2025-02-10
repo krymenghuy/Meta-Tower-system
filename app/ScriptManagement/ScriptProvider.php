@@ -138,8 +138,8 @@ class ScriptProvider
                 'js/components/umt/CreateLoginDialog.js',
                 'js/components/umt/FindUserDialog.js',
                 //'js/components/umt/BranchManagementComponent.js',
-                 'js/components/umt/RoleManagementComponent.js',
-                 //'js/components/umt/RoleManagementTool.js',
+                //  'js/components/umt/RoleManagementComponent.js',
+                 'js/components/umt/RoleManagementTool.js',
                 'js/components/bhr/CreateContractDialog.js',
             ]
         ],

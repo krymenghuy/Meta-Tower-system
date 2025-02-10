@@ -85,6 +85,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('non-staff')->
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
     Route::post('/save', [EmployeeController::class, 'saveEmployee']);
+    Route::post('/import',[EmployeeController::class,'importEmployee']);
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
     Route::post('/find', [EmployeeController::class, 'findEmployee']);
     Route::post('/details', [EmployeeController::class, 'getDetails']);

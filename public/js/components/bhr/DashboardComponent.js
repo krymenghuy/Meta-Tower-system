@@ -4,29 +4,12 @@ var DashboardComponent =  (function () {
     const mThis = {};
     mThis.title_prop = "Dashboard";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_dashboardComponent");
-    mThis.self = mThis.jm[0];
-    mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
-    mThis.dbCards = mThis.self.querySelector("#db_cards");
-    mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
-    mThis.dashboard_Bottom_left = mThis.self.querySelector(
-        "#_dashboard_bottom_left"
-    );
-    mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
-
-    const formattedNumber = (number) => {
-        number = Number(number) || 0;
-        return number
-            .toLocaleString("en-US", {
-                useGrouping: true,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-            .replace(/,/g, " ");
-    };
-
+    mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
+    // mThis.self = mThis.jm[0];
+   
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     mThis.onShow = (options) => {
+        if (!AuthManager.allowed(254,true)) return; 
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector(".btn-db-fitler");
@@ -41,11 +24,19 @@ var DashboardComponent =  (function () {
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     mThis.onHide = (options) => {
+        if (!AuthManager.allowed(254,true)) return; 
         mThis.removeFilterButton();
     };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
+        if(!AuthManager.allowed(254,true)){
+            mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
+            mThis.dbCards = mThis.self.querySelector("#db_cards");
+            mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
+            mThis.dashboard_Bottom_left = mThis.self.querySelector("#_dashboard_bottom_left");
+            mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
+        }
         mThis.initAlready = true;
     };
 
@@ -650,6 +641,7 @@ var DashboardComponent =  (function () {
     mThis.prepareFormOptions = (data, onFinish) => {
         mThis.loadCards(onFinish);
     };
+
     mThis.setDashboardScroll = () => {
         const parent = mThis.self;
         parent.style.height = window.innerHeight - 100 + "px";
@@ -659,15 +651,39 @@ var DashboardComponent =  (function () {
             parent.style.height = window.innerHeight - 100 + "px";
         };
     };
+  
     mThis.show = (options) => {
+        if (!AuthManager.allowed(254,true)){
+            mThis.self.innerHTML = renderUserHome();
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            return;
+        } 
+
         mThis.setDashboardScroll();
         mThis.init();
         options = options || {};
-        main_view.setTitle(mThis.title_prop);
+        //main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
-            mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(200);
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            // mThis.jm.siblings().hide();
+            // mThis.jm.fadeIn(200);
         });
     };
+
+    const renderUserHome = ()=>{
+        return [
+            `<div class="container mt-4">
+                <div class="d-flex align-items-center justify-content-center p-4 user-home-header">
+                    <div class="text-center">
+                        <h1 class="text-primary-custom fw-bold">Welcome to LC</h1>
+                        <p class="text-muted">Manage your profile, settings, and more from here.</p>
+                    </div>
+                </div>
+                    <img src="../../../assets/images/logo/loc_logo.jpg" alt="Dashboard Mockup" width="250" height="auto">
+            </div>`,
+        ].join("");
+     };
+ 
+     
     return mThis;
 })();
