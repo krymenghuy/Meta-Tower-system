@@ -17,6 +17,9 @@ use App\Http\Controllers\Login\LoginController;
 use App\Models\Notifier;
 // use App\Models\Package;
 use Carbon\Carbon; //for testing only
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 //use App\Models\UM;
 
@@ -110,7 +113,7 @@ Route::get('test-count',function(){
     INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
     WHERE p.branch_id =$branch_id AND p.sender_id ='$sender_id' AND (p.status_id=5 OR p.status_id=6) AND DATE(p.arrival_time) >= '$last_10_days'
     GROUP BY p.status_id,ps.`name`";
-    $rows = DB::select(\DB::raw($sql));
+    $rows = DB::select(DB::raw($sql));
     return response()->json($rows);
 });
 
@@ -169,7 +172,7 @@ Route::get('bhr/{componentName?}',function($componentName= null){
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
        return;
     };
-    $data = ['defaultComponent' => $componentName];
+    $data = ['defaultComponent' => $componentName ?? 'UserHomePageComponent'];
     return view('bhr',$data);
 });
 
