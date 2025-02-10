@@ -55,13 +55,15 @@ class Attendance
             return DV::error('The day is a weekend');
         }
 
-
         $d = (object) $arr;
         $remarks = $d->remarks;
         $scan_time = $d->scan_time ? date('H:i:s', strtotime($d->scan_time)) : '00:00:00';
         $scan_action = $d->scan_action;
         $action_type = $d->action_type;
 
+        if($emp_id){
+            $work_shift_id = DB::table('employees')->where('id', $emp_id)->value('work_shift_id');
+        }
 
         $arr_attendance = [
             'emp_id' => $emp_id,
@@ -69,6 +71,7 @@ class Attendance
             'scan_action' => $scan_action,
             'action_type' => $action_type,
             'attendance_date' => $attendance_date ?? '',
+            'work_shift_id' => $work_shift_id ?? null,
             'remarks' => $remarks,
         ];
 
@@ -76,7 +79,6 @@ class Attendance
         // unset($inputs['status']);
 
         $newID = saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
-
         return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], $ss);
     }
 
@@ -102,7 +104,7 @@ class Attendance
             ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
-            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action,
+            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action,a.action_type,
             p.title as position')->when(!empty($search_value), function ($q) use ($search_value) {
                 //$search_value = escape_like_str($filter->search_value);
                 return $q->where(function ($subQuery) use ($search_value){
@@ -130,6 +132,7 @@ class Attendance
                     'scan_info' => $group->map(fn($item) => [
                         'time' => $item->scan_time,
                         'action' => $item->scan_action,
+                        'action_type' => $item->action_type
                     ])->values(),
                 ];
             })->values();
@@ -274,14 +277,11 @@ class Attendance
         $str_work_shift = 'sd.work_shift_id=\'' . $work_shift_id . '\'';
 
 
-        $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+        $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
         $has_checked_out_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
-        $has_checked_in_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+        $has_checked_in_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
+        $has_checked_out_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
         /** If has_checked_in then process check_out action */
-
-        $col_checkout_time = DBX::formatTimeOnly('g.checkout_time', 'checkout_time');
-        $col_checkin_time = DBX::formatTimeOnly('g.checkin_time', 'checkin_time');
-        $col_scan_time = DBX::formatTimeOnly('g.scan_time', 'scan_time');
 
         $work_shifts = null; // self::getWorkShift($current_date);
         $rows = DB::table('shift_details as sd')
@@ -310,32 +310,7 @@ class Attendance
                 break;
             }
         }
-
-        // return$work_shift_detail;
-        // if($has_checked_in_a && $shift_order_number == 3){
-        //    // save checked_out_a
-        //     return 1;
-
-        // }
-        // else if($has_checked_in_m && $shift_order_number == 1){
-        //    // save checked_out_m
-        //     return 2
-
-        // }
-        // else if($has_checked_out_m){
-        //    // save checked_in_a
-        //     return 3;
-
-        // }
-        // else{
-        //     // save checked_in_m
-
-
-        //     if (!$work_shifts) return DV::error();
-        // }
-        // return $;
-
-        //\Log::info(json_encode($group));  // {"checkout_time":"04:30:00","checkin_time":"07:30:00"}
+        // return $work_shift_detail;
 
         if (!$work_shift_detail && !$force_checkout) {
             if ($has_checked_in_m) {
@@ -355,7 +330,10 @@ class Attendance
                 $message = null;
                 if ($shift_order_number > 1) {
                     foreach ($work_shifts as $work_shift) {
+                        // \Log::info('aa'.json_encode($work_shift->shift_order_number));
                         if ($shift_order_number == (int)$work_shift->shift_order_number - 1) {
+                        // \Log::info('in'.json_encode($shift_order_number));
+
                             $message = "$work_shift->action-$work_shift->session not yet scan!";
                             break;
                         }
@@ -368,7 +346,7 @@ class Attendance
             if ($has_checked_out) return DV::error('You already checked out this session!');
             else {
                 $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
-                \Log::info($shift_order_number);
+                // \Log::info($shift_order_number);
                 $message = null;
                 if ($shift_order_number > 1) {
                     foreach ($work_shifts as $work_shift) {
@@ -409,7 +387,7 @@ class Attendance
         if ($current_date > $today) {
             return DV::error('It seems you are trying to scan ahead of time');
         }
-
+        $work_shift_id = DB::table('employees')->where('id', $employee_id)->value('work_shift_id');
 
         $nowTime = getNowTime();
         $arr_attenance = [
@@ -422,7 +400,8 @@ class Attendance
             "scan_time" => $present_time,
             "remarks" => $remarks,
             // "is_finished" => $is_finished,
-            'session' => $work_shift_detail->session
+            'session' => $work_shift_detail->session,
+            'work_shift_id' => $work_shift_id
         ];
         // $update = [];
         //$str_msg = $in_remarks;
@@ -471,9 +450,9 @@ class Attendance
         $per_page = $d->per_page ?? 0;
 
         $query = DB::table('employees as emp')
-            ->join('emp_attendances as att', 'att.emp_id', '=', 'emp.id')
-            ->selectRaw('emp.id,emp.name,emp.code,att.scan_time,att.scan_action');
-        $rows = $query->orderBy('att.updated_at', 'DESC')->take($per_page)->get();
+            ->join('emp_attendances as at', 'at.emp_id', '=', 'emp.id')
+            ->selectRaw('emp.id,emp.name,emp.code,emp.sex,at.scan_time,at.scan_action,at.session');
+        $rows = $query->orderBy('at.updated_at', 'DESC')->take($per_page)->get();
         // foreach ($rows as $row) {
         //     $row->session = GeneralSettings::getSession($row->session_id)->name;
         //     $url = PublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
