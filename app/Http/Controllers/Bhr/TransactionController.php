@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Transaction;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -13,7 +13,7 @@ class TransactionController extends Controller
      
     public function getList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -24,7 +24,7 @@ class TransactionController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -36,7 +36,7 @@ class TransactionController extends Controller
 
     public function deleteTransaction(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -49,7 +49,7 @@ class TransactionController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

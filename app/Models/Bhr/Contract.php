@@ -4,10 +4,9 @@ namespace App\Models\Bhr;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\DB;
 use App\Models\Location\City;
-use App\Models\Bhr\Employee;
-
 use Carbon\Carbon;
-Use App\Models\DV;
+use DV;
+use DBX;
 class Contract
 {
     static function getBranchInfo($branch_id){

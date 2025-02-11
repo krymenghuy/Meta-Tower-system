@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Pusher\Pusher;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 use Config;
 
 class PusherController extends Controller
@@ -36,7 +36,7 @@ class PusherController extends Controller
             //$user = auth()->user();
             //$um = new UM();
             //todo: check if Decrytpion error "The payload is invalid" causing Websocket to fail. Error 500 on "api/broadcast/auth"
-            $ss = AuthService::verifyAuth($req,-1);
+            $ss = XAuthService::verifyAuth($req,-1);
             if($ss->status_code !=200) {
                 //response as JSON response for API
                 return JDV::error("Forbidden (Pusher authentication failed)");

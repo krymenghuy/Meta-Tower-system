@@ -2,15 +2,15 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
-use App\Models\JDV;
+use DV;
+use JDV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
+use DBX;
 use App\Models\Bhr\Employee;
 use App\Models\Bhr\Account;
 use App\Models\Bhr\Payroll;
-use App\Models\Money;
+use VSMoney;
 // use App\Models\Bhr\PayrollListSettings;
 
 class PayrollList
@@ -36,14 +36,14 @@ class PayrollList
 
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'payroll_list', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'payroll_list', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payroll_list' => $inputs, 'id' => $id]);
         }
@@ -175,7 +175,7 @@ class PayrollList
     //             $row->allowance = $row->allowance->get();
     //             foreach ($row->allowance as $allowance) {
     //                 if ($allowance->allowance_currency != $row->currency_code) {
-    //                     $allowance->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
+    //                     $allowance->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
     //                 }
     //             }
     //             $row->allowance = $row->allowance->sum('allowance');
@@ -183,7 +183,7 @@ class PayrollList
     //             $allowance = $row->allowance->first();
     //             if ($allowance) {
     //                 if ($allowance->allowance_currency != $row->currency_code) {
-    //                     $row->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
+    //                     $row->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
     //                 } else {
     //                     $row->allowance = $allowance->allowance;
     //                 }
@@ -381,7 +381,7 @@ class PayrollList
     //         return DV::error('The master payroll account balance is zero!');
     //     }
     //     if ($payroll->currency_code !== $master_account->currency_code) {
-    //         $master_amount = Money::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
+    //         $master_amount = VSMoney::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
     //     } else {
     //         $master_amount = $master_account->balance;
     //     }

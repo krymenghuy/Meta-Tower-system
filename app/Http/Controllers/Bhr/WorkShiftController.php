@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\WorkShift;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class WorkShiftController extends Controller
@@ -21,7 +21,7 @@ class WorkShiftController extends Controller
     {
         $id = $req->work_shift_id ?? $req->id;
         $prn_code = $id ? 267: 268;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -32,7 +32,7 @@ class WorkShiftController extends Controller
 
     public function getWorkShiftListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -41,7 +41,7 @@ class WorkShiftController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -53,7 +53,7 @@ class WorkShiftController extends Controller
 
     public function deleteWorkShift(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 269);
+        $ss = XAuthService::verifyAuth($req, 269);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -66,7 +66,7 @@ class WorkShiftController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -37,7 +38,7 @@ class School //extends Model
 
         $restrictedChars = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $validationResult = validateObject($arr, $validationRules, true, ['name' => $restrictedChars], $ss->lang, false);
+        $validationResult = DBX::validateObject($arr, $validationRules, true, ['name' => $restrictedChars], $ss->lang, false);
 
         if ($validationResult->error) {
             return DV::error($validationResult->error);

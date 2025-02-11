@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,7 +28,7 @@ class BenefitDisbursePolicy
             'target_year' => '1|number|default=0',
             'withdraw_rate' => '1|number|default=100',
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
@@ -43,7 +44,7 @@ class BenefitDisbursePolicy
             }
         }
 
-        $id = saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['sender' => $inputs, 'id' => $id]);
     }
 

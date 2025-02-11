@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -26,14 +27,14 @@ class EmployeeSkill
             'rate' => '1|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'emp_skills', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'emp_skills', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['emp_skills' => $inputs, 'id' => $id]);
         }

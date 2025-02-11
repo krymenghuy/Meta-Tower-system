@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bhr\Job_Level;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 
 class JobLevelController extends Controller
 {
@@ -18,7 +18,7 @@ class JobLevelController extends Controller
     {
         $id = $req->id ?? null;
         $prn_code = $id ? 204 : 205;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $job_level = new Job_Level($id, $ss);
@@ -28,7 +28,7 @@ class JobLevelController extends Controller
 
     // function getJobLevelList(Request $req)
     // {
-    //     $ss = AuthService::verifyAuth($req, -1);
+    //     $ss = XAuthService::verifyAuth($req, -1);
     //     if ($ss->status_code != 200) return JDV::raw($ss);
     //     $job_level = new Job_Level($req->id, $ss);
     //     $data = $job_level->getList($req->all(),$ss);
@@ -37,7 +37,7 @@ class JobLevelController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -45,7 +45,7 @@ class JobLevelController extends Controller
     }
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -57,7 +57,7 @@ class JobLevelController extends Controller
     }
     public function deleteJobLevel(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 206);
+        $ss = XAuthService::verifyAuth($req, 206);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -69,7 +69,7 @@ class JobLevelController extends Controller
     }
     public function getList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code != 200) return JDV::raw($ss);
         $job_level = new Job_Level($req->id, $ss);
         $data = $job_level->getList($req->all(), $ss);

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Umt\AuthService; 
+use XAuthService; 
 use App\Services\GarbageCollector\GarbageCollector;
 use Config;
 use Illuminate\Support\Facades\Session;
@@ -21,9 +21,9 @@ class LoginController extends Controller
         $login_name = $request->login_name;
         $pwd = $request->password;
 
-        $result = AuthService::verifyUser($app_id, $login_name, $pwd);
+        $result = XAuthService::verifyUser($app_id, $login_name, $pwd);
         // if ($result->status === 'OK') {
-        //     $result->user->image_url = \App\Models\PublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
+        //     $result->user->image_url = \App\Models\XPublicStorage::getProfilePhoto_url($result->user->branch_id, $result->user->user_class, $result->user->official_id);
         // }
         return $result;
     }
@@ -35,12 +35,12 @@ class LoginController extends Controller
         //$this->UMModel->setSessionUser($user);
         //$this->UMModel->createSession($request->login_name);
         //$request->access_token is used to check if the existing session is valid then just use existing session for this given access_token
-        $result = AuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
+        $result = XAuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
         if ($result->status_code ===200) {
             $user = $result->user;
                 $access_token =Crypt::encryptString($user->access_token);
                 unset($user->access_token);
-                 AuthService::login($user);
+                 XAuthService::login($user);
                 //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
                 $cookie_name = Config::get('app.cookie_name');
                 GarbageCollector::cleanAll();
@@ -100,13 +100,13 @@ class LoginController extends Controller
 //        /** $THIS_APP_ID is used for we login. BUT for Mobile app authentication, must be come app_id and users login_name or access_token **/
 //        $THIS_APP_ID = Config::get('app.mac_app_id');
 //        //$request->access_token is used to check if the existing session is valid then just use existing session for this given access_token
-//        $result = AuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
+//        $result = XAuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
 //        if ($result->status_code ===200) {
 //                $user = $result->user;
 //                CrispModel::createOrUpdateOperator($user);
 //                $access_token =Crypt::encryptString($user->access_token);
 //                unset($user->access_token);
-//                AuthService::login($user);
+//                XAuthService::login($user);
 //             //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
 //             $cookie_name = Config::get('app.cookie_name');
 //             GarbageCollector::cleanAll();
@@ -123,7 +123,7 @@ class LoginController extends Controller
 //    }
 
     public function logout(){
-        AuthService::logout();
+        XAuthService::logout();
         // Session::invalidate();
         // Session::regenerateToken();
         return redirect('/');

@@ -5,7 +5,8 @@ namespace App\Models\Location;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\DV;
+use DV;
+use DBX;
 use App\Models\Location\District;
 use Illuminate\Support\Facades\Cache;
 class City //extends Model
@@ -64,13 +65,13 @@ class City //extends Model
         $sanitize_rules = [];
         $branch_id = $ss->branch_id;
         $check_unique = ["$branch_id|loc_cities|name|id=id"];
-        $res = validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|1-100','name_kh'=>'0|string|0-100','country_id'=>'1|positive|exists=loc_countries.id'],true,$sanitize_rules,$ss->lang,false,$check_unique);
+        $res = DBX::validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|1-100','name_kh'=>'0|string|0-100','country_id'=>'1|positive|exists=loc_countries.id'],true,$sanitize_rules,$ss->lang,false,$check_unique);
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
         $name_kh = $inputs['name_kh'];
         $name_kh = $name_kh?$name_kh:$inputs['name'];
-        $id = saveData($ss,'loc_cities',['id'=>$id],$inputs,[],1,0);
+        $id = DBX::saveData($ss,'loc_cities',['id'=>$id],$inputs,[],1,0);
         if($id >0) return DV::success(["city"=>$inputs]);
         return DV::error("something wrong during saving city name");
      }

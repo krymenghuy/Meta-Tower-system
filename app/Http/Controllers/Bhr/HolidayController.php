@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Holiday;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class HolidayController extends Controller
@@ -19,7 +19,7 @@ class HolidayController extends Controller
     {
         $id = $req->id ?? null;
         $prn_code = $id ? 260 : 262;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $holiday = new Holiday($req->id, $ss);
@@ -28,7 +28,7 @@ class HolidayController extends Controller
     }
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -36,7 +36,7 @@ class HolidayController extends Controller
     }
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -48,7 +48,7 @@ class HolidayController extends Controller
     }
     public function deleteHoliday(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 263);
+        $ss = XAuthService::verifyAuth($req, 263);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -60,7 +60,7 @@ class HolidayController extends Controller
     }
     public function getHolidayListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code != 200) return JDV::raw($ss);
         $holiday = new Holiday($req->id, $ss);
         $data = $holiday->getHolidayListPaginate($req->all(), $ss);
@@ -68,7 +68,7 @@ class HolidayController extends Controller
     }
     public function getHolidayList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

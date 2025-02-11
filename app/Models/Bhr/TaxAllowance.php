@@ -2,10 +2,11 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Money;
+use VSMoney;
 
 class TaxAllowance
 {
@@ -30,11 +31,11 @@ class TaxAllowance
             'amount' => '1|number',
             'qty' => '1|number|default=1',
             'allowance' => '0|number',
-            'currency_code'=> '1|choice|KHR,USD|default='.Money::$national_currency,
+            'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$national_currency,
             'remarks' => '0|string|250',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -42,10 +43,10 @@ class TaxAllowance
         $inputs = $res->values;
         $qty = $inputs['qty'] ?? 1;
         $currency_code = $inputs['currency_code'] ?? null;
-        if($currency_code != Money::$national_currency) return DV::error('Tax Allowance must be national currency (??)::'.Money::$national_currency);
+        if($currency_code != VSMoney::$national_currency) return DV::error('Tax Allowance must be national currency (??)::'.VSMoney::$national_currency);
         $inputs['allowance'] = $qty * $inputs['amount'];
 
-        $id = saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['tax_allowances' => $inputs, 'id' => $id], 'Failed to save allowance');
     }
 
@@ -121,7 +122,7 @@ class TaxAllowance
             $tax_allowance = self::getDetails($id, $ss);
         }
         return (object) [
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'employees' => GeneralSettings::options_employee(10,$ss),
             'tax_allowance' => $tax_allowance,
         ];

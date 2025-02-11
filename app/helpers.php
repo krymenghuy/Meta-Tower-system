@@ -1,16 +1,10 @@
 <?php
- use App\Models\PublicStorage;
  //use Illuminate\support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
- use App\Models\DBX;
- use App\Models\DV;
-use App\Models\Umt\Subscription;
-use App\Models\Umt\UMTSettings;
 use Intervention\Image\Facades\Image;
  //use Ramsey\Uuid\Uuid;
  //use GuzzleHttp\Client;
  use Illuminate\Http\Client\RequestException;
-use App\Services\Umt\AuthService;
 //use Illuminate\Support\Facades\Session;
  //BEGIN:: LocaleManager class
 
@@ -63,7 +57,7 @@ use App\Services\Umt\AuthService;
 // }
 
 function getAccessBranches($ss=null,$filter_branch_id = null){
-    if(!$ss) $ss = AuthService::user();
+    if(!$ss) $ss = XAuthService::user();
     if(!$ss) return [0];
     $branches = $ss->branches;
     $branchIds = [];
@@ -655,22 +649,22 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
 
     //sess_branch_id
     function sess_company_id(){
-        $user =AuthService::user();
+        $user =XAuthService::user();
         return $user->branch_id;
     }
 
     function sess_user_id(){
-        return AuthService::user()->id;
+        return XAuthService::user()->id;
     }
 
     function sess_subs_id(){
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if(!$user) return "";
         return $user->subs_id;
     }
 
     function sess_app_id($route_name){
-        return UMTSettings::getAppIdFromRoute($route_name);
+        return XUMTSettings::getAppIdFromRoute($route_name);
     }
 
     function base_url($uri=null){
@@ -682,11 +676,11 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
     }
 
     function getCurrentSubsId($use_env_value = false){
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if(!$user){
              //This is correct only for Single-subscriber system.
              if ($use_env_value){
-                $d = Subscription::defaultSubscription(30);
+                $d = XSubscription::defaultSubscription(30);
                 return ($d? $d->id: null);
              }
              else return null;
@@ -694,11 +688,11 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
         return $user->subs_id;
     }
     function getCurrentSubs($use_env_value=false){
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if(!$user){
             if($use_env_value){
                 //This is correct only for Single-subscriber system.
-                $d = Subscription::defaultSubscription(30);
+                $d = XSubscription::defaultSubscription(30);
                 return (Object)['id'=>$d->id,'subscriber_id'=>$d->subscriber_id];
             }else return (Object)['id'=>null,'subscriber_id'=>null];
         }
@@ -777,63 +771,63 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
 	 return $months[($num-1)];
  }
 
- function deleteDataRow($table_name,$key_fields=[]){
-    $m_where ="";
-    foreach($key_fields as $field=>$value){
-        $sp = $m_where? " AND ":"";
-        if(is_numeric($value))
-           $m_where .= $sp.$field."=$value";
-        else $m_where .= $sp.$field."='$value'";
-    }
-    DB::table($table_name)->whereRaw($m_where)->delete();
-    return null;
- }
+//  function deleteDataRow($table_name,$key_fields=[]){
+//     $m_where ="";
+//     foreach($key_fields as $field=>$value){
+//         $sp = $m_where? " AND ":"";
+//         if(is_numeric($value))
+//            $m_where .= $sp.$field."=$value";
+//         else $m_where .= $sp.$field."='$value'";
+//     }
+//     DB::table($table_name)->whereRaw($m_where)->delete();
+//     return null;
+//  }
 
- //return row object based on the given key value
- function getDataRow($table_name,$key_fields=[], $cols=null){
-    if(!$cols) $cols ="id";
-    $m_where ="";
-    foreach($key_fields as $field=>$value){
-        $sp = $m_where? " AND ":"";
-        if($value > 0)
-           $m_where .= $sp.$field."=$value";
-        else $m_where .= $sp.$field."='$value'";
-    }
-    return DB::table($table_name)->whereRaw($m_where)->selectRaw($cols)->take(1)->first();
- }
+//  //return row object based on the given key value
+//  function getDataRow($table_name,$key_fields=[], $cols=null){
+//     if(!$cols) $cols ="id";
+//     $m_where ="";
+//     foreach($key_fields as $field=>$value){
+//         $sp = $m_where? " AND ":"";
+//         if($value > 0)
+//            $m_where .= $sp.$field."=$value";
+//         else $m_where .= $sp.$field."='$value'";
+//     }
+//     return DB::table($table_name)->whereRaw($m_where)->selectRaw($cols)->take(1)->first();
+//  }
 
-  //return value a specified field given key value
-  function getDataValue($table_name,$key_fields=[], $col=""){
-    if(!$col) $col ="id";
-     $m_where ="";
-      foreach($key_fields as $field=>$value){
-        $sp = $m_where? " AND ":"";
-        if(is_numeric($value))
-           $m_where .= $sp.$field."=$value";
-        else $m_where .= $sp.$field."='$value'";
-    }
+//   //return value a specified field given key value
+//   function getDataValue($table_name,$key_fields=[], $col=""){
+//     if(!$col) $col ="id";
+//      $m_where ="";
+//       foreach($key_fields as $field=>$value){
+//         $sp = $m_where? " AND ":"";
+//         if(is_numeric($value))
+//            $m_where .= $sp.$field."=$value";
+//         else $m_where .= $sp.$field."='$value'";
+//     }
 
-    $rows = DB::table($table_name)->whereRaw($m_where)->selectRaw($col)->take(1)->get();
-    foreach($rows as $row) return $row->{$col};
-    return null;
- }
+//     $rows = DB::table($table_name)->whereRaw($m_where)->selectRaw($col)->take(1)->get();
+//     foreach($rows as $row) return $row->{$col};
+//     return null;
+//  }
 
- function record_exists($table_name,$key_field,$use_branch_id = 0){
-    $key_field_name =null;
-    $key_value = null;
-    foreach($key_field as $field=>$value){
-        $key_field_name = $field;
-        $key_value = $value;
-    }
-   $str_branch ="1=1";
+//  function record_exists($table_name,$key_field,$use_branch_id = 0){
+//     $key_field_name =null;
+//     $key_value = null;
+//     foreach($key_field as $field=>$value){
+//         $key_field_name = $field;
+//         $key_value = $value;
+//     }
+//    $str_branch ="1=1";
 
-   if($use_branch_id){
-      $branch_id = AuthService::getBranchId();
-      $str_branch ="branch_id = $branch_id";
-   }
-   return DB::table($table_name)->where($key_field_name,$key_value)->whereRaw($str_branch)->selectRaw($key_field_name)->take(1)->exists();
+//    if($use_branch_id){
+//       $branch_id = XAuthService::getBranchId();
+//       $str_branch ="branch_id = $branch_id";
+//    }
+//    return DB::table($table_name)->where($key_field_name,$key_value)->whereRaw($str_branch)->selectRaw($key_field_name)->take(1)->exists();
 
- }
+//  }
 
  //createForcibly() will checks if the given key_value actually exists in the target table. If it does not exists, then createForcibly() will CREATE. If the given key_value exists in target table, this method UPDATE
  //create record in a table silently if the given $key_value is positive but does not exist in the target table
@@ -920,8 +914,8 @@ function createUUIDV1()
     return $uuid;
 }
 
- //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
- //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
+ //Unlike createForcibly(), the method DBX::saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
+ //Unlike method createForcibly(), DBX::saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
  //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
  // $data_scope = {0 = not use branch_id and subs_id ,1 = use branch_id, 2 = use subs_id}.
  function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$data_scope = 0,$endure_exits=false,$primary_key_type = 'auto_number'){
@@ -1005,22 +999,7 @@ function createUUIDV1()
 
  }
 
- //setIdentityFields() | setCommonCols() | setCommonInputs()
- function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
-        if ($action === 'create'){
-            if ($include_branch_id===1) $d['branch_id'] = $ss->branch_id;
-            $d[DBX::$created_at] = getNowTime();
-            $d['create_uid'] = $ss->user_id;
-            $d['create_user'] = $ss->full_name;
-        }else{
-            $d[DBX::$updated_at] = getNowTime();
-            $d['update_uid'] = $ss->user_id;
-            $d['update_user'] = $ss->full_name;
-        }
-       return $d;
-  }
-
-
+   
     //Replace charater (?) in string, through the use of array ['A','B','C']
     //str_raplce_special()
     function replace_marks($str,$arr)
@@ -1208,577 +1187,58 @@ function createUUIDV1()
             return -1;
         }
     }
-
-     function getInterval($part3=null){
-         if (!$part3) return (object)['min'=>-1,'max'=>-1]; /** No interval specificed and No number specified **/
-
-         $sts = explode('-',$part3);
-         $min = isset($sts[0])?$sts[0]:null;
-         $max = isset($sts[1])?$sts[1]:null;
-
-         if (is_numeric($min) && is_numeric($max)) /** min and max are well specified example "5-50" **/
-            return (object)['min'=>$min,'max'=>$max];
-         else if (is_numeric($min)) /** min specified but no max. Or there is ONLY one numbder specified **/
-         {
-            if ($min <=0) return (object)['min'=>$min,'max'=>null];
-            else if ($min > 0) return (object)['min'=>0,'max'=>$min];
-         }
-         else
-            return (object)['min'=>-1,'max'=>-1]; /** No interval specificed and No number specified **/
-        //  if(strpost($part3,'-') !==false){
-
-        //  }else return (object)['min'=>-1,'max'=>-1];
-     }
-
-     function getPropValue($prop_name=null,$part3=null,$part4=null){
-        //if(!$prop_name) return $part3? $part3: ($part4? $part4:null);
-        if (!$prop_name) return null;
-        $prop_found = false;
-        if ($part3){
-            $sts = explode('=',$part3);
-            $varname = trim($sts[0]?$sts[0]:'');
-            if ($varname ===$prop_name){
-                $prop_found = true;
-                return isset($sts[1])?$sts[1]:null;
-            }
-            //else if ($varname != $prop_name) return $part3;
-        }
-
-        if (!$prop_found  && $part4) {
-            $sts = explode('=',$part4);
-            $varname = trim($sts[0]?$sts[0]:'');
-            if ($varname ===$prop_name) return isset($sts[1])?$sts[1]:null;
-            //else if ($varname != $prop_name) return $part4;
-        }
-        return null;
-        // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
-        // $sts = explode('=',$part4);
-        // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
-     }
-
-     /***process $input value based on a given $spec string such as:
-        1. "0|number|identity=1" (This field is used as key field, and is NOT part of the input fields for INSERT or UPDATE)
-        1. "1|string|5-25|default=your default value|text=your error message"
-        2. "1|positive|1-55|default=5|text=age cannot be zero"
-        3. "0|number|1-55|default=5",
-        4. 'sex'=>"1|choice|M,F|default=F,
-        5. 'loan_compound_cycle'=>"0|choice|monthly,daily,yearly,weekly|default=monthly
-      ***/
-     //It returns object {value,error}
-
-    function processInput($field_name=null,$val=null, $spec='',$lang =null){
-        /***
-          1. "prop_name"=> "0|string|0|default=dsfdgdf"
-          2. "prop_name"=> "1|string|5-25|default=sfdsfdf|first name is required"
-          3. "status"=>"1|string|default=active"
-          4. "age"=>"1|number|0|default=1"
-          5. "items"=>"1|object"
-          6. "type"=>"1|array|Fast,Normal"
-          7. "payment_date" => "1|date|default=@today"
-          8. "appointment_time"=>"1|timestamp|default=@now",
-          9. "other_time"=> "1|time|default=@now"
-          10. "cp_phone"=>"depend=cp_name,cp_email|string"   Means that "cp_phone" is required only when user inputs cp_name and cp_email
-          11. Example  "brand_id"=>"1|exists=inv_brands.id" or "group_id"=> "0|exists=inv_groups"  that means to check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
-
-          ***/
-    $lang = Session('lang','en'); //default langauge to English
-    $field_name = $field_name?str_replace('_',' ',$field_name):'Some field name'; //$field_name is used to show which technical field_name has validation error
-    $parts = explode('|',$spec);
-    $part1 = isset($parts[0])?$parts[0]:null; /* {0,1} */
-    $part2 = isset($parts[1])?$parts[1]:''; //{'string','date','time','timestamp','phone','email'} OR "default=50" or "default=sdfsddsfd"
-    $part3 = isset($parts[2])?$parts[2]:''; // range: 1-50 length of text, or min and max of number
-    $part4 = isset($parts[3])?$parts[3]:''; //this can be text_prop or default value for 'string' data type
-    $part5 = isset($parts[4])?$parts[4]:''; //This is $text_prop
-    //this is text_prop to be translated. This text_prop is stored in km.php or en.php.
-    //$text_prop is usually given as "text=phone number is required" or simply "phone number is required"
-    $tmp = isset($parts[4])?$parts[4]:null;
-
-    $my_text_prop = getPropValue('text',$part3,$part4);
-
-    $def_val = getPropValue('default',$part4,$part3);
-    $val = ($val===null || $val==='')?$def_val:$val;
-
-    $is_identity = getPropValue('identity',$part3,$part2); // example:  "id"=>"0|identity=1"
-    $is_identity = $is_identity?(int)$is_identity:0;
-
-    //if the value is supplied, then check if there is exist_checking requred for one-to-one or one-to-many relationships.
-    //**** EXAMPLE  "brand_id"=>"1|exists=inv_brands.id" => check to ensure that the given @brancd_id exists in table "inv_brands" by primary field "id"
-    if ($val || $val ==0){
-        //if () return (object)['error'=>$val,'default_value'=>'ddd'];
-       if($val > 0){
-        $check_exists_rule = getPropValue('exists',$part2,$part3);
-        if($check_exists_rule){
-            if (!checkExists($check_exists_rule,$val))  return (object)['error'=>Localization::translate($lang,"$field_name ID is not valid or does not exist"),'default_value'=>null];
-        }
-       }
-    }
-
-    if ($is_identity === 1)
-        return (object)['error'=>null,'is_identity'=>1,'default_value'=>$val];
-    else if ($part1==0 || $part1===false)
-        return (object)['error'=>null,'default_value'=>$val]; //value is not required
-    else if ($part1==1 || $part1===true){
-
-                if ($part2 === 'string' || !$part2){
-                    //$my_text_prop = $part4; //here
-                    if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];
-                    $interval = getInterval($part3);
-                    if ($interval->min ===-1 && $interval->max ===-1){
-                        if (!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$def_val];
-                    }else{
-                        //if there is interval to check
-                        $len = strlen($val?$val:'');
-                        if ($len >= $interval->min && $len <= $interval->max)
-                           return (object)['error'=>null,'default_value'=>$val];
-                        else
-                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name length must be between $interval->min and $interval->max",[$interval->min,$interval->max]),
-                            'default_value'=>$val
-                            ];
-                    }
-
-                } else if ($part2 === 'positive'){
-                     $interval = getInterval($part3);
-                     if ($val <0 || !is_numeric($val)) $val = $def_val;
-                     if ($val <0 || !is_numeric($val)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be positive")];
-
-                     if ($interval->min ===-1 && $interval->max ===-1)
-                     {
-                        //This case: there are No Interval specified for the value of positive number
-                        if($val> 0)
-                            return (object)['error'=>null,'default_value'=>$val];
-                        else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a positive number")];
-                     }else{
-                        if($val < $interval->min || $val > $interval->max)
-                           return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];
-                        else return (object)['error'=>null,'default_value'=>$val];
-                     }
-
-                }else if ($part2 === 'date') {
-                        //NOTE: $val ="03 Nov" or "03-Nov" => (bool)strtotime($val) return 1 this can cause problem with date validation
-
-                        //$val = str_replace('-',' ',$val);
-
-                        $format = getPropValue('format',$part3);
-                        if (!$format){
-                            $format = getPropValue('format',$part3);
-                            if (!$my_text_prop) $my_text_prop = getPropValue('text',$part3);
-                        }
-
-                        //If there is NO date format specified for the input
-                        if (!$format){
-                            // *** Option 1: Check if it is date. If yes => return date format "Y-m-d" for MYSQL database
-                            if ((bool)strtotime($val))
-                                 return (object)['error'=>null,'default_value'=>convertDate($val)];
-                            else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct",['Y-m-d'])];
-                        }else{
-                            //// *** Option 2: Check date and its format to ensure the specified format is matched with the input
-                            $m_date = validateDate($val,$format);
-                            if($m_date){
-                                //$m_date = date('Y-m-d',$m_date);
-                                return (object)['error'=>null,'default_value'=>$m_date->format('Y-m-d')];
-                            }
-                            else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Date format $format is expected",[$format])];
-                        }
-
-                 }else if ($part2 ==='time' || $part2 ==='timestamp') {
-                    if((bool)strtotime($val))
-                      return (object)['error'=>null,'default_value'=>date("Y-m-d H:i:s",strtotime($val))];
-                    else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Timestamp expected")];
-                }else if ($part2==='email') {
-                    if(isEmail($val))
-                        return (object)['error'=>null,'default_value'=>$val];
-                    else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct. Email is expected")];
-                }else if ($part2==='phone'){
-                    if(isPhoneNumber($val))
-                    {
-                        $val =str_replace(' ','',$val);
-                        return (object)['error'=>null,'default_value'=>$val];
-                    }
-                    else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not correct")];
-                }
-                else if ($part2 === 'option' ||$part2 === 'choice'){
-                    $arr = explode(',',$part3);
-                    if (in_array($val,$arr))  return (object)['error'=>null,'default_value'=>$val];
-                    else return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be one of $part3")];
-                }else if ($part2 === 'number' || $part2 === 'numeric'){
-                    $interval = getInterval($part3);
-                    if ($interval->min ===-1 && $interval->max ===-1)
-                    {
-                         if (is_numeric($val))
-                            return (object)['error'=>null,'default_value'=>$val];
-                         else
-                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a number. Given value is ".($val?$val:'empty'))];
-
-                    }else{
-                       if($val < $interval->min || $val > $interval->max)
-                          return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be between $interval->min and $interval->max",[$interval->min,$interval->max])];
-                       else return (object)['error'=>null,'default_value'=>$val];
-                    }
-
-                }else if ($part2 === 'object' || $part2 === 'array'){
-
-                        //if $val is empty or NULL then do not treat it as validation error for JSON object or JSON array
-                        if (!$val) return (object)['error'=>null,'default_value'=>null];
-                          if(is_string($val))
-                             $obj = json_decode($val);
-                          else
-                             $obj = json_decode(json_encode($val));
-                        if ($obj)
-                           return (object)['error'=>null,'default_value'=>$obj];
-                        else
-                           return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not a invalid JSON format")];
-                } else if ($part2 ==='image' || $part2==='file' || $part2==='base64'){
-
-                        $interval = getInterval($part3);
-                        $file_types = getPropValue('type',$part4,$part3);
-                        $types = explode(';',$file_types);
-                        $ext = getFileExtensionFromBase64($val);
-                        if (!in_array($ext, $types)) return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
-                        $size = getBase64ImageSize($val);
-                        if ($interval->min===-1 && $interval->max===-1){
-                            $image = null;
-                            $mx = resizeImage_base64($val);
-                            if(!$mx->error) $image = $mx->image;
-                            //If the provided $image or photo data is not valid image, then just return NULL silently
-                            return (object)['error'=>null,'default_value'=>$image];
-                        }else{
-                            if ($size < $interval->min || $size > $interval->max)
-                            return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
-                            else{
-                                $image = null;
-                                $mx = resizeImage_base64($val);
-                                if(!$mx->error) $image = $mx->image;
-                                //If the provided $image or photo data is not valid image, then just return NULL silently
-                                return (object)['error'=>null,'default_value'=>$image];
-                            }
-                        }
-                }
-                else {
-                    //This case can happen when $spec ="1|" or "1|default=1" where data_type is not specified as "string or as number?"
-                    //This case can happen when $spec ="1|text=fdgfdgf:ddfgf1" where data_type is not specified as "string or as number?"
-                    $def_val = getPropValue('default',$part2,null);
-
-                    //NOTE thtat $def_val==0 => ($def_val) = false
-                    if ($def_val || $def_val==0){
-                        //return whatever value because data_type is not specified for validation
-                        return (object)['error'=>null,'default_value'=>$def_val];
-                    }else {
-
-                       if($part1===1)
-                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>null];
-                       else
-                          return (object)['error'=>null,'default_value'=>null]; /** NULL value is OK and no error **/
-                    }
-
-                }
-
-            } else /** this case happens when ($part1 !=0 and $part1 != 1) **/
-            {
-                //"address"=>"depend=name,email!phone_number|string". This means that "address" is required when there is input of "name and (email or phone_number)"
-                $ff = getPropValue('depend',$part1);
-                //In case there is no dependency field specified
-                if (!$ff){
-                    //In case that user specified $spec as, for example: "string" or "string|0", so NOT defining "1|string" or "0|string". NOTE that 1= "required", 0 = "not required"
-                    return (object)['error'=>null,'default_value'=>$val];
-                }else {
-                    //In this case : "address"=>"depend=name,email!phone_number|string"
-                            $dep_fields = explode(',',$ff?$ff:'');
-                            $all_exps = true;  //All dependency fields have values
-                            foreach($dep_fields as $dField){
-                                $or_exp=false;//one of the dependency field has value ( false = not have value)
-                                $or_fields = explode('!',$dField);
-                                foreach($or_fields as $f){
-                                        $v = isset($d[$f])?$d[$f]:null;
-                                        if($v){
-                                            $or_exp = true;
-                                            break;
-                                        }
-                                }
-
-                                if (!$or_exp){
-                                        $all_exps = false;
-                                        break;
-                                }
-                            }
-                }//end:: if "depend=name,email" etc...
-                if($all_exps){
-                    switch($part2){
-                        case 'string':{
-                           if(!$val) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name cannot be empty"),'default_value'=>$val];
-                           break;
-                        }
-                        case 'number':{
-                            if(!is_numeric($val)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a number"),'default_value'=>$val];
-                            break;
-                        }
-                        case 'date':{
-                            if((bool)strtotime($val)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not valid"),'default_value'=>$val];
-                            break;
-                        }
-                        case 'phone':{
-                            if(!isPhoneNumber($val)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not valid"),'default_value'=>$val];
-                            break;
-                        }
-                        default:{
-                            if(!is_numeric($val)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name must be a number"),'default_value'=>$val];
-                            break;
-                        }
-                    }
-                    return (object)['error'=>null,'default_value'=>$val];
-
-                }
-
-            }
-            return (object)['error'=>null,'default_value'=>$val];
-    }
-
-     function getValue($obj,$prop,$sanitize=0,$sanitize_options=[],$allow_raw=1){
-        $val = isset($obj->{$prop})?$obj->{$prop}:null;
-        return $sanitize? Sanitizer::sanitize($val,$sanitize_options,$allow_raw):$val;
-     }
-
-     //returns true if exists. If @check_exists_rule or @val is not supplied = > it returns TRUE
-     function checkExists($check_exists_rule='',$val=null){
-        if(($val==null || $val=='') || !$check_exists_rule) return true;
-        $exists_rule_parts = explode('.',$check_exists_rule);
-        $table_name = $exists_rule_parts[0];
-        if($table_name){
-            $exist_col = isset($exists_rule_parts[1])?$exists_rule_parts[1]:'id';
-            $row = DB::table($table_name)->where($exist_col,$val)->selectRaw($exist_col)->first();
-            return $row?true:false;
-        }
-        return true;
-     }
-
-     //NOTE:
-     /*** validateReq() | getValues() ***/
-     /***
-       $req is the $request object send from client browser. getValues() will retrieve parameter list by $req->all() that is associative array of params;
-       $fields = ['first_name'=>'1|string|1-50|default:null|first name cannot be empty','sex'=>'1|array|M,F|default:M|Gender must be M or F','1|phone_number|3-25'|phone number is not valid,'delivery_type'=>'1|array|Fast,Normal|exactcase:1|default:Normal'];
-       $include_all_fields =1 => include all fields sent through http request object from client, Otherwise,getValues() returns only fields within the given validation array "$fields"
-       $unique_specs "$branch_id|persons|first_name,last_name,email!phone_number|id|text=person already exists"
-       ***/
-      function validateReq($req, $fields = [],$sanitize=1,$sanitize_options =[],$lang='en',$include_all_fields=0,$unique_specs=null){
-        $langSection ='validation';
-        $identity_field = null;
-        $identity_value = null;
-
-        $d = $req->all();
-        $outputs = [];
-        //$to_check_unique = isset($unique_specs);
-        foreach($fields as $field=>$spec){
-              $val = null;
-              $op = null;
-              if (is_array($sanitize_options)) $op = isset($sanitize_options[$field])?$sanitize_options[$field]:null;
-              $raw_val = isset($d[$field])?$d[$field]:null;
-
-              if(is_array($raw_val))
-                    $val = ($sanitize)? Sanitizer::sanitizeObject($raw_val,$op):$raw_val;
-              else if($raw_val) $val = ($sanitize)? Sanitizer::sanitize($raw_val,$op):$raw_val;
-
-              $res = processInput($field,$val,$spec,$lang);
-              if($res->error) return (object)['error'=>$res->error,'values'=>null];
-
-               $is_identity = isset($res->is_identity)?(int)$res->is_identity:0;
-
-                if ($is_identity ==1)
-                {
-                    $identity_field = $field;
-                    $identity_value = $val;
-                }
-                else
-                  $outputs[$field] = $res->default_value;
-        }
-
-        if ($include_all_fields)  foreach($d as $col=>$value) if (!isset($outputs[$col])) $outputs[$col] = $value;
-
-        $unique_error =null;
-        if (is_array($unique_specs)){
-            $pk_field =[];
-            if ((double)$identity_value > 0) $pk_field[$identity_field] = $identity_value;
-            else if ($identity_value) $pk_field[$identity_field] = "'$identity_value'";
-
-            foreach($unique_specs as $u_spec){
-                $parts = explode('|',$u_spec);
-                $part4= $parts[3]; //example  "id=person_id" where "id" is the table PK field name and "person_id" is the data's prop that contains id value
-                $parts1 = explode('=',$part4); //"id=person_id"
-                $pk_field_name = isset($parts1[0])?$parts1[0]:null;
-                $pk_value =null;
-
-                if($pk_field_name){
-                        $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
-                        if (!$pk_input_prop) $pk_input_prop = $identity_field;
-                        if(is_numeric($pk_input_prop)) $pk_value = $pk_input_prop;
-                        else $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
-                }
-
-                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);
-                if ($unique_error){
-                   $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
-                   return (object)['error'=>$trans_err,'values'=>null];
-                }
-            }
-        }
-
-        $result =['error'=>null,'values'=>$outputs];
-        if ($identity_field) $result[$identity_field]= $identity_value;
-        return (object)$result;
-
-     }
-
-     /** getValuesBySection() | validateArray() | validateObject() **/
-     //getValues() process $req->all() automcatically. While getValuesBySection() process a section or an prop value based on given array such as  $d['personal_data']
-     function validateObject($d, $fields = [],$sanitize=1,$sanitize_options =[],$lang='en',$include_all_fields=0,$unique_specs=null){
-        $langSection ='validation';
-        $identity_field = null;
-        $identity_value = null;
-
-        //$d = $req->all();
-        $outputs = [];
-        foreach($fields as $field=>$spec){
-              $val = null;
-              $op = null;
-              if (is_array($sanitize_options)) $op = isset($sanitize_options[$field])?$sanitize_options[$field]:null;
-              if(isset($d[$field])) $val = ($sanitize)? Sanitizer::sanitize($d[$field],$op):$d[$field];
-                //Check field specification
-                /***
-                 1. 0|string|0|default:dsfdgdf
-                 2. 1|string|5-25|default:sfdsfdf
-                 3. 1|string|default:active
-                 4. 1|number|0|default:1
-                 5. 1|object|default:null
-                 6. 1|array|Fast,Normal|exactcase:1
-                ***/
-
-                $res = processInput($field,$val,$spec,$lang);
-                //if (!$res) return (object)['error'=>"$field $def_val",'values'=>null];
-                if($res->error) return (object)['error'=>$res->error,'values'=>null];
-
-                $is_identity = isset($res->is_identity)?(int)$res->is_identity:0;
-                if ($is_identity ===1)
-                {
-                    $identity_field = $field;
-                    $identity_value = $val;
-                }
-                else
-                  $outputs[$field] = $res->default_value;
-
-        }
-
-        if ($include_all_fields)  foreach($d as $col=>$value) if (!isset($outputs[$col])) $outputs[$col] = $value;
-        //Check Uniqeness
-        $unique_error =null;
-        if (is_array($unique_specs)){
-            foreach($unique_specs as $u_spec){
-                //$u_spec ="$ss->branch_id|persons|first_name,last_name!phone_number|id=person_id|text=person already exists"
-                $parts = explode('|',$u_spec);
-                $part4= $parts[3]; //example  "id=person_id" where "id" is the table PK field name and "person_id" is the data's prop that contains id value
-                $parts1 = explode('=',$part4); //"id=person_id"
-                $pk_field_name = isset($parts1[0])?$parts1[0]:null;
-                $pk_value =null;
-                if($pk_field_name){
-                        /** For example, input from frontend is d['person_id'], so "person_id" is pk_input_prop **/
-                        $pk_input_prop = isset($parts1[1])?$parts1[1]:null;
-                        if (!$pk_input_prop) $pk_input_prop = $identity_field;
-                        if(is_numeric($pk_input_prop)) $pk_value = $pk_input_prop;
-                        else $pk_value= isset($d[$pk_input_prop])?$d[$pk_input_prop]:null;
-                }
-
-                //NOTE: $pk_field is associateive array. Example: ['person_id'=>101] . This is needed for avoid check duplicate in case of UPDATE exiting item " where person_id <> 101"
-                if ($u_spec) $unique_error = checkUnique($d,$pk_field_name,$pk_value,$u_spec,$lang,$langSection);
-                if ($unique_error){
-                    $trans_err = Localization::translate($lang,$unique_error,null,$lang,$langSection,);
-                    return (object)['error'=>$trans_err,'values'=>null];
-                }
-            }
-
-        }
-
-        $result = (object)['error'=>null,'values'=>$outputs];
-        if ($identity_field) $result->{$identity_field} = $identity_value;
-        return $result;
-     }
-
-     /***
-         $spec = "$branch_id|persons|first_name,last_name,sex,date_of_birth|id=person_id|text=that person already exists::$var1;$var2"
-         $spec = "$branch_id|persons|phone_number!email,f2,f3|id|text=that person already exists::$var1;$var2"
-         $pk_field = ['id'=>101]. then it will be used as " AND id <> 101" to avoid checking uplicate item in case of UPDATE
-    ***/
-    function checkUnique($d,$pk_field_name,$pk_value,$spec=null,$lang='en',$langSection='validation'){
-        if (!$spec) return null; //"Failed to check uniqueness of data";
-        $parts = explode('|',$spec);
-        if(!isset($parts[0])) return "Failed to check uniqueness of data. Unique_spec= $spec";
-        if(!isset($parts[1])) return "Failed to check uniqueness of data. Unique Spec= $spec";
-        if (!isset($parts[2])) return "Failed to check uniqueness of data. Unique Spec= $spec";
-
-        $branch_id = $parts[0];
-        $table = $parts[1];
-        $field_list = explode(',',$parts[2]);
-        $m_where ="";
-        $select_cols =$pk_field_name?$pk_field_name:"id"; //presume a default. That all tables have a "id" column
-        //$checking_field_cnt = 0;
-        foreach($field_list as $fields){
-             $sts = explode('!',$fields);
-             $i =0;
-             $where_con="";
-             $has_or=0;
-             foreach($sts as $f){
-                //NOTE: For example, you want to check duplicate Phone_number. If phone_number is NULL or empty => do not check duplicate
-                if ($f && isset($d[$f])){
-                    if (!$has_or || $has_or ===0) $has_or = $where_con?1:0;
-                    //if (!isset($d[$f])) return "Error in checking uniqueness because field $f is empty or it is not supplied";
-                    $where_con .= ($where_con? ' OR ':''). $f."='".$d[$f]."'";
-                    //$checking_field_cnt++;
-                    $i++;
-                }
-             }
-             if ($has_or) $where_con = "($where_con)";
-             $m_where .= ($m_where? ' AND ':'').$where_con;
-        }
-
-        //Following line => do not check duplicate for NULL value or Zero value for the target field
-        if ($i===0) return null;
-        $str_pk = "";
-
-        if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
-        else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
-         $text = getPropValue('text',$parts[3]);
-        if (!$text) $text = getPropValue('text',isset($parts[4])?$parts[4]:'');
-
-        $str_branch = "1=1 ";
-        if ($branch_id > 0) $str_branch ='branch_id ='.$branch_id;
-        $m_where =  $str_branch." AND ".$m_where.$str_pk;
-        $row = DB::table($table)->whereRaw($m_where)->selectRaw($select_cols)->take(1)->first();
-        if ($row)
-        {
-            return $text?$text: $table.' already exists';
-        }
-        else return null;
-    }
-
-    function validateDate($date,$format){
-        //return date('Y-m-d',strtotime($date));
-        //return  convertDate($date);
-        if (!$date) return null;
-        $d = DateTime::createFromFormat($format, $date);
-        // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
-        if ($d && $d->format($format) === $date) return $d;
-        else return null;
-     }
-
-     function isPhoneNumber($phoneNumber) {
-        if (ctype_digit($phoneNumber)) {
-            if (strlen($phoneNumber) >=9 || strlen($phoneNumber) <= 12) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function isEmail($email=null,$nullable=0){
-        if (empty($email)) if ($nullable===1) return true;
-        return true;
-    }
+ 
+
+    //  function getPropValue($prop_name=null,$part3=null,$part4=null){
+    //     //if(!$prop_name) return $part3? $part3: ($part4? $part4:null);
+    //     if (!$prop_name) return null;
+    //     $prop_found = false;
+    //     if ($part3){
+    //         $sts = explode('=',$part3);
+    //         $varname = trim($sts[0]?$sts[0]:'');
+    //         if ($varname ===$prop_name){
+    //             $prop_found = true;
+    //             return isset($sts[1])?$sts[1]:null;
+    //         }
+    //         //else if ($varname != $prop_name) return $part3;
+    //     }
+
+    //     if (!$prop_found  && $part4) {
+    //         $sts = explode('=',$part4);
+    //         $varname = trim($sts[0]?$sts[0]:'');
+    //         if ($varname ===$prop_name) return isset($sts[1])?$sts[1]:null;
+    //         //else if ($varname != $prop_name) return $part4;
+    //     }
+    //     return null;
+    //     // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
+    //     // $sts = explode('=',$part4);
+    //     // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
+    //  }
+ 
+     
+    // function validateDate($date,$format){
+    //     //return date('Y-m-d',strtotime($date));
+    //     //return  convertDate($date);
+    //     if (!$date) return null;
+    //     $d = DateTime::createFromFormat($format, $date);
+    //     // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+    //     if ($d && $d->format($format) === $date) return $d;
+    //     else return null;
+    //  }
+
+    //  function isPhoneNumber($phoneNumber) {
+    //     if (ctype_digit($phoneNumber)) {
+    //         if (strlen($phoneNumber) >=9 || strlen($phoneNumber) <= 12) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
+
+    // function isEmail($email=null,$nullable=0){
+    //     if (empty($email)) if ($nullable===1) return true;
+    //     return true;
+    // }
 
 	// function seo_friendly_url($string){
 	// 	$string = str_replace(array('[\', \']'), '', $string);
@@ -1915,7 +1375,7 @@ function createUUIDV1()
     function getImageUrl($branch_id,$user_class,$file_name){
         $user_class = strtolower($user_class);
         if($file_name !=null){
-            return PublicStorage::getURl($branch_id,$user_class,'image').$file_name;
+            return XPublicStorage::getURl($branch_id,$user_class,'image').$file_name;
         }
         return null;
     }

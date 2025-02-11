@@ -2,9 +2,9 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
-use App\Models\DBX;
-use App\Models\Money;
+use DV;
+use DBX;
+use VSMoney;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -29,19 +29,19 @@ class TaxBracket
             'upper_amount' => '1|number',
             'rate' => '1|number',
             'bias' => '1|number',
-           'currency_code'=> '1|choice|KHR,USD|default='.Money::$national_currency,
+           'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$national_currency,
         ];
         $checkUnique = [
             "$branch_id|tax_brackets|lower_amount,upper_amount|id=id|text= already exists by tax bracket."
         ];
 
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
         $inputs = $res->values;
-        $id = saveData($ss, 'tax_brackets', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'tax_brackets', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['tax_brackets' => $inputs, 'id' => $id]);
         }
@@ -105,7 +105,7 @@ class TaxBracket
             $tax_bracket = self::getDetails($id, $ss);
         }
         return (object) [
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'tax_bracket' => $tax_bracket,
         ];
 

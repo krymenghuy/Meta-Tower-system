@@ -3,9 +3,9 @@
 namespace App\Models\Bhr;
 
 use App\Models\Bhr\GeneralSettings;
-use App\Models\DBX;
-use App\Models\DV;
-use App\Models\PublicStorage;
+use DBX;
+use DV;
+use XPublicStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -34,7 +34,7 @@ class Skill
         $checkUnique = [
             "$branch_id|skills|title|id=id|text=Skill already exists by title",
         ];
-        $res = validateObject($arr, $v_rule, true, ['image' => GeneralSettings::$image_chars], $ss->lang, false,$checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['image' => GeneralSettings::$image_chars], $ss->lang, false,$checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -46,17 +46,17 @@ class Skill
         $skill_create = !$id;
 
         $delete_prev_image = ($id > 0 && (!$image || isImage($image)));
-        $id = saveData($ss, 'skills', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'skills', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
             if ($delete_prev_image) {
                 $file_name = DB::table('skills')->where('id', $id)->take(1)->value('image_file_name');
                 if ($file_name) {
-                    PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+                    XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
                 DB::table('skills')->where('id', $id)->update(['image_file_name' => null]);
             }
-            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $image, null, ['id' => $id, 'store' => 'skills.image_file_name']);
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $image, null, ['id' => $id, 'store' => 'skills.image_file_name']);
             return DV::depends(1, ['skills' => $inputs, 'id' => $id]);
         }
 
@@ -162,7 +162,7 @@ class Skill
             ->take(1)
             ->value('s.image_file_name');
         if ($file_name) {
-            PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+            XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
         }
         $deleted = DB::table('skills')->where('id', $id)->delete();
         if (!$deleted) {
@@ -202,11 +202,11 @@ class Skill
     $delete_photo = (!$photo || isImage($photo));
     $logo_file_name = DB::table('skills')->where('id',$skill_id)->selectRaw('image_file_name')->value('image_file_name');
     if ($delete_photo){
-      PublicStorage::delete (['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$img_dir],'image',$logo_file_name);
+      XPublicStorage::delete (['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$img_dir],'image',$logo_file_name);
       DB::table('skills')->where('id', $skill_id)->update(['image_file_name' => null]);
     }
     $maxSize =500;
-	  $res = PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>null,'dir'=>self::$img_dir],$file_type,$photo,$maxSize,['id'=>$skill_id,'store'=>'skills.image_file_name']);
+	  $res = XPublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>null,'dir'=>self::$img_dir],$file_type,$photo,$maxSize,['id'=>$skill_id,'store'=>'skills.image_file_name']);
     if($res->status ==='Error') return DV::error($res->error_message);
     $img = self::getSkillPhoto($skill_id);
     return DV::depends(1, ['image_url'=>$img]);
@@ -223,7 +223,7 @@ class Skill
         $def_image = self::defaultPhoto($row ? $row->subs_id : null);
         $url = '';
         if ($row) {
-            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'skills'], 'images') . $row->image_file_name;
+            $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'skills'], 'images') . $row->image_file_name;
             return validateUrl($url,$def_image);
         } else return $def_image;
     }
@@ -233,7 +233,7 @@ class Skill
         $ss = $ss ?? $this->userInfo;
         $skill = DB::table('skills as s')->where('id', $id)->selectRaw('id,image_file_name')->first();
         if (!$skill) return DV::error('Skill identity is not correct!');
-        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $skill->image_file_name);
+        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $skill->image_file_name);
         DB::table('skills')->where('id', $id)->update(['image_file_name' => null]);
         return DV::success();
     }

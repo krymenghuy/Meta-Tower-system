@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Config;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 use App\Models\CrispModel;
 use App\Models\Umt\User;
 class CrispController extends Controller
@@ -24,7 +24,7 @@ class CrispController extends Controller
 
     public function linkUserToCrispOperator(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $user = $req->user;
         $operator = CrispModel::createOrUpdateOperator($user);

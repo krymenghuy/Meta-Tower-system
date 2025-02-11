@@ -2,12 +2,12 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
-use App\Models\Money;
+use VSMoney;
 
 class Payroll
 {
@@ -37,12 +37,12 @@ class Payroll
             'total' => '0|number',
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
-            'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
+            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'exchange_rate' => '0|number',
 
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -64,7 +64,7 @@ class Payroll
             }
         }
 
-        $id = saveData($ss, 'payrolls', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'payrolls', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payrolls' => $inputs, 'id' => $id]);
         }
@@ -223,7 +223,7 @@ class Payroll
          'currency_code'=>$payroll->currency_code,
          'head_count'=>$payroll->head_count
        ];
-       $disburse_id = saveData($ss,'payroll_disbursements',['id'=>null],$inputs,[],1,false,'binary');
+       $disburse_id = DBX::saveData($ss,'payroll_disbursements',['id'=>null],$inputs,[],1,false,'binary');
        if($disburse_id) return bin2hex($disburse_id);
        return null;
     }
@@ -256,7 +256,7 @@ class Payroll
          }
          $master_amount = 0;
          if ($payroll->currency_code != $master_account->currency_code) {
-             $master_amount = Money::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
+             $master_amount = VSMoney::convert($ss, $master_account->balance, $master_account->currency_code, $payroll->currency_code, $payroll->exchange_rate);
          } else if (!$payroll->currency_code) {
              return DV::error('Either payroll currency or master payroll account currency is not valid!');
          } else {
@@ -359,7 +359,7 @@ class Payroll
                 ['id' => '0', 'name' => 'Pending'],
 
             ],
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'payrolls' => $payroll,
         ];
     }
@@ -620,7 +620,7 @@ class Payroll
                 $row->allowance = $row->allowance->get();
                 foreach ($row->allowance as $allowance) {
                     if ($allowance->allowance_currency != $row->payroll_currency) {
-                        $allowance->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
+                        $allowance->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
                     }
                 }
                 $row->allowance = $row->allowance->sum('allowance');
@@ -628,7 +628,7 @@ class Payroll
                 $allowance = $row->allowance->first();
                 if ($allowance) {
                     if ($allowance->allowance_currency != $row->payroll_currency) {
-                        $row->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
+                        $row->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->payroll_currency, (1 / $row->exchange_rate));
                     } else {
                         $row->allowance = $allowance->allowance;
                     }
@@ -969,19 +969,19 @@ class Payroll
                 if ($tax_option_id == 1) {
                     $tax_base = $emp_salary + $payroll_list_benefit->used_amount;
                     if ($emp->salary_currency != $currency_code || $payroll_list_benefit->currency_code != $currency_code) {
-                        $tax_base = Money::convert($ss, $tax_base, $payroll_list_benefit->currency_code, $currency_code, (1 / $exchange_rate));
+                        $tax_base = VSMoney::convert($ss, $tax_base, $payroll_list_benefit->currency_code, $currency_code, (1 / $exchange_rate));
                     }
                 }
             }
             if ($emp->salary_currency != $currency_code) {
-                $emp_salary = Money::convert($ss, $emp_salary, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
+                $emp_salary = VSMoney::convert($ss, $emp_salary, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
             }
             if ($emp->apply_payroll_tax == 1) {
-                if ($currency_code != Money::$national_currency) {
+                if ($currency_code != VSMoney::$national_currency) {
                     if ($exchange_rate == 0) {
                         $exchange_rate = 1;
                     }
-                    $tax_base = Money::convert($ss, $tax_base, Money::$national_currency, $currency_code, $exchange_rate);
+                    $tax_base = VSMoney::convert($ss, $tax_base, VSMoney::$national_currency, $currency_code, $exchange_rate);
                     $taxInfo = DB::table('tax_brackets')
                         ->where(function ($query) use ($tax_base) {
                             $query->whereRaw('lower_amount <= ?', [$tax_base])
@@ -989,7 +989,7 @@ class Payroll
                         })
                         ->select('rate', 'bias')
                         ->first();
-                    $taxInfo->bias = Money::convert($ss, $taxInfo->bias, Money::$national_currency, $currency_code, (1 / $exchange_rate));
+                    $taxInfo->bias = VSMoney::convert($ss, $taxInfo->bias, VSMoney::$national_currency, $currency_code, (1 / $exchange_rate));
                     // \Log::info('bias : '.json_encode($taxInfo->bias));
                 } else {
                     $taxInfo = DB::table('tax_brackets')
@@ -1021,7 +1021,7 @@ class Payroll
                 ->where('payroll_id', $payroll_id)
                 ->value('id');
 
-            $test_id = saveData($ss, 'payroll_list', ['id' => $test_id], $inputs, [], 1);
+            $test_id = DBX::saveData($ss, 'payroll_list', ['id' => $test_id], $inputs, [], 1);
 
             if ($test_id) {
                 $success++;
@@ -1144,7 +1144,7 @@ class Payroll
                 $row->allowance = $row->allowance->get();
                 foreach ($row->allowance as $allowance) {
                     if ($allowance->allowance_currency != $row->currency_code) {
-                        $allowance->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
+                        $allowance->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
                     }
                 }
                 $row->allowance = $row->allowance->sum('allowance');
@@ -1152,7 +1152,7 @@ class Payroll
                 $allowance = $row->allowance->first();
                 if ($allowance) {
                     if ($allowance->allowance_currency != $row->currency_code) {
-                        $row->allowance = Money::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
+                        $row->allowance = VSMoney::convert($ss, $allowance->allowance, $allowance->allowance_currency, $row->currency_code, (1 / $row->exchange_rate));
                     } else {
                         $row->allowance = $allowance->allowance;
                     }
@@ -1219,7 +1219,7 @@ class Payroll
             'emp_id'=>$emp_id,
             'payroll_id'=>$id
         ];
-        $pl_id = saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1,false);
+        $pl_id = DBX::saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1,false);
         return DV::depends($pl_id,null,'Failed to add staff to payroll list');
     }
 

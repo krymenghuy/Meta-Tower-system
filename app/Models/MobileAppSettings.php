@@ -5,10 +5,11 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 //use App\Models\PrivateStorage;
-use App\Models\DV;
-use App\Models\PublicStorage;
+use DV;
+use XPublicStorage;
 use App\Models\Umt\Subscription;
 use DB;
+use DBX;
 use Config;
 //use Sanitizer;
 //use Carbon\Carbon;
@@ -30,7 +31,7 @@ class MobileAppSettings //extends Model
        $rows = DB::table('mobile_brand_images as img')->where('app_id',hex2bin($app_id))->where('subs_id',hex2bin($subs_id))->selectRaw('file_name')->get();
        $imgs = [];
        foreach($rows as &$row){
-          $url = PublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name;
+          $url = XPublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name;
           $imgs[] = validateUrl($url,'');
         }
        return (object)[
@@ -64,7 +65,7 @@ class MobileAppSettings //extends Model
     $file_name = $fileMap[$app_id];
 
     // Build the full file path
-    $full_path = PublicStorage::getDiskPath(['subs_id'=>$subs_id,'branch_id'=>null,'dir'=>'general'], 'document') . $file_name;
+    $full_path = XPublicStorage::getDiskPath(['subs_id'=>$subs_id,'branch_id'=>null,'dir'=>'general'], 'document') . $file_name;
     // Check if the file exists
     if (!file_exists($full_path)) {
         return "File not found!";
@@ -91,7 +92,7 @@ class MobileAppSettings //extends Model
     //       $file_name ='salesapp_terms_and_conditions.txt';
     //    }
     //     else return "Invalid app_id";                  
-    //     $full_path = PublicStorage::getDiskPath_v1($branch_id,$user_class,'document').$file_name; //getcwd()."/storage/companies/common/".$app_id."/".$file_name;
+    //     $full_path = XPublicStorage::getDiskPath_v1($branch_id,$user_class,'document').$file_name; //getcwd()."/storage/companies/common/".$app_id."/".$file_name;
     //     if (!file_exists($full_path)) return "File not found!";
     //     $text = readFileContent($full_path);
       
@@ -112,7 +113,7 @@ class MobileAppSettings //extends Model
           return "Invalid app_id";
       }
   
-      $full_path = PublicStorage::getDiskPath(['subs_id'=>$subs_id,'branch_id'=>null, 'dir'=>'general'],'document');
+      $full_path = XPublicStorage::getDiskPath(['subs_id'=>$subs_id,'branch_id'=>null, 'dir'=>'general'],'document');
      
       $content = $content ?? '';
       if (!file_exists($full_path)) {
@@ -283,7 +284,7 @@ class MobileAppSettings //extends Model
         {
             $i++;
             //$storage_folder ="general", so the brand images are retrieved from folder "General"
-            $image_url = htmlspecialchars(PublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name);
+            $image_url = htmlspecialchars(XPublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name);
             $row->image_url = $image_url;
         }
         return $rows;
@@ -310,7 +311,7 @@ class MobileAppSettings //extends Model
         foreach($rows as $row){
         $imgs[] = (object)[
             'id'=>$row->id,
-            'image_url'=>PublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name,
+            'image_url'=>XPublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$row->file_name,
             'description'=>$row->description
         ];
         }
@@ -332,16 +333,16 @@ class MobileAppSettings //extends Model
     //Do not save and just ignore
     //if(!$photo_data || filter_var($photo_data, FILTER_VALIDATE_URL)) return DV::success();
    
-    $res = PublicStorage::saveImage(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],$file_type,$photo_data,null,null);
+    $res = XPublicStorage::saveImage(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],$file_type,$photo_data,null,null);
     if($res->status ==='OK'){
-      $new_id = saveData($ss,'mobile_brand_images',['id'=>null],[
+      $new_id = DBX::saveData($ss,'mobile_brand_images',['id'=>null],[
         'app_id'=>$bin_app_id,
         'description'=>$description,
         'file_type'=>$res->extension,
         'file_name'=>$res->file_name
       ],[],1);
       if($new_id > 0){
-        $url = PublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$res->file_name;
+        $url = XPublicStorage::getUrl(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image').$res->file_name;
          return DV::depends(1,['imgs'=>self::getBrandImages($app_id,$ss),'image'=>(object)['url'=>$url,'description'=>$description]]);
       }
       return DV::error('Something when wrong in saving Brand Image');
@@ -355,7 +356,7 @@ class MobileAppSettings //extends Model
       //$bin_app_id = $app_id? hex2bin($app_id): null; 
       $subs_id = $ss->subs_id;
       $row = DB::table('mobile_brand_images')->where('id',$id)->selectRaw('file_name')->first();
-      if($row) PublicStorage::delete(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image',$row->file_name);
+      if($row) XPublicStorage::delete(['subs_id'=>$subs_id,'branch_id'=>null,'dir_name'=>self::$img_dir],'image',$row->file_name);
       DB::table('mobile_brand_images')->where('id',$id)->delete();
       return DV::depends(1,['imgs'=>self::getBrandImages( $app_id,$ss)]);
   }

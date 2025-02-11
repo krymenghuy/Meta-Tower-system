@@ -5,8 +5,8 @@ namespace App\Models\Location;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\DV;
-
+use DV;
+use DBX;
 class Commune //extends Model
 {
     //use HasFactory;
@@ -44,13 +44,13 @@ class Commune //extends Model
         $sanitize_rules = [];
         $branch_id = $ss->branch_id;
         $check_unique = ["$branch_id|loc_communes|name|id=id"];
-        $res = validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|0-100','name_kh'=>'0|string|0-100','district_id'=>'1|positive|exists=loc_districts.id'],true,$sanitize_rules,$ss->lang,false,$check_unique);
+        $res = DBX::validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|0-100','name_kh'=>'0|string|0-100','district_id'=>'1|positive|exists=loc_districts.id'],true,$sanitize_rules,$ss->lang,false,$check_unique);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $id = $res->id;
         $name_kh = $inputs['name_kh'];
         $name_kh = $name_kh?$name_kh:$inputs['name'];
-        $id = saveData($ss,'loc_communes',['id'=>$id],$inputs,[],0);
+        $id = DBX::saveData($ss,'loc_communes',['id'=>$id],$inputs,[],0);
         if($id >0) return DV::success(["commune"=>$inputs]);
         return DV::error("something wrong during saving commune");
      }

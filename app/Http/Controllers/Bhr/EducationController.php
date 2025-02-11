@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Education;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -18,14 +18,14 @@ class EducationController extends Controller
     public function save(Request $req){
         $id = $req->id ?? $req->edu_id;
         $prn_code = $id ? 493 : 494;
-        $ss = AuthService::verifyAuth($req,$prn_code);
+        $ss = XAuthService::verifyAuth($req,$prn_code);
         if($ss->status_code !=200) return JDV::raw($ss);
         $edu = $this->education->save($req->all(),$id, $ss);
         return JDV::raw($edu);
     }
 
     public function ListAll(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if ($ss->status_code !==200) return JDV::raw($ss);
         $edu = $this->education->getListAll($req->all(),$ss);
 
@@ -33,7 +33,7 @@ class EducationController extends Controller
     }
 
     public function getDetails(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
 
         $edu = $this->education->details($req->id,$ss);
@@ -44,14 +44,14 @@ class EducationController extends Controller
 
 
     public function getFormOptions(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $edu = $this->education->formOptions($req->id,$ss);
          return JDV::result($edu);
     }
 
     public function delete(Request $req){
-        $ss = AuthService::verifyAuth($req,495);
+        $ss = XAuthService::verifyAuth($req,495);
         if($ss->status_code !==200) return JDV::raw($ss);
 
         if(!isset($req->id) || !is_numeric($req->id)){

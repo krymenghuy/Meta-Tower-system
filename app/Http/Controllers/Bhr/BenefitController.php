@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Benefit;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class BenefitController extends Controller
@@ -19,7 +19,7 @@ class BenefitController extends Controller
     {
         $id = $req->benefit_id ?? $req->id;
         $prn_code = $id ? 270 : 271;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -29,7 +29,7 @@ class BenefitController extends Controller
     }
     public function getBenefitPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -37,7 +37,7 @@ class BenefitController extends Controller
     }
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -48,7 +48,7 @@ class BenefitController extends Controller
     }
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -57,7 +57,7 @@ class BenefitController extends Controller
 
     public function deleteBenefit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 272);
+        $ss = XAuthService::verifyAuth($req, 272);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
