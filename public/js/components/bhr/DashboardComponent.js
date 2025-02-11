@@ -31,8 +31,7 @@ var DashboardComponent =  (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        if(!AuthManager.allowed(254,true)){
- 
+        if(AuthManager.allowed(254,true)){
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
@@ -656,7 +655,6 @@ var DashboardComponent =  (function () {
   
     mThis.show = (options) => {
         if (!AuthManager.allowed(254,true)){
- 
             mThis.self.innerHTML = renderUserHome();
             main_view.setContentView(mThis.self, mThis.title_prop);
             return;
@@ -675,19 +673,22 @@ var DashboardComponent =  (function () {
 
     const renderUserHome = ()=>{
         return [
-            `<div class="container mt-4">
-                <div class="d-flex align-items-center justify-content-center p-4 user-home-header">
-                    <div class="text-center">
-                        <h1 class="text-primary-custom fw-bold">Welcome to LC</h1>
-                        <p class="text-muted">Manage your profile, settings, and more from here.</p>
-                    </div>
-                </div>
-                    <img src="../../../assets/images/logo/loc_logo.jpg" alt="Dashboard Mockup" width="250" height="auto">
-            </div>`,
+            `<div class="user_home_page">
+                <img src="../../../assets/images/default/default-dashboard.jpg" >
+            </div>
+            <style>
+                .user_home_page img{
+                    height: 88.6vh;
+                    width: 99.2%;
+                    margin:5px;
+                    background-size: cover;
+                    display:flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            </style>`,
         ].join("");
-     };
- 
 
-     
+     };
     return mThis;
 })();

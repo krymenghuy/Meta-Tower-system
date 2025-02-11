@@ -135,7 +135,7 @@
 <?php
 function v_display($mod_id, $module_ids = null)
 {
-    if (App\Models\UM::access_mod($mod_id, null, $module_ids)) {
+    if (XAuthService::access_mod($mod_id, null, $module_ids)) {
         echo '';
     } else {
         echo ' style= "display:none" ';
@@ -181,13 +181,11 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(241); ?>>
-                            <a href="EmployeeComponent" modid="241" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" />                    </span>
- 
-                                <span class="kt-menu__link-text font-color " vslang="menus.Employee Management"></span>
- 
-                            </a>
+                <a href="EmployeeComponent" modid="241" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" /></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Employee Management"></span>
+                </a>
             </li>
  
           

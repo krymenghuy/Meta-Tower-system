@@ -679,9 +679,10 @@ const RoleTabView = new function(){
     
     //displayAppList()
      this.loadApps =()=>{
-        let p = {
+        const p = {
             subs_id: main_view.subs_id,
-            role_id:mThis.selected_role.role_id
+            role_id:mThis.selected_role.role_id,
+            order_by:'display_order'
         };
         vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
@@ -1015,6 +1016,13 @@ const RoleTabView = new function(){
 this.ModulePanel = new function(){
     const that = this;
     this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
+    this.elSearchModule = mThis.self.querySelector('#_um_role_search_module');
+    this.elSearchModule.onkeyup = e =>{
+        setTimeout(() =>{
+            const op = {"search_value": this.elSearchModule.value};
+            that.displayModules(mThis.selected_role.role_id, that.def_app_id, op);
+        },250);
+    };
 
     this.elAppFilter.onchange = e => {
       e.preventDefault();
@@ -1040,7 +1048,7 @@ this.ModulePanel = new function(){
         that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
-    this.displayModules = (role_id,app_id)=>{
+    this.displayModules = (role_id,app_id, op = {})=>{
             if (!that.elAppFilter.value) that.elAppFilter.value = ''; // (All Applications)
             role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
             mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
@@ -1124,10 +1132,9 @@ this.ModulePanel = new function(){
                     });
                 }
             });
-
-            const p = {"role_id":role_id,"app_id":app_id};
+            const p = {"role_id":role_id,"app_id":app_id, order_by:'display_order', search_value: (op.search_value ?? '')};
             vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
-                let data = res.status_code ==200 ? res.data : [];
+                const data = res.status_code ==200 ? res.data : [];
                 mThis.modulesList.setData(data);
                 mThis.setItemActionButtons(mThis.modulesList.getContainer(), app_id,"module");
             });
@@ -1203,6 +1210,10 @@ this.ModulePanel = new function(){
                     `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
                  `</div>`,
                  `<div class="form-group col-md-12">`,
+                 `<label class="form-label" vslang="titles.Module ID (optional)">Module ID (optional)</label>`,
+                 `<div><input type="number" name="force_module_id" class="form-control data-input" data-field="force_module_id" /></div>`,
+               `</div>`,
+                 `<div class="form-group col-md-12">`,
                    `<label class="form-label" vslang="titles.Visibility">Visibility</label>`,
                    `<div><select name="visibility"  class="data-input" data-field="hidden"></select></div>`,
                  `</div>`,
@@ -1222,17 +1233,32 @@ this.ModulePanel = new function(){
                          vsapi.call(`${main_view.base_url}/api/module/save`,p,false,false,false).then(res =>{
                              if(res.status_code == 200){
                                 me.hide();
-                                let app_id = me.controls.app.value; 
+                                const app_id = me.controls.app.value; 
                                 if(app_id){
                                   that.elAppFilter.value = app_id;
                                   that.elAppFilter.dispatchEvent(new Event("change"));
                                 }
-                                cv_interact.success(['Module ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
+                                const change_id_error = res.data.change_id_error ?? null;
+                                if(change_id_error){
+                                   cv_interact.warning('html::Module name has been saved! <span calss="text-danger">' + change_id_error + '</span>');
+                                }
+                                else cv_interact.success(['Module ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
                              }else cv_interact.error(res.error_message); 
                          })
                      }
                  }
               ],
+              extendMethod:{
+                 "getData":(me)=>{
+                     const force_mid = me.controls.force_module_id;
+                     if(force_mid> 0){
+                        return {"force_module_id":force_mid};   
+                     }else return {};
+                  },
+                  "setData":(me,data)=>{
+                     me.controls.force_module_id.value = data.id ?? data.module_id ?? '';
+                 }
+              },
               configSelect:[
                 {
                     name:"visibility",
@@ -1397,7 +1423,7 @@ this.PermissionPanel = new function(){
             }
         });
      
-            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
+            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value, 'order_by':'display_order'};
             vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);
@@ -1762,7 +1788,7 @@ this.ReportPanel = new function(){
 
         });
 
-        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
+        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value, 'order_by':'display_order'};
         vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
              const d = res.status_code ==200? res.data: {};
              mThis.reportList.setData(d);

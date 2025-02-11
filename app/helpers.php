@@ -1,6 +1,6 @@
 <?php
  //use Illuminate\support\Facades\Auth;
- use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
  //use Ramsey\Uuid\Uuid;
  //use GuzzleHttp\Client;
