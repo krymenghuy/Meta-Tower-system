@@ -74,8 +74,7 @@ class Account
         $id = DBX::saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
-
-
+ 
     static function accountNumberExists($account_number, $account_type, $id = null)
     {
         $str_id = $id > 0 ? 'id <> ' . $id : '1=1';

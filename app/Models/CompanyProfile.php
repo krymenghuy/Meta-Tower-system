@@ -8,16 +8,16 @@ namespace App\Models;
 //use Sanitizer;
 use XSubscription;
 use XPublicStorage;
+use DB;
 use DBX;
 use DV;
-use Illuminate\Support\Facades\DB;
 
 class CompanyProfile //extends Model
 {
   //use HasFactory;
    protected $userInfo = null;
    protected static $logo_dir ="identity";
-   protected static $img_dir ='mobile_banner', $soc_media_img_dir ='social_media';
+   protected static $img_dir ='brand-images', $soc_media_img_dir ='social_media';
   
    function __construct($userInfo=null){
       $this->userInfo = $userInfo;
@@ -57,7 +57,7 @@ class CompanyProfile //extends Model
 
      $name_kh = $inputs['name_kh'];
      if (!$name_kh) $inputs['name_kh'] = $inputs['name'];
-     $customer_id = DBX::saveData($ss,'um_customers',['id'=>$bin_customer_id],$inputs,[],0,'binary');
+     $customer_id = saveData($ss,'um_customers',['id'=>$bin_customer_id],$inputs,[],0,'binary');
      if($customer_id){
        if($logo) XPublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>$ss->branch_id,'dir_name'=>self::$logo_dir],null,$logo,['id'=>$customer_id,'store'=>'um_customers.logo_file_name']);
      }
@@ -80,20 +80,27 @@ class CompanyProfile //extends Model
     ];
   } 
 
-   static function socialMediaList($ss){
-      $customer_id = $ss->subscriber_id ?? null;
-      $branch_id = null; 
-      if(!$customer_id) return [];
-      $bin_customer_id = hex2bin($customer_id);
-      $rows = DB::table('social_media')->where('customer_id',$bin_customer_id)->selectRaw('file_name,name,url,id')->get();
-      foreach($rows as $row){
-          if($row->file_name != null){
-              $row->image_url = XPublicStorage::getUrl(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir'=>self::$soc_media_img_dir],'image').$row->file_name;
-          }else  $row->image_url = $row->file_name;
-          unset($row->file_name);
-      }
-      return $rows;
-  }
+  static function socialMediaList($ss){
+    $customer_id = $ss->subscriber_id ?? null;
+    $branch_id = null; 
+    if(!$customer_id){
+       $subs_id = $ss->subs_id ?? null;
+       if($subs_id != null) {
+           $row = DB::table('um_subscriptions as s')->where('s.id',hex2bin($subs_id))->selectRaw(DBX::getHex('s.customer_id','customer_id'))->first();
+           if($row != null) $customer_id = $row->customer_id;
+       }
+    }
+    if(!$customer_id) return [];
+    $bin_customer_id = hex2bin($customer_id);
+    $rows = DB::table('social_media')->where('customer_id',$bin_customer_id)->selectRaw('file_name,name,url,id')->get();
+    foreach($rows as $row){
+        if($row->file_name != null){
+            $row->image_url = XPublicStorage::getUrl(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir'=>self::$soc_media_img_dir],'image').$row->file_name;
+        }else  $row->image_url = $row->file_name;
+        unset($row->file_name);
+    }
+    return $rows;
+}
 
   static function connectWithUs($ss){
       $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
@@ -123,7 +130,7 @@ class CompanyProfile //extends Model
       $row->logo_url =self::logoUrl($ss);
       return $row;
    } 
-
+ 
   static function details($ss) {
     $customer_id = $ss->subscriber_id;
     if(!$customer_id) return null;
@@ -158,11 +165,12 @@ class CompanyProfile //extends Model
   
   static function logoUrl($ss){
     $customer_id = $ss->subscriber_id;
-    if(!$customer_id) return '';
+    if(!$customer_id) return "";
     $bin_customer_id = hex2bin($customer_id);
     $branch = DB::table('um_customers')->where('id',$bin_customer_id)->selectRaw('logo_file_name')->first();
     if(!$branch) return "";
-    return XPublicStorage::getUrl(['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$logo_dir],'image').$branch->logo_file_name;
+    $url = XPublicStorage::getUrl(['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$logo_dir],'image').$branch->logo_file_name;
+    return ValidateUrl($url,'');
   }
 
   function getLogoUrl($ss=null)
@@ -180,7 +188,7 @@ class CompanyProfile //extends Model
 
      $row = DB::table('um_customers')->where('id', $bin_customer_id)->selectRaw('logo_file_name')->first();
      if($row) XPublicStorage::delete(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir_name'=>self::$logo_dir],'image',$row->logo_file_name); 
-     DB::table('um_customers')->where('id',$bin_customer_id)->update(['logo_file_name'=>null]);
+     DB::table('um_customers')->where('id',$bin_customer_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
      return DV::depends(1); 
   }
 }
