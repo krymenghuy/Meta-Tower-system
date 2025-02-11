@@ -7391,12 +7391,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-dbx.git",
-                "reference": "e4f7559162f651ebef5d2db5277ab6fc2b37d9a3"
+                "reference": "df9831c29ca4e92a153db9ec7fe2926e42ecc5c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/e4f7559162f651ebef5d2db5277ab6fc2b37d9a3",
-                "reference": "e4f7559162f651ebef5d2db5277ab6fc2b37d9a3",
+                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/df9831c29ca4e92a153db9ec7fe2926e42ecc5c0",
+                "reference": "df9831c29ca4e92a153db9ec7fe2926e42ecc5c0",
                 "shasum": ""
             },
             "require": {
@@ -7426,7 +7426,7 @@
                 "source": "https://github.com/vectorasoft/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-dbx/issues"
             },
-            "time": "2025-02-11T01:27:12+00:00"
+            "time": "2025-02-11T07:13:30+00:00"
         },
         {
             "name": "vsd/money",
@@ -7569,12 +7569,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-xauth.git",
-                "reference": "8107afd80f7e20d9276a49c0ede592f2962b692d"
+                "reference": "24b1fd07a78d7a1599af895f5708a901a206aab5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/8107afd80f7e20d9276a49c0ede592f2962b692d",
-                "reference": "8107afd80f7e20d9276a49c0ede592f2962b692d",
+                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/24b1fd07a78d7a1599af895f5708a901a206aab5",
+                "reference": "24b1fd07a78d7a1599af895f5708a901a206aab5",
                 "shasum": ""
             },
             "require": {
@@ -7624,7 +7624,7 @@
                 "source": "https://github.com/vectorasoft/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-xauth/issues"
             },
-            "time": "2025-02-11T05:30:12+00:00"
+            "time": "2025-02-11T08:00:10+00:00"
         },
         {
             "name": "webmozart/assert",
