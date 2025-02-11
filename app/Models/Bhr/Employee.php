@@ -1545,9 +1545,9 @@ class Employee //extends Model
         $duplicates = [];
         foreach ($rows as $row) {
             $row = (object) $row; 
-            $key = $row->code . $row->benefit . convertDate($row->effective_date);
+            $key = $row->name  .$row->phone_number;
             if (isset($duplicates[$key])) {
-                return "Employee ID {$row->code} is already has Benefit {$row->benefit} on {$row->effective_date}";
+                return "Duplicate employee name {$row->name} use Contact {$row->phone_number}!";
             }
             $duplicates[$key] = true;
         }
@@ -1577,18 +1577,19 @@ class Employee //extends Model
             $file_name = $x->file_name;
             $rows = self::readExcel($ss,$x->file_name,2);
             $data = self::convertImportedEmployee($rows);
-            // $error = self::validateData($data);
-            // if($error) return DV::error($error);
+            $error = self::validateData($data);
+            if($error) return DV::error($error);
             
             $success = 0;
             DB::beginTransaction();
             try {
                 foreach ($data as $row) {
                     $arr = (array) $row;
-                    $arr['nationality_id'] = DB::table('loc_countries')->where('nationality', $arr['nationality_id'])->value('id');
-                    $arr['position_id'] = DB::table('positions')->where('title', $arr['position_id'])->value('id');
-                    $arr['emp_type_id'] = DB::table('emp_types')->where('name', $arr['emp_type_id'])->value('id');
-                    $arr['work_shift_id'] = DB::table('work_shifts')->where('name', $arr['work_shift_id'])->value('id');
+
+                    $nationality_id = DB::table('loc_countries')->where('nationality', $arr['nationality_id'])->value('id');
+                    $position_id = DB::table('positions')->where('title', $arr['position_id'])->value('id');
+                    $emp_type_id = DB::table('emp_types')->where('name', $arr['emp_type_id'])->value('id');
+                    $work_shift_id = DB::table('work_shifts')->where('name', $arr['work_shift_id'])->value('id');
                     $v_rule = [
                         'name' => '1|string|0-100',
                         'name_kh' => '0|string|0-100',
@@ -1619,6 +1620,11 @@ class Employee //extends Model
                         'passport_number' => '0|string|0-100',
                         'passport_expiry_date' => '0|date',
                     ];
+                    $arr['nationality_id'] = $nationality_id;
+                    $arr['position_id'] = $position_id;
+                    $arr['emp_type_id'] = $emp_type_id;
+                    $arr['work_shift_id'] = $work_shift_id;
+
             
                     $checkUnique = null;
                     $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
@@ -1659,7 +1665,6 @@ class Employee //extends Model
                     }
                     unset($inputs['photo']);
                     $created = !$emp_id;
-                    $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
                     $salary = $d->salary ?? 0;
                     if ($d->emp_type_id == '3' && $d->position_id >0){
                         if($created && !$salary){
@@ -1675,51 +1680,25 @@ class Employee //extends Model
                     $inputs['salary'] = $salary;
                     $currency_code = Money::$base_currency;
                     $inputs['currency_code'] = $currency_code;
-                    $org_joining_date = null;
-                    $change_joining_date = false;
-                    if(!$created){
-                        $emp = self::getProps($emp_id,'id,joining_date');
-                        $input_joining_date = convertDate($d->joining_date);
-                        $org_joining_date = convertDate($emp->joining_date);
-                        $change_joining_date =  $input_joining_date != $org_joining_date;
-                        unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id']);
-                    }
-                    $emp_id = saveData($ss, 'employees', ['id' => null], $inputs, [], 1,false);
-                    if ($emp_id && $created) {
-                        $prefix = 'LC';
-                        $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $emp_id], $prefix, 5, null);
-                        // $new_code = $res->code;
-                    }else if($emp_id){
-                      //If user has changed the joining date, that can cause the seniority payment to be wrong
-                      if($change_joining_date){
-                          $message = "$ss->full_name changed joining date from $org_joining_date to $input_joining_date at ".getNowTime();
-                          Employee::log($ss,$id,'change_joining_date',$message);
-                      }
-                    }
-            
-                    if ($emp_id > 0) {
+              
+                    \Log::info(json_encode($inputs));
+                    $id = saveData($ss, 'employees', ['id' => null], $inputs, [], 1,false);
+                    if ($id > 0) {
                         $success++;
-                        $new_code = null;
-                        if ($delete_prev_image) {
-                            $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
-                            if ($file_name) {
-                                PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
-                            }
-            
-                            DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
-                        }
-                        PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $emp_id, 'store' => 'employees.photo_file_name']);
+
+                        $prefix = 'LC';
+                        $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
                     }
+                    
                 }
                 if ($success > 0) {
                     DB::commit();
-                    return DV::depends($success, 'Successfully import');
+                    return DV::depends($success, 'Employee import Successfully!');
                 } else {
                         DB::rollback();
                         return DV::error('It seem there are no valid data to import.');
                     }
                     
-                
             }
             catch (\Exception $e) {
                 DB::rollback();
