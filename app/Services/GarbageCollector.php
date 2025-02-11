@@ -1,8 +1,8 @@
 <?php
 namespace App\Services;
 use DB;
-//use App\Models\DV;
-use App\Models\PublicStorage;
+//use DV;
+use XPublicStorage;
 //use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 
@@ -97,7 +97,7 @@ class GarbageCollector {
         $rows = DB::table('order_images as m')->whereRaw($str_date)->selectRaw('m.id,m.branch_id,m.file_name')->get();
         $ids = [];
         foreach($rows as $row){
-            if($row->file_name) PublicStorage::delete($row->branch_id,self::$package_photo_dir,'image',$row->file_name);
+            if($row->file_name) XPublicStorage::delete($row->branch_id,self::$package_photo_dir,'image',$row->file_name);
             $ids[] = $row->id;
         }
         $cnt = DB::table('order_images')->whereIn('id',$ids)->delete();

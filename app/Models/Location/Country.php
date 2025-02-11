@@ -4,14 +4,14 @@ namespace App\Models\Location;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\DV;
+use DV;
 use App\Models\Location\City;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Bhr\GeneralSettings;
 
-use App\Models\PublicStorage;
+use XPublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Country //extends Model
@@ -38,7 +38,7 @@ class Country //extends Model
         $file_name = DB::table('loc_countries')->where('id', $country_id)->value('flag_file_name');
         if ($file_name) {
             // Delete the file from the storage
-            PublicStorage::delete([
+            XPublicStorage::delete([
                 'branch_id' => null,
                 'subs_id' => $ss->subs_id,
                 'dir' => self::$img_dir,
@@ -194,7 +194,7 @@ class Country //extends Model
     //     $sanitize_rules = [];
     //     $branch_id = $ss->branch_id;
     //     $check_unique = ["$branch_id|loc_countries|name|id=id"];
-    //     $res = validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|0-100','name_kh'=>'0|string|0-100','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,$check_unique);
+    //     $res = DBX::validateObject($d,['id'=>'0|number|identity=1','name'=>'1|string|0-100','name_kh'=>'0|string|0-100','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,$check_unique);
     //     if($res->error) return DV::error($res->error);
     //     $id = $res->id;
     //     $inputs = $res->values;
@@ -211,7 +211,7 @@ class Country //extends Model
     //     $inputs['code'] = $code;
 
     //     $inputs['nationality'] = isset($inputs['nationality'])?$inputs['nationality']: $inputs['name'];
-    //     $id = saveData($ss,'loc_countries',['id'=>$id],$inputs,[],1,false);
+    //     $id = DBX::saveData($ss,'loc_countries',['id'=>$id],$inputs,[],1,false);
     //     if($id >0) return DV::success(["id"=>$id,'country'=>$d]);
     //     return DV::error("something wrong during saving country");
     //  }
@@ -220,7 +220,7 @@ class Country //extends Model
     //     $sanitize_rules = [];
     //     // $branch_id = $ss->branch_id;
     //     // $check_unique = ["$branch_id|loc_countries|name|id=id"];
-    //     $res = validateObject($d,['name'=>'1|string|0-200','name_kh'=>'0|string|0-200','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,null);
+    //     $res = DBX::validateObject($d,['name'=>'1|string|0-200','name_kh'=>'0|string|0-200','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,null);
     //     if($res->error) return DV::error($res->error);
     //     //$id = $res->id;
     //     $inputs = $res->values;
@@ -234,7 +234,7 @@ class Country //extends Model
     //     $inputs['code'] = $code;
 
     //     $inputs['nationality'] = isset($inputs['nationality'])? $inputs['nationality']: $inputs['name'];
-    //     $id = saveData($ss,'loc_countries',['id'=>null],$inputs,[],1,false);
+    //     $id = DBX::saveData($ss,'loc_countries',['id'=>null],$inputs,[],1,false);
     //     if($id >0) return (object)['status'=>'OK','id'=>$id, 'country'=>$inputs];
     //     return DV::error("something wrong during creating country");
     //  }
@@ -251,7 +251,7 @@ class Country //extends Model
     //     if($id) return DV::error('Country ID is required to update country data');
     //     if(!self::existsById($id)) return DV::error('Country ID ? does not exist::'.$id);
 
-    //     $res = validateObject($d,['name'=>'1|string|0-200','name_kh'=>'0|string|0-200','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,null);
+    //     $res = DBX::validateObject($d,['name'=>'1|string|0-200','name_kh'=>'0|string|0-200','code'=>'1|string|0-25','nationality'=>'0|string|0-150'],true,$sanitize_rules,$ss->lang,false,null);
     //     if($res->error) return DV::error($res->error);
     //     $inputs = $res->values;
     //     $d = (object)$inputs;
@@ -265,7 +265,7 @@ class Country //extends Model
     //     $inputs['code'] = $code;
 
     //     $inputs['nationality'] = isset($inputs['nationality'])? $inputs['nationality']: $inputs['name'];
-    //     $id = saveData($ss,'loc_countries',['id'=>$id],$inputs,[],1,false);
+    //     $id = DBX::saveData($ss,'loc_countries',['id'=>$id],$inputs,[],1,false);
     //     if($id >0) return (object)['status'=>'OK','id'=>$id, 'country'=>$inputs];
     //     return DV::error("something wrong during updating country");
     //  }
@@ -302,7 +302,7 @@ class Country //extends Model
             'flag_file_name' => '0|string|0-100',
         ];
         $check_unique = ["$branch_id|loc_countries|name|id=id"];
-        $res = validateObject($arr, $v_rule, true, ['flag_file_name' => GeneralSettings::$image_chars,'lang_code'=>['-']], $ss->lang, false, isset($arr['id']) ? null : $check_unique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['flag_file_name' => GeneralSettings::$image_chars,'lang_code'=>['-']], $ss->lang, false, isset($arr['id']) ? null : $check_unique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -319,16 +319,16 @@ class Country //extends Model
         $country_created = !$id;
         $delete_prev_flag = ($id >0 && (!$flag || isImage($flag)));
 
-        $id = saveData($ss, 'loc_countries', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'loc_countries', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
             if($delete_prev_flag){
                 $file_name = DB::table('loc_countries')->where('id', $id)->value('flag_file_name');
                 if($file_name){
-                    PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+                    XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
                 DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
             }
-            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $flag, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $flag, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
             return DV::depends(1, ['loc_countries' => $inputs, 'id' => $id]);
         }
         return DV::error("Failed to save country");
@@ -346,10 +346,10 @@ class Country //extends Model
             return DV::error('Country identity is not correct!');
         }
         if ($delete_image) {
-            PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
+            XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
             DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
         }
-        $res = PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
+        $res = XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'loc_countries.flag_file_name']);
         if($res->status ==='Error') return $res;
         $img = self::flagPicture($id);
         return DV::depends(1,['image_url'=>$img]);
@@ -361,7 +361,7 @@ class Country //extends Model
         $row = DB::table('loc_countries as c')->where('c.id', $id)->selectRaw($col_subs_id . ',c.branch_id,c.flag_file_name')->first();
         $url = '';
         if ($row) {
-            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->flag_file_name;
+            $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->flag_file_name;
             return validateUrl($url);
         }
     }
@@ -371,7 +371,7 @@ class Country //extends Model
         $ss = $ss ?? $this->userInfo;
         $country = DB::table('loc_countries')->where('id', $id)->selectRaw('id,flag_file_name')->first();
         if (!$country) return DV::error('Country identity is not correct!');
-        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
+        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $country->flag_file_name);
         DB::table('loc_countries')->where('id', $id)->update(['flag_file_name' => null]);
         return DV::success();
     }

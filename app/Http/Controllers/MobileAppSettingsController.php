@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MobileAppSettings;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 use Config;
   
 class MobileAppSettingsController extends Controller
 {
      
     function getHomeScreenData(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = $req->app_id ?? getAppIdByUserClass($ss->user_class);
       $subs_id = $req->subs_id ?? ($ss->subs_id ?? getCurrentSubsId(true));
@@ -23,14 +23,14 @@ class MobileAppSettingsController extends Controller
     //saveBrandIamge, saveBrandPhoto
     //$d = {app_name, 'file_type','photo_data'}
     function saveBrandImage(Request $req){
-       $ss = AuthService::verifyAuth($req,-1);
+       $ss = XAuthService::verifyAuth($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
        $res = MobileAppSettings::saveBrandImage($req->all(),$req->app_id,$ss);
        return JDV::raw($res);
     }
 
     function getAppSettings(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = Config::get('app.merchant_app_id');
       $data = MobileAppSettings::appSettings($app_id,$ss);
@@ -38,7 +38,7 @@ class MobileAppSettingsController extends Controller
     }
 
     function deleteBrandImage(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $app_id =$req->app_id;
       $res = MobileAppSettings::deleteBrandImage($req->id,$app_id,$ss);
@@ -46,7 +46,7 @@ class MobileAppSettingsController extends Controller
     }
     
     function getPrivacyContent(Request $req){
-      // $ss = AuthService::verifyAuth($req,-1);
+      // $ss = XAuthService::verifyAuth($req,-1);
       // if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = $req->app_id;
       $res = MobileAppSettings::getPrivacyContent($app_id);
@@ -54,7 +54,7 @@ class MobileAppSettingsController extends Controller
     }
 
     function savePrivacyContent(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = $req->app_id;
       $content = $req->content;
@@ -63,7 +63,7 @@ class MobileAppSettingsController extends Controller
     }
 
     function getTermsAndConditions(Request $req){
-      // $ss = AuthService::verifyAuth($req,-1);
+      // $ss = XAuthService::verifyAuth($req,-1);
       // if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = $req->app_id;
       $ss = (object)['branch_id'=>1];
@@ -72,7 +72,7 @@ class MobileAppSettingsController extends Controller
     }
 
     function saveTermsAndConditions(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $app_id = $req->app_id;
       $content = $req->content; 

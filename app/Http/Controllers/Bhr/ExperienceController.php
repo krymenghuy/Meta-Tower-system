@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Experience;
 use Illuminate\Http\Request;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Auth;
 class ExperienceController extends Controller
 {
@@ -19,7 +19,7 @@ class ExperienceController extends Controller
     {
         $id = $req->id ?? $req->id;
         $prn_code = $id ? 497 : 498;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code != 200) return JDV::raw($ss);
         $edu = $this->experience->saveExperience($req->all(), $id, $ss);
         return JDV::raw($edu);
@@ -27,7 +27,7 @@ class ExperienceController extends Controller
 
     public function ListAll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $edu = $this->experience->getListAll($req->all(), $ss);
 
@@ -36,7 +36,7 @@ class ExperienceController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $edu = $this->experience->details($req->id, $ss);
@@ -47,7 +47,7 @@ class ExperienceController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $edu = $this->experience->formOptions($req->id, $ss);
         return JDV::result($edu);
@@ -55,7 +55,7 @@ class ExperienceController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 499);
+        $ss = XAuthService::verifyAuth($req, 499);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {

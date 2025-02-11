@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fecd515b68b0e5d0c2ca31cc08f2f935",
+    "content-hash": "d25e8b620aabd6d32dee167a2ecc8e2d",
     "packages": [
         {
             "name": "apility/laravel-fcm",
@@ -2309,34 +2309,34 @@
         },
         {
             "name": "lcobucci/clock",
-            "version": "2.3.0",
+            "version": "3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/clock.git",
-                "reference": "c7aadcd6fd97ed9e199114269c0be3f335e38876"
+                "reference": "db3713a61addfffd615b79bf0bc22f0ccc61b86b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/clock/zipball/c7aadcd6fd97ed9e199114269c0be3f335e38876",
-                "reference": "c7aadcd6fd97ed9e199114269c0be3f335e38876",
+                "url": "https://api.github.com/repos/lcobucci/clock/zipball/db3713a61addfffd615b79bf0bc22f0ccc61b86b",
+                "reference": "db3713a61addfffd615b79bf0bc22f0ccc61b86b",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.1.0 || ~8.2.0",
-                "stella-maris/clock": "^0.1.7"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
+                "psr/clock": "^1.0"
             },
             "provide": {
                 "psr/clock-implementation": "1.0"
             },
             "require-dev": {
-                "infection/infection": "^0.26",
-                "lcobucci/coding-standard": "^9.0",
-                "phpstan/extension-installer": "^1.2",
-                "phpstan/phpstan": "^1.9.4",
-                "phpstan/phpstan-deprecation-rules": "^1.1.1",
-                "phpstan/phpstan-phpunit": "^1.3.2",
-                "phpstan/phpstan-strict-rules": "^1.4.4",
-                "phpunit/phpunit": "^9.5.27"
+                "infection/infection": "^0.29",
+                "lcobucci/coding-standard": "^11.1.0",
+                "phpstan/extension-installer": "^1.3.1",
+                "phpstan/phpstan": "^1.10.25",
+                "phpstan/phpstan-deprecation-rules": "^1.1.3",
+                "phpstan/phpstan-phpunit": "^1.3.13",
+                "phpstan/phpstan-strict-rules": "^1.5.1",
+                "phpunit/phpunit": "^11.3.6"
             },
             "type": "library",
             "autoload": {
@@ -2357,7 +2357,7 @@
             "description": "Yet another clock abstraction",
             "support": {
                 "issues": "https://github.com/lcobucci/clock/issues",
-                "source": "https://github.com/lcobucci/clock/tree/2.3.0"
+                "source": "https://github.com/lcobucci/clock/tree/3.3.1"
             },
             "funding": [
                 {
@@ -2369,47 +2369,45 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2022-12-19T14:38:11+00:00"
+            "time": "2024-09-24T20:45:14+00:00"
         },
         {
             "name": "lcobucci/jwt",
-            "version": "4.0.4",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "55564265fddf810504110bd68ca311932324b0e9"
+                "reference": "4d7de2fe0d51a96418c0d04004986e410e87f6b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/55564265fddf810504110bd68ca311932324b0e9",
-                "reference": "55564265fddf810504110bd68ca311932324b0e9",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/4d7de2fe0d51a96418c0d04004986e410e87f6b4",
+                "reference": "4d7de2fe0d51a96418c0d04004986e410e87f6b4",
                 "shasum": ""
             },
             "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
                 "ext-mbstring": "*",
                 "ext-openssl": "*",
-                "lcobucci/clock": "^2.0",
+                "ext-sodium": "*",
+                "lcobucci/clock": "^2.0 || ^3.0",
                 "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "infection/infection": "^0.20",
+                "infection/infection": "^0.21",
                 "lcobucci/coding-standard": "^6.0",
-                "mikey179/vfsstream": "^1.6",
-                "phpbench/phpbench": "^0.17",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpbench/phpbench": "^1.2",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12",
-                "phpstan/phpstan-deprecation-rules": "^0.12",
-                "phpstan/phpstan-phpunit": "^0.12",
-                "phpstan/phpstan-strict-rules": "^0.12",
+                "phpstan/phpstan": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/php-invoker": "^3.1",
-                "phpunit/phpunit": "^9.4"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Lcobucci\\JWT\\": "src"
@@ -2433,7 +2431,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lcobucci/jwt/issues",
-                "source": "https://github.com/lcobucci/jwt/tree/4.0.4"
+                "source": "https://github.com/lcobucci/jwt/tree/4.3.0"
             },
             "funding": [
                 {
@@ -2445,7 +2443,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-09-28T19:18:28+00:00"
+            "time": "2023-01-02T13:28:00+00:00"
         },
         {
             "name": "league/commonmark",
@@ -7388,6 +7386,246 @@
             "time": "2022-01-24T18:55:24+00:00"
         },
         {
+            "name": "vsd/dbx",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-dbx.git",
+                "reference": "e4f7559162f651ebef5d2db5277ab6fc2b37d9a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/e4f7559162f651ebef5d2db5277ab6fc2b37d9a3",
+                "reference": "e4f7559162f651ebef5d2db5277ab6fc2b37d9a3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "DBX": "Vsd\\Database\\DBX"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vsd\\Database\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sam"
+                }
+            ],
+            "description": "DBX is a class that is used to interact with databases in a special way for Vectorasoft developer team",
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-dbx/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-dbx/issues"
+            },
+            "time": "2025-02-11T01:27:12+00:00"
+        },
+        {
+            "name": "vsd/money",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-money.git",
+                "reference": "b96c0426a1dc9a87cbba0cedb58008a9fd68be7c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/b96c0426a1dc9a87cbba0cedb58008a9fd68be7c",
+                "reference": "b96c0426a1dc9a87cbba0cedb58008a9fd68be7c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "VSMoney": "Vsd\\Money\\Models\\VSMoney"
+                    },
+                    "providers": [
+                        "Vsd\\Money\\RouteServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vsd\\Money\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sam"
+                }
+            ],
+            "description": "Money is a class that is used to manage currencies, exchange rates, conversion, and money amount formatting",
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-money/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-money/issues"
+            },
+            "time": "2025-02-10T12:16:19+00:00"
+        },
+        {
+            "name": "vsd/response",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-response.git",
+                "reference": "a0d21198a8388fa65cfa6865b31d3c04415f98c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-response/zipball/a0d21198a8388fa65cfa6865b31d3c04415f98c4",
+                "reference": "a0d21198a8388fa65cfa6865b31d3c04415f98c4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "DV": "Vsd\\Response\\DV",
+                        "JDV": "Vsd\\Response\\JDV"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vsd\\Response\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sam"
+                }
+            ],
+            "description": "A generic response handler package",
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-response/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-response/issues"
+            },
+            "time": "2025-02-10T13:11:38+00:00"
+        },
+        {
+            "name": "vsd/storage",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-storage.git",
+                "reference": "d95d0460d34136d314e0c407f87420e498e30280"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-storage/zipball/d95d0460d34136d314e0c407f87420e498e30280",
+                "reference": "d95d0460d34136d314e0c407f87420e498e30280",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "XPublicStorage": "Vsd\\Storage\\PublicStorage",
+                        "XPrivateStorage": "Vsd\\Storage\\PrivateStorage"
+                    },
+                    "providers": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vsd\\Storage\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sam"
+                }
+            ],
+            "description": "Store is used to manage file update and download, save photos and audio files and so on",
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-storage/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-storage/issues"
+            },
+            "time": "2025-02-11T01:14:53+00:00"
+        },
+        {
+            "name": "vsd/xauth",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-xauth.git",
+                "reference": "2da23d1380ac9a98977f81e94ff0721451c750b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/2da23d1380ac9a98977f81e94ff0721451c750b6",
+                "reference": "2da23d1380ac9a98977f81e94ff0721451c750b6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "XUMTSettings": "Vsd\\Xauth\\Models\\UMTSettings",
+                        "XAuthService": "Vsd\\Xauth\\Services\\AuthService",
+                        "XBranch": "Vsd\\Xauth\\Models\\Branch",
+                        "XApplication": "Vsd\\Xauth\\Models\\Application",
+                        "XModule": "Vsd\\Xauth\\Models\\Module",
+                        "XRole": "Vsd\\Xauth\\Models\\Role",
+                        "XUser": "Vsd\\Xauth\\Models\\User",
+                        "XPermission": "Vsd\\Xauth\\Models\\Permission",
+                        "XReport": "Vsd\\Xauth\\Models\\Report",
+                        "XAuthServiceController": "Vsd\\Xauth\\Http\\Controllers\\AuthServiceController",
+                        "XApplicationController": "Vsd\\Xauth\\Http\\Controllers\\ApplicationController",
+                        "XModuleController": "Vsd\\Xauth\\Http\\Controllers\\ModuleController",
+                        "XRoleController": "Vsd\\Xauth\\Http\\Controllers\\RoleController",
+                        "XUserController": "Vsd\\Xauth\\Http\\Controllers\\UserController",
+                        "XPermissionController": "Vsd\\Xauth\\Http\\Controllers\\PermissionController",
+                        "XReportController": "Vsd\\Xauth\\Http\\Controllers\\ReportController",
+                        "XDataImportController": "Vsd\\Xauth\\Http\\Controllers\\DataImportController",
+                        "XUMTSettingsController": "Vsd\\Xauth\\Http\\Controllers\\UMTSettingsController",
+                        "XBranchController": "Vsd\\Xauth\\Http\\Controllers\\BranchController"
+                    },
+                    "providers": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vsd\\Xauth\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Sam"
+                }
+            ],
+            "description": "Vectorasoft Authentication and authorization package",
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-xauth/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-xauth/issues"
+            },
+            "time": "2025-02-11T04:43:51+00:00"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.11.0",
             "source": {
@@ -9821,12 +10059,17 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "vsd/dbx": 20,
+        "vsd/money": 20,
+        "vsd/response": 20,
+        "vsd/xauth": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.3|^8.2.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

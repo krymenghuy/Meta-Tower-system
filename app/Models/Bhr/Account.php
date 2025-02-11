@@ -3,11 +3,11 @@
 namespace App\Models\Bhr;
 
 use App\Models\CompanyProfile;
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
-use App\Models\Money;
+use DBX;
+use VSMoney;
 
 class Account
 {
@@ -30,7 +30,7 @@ class Account
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         //$branch_id = $ss->branch_id;
-        $base_currency =  Money::$base_currency;
+        $base_currency =  VSMoney::$base_currency;
         $v_rule = [
             'emp_id' => '0|number|exists=employees.id',
             'account_number' => '0|string|0-30',
@@ -38,7 +38,7 @@ class Account
             'currency_code' => "1|choice|$base_currency|default=" . $base_currency,
             'account_type' => '1|choice|Payroll,Wallet',
         ];
-        $res = validateObject($arr, $v_rule, true, ['balance' => ['.'], 'account_number' => ['-']], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['balance' => ['.'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -71,11 +71,10 @@ class Account
             return DV::error('Account number ?? already exists::' . $account_number);
         }
 
-        $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
-
-
+ 
     static function accountNumberExists($account_number, $account_type, $id = null)
     {
         $str_id = $id > 0 ? 'id <> ' . $id : '1=1';
@@ -114,12 +113,12 @@ class Account
                 'emp_id' => $emp->id,
                 'account_number' => $emp->code . ($lowerAccountType === 'payroll' ? '-P' : '-W'),
                 'balance' => 0.00,
-                'currency_code' => Money::$national_currency,
+                'currency_code' => VSMoney::$national_currency,
                 'account_type' => $account_type
             ];
 
             if (!self::employeeHasAccount($emp->id, $account_type)) {
-                $acc_id = saveData($ss, 'accounts', ['id' => null], $inputs, [], 1, false);
+                $acc_id = DBX::saveData($ss, 'accounts', ['id' => null], $inputs, [], 1, false);
                 if ($acc_id) $success_count++;
             }
             // else{
@@ -276,7 +275,7 @@ class Account
         }
         return (object) [
             'departments' => GeneralSettings::options_department($ss),
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'employees' => GeneralSettings::options_employee([10, 20], $ss),
             'accounts' => $account,
         ];
@@ -369,7 +368,7 @@ class Account
         }
         $converted_amount = $d->amount;
         if ($from_account->currency_code != $to_account->currency_code) {
-            $converted_amount = Money::convert($ss, $d->amount, $from_account->currency_code, $to_account->currency_code, $exchange_rate);
+            $converted_amount = VSMoney::convert($ss, $d->amount, $from_account->currency_code, $to_account->currency_code, $exchange_rate);
         }
         if ($from_account->balance < $d->amount) {
             return DV::error('Insufficient balance');
@@ -403,7 +402,7 @@ class Account
             'disburse_id' => '0|string|0-128'
         ];
 
-        $res = validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, false, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object)$inputs;
@@ -429,7 +428,6 @@ class Account
         }
         $inputs['to_account_id'] = $d->to_account_id;
         $inputs['from_account_id'] = $id;
-
         return $this->transfer($inputs, $ss);
     }
 
@@ -449,7 +447,7 @@ class Account
             'disburse_id' => '0|string|0-128',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => ['-'], 'account_number' => ['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $from_account = null;
         $to_account = null;
@@ -489,7 +487,7 @@ class Account
             } else return DV::error('Invalid status. NOTE: it must be in or out');
         }
         $inputs['currency_code'] = $this_account->currency_code;
-        $trx_id = saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
+        $trx_id = DBX::saveData($ss, 'transactions', ['id' => null], $inputs, [], 1, false, 'binary');
         if ($trx_id) {
             if ($update_balance) {
                 $x = Account::updateBalance($d->amount, $d->status, null, $id, $ss);

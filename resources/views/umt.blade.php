@@ -1,9 +1,9 @@
 <?php 
-    if(!\App\Services\Umt\AuthService::user()) return view('login.index'); 
+    if(!\App\Services\Umt\XAuthService::user()) return view('login.index'); 
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php $user = App\Services\Umt\AuthService::user(); echo $user->lang ?? 'en'; ?>">
+<html lang="<?php $user = App\Services\Umt\XAuthService::user(); echo $user->lang ?? 'en'; ?>">
     <head>
         <base href="../">
         <meta charset="utf-8" />
@@ -144,7 +144,7 @@
                                                 <span class="app-menu-header"></span>
                                                 <div class="main-app-menus">
                                                 <?php
-                                                     $user = App\Services\Umt\AuthService::user();
+                                                     $user = App\Services\Umt\XAuthService::user();
                                                      if(!$user) return redirect('/');
                                                      $apps = $user->apps;
                                                      $cnt =0;

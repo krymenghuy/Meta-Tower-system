@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bhr\GeneralSettings;
-use App\Models\JDV;
+use JDV;
 use App\Models\UM;
-use App\Services\Umt\AuthService;
+use XAuthService;
 
 
 class GeneralSettingsController extends Controller
@@ -18,7 +18,7 @@ class GeneralSettingsController extends Controller
         $this->settingModel = new GeneralSettings();
     }
     function select_options(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
       $options = GeneralSettings::select_options($req->all(),$ss);
       return JDV::result($options);

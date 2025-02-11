@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models\Bhr;
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -31,7 +32,7 @@ class Education //extends Model
 
         ];
         $edu_char = ['$','#','@','!','.','-','_','=','?'];
-        $res = validateObject($arr,$v_rule,true,['period'=>$edu_char],$ss->lang,false,null);
+        $res = DBX::validateObject($arr,$v_rule,true,['period'=>$edu_char],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object)$inputs;
@@ -48,7 +49,7 @@ class Education //extends Model
             if(!$period) return DV::error('At least enter start year for this Education Information');
         }  
         $inputs['period'] = $period;
-        $id = saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
+        $id = DBX::saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
         return DV::depends($id,['emp_educations'=>$inputs,'id'=>$id], 'Failed to save education');
     }
 

@@ -135,7 +135,7 @@
 <?php
 function v_display($mod_id, $module_ids = null)
 {
-    if (App\Models\UM::access_mod($mod_id, null, $module_ids)) {
+    if (XAuthService::access_mod($mod_id, null, $module_ids)) {
         echo '';
     } else {
         echo ' style= "display:none" ';

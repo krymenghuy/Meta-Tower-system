@@ -3,11 +3,10 @@
 namespace App\Models\Bhr;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
 //use Carbon\Carbon;
 //use Session;
+use DBX;
 use Illuminate\Support\Facades\DB;
-use App\Security\Sanitizer;
 //use Illuminate\Support\Collection;
 
 class GeneralSettings //extends Model
@@ -277,79 +276,7 @@ class GeneralSettings //extends Model
        $rows = $q->get();
         return $rows;
     }
-
-
-    function deleteProductType($d){
-        $ss = UM::getUserInfoByToken($d);
-        if($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $id = isset($d->id)?Sanitizer::sanitize($d->id):null;
-        $id =isset($d->id)?Sanitizer::sanitize($d->id):0;
-        DB::table('product_types')->where('branch_id',$branch_id)->where('id',$id)->delete();
-        return null;
-    }
-
-    function sendMessage($d){
-        $ss = UM::getUserInfoByToken($d);
-        if($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $phone_number = isset($d->phone_number)?Sanitizer::sanitize($d->phone_number):null;
-        $text = isset($d->text)?Sanitizer::sanitize($d->text):null;
-
-                $fields = array(
-                    //'app_id' => "5eb5a37e-b458-11e3-ac11-000c2940e62c",
-                    'gw-username'=>'xperasoft',
-                    'gw-password'=>'bchsd',
-                    'gw-to'=>$phone_number,
-                    'gw-from'=>'Dolgoal',
-                    'gw-text'=>$text
-                    //'token' =>'di5B9xXcZeULyNAFSsdv9COWOzBPWE',
-                );
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "http://sms.plasgate.com:29062/cgi-bin/sendsms");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json; charset=utf-8',
-                'Authorization: Basic di5B9xXcZeULyNAFSsdv9COWOzBPWE'
-            ));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-            $response = curl_exec($ch);
-            curl_close($ch);
-
-            return $response;
-    }
-
-//     function getProductTypes($d){
-//         $ss = UM::getUserInfoByToken($d);
-//         if($ss->status_code !==200) return $ss; //user not authenticated
-//          //need permission to do this task
-//         $branch_id = Sanitizer::sanitize($ss->branch_id);
-//         $sender_id = isset($d->sender_id)?Sanitizer::sanitize($d->sender_id):null;
-//         $id =isset($d->id)?Sanitizer::sanitize($d->id):0;
-//         DB::table('sender_base_price')->where('id',$id)->where('branch_id',$branch_id)->delete();
-//         return null;
-//     }
-
-//    static function options_lead_status($ss =null){
-//      $branch_id =1;
-//      return DB::table('lead_statuses as ls')->selectRaw('id,`name` as status')->get();
-//    }
-//    static function options_lead_category($ss =null){
-//     $branch_id =1;
-//     return DB::table('lead_categories as c')->selectRaw('c.id,c.`name` as category')->get();
-//   }
-//   static function options_business_type($ss =null){
-//     $branch_id =1;
-//     return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
-//   }
-
+ 
   //warning
   static function options_warning_types($ss =null){
     return DB::table('warning_types as t')->selectRaw('id, name as warning_types')->get();

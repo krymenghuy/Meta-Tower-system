@@ -2,8 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DBX;
-use App\Models\DV;
+use DBX;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +31,7 @@ class ExitForm
         ];
         $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
         $checkUnique = ["$branch_id|exit_forms|name|id=id|text=Name already exists."];
-        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false, $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false, $checkUnique);
 
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -55,7 +55,7 @@ class ExitForm
             }
         }
         $is_update = $id ? true : false;
-        $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             if ($d->is_finished == 1 && $is_update) {
                 DB::table('exit_form_items')->where('form_id', $id)->update(['status_id' => 1]);
@@ -99,7 +99,7 @@ class ExitForm
                 'item_type' => $row->item_type ?? 'General',
                 'amount' => 0,
             ];
-            $new_id = saveData($ss, 'exit_form_items', ['id' => null], $inputs, [], 1, false);
+            $new_id = DBX::saveData($ss, 'exit_form_items', ['id' => null], $inputs, [], 1, false);
             if ($new_id) $success_cnt++;
         }
     }
@@ -149,7 +149,7 @@ class ExitForm
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $pos_char], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $pos_char], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -157,7 +157,7 @@ class ExitForm
         $inputs = $res->values;
         //$inputs['branch_id'] = $branch_id;
         $d = (object)$inputs;
-        $id = saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, null, 'Failed to save cehckpoint item');
 
         // $checkPointName = DB::table('check_points')->where('id', $d->check_point_id)->value('name');
@@ -197,7 +197,7 @@ class ExitForm
         // if ($id) {
         //     DB::table('exit_form_items')->where('id', $id)->update(['status_id' => $d->status_id]);
         // } else {
-        //     $id = saveData($ss, 'exit_form_items', [], $inputs, [], 0);
+        //     $id = DBX::saveData($ss, 'exit_form_items', [], $inputs, [], 0);
         //     if ($id <= 0) {
         //         return DV::error('Create failed.');
         //     }

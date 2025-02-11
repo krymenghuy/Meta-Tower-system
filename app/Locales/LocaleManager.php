@@ -1,7 +1,7 @@
 <?php
 namespace App\Locales;
 
-use App\Services\Umt\AuthService;
+use XAuthService;
 use App\Locales\LangContentProvider;
 
 //BEGIN:: LocaleManager class
@@ -62,7 +62,7 @@ class LocaleManager{
         /** translate() is used to support previous codecode and previous projects and library. trans() is the new version of this translate() function */
         static function translate($lang,$text_prop,$replacements=null,$langSection='validation'){
             if(!$lang){
-                $user = AuthService::user();
+                $user = XAuthService::user();
                 $lang = $user? $user->lang : self::$default_lang;
             }
             $parts = explode('::',$text_prop);
@@ -81,7 +81,7 @@ class LocaleManager{
 
     static function trans($text_prop,$langSection = 'validation',$replacements=null,$lang = null){
         if(!$lang){
-            $user = AuthService::user();
+            $user = XAuthService::user();
             $lang = $user? $user->lang : self::$default_lang;
         }
         $parts = explode('::',$text_prop);

@@ -2,10 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
+use DBX;
 
 class Department
 {
@@ -36,14 +36,14 @@ class Department
 
 
         $checkUnque = ["$branch_id|departments|name|id=id|text=Department already exists."];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
+        $id = DBX::saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
         if ($id > 0) {
             return DV::depends($id, ['departments' => $inputs, 'id' => $id]);
         }

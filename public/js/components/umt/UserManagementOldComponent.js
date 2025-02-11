@@ -597,7 +597,7 @@ const AddUserDialogOld = new function(){
     this.selected_options = {};
     
     /** Set event handlers */
-    this.saveData = (modal,btnSave,end_point,options) => {
+    this.DBX::saveData = (modal,btnSave,end_point,options) => {
         btnSave.onclick = function(e){
             e.preventDefault();
             let p = null;
@@ -904,7 +904,7 @@ const AddUserDialogOld = new function(){
                 elUserClass.dispatchEvent(new Event('change',{bubbles:true}));
                 mThis.validatePassword(div);
                 mThis.setChooseImage(div);
-                mThis.saveData(div,mThis.btnSave,'/api/user/save',options);
+                mThis.DBX::saveData(div,mThis.btnSave,'/api/user/save',options);
               
             }
         });
@@ -965,7 +965,7 @@ const AddUserDialogOld = new function(){
         div.innerHTML = html;
         mThis.validatePassword(div);
         //Set btnSave's event handler
-        mThis.saveData(div,mThis.btnSave,'/api/user/security/set-pwd',options);
+        mThis.DBX::saveData(div,mThis.btnSave,'/api/user/security/set-pwd',options);
         LocaleManager.translateZone(div);
         onFinish();
     }

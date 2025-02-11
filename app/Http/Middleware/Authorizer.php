@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\UM;
-use App\Models\JDV;
+use JDV;
 
 class Authorizer
 {
