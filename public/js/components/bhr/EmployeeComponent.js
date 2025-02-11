@@ -40,7 +40,7 @@ var EmployeeComponent =  new function () {
     mThis.employee_id = null;
     mThis.store_filter = {};
     //const div = mThis.self.querySelector("#_employee_list");
- 
+
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.EmployeeListView = new ListView(mThis.divlistView, {
@@ -73,9 +73,9 @@ var EmployeeComponent =  new function () {
 
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            mThis.showPage('employee_list',mThis.getFilterData()); 
+            mThis.showPage('employee_list',mThis.getFilterData());
         };
-         
+
         mThis.btnPrintCV.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -128,7 +128,7 @@ var EmployeeComponent =  new function () {
         elements.forEach((el) => {
                  const f = el.dataset.field;
                  el.value = d[f];
-                 if(triggerChangeEvent && el.tagName.toLowerCase() ==='select') el.dispatchEvent(new Event('change')); 
+                 if(triggerChangeEvent && el.tagName.toLowerCase() ==='select') el.dispatchEvent(new Event('change'));
         });
        }
     };
@@ -153,7 +153,7 @@ var EmployeeComponent =  new function () {
     mThis.getPageContainer =(pageName)=>{
         return mThis.pages[pageName];
     };
- 
+
     mThis.showPage = async (pageName, op = {})=>{
        if(this.self.style.display !=='block'){
          main_view.setContentView(this.self, this.title_prop);
@@ -167,7 +167,7 @@ var EmployeeComponent =  new function () {
          case 'profile_view':
             {
                 mThis.currentPage = 'profile_view';
-                const emp_id = (op.emp_id || op.id || op); 
+                const emp_id = (op.emp_id || op.id || op);
                 const p = {"id": emp_id};
                 const res = await vsapi.call([main_view.base_url, '/hr/employee/details'].join(''),p,false,null);
                 const data = res.data || {};
@@ -177,7 +177,7 @@ var EmployeeComponent =  new function () {
                 mThis.renderCardRight(emp_id);
                 mThis.renderCardTaxAllowance(emp_id);
                 mThis.renderEmpDocuments(emp_id);
-              
+
                 break;
             }
           default:{
@@ -185,7 +185,7 @@ var EmployeeComponent =  new function () {
           }
        }
        const targetPage = mThis.getPageContainer(pageName);
-       const siblings = Array.from(targetPage.parentElement.children);   
+       const siblings = Array.from(targetPage.parentElement.children);
        // Hide all siblings smoothly
        siblings.forEach((div) => {
            if (div !== targetPage && div.style.display !== 'none') {
@@ -194,7 +194,7 @@ var EmployeeComponent =  new function () {
        });
        targetPage.style.display = 'block';
     };
- 
+
     mThis.initDropdownMenus = (listContainer) => {
         const menuOptopns = {
             containerElement: listContainer,
@@ -357,7 +357,7 @@ var EmployeeComponent =  new function () {
     mThis.renderEmployeeList = (div, data) => {
         data = data ?? [];
         // if (!AuthManager) {
-        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!"); 
+        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
         //     return;
         // }
         AuthManager.init().then((user) => {
@@ -2075,7 +2075,7 @@ var EmployeeComponent =  new function () {
                                 });
                         },
                     },
-                ],
+                ],pro
                 prepareFormOptions: {
                     createTitle: "Employee Movement",
                     modifyTitle: "Edit Movement",
@@ -3635,23 +3635,23 @@ const EmployeeDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        if (me.dataOptions.id > 0) 
+                                        if (me.dataOptions.id > 0)
                                             cv_interact.success( "Employee inforamtion was updated successfully");
                                         else cv_interact.success("New employee was created successfully");
                                         const currentPage = EmployeeComponent.currentPage;
                                         if(currentPage ==='employee_list')
                                            EmployeeComponent.setDefaultFilter({"search_value":p.code || p.name, "status_id":"", "emp_type_id":"", "branch_id":"","work_shift_id":""});
                                         else if (me.dataOptions.id && currentPage ==='profile_view')
-                                           EmployeeComponent.showPage('profile_view',{"emp_id":me.dataOptions.id});   
+                                           EmployeeComponent.showPage('profile_view',{"emp_id":me.dataOptions.id});
                                         //EmployeeComponent.showPage('employee_list',{"search_value":p.code || p.name});
-                                     
+
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Employee",
+                    createTitle: "Add Employee",
                     modifyTitle: "Edit Employee",
                     targetProp: "employee",
                     api: {

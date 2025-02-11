@@ -9,6 +9,7 @@ use App\Http\Controllers\Login\LoginController;
 use App\Models\Notifier;
 // use App\Models\Package;
 use Carbon\Carbon; //for testing only
+ 
 //use App\Models\UM;
 
 // Route::get('/getlogin', function(){
@@ -101,7 +102,7 @@ Route::get('test-count',function(){
     INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
     WHERE p.branch_id =$branch_id AND p.sender_id ='$sender_id' AND (p.status_id=5 OR p.status_id=6) AND DATE(p.arrival_time) >= '$last_10_days'
     GROUP BY p.status_id,ps.`name`";
-    $rows = DB::select(\DB::raw($sql));
+    $rows = DB::select(DB::raw($sql));
     return response()->json($rows);
 });
 

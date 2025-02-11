@@ -9,7 +9,7 @@ var StaffAttendanceComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_staff_attendance_search");
     mThis.containerFilter = mThis.self.querySelector('#container_scan_filter');
     mThis.divListView = mThis.self.querySelector('#_staff_attendance_list');
- 
+
     mThis.cols = [
         {
             title: "",
@@ -27,7 +27,7 @@ var StaffAttendanceComponent = (function () {
             title: "Full Name",
             className: "name text-capitalize align-middle",
             data: (data, index, tr) => {
-                const sex = data.sex === "M" ? "Male" : data.sex === "F" ? "Female" : "Unknown";
+                const sex = data.sex === "M" ? "Male" : data.sex === "F" ? "Female" : "Other";
                 return `<p class="d-flex flex-column">
                     <span class="text-Capitalize">${data.name}</span>
                     <small class="text-muted">${sex}</small>
@@ -69,7 +69,7 @@ var StaffAttendanceComponent = (function () {
                         return `
                             <div class="d-flex flex-column mb-1">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-primary-custom fw-bold" style="font-size: 80%;">${info.action}</small>
+                                    <small class="text-primary-custom fw-bold" style="font-size: 80%;">${info.action_type}</small>
                                     <small class="text-info px-2" style="font-size: 80%;">→</small>
                                     <small class="text-success  fw-bold" style="font-size: 80%;">${formattedTime}</small>
                                 </div>

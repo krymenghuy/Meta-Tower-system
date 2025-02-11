@@ -7175,6 +7175,7 @@
             "time": "2024-11-08T15:21:10+00:00"
         },
         {
+
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "v2.3.0",
             "source": {

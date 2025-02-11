@@ -126,7 +126,7 @@ class ScriptProvider
                 '/js/components/bhr/WorkShiftListComponent.js',
                 '/js/components/bhr/RenderTableReportComponent.js',
                 '/js/components/bhr/BenefitDisbursementComponent.js',
-                'js/components/bhr/BenefitDisbursePolicyComponent.js', 
+                'js/components/bhr/BenefitDisbursePolicyComponent.js',
                 'js/components/bhr/BenefitComponent.js',
                 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',
@@ -140,6 +140,7 @@ class ScriptProvider
                 'js/components/umt/BranchManagementComponent.js',
                  'js/components/umt/RoleManagementComponent.js',
                  //'js/components/umt/RoleManagementTool.js',
+
                 'js/components/bhr/CreateContractDialog.js',
             ]
         ],

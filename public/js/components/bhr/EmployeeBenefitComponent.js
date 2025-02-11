@@ -18,8 +18,13 @@ var EmployeeBenefitComponent = new (function () {
 
     mThis.cols = [
         {
+            title:"",
+            className:"align-middle",
+        }
+        ,
+        {
             title: "Name",
-            className: "align-middle text-start w-15",
+            className: "align-middle",
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
@@ -49,15 +54,13 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
 
+       
         {
-            title: "Benefit Type",
+            title: "Date",
             className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${
-                    data.benefit_type_id == "1" ? "Remuneration" : ""
-                }${data.benefit_type_id == "2" ? "Fringe Benefit" : ""}`;
-            },
+            data: (data, index, tr) => {
+                return `<p class="text-primary p-0 m-0">${data.effective_date}</p>`;
+            }
         },
         {
             title: "Amount",
@@ -66,29 +69,15 @@ var EmployeeBenefitComponent = new (function () {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.amount, data.currency_code)}</p>`;
             }
         },
-        {
-            title: "Balance",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
-            }
-        },
-        {
-            title: "Remarks",
-            className: "align-middle",
-            data: (data) => {
-                return `
-                <p class="p-0 text-primary-custom m-0">${data.remarks ?? ""}`;
-            },
-        },
+      
         {
             title: "Tax Option",
             className: "align-middle",
             data: (data) => {
                 return `
                 <p class="p-0 text-primary-custom m-0">${
-                    data.tax_option_id == "1" ? "Taxable" : ""
-                }${data.tax_option_id == "2" ? "Non Tax" : ""}${
+                    data.tax_option_id == "1" ? "Tax" : ""
+                }${data.tax_option_id == "2" ? "Non" : ""}${
                     data.tax_option_id == "3" ? "Flat Rate" : ""
                 }`;
             },
@@ -154,12 +143,14 @@ var EmployeeBenefitComponent = new (function () {
                     vsapi.call(`${main_view.base_url}/hr/employee/benefit/import-emp-benefits`,{
                         file: d.dataUrl
                     },false).then(res => {
+                        console.log(123,res);
+                        
                         if(res.status_code === 200){
                             mThis.EmployeeBenefitListView.showPage(null);
                             cv_interact.success('Employees Benefit Were Import Successfully!');
                         }
                         else{
-                            cv_interact.error(res.error_message );
+                            cv_interact.error(res.error_message);
                         }
                     });
                 }
@@ -329,8 +320,8 @@ const EmployeeBenefitDialog = (() => {
                             <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
                             <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
                                 <option value="">(Select Tax Option)</option>
-                                <option value="1">Taxable</option>
-                                <option value="2">Non Tax</option>
+                                <option value="1">Tax</option>
+                                <option value="2">Non</option>
                                 <option value="3">Flat Rate</option>
                             </select>
                         </div>`,
@@ -338,6 +329,10 @@ const EmployeeBenefitDialog = (() => {
                             <label for="amount" class="form-label" vslang="titles.Amount"></label>
                             <input type="number" name="amount" class="form-control data-input" data-field="amount" />
                         </div>`,
+                        `<div class="form-group col-md-6">
+                        <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                        <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
+                    </div>`,
                     `    <div class="form-group col-md-6 flat_tax_rate d-none">
                             <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
                             <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" />
@@ -350,6 +345,7 @@ const EmployeeBenefitDialog = (() => {
                 ].join("");
             },
             contentCreated: (me) => {
+                DateTimePicker.init(me.controls.effective_date);
                 const taxOptionField =
                     me.divModal.querySelector("#tax_option_id");
                 const flatTaxRateField =
@@ -461,161 +457,4 @@ const EmployeeBenefitDialog = (() => {
 })();
 
 
-const EmployeeBenefitImportDialog = (() => {
-    const self = {};
-    let dialog = null;
 
-    self.show = (op) => {
-        dialog = new GeneralDialog({
-            cssClass: "modal-lg",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row">`,
-                    `    <div class="form-group col-md-12">
-                            <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                            <select name="employee" class="data-input" data-field="emp_id"></select>
-                        </div>`,
-                    `    <div class="form-group col-md-4">
-                            <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
-                            <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
-                        </div>`,
-                    `<div class="form-group col-4">
-                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                            <select name="currency_code" class="data-input" data-field="currency_code" disabled></select>
-                        </div>`,
-                    `    <div class="form-group col-md-4">
-                            <label for="tax_option_id" class="form-label" vslang="titles.Tax Option"></label>
-                            <select name="tax_option_id" class="modal-select data-input form_input" data-field="tax_option_id" id="tax_option_id">
-                                <option value="">(Select Tax Option)</option>
-                                <option value="1">Taxable</option>
-                                <option value="2">Non Tax</option>
-                                <option value="3">Flat Rate</option>
-                            </select>
-                        </div>`,
-                    `    <div class="form-group col-md-6">
-                            <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                            <input type="number" name="amount" class="form-control data-input" data-field="amount" />
-                        </div>`,
-                    `    <div class="form-group col-md-6 flat_tax_rate d-none">
-                            <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
-                            <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" />
-                        </div>`,
-                    `    <div class="form-group col-md-12">
-                            <label for="remarks" class="form-label" vslang="titles.Remark"></label>
-                            <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                        </div>`,
-                    `</div>`,
-                ].join("");
-            },
-            contentCreated: (me) => {
-                const taxOptionField =
-                    me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField =
-                    me.divModal.querySelector(".flat_tax_rate");
-
-                taxOptionField.addEventListener("change", () => {
-                    flatTaxRateField.classList.toggle(
-                        "d-none",
-                        taxOptionField.value !== "3"
-                    );
-                });
-            },
-            prepareFormOptions: {
-                createTitle: "Add Benefit",
-                modifyTitle: "Edit Benefit",
-                targetProp: "emp_benefits",
-                api: {
-                    endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
-                    params: (op) => ({ id: op.id }),
-                },
-            },
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-                me.controls.currency_code.value = VSMoney.getCurrency().code;
-
-                Object.keys(data).forEach((key) => {
-                    const input = me.divModal.querySelector(
-                        `[data-field="${key}"]`
-                    );
-                    if (input) {
-                        input.value = data[key];
-                    }
-                });
-            },
-            configSelect: [
-                {
-                    name: "employee",
-                    data: "employees",
-                    textField: (me, d) => `
-                        <div class="d-flex gap-2">
-                            <img class="img_select" src="${d.image_url}" />
-                            <div class="d-flex flex-column">
-                                <span>${d.name}</span>
-                                <span>${d.position}</span>
-                            </div>
-                        </div>`,
-                    valueField: "id",
-                },
-                {
-                    name: "benefits",
-                    data: "benefits",
-                    textField: "name",
-                    valueField: "id",
-                },
-                {
-                    name: "currency_code",
-                    data: "currency_codes",
-                    textField: "code",
-                    valueField: "code",
-                },
-            ],
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => me.hide(false),
-                },
-                {
-                    label: "<span>Save</span>",
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const p = me.getData();
-                        p.id = me.dataOptions.id;
-
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/hr/employee/benefit/save`,
-                                p,
-                                btn
-                            )
-                            .then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, p);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Updated employee benefit successfully"
-                                        );
-                                    } else {
-                                        cv_interact.success(
-                                            "Added employee benefit successfully"
-                                        );
-                                    }
-                                } else {
-                                    cv_interact.error(
-                                        res.error_message ||
-                                            "An error occurred."
-                                    );
-                                }
-                            });
-                    },
-                },
-            ],
-        });
-
-        dialog.show(op);
-    };
-
-    return self;
-})();

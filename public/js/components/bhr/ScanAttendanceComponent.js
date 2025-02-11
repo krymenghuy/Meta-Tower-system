@@ -64,6 +64,7 @@ var ScanAttendanceComponent = new function () {
             if (res.status_code === 200) {
                 const d = res.data;
                 // mThis.popDialog(d);
+
                 mThis.renderTableEmployee();
                 console.log(123,d);
                 mThis.renderEmployeeImage(d);
@@ -176,7 +177,7 @@ var ScanAttendanceComponent = new function () {
         vsapi.call(`${mThis.base_url}/hr/employee/attendance/last-employees-scan`, {
             "per_page":per_page
         }, null, false).then(res => {
-            console.log(123,res);
+            // console.log(123,res);
             if (res.status_code === 200) {
                 const d = res.data;
                 console.log(JSON.stringify(d,null,2));
@@ -190,15 +191,15 @@ var ScanAttendanceComponent = new function () {
                                 <td class="align-middle Employee-ID">${s.code}</td>
                                 <td class="align-middle Employee-Name">
                                     <p class="pb-0 mb-1 text-capitalize">${s.name}</p>
-                                    <span class="text-success">${s.sex}</span>
+                                    <span class="text-success">${s.sex == "M" ? "Male" : ""}${s.sex == "F" ? "Female" : ""}${s.sex == "O" ? "Other" : ""}</span>
                                 </td>
                                 <td class="align-middle Session">
-                                    <p class="pb-0 mb-1 text-nowrap">${s.session ?? ''}</p>
-                                    <span>Class: </span><span class="text-success">${d.level ?? ''}</span>
+                                    <p class="pb-0 mb-1 text-nowrap">${s.session == 'm' ? 'Morning' : ''}${s.session == 'a' ? 'Afternoon' : ''} ${s.session == 'e' ? 'Evening' : ''}</p>
+
                                 </td>
                                 <td class="align-middle Check-In">
                                     <div class="d-flex flex-column">
-                                        <span>${s.checkin_time ?? ''}</span>
+                                        <span>${s.scan_time ?? ''}</span>
                                     </div>
                                 </td>
                                 <td class="align-middle Check-Out">${s.scan_action ?? ''}</td>
