@@ -329,10 +329,10 @@ const EmployeeBenefitDialog = (() => {
                             <label for="amount" class="form-label" vslang="titles.Amount"></label>
                             <input type="number" name="amount" class="form-control data-input" data-field="amount" />
                         </div>`,
-                        `<div class="form-group col-md-6">
-                        <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
-                        <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
-                    </div>`,
+                        `<div class="form-group col-md-6 effective_date d-none">
+                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
+                        </div>`,
                     `    <div class="form-group col-md-6 flat_tax_rate d-none">
                             <label for="flat_tax_rate" class="form-label" vslang="titles.Flat Tax"></label>
                             <input type="number" name="flat_tax_rate" class="form-control data-input" data-field="flat_tax_rate" />
@@ -350,12 +350,19 @@ const EmployeeBenefitDialog = (() => {
                     me.divModal.querySelector("#tax_option_id");
                 const flatTaxRateField =
                     me.divModal.querySelector(".flat_tax_rate");
-
+                const BenefitField = me.divModal.querySelector("#benefit_id");
+                const effective_date = me.divModal.querySelector(".effective_date");
                 taxOptionField.addEventListener("change", () => {
                     flatTaxRateField.classList.toggle(
                         "d-none",
                         taxOptionField.value !== "3"
                     );
+                });
+                BenefitField.addEventListener("change", () => {
+                    effective_date.classList.toggle(
+                        "d-none",
+                        BenefitField.value != "Incentive"
+                    )
                 });
             },
             prepareFormOptions: {
