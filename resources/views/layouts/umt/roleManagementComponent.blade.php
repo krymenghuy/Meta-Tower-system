@@ -164,8 +164,11 @@ div.role-card.selected > div.card-content {
                <div class="h-100">
                   <div id="mod_list" class="d-flex flex-column gap-2">
                       <div class="w-50 d-flex justify-content-between align-items-center">
-                        <div class="w-75">
+                        <div class="w-50">
                           <select class="modal-select2 " id="mod_app_chooser"> </select>
+                        </div>
+                        <div>
+                          <input id="_um_role_search_module" type="text" class="form-control"  placeholder="Search module"/>
                         </div>
                         <div class="">
                           <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 px-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class="text-nowrap " vslang="buttons.Print Modules"></span></a> 

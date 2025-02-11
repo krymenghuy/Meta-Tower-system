@@ -17,8 +17,9 @@
 /uploads
 .env
 .env.backup
-.composer.json.local
-.composer.json.sam
+composer.json.local
+composer.json.backup.sam
+composer.lock
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
