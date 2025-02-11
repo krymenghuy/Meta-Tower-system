@@ -2,10 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
+use DBX;
 
 class Transaction
 {
@@ -33,7 +33,7 @@ class Transaction
             'to_account_id' => '1|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
         if ($res->error) {
             return (object)['error' => $res->error];
         }
@@ -43,7 +43,7 @@ class Transaction
         $d = (object) $inputs;
         $inputs['status'] = $status;
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
+        $id = DBX::saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
         if ($id) {
             $updateBalance_emp = Account::updateBalance(
                 $d->from_account_id,

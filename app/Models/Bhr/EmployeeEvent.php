@@ -2,8 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DBX;
-use App\Models\DV;
+use DBX;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -30,14 +30,14 @@ class EmployeeEvent
             'impact'=> '0|number'
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'emp_events', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'emp_events', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
         }

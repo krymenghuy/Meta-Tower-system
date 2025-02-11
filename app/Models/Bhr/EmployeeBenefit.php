@@ -2,14 +2,13 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
-use App\Models\Bhr\Event;
+use DBX;
 use App\Models\Bhr\Employee;
-use App\Models\Money;
-use App\Models\PublicStorage;
+use VSMoney;
+use XPublicStorage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EmployeeBenefit
@@ -40,13 +39,13 @@ class EmployeeBenefit
             'flat_tax_rate' => '0|number',
             'balance' => '0|number|default=0',
             'amount' => '1|number',
-            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+            'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$base_currency,
             'remarks' => '0|string|1-250',
         ];
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -60,7 +59,7 @@ class EmployeeBenefit
         //     }
         // }
 
-        $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
         }
@@ -87,7 +86,7 @@ class EmployeeBenefit
         return $result;
     }
     static function readExcel($ss,$file_name,$start_index=null){
-        $fullPath = PublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'document').$file_name ;
+        $fullPath = XPublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'document').$file_name ;
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load($fullPath);
         $worksheet = $spreadsheet->getActiveSheet();
@@ -112,13 +111,13 @@ class EmployeeBenefit
         $v_rule = [
             'file' => '1|string',
         ];
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        $res = DBX::validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $base64 = str_replace('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,','',$inputs['file']);
-        $x = PublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'xlsx',$base64,'document');//(object)['status'=>'OK']; //
+        $x = XPublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'xlsx',$base64,'document');//(object)['status'=>'OK']; //
         if($x->status =='OK'){
-            $import_id = saveData($ss,'imported_files',['id' => null],[
+            $import_id = DBX::saveData($ss,'imported_files',['id' => null],[
                 'type' =>$x->file_type,
                 'file_name' => 'Imported from Excel by '.$ss->full_name.' on '. date('d M Y H:i', time()), //$file_name,
                 'imported_date' => date('Y-m-d H:i:s'),
@@ -145,16 +144,16 @@ class EmployeeBenefit
                         'flat_tax_rate' => '0|number',
                         'balance' => '0|number|default=0',
                         'amount' => '1|number',
-                        'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+                        'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$base_currency,
                         'remarks' => '0|string|1-250',
                     ];
                     $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-                    $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
+                    $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
                     if ($res->error) {
                         return DV::error($res->error);
                     }
                     $inputs = $res->values;
-                    $id = saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
+                    $id = DBX::saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
                     if ($id > 0) {
                         $success ++;
                     }else{
@@ -168,7 +167,7 @@ class EmployeeBenefit
             catch (\Exception $e) {
                 DB::rollback();
                 $file_name = basename($x->file_name);
-                PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'documents',$file_name);
+                XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'documents',$file_name);
                 \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
                 return DV::error('There were some problem during importing. This is likely due to incorrect data format in Excel.');
             }
@@ -288,7 +287,7 @@ class EmployeeBenefit
         return (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'emp_benefits' => $emp_benefits,
             'tax_options' => [
                 ['id' => '1', 'name' => 'taxable'],

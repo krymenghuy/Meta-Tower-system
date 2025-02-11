@@ -3,7 +3,7 @@
 namespace App\Models\Bhr;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 use Carbon\Carbon;
 
 

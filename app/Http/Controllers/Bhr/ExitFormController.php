@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\ExitForm;
 use App\Models\Bhr\ExitFormItem;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class ExitFormController extends Controller
@@ -21,7 +21,7 @@ class ExitFormController extends Controller
     {
         $id = $req->id ?? $req->id;
         $prn_code = $id ? 282 : 283;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
 
         if ($ss->status_code != 200) return JDV::raw($ss);
         $exit_form = new ExitForm($req->id, $ss);
@@ -31,7 +31,7 @@ class ExitFormController extends Controller
 
     function saveExitItem(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ?? $req->item_id ?? $req->checkpoint_id;
         $res = ExitForm::saveExitItem($req->all(), $id,$ss);
@@ -39,7 +39,7 @@ class ExitFormController extends Controller
     }
     function updateCheckboxItem(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 285);
+        $ss = XAuthService::verifyAuth($req, 285);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ?? $req->item_id ?? $req->checkbox_item;
         $res = ExitForm::updateCheckboxItem($req->all(), $id);
@@ -47,7 +47,7 @@ class ExitFormController extends Controller
     }
     public function getList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -56,7 +56,7 @@ class ExitFormController extends Controller
 
     public function getCheckpoints(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 285);
+        $ss = XAuthService::verifyAuth($req, 285);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -66,7 +66,7 @@ class ExitFormController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 285);
+        $ss = XAuthService::verifyAuth($req, 285);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -77,7 +77,7 @@ class ExitFormController extends Controller
     }
     public function getExitFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -86,7 +86,7 @@ class ExitFormController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 284);
+        $ss = XAuthService::verifyAuth($req, 284);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

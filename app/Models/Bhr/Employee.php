@@ -3,14 +3,14 @@ namespace App\Models\Bhr;
 
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
-use App\Models\DV;
-use App\Models\PublicStorage;
+use DV;
+use XPublicStorage;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 use App\Models\Umt\Branch;
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Money;
+use VSMoney;
 
 class Employee //extends Model
 {
@@ -39,7 +39,7 @@ class Employee //extends Model
          'action_name'=>$action_name,
          'description'=>$message
        ];
-       saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
+       DBX::saveData($ss,'employee_log',['id'=>null],$inputs,[],1,false);
     }
 
     function checkUniqueEmployeeByPhone($phone_number, $id = null)
@@ -82,7 +82,7 @@ class Employee //extends Model
             'emp_type_id' => '1|number',
             // 'branch_id' => '1|number',
             'salary' => '0|number',
-            'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
+            'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'work_shift_id' => '1|number|exists=work_shifts.id',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
@@ -100,12 +100,12 @@ class Employee //extends Model
         ];
 
         $checkUnique = null;
-        $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $d = (object) $inputs;
-        if($d->currency_code !== Money::$base_currency) return DV::error('The salary currency must be ??::'.Money::$base_currency);
+        if($d->currency_code !== VSMoney::$base_currency) return DV::error('The salary currency must be ??::'.VSMoney::$base_currency);
         $nid = $d->nid ?? null;
         if($nid){
             $expire_date = $d->nid_expiry_date ?? null;
@@ -149,7 +149,7 @@ class Employee //extends Model
         }
 
         $inputs['salary'] = $salary;
-        $currency_code = Money::$base_currency;
+        $currency_code = VSMoney::$base_currency;
         $inputs['currency_code'] = $currency_code;
         $org_joining_date = null;
         $change_joining_date = false;
@@ -160,7 +160,7 @@ class Employee //extends Model
             $change_joining_date =  $input_joining_date != $org_joining_date;
             unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id']);
         }
-        $emp_id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
+        $emp_id = DBX::saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
         if ($emp_id && $created) {
             $prefix = 'LC';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $emp_id], $prefix, 5, null);
@@ -178,12 +178,12 @@ class Employee //extends Model
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
-                    PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+                    XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
 
                 DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
             }
-            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $emp_id, 'store' => 'employees.photo_file_name']);
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $emp_id, 'store' => 'employees.photo_file_name']);
             return DV::depends(1, ['employees' => $inputs, 'id' => $emp_id]);
         }
         return DV::error('Failed to save employee');
@@ -197,10 +197,10 @@ class Employee //extends Model
     //     $delete_image = (!$photo_data || isImage($photo_data));
     //     if(!$employee)return DV::error('Emplyee identity is not correct!');
     //     if($delete_image){
-    //       PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
+    //       XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
     //       DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
     //     }
-    //     return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
+    //     return XPublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
     //   }
 
     static function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
@@ -214,10 +214,10 @@ class Employee //extends Model
             return DV::error('Employee identity is not correct!');
         }
         if ($delete_image) {
-            PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $employee->photo_file_name);
+            XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $employee->photo_file_name);
             DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         }
-        $res = PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+        $res = XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
         if($res->status ==='Error') return $res;
         $img = self::profilePicture($id);
         return DV::depends(1,['image_url'=>$img]);
@@ -317,7 +317,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
 
@@ -352,7 +352,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                         }
@@ -376,7 +376,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                                 $result =  [
@@ -411,7 +411,7 @@ class Employee //extends Model
                                 {
                                     if($benefit_currency != $payroll_currency)
                                     {
-                                        $used_amount = Money::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
+                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
                                     }
                                 }
                                 $result =  [
@@ -461,7 +461,7 @@ class Employee //extends Model
             'emp_benefit_id' => '0|number',
             'currency_code' => '0|number'
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -475,7 +475,7 @@ class Employee //extends Model
             ->value('id');
         $id = $existing_id ?? null;
 
-        $id = saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
         }
@@ -517,7 +517,7 @@ class Employee //extends Model
         $ss = $ss ?? $this->userInfo;
         $emp = DB::table('employees as s')->where('id', $id)->selectRaw('id,photo_file_name')->first();
         if (!$emp) return DV::error('Employee identity is not correct!');
-        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $emp->photo_file_name);
+        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $emp->photo_file_name);
         DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::success();
     }
@@ -529,7 +529,7 @@ class Employee //extends Model
         $def_image = self::defaultPhoto($row ? $row->subs_id : null);
         $url = '';
         if ($row) {
-            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->photo_file_name;
+            $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->photo_file_name;
             return validateUrl($url, $def_image);
         } else return $def_image;
     }
@@ -727,7 +727,7 @@ class Employee //extends Model
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
-                $row->image_url = PublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
+                $row->image_url = XPublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
                 unset($row->photo_file_name);
                 if (!$row->image_url) $row->image_url = self::defaultImage($ss->branch_id);
             }
@@ -737,8 +737,8 @@ class Employee //extends Model
     }
     static function defaultImage()
     {
-        return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
-        // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
+        return XPublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
+        // return XPublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
 
     static function getDetails($id, $ss)
@@ -819,7 +819,7 @@ class Employee //extends Model
         $file_name = DB::table('employees')->where('id', $id)->value('photo_file_name');
         if ($file_name) {
             // Delete the file from the storage
-            PublicStorage::delete([
+            XPublicStorage::delete([
                 'branch_id' => null,
                 'subs_id' => $ss->subs_id,
                 'dir' => self::$img_dir,
@@ -855,7 +855,7 @@ class Employee //extends Model
                 ['id' => '0', 'name' => 'non tax'],
             ],
             'nationalities' => GeneralSettings::options_nationality($ss),
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
@@ -918,7 +918,7 @@ class Employee //extends Model
             'event_date' => $event_date
         ];
 
-        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log resignation event.');
         }
@@ -961,7 +961,7 @@ class Employee //extends Model
             $event_id = Event::createEvent($event_arr, $ss);
             $event_id = $event_id->status_code == 200 ? $event_id->data['id'] : '';
         }
-        $id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
+        $id = DBX::saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
         if ($id) {
             $impact = $emp_type_id > $emp->emp_type_id ? 'Positive' : ($emp_type_id < $emp->emp_type_id ? 'Negative' : 'Neutral');
             $inputs = [
@@ -971,7 +971,7 @@ class Employee //extends Model
                 'remarks' => $remarks,
                 'event_date' => $event_date
             ];
-            saveData($ss, 'emp_events', [], $inputs, [], 1, false);
+            DBX::saveData($ss, 'emp_events', [], $inputs, [], 1, false);
             return DV::depends($id, ['Employee', 'updated']);
         }
 
@@ -990,7 +990,7 @@ class Employee //extends Model
         ];
 
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -1042,13 +1042,13 @@ class Employee //extends Model
             'event_date' => $event_date
         ];
 
-        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log resignation event.');
         }
 
 
-        $resign_id = saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
+        $resign_id = DBX::saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
         if ($resign_id) {
 
             DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
@@ -1066,7 +1066,7 @@ class Employee //extends Model
             'rejoin_date' => '1|date',
             'remarks' => '0|string|1-300'
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
@@ -1115,13 +1115,13 @@ class Employee //extends Model
             'event_date' => $event_date
         ];
 
-        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log rejoin event.');
         }
 
 
-        $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
+        $rejoin_id = DBX::saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
         if ($rejoin_id) {
 
             DB::table('employees')->where('id', $id)->update(['status_id' => 10, 'last_rejoin_date' => $rejoin_date]);
@@ -1220,7 +1220,7 @@ class Employee //extends Model
                 'event_date' => $event_date,
             ];
 
-            $event_id = saveData($ss, 'emp_events', ['id'=>null], $inputs, [], 1, false);
+            $event_id = DBX::saveData($ss, 'emp_events', ['id'=>null], $inputs, [], 1, false);
             if(!$event_id){
                 \Log::error('Employee->promoteStaff(): Failed to create record in table "emp_events"');
             }
@@ -1238,7 +1238,7 @@ class Employee //extends Model
             'remarks' => '0|string|1-300',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -1253,7 +1253,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $emp_id;
         $effective_date = convertDate($d->effective_date ?? date('Y-m-d'));
         $inputs['effective_date'] = $effective_date; 
-        $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
         $branch_id = $arr['to_branch_id'];
         $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
         return DV::depends(1, null);
@@ -1268,7 +1268,7 @@ class Employee //extends Model
             'start_date' => '0|date',
             'remarks' => '0|string|0-300'
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -1282,7 +1282,7 @@ class Employee //extends Model
         if($d->to_position_id == $emp->position_id) return DV::Error('Please select a different position to change');
         $start_date = convertDate($d->start_date ?? date('Y-m-d'));
         $inputs['start_date'] = $start_date; 
-        $id = saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
         $position_id = $arr['to_position_id'];
         $x = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
         return DV::depends($x, null, 'Failed to change staff position');
@@ -1302,7 +1302,7 @@ class Employee //extends Model
             'new_salary' => '1|decimal'
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -1321,7 +1321,7 @@ class Employee //extends Model
         $inputs['org_salary'] = $org_salary;
         $inputs['org_position_id'] = $org_position_id;
 
-        $id = saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
         $salary = $arr['new_salary'];
         $x = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
         return DV::depends(1, null, 'Failed to change staff salary');
@@ -1337,7 +1337,7 @@ class Employee //extends Model
             'remarks' => '0|string|0-300'
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error)  return DV::error($res->error);
         $inputs = $res->values;
         $d = (object)$inputs;
@@ -1352,7 +1352,7 @@ class Employee //extends Model
 
         $emp = self::getProps($emp_id,'name,code, work_shift_id');
         if(!$emp) return DV::error('Employee ID does not exist');
-        $id = saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_work_shifts', ['id' => null], $inputs, [], 1, false);
         $work_shift_id = $inputs['to_work_shift_id'];
         if($id){
             $emp_name =$emp->name."( $emp->code)";
@@ -1376,7 +1376,7 @@ class Employee //extends Model
             'change_work_shift' => '0|number|default=0'
 
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return null;
         }
@@ -1398,7 +1398,7 @@ class Employee //extends Model
             'change_salary' => $change_salary,
             'change_work_shift' => $change_work_shift
         ];
-        $id = saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
         if ($id > 0) {
             return $id;
         }

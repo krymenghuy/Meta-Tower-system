@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bhr\Employee;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 
 class EmployeeController extends Controller
 {
@@ -15,7 +15,7 @@ class EmployeeController extends Controller
     {
         $id = $req->id ?? $req->employee_id;
         $prn_code = $id ? 208 : 207; // check permmission code id to create or update
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $employee = new Employee($id, $ss);
@@ -25,7 +25,7 @@ class EmployeeController extends Controller
 
     function saveProfilePhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->employee_id ?? $req->id;
@@ -36,7 +36,7 @@ class EmployeeController extends Controller
 
     function deleteProfilePhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->employee_id ?? $req->id;
         $emp = new Employee($id, $ss);
@@ -46,7 +46,7 @@ class EmployeeController extends Controller
 
     function getProfilePhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->employee_id ?? $req->id;
         $img = Employee::profilePicture($id, $ss);
@@ -55,7 +55,7 @@ class EmployeeController extends Controller
 
     function findEmployee(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->employee_id ? $req->employee_id : $req->id;
         $employee = new Employee($id, $ss);
@@ -65,7 +65,7 @@ class EmployeeController extends Controller
 
     public function deleteEmployee(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 209);
+        $ss = XAuthService::verifyAuth($req, 209);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -77,7 +77,7 @@ class EmployeeController extends Controller
 
     function deleteSenderSpecial(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 273);
+        $ss = XAuthService::verifyAuth($req, 273);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ? $req->id : $req->employee_id;
         $employee = new Employee($id, $ss);
@@ -88,7 +88,7 @@ class EmployeeController extends Controller
 
     function deleteProfilePicture(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss); //user not authenticated
         $id = $req->id ? $req->id : $req->employee_id;
         $employee = new Employee($id, $ss);
@@ -98,7 +98,7 @@ class EmployeeController extends Controller
 
     function saveProfilePicture(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss); //user not authenticated
         $id = $req->id ? $req->id : $req->employee_id;
         $photo = $req->photo;
@@ -109,7 +109,7 @@ class EmployeeController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -119,7 +119,7 @@ class EmployeeController extends Controller
 
     function updateSenderStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss); //user not authenticated
         $id = $req->id ? $req->id : $req->employee_id;
         $employee = new Employee($id, $ss);
@@ -130,7 +130,7 @@ class EmployeeController extends Controller
 
     function getListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -140,7 +140,7 @@ class EmployeeController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -149,7 +149,7 @@ class EmployeeController extends Controller
     }
     public function getFormOptionPromotion(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -159,7 +159,7 @@ class EmployeeController extends Controller
 
     public function setTerminateStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -171,7 +171,7 @@ class EmployeeController extends Controller
 
     public function setResignStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 223);
+        $ss = XAuthService::verifyAuth($req, 223);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -183,7 +183,7 @@ class EmployeeController extends Controller
     }
     public function setRejoinStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 486);
+        $ss = XAuthService::verifyAuth($req, 486);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -194,7 +194,7 @@ class EmployeeController extends Controller
     }
     public function promoteNonStaff(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ?? $req->id;
         $employee = new Employee($id, $ss);
@@ -204,7 +204,7 @@ class EmployeeController extends Controller
 
     public function promoteStaff(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ?? $req->emp_id;
         $employee = new Employee($id, $ss);
@@ -213,7 +213,7 @@ class EmployeeController extends Controller
     }
     public function getEmployeeList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -222,7 +222,7 @@ class EmployeeController extends Controller
     }
     public function contractFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -235,7 +235,7 @@ class EmployeeController extends Controller
 
     public function getFormOptions_non_staff(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

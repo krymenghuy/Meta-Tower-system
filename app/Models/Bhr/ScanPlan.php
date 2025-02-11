@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,14 +28,14 @@ class ScanPlan
             'action' => '1|string|0-100',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss,'scan_plan', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss,'scan_plan', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['scan_plan' => $inputs, 'id' => $id]);
         }

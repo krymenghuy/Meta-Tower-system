@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\JDV;
+use JDV;
 use App\Models\SocialMedia;
 use App\Models\UM;
 use Illuminate\Http\Request;

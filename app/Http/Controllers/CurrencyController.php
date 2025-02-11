@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
-use App\Models\DBX;
+use DBX;
 use Illuminate\Http\Request;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 //use Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator; 
@@ -18,7 +18,7 @@ class CurrencyController extends Controller
     //Create/Update currency
     //$d = {code,name,symbol,symbol_after,decimal_points}
     function saveCurrency(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $validate_rule =['id'=>"0|identity=1",'code'=>"1|string|1-5","name"=>"1|string|1-50","symbol"=>"1|string|1-3|text=Currency symbol is required","symbol_after"=>"1|choice|0,1|default=0"];
@@ -27,12 +27,12 @@ class CurrencyController extends Controller
         if($res->error) return JDV::error($res->error);
         $inputs = $res->values;
         $id = $res->id;
-        $id = saveData($auth,'currencies',['id'=>$id],$inputs,[],1);
+        $id = DBX::saveData($auth,'currencies',['id'=>$id],$inputs,[],1);
         return JDV::success(["id"=>$id]);
     }
 
     function deleteCurrency(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $id = $req->id;
@@ -41,7 +41,7 @@ class CurrencyController extends Controller
     }
     
     function deleteCurrencyPair(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $id = $req->id;
@@ -55,7 +55,7 @@ class CurrencyController extends Controller
     }
     //getCurrencyPairsList()
     function getCurrencyPairs(Request $req){
-        $auth = AuthService::verifyAuth($req);
+        $auth = XAuthService::verifyAuth($req);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $rows = DB::table("currency_pairs as p")->where("p.branch_id",$branch_id)->selectRaw("p.id,p.currency_pair,p.create_user")->get();
@@ -63,7 +63,7 @@ class CurrencyController extends Controller
     }
 
     function getCurrencies(Request $req){
-        $auth = AuthService::verifyAuth($req);
+        $auth = XAuthService::verifyAuth($req);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $rows = DB::table("currencies as c")->where("branch_id",$branch_id)->selectRaw("id,code,name,symbol,symbol_after")->get();
@@ -72,7 +72,7 @@ class CurrencyController extends Controller
 
     //Create Currency Pair. createExchangeRatePair(). Create Exchange Rate currency pair such as USDKHR
     function createCurrencyPair(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $validate_rule =['id'=>'0|identity=1','currency_pair'=>'1|string|1-20','buy_rate'=>'0|number|default=0','sell_rate'=>'0|number|default=0'];
@@ -86,13 +86,13 @@ class CurrencyController extends Controller
         $sell_rate = $inputs['sell_rate'];
         unset($inputs['buy_rate']);
         unset($inputs['sell_rate']);
-        $id = saveData($auth,'currency_pairs',['id'=>$id],$inputs,[],1);
+        $id = DBX::saveData($auth,'currency_pairs',['id'=>$id],$inputs,[],1);
         if($id>0){
             $currency_pair = $inputs['currency_pair'];
             if($buy_rate >0 || $sell_rate >0){
                //Add Exchange rate, if the rate for today does not exist 
                if(!$this->rate_exists($currency_pair,null)){
-                   saveData($auth,'exchange_rates',['id'=>0],[
+                   DBX::saveData($auth,'exchange_rates',['id'=>0],[
                     "currency_pair"=>$currency_pair,
                     'buy_rate'=>$buy_rate,
                     'sell_rate'=>$sell_rate,
@@ -113,7 +113,7 @@ class CurrencyController extends Controller
     }
     
     function getExchangeRateInfo(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $subs_id = $auth->subs_id;
         $bin_subs_id = hex2bin($subs_id);
@@ -125,7 +125,7 @@ class CurrencyController extends Controller
     }
 
     function getFormOptions(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
         $subs_id = $ss->subs_id;
         $bin_subs_id = hex2bin($subs_id);
@@ -142,7 +142,7 @@ class CurrencyController extends Controller
 
     //$d = {x_month = "2023.2",currency_pair='USDKHR'}
     function getExchangeRates(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
         $d = (object) $req->all();
 
@@ -189,7 +189,7 @@ class CurrencyController extends Controller
     }
 
     function deleteExchangeRate(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $id = $req->id;
@@ -198,7 +198,7 @@ class CurrencyController extends Controller
     }
 
     function getComboItems_x_month(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
         $rows = DB::table("exchange_rates as r")->where('branch_id',$branch_id)->selectRaw("DISTINCT x_month,x_year,concat(x_year,'.',x_month) as `year_month`, concat(x_year,'.',x_month) as year_month_name")->orderByRaw('x_year DESC,x_month DESC')->get();
@@ -222,7 +222,7 @@ class CurrencyController extends Controller
     //Create exchange rate by date
     //$d = {x_date,buy_rate,sell_rate,auto_apply}
     function saveExchangeRate(Request $req){
-        $auth = AuthService::verifyAuth($req,-1);
+        $auth = XAuthService::verifyAuth($req,-1);
         if($auth->status_code !=200) return JDV::raw($auth);
         $branch_id = $auth->branch_id;
 
@@ -249,14 +249,14 @@ class CurrencyController extends Controller
         $inputs['x_month'] = date('m',strtotime($inputs['x_date']));
         $inputs['x_year'] = date('Y',strtotime($inputs['x_date']));
 
-        $id = saveData($auth,"exchange_rates",['id'=>$id],$inputs,[],1);
+        $id = DBX::saveData($auth,"exchange_rates",['id'=>$id],$inputs,[],1);
         if($id > 0) return JDV::success(['id'=>$id]);
         return JDV::error("Failed to save exchange rate");
     }
 
     //Apply Exchange rate based on selected date range
     function applyExchangeRate(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         // $start_date = convertDate($req->start_date);
         // $end_date = convertDate($req->end_date);

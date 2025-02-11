@@ -2,12 +2,12 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\CompanyProfile;
-use App\Models\DBX;
-use App\Models\PublicStorage;
+use XPublicStorage;
 
 class Report
 {
@@ -367,7 +367,7 @@ class Report
         foreach ($rows as $row) {
             $user_class = "general";
             $category = "image";
-            $dir = PublicStorage::getUrl($branch_id, $user_class, $category);
+            $dir = XPublicStorage::getUrl($branch_id, $user_class, $category);
             $row->logo_url =  $dir . $row->logo_file_name;
             return $row;
         }

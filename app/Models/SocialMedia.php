@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-use App\Models\DV;
-use App\Models\PublicStorage;
-
+use DV;
+use XPublicStorage;
+use DBX;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
@@ -31,7 +31,7 @@ class SocialMedia //extends Model
             'branch_id'=>'0|number|exists.um_branches.id'
         ];
 
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        $res = DBX::validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $branch_id = $inputs['branch_id'] ?? $ss->branch_id;
@@ -42,16 +42,16 @@ class SocialMedia //extends Model
         $to_delete_image = $id && (!$image || isImage($image));
         if($to_delete_image){
           $prev_file_name = DB::table('social_media')->where('id',$id)->value('file_name');
-          if($prev_file_name) PublicStorage::delete(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image',$prev_file_name);
+          if($prev_file_name) XPublicStorage::delete(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image',$prev_file_name);
         }
  
         $existName = isExists('social_media',['name'=>$inputs['name']],'name',$inputs['name'],$id);
         if($existName) return DV::error('Social media name is already used');
 
 
-        $newID = saveData($ss,'social_media',['id' => $id],$inputs,[],1);
+        $newID = DBX::saveData($ss,'social_media',['id' => $id],$inputs,[],1);
         if($newID){
-            PublicStorage::saveImage(['subs_id'=>$subs_id,'dir'=>self::$img_dir],null,$image,null,['id' => $newID,'store' => 'social_media.file_name']);
+            XPublicStorage::saveImage(['subs_id'=>$subs_id,'dir'=>self::$img_dir],null,$image,null,['id' => $newID,'store' => 'social_media.file_name']);
         }
         return DV::depends($newID,null,'Failed to save social media');
     }
@@ -66,7 +66,7 @@ class SocialMedia //extends Model
         $rows = DB::table('social_media AS s')->whereRaw($str_branch_id)->where('s.customer_id',hex2bin( $customer_id))->selectRaw('branch_id,file_name,name,url,id,'.$col_customer_id)->get();
         foreach($rows as $row){
             if($row->file_name != null){
-                $row->image_url = PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image').$row->file_name;
+                $row->image_url = XPublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image').$row->file_name;
             }else  $row->image_url = $row->file_name;
             unset($row->file_name);
         }
@@ -94,7 +94,7 @@ class SocialMedia //extends Model
     //     $rows = $q->get();
     //     foreach($rows as $row){
     //         if($row->file_name){
-    //             $row->image_url = PublicStorage::getUrl($branch_id,self::$img_dir,'image').$row->file_name;
+    //             $row->image_url = XPublicStorage::getUrl($branch_id,self::$img_dir,'image').$row->file_name;
     //         }else  $row->image_url = null;
     //         unset($row->file_name);
     //     }
@@ -109,7 +109,7 @@ class SocialMedia //extends Model
         $row = DB::table('social_media')->where('id',$id)->where('customer_id',hex2bin($customer_id))->selectRaw('file_name,name,url,id')->first();
         if($row){
             if($row->file_name != null){
-                $row->image_url = PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image').$row->file_name;
+                $row->image_url = XPublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>self::$img_dir],'image').$row->file_name;
             }else  $row->image_url = $row->file_name;
             return $row;
         }
@@ -123,7 +123,7 @@ class SocialMedia //extends Model
         $customer_id = $ss->subscriber_id;
         $file_name = DB::table('social_media')->where('customer_id',hex2bin($customer_id))->where('id',$id)->value('file_name');
         if($file_name){
-            PublicStorage::delete($ss->branch_id,self::$img_dir,'image',$file_name);
+            XPublicStorage::delete($ss->branch_id,self::$img_dir,'image',$file_name);
         }
         $row = DB::table('social_media')->where('customer_id',hex2bin($customer_id))->where('id',$id)->delete();
         return DV::depends($row,'Deleted');

@@ -2,11 +2,11 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 
 class Holiday
 {
@@ -35,14 +35,14 @@ class Holiday
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?',','];
         $checkUnique = ["$branch_id|holidays|name|id=id|text=Holiday already exists."];
 
-        $res = validateObject($arr, $v_rule, true, ['description' => $pos_char], $ss->lang, false, $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['description' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'holidays', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'holidays', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['holidays' => $inputs, 'id' => $id]);
         }

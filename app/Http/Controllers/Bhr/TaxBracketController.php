@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\TaxBracket;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 
@@ -22,7 +22,7 @@ class TaxBracketController extends Controller
     {
         $id = $req->id ?? $req->id;
         $prn_code = $id ? 253: 254;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -34,7 +34,7 @@ class TaxBracketController extends Controller
 
     public function getTaxBracketListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -44,7 +44,7 @@ class TaxBracketController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -57,7 +57,7 @@ class TaxBracketController extends Controller
 
     public function deleteTaxBracket(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 255);
+        $ss = XAuthService::verifyAuth($req, 255);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -71,7 +71,7 @@ class TaxBracketController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

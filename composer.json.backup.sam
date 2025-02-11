@@ -12,10 +12,10 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "guzzlehttp/psr7": "^1.5",
         "intervention/image": "^2.5",
-        "kreait/firebase-php": "^5.24",
-        "kreait/firebase-tokens": "^1.17",
-        "kreait/laravel-firebase": "^2.0",
         "laravel-notification-channels/fcm": "~2.0",
+        "kreait/laravel-firebase": "^2.0",
+        "kreait/firebase-php": "^5.24",
+        "kreait/firebase-tokens": "^1.17" ,
         "laravel/framework": "^8.0|^10.0|^11.0",
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.2",
@@ -23,12 +23,7 @@
         "phpmailer/phpmailer": "^6.9",
         "phpoffice/phpspreadsheet": "^2.0",
         "pusher/pusher-php-server": "^7.2",
-        "ramsey/uuid": "^4.7",
-        "vsd/dbx": "dev-main",
-        "vsd/money": "dev-main",
-        "vsd/response": "dev-main",
-        "vsd/storage": "*",
-        "vsd/xauth": "dev-main"
+        "ramsey/uuid": "^4.7"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -44,9 +39,7 @@
             "Opt\\": "app/Http/Traits/chapx/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Vsd\\Response\\": "src/",
-            "Vsd\\Database\\": "src/",
-            "Vsd\\Money\\": "src/"
+            "Vsd\\Response\\": "src/"
         },
        "files":[
            "app/helpers.php"
@@ -86,24 +79,8 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-response.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-storage.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-dbx.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-xauth.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-money.git"
+            "type": "path",
+            "url": "../../packages/vsd-response"
         }
     ]
 }

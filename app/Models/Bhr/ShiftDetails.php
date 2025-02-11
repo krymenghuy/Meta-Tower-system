@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +37,7 @@ class ShiftDetails
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '|'];
         $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
-        $res = validateObject($arr, $v_rule, true, ['day' => $pos_char], $ss->lang, false, $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['day' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -55,7 +56,7 @@ class ShiftDetails
 
             unset($inputs['days']);
             // Save data for each day
-            $savedId = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
+            $savedId = DBX::saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
             if ($savedId > 0) {
                 $savedRows[] = ['id' => $savedId, 'shift_details' => $inputs];
             } else {

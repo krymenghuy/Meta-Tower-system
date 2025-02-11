@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
-use App\Services\Umt\AuthService;
+use XAuthService;
 //use Illuminate\Http\Request;
 
 //use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -14,11 +14,11 @@ use DB;
 class ExcelReportController extends Controller
 {
     function index($query_string){
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if (!$user){
              return view('error.403');
         }
-        //$ss = AuthService::getUserInfoByToken($token);
+        //$ss = XAuthService::getUserInfoByToken($token);
         if (!$user) return redirect('/');
         $branch_id = $user->branch_id;
         if (!$branch_id) return redirect('/');
@@ -48,7 +48,7 @@ class ExcelReportController extends Controller
     }
 
     function create_merchant_disbursements_report($branch_id, $warehouse_id,$start_date,$end_date){
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if (!$user) return redirect('/');
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load( base_path('/storage/excel_report_templates/merchant_disbursements.xlsx'));
         $sheet = $spreadsheet->getActiveSheet();

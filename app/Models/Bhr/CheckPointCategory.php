@@ -2,8 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DBX;
-use App\Models\DV;
+use DBX;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +38,7 @@ class CheckPointCategory //extends Model
         ];
         $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $validationRules, true, ['name' => $name], $ss->lang, false);
+        $res = DBX::validateObject($arr, $validationRules, true, ['name' => $name], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
