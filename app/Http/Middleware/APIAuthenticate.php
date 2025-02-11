@@ -2,8 +2,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Services\Umt\AuthService;
-use App\Models\JDV; // Assuming JDV is your custom response handler
+use XAuthService;
+use JDV; // Assuming JDV is your custom response handler
   
 class APIAuthenticate
 {
@@ -14,10 +14,10 @@ class APIAuthenticate
         // Set 'user' to null at the beginning
         $request->user = null;
         $ss =null;
-        /** AuthService::getWebToken() will return access_token that is stored in web http cookie from Web page (e.g Backend system) */
-        //$token =AuthService::getWebToken($request, $token_encrypted);
+        /** XAuthService::getWebToken() will return access_token that is stored in web http cookie from Web page (e.g Backend system) */
+        //$token =XAuthService::getWebToken($request, $token_encrypted);
         $token = $request->bearerToken() ?? (($request->header('Authorization') ?: $request->query('api_token')));
-        $ss = AuthService::authenticateToken($token,false,$lang);
+        $ss = XAuthService::authenticateToken($token,false,$lang);
         // Set $def_lang based on the 'lang' property of $ss
         $def_lang = $ss->lang ?? 'en';
 

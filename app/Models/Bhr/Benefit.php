@@ -2,11 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
-use Illuminate\Database\Eloquent\Model;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 
 class Benefit //extends Model
 {
@@ -30,14 +29,14 @@ class Benefit //extends Model
         ];
         $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang , false, $checkUnque);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang , false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['benefits' => $inputs, 'id' => $id]);
         }

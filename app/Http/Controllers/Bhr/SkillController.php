@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Skill;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class SkillController extends Controller
@@ -20,7 +20,7 @@ class SkillController extends Controller
     {
         $id = $req->skill_id ?? $req->id;
         $prn_code = $id ? 201 : 202;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -33,7 +33,7 @@ class SkillController extends Controller
 
     public function getSkillList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -42,7 +42,7 @@ class SkillController extends Controller
 
     public function getSkillListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -51,7 +51,7 @@ class SkillController extends Controller
 
     public function deleteSkill(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 203);
+        $ss = XAuthService::verifyAuth($req, 203);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -64,7 +64,7 @@ class SkillController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -73,7 +73,7 @@ class SkillController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -82,7 +82,7 @@ class SkillController extends Controller
 
     public function saveSkillPhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -91,7 +91,7 @@ class SkillController extends Controller
 
     public function getSkillPhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -101,7 +101,7 @@ class SkillController extends Controller
 
     public function deleteSkillPhoto(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

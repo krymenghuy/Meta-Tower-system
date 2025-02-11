@@ -2,13 +2,12 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
-use App\Models\Bhr\Employee;
+use DV;
 use App\Models\Bhr\ShiftDetails;
-use App\Models\DBX;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\PublicStorage;
+use XPublicStorage;
 
 use DateTime;
 
@@ -41,7 +40,7 @@ class Attendance
             'remarks' => '0|string',
         ];
 
-        $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -77,8 +76,7 @@ class Attendance
 
 
         // unset($inputs['status']);
-
-        $newID = saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
+        $newID = DBX::saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
         return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], $ss);
     }
 
@@ -233,7 +231,7 @@ class Attendance
             'remarks' => '0|string|1,150'
         ];
 
-        $res = validateObject($arr, $v_rule, 0, [], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 0, [], $ss->lang, 0, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
@@ -371,7 +369,7 @@ class Attendance
         $employee_code = $employee->code;
         $file_name = $employee->photo_file_name;
         $defaultPhoto = base_url('assets/images/default/') . 'default-staff.png';
-        $image = PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
+        $image = XPublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'employees'], 'image') . $file_name;
 
         $image_url = validateUrl($image, $defaultPhoto);
         //In case => need to alert to Finance Officer about overdue Scan, Premature scan
@@ -460,7 +458,7 @@ class Attendance
         $rows = $query->orderBy('at.updated_at', 'DESC')->take($per_page)->get();
         // foreach ($rows as $row) {
         //     $row->session = GeneralSettings::getSession($row->session_id)->name;
-        //     $url = PublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
+        //     $url = XPublicStorage::getUrl(['subs_id'=>$ss->subs_id,'dir'=>'student'],'image').$row->file_name;
         //     $row->image_url = validateUrl($url,Student::getDefaulPhoto($ss));
 
         //     $row->date_of_birth = date('d M Y', strtotime($row->date_of_birth));

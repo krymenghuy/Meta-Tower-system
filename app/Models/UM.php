@@ -7,10 +7,10 @@ namespace App\Models;
 use Firebase\JWT\JWT;
 //use Firebase\JWT\Key;
 
-use App\Services\Umt\AuthService;
+use XAuthService;
   
 use App\Models\SMS;
-use App\Models\PublicStorage;
+use XPublicStorage;
 //use App\Security\Sanitizer as SecuritySanitizer;
 // use App\Security\Sanitizer as SecuritySanitizer;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -434,7 +434,7 @@ class UM //extends Model
           'user_class'=>'1|string|1-150|text=User class is required',
           'subs_id'=>'0|string|50'
         ];
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
+        $res = DBX::validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
          $inputs = $res->values;
          $inputs['subs_id'] = isset($inputs['subs_id']) ?? self::getSubscriptionId($ss->user_id); 
@@ -445,7 +445,7 @@ class UM //extends Model
          
          if ($this->role_exists($ss, $d->name, $id)) return DV::error('Role name already exists', $ss->lang);
          $inputs['subs_id'] = $subs->subs_id;
-         $id = saveData($ss,'um_roles',['id'=>$id],$inputs,[],0,false);     
+         $id = DBX::saveData($ss,'um_roles',['id'=>$id],$inputs,[],0,false);     
         return DV::depends($id,['role'=>$inputs],'Faled to save role');
       }
 
@@ -856,7 +856,7 @@ class UM //extends Model
 
           $check_unique = ["$branch_id|um_users|login_name|id|text=login name or phone number is already in use by another user"];
           $img_char = ['+',':',',',';','=','/','\\','?'];
-          $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['@','-','.','_'],'photo' => $img_char],$ss->lang,false,$check_unique);
+          $res = DBX::validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['@','-','.','_'],'photo' => $img_char],$ss->lang,false,$check_unique);
           if($res->error) return DV::error($res->error);
           $inputs = $res->values;
           $user_id = $id ?? $res->id;
@@ -934,13 +934,13 @@ class UM //extends Model
          if ($user_id > 0){
            unset($inputs['hpwd'],$inputs['status'],$inputs['is_locked'],$inputs['user_class'],$inputs['official_id'],$inputs['official_code']);
          }
-         $user_id = saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
+         $user_id = DBX::saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
          if($user_id >0){
             $this->addRoleMember_internal($ss,$role_id,$user_id);
-            $x = PublicStorage::saveImage($ss->branch_id,$user_class,null,$image,null,[]);
+            $x = XPublicStorage::saveImage($ss->branch_id,$user_class,null,$image,null,[]);
             if($x->status == 'OK'){     
                 $primary_key = $p_table ==='um_users'? ['id'=>$user_id]: [$pk_field => ($official_id ?? -3)];
-                saveData($ss,$p_table,$primary_key,[
+                DBX::saveData($ss,$p_table,$primary_key,[
                   $photo_field => $x->file_name
                 ],[],1);
             }
@@ -1022,9 +1022,9 @@ class UM //extends Model
     //This method is used in mobile app's api authentication, which does not depends on web session
     static function getUserInfoByToken($request, $prn_code = -1, $prn_error_message = null)
     {
-        return AuthService::verifyAuth($request,$prn_code);
+        return XAuthService::verifyAuth($request,$prn_code);
         // $def_lang = 'en';
-        // $user = AuthService::user();
+        // $user = XAuthService::user();
         // if ($user){
         //     $user->status_code =200;
         //     return $user;
@@ -1437,7 +1437,7 @@ class UM //extends Model
   //   $id = DB::table('um_role_modules')->where('module_id', $module_id)->where('role_id', $role_id)->value('id');
   //   if (!$id) {
   //     $inputs = ['module_id' => $module_id, 'role_id' => $role_id, 'start_date' => getNowTime()];
-  //     $id = saveData($ss, 'um_role_modules', ['id' => null], $inputs, [], 0, false);
+  //     $id = DBX::saveData($ss, 'um_role_modules', ['id' => null], $inputs, [], 0, false);
   //   }
   //   if ($id) {
   //     $users = DB::table('um_user_roles')->where('role_id', $role_id)->selectRaw('user_id')->distinct()->get();
@@ -1445,7 +1445,7 @@ class UM //extends Model
   //       $test_id = DB::table('um_user_modules')->where('user_id', $user->user_id)->where('module_id', $module_id)->take(1)->value('id');
   //       if (!$test_id) {
   //         $inputs = ['user_id' => $user->user_id, 'module_id' => $module_id,'role_id'=>$role_id,'start_date' => getNowTime()];
-  //         saveData($ss, 'um_user_modules', ['id' => null], $inputs, [], 0, false);
+  //         DBX::saveData($ss, 'um_user_modules', ['id' => null], $inputs, [], 0, false);
   //       }
   //     }
   //   }
@@ -1529,7 +1529,7 @@ class UM //extends Model
 
     //         $id = DB::table('um_role_permissions')->where('role_id', $role_id)->where('permission_id', $prn_id)->take(1)->value('id');
     //         $inputs = ['role_id' => $role_id, 'permission_id' => $prn_id, 'start_date' => getNowTime()];
-    //         $id = saveData($ss, 'um_role_permissions', ['id' => $id], $inputs, [], 0, false);
+    //         $id = DBX::saveData($ss, 'um_role_permissions', ['id' => $id], $inputs, [], 0, false);
     //         if ($id > 0) {
     //         //Ensure that all users in the provided $role_id has this permission ($prn_id)
     //         $users = DB::table('um_user_roles as ur')->join('um_users as u','u.id','=','ur.user_id')->where('ur.role_id', $role_id)->select('ur.user_id')->get();
@@ -1537,7 +1537,7 @@ class UM //extends Model
     //             $test_id = DB::table('um_user_permissions')->where('user_id', $user->user_id)->where('permission_id', $prn_id)->take(1)->value('id');
     //             if (!$test_id) {
     //             $inputs = ['user_id' => $user->user_id,'role_id' => $role_id, 'permission_id' => $prn_id, 'start_date' => getNowTime()];
-    //             saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
+    //             DBX::saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
     //             }
     //         }
     //         }
@@ -1624,7 +1624,7 @@ class UM //extends Model
   }
 
   static function access_mod($mod_id, $user_id = null,$module_ids = null) {
-     return AuthService::access_mod($mod_id,$user_id,$module_ids); 
+     return XAuthService::access_mod($mod_id,$user_id,$module_ids); 
   }
   
   function getAuthData($d)
@@ -1632,7 +1632,7 @@ class UM //extends Model
        $main_route = isset($d->main_route) ? $d->main_route:null;
        $app_id = UMTSettings::getAppIdFromRoute($main_route);
        if (!$app_id) Log::error('Failed to find app_id for route named "'.$main_route.'". The api/auth-data does not return correct result. resolution is to ensure that the target application stored in table "um_applications" must have a home_route named "'.$main_route.'" ');
-       $data = AuthService::getAuthData($app_id);
+       $data = XAuthService::getAuthData($app_id);
        if (!$data) return DV::error('Authentication failed','en',401);
          return $data;
    }
@@ -1652,7 +1652,7 @@ class UM //extends Model
 
   static function allowed($prn_id, $module_id = null,$user_id=null)
   {
-      return AuthService::allowed($prn_id,$user_id);
+      return XAuthService::allowed($prn_id,$user_id);
   }
 
     //Check if current user has access to a MODULE refered by module_code or ref_code
@@ -1840,7 +1840,7 @@ class UM //extends Model
     $test_id = DB::table('um_user_modules')->where('user_id', $user_id)->where('module_id', $mod_id)->take(1)->value('id');
     if (!$test_id) {
       $inputs = ['user_id' => $user_id, 'module_id' => $mod_id, 'start_date' => getNowTime()];
-      $test_id = saveData($ss,'um_user_modules', ['id' => null], $inputs, [], 0, false);
+      $test_id = DBX::saveData($ss,'um_user_modules', ['id' => null], $inputs, [], 0, false);
       $success=1;
     }
     return DV::depends($success, null, 'Module is aready assigned');
@@ -1953,7 +1953,7 @@ class UM //extends Model
       if(!$prn) return DV::error('Permission ID ? does not exists::'.$prn_id);
       self::addModuleToUser($prn->module_id,$user_id,$ss);
       $inputs = ['user_id' => $user_id, 'permission_id' => $prn_id, 'role_id' => null, 'start_date' => getNowTime()];
-      $user_prn_id = saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
+      $user_prn_id = DBX::saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
       $success=1;
     }
     return DV::depends($success, null, 'Failed assign permission '.$prn_id);
@@ -2016,7 +2016,7 @@ class UM //extends Model
   }
 
   static function geDefaultUserPhoto($branch_id){
-    return PublicStorage::getUrl($branch_id,'default','image').'default-user.png';
+    return XPublicStorage::getUrl($branch_id,'default','image').'default-user.png';
   }
 
   static function getPrimaryRole($id){
@@ -2061,7 +2061,7 @@ class UM //extends Model
 
   //     if($p_table ==='um_users'){
   //         $file_name = DB::table('um_users')->where('id',$user_id)->take(1)->value('photo_file_name');
-  //         $url = PublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
+  //         $url = XPublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
   //         return validateUrl($url,self::geDefaultUserPhoto($branch_id));
   //     }else if($p_table){
   //       $official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');
@@ -2073,7 +2073,7 @@ class UM //extends Model
   //       $pk_field = $p['key_field'];
   //       $photo_field = isset($p['photo_field'])?$p['photo_field']:'photo_file_name';
   //       $file_name = DB::table($p_table)->where($pk_field,$official_id)->take(1)->value($photo_field);
-  //       $url = PublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
+  //       $url = XPublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
   //       return validateUrl($url,self::geDefaultUserPhoto($branch_id)); 
   //     }
   //     return self::geDefaultUserPhoto($branch_id);
@@ -2088,12 +2088,12 @@ class UM //extends Model
   //   if(!$user) return null;
   //   if($p_table ==='um_users'){
   //     $file_name = $user->photo_file_name;
-  //     if($file_name) PublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
+  //     if($file_name) XPublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
   //   }else{
   //     $pk_field = $p['key_field'];
   //     $photo_field = $p['photo_field'];
   //     $file_name = DB::table($p_table)->where($pk_field,$user->official_id)->take(1)->value($photo_field);
-  //     if($file_name) PublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
+  //     if($file_name) XPublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
   //   }
   //   return true;
   // }

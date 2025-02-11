@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,7 @@ class ExitFormItem
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang, false);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }

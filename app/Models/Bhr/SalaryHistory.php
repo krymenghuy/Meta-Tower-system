@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -28,14 +29,14 @@ class SalaryHistory
             'new_position_id' => '1|number',
             'new_salary' => '1|numeric|0-1000000',
         ];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData($ss, 'salary_histories', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'salary_histories', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
         }

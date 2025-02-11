@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 use App\Models\Bhr\Contract;
 
 class ContractController extends Controller
 {
     public function createContract($qString)
     {
-        $user = AuthService::user();
+        $user = XAuthService::user();
         if (!$user) {
             return JDV::raw(['error' => 'You are not logged in'], 401);
         }

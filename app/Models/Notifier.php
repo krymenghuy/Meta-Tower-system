@@ -2,12 +2,13 @@
 
 namespace App\Models;
 // use LaravelFCM\Facades\FCM;
-use App\Models\DV;
-use App\Services\Umt\AuthService;
+use DV;
+use XAuthService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
+use DBX;
 use Illuminate\Support\Facades\Log;
 use App\Models\Dms\Promotion;
 use Config;
@@ -365,7 +366,7 @@ static function notify_mobile($scope,$data=[],$category_id = null){
                   $notif_id = null;
                   $nowTime =getNowTime();
                   if($detail_id && $category_id > 0) $notif_id = DB::table('notifications')->where('detail_id',$detail_id)->where('category_id',$category_id)->value('id');
-                  $ss = $ss ?? AuthService::user();
+                  $ss = $ss ?? XAuthService::user();
                   if (!$ss){
                     $ss = (object)[
                       'subs_id'=>$subs_id,
@@ -376,7 +377,7 @@ static function notify_mobile($scope,$data=[],$category_id = null){
                       DBX::$updated_at => $nowTime
                     ];
                   }
-                  saveData($ss,'notifications',['id'=>$notif_id],$inputs,[],$subs_id? 1 :0,false);
+                  DBX::saveData($ss,'notifications',['id'=>$notif_id],$inputs,[],$subs_id? 1 :0,false);
                 }catch(\Exception $e){
                    Log::error('Notifier Error: problem in saving notification message');
                    Log::error($e->getMessage());
@@ -407,7 +408,7 @@ static function notify_mobile($scope,$data=[],$category_id = null){
        $user_class =null;
        $d = (object)$arr;
        $category = $d->category ?? 'default';
-       $ss = $ss ?? AuthService::user();
+       $ss = $ss ?? XAuthService::user();
        //Need to be cautious when the system is running as SaS model (or subscription model) where multiple companies are subscribers
        $branch_id = 0;
        $bin_subs_id = null;

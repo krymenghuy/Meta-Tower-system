@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Umt\AuthService;
-use App\Models\JDV;
+use XAuthService;
+use JDV;
 use App\Models\Umt\User;
 use DB;
   
 class ReportCenterController extends Controller
 {
     function getReportList(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
         $include = '';
         $user_id = $ss->user_id;
@@ -32,7 +32,7 @@ class ReportCenterController extends Controller
    }
 
    function getReportListByCategory(Request $req){
-    $ss = AuthService::verifyAuth($req,-1);
+    $ss = XAuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss);
     $app_id = $req->app_id;
     $bin_app_id = $app_id ? hex2bin($app_id):null;

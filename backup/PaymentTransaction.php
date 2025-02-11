@@ -170,7 +170,7 @@ function getTransactionList_driver($arr, $ss=null){
       }
       $row->pmt_method = $notes;
 
-      if($row->file_name) $row->image_url = PublicStorage::getUrl($branch_id,'driver','image').$row->file_name;
+      if($row->file_name) $row->image_url = XPublicStorage::getUrl($branch_id,'driver','image').$row->file_name;
       else  $row->image_url =null;
       $row->file_name = null;
       $total_amount += $row->amount;
@@ -346,7 +346,7 @@ function getTransactions_driver($arr, $ss){
   /** END:: Calculate Overall breakdown items by pmt_method */
 
   foreach($rows as $row){
-    if($use_paginate && $row->file_name) $row->image_url = PublicStorage::getUrl($branch_id,'driver','image').$row->file_name;
+    if($use_paginate && $row->file_name) $row->image_url = XPublicStorage::getUrl($branch_id,'driver','image').$row->file_name;
     else $row->image_url = null;
      //$row->pmt_breakdowns = self::getBreakdownNotes($row->trx_type,$row->trx_id);
      /** Driver does not need to have bank account */
@@ -504,7 +504,7 @@ function getTransactions_merchant($arr, $ss){
     /*** END:: Calculate Overall breakdown items by pmt_method */
 
     foreach($rows as $row){
-      if($use_paginate && $row->file_name) $row->image_url = PublicStorage::getUrl($branch_id,'merchant','image').$row->file_name;
+      if($use_paginate && $row->file_name) $row->image_url = XPublicStorage::getUrl($branch_id,'merchant','image').$row->file_name;
       else $row->image_url = null;
       $row->bank_account_info = self::getBankAccountInfo($row->agent_type,$row->agent_id);
     }
@@ -544,7 +544,7 @@ function makePayment($arr,$ss=null){
     'packages'=>'1|string',
     'breakdowns'=>'1|array'
   ];
-  $res = validateObject($arr,$v_rule,true,['notes' => [':','.','$','-'],'remarks' => [':','.','$','-'],'packages'=>[',','|',';']],$ss->lang,false,null);
+  $res = DBX::validateObject($arr,$v_rule,true,['notes' => [':','.','$','-'],'remarks' => [':','.','$','-'],'packages'=>[',','|',';']],$ss->lang,false,null);
   if($res->error) return DV::error($res->error);
   $d = (object)$res->values;
   if(!$d->packages) return DV::error('No package list provided');
@@ -579,7 +579,7 @@ function makePayment($arr,$ss=null){
     if($row){
        return DV::error('មានកញ្ចប់ទំនិញខ្លះបានធ្លាប់បានទូទាត់ពីមិនរួចហើយ អាចនឺងកំពុងរុងចាំការអនុម័ត!');
     }
-  $trx_id = saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
+  $trx_id = DBX::saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
   if($trx_id){
     //Update other totals such as COD_amount, taxi, fees in table cash_receipts
     self::setOtherTotals('disbursement',$trx_id,$agent_type);
@@ -787,8 +787,8 @@ function makePayment($arr,$ss=null){
         $m = $this->savePhoto_local($ss, $user_class,$trx_type,$trx_id,$file_type,$photo_data);
         if(!$m->error) {
           //$result->upload_id = $m->upload_id;
-          $image_url = htmlspecialchars(PublicStorage::getUrl($branch_id,$user_class,'image').$m->file_name);
-          if($prev_file_name) PublicStorage::delete($branch_id,$user_class,'image',$prev_file_name); 
+          $image_url = htmlspecialchars(XPublicStorage::getUrl($branch_id,$user_class,'image').$m->file_name);
+          if($prev_file_name) XPublicStorage::delete($branch_id,$user_class,'image',$prev_file_name); 
           return DV::depends(1,['image_url'=>$image_url]); 
         }else return DV::error($m->error); 
         
@@ -811,7 +811,7 @@ function makePayment($arr,$ss=null){
       if($info) $file_name = $info->file_name;
   
       if($file_name){
-        $x = PublicStorage::delete($branch_id,$user_class,'image',$file_name);
+        $x = XPublicStorage::delete($branch_id,$user_class,'image',$file_name);
         return DV::depends($x);
       }else return DV::error('Failed to delete photo');
      }
@@ -834,11 +834,11 @@ function makePayment($arr,$ss=null){
         //if(empty($file_name)) $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".".$file_type;
       
 
-        $m = PublicStorage::saveImage($branch_id, $user_class,$file_type,$photo_data);
+        $m = XPublicStorage::saveImage($branch_id, $user_class,$file_type,$photo_data);
         if($m->status ==='OK')
         {
             $file_name = $m->file_name;
-            $file_url = PublicStorage::getUrl($branch_id,$user_class,$category).$file_name;
+            $file_url = XPublicStorage::getUrl($branch_id,$user_class,$category).$file_name;
             DB::table($table1)->where('id',$trx_id)->update(array('file_type'=>$file_type,'file_name'=>$file_name));  
  
             $res->file_name = $file_name;
@@ -876,7 +876,7 @@ function makePayment($arr,$ss=null){
         if($trx_type ==='cash_disbursements') $table ='cash_disbursements';
         $rows = DB::table($table)->where('id',$trx_id)->selectRaw("file_name,file_type")->limit(1)->get();
         foreach($rows as $row){
-          $row->image_url = PublicStorage::getUrl($branch_id,$user_class,'image').$row->file_name;
+          $row->image_url = XPublicStorage::getUrl($branch_id,$user_class,'image').$row->file_name;
           return $row;
         } 
         return null;
@@ -939,7 +939,7 @@ function makePayment($arr,$ss=null){
             }
             $row->pmt_method = $notes;
 
-            $row->image_url = htmlspecialchars(PublicStorage::getUrl($branch_id,'merchant','image').$row->file_name);
+            $row->image_url = htmlspecialchars(XPublicStorage::getUrl($branch_id,'merchant','image').$row->file_name);
             if(!isset($row->image_url)) $row->image_url=null;      
             $row->file_name = null;
             if (strtolower($row->trx_type)=='receipt') $row->amount = abs($row->amount);
@@ -971,7 +971,7 @@ function settleZero_driver($arr,$ss){
       'authorized'=>0
     ];
 
-    $trx_id = saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
+    $trx_id = DBX::saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
     $success_count = 0 ;
     if($trx_id){
       $p_ids = explode(',',isset($d->packages)?$d->packages:'');
@@ -1010,7 +1010,7 @@ function settleZero_sender($arr,$ss){
     'auth_uid'=>$ss->user_id
   ];
 
-  $trx_id = saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
+  $trx_id = DBX::saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
   $success_count = 0 ;
     if($trx_id){
       $p_ids = explode(',',isset($d->packages)?$d->packages:'');
@@ -1079,7 +1079,7 @@ function receivePayment($arr,$ss=null){
       'packages'=>'1|string',
       'breakdowns'=>'1|array'
     ];
-    $res = validateObject($arr,$v_rule,true,['notes' => [':','.','$','-'],'remarks' => [':','.','$','-'],'packages'=>[',','|',';']],$ss->lang,false,null);
+    $res = DBX::validateObject($arr,$v_rule,true,['notes' => [':','.','$','-'],'remarks' => [':','.','$','-'],'packages'=>[',','|',';']],$ss->lang,false,null);
     if($res->error) return DV::error($res->error);
     $d = (object)$res->values;
     if(!$d->packages) return DV::error('No package list provided');
@@ -1115,7 +1115,7 @@ function receivePayment($arr,$ss=null){
        return DV::error('មានកញ្ចប់ទំនិញខ្លះបានធ្លាប់បានទូទាត់ពីមិនរួចហើយ អាចនឺងកំពុងរុងចាំការអនុម័ត!');
     }
 
-    $trx_id = saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
+    $trx_id = DBX::saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
     if($trx_id){
       //Update other totals such as COD_amount, taxi, fees in table cash_receipts
       self::setOtherTotals('receipt',$trx_id,$agent_type);

@@ -2,10 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 
 class Experience //extends Model
 {
@@ -36,7 +36,7 @@ class Experience //extends Model
 
         $exp_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
         // Validate input
-        $res = validateObject($arr, $v_rule, true, ['period' => $exp_char], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['period' => $exp_char], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object)$inputs;
@@ -54,7 +54,7 @@ class Experience //extends Model
         $inputs['start_date'] =  $start_date;
         $inputs['end_date'] = $end_date;
         $inputs['period'] = $period;
-        $id = saveData($ss,'emp_experiences',['id'=>$id],$inputs,1,false);
+        $id = DBX::saveData($ss,'emp_experiences',['id'=>$id],$inputs,1,false);
         return DV::depends($id, ['emp_experiences' => $inputs, 'id' => $id], 'Failed to save experience');
     }
 

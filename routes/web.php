@@ -1,26 +1,15 @@
 <?php
 use Illuminate\Support\Facades\Route;
 //use app\Http\Middleware\CustomRateLimiter;
-  use App\Services\Umt\AuthService;
   use App\Http\Controllers\Bhr\ExcelReportController;
   use App\Http\Controllers\Bhr\ContractController;
-  
-// use App\Http\Controllers\Category\CategoryController;
-// use App\Http\Controllers\Slide\SlideController;
-
-// use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Bhr\WebReportController;
-// use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Login\LoginController;
 //use App\Http\Controllers\DbExportController;
 // use Illuminate\Http\Request;
 use App\Models\Notifier;
 // use App\Models\Package;
 use Carbon\Carbon; //for testing only
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-
+ 
 //use App\Models\UM;
 
 // Route::get('/getlogin', function(){
@@ -135,12 +124,12 @@ Route::get('logout',function(){
     return view('login.hr_login');
 });
 
-Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
-Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);
+//Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
+//Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);
 // Route::get('sales-module-report/{q}', [SalesModuleReportController::class, 'showReport']);
-Route::get('hs-merchant-invoice/{q}', [WebReportController::class, 'hs_merchant_invoice']);
-Route::get('hs-merchant-invoice-v2/{q}', [WebReportController::class, 'hs_merchant_invoice_v2']);
-Route::get('merchant-invoice/{q}', [WebReportController::class, 'merchant_invoice']);
+//Route::get('hs-merchant-invoice/{q}', [WebReportController::class, 'hs_merchant_invoice']);
+//Route::get('hs-merchant-invoice-v2/{q}', [WebReportController::class, 'hs_merchant_invoice_v2']);
+//Route::get('merchant-invoice/{q}', [WebReportController::class, 'merchant_invoice']);
 
 Route::post('processLogin', [LoginController::class, 'processLogin']);
 // Route::post('process_mac_login', [LoginController::class, 'process_mac_login']);
@@ -157,7 +146,7 @@ Route::get('attendance', function () {
 // Route::get('/export-dbbydate031181/{date?}', [DbExportController::class, 'exportDataByDate']);
 
 Route::get('landingpoint',function(){
-    if(!AuthService::user()){
+    if(!XAuthService::user()){
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
        return;
@@ -166,7 +155,7 @@ Route::get('landingpoint',function(){
 });
 
 Route::get('bhr/{componentName?}',function($componentName= null){
-    if(!AuthService::user()){
+    if(!XAuthService::user()){
        // return redirect('/')
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
@@ -177,7 +166,7 @@ Route::get('bhr/{componentName?}',function($componentName= null){
 });
 
 Route::get('umt/{componentName?}',function($componentName= null){
-    if(!AuthService::user()){
+    if(!XAuthService::user()){
        // return redirect('/')
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
@@ -189,7 +178,7 @@ Route::get('umt/{componentName?}',function($componentName= null){
 });
 
 // Route::get('acc/{componentName?}',function($componentName= null){
-//     if(!AuthService::user()){
+//     if(!XAuthService::user()){
 //        // return redirect('/')
 //        $base_url =url('/');
 //        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
@@ -204,7 +193,7 @@ Route::get('umt/{componentName?}',function($componentName= null){
 // });
 
 // Route::get('mac/{componentName?}',function($componentName= null){
-//     $user = AuthService::user();
+//     $user = XAuthService::user();
 //     $data = ['defaultComponent' => $componentName];
 //     if(!$user){
 //        // return redirect('/')
@@ -212,14 +201,14 @@ Route::get('umt/{componentName?}',function($componentName= null){
 //        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
 //        return;
 //     } else if($user->user_class !=='merchant' || !$user->official_id){
-//         $result = AuthService::getLinkedUser($user->id, ($user->subs_id ?? null));
+//         $result = XAuthService::getLinkedUser($user->id, ($user->subs_id ?? null));
 //         if ($result->error){
 //             echo '<p>'.$result->error."</p><a href='/mac' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
 //             return;
 //         }
 //         $linked_user = $result->user;
 //         if($linked_user && $linked_user->user_class ==='merchant'){
-//             AuthService::login($linked_user);
+//             XAuthService::login($linked_user);
 //             return view('mac',$data);
 //         }
 //         return view('login.mac_login',[]);
@@ -228,7 +217,7 @@ Route::get('umt/{componentName?}',function($componentName= null){
 // });
 
 // Route::get('gmt/{componentName?}',function($componentName= null){
-//     if(!AuthService::user()){
+//     if(!XAuthService::user()){
 //        // return redirect('/')
 //        $base_url =url('/');
 //        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";

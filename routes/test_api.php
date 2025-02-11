@@ -4,16 +4,16 @@ use App\Models\Notifier;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MobileAppSettingsController;
-use App\Http\Controllers\ApiController;
+//use App\Http\Controllers\ApiController;
 use App\Http\Controllers\NotificationController;
 
-Route::post('opi/call', [ApiController::class, 'OPICall']);
+//Route::post('opi/call', [ApiController::class, 'OPICall']);
 Route::post('test/months',  function(Request $req){
     $d = getSQLParts_months($req->month_period,'c');
     return $d;
 });
 
-Route::post('telegram/send', [ApiController::class, 'sendToTelegram']);
+//Route::post('telegram/send', [ApiController::class, 'sendToTelegram']);
 
 Route::middleware([CustomRateLimiter::class])->group(function(){
     Route::post('tell-merchant', function(Request $request){

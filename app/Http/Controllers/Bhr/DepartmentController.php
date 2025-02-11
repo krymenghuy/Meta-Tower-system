@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Department;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -20,7 +20,7 @@ class DepartmentController extends Controller
     {
         $id = $req->id ?? null;
         $prn_code = $id ? 216 : 217;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -31,7 +31,7 @@ class DepartmentController extends Controller
 
     public function getList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -41,7 +41,7 @@ class DepartmentController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -54,7 +54,7 @@ class DepartmentController extends Controller
 
     public function deleteDepartment(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 218);
+        $ss = XAuthService::verifyAuth($req, 218);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -67,7 +67,7 @@ class DepartmentController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -2,9 +2,9 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DBX;
+use DBX;
 use Illuminate\Support\Facades\DB;
-use App\Models\DV;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Bhr\Event;
 
@@ -36,7 +36,7 @@ class Warning
 
         // Validate input
         $sign = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $sign, 'reason' => $sign], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $sign, 'reason' => $sign], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -55,7 +55,7 @@ class Warning
 
         }
 
-        $warning = saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
+        $warning = DBX::saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
         if ($warning > 0) {
             // Define event details
             $event_name = 'Employee Warnings';
@@ -85,7 +85,7 @@ class Warning
             ];
 
             // Save event data
-            $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+            $event_saved = DBX::saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
             if (!$event_saved) {
                 return DV::error('Failed to log event.');
             }

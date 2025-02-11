@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Payroll;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -20,7 +20,7 @@ class PayrollController extends Controller
     {
         $id = $req->payroll_id ?? $req->id;
         $prn_code = $id ? 473 : 474;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -31,7 +31,7 @@ class PayrollController extends Controller
 
     public function getStaffList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->payroll_id ?? $req->id;
         $payroll = new Payroll($id,$ss);
@@ -41,7 +41,7 @@ class PayrollController extends Controller
 
     public function disburseAll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 476);
+        $ss = XAuthService::verifyAuth($req, 476);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -52,7 +52,7 @@ class PayrollController extends Controller
     }
     public function reset(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 475);
+        $ss = XAuthService::verifyAuth($req, 475);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -63,7 +63,7 @@ class PayrollController extends Controller
 
     public function calculatePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -75,7 +75,7 @@ class PayrollController extends Controller
 
     public function importStaffList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -87,7 +87,7 @@ class PayrollController extends Controller
 
     public function reverseTransactions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -98,7 +98,7 @@ class PayrollController extends Controller
 
     public function getPayrollListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -107,7 +107,7 @@ class PayrollController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -121,7 +121,7 @@ class PayrollController extends Controller
 
     public function deletePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 478);
+        $ss = XAuthService::verifyAuth($req, 478);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -134,7 +134,7 @@ class PayrollController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -143,7 +143,7 @@ class PayrollController extends Controller
 
     public function authorizePayroll(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 474);
+        $ss = XAuthService::verifyAuth($req, 474);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -157,7 +157,7 @@ class PayrollController extends Controller
 
     public function getEndDate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

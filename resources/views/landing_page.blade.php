@@ -37,7 +37,7 @@
         <div class="row m-3">
 
            <?php
-             $user = \App\Services\Umt\AuthService::user();
+             $user = XAuthService::user();
              if(!$user) return ; //todo: redirect to login page
              $apps = $user->apps;
              foreach($apps as $app){

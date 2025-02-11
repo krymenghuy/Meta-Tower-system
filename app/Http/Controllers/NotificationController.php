@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Notifier;
 use Illuminate\Http\Request;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 
 class NotificationController extends Controller
 {
     function getNotificationListByUser(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
+      $ss = XAuthService::verifyAuth($req,-1);
       if($ss->status_code !==200) return JDV::result([]);
       $rows = Notifier::getNotificationListByUser($req->all(),$ss);
       return JDV::result($rows);
@@ -21,14 +21,14 @@ class NotificationController extends Controller
     }
 
     function getUnreadCount(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $cnt = Notifier::getUnreadCount($ss->user_id,$ss->user_class);
         return JDV::result(['count'=>$cnt]);
     }
 
     function markReadAll(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $res = Notifier::markReadAll($ss->user_id);
         return JDV::raw($res);
