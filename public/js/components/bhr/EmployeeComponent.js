@@ -687,7 +687,7 @@ var EmployeeComponent =  new function () {
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="d-flex justify-content-center gap-4 mt-2">
+                                        <div class="d-flex justify-content-center gap-4 mt-2 group_action_movement">
                                             <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                                 data.id
                                             }" data-status ="${data.status_id}">
@@ -718,6 +718,13 @@ var EmployeeComponent =  new function () {
         ].join("");
 
         mThis.profile_info_emp.innerHTML = html;
+        if (data.status_id == 20 || data.status_id == 30) {
+            mThis.profile_info_emp.querySelector(".movement").style.display = "none";
+            mThis.profile_info_emp.querySelector(".set_resign").style.display = "none";
+            mThis.profile_info_emp.querySelector(".edit_emp_profile_info").style.display = "none";
+            mThis.profile_info_emp.querySelector(".delete_employee").style.display = "none";
+            mThis.profile_info_emp.querySelector(".group_action_movement").style.display = "none";
+        }
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
     };
@@ -2075,7 +2082,7 @@ var EmployeeComponent =  new function () {
                                 });
                         },
                     },
-                ],pro
+                ],
                 prepareFormOptions: {
                     createTitle: "Employee Movement",
                     modifyTitle: "Edit Movement",
@@ -2162,6 +2169,7 @@ var EmployeeComponent =  new function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
+        
         if (!AuthManager.allowed(223)) return;
         mThis.ResignDialog =
             mThis.ResignDialog ||
@@ -2415,7 +2423,7 @@ var EmployeeComponent =  new function () {
                 };
 
                 vsapi
-                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
+                    .call(`${mThis.base_url}/hr/employee/set-terminate-status`, p)
                     .then((res) => {
                         if (res.status_code === 200) {
                             mThis.elEmployeeStatus.value = parseInt(d.value);
@@ -2426,7 +2434,7 @@ var EmployeeComponent =  new function () {
                             cv_interact.success(
                                 "The employee has been terminate"
                             );
-                            // if(tr) tr.dataset.status_id = d.value;
+                            // if(tr) tr.dataset.status_id = d.value; 
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });

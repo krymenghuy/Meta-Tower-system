@@ -203,7 +203,7 @@ var LeaveComponent = (function () {
             menus:[
                 {
                     html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+                    icon:`<i class="fa fa-exchange fs-5"></i>`,
 
                     cssClass:"border-bottom pb-2",
                     name:"change_leave_request_status"
