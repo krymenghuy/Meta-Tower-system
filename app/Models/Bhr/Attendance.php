@@ -15,7 +15,7 @@ class Attendance
 {
 
     protected $id = null;
-    protected $userInfo = null, $mins = 40;
+    protected $userInfo = null, $mins = 60;
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -220,12 +220,10 @@ class Attendance
     function scanAttendance($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = 1;
-        //$branch_id = $ss->branch_id ?? $branch_id =1;
+        $branch_id = $ss->branch_id ?? $branch_id =1;
         $subs_id = isset($ss->subs_id) ? $ss->subs_id : getCurrentSubsId(true);
         $mins = $this->mins; // for find class start and end time which > between < mins
-        $force_checkin = $arr['force_checkin'] ?? 0;
-        $force_checkout = $arr['force_checkout'] ?? 0;
+
         $v_rule = [
             'employee_id' => '0|number',
             'employee_code' => '0|string|exists.employees.code',
@@ -237,14 +235,11 @@ class Attendance
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
 
-        // $enrollment_id = $inputs['enrollment_id'];
         $employee_id =  $inputs['employee_id'] ?? null;
         $employee_code = $inputs['employee_code'] ??  null;
         $employee_card_number = $inputs['employee_card_number'] ??  null;
         $current_date = convertDate($arr['attendance_date'] ?? date('Y-m-d'));
         $present_time =  $arr['scan_time'] ??  date('H:i');
-        // $present_time = isset($arr['present_time'])?$arr['present_time']: date('H:i');
-        // $group = null;
         $success = 0;
 
         // Check if a record with the specified date exists
@@ -257,7 +252,6 @@ class Attendance
         } else {
             $employee = DB::table('employees')->where('id', $employee_id)->selectRaw('id,name,code,work_shift_id,photo_file_name,status_id,' . $col_subs_id)->first();
         }
-        // \Log::info($arr);
         if (!$employee) return DV::error('Employee not found');
         if ($employee->status_id != 10) return DV::error('Employee ' . $employee->name . ' are Resigned or Terminated ');
         $employee_id = $employee->id;
@@ -275,13 +269,10 @@ class Attendance
         $str_work_shift = 'sd.work_shift_id=\'' . $work_shift_id . '\'';
 
 
-        $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
-        $has_checked_out_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
-        $has_checked_in_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
-        $has_checked_out_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
+
         /** If has_checked_in then process check_out action */
 
-        $work_shifts = null; // self::getWorkShift($current_date);
+        $work_shifts = null;
         $rows = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
             ->whereRaw($str_work_shift)
@@ -308,50 +299,52 @@ class Attendance
                 break;
             }
         }
-        // return $work_shift_detail;
+        // return $work_shifts;
 
-        if (!$work_shift_detail && !$force_checkout) {
-            if ($has_checked_in_m) {
-                return DV::error("No work shift found at this time ($present_time)!");
-            } else if ($has_checked_in_a) {
-                DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
-                if ($has_checked_out)  return DV::error('You already checked out today');
-            }
-            return DV::error('No work shift found for checking in at ' . $present_time);
-        } else if (!$work_shift_detail) return DV::error('No work shift found based on the scan date ??::' . $current_date);
+
+        if (!$work_shift_detail) {
+            return DV::error("No work shift found at this time ($present_time)!");
+        }
 
         if (strtolower($action) == 'check in') {
-            $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+            // $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+            $has_checked_in = self::getActionBySession($work_shift_detail->session, $action,$str_where,$strsearch_date);
             if ($has_checked_in) return DV::error('You already checked in this session!');
             else {
-                $shift_order_number = $work_shift_detail->shift_order_number;
+                $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
                 $message = null;
-                if ($shift_order_number > 1) {
+                if ($shift_order_number >= 1) {
                     foreach ($work_shifts as $work_shift) {
-                        // \Log::info('aa'.json_encode($work_shift->shift_order_number));
-                        if ($shift_order_number == (int)$work_shift->shift_order_number - 1) {
-                        // \Log::info('in'.json_encode($shift_order_number));
-
-                            $message = "$work_shift->action-$work_shift->session not yet scan!";
-                            break;
+                        if ($shift_order_number == $work_shift->shift_order_number) {
+                            $session = self::getTranslateSession($work_shift->session);
+                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action,$str_where,$strsearch_date);
+                            if(!$check_action){
+                                $message = "$work_shift->action $session not yet scan!";
+                                break;
+                            }
                         }
                     }
                 }
+
                 if ($message) return DV::error($message);
             }
         } else if (strtolower($action) == 'check out') {
-            $has_checked_out = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+            // $has_checked_out = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
+            $has_checked_out = self::getActionBySession($work_shift_detail->session, $action,$str_where,$strsearch_date);
             if ($has_checked_out) return DV::error('You already checked out this session!');
             else {
                 $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
                 // \Log::info($shift_order_number);
                 $message = null;
-                if ($shift_order_number > 1) {
+                if ($shift_order_number >= 1) {
                     foreach ($work_shifts as $work_shift) {
                         if ($shift_order_number == $work_shift->shift_order_number) {
                             $session = self::getTranslateSession($work_shift->session);
-                            $message = "$work_shift->action $session not yet scan!";
-                            break;
+                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action,$str_where,$strsearch_date);
+                            if(!$check_action){
+                                $message = "$work_shift->action $session not yet scan!";
+                                break;
+                            }
                         }
                     }
                 }
@@ -430,7 +423,7 @@ class Attendance
         // Notifier::notify_admin('attendance_scanned', $d);
 
         $res = (object)[
-            'scan_status' => $scan_status,
+            'scan_status' => $work_shift_detail->action,
             'employee_id' => $employee_id,
             'employee_name' => $employee_name,
             'image_url' => $image_url,
@@ -491,5 +484,43 @@ class Attendance
             'n' => 'Night'
         ];
         return $arr_session[$key_session];
+    }
+
+    Static function getActionBySession($session,$action,$str_where,$strsearch_date)
+    {
+        // $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
+        // $has_checked_out_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
+        // $has_checked_in_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
+        // $has_checked_out_a = DB::table('emp_attendances')->where('session', 'a')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
+        // $has_checked_in_e = DB::table('emp_attendances')->where('session', 'e')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
+        // $has_checked_out_e = DB::table('emp_attendances')->where('session', 'e')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
+        // $result = null;
+        // switch ($session) {
+        //     case 'm':
+        //         if(strtolower($action) == 'check in'){
+        //             $result = $has_checked_in_m ;
+        //         }else {
+        //             $result = $has_checked_out_m;
+        //         }
+        //         return $result;
+        //         break;
+        //     case 'a':
+        //         if(strtolower($action) == 'check in'){
+        //             $result = $has_checked_in_a ;
+        //         }else {
+        //             $result = $has_checked_out_a;
+        //         }
+        //         return $result;
+        //         break;
+        //     case 'e':
+        //         if(strtolower($action) == 'check in'){
+        //             $result = $has_checked_in_e ;
+        //         }else {
+        //             $result = $has_checked_out_e;
+        //         }
+        //         return $result;
+        //         break;
+        // }
+        return DB::table('emp_attendances')->where('session', $session)->whereRaw($str_where)->where('action_type', $action)->whereRaw($strsearch_date)->value('id');
     }
 }
