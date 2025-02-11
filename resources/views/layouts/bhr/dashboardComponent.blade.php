@@ -148,7 +148,7 @@
     #_main_dashboardComponent {
         display: flex;
         flex-direction: column;
-        height: 550px;
+        height: 630px;
         /* background-color: #fff; */
         overflow-y: auto;
         overflow-x: hidden;
