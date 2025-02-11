@@ -2075,7 +2075,7 @@ var EmployeeComponent =  new function () {
                                 });
                         },
                     },
-                ],pro
+                ],
                 prepareFormOptions: {
                     createTitle: "Employee Movement",
                     modifyTitle: "Edit Movement",
