@@ -12,12 +12,10 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "guzzlehttp/psr7": "^1.5",
         "intervention/image": "^2.5",
-
         "kreait/firebase-php": "^5.24",
         "kreait/firebase-tokens": "^1.17",
         "kreait/laravel-firebase": "^2.0",
         "laravel-notification-channels/fcm": "~2.0",
-
         "laravel/framework": "^8.0|^10.0|^11.0",
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.2",
@@ -109,4 +107,3 @@
         }
     ]
 }
-

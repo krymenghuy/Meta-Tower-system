@@ -5,12 +5,14 @@ use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
 use DV;
 use XPublicStorage;
-use Illuminate\Support\Facades\DB;
 use DBX;
+use DB;
 use App\Models\Umt\Branch;
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 use VSMoney;
+use Exception;
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
  
 
@@ -22,7 +24,7 @@ class Employee //extends Model
     protected $userInfo = null;
     protected static $xlsx_keys = [
         'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','date_of_birth','phone_number',
-        'email','city_id','nssf_id','marital_status','joining_date','position_id','emp_type_id','work_shift_id','salary','address',
+        'email','birth_city_id','nssf_id','marital_status','joining_date','position_id','emp_type_id','work_shift_id','salary','address',
     ];
     protected static $img_dir = 'employees';
     //employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
@@ -1522,7 +1524,7 @@ class Employee //extends Model
         return $result;
     }
     static function readExcel($ss,$file_name,$start_index=null){
-        $fullPath = PublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'document').$file_name ;
+        $fullPath = XPublicStorage::getDiskPath(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'document').$file_name ;
         $reader = IOFactory::createReader('Xlsx');
         $spreadsheet = $reader->load($fullPath);
         $worksheet = $spreadsheet->getActiveSheet();
@@ -1543,16 +1545,57 @@ class Employee //extends Model
         return $data_tracking;
     }
     static function validateData($rows) {
-        $duplicates = [];
-        foreach ($rows as $row) {
+        $duplicates_phone = [];
+        $duplicates_nid = [];
+        $duplicates_nssf = [];
+        $rows = (object) $rows;
+        $cnt = 0;
+        foreach ($rows as &$row) {
+            $cnt++;
             $row = (object) $row; 
-            $key = $row->name  .$row->phone_number;
-            if (isset($duplicates[$key])) {
-                return "Duplicate employee name {$row->name} use Contact {$row->phone_number}!";
+            $name = $row->name;
+          
+            $phone = $row->phone_number;
+            if ($phone && in_array($phone,$duplicates_phone)) {
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខទូរស័ព្ទ";
+            }else{
+                $duplicates_phone[]=$phone;
             }
-            $duplicates[$key] = true;
+            $nid = $row->nid;
+            if ($nid && in_array($nid,$duplicates_nid)) {
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខអត្តសញ្ញាណប័ណ្ណ";
+            }else{
+                $duplicates_nid[]=$nid;
+            }
+            $nssf = $row->nssf_id;
+            if ($nssf && in_array($nssf,$duplicates_nssf)) {
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខ ប.​ប.ស";
+            }else{
+                $duplicates_nssf[]=$nssf;
+            }
+
+            $row->nationality_id = DB::table('loc_countries')->where('nationality', $row->nationality_id)->value('id');
+            if(!$row->nationality_id){
+                return $rows->error = "Import failed for employee $row->name : nationality $row->nationality_id not found.";
+            }
+            $row->position_id = DB::table('positions')->where('title', $row->position_id)->value('id');
+            if(!$row->position_id){
+                return $rows->error = "Import failed for employee $row->name : position $row->position_id not found.";
+            }
+            $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
+            if(!$row->emp_type_id){
+                return $rows->error = "Import failed for employee $row->name : Type $row->emp_type_id not found.";
+            }
+            $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
+            if(!$row->work_shift_id){
+                return $rows->error = "Import failed for employee $row->name : Work Shift $row->work_shift_id not found.";
+            }
+           
+            
+
+         
         }
-        return null;
+        return $rows;
     }
     public function importEmployee($arr,$ss,$id=null){
         $emp_id = $id ?? $this->id;
@@ -1562,11 +1605,11 @@ class Employee //extends Model
         $v_rule = [
             'file' => '1|string',
         ];
-        $res = validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
+        $res = DBX::validateObject($arr,$v_rule,0,[],$ss->lang,0,null);
         if($res->error) return DV::error($res->error_message);
         $inputs = $res->values;
         $base64 = str_replace('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,','',$inputs['file']);
-        $x = PublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'xlsx',$base64,'document');
+        $x = XPublicStorage::savefile(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'xlsx',$base64,'document');
         if($x->status =='OK'){
             $import_id = saveData($ss,'imported_files',['id' => null],[
                 'type' =>$x->file_type,
@@ -1578,133 +1621,39 @@ class Employee //extends Model
             $file_name = $x->file_name;
             $rows = self::readExcel($ss,$x->file_name,2);
             $data = self::convertImportedEmployee($rows);
-            $error = self::validateData($data);
-            if($error) return DV::error($error);
+            $data = self::validateData($data);
+            if(isset($data->error)) return DV::error($data->error);
             
             $success = 0;
-            DB::beginTransaction();
+            
+            DBX::beginTransaction();
             try {
-                foreach ($data as $row) {
+                $employee = new Employee();
+
+                foreach ((array)$data as $row) {
                     $arr = (array) $row;
-
-                    $nationality_id = DB::table('loc_countries')->where('nationality', $arr['nationality_id'])->value('id');
-                    $position_id = DB::table('positions')->where('title', $arr['position_id'])->value('id');
-                    $emp_type_id = DB::table('emp_types')->where('name', $arr['emp_type_id'])->value('id');
-                    $work_shift_id = DB::table('work_shifts')->where('name', $arr['work_shift_id'])->value('id');
-                    $v_rule = [
-                        'name' => '1|string|0-100',
-                        'name_kh' => '0|string|0-100',
-                        'email' => '1|email',
-                        'phone_number' => '1|phone|0-20',
-                        'sex' => '1|choice|f,F,m,M,o,O',
-                        'nationality_id' => '1|number',
-                        'date_of_birth' => '1|date',
-                        'birth_city_id'=>'0|number',
-                        'address' => '0|string|0-250',
-                        'position_id' => '1|number',
-                        'emp_type_id' => '1|number',
-                        // 'branch_id' => '1|number',
-                        'salary' => '0|number',
-                        'currency_code' => '1|choice|KHR,USD|default=' . Money::$base_currency,
-                        'work_shift_id' => '1|number',
-                        'joining_date' => '1|date',
-                        'nssf_id' => '0|string|0-100',
-                        'nid' => '1|string|1-100',
-                        'nid_expiry_date' => '0|date',
-                        'apply_payroll_tax' => '1|number|default = 1',
-                        'status_id' => '1|number|default = 10',
-                        'photo' => '0|image',
-                        'marital_status' => '1|string|0-100',
-                        'spouse_name' => '0|string|0-100',
-                        'spouse_emp_id' => '0|number',
-                        'spouse_occ_code' => '0|string|0-100',
-                        'passport_number' => '0|string|0-100',
-                        'passport_expiry_date' => '0|date',
-                    ];
-                    $arr['nationality_id'] = $nationality_id;
-                    $arr['position_id'] = $position_id;
-                    $arr['emp_type_id'] = $emp_type_id;
-                    $arr['work_shift_id'] = $work_shift_id;
-
-            
-                    $checkUnique = null;
-                    $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
-                    if ($res->error){
-                        DB::rollback();
-                        return DV::error("Validation failed for employee import failed!");
-                    } 
-                    $inputs = $res->values;
-                    $d = (object) $inputs;
-
-                    if($d->currency_code !== Money::$base_currency) return DV::error('The salary currency must be ??::'.Money::$base_currency);
-                    $nid = $d->nid ?? null;
-                    if($nid){
-                        $expire_date = $d->nid_expiry_date ?? null;
-                        if (!$expire_date) return DV::error('Expiry Date for National ID Card is required');
-                        else $inputs['nid_expiry_date'] = convertDate($expire_date);
-                    } else $inputs['nid_expiry_date'] = null;
-                    
-                    $passport_number = $d->passport_number;
-                    if($passport_number){
-                        $expire_date = $d->passport_expiry_date ?? null;
-                        if (!$expire_date) return DV::error('Expiry Date for passport is required');
-                        else $inputs['passport_expiry_date'] = convertDate($expire_date);
-                    } else $inputs['passport_expiry_date'] = null;
-            
-                    $photo = $d->photo;
-                    $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
-                    $inputs['phone_number'] = $d->phone_number;
-                    $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number, $emp_id);
-                    if ($phone_check) return DV::error($phone_check);
-            
-                    $nid_check = $this->checkUniqueEmployeeByNID($d->nid, $emp_id);
-                    if ($nid_check) return DV::error($nid_check);
-            
-                    if (!$d->name_kh) {
-                        $d->name_kh = $d->name;
-                        $inputs['name_kh'] = $d->name_kh;
-                    }
-                    unset($inputs['photo']);
-                    $created = !$emp_id;
-                    $salary = $d->salary ?? 0;
-                    if ($d->emp_type_id == '3' && $d->position_id >0){
-                        if($created && !$salary){
-                            $position = DB::table('positions')->where('id', $d->position_id)->selectRaw('id,salary,currency_code')->first();
-                            if(!$position) return DV::error('Position ID does not exist');
-                            $inputs['salary'] = $position->salary ?? 0;
-                        }
-            
-                    } elseif ($d->emp_type_id != '3') {
-                        $inputs['salary'] = $inputs['salary'] ?? 0;
-                    }
-            
-                    $inputs['salary'] = $salary;
-                    $currency_code = Money::$base_currency;
-                    $inputs['currency_code'] = $currency_code;
-              
+                    $inputs = $arr;
                     \Log::info(json_encode($inputs));
-                    $id = saveData($ss, 'employees', ['id' => null], $inputs, [], 1,false);
-                    if ($id > 0) {
+                
+                    $emp_res = $employee->save($inputs,null,$ss);
+                    if($emp_res->status_code ==200){
                         $success++;
-
-                        $prefix = 'LC';
-                        $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
+                    }else{
+                        DBX::rollback();
+                        return $emp_res;
                     }
+                   
                     
                 }
-                if ($success > 0) {
-                    DB::commit();
-                    return DV::depends($success, 'Employee import Successfully!');
-                } else {
-                        DB::rollback();
-                        return DV::error('It seem there are no valid data to import.');
-                    }
+                    
+                    DBX::commit();
+                    return DV::depends(1, ['success_count'=>$success]);
                     
             }
-            catch (\Exception $e) {
-                DB::rollback();
+            catch (Exception $e) {
+                DBX::rollback();
                 $file_name = basename($x->file_name);
-                PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
+                XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'documents',$file_name);
                 \Log::error($e->getMessage() . "\n" . $e->getTraceAsString());
                 return DV::error('There were some problem during importing. This is likely due to incorrect data format in Excel.');
             }
