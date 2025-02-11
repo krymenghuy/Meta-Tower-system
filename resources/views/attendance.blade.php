@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?php echo Session::get('lang', 'en'); $user = App\Services\Umt\XAuthService::user(); ?>">
+<html lang="<?php echo Session::get('lang', 'en'); $user = XAuthService::user(); ?>">
     <head>
         <base href="../">
         <meta charset="utf-8" />

@@ -244,7 +244,7 @@ class EmployeeController extends Controller
     }
 
     public function importEmployee(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
+        $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
