@@ -1634,7 +1634,6 @@ class Employee //extends Model
                 foreach ((array)$data as $row) {
                     $arr = (array) $row;
                     $inputs = $arr;
-                    \Log::info(json_encode($inputs));
                 
                     $emp_res = $employee->save($inputs,null,$ss);
                     if($emp_res->status_code ==200){
