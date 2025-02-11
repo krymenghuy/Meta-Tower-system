@@ -30,13 +30,13 @@ var DashboardComponent =  (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        if(!AuthManager.allowed(254,true)){
+        // if(!AuthManager.allowed(254,true)){
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
             mThis.dashboard_Bottom_left = mThis.self.querySelector("#_dashboard_bottom_left");
             mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
-        }
+        // }
         mThis.initAlready = true;
     };
 
@@ -672,16 +672,67 @@ var DashboardComponent =  (function () {
 
     const renderUserHome = ()=>{
         return [
-            `<div class="container mt-4">
-                <div class="d-flex align-items-center justify-content-center p-4 user-home-header">
-                    <div class="text-center">
-                        <h1 class="text-primary-custom fw-bold">Welcome to LC</h1>
-                        <p class="text-muted">Manage your profile, settings, and more from here.</p>
+            `<div class="user_home_page">
+                <div class="user_container text-center pt-3">
+                    <div class="text-center pt-3">
+                        <h1 class="text-primary-custom fw-bold text-uppercase">Welcome to LC</h1>
+                        <p class="text-muted">Welcome to LC. System</p>
+                    </div>
+
+                    <div class="mt-3">
+                        <img src="../../../assets/images/logo/loc_logo.jpg" alt="Profile Picture" class="profile-img">
                     </div>
                 </div>
-                    <img src="../../../assets/images/logo/loc_logo.jpg" alt="Dashboard Mockup" width="250" height="auto">
-            </div>`,
+            </div>
+            <style>
+                .user_home_page{
+                    display:flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    margin-top:80px;
+                }
+                .user_container {
+                    background: rgb(2,0,36);
+                    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(128,193,255,1) 0%, rgba(228,242,255,1) 0%, rgba(147,203,255,1) 100%, rgba(14,113,177,1) 100%);       
+                    padding:40px;
+                    width:50%;
+                    justify-content: center;
+                    align-items:center;
+                    border-radius: 20px;
+                    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+                }
+                    
+                .welcome-text h1 {
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    font-size: 2.5rem;
+                    color: #0d47a1;
+                }
+                .welcome-text p {
+                    font-style: italic;
+                    font-size: 1.5rem;
+                }
+                .profile-img {
+                    width: 250px;
+                    height: 250px;
+                    border-radius: 50%;
+                    border: 4px solid #cab54a;
+                    object-fit: cover;
+                }
+                .name-banner {
+                    background: white;
+                    color: #0d47a1;
+                    font-weight: bold;
+                    padding: 8px 20px;
+                    border-radius: 30px;
+                    display: inline-block;
+                    font-size: 1.2rem;
+                    margin-top: 15px;
+                }
+            </style>`,
         ].join("");
+
      };
  
      
