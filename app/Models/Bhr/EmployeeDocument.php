@@ -3,9 +3,9 @@
 namespace App\Models\Bhr;
 
 use App\Models\Bhr\GeneralSettings;
-use App\Models\DBX;
-use App\Models\DV;
-use App\Models\PublicStorage;
+use DBX;
+use DV;
+use XPublicStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -37,7 +37,7 @@ class EmployeeDocument
             'file_name' => '1|string',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
             error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
@@ -62,7 +62,7 @@ class EmployeeDocument
         $emp_document_create = !$id;
         $res = null;
 
-        $res = PublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
+        $res = XPublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
 
         if ($res->status === "Error") {
             return DV::error($res->error_message);
@@ -74,7 +74,7 @@ class EmployeeDocument
             $inputs['description'] = $res->file_name;
         }
 
-        $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
         return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
 
     }
@@ -149,7 +149,7 @@ class EmployeeDocument
             $category = 'documents';
          }
         if ($data) {
-            PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $category, $data);
+            XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $category, $data);
         }
         DB::table('emp_documents as ed')->where('ed.id', $id)->update(['file_name' => null]);
 
@@ -200,7 +200,7 @@ class EmployeeDocument
          else if  (in_array($extension, self::$allowed_doc_extensions)){
             $category = 'document';
          }
-        $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+        $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
 
         return $url;
     }
@@ -218,7 +218,7 @@ class EmployeeDocument
     //         $category = 'document';
     //      }
     //     if ($row) {
-    //          return $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+    //          return $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
     //         // return validateUrl($url,null);
     //     } else return null;
     // }

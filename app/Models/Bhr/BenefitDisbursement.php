@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +39,7 @@ class BenefitDisbursement
             'withdraw_rate' => '1|number|default=100',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -57,7 +58,7 @@ class BenefitDisbursement
                 return DV::error('Disbursement already exists');
             }
         }
-        $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
 
         return DV::depends($id, ['id' => $id], 'Save failed');
     }

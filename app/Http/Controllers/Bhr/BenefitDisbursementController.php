@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\BenefitDisbursement;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class BenefitDisbursementController extends Controller
@@ -20,7 +20,7 @@ class BenefitDisbursementController extends Controller
     {
         $id = $req->emp_id ?? $req->id;
         $prn_code = $id ? 276 : 277;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->benefitDisubrsement->save($req->benefit_id,$ss, $req->all());
         return JDV::raw($res);
@@ -28,14 +28,14 @@ class BenefitDisbursementController extends Controller
 
     public function getBenefitDisbursementListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         return JDV::result($this->benefitDisubrsement->getBenefitDisbursementListPaginate($req->all(), $ss));
     }
     public function getBenefitDisbursementList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -45,7 +45,7 @@ class BenefitDisbursementController extends Controller
     public function getDetails(Request $req)
     {
         $id = $req->id;
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         // $benefit_disbursement_type_id = $req->id;
 
@@ -54,7 +54,7 @@ class BenefitDisbursementController extends Controller
 
     public function deleteBenefitDisbursement(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 278);
+        $ss = XAuthService::verifyAuth($req, 278);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {
@@ -67,7 +67,7 @@ class BenefitDisbursementController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
         return JDV::result($this->benefitDisubrsement->getFormOptions($id, $ss));

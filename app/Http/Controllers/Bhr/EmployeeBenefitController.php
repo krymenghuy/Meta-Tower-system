@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\EmployeeBenefit;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 class EmployeeBenefitController extends Controller
@@ -19,7 +19,7 @@ class EmployeeBenefitController extends Controller
     {
         $id = $req->emp_benefit_id ?? $req->id;
         $prn_code = $id ? 273 : 274;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -29,7 +29,7 @@ class EmployeeBenefitController extends Controller
     }
     public function getAllBenefitList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         return JDV::result($this->benefitModel->getAllBenefitList($req->all(),$ss));
@@ -37,7 +37,7 @@ class EmployeeBenefitController extends Controller
     public function getDetails(Request $req)
     {
         $id =$req->id;
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         // $benefit_type_id = $req->id;
 
@@ -46,7 +46,7 @@ class EmployeeBenefitController extends Controller
 
     public function deleteBenefit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 275);
+        $ss = XAuthService::verifyAuth($req, 275);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         if (!isset($req->id) || !is_numeric($req->id)) {
@@ -58,14 +58,14 @@ class EmployeeBenefitController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
         return JDV::result($this->benefitModel->getFormOptions($id, $ss));
     }
     public function import(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 325);
+        $ss = XAuthService::verifyAuth($req, 325);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

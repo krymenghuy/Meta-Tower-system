@@ -2,10 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
+use DBX;
 
 class WorkShift
 {
@@ -28,14 +28,14 @@ class WorkShift
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
 
         $checkUnque = ["$branch_id|work_shifts|name|id=id|text=Work Shift already exists."];
-        $res = validateObject($arr, $v_rule, true, ['Title' => $pos_char], $ss->lang, false, $checkUnque);
+        $res = DBX::validateObject($arr, $v_rule, true, ['Title' => $pos_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
 
-        $id = saveData(
+        $id = DBX::saveData(
             $ss,
             'work_shifts',
             ['id' => $id],

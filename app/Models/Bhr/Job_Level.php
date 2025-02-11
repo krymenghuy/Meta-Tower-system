@@ -2,10 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
+use DBX;
 
 class Job_Level //extends Model
 {
@@ -35,13 +35,13 @@ class Job_Level //extends Model
 
 
         $checkUnque = ["$branch_id|job_levels|name|id=id|text=Job Level already exists."];
-        $res = validateObject($arr, $v_rule, true, ['name'=>$job_char,'description'=>$job_char], $ss->lang, false, $checkUnque);
+        $res = DBX::validateObject($arr, $v_rule, true, ['name'=>$job_char,'description'=>$job_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $id = saveData($ss, 'job_levels', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'job_levels', ['id' => $id], $inputs, [], 1, false);
         if($id > 0){
             return DV::depends(1,['job_levels' => $inputs, 'id' => $id]);
         }

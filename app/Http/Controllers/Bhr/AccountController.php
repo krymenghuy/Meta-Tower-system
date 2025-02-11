@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\Account;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
@@ -20,7 +20,7 @@ class AccountController extends Controller
     {
         $id = $req->account_id ?? $req->id;
         $prn_code = $id ? 315 : 256;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -28,9 +28,10 @@ class AccountController extends Controller
         $res = $account->save($req->all());
         return JDV::raw($res);
     }
+    
     public function bulkCreateAccounts(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 210);
+        $ss = XAuthService::verifyAuth($req, 210);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -43,7 +44,7 @@ class AccountController extends Controller
 
     public function getPayrollAccountList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -53,7 +54,7 @@ class AccountController extends Controller
 
     public function getWalletAccountList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -63,7 +64,7 @@ class AccountController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -76,7 +77,7 @@ class AccountController extends Controller
 
     public function deleteAccount(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 212);
+        $ss = XAuthService::verifyAuth($req, 212);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -89,7 +90,7 @@ class AccountController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -99,7 +100,7 @@ class AccountController extends Controller
 
     public function transfer(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -108,7 +109,7 @@ class AccountController extends Controller
     }
     public function deposit(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 326);
+        $ss = XAuthService::verifyAuth($req, 326);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -124,7 +125,7 @@ class AccountController extends Controller
     }
     public function withdraw(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -138,7 +139,7 @@ class AccountController extends Controller
     }
     public function transferTo(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 327);
+        $ss = XAuthService::verifyAuth($req, 327);
         $id = $req->id;
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
@@ -149,7 +150,7 @@ class AccountController extends Controller
 
     public function getAccountInfo(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 211);
+        $ss = XAuthService::verifyAuth($req, 211);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -159,7 +160,7 @@ class AccountController extends Controller
 
     public function getConfirmTransfer(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -168,7 +169,7 @@ class AccountController extends Controller
 
     public function createTransactions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -179,7 +180,7 @@ class AccountController extends Controller
 
     public function printTransaction(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -188,7 +189,7 @@ class AccountController extends Controller
     }
 
     function getFormOptions_deposit(Request $req){
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -2,11 +2,11 @@
 
 namespace App\Models\Bhr;
 use App\Models\Bhr\GeneralSettings;
-use App\Models\DV;
+use DV;
 use App\Models\Bhr\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
+use DBX;
 use DateTime;
 use Carbon\Carbon;
 
@@ -36,7 +36,7 @@ class Leave
             'status_id' => '0|choice|1,2,3|default=1',
         ];
         $chars = ['$', '#', '@', '!', '/', '.', '-', '_', '=', '?', "'"];
-        $res = validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $chars], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -74,7 +74,7 @@ class Leave
         }
 
 
-        $id = saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
+        $id = DBX::saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
     }
 

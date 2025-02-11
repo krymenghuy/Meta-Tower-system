@@ -2,7 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,7 +28,7 @@ class Event
             'event_type' => '0|string|default = General',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -35,7 +36,7 @@ class Event
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss, 'events', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'events', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
         }

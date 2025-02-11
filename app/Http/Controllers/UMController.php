@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UM;
-use App\Models\JDV;
+use JDV;
 use Session;
 // use Sanitizer;
 use Localization;

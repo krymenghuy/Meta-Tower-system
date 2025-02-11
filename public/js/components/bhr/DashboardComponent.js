@@ -24,13 +24,15 @@ var DashboardComponent =  (function () {
 
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     mThis.onHide = (options) => {
-        if (!AuthManager.allowed(254,true)) return; 
+
+    if (!AuthManager.allowed(254,true)) return; 
         mThis.removeFilterButton();
     };
 
     mThis.init = () => {
         if (mThis.initAlready) return;
         if(!AuthManager.allowed(254,true)){
+ 
             mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
             mThis.dbCards = mThis.self.querySelector("#db_cards");
             mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
@@ -654,6 +656,7 @@ var DashboardComponent =  (function () {
   
     mThis.show = (options) => {
         if (!AuthManager.allowed(254,true)){
+ 
             mThis.self.innerHTML = renderUserHome();
             main_view.setContentView(mThis.self, mThis.title_prop);
             return;
@@ -684,6 +687,7 @@ var DashboardComponent =  (function () {
         ].join("");
      };
  
+
      
     return mThis;
 })();

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bhr\PayrollList;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class PayrollListController extends Controller
@@ -18,7 +18,7 @@ class PayrollListController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -31,7 +31,7 @@ class PayrollListController extends Controller
 
     public function removeStaff(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 215);
+        $ss = XAuthService::verifyAuth($req, 215);
         if ($ss->status_code !== 200)  return JDV::raw($ss);
         $id = $req->id;
         $res = $this->payrollListModel->removeStaff($id);
@@ -40,7 +40,7 @@ class PayrollListController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -49,7 +49,7 @@ class PayrollListController extends Controller
 
     // public function disburseOne(Request $req)
     // {
-    //     $ss = AuthService::verifyAuth($req, -1);
+    //     $ss = XAuthService::verifyAuth($req, -1);
     //     if ($ss->status_code !== 200) {
     //         return JDV::raw($ss);
     //     }
@@ -62,7 +62,7 @@ class PayrollListController extends Controller
 
     public function paySlip(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -71,7 +71,7 @@ class PayrollListController extends Controller
 
     public function addDeduction(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 214);
+        $ss = XAuthService::verifyAuth($req, 214);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

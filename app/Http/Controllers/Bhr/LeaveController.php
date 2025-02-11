@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Bhr;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bhr\Leave;
-use App\Models\JDV;
-use App\Services\Umt\AuthService;
+use JDV;
+use XAuthService;
 
 class LeaveController extends Controller
 {
@@ -19,7 +19,7 @@ class LeaveController extends Controller
     {
         $id = $req->id;
         $prn_code = $id ? 240: 241;
-        $ss = AuthService::verifyAuth($req, $prn_code);
+        $ss = XAuthService::verifyAuth($req, $prn_code);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $save = $this->leave->save($req->all(),$id,$ss);
 
@@ -28,7 +28,7 @@ class LeaveController extends Controller
 
     public function getLeaveListPaginate(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $data = $this->leave->getLeaveListPaginate($req->all(),$ss);
 
@@ -37,7 +37,7 @@ class LeaveController extends Controller
 
     public function getLeaveUninformList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $data = $this->leave->getLeaveUninformList($req->all(),$ss);
 
@@ -46,7 +46,7 @@ class LeaveController extends Controller
 
     public function getDetails(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $leave = $this->leave->getDetails($req->id,$ss);
 
@@ -57,7 +57,7 @@ class LeaveController extends Controller
 
     public function delete(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 242);
+        $ss = XAuthService::verifyAuth($req, 242);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
@@ -72,7 +72,7 @@ class LeaveController extends Controller
 
     public function getFormOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $data = $this->leave->getFormOptions($req->id,$ss);
         return JDV::result($data);
@@ -80,7 +80,7 @@ class LeaveController extends Controller
 
    public function updateStatus(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, 321);
+        $ss = XAuthService::verifyAuth($req, 321);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id;
@@ -90,7 +90,7 @@ class LeaveController extends Controller
     }
     public function getLeaveList(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
+        $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }

@@ -3,8 +3,9 @@
 namespace App\Models;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Services\Umt\AuthService;
-use App\Models\DV;
+use XAuthService;
+use DV;
+//use DBX;
 //use Carbon\Carbon;
 use DB;
 use Sanitizer;
@@ -15,7 +16,7 @@ class SMS //extends Model
     //use HasFactory;
     //$d = {phone_number , text, [sender_name]}
     function sendSMS($d){
-        $ss = AuthService::verifyAuth($d);
+        $ss = XAuthService::verifyAuth($d);
         if ($ss->status_code !==200) return $ss; //user not authenticated
          //need permission to do this task
         // $branch_id = Sanitizer::sanitize($ss->branch_id);

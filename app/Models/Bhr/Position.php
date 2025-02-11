@@ -2,11 +2,11 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
+use DV;
+use DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX;
-use App\Models\Money;
+use VSMoney;
 
 class Position
 {
@@ -31,12 +31,12 @@ class Position
             'job_level_id'=>'1|number',
             'department_id' => '1|number',
             'salary' => '1|number',
-            'currency_code'=> '1|choice|KHR,USD|default='.Money::$base_currency,
+            'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$base_currency,
             'inactive' => '1|number|default = 0',
         ];
         $pos_char = ['$',"'", '#', '@', '!','&', '.', '-', '_', '=', '?'];
 
-        $res = validateObject($arr, $v_rule, true, ['Title'=>$pos_char], $ss->lang);
+        $res = DBX::validateObject($arr, $v_rule, true, ['Title'=>$pos_char], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -50,7 +50,7 @@ class Position
             }
         }
 
-        $id = saveData($ss,'positions', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss,'positions', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['positions' => $inputs, 'id' => $id]);
         }
@@ -139,7 +139,7 @@ class Position
         return (object) [
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-            'currency_codes' => Money::options_currency($ss),
+            'currency_codes' => VSMoney::options_currency($ss),
             'departments' => DB::table('departments as d')->where('d.inactive',0)->selectRaw('id,name')->get(),
             'job_levels' => DB::table('job_levels as job')->selectRaw('id,name as level')->get(),
             'positions' => $position,

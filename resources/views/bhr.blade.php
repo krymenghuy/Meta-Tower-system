@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="<?php $user = App\Services\Umt\AuthService::user();
+<html lang="<?php $user = XAuthService::user();
   echo $user->lang ?? 'en';
 ?>">
 <head>
@@ -192,7 +192,7 @@
                                             <span class="app-menu-header"></span>
                                             <div class="main-app-menus">
                                                 <?php
-                                                //$user = App\Services\Umt\AuthService::user();
+                                                //$user = App\Services\Umt\XAuthService::user();
                                                 if (!$user) {
                                                     return redirect('/');
                                                 }
@@ -222,7 +222,7 @@
                                             <img class="mr-1" src="<?php echo $user->image_url; ?>" style="height:30px" />
                                                 <span class="text-primary-custom">
                                                     <?php
-                                                        //$user = App\Services\Umt\AuthService::user();
+                                                        //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
                                                     ?>
                                                 </span>
