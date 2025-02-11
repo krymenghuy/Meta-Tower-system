@@ -1576,19 +1576,19 @@ class Employee //extends Model
 
             $row->nationality_id = DB::table('loc_countries')->where('nationality', $row->nationality_id)->value('id');
             if(!$row->nationality_id){
-                return $rows->error = "Import failed for employee $row->name : nationality $row->nationality_id not found.";
+                return (object)['error'=>"Import failed for employee $row->name : nationality $row->nationality_id not found."];
             }
             $row->position_id = DB::table('positions')->where('title', $row->position_id)->value('id');
             if(!$row->position_id){
-                return $rows->error = "Import failed for employee $row->name : position $row->position_id not found.";
+                return (object)['error'=>"Import failed for employee $row->name : position $row->position_id not found."];
             }
             $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
             if(!$row->emp_type_id){
-                return $rows->error = "Import failed for employee $row->name : Type $row->emp_type_id not found.";
+                return (object)['error'=>"Import failed for employee $row->name : Type $row->emp_type_id not found."];
             }
             $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
             if(!$row->work_shift_id){
-                return $rows->error = "Import failed for employee $row->name : Work Shift $row->work_shift_id not found.";
+                return (object)['error'=>"Import failed for employee $row->name : Work Shift $row->work_shift_id not found."];
             }
            
             
@@ -1622,6 +1622,7 @@ class Employee //extends Model
             $rows = self::readExcel($ss,$x->file_name,2);
             $data = self::convertImportedEmployee($rows);
             $data = self::validateData($data);
+            
             if(isset($data->error)) return DV::error($data->error);
             
             $success = 0;

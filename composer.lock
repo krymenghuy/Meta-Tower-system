@@ -7593,6 +7593,7 @@
                         "XRole": "Vsd\\Xauth\\Models\\Role",
                         "XUser": "Vsd\\Xauth\\Models\\User",
                         "XPermission": "Vsd\\Xauth\\Models\\Permission",
+                        "XSubscription": "Vsd\\Xauth\\Models\\Subscription",
                         "XReport": "Vsd\\Xauth\\Models\\Report",
                         "XAuthServiceController": "Vsd\\Xauth\\Http\\Controllers\\AuthServiceController",
                         "XApplicationController": "Vsd\\Xauth\\Http\\Controllers\\ApplicationController",
