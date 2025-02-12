@@ -618,14 +618,15 @@ const ViewExitFormDialog = (() => {
                     me.getCheckPointItems(me.divModal);
                 },
                 buttons: [
+
                     {
-                        label: '<span class="bg bg-danger rounded-3" style="outline:none; padding:10px;"><i class="fa-solid text-white fa-xmark"></i></span>',
-                        cssClass: "btn btn-sm-outline rounded-3",
-                        click: (me) => me.hide(true, null),
+                        label: '<span class="justify-content-center align-center text-center pl-2"><i class="fa-solid text-white fa-xmark"></i></span>',
+                        cssClass: "btn btn-sm btn-warning",
+                        click: (me) => me.hide(false),
                     },
                     {
-                        label: '<span id="_btnPrintExitForm" class="bg bg-info rounded-3" style="outline:none; padding:10px;"><i class="fa-solid text-white fa-print"></i></span>',
-                        cssClass: "btn btn-sm-outline rounded-3",
+                        label: '<span id="_btnPrintExitForm" class="pl-2"><i class="fa-solid text-white fa-print"></i></span>',
+                        cssClass: "btn btn-sm btn-primary-custom",
                         click: (me, btn) => {
                             const p = {
                                 ...me.getData(),

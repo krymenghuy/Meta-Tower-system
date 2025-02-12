@@ -23,7 +23,7 @@ class EmployeeBenefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-   
+
     public function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -35,7 +35,7 @@ class EmployeeBenefit
             'benefit_id' => '1|number|exists=benefits.id',
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
-            'effective_date' => '1|date',
+            'effective_date' => '0|date',
             'balance' => '0|number|default=0',
             'amount' => '1|number',
             'currency_code'=> '1|choice|KHR,USD|default='.VSMoney::$base_currency,
@@ -51,13 +51,14 @@ class EmployeeBenefit
 
         $inputs = $res->values;
         $d = (object)$inputs;
+        $inputs['effective_date'] = convertDate($d->effective_date);
         if(!$id){
             $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
             if($id){
                 return DV::error('Duplicate Benefit id');
             }
         }
-    
+
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
             return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
@@ -124,8 +125,8 @@ class EmployeeBenefit
         }
         return $rows;
     }
-    
-    
+
+
     public function importBenefits($arr, $ss,$id=null)
     {
         $v_rule = [
@@ -192,9 +193,9 @@ class EmployeeBenefit
 
                     if ($id > 0) {
                         $success++;
-                    } 
+                    }
                 }
-               
+
                 if ($success > 0) {
                     DB::commit();
                     return DV::depends($success, 'Successfully import');
