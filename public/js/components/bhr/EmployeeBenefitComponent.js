@@ -59,7 +59,7 @@ var EmployeeBenefitComponent = new (function () {
             title: "Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="text-primary p-0 m-0">${data.effective_date}</p>`;
+                return `<p class="text-primary p-0 m-0">${data.effective_date ?? "N/A"}</p>`;
             }
         },
         {
@@ -329,7 +329,7 @@ const EmployeeBenefitDialog = (() => {
                             <label for="amount" class="form-label" vslang="titles.Amount"></label>
                             <input type="number" name="amount" class="form-control data-input" data-field="amount" />
                         </div>`,
-                        `<div class="form-group col-md-6 effective_date d-none">
+                    `<div class="form-group col-md-6 effective_date d-none">
                             <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
                             <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                         </div>`,
@@ -346,10 +346,8 @@ const EmployeeBenefitDialog = (() => {
             },
             contentCreated: (me) => {
                 DateTimePicker.init(me.controls.effective_date);
-                const taxOptionField =
-                    me.divModal.querySelector("#tax_option_id");
-                const flatTaxRateField =
-                    me.divModal.querySelector(".flat_tax_rate");
+                const taxOptionField = me.divModal.querySelector("#tax_option_id");
+                const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
                 const BenefitField = me.divModal.querySelector("#benefit_id");
                 const effective_date = me.divModal.querySelector(".effective_date");
                 taxOptionField.addEventListener("change", () => {
@@ -359,12 +357,14 @@ const EmployeeBenefitDialog = (() => {
                     );
                 });
                 BenefitField.addEventListener("change", () => {
+                    const selectedValue = BenefitField.textContent;
                     effective_date.classList.toggle(
                         "d-none",
-                        BenefitField.value != "Incentive"
-                    )
+                        selectedValue !== "Incentive"
+                    );
                 });
             },
+
             prepareFormOptions: {
                 createTitle: "Add Benefit",
                 modifyTitle: "Edit Benefit",
