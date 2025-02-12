@@ -330,7 +330,7 @@ const EmployeeBenefitDialog = (() => {
                             <input type="number" name="amount" class="form-control data-input" data-field="amount" />
                         </div>`,
                     `<div class="form-group col-md-6 effective_date d-none">
-                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <label for="effective_date" class="form-label" vslang="titles.Effective Date">Effective Date</label>
                             <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                         </div>`,
                     `    <div class="form-group col-md-6 flat_tax_rate d-none">
