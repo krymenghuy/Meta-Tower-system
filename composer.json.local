@@ -25,6 +25,7 @@
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
         "vsd/dbx": "dev-main",
+        "vsd/localization": "dev-main",
         "vsd/money": "dev-main",
         "vsd/response": "dev-main",
         "vsd/storage": "*",
@@ -87,11 +88,15 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../../packages/storage"
+            "url": "../../packages/localization"
         },
         {
             "type": "path",
             "url": "../../packages/response"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/storage"
         },
         {
             "type": "path",
