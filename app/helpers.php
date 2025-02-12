@@ -999,7 +999,7 @@ function createUUIDV1()
 
  }
 
-   
+
     //Replace charater (?) in string, through the use of array ['A','B','C']
     //str_raplce_special()
     function replace_marks($str,$arr)
@@ -1187,7 +1187,7 @@ function createUUIDV1()
             return -1;
         }
     }
- 
+
 
     //  function getPropValue($prop_name=null,$part3=null,$part4=null){
     //     //if(!$prop_name) return $part3? $part3: ($part4? $part4:null);
@@ -1214,8 +1214,8 @@ function createUUIDV1()
     //     // $sts = explode('=',$part4);
     //     // if ($sts[0]===$prop_name) return isset($sts[1])?$sts[1]:null;
     //  }
- 
-     
+
+
     // function validateDate($date,$format){
     //     //return date('Y-m-d',strtotime($date));
     //     //return  convertDate($date);

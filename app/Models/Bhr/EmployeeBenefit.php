@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Models\Bhr;
-
+use DBX;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use DBX;
 use App\Models\Bhr\Employee;
 use VSMoney;
 use XPublicStorage;
@@ -156,7 +155,15 @@ class EmployeeBenefit
                     $arr = (array) $row;
 
                    $emp_id = DB::table('employees')->where('code', $arr['code'])->value('id');
+                   if (!$emp_id) {
+                    DB::rollback();
+                    return DV::error("Employee not found for code: {$arr['code']}. Import failed!");
+                    }
                    $benefit_id = DB::table('benefits')->where('name', $arr['benefit'])->value('id');
+                   if (!$benefit_id) {
+                    DB::rollback();
+                    return DV::error("Employee not found for code: {$arr['benefit']}. Import failed!");
+                    }
                     $v_rule = [
                         'emp_id' => '1|number|exists=employees.id',
                         'benefit_id' => '1|number|exists=benefits.id',
