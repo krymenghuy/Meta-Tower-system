@@ -81,6 +81,10 @@
         {
             "type": "path",
             "url": "../../packages/vsd-response"
+        },
+        {
+            "type": "path",
+            "url": "../../packages/vsd-response"
         }
     ]
 }
