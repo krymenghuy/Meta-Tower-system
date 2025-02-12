@@ -299,10 +299,11 @@ class Employee //extends Model
         $result = [];
         $dates = null;
         $during_payroll = null;
+        $effective_date = null;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
-            ->selectRaw('p.month, p.year, p.currency_code,exchange_rate,p.start_date,p.end_date')
+            ->selectRaw('p.month, p.year, p.currency_code, exchange_rate, p.start_date, p.end_date')
             ->first();
 
         $payroll_currency = $payroll->currency_code ?? null;
@@ -311,17 +312,23 @@ class Employee //extends Model
         $payroll_end_date = convertDate($payroll->end_date);
 
         $dates = DB::table('emp_benefits as eb')
-        ->join('benefit_disburse_policies as bdp' , 'eb.benefit_id', '=', 'bdp.benefit_id')
-        ->where('emp_id', $emp_id)
-        ->where('bdp.target_month',0)
-        ->whereRaw("Date(eb.effective_date) BETWEEN '$payroll_start_date' AND '$payroll_end_date'")
-        ->selectRaw('eb.effective_date')->get();
+            ->join('benefit_disburse_policies as bdp', 'eb.benefit_id', '=', 'bdp.benefit_id')
+            ->where('emp_id', $emp_id)
+            ->where('bdp.target_month', 0)
+            ->whereRaw("Date(eb.effective_date) BETWEEN '$payroll_start_date' AND '$payroll_end_date'")
+            ->selectRaw('eb.effective_date')
+            ->get();
 
         foreach ($dates as $date) {
             $effective_date = convertDate($date->effective_date);
         }
 
-        $during_payroll = "('$effective_date' BETWEEN '$payroll_start_date' AND '$payroll_end_date')";
+        if (!empty($effective_date)) {
+            $during_payroll = "('$effective_date' BETWEEN '$payroll_start_date' AND '$payroll_end_date')";
+        } else {
+            $during_payroll = "0";
+        }
+
         // \Log::info('emp_id'.json_encode($emp_id).'during_payroll :'.json_encode($during_payroll));
 
         if ($payroll) {
