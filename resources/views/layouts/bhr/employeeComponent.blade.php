@@ -196,7 +196,7 @@
                                 class="tool-tiptext fs-6 ">Add Staff</span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center border-0 bg-success rounded-circle"
-                        style="width: 40px; height: 40px;" id="_btnImport">
+                        style="width: 40px; height: 40px;" id="_btn_import_employee">
                         <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span
                                 class="tool-tiptext fs-6">Import Staff</span></i>
                     </button>

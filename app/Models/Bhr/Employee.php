@@ -24,7 +24,7 @@ class Employee //extends Model
     protected $userInfo = null;
     protected static $xlsx_keys = [
         'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','date_of_birth','phone_number',
-        'email','birth_city_id','nssf_id','marital_status','joining_date','position_id','emp_type_id','work_shift_id','salary','address',
+        'email','birth_city_id','nssf_id','marital_status','joining_date','branch_id','position_id','emp_type_id','work_shift_id','salary','address',
     ];
     protected static $img_dir = 'employees';
     //employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
@@ -182,7 +182,9 @@ class Employee //extends Model
         }
 
         if ($emp_id > 0) {
-            $new_code = null;
+            if($arr['branch_id'] > 0){
+                DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $arr['branch_id']]);
+            }
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
@@ -1597,41 +1599,59 @@ class Employee //extends Model
             $cnt++;
             $row = (object) $row;
             $name = $row->name;
-
             $phone = $row->phone_number;
             if ($phone && in_array($phone,$duplicates_phone)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខទូរស័ព្ទ";
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខទូរស័ព្ទស្ទួន។"];
             }else{
                 $duplicates_phone[]=$phone;
             }
             $nid = $row->nid;
             if ($nid && in_array($nid,$duplicates_nid)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខអត្តសញ្ញាណប័ណ្ណ";
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួន";
             }else{
                 $duplicates_nid[]=$nid;
             }
             $nssf = $row->nssf_id;
             if ($nssf && in_array($nssf,$duplicates_nssf)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt ស្ទួនលេខ ប.​ប.ស";
+                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខ ប.​ប.ស​ ស្ទួន";
             }else{
                 $duplicates_nssf[]=$nssf;
             }
 
-            $row->nationality_id = DB::table('loc_countries')->where('nationality', $row->nationality_id)->value('id');
-            if(!$row->nationality_id){
-                return (object)['error'=>"Import failed for employee $row->name : nationality $row->nationality_id not found."];
+            $nationality = $row->nationality_id;
+            $row->nationality_id = DB::table('loc_countries')->where('nationality', $nationality)->value('id');
+            if (!$row->nationality_id) {
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
+
+            $branch = $row->branch_id;
+            $row->branch_id = DB::table('um_branches')->where('name', $branch)->value('id');
+            if (!$row->branch_id) {
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សាខា '".($branch ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+
+            $city = $row->birth_city_id;
+            $row->birth_city_id = DB::table('loc_cities')->where('country_id',$row->nationality_id)->where('name_kh', $city)->value('id');
+            if (!$row->birth_city_id) {
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : ទីកន្លែងកំណើត '".($city ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+
+            $position = $row->position_id;
             $row->position_id = DB::table('positions')->where('title', $row->position_id)->value('id');
             if(!$row->position_id){
-                return (object)['error'=>"Import failed for employee $row->name : position $row->position_id not found."];
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : position '".($position ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
+
+            $emp_type = $row->emp_type_id;
             $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
             if(!$row->emp_type_id){
-                return (object)['error'=>"Import failed for employee $row->name : Type $row->emp_type_id not found."];
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Type '".($emp_type ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
+
+            $work_shift =$row->work_shift_id;
             $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
             if(!$row->work_shift_id){
-                return (object)['error'=>"Import failed for employee $row->name : Work Shift $row->work_shift_id not found."];
+                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Work Shift '".($work_shift ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
 
 
@@ -1677,8 +1697,10 @@ class Employee //extends Model
                 foreach ((array)$data as $row) {
                     $arr = (array) $row;
                     $inputs = $arr;
-
                     $emp_res = $employee->save($inputs,null,$ss);
+                 
+
+                   
                     if($emp_res->status_code ==200){
                         $success++;
                     }else{
