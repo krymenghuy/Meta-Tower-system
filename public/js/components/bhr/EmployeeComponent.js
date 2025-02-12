@@ -14,6 +14,7 @@ var EmployeeComponent =  new function () {
     mThis.el_work_shift = mThis.self.querySelector("#el_work_shift");
     mThis.elEmployeeType = mThis.self.querySelector("#filter_employee_type");
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_employee");
+    mThis.btnImport = mThis.self.querySelector('#_btn_import_employee');
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_employee");
     mThis.btnPrintCV = mThis.self.querySelector("#_print_emp_cv");
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");
@@ -69,6 +70,27 @@ var EmployeeComponent =  new function () {
             };
             if (!AuthManager.allowed(207)) return;
             EmployeeDialog.show(op);
+        };
+        mThis.btnImport.onclick = (e) => {
+            e.preventDefault();
+            FileChooser.chooseFile({
+                accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            },(d) => {
+                if(d){
+                    vsapi.call(`${main_view.base_url}/hr/employee/import`,{
+                        file: d.dataUrl
+                    },false).then(res => {
+                        if(res.status_code === 200){
+                            mThis.EmployeeListView.showPage(null);
+                            cv_interact.success('Employee Import Successfully!');
+                        }
+                        else{
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
+            });
+            
         };
 
         mThis.btnBack.onclick = function (e) {
