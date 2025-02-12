@@ -254,36 +254,48 @@ class Employee //extends Model
 
     static function getBenefitDisburseInfo($emp_id,$benefit_id,$payroll)
     {
-        $str_where = "((target_month = $payroll->month AND target_year = $payroll->year) OR (target_month =0))";
+        $str_where = "((target_month = $payroll->month AND target_year = $payroll->year) OR (target_month =0 ))";
         $bd = DB::table('benefit_disbursements as bd')
-            ->where('emp_id', $emp_id)
-            ->where('benefit_id', $benefit_id)
+            ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
+            ->where('bd.emp_id', $emp_id)
+            ->where('bd.benefit_id', $benefit_id)
             ->whereRaw($str_where)
-            ->selectRaw('id, withdraw_rate')
+            ->selectRaw('bd.benefit_id, bd.withdraw_rate,b.name,bd.target_month')
             ->first();
 
         if($bd){
             return (object)[
-                'id' => $bd->id,
+                'benefit_id' => $bd->benefit_id,
                 'withdraw_rate' => $bd->withdraw_rate,
+                'target_month'=>$bd->target_month,
                 'error' => null
             ];
         }
         $bdp = DB::table('benefit_disburse_policies')
             ->where('benefit_id', $benefit_id)
             ->whereRaw($str_where)
-            ->selectRaw('id, withdraw_rate')
+            ->selectRaw('benefit_id, withdraw_rate,target_month')
             ->first();
         if($bdp){
             return (object)[
-                'id' => $bdp->id,
+                'benefit_id' => $bdp->benefit_id,
                 'withdraw_rate' => $bdp->withdraw_rate,
+                'target_month'=>$bdp->target_month,
                 'error' => null
             ];
         }
+        $b = DB::table('benefits')->where('id', $benefit_id)->selectRaw('name')->first();
         return (object)[
-            'error'=>'No disbursement policy found'
+            'error'=>'No disbursement policy found for '.($b?->name ?? 'benefit id '.$benefit_id),
         ];
+
+    }
+    static function benefitList($emp_id){
+        return DB::table('emp_benefits as eb')
+                    ->join('benefits as b', 'eb.benefit_id', '=', 'b.id')
+                    ->where('eb.emp_id', $emp_id)
+                    ->selectRaw('eb.id, eb.amount, eb.tax_option_id,eb.emp_id, eb.flat_tax_rate, eb.benefit_id,eb.currency_code,b.name,eb.effective_date')
+                    ->get();
     }
     static function getPayrollListBenefit($payroll_id, $emp_id ,$ss)
     {
@@ -303,7 +315,7 @@ class Employee //extends Model
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
-            ->selectRaw('p.month, p.year, p.currency_code, exchange_rate, p.start_date, p.end_date')
+            ->selectRaw('p.id,p.month, p.year, p.currency_code, exchange_rate, p.start_date, p.end_date')
             ->first();
 
         $payroll_currency = $payroll->currency_code ?? null;
@@ -311,226 +323,56 @@ class Employee //extends Model
         $payroll_start_date = convertDate($payroll->start_date);
         $payroll_end_date = convertDate($payroll->end_date);
 
-        $dates = DB::table('emp_benefits as eb')
-            ->join('benefit_disburse_policies as bdp', 'eb.benefit_id', '=', 'bdp.benefit_id')
-            ->where('emp_id', $emp_id)
-            ->where('bdp.target_month', 0)
-            ->whereRaw("Date(eb.effective_date) BETWEEN '$payroll_start_date' AND '$payroll_end_date'")
-            ->selectRaw('eb.effective_date')
-            ->get();
-
-        foreach ($dates as $date) {
-            $effective_date = convertDate($date->effective_date);
+        if (!$payroll){
+            return DV::error('Payroll not found');
         }
+        $emp_benefits = self::benefitList($emp_id);
+        DB::beginTransaction();
+        foreach($emp_benefits as $benefit){
+            $benefit_id = $benefit->benefit_id;
+            $disburseInfo = self::getBenefitDisburseInfo($emp_id, $benefit_id, $payroll);
 
-        if (!empty($effective_date)) {
-            $during_payroll = "('$effective_date' BETWEEN '$payroll_start_date' AND '$payroll_end_date')";
-        } else {
-            $during_payroll = "0";
-        }
+            if($disburseInfo->error){
+                continue;
+            }
+            $disburse_all = $disburseInfo->target_month == 0;
+            $can_disburse = true;
+            if($disburse_all){
+                $effective_date = convertDate($benefit->effective_date);
+                $can_disburse = $effective_date >= $payroll->start_date && $effective_date <= $payroll->end_date;
 
-        if ($payroll) {
-            $bdps = DB::table('benefit_disburse_policies')
-                ->where(function ($query) use ($payroll, $during_payroll) {
-                    $query->where('target_month', $payroll->month)
-                        ->where('target_year', $payroll->year)
-                        ->orWhereRaw("(target_month = 0 AND $during_payroll)");
-                })
-                ->selectRaw('id, withdraw_rate, benefit_id')
-                ->get();
+            }
+            if(!$can_disburse){
+                continue;
+            }
 
-            foreach ($bdps as $bdp) {
-                $withdraw_rate = $bdp->withdraw_rate ?? 0;
-                $benefit_id = $bdp->benefit_id;
-
-                $bd = DB::table('benefit_disbursements')
-                    ->where('target_month', $payroll->month)
-                    ->where('target_year', $payroll->year)
-                    ->where('emp_id', $emp_id)
-                    ->selectRaw('id, withdraw_rate, emp_id, target_month, target_year, benefit_id')
-                    ->first();
-
-                    $emp_benefit = DB::table('emp_benefits')
-                    ->where('emp_id', $emp_id)
-                    ->where('benefit_id', $benefit_id)
-                    ->selectRaw('id, amount, tax_option_id,emp_id, flat_tax_rate, benefit_id,currency_code');
-
-                $benefit_count = DB::table('emp_benefits')
-                    ->where('emp_id', $emp_id)
-                    ->count('id');
-
-                if ($bd) {
-
-                    if($benefit_count > 1){
-                        $rows = $emp_benefit->get();
-
-                        if ($emp_benefit) {
-                            foreach($rows as $emp_benefit){
-                                $benefit_currency = $emp_benefit->currency_code ?? null;
-                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
-                                $withdraw_rate = $emp_benefit->benefit_id == $bd->benefit_id ?$bd->withdraw_rate : $bdp->withdraw_rate;
-                                $full_amount = $emp_benefit->amount ?? 0;
-                                $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-                                $used_amount = $full_amount * ($withdraw_rate / 100);
-                                $last_benefit_id = $emp_benefit->benefit_id;
-
-                                if($benefit_currency)
-                                {
-                                    if($benefit_currency != $payroll_currency)
-                                    {
-                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
-                                    }
-                                }
-
-                                $result =  [
-                                    "emp_id" => $emp_id,
-                                    "payroll_id" => $payroll_id,
-                                    "withdraw_rate" => $withdraw_rate,
-                                    "benefit_id" => $last_benefit_id,
-                                    "full_amount" => $full_amount,
-                                    "tax_option_id" => $tax_option_id,
-                                    "flat_tax_rate" => $flat_tax_rate,
-                                    "used_amount" => $used_amount,
-                                    "emp_benefit_id" => $emp_benefit->id,
-                                    "currency_code" => $payroll_currency
-                                ];
-                                $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-                            }
-                        }
-                    }else{
-                        $withdraw_rate = $bd->withdraw_rate ?? $withdraw_rate;
-                        $emp_benefit = $emp_benefit->first();
-                        $benefit_currency = $emp_benefit->currency_code ?? null;
-                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
-
-                        if ($emp_benefit) {
-                            $full_amount = $emp_benefit->amount ?? 0;
-                            $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-                            $used_amount = $full_amount * ($withdraw_rate / 100);
-                            $last_benefit_id = $emp_benefit->benefit_id;
-
-                            if($benefit_currency)
-                                {
-                                    if($benefit_currency != $payroll_currency)
-                                    {
-                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
-                                    }
-                                }
-                        }
-                    }
-                }
-                else{
-                    if($benefit_count > 1){
-                        $rows = $emp_benefit->get();
-                        if ($emp_benefit) {
-                            foreach($rows as $emp_benefit){
-
-                                $benefit_currency = $emp_benefit->currency_code ?? null;
-                                $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
-                                $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
-                                $full_amount = $emp_benefit->amount ?? 0;
-                                $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-                                $used_amount = $full_amount * ($withdraw_rate / 100);
-                                $last_benefit_id = $emp_benefit->benefit_id;
-
-                                if($benefit_currency)
-                                {
-                                    if($benefit_currency != $payroll_currency)
-                                    {
-                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
-                                    }
-                                }
-                                $result =  [
-                                    "emp_id" => $emp_id,
-                                    "payroll_id" => $payroll_id,
-                                    "withdraw_rate" => $withdraw_rate,
-                                    "benefit_id" => $last_benefit_id,
-                                    "full_amount" => $full_amount,
-                                    "tax_option_id" => $tax_option_id,
-                                    "flat_tax_rate" => $flat_tax_rate,
-                                    "used_amount" => $used_amount,
-                                    "emp_benefit_id" => $emp_benefit->id,
-                                    "currency_code" => $payroll_currency
-                                ];
-                                $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-                            }
-
-                        }
-                    }else{
-                        $withdraw_rate = $bdp->withdraw_rate ?? $withdraw_rate;
-                        $emp_benefit = $emp_benefit->first();
-                        $id = $emp_id;
-                        $benefit_currency = $emp_benefit->currency_code ?? null;
-                        $flat_tax_rate = $emp_benefit->flat_tax_rate ?? 0;
-
-                        if ($emp_benefit) {
-                            $full_amount = $emp_benefit->amount ?? 0;
-                            $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-                            $used_amount = $full_amount * ($withdraw_rate / 100);
-                            $last_benefit_id = $emp_benefit->benefit_id;
-                            if($benefit_currency)
-                                {
-                                    if($benefit_currency != $payroll_currency)
-                                    {
-                                        $used_amount = VSMoney::convert($ss,$used_amount,$benefit_currency,$payroll_currency,(1/$exchange_rate));
-                                    }
-                                }
-                                $result =  [
-                                    "emp_id" => $emp_benefit->emp_id ?? $emp_id,
-                                    "payroll_id" => $payroll_id,
-                                    "withdraw_rate" => $withdraw_rate,
-                                    "benefit_id" => $last_benefit_id,
-                                    "full_amount" => $full_amount,
-                                    "tax_option_id" => $tax_option_id,
-                                    "flat_tax_rate" => $flat_tax_rate,
-                                    "used_amount" => $used_amount,
-                                    "emp_benefit_id" => null,
-                                    "currency_code" => $payroll_currency
-                                ];
-                                 $save_payroll_list_benefit = Employee::savePayrollListBenefit($result, $ss);
-                        }
-                    }
-                }
+            $full_amount = $benefit->amount ?? 0;
+            if($benefit->currency_code != $payroll->currency_code){
+                $full_amount = VSMoney::convert($ss,$full_amount,$benefit->currency_code,$payroll->currency_code,$payroll->exchange_rate);
+            }
+            $used_amount = $full_amount * $disburseInfo->withdraw_rate / 100;
+            $inputs =  [
+                            "emp_id" => $emp_id,
+                            "payroll_id" => $payroll->id,
+                            "withdraw_rate" => $disburseInfo->withdraw_rate,
+                            "benefit_id" => $benefit_id,
+                            "full_amount" => $full_amount,
+                            "tax_option_id" => $benefit->tax_option_id,
+                            "flat_tax_rate" => $benefit->flat_tax_rate ?? 0,
+                            "used_amount" => $used_amount,
+                            "emp_benefit_id" => $benefit->id,
+                            "currency_code" => $payroll->currency_code
+                        ];
+            $b_id = DB::table('payroll_list_benefits')->where('payroll_id', $payroll->id)->where('emp_id', $emp_id)->where('benefit_id', $benefit_id)->where('emp_benefit_id', $benefit->id)->value('id');
+            $b_id = DBX::saveData($ss, 'payroll_list_benefits', ['id' => $b_id], $inputs, [], 1);
+            if(!$b_id){
+                DB::rollBack();
+                $emp = self::getProps($emp_id, 'code,name');
+                return DV::error("Failed to save benefit for employee {$emp->name} ({$emp->code})");
             }
         }
-        return (object)$result;
-    }
-
-
-    static function savePayrollListBenefit($arr, $ss)
-    {
-        $v_rule = [
-            // 'id' => '0|identity=1',
-            'payroll_id' => '1|number',
-            'emp_id' => '1|number',
-            'benefit_id' => '1|number',
-            'full_amount' => '1|number',
-            'withdraw_rate' => '0|number',
-            'tax_option_id' => '1|number',
-            'flat_tax_rate' => '0|number',
-            'used_amount' => '0|number',
-            'emp_benefit_id' => '0|number',
-            'currency_code' => '0|number'
-        ];
-        $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $inputs = $res->values;
-
-        $existing_id = DB::table('payroll_list_benefits')
-            ->where('payroll_id', $inputs['payroll_id'])
-            ->where('emp_id', $inputs['emp_id'])
-            ->where('benefit_id', $inputs['benefit_id'])
-            ->where('emp_benefit_id', $inputs['emp_benefit_id'])
-            ->value('id');
-        $id = $existing_id ?? null;
-
-        $id = DBX::saveData($ss, 'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
-        }
-        return DV::error('Error saving payroll list benefit!');
+        DB::commit();
+        return DV::depends(1);
     }
 
     public static function getPayrollAccount($emp_id)
