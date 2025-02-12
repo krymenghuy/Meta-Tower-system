@@ -115,6 +115,7 @@ class EmployeeBenefit
         $duplicate_benefit = [];
         foreach ($rows as &$row) {
             $row = (object) $row; 
+
             $name = $row->name;
             $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
             if ($emp_benefit && in_array($emp_benefit,$duplicate_benefit)) {
@@ -126,12 +127,12 @@ class EmployeeBenefit
             $employee = $row->emp_id;
             $row->emp_id = DB::table('employees')->where('code', $employee)->value('id');
             if (!$row->emp_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : លេខសំគាល់ខ្លួន '".($employee ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : លេខសំគាល់ខ្លួន '".($employee ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
             $benefit = $row->benefit_id;
             $row->benefit_id = DB::table('benefits')->where('name', $benefit)->value('id');
             if (!$row->benefit_id) {
-                return (object)['error' => "បញ្ចូល Benefit បរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Benefit '".($benefit ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : Benefit '".($benefit ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
              }
         }
         return $rows;
@@ -167,7 +168,7 @@ class EmployeeBenefit
             try {
                 foreach ($data as $row) {
                     $arr = (array) $row;
-                    $name=$arr['name'];
+                    $name = $arr['name'];
                     $v_rule = [
                         'emp_id' => '1|number|exists=employees.id',
                         'benefit_id' => '1|number|exists=benefits.id',
