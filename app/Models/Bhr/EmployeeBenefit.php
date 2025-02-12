@@ -9,14 +9,14 @@ use App\Models\Bhr\Employee;
 use VSMoney;
 use XPublicStorage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
+use Exception;
 class EmployeeBenefit
 {
     protected $id = null;
     protected $userInfo = null;
     protected static $emp_benefit ='emp_benefit';
     protected static $xlsx_keys = [
-        'code','name','benefit','effective_date','amount','currency','tax_option_id','remarks',
+        'emp_id','name','benefit_id','effective_date','amount','currency','tax_option_id','remarks',
     ];
     public function __construct($id = null, $userInfo = null)
     {
@@ -111,16 +111,18 @@ class EmployeeBenefit
         return $data_tracking;
     }
     static function validateData($rows) {
-        $duplicates = [];
+        $duplicate_benefit = [];
         foreach ($rows as $row) {
             $row = (object) $row; 
-            $key = $row->code . $row->benefit . convertDate($row->effective_date);
-            if (isset($duplicates[$key])) {
-                return "Employee ID {$row->code} is already has Benefit {$row->benefit} on {$row->effective_date}";
+            $name = $row->name;
+            $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
+            if ($emp_benefit && in_array($emp_benefit,$duplicate_benefit)) {
+                return (object)['error' => "បុគ្គលិកឈ្មោះ​ $name ដែលមានលេខសំគាល់ខ្លួន $row->emp_id នៅថ្ងៃទី $row->effective_date ត្រូវបានទទួល​ $row->benefit_id ស្ទួន "];
+            }else{
+                $duplicate_benefit[]=$emp_benefit;
             }
-            $duplicates[$key] = true;
         }
-        return null;
+        return $rows;
     }
     
     
@@ -145,8 +147,8 @@ class EmployeeBenefit
             $file_name = $x->file_name;
             $rows = self::readExcel($ss,$x->file_name,2);
             $data = self::convertImportedEmployeeBenefit($rows);
-            $error = self::validateData($data);
-            if($error) return DV::error($error);
+            $data = self::validateData($data);
+            if(isset($data->error)) return DV::error($data->error);
             
             $success = 0;
             DB::beginTransaction();
@@ -154,15 +156,15 @@ class EmployeeBenefit
                 foreach ($data as $row) {
                     $arr = (array) $row;
 
-                   $emp_id = DB::table('employees')->where('code', $arr['code'])->value('id');
+                   $emp_id = DB::table('employees')->where('code', $arr['emp_id'])->value('id');
                    if (!$emp_id) {
                     DB::rollback();
-                    return DV::error("Employee not found for code: {$arr['code']}. Import failed!");
+                    return DV::error("Employee not found for code: {$arr['emp_id']}. Import failed!");
                     }
-                   $benefit_id = DB::table('benefits')->where('name', $arr['benefit'])->value('id');
+                   $benefit_id = DB::table('benefits')->where('name', $arr['benefit_id'])->value('id');
                    if (!$benefit_id) {
                     DB::rollback();
-                    return DV::error("Employee not found for code: {$arr['benefit']}. Import failed!");
+                    return DV::error("Employee not found for code: {$arr['benefit_id']}. Import failed!");
                     }
                     $v_rule = [
                         'emp_id' => '1|number|exists=employees.id',
@@ -186,17 +188,6 @@ class EmployeeBenefit
                         return DV::error("Validation failed for employee {$arr['code']}. Import failed!");
                     }
                     $inputs = $res->values;
-
-                    $duplicate = DB::table('emp_benefits')
-                        ->where('emp_id', $emp_id)
-                        ->where('benefit_id', $benefit_id)
-                        ->where('effective_date', $inputs['effective_date'])
-                        ->exists();
-
-                    if ($duplicate) {
-                        DB::rollback();
-                        return DV::error("Duplicate record found for employee {$arr['code']} with benefit {$arr['benefit']} on {$inputs['effective_date']}!");
-                    }
                     $id = DBX::saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
 
                     if ($id > 0) {
@@ -212,7 +203,7 @@ class EmployeeBenefit
                     return DV::error('It seem there are no valid data to import.');
                 }
             }
-            catch (\Exception $e) {
+            catch (Exception $e) {
                 DB::rollback();
                 $file_name = basename($x->file_name);
                 XPublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$emp_benefit],'documents',$file_name);
