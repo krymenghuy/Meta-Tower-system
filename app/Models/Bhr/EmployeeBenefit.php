@@ -23,7 +23,7 @@ class EmployeeBenefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-   
+
     public function save($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -51,13 +51,14 @@ class EmployeeBenefit
 
         $inputs = $res->values;
         $d = (object)$inputs;
+        $inputs['effective_date'] = convertDate($d->effective_date);
         if(!$id){
             $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
             if($id){
                 return DV::error('Duplicate Benefit id');
             }
         }
-    
+
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
             return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
@@ -113,7 +114,7 @@ class EmployeeBenefit
     static function validateData($rows) {
         $duplicates = [];
         foreach ($rows as $row) {
-            $row = (object) $row; 
+            $row = (object) $row;
             $key = $row->code . $row->benefit . convertDate($row->effective_date);
             if (isset($duplicates[$key])) {
                 return "Employee ID {$row->code} is already has Benefit {$row->benefit} on {$row->effective_date}";
@@ -122,8 +123,8 @@ class EmployeeBenefit
         }
         return null;
     }
-    
-    
+
+
     public function importBenefits($arr, $ss,$id=null)
     {
         $v_rule = [
@@ -147,7 +148,7 @@ class EmployeeBenefit
             $data = self::convertImportedEmployeeBenefit($rows);
             $error = self::validateData($data);
             if($error) return DV::error($error);
-            
+
             $success = 0;
             DB::beginTransaction();
             try {
@@ -201,9 +202,9 @@ class EmployeeBenefit
 
                     if ($id > 0) {
                         $success++;
-                    } 
+                    }
                 }
-               
+
                 if ($success > 0) {
                     DB::commit();
                     return DV::depends($success, 'Successfully import');
