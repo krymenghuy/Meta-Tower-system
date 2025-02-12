@@ -549,6 +549,7 @@ class Payroll
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
+            ->where('pl.emp_id', 7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -614,8 +615,6 @@ class Payroll
 
             $row->emp_allowance_count = $emp_allowance_count;
             $row->emp_benefit_count = $emp_benefit_count;
-            // $used_amount = [];
-            // $flat_tax_rates = [];
             if ($emp_allowance_count > 1) {
                 $row->allowance = $row->allowance->get();
                 foreach ($row->allowance as $allowance) {
@@ -678,8 +677,7 @@ class Payroll
             $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
             $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
         }
-        // return $payrolls;
-
+        // return $row;
         foreach ($emps as &$payroll) {
             $payroll->tax_base = 0;
             $payroll->total = 0;
@@ -691,8 +689,6 @@ class Payroll
             $day_in_month = 0;
 
             $full_benefit_taxable = $payroll->benefit_taxable ?? 0;
-           // $full_salary = $payroll->salary  + $full_benefit_taxable;
-
             $day_in_month = days_in_month($payroll->month, $payroll->year);
             $payroll_start_date = convertDate($payroll->start_date);
             $payroll_end_date = convertDate($payroll->end_date);
@@ -701,8 +697,6 @@ class Payroll
             $salary = ($payroll->salary / $day_in_month) * $payroll_days;
             $benefit_taxable = ($full_benefit_taxable / $day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax / $day_in_month) * $payroll_days;
-
-            // \Log::info(['benefit_taxable' => $benefit_taxable, 'benefit_non_tax' => $benefit_non_tax]);
 
             if ($payroll->emp_benefit_count > 1) {
                 $benefit_flat_rate_data = [];
@@ -962,20 +956,18 @@ class Payroll
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
             $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id, $ss);
+            if($payroll_list_benefit->status_code != 200){
+                return $payroll_list_benefit;
+            }
 
-            if ($payroll_list_benefit) {
-                $tax_option_id = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->value('tax_option_id');
+                $taxable_benefits = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->where('tax_option_id',1)->sum('used_amount');
 
-                if ($tax_option_id == 1) {
-                    $tax_base = $emp_salary + $payroll_list_benefit->used_amount;
-                    if ($emp->salary_currency != $currency_code || $payroll_list_benefit->currency_code != $currency_code) {
-                        $tax_base = VSMoney::convert($ss, $tax_base, $payroll_list_benefit->currency_code, $currency_code, (1 / $exchange_rate));
-                    }
+                $tax_base = $emp_salary + ($taxable_benefits ?? 0);
+                if ($emp->salary_currency != $currency_code ) {
+                    $tax_base = VSMoney::convert($ss, $tax_base, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
                 }
-            }
-            if ($emp->salary_currency != $currency_code) {
-                $emp_salary = VSMoney::convert($ss, $emp_salary, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
-            }
+
+
             if ($emp->apply_payroll_tax == 1) {
                 if ($currency_code != VSMoney::$national_currency) {
                     if ($exchange_rate == 0) {
@@ -991,7 +983,7 @@ class Payroll
                         ->first();
                     $taxInfo->bias = VSMoney::convert($ss, $taxInfo->bias, VSMoney::$national_currency, $currency_code, (1 / $exchange_rate));
                     // \Log::info('bias : '.json_encode($taxInfo->bias));
-                } else {
+                }
                     $taxInfo = DB::table('tax_brackets')
                         ->where(function ($query) use ($tax_base) {
                             $query->whereRaw('lower_amount <= ?', [$tax_base])
@@ -999,7 +991,6 @@ class Payroll
                         })
                         ->select('rate', 'bias')
                         ->first();
-                }
                 $emp->tax_rate = (object) [
                     'rate' => $taxInfo->rate,
                     'bias' => $taxInfo->bias
