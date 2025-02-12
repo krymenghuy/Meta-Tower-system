@@ -7393,12 +7393,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-dbx.git",
-                "reference": "df9831c29ca4e92a153db9ec7fe2926e42ecc5c0"
+                "reference": "1ffef51f025dd506516a771f84422cb0af03f76c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/df9831c29ca4e92a153db9ec7fe2926e42ecc5c0",
-                "reference": "df9831c29ca4e92a153db9ec7fe2926e42ecc5c0",
+                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/1ffef51f025dd506516a771f84422cb0af03f76c",
+                "reference": "1ffef51f025dd506516a771f84422cb0af03f76c",
                 "shasum": ""
             },
             "require": {
@@ -7428,7 +7428,7 @@
                 "source": "https://github.com/vectorasoft/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-dbx/issues"
             },
-            "time": "2025-02-11T07:13:30+00:00"
+            "time": "2025-02-11T09:29:29+00:00"
         },
         {
             "name": "vsd/money",
