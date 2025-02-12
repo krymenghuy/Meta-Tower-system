@@ -25,6 +25,7 @@
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
         "vsd/dbx": "dev-main",
+        "vsd/localization": "dev-main",
         "vsd/money": "dev-main",
         "vsd/response": "dev-main",
         "vsd/storage": "*",
@@ -85,6 +86,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft/lib-localization.git"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/vectorasoft/lib-response.git"
