@@ -113,8 +113,9 @@ class EmployeeBenefit
     }
     static function validateData($rows) {
         $duplicate_benefit = [];
-        foreach ($rows as $row) {
+        foreach ($rows as &$row) {
             $row = (object) $row; 
+
             $name = $row->name;
             $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
             if ($emp_benefit && in_array($emp_benefit,$duplicate_benefit)) {
@@ -122,6 +123,17 @@ class EmployeeBenefit
             }else{
                 $duplicate_benefit[]=$emp_benefit;
             }
+
+            $employee = $row->emp_id;
+            $row->emp_id = DB::table('employees')->where('code', $employee)->value('id');
+            if (!$row->emp_id) {
+                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : លេខសំគាល់ខ្លួន '".($employee ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+            }
+            $benefit = $row->benefit_id;
+            $row->benefit_id = DB::table('benefits')->where('name', $benefit)->value('id');
+            if (!$row->benefit_id) {
+                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : Benefit '".($benefit ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+             }
         }
         return $rows;
     }
@@ -156,17 +168,7 @@ class EmployeeBenefit
             try {
                 foreach ($data as $row) {
                     $arr = (array) $row;
-
-                   $emp_id = DB::table('employees')->where('code', $arr['emp_id'])->value('id');
-                   if (!$emp_id) {
-                    DB::rollback();
-                    return DV::error("Employee not found for code: {$arr['emp_id']}. Import failed!");
-                    }
-                   $benefit_id = DB::table('benefits')->where('name', $arr['benefit_id'])->value('id');
-                   if (!$benefit_id) {
-                    DB::rollback();
-                    return DV::error("Employee not found for code: {$arr['benefit_id']}. Import failed!");
-                    }
+                    $name = $arr['name'];
                     $v_rule = [
                         'emp_id' => '1|number|exists=employees.id',
                         'benefit_id' => '1|number|exists=benefits.id',
@@ -181,15 +183,21 @@ class EmployeeBenefit
                     $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
 
-                    $arr['emp_id'] = $emp_id;
-                    $arr['benefit_id'] = $benefit_id;
+                    
                     $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
-                    if ($res->error) {
-                        DB::rollback();
-                        return DV::error("Validation failed for employee {$arr['code']}. Import failed!");
-                    }
+                   
                     $inputs = $res->values;
-                    $id = DBX::saveData($ss, 'emp_benefits', ['id' => null], $inputs, [], 1);
+                    $duplicate = DB::table('emp_benefits')
+                    ->where('emp_id', $inputs['emp_id'])
+                    ->where('benefit_id', $inputs['benefit_id'])
+                    ->where('effective_date', $inputs['effective_date'])
+                    ->exists();
+
+                    if ($duplicate) {
+                        DB::rollback();
+                        return DV::error("បុគ្គលិកឈ្មោះ​ $name បានទទួល Benefit រួចម្តង់ហើយនៅក្នុងថ្ងៃទី​ $row->effective_date");
+                    }
+                    $id = DBX::saveData($ss,'emp_benefits', ['id' => null], $inputs, [], 1);
 
                     if ($id > 0) {
                         $success++;
