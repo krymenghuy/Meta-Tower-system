@@ -556,7 +556,7 @@ class Account
         return $res;
     }
 
-    function deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
+    function deposit($amount,$balance, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -567,6 +567,7 @@ class Account
             'status' => 'in',
             'account_id' => $id,
             'to_account_id' => $id,
+            'balance' => $balance,
             'remarks' => $remarks,
             'account_number' => $account_number,
             'account_name' => $account_name,
