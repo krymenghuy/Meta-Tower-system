@@ -10029,7 +10029,17 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
+<<<<<<< HEAD
+    "stability-flags": {
+        "vsd/dbx": 20,
+        "vsd/localization": 20,
+        "vsd/money": 20,
+        "vsd/response": 20,
+        "vsd/xauth": 20
+    },
+=======
     "stability-flags": [],
+>>>>>>> 13445089a20e1b4c6e782ba0024544daa2b58fe4
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
