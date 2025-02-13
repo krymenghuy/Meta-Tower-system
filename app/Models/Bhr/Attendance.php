@@ -60,7 +60,7 @@ class Attendance
         $scan_action = $d->scan_action;
         $action_type = $d->action_type;
 
-        if($emp_id){
+        if ($emp_id) {
             $work_shift_id = DB::table('employees')->where('id', $emp_id)->value('work_shift_id');
         }
 
@@ -82,39 +82,45 @@ class Attendance
 
     public function getStaffAttendanceListPaginate($filter = [], $ss = null)
     {
+        $filter = (object) $filter;
         $branch_id = $filter->branch_id ?? null;
-        $department_id =$filter->department_id ?? null;
+        $department_id = $filter->department_id ?? null;
         $emp_type_id = $filter->emp_type_id ?? null;
         $work_shift_id = $filter->work_shift_id ?? null;
         $search_value = escape_like_str($filter->search_value ?? null);
-
-        $filter = (object) $filter;
         $current_page = $filter->current_page ?? 1;
         $per_page = $filter->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
-        $attendance_date = DBX::formatDate('a.attendance_date', 'attendance_date');
-
-        // Query Construction
         $scan_date = DBX::formatDate('a.attendance_date', 'attendance_date');
-        $dob = DBX::formatDate('emp.date_of_birth','dob');
+        $dob = DBX::formatDate('emp.date_of_birth', 'dob');
         $query = DB::table('employees as emp')
         ->join('positions as p', 'emp.position_id', '=', 'p.id')
             ->join('departments as d', 'p.department_id', '=', 'd.id')
             ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
             ->join('work_shifts as ws', 'ws.id', '=', 'a.work_shift_id')
-            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code,'.$dob.', ws.name as work_shift,'.$scan_date.', a.scan_time, a.scan_action,a.action_type,
-            p.title as position')->when(!empty($search_value), function ($q) use ($search_value) {
-                //$search_value = escape_like_str($filter->search_value);
-                return $q->where(function ($subQuery) use ($search_value){
-                    $subQuery->where('emp.code', $search_value)
-                        ->orWhere('emp.name', 'LIKE', "%{$search_value}%")->orWhere('emp.phone_number','LIKE',"%$search_value%");
-                });
-            })->orderByRaw('orderByDate DESC,emp.name,emp.code,a.work_shift_id');
-            if($branch_id) $query->where('emp.branch_id',$branch_id);
-            if($department_id) $query->where('d.id',$department_id);
-            if($emp_type_id) $query->where('emp.emp_type_id',$emp_type_id);
-            if($work_shift_id) $query->where('a.work_shift_id',$work_shift_id);
-
+            ->selectRaw('a.attendance_date AS orderByDate, emp.id as emp_id, emp.phone_number, emp.name, emp.name_kh, emp.sex, emp.code,'
+            . $dob . ', ws.name as work_shift,'
+            . $scan_date . ', a.scan_time, a.scan_action, a.action_type, p.title as position')
+            ->orderByRaw('orderByDate DESC, emp.name, emp.code, a.work_shift_id');
+        if ($search_value) {
+            $query->where(function ($subQuery) use ($search_value) {
+                $subQuery->where('emp.code', 'LIKE', "%{$search_value}%")
+                ->orWhere('emp.name', 'LIKE', "%{$search_value}%")
+                ->orWhere('emp.phone_number', 'LIKE', "%{$search_value}%");
+            });
+        }
+        if ($branch_id) {
+            $query->where('emp.branch_id', $branch_id);
+        }
+        if ($department_id) {
+            $query->where('d.id', $department_id);
+        }
+        if ($emp_type_id) {
+            $query->where('emp.emp_type_id', $emp_type_id);
+        }
+        if ($work_shift_id) {
+            $query->where('a.work_shift_id', $work_shift_id);
+        }
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get()
             ->groupBy(fn($item) => $item->emp_id . '_' . $item->attendance_date)
@@ -130,15 +136,12 @@ class Attendance
                     'scan_info' => $group->map(fn($item) => [
                         'time' => $item->scan_time,
                         'action' => $item->scan_action,
-                        'action_type' => $item->action_type
+                        'action_type' => $item->action_type,
                     ])->values(),
                 ];
             })->values();
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-
     function attendanceList($arr, $ss = null)
     {
         $d = (object) $arr;
@@ -151,18 +154,12 @@ class Attendance
             $search_value = escape_like_str($search_value);
             $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
         }
-
-        // Execute the query and fetch all matching records
         $rows = $query->get();
-
-        // Return the rows as a result
         return $rows;
     }
 
-
     function getDetails($id)
     {
-        //$branch_id = $ss->branch_id;
         if (empty($id)) {
             return response()->json([
                 'message' => 'Attendance ID is required.',
@@ -187,8 +184,6 @@ class Attendance
             return DV::error('Invalid ID');
         }
 
-        //$branch_id = $ss->branch_id;
-
         $query = DB::table('attendances')
             ->where('id', $id)
             ->delete();
@@ -197,7 +192,6 @@ class Attendance
         }
         return DV::depends($query, null, 'Error deleting attendances');
     }
-    // Other functions...
     function getFormOptions($id, $ss)
     {
         $attendance = null;
@@ -220,7 +214,7 @@ class Attendance
     function scanAttendance($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id ?? $branch_id =1;
+        $branch_id = $ss->branch_id ?? $branch_id = 1;
         $subs_id = isset($ss->subs_id) ? $ss->subs_id : getCurrentSubsId(true);
         $mins = $this->mins; // for find class start and end time which > between < mins
 
@@ -308,7 +302,7 @@ class Attendance
 
         if (strtolower($action) == 'check in') {
             // $has_checked_in = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
-            $has_checked_in = self::getActionBySession($work_shift_detail->session, $action,$str_where,$strsearch_date);
+            $has_checked_in = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
             if ($has_checked_in) return DV::error('You already checked in this session!');
             else {
                 $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
@@ -317,8 +311,8 @@ class Attendance
                     foreach ($work_shifts as $work_shift) {
                         if ($shift_order_number == $work_shift->shift_order_number) {
                             $session = self::getTranslateSession($work_shift->session);
-                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action,$str_where,$strsearch_date);
-                            if(!$check_action){
+                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
+                            if (!$check_action) {
                                 $message = "$work_shift->action $session not yet scan!";
                                 break;
                             }
@@ -330,7 +324,7 @@ class Attendance
             }
         } else if (strtolower($action) == 'check out') {
             // $has_checked_out = DB::table('emp_attendances')->where('action_type', $action)->where('session', $work_shift_detail->session)->whereRaw($str_where)->whereRaw($strsearch_date)->value('id');
-            $has_checked_out = self::getActionBySession($work_shift_detail->session, $action,$str_where,$strsearch_date);
+            $has_checked_out = self::getActionBySession($work_shift_detail->session, $action, $str_where, $strsearch_date);
             if ($has_checked_out) return DV::error('You already checked out this session!');
             else {
                 $shift_order_number = (int)$work_shift_detail->shift_order_number - 1;
@@ -340,8 +334,8 @@ class Attendance
                     foreach ($work_shifts as $work_shift) {
                         if ($shift_order_number == $work_shift->shift_order_number) {
                             $session = self::getTranslateSession($work_shift->session);
-                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action,$str_where,$strsearch_date);
-                            if(!$check_action){
+                            $check_action = self::getActionBySession($work_shift->session, $work_shift->action, $str_where, $strsearch_date);
+                            if (!$check_action) {
                                 $message = "$work_shift->action $session not yet scan!";
                                 break;
                             }
@@ -486,7 +480,7 @@ class Attendance
         return $arr_session[$key_session];
     }
 
-    Static function getActionBySession($session,$action,$str_where,$strsearch_date)
+    static function getActionBySession($session, $action, $str_where, $strsearch_date)
     {
         // $has_checked_in_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check In')->whereRaw($strsearch_date)->value('id');
         // $has_checked_out_m = DB::table('emp_attendances')->where('session', 'm')->whereRaw($str_where)->where('action_type', 'Check Out')->whereRaw($strsearch_date)->value('id');
