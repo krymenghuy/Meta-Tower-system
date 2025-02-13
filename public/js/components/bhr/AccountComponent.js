@@ -398,6 +398,7 @@ var AccountManagementComponent = (function () {
     });
 
     mThis.elSearch.addEventListener("keyup", (e) => {
+        e.preventDefault();
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.AccountListView) {
@@ -601,7 +602,7 @@ var AccountManagementComponent = (function () {
 
     mThis.getFilterData = () => {
         const p = {};
-        // p.search_value = mThis.elSearch.value;
+        p.search_value = mThis.elSearch.value;
        // p.sort_by_department = mThis.elSortByDepartment.value;
         // p.sort_by_branch = mThis.elSortByBranch.value;
         //p.sort_by_account = mThis.elSortByAccount.value;

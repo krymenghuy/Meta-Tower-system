@@ -176,8 +176,8 @@ class Account
                 ->where('a.account_type', $account_type);
             if ($search_value) {
                 $search_value = escape_like_str($search_value);
-                $query->where('e.name', 'LIKE', '%' . $search_value . '%');
-            } else {
+                $query->where('e.name', 'LIKE', "%{$search_value}%");
+            }else {
                 if ($branch_id) $query->where('e.branch_id', $branch_id);
                 if ($department_id) $query->where('pos.department_id', $department_id);
             }

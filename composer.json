@@ -24,12 +24,12 @@
         "phpoffice/phpspreadsheet": "^2.0",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
-        "vsd/dbx": "dev-main",
-        "vsd/localization": "dev-main",
-        "vsd/money": "dev-main",
-        "vsd/response": "dev-main",
-        "vsd/storage": "*",
-        "vsd/xauth": "dev-main"
+        "vsd/dbx": "*",
+        "vsd/xauth": "*",
+        "vsd/response": "*",
+        "vsd/money": "*",
+        "vsd/localization": "*",
+        "vsd/storage": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
