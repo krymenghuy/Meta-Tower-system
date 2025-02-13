@@ -119,7 +119,7 @@ class EmployeeBenefit
             $name = $row->name;
             $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
             if ($emp_benefit && in_array($emp_benefit,$duplicate_benefit)) {
-                return (object)['error' => "បុគ្គលិកឈ្មោះ​ $name ដែលមានលេខសំគាល់ខ្លួន $row->emp_id នៅថ្ងៃទី $row->effective_date ត្រូវបានទទួល​ $row->benefit_id ស្ទួន "];
+                return (object)['error' => "បុគ្គលិកឈ្មោះ​ $name ដែលមានលេខសំគាល់ខ្លួន $row->emp_id នៅថ្ងៃទី $row->effective_date ត្រូវបានទទួល​ $row->benefit_id រួចម្តងហើយ "];
             }else{
                 $duplicate_benefit[]=$emp_benefit;
             }
