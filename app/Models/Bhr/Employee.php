@@ -1495,10 +1495,6 @@ class Employee //extends Model
             if(!$row->work_shift_id){
                 return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Work Shift '".($work_shift ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
-
-
-
-
         }
         return $rows;
     }
