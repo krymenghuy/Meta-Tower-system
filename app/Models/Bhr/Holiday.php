@@ -2,11 +2,11 @@
 
 namespace App\Models\Bhr;
 
-use DV;
+use Vsd\Response\DV;
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use DBX;
+use Vsd\Database\DBX;
 
 class Holiday
 {
@@ -59,6 +59,7 @@ class Holiday
             $current_page = 1;
         }
         $search_value = $d->search_value ?? null;
+        $year = $d->year ?? date('Y');
         $skip_rows = ($current_page - 1) * $per_page;
         $start_date = DBX::formatDate('h.start_date','start_date');
         $end_date = DBX::formatDate('h.end_date','end_date');
@@ -71,7 +72,7 @@ class Holiday
 
 
         $selectRow = 'h.id,h.name,h.holiday_type_id,ht.name as holiday_type,'.$start_date.','.$end_date.',h.description,h.update_user,'.$updated_at.'';
-        $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereRaw($str_srch)->selectRaw($selectRow);
+        $query = DB::table('holidays as h')->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')->whereYear('h.start_date', $year)->whereRaw($str_srch)->selectRaw($selectRow);
         $count_query = clone $query;
         $count = $count_query->count('h.id');
         $rows = $query->skip($skip_rows)->take($per_page)->orderByRaw('h.id ASC')->get();
@@ -116,12 +117,12 @@ class Holiday
         $d = (object) $arr;
 
         $search_value = $d->search_value ?? null;
-
-        $str_search = '1=1';
+        $year = $d->year ?? date('Y');
         $query = DB::table('holidays as hd')
         ->join('holiday_types as ht', 'ht.id', '=', 'hd.holiday_type_id')
         ->selectRaw('hd.id, hd.holiday_type_id, hd.name, hd.start_date, hd.end_date, hd.description')
-        ->where('hd.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+        ->where('hd.branch_id', $ss->branch_id)
+        ->where('hd.start_date', $year);
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->whereRaw("hd.name LIKE '%" . $search_value . "%' OR hd.code LIKE '%" . $search_value . "%'");

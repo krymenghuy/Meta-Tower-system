@@ -176,8 +176,8 @@ class Account
                 ->where('a.account_type', $account_type);
             if ($search_value) {
                 $search_value = escape_like_str($search_value);
-                $query->where('e.name', 'LIKE', '%' . $search_value . '%');
-            } else {
+                $query->where('e.name', 'LIKE', "%{$search_value}%");
+            }else {
                 if ($branch_id) $query->where('e.branch_id', $branch_id);
                 if ($department_id) $query->where('pos.department_id', $department_id);
             }
@@ -556,7 +556,7 @@ class Account
         return $res;
     }
 
-    function deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
+    function deposit($amount,$balance, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -567,6 +567,7 @@ class Account
             'status' => 'in',
             'account_id' => $id,
             'to_account_id' => $id,
+            'balance' => $balance,
             'remarks' => $remarks,
             'account_number' => $account_number,
             'account_name' => $account_name,

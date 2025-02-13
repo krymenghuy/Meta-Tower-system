@@ -29,7 +29,7 @@ var EmployeeBenefitComponent = new (function () {
                 return `
                 <div style="display: flex; align-items: center;">
                     <img class="image-student-tbl" src="${
-                        data.image_url
+                        data.image_url || main_view.asset_url + "/images/default/default-staff.png"
                     }" alt=""
                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
@@ -330,7 +330,7 @@ const EmployeeBenefitDialog = (() => {
                             <input type="number" name="amount" class="form-control data-input" data-field="amount" />
                         </div>`,
                     `<div class="form-group col-md-6 effective_date d-none">
-                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <label for="effective_date" class="form-label" vslang="titles.Effective Date">Effective Date</label>
                             <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                         </div>`,
                     `    <div class="form-group col-md-6 flat_tax_rate d-none">

@@ -67,7 +67,7 @@ var HolidayComponent = (function () {
                             <i class="fa-solid fa-pen-to-square text-primary fs-6"></i>
                         </a>
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-delete">
-                            <i class="fa-regular fa-calendar-xmark text-danger fs-6"></i>
+                            <i class="fa fa-trash-can text-danger fs-6"></i>
                         </a>
                     </div>
                 `;

@@ -398,6 +398,7 @@ var AccountManagementComponent = (function () {
     });
 
     mThis.elSearch.addEventListener("keyup", (e) => {
+        e.preventDefault();
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.AccountListView) {
@@ -601,7 +602,7 @@ var AccountManagementComponent = (function () {
 
     mThis.getFilterData = () => {
         const p = {};
-        // p.search_value = mThis.elSearch.value;
+        p.search_value = mThis.elSearch.value;
        // p.sort_by_department = mThis.elSortByDepartment.value;
         // p.sort_by_branch = mThis.elSortByBranch.value;
         //p.sort_by_account = mThis.elSortByAccount.value;
@@ -832,12 +833,12 @@ const DepositDialog = (() => {
                     return [
                         '<div class="row">',
                         '<div class="form-group col-6">',
-                        '<label for="account_number" class="form-label" vslang="titles.Account Number"></label>',
-                        '<input name="account_number" class="data-input form-control" data-field="account_number" disabled/>',
-                        "</div>",
-                        '<div class="form-group col-6">',
                         '<label for="account_name" class="form-label" vslang="titles.Account Name"></label>',
                         '<input name="account_name" class="data-input form-control" data-field="account_name" disabled/>',
+                        "</div>",
+                        '<div class="form-group col-6">',
+                        '<label for="balance" class="form-label" vslang="titles.Master Balance"></label>',
+                        '<input name="balance" class="data-input form-control" data-field="balance" disabled/>',
                         "</div>",
                         '<div class="form-group col-12">',
                         '<label for="account_type" class="form-label" vslang="titles.Account Type"></label>',

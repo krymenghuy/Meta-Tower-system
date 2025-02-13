@@ -68,7 +68,7 @@ var EmployeeComponent =  new function () {
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
-            if (!AuthManager.allowed(207)) return;
+            
             EmployeeDialog.show(op);
         };
         mThis.btnImport.onclick = (e) => {
