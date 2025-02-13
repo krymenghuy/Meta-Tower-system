@@ -23,7 +23,7 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/priority-one.min.js?v=13',
             'files' => [
-                '/assets/js/LocaleManager.v2.js',
+                '/assets/js/LocaleManager.v3.js', //LocaleManager.v3.js is compatible with new "vsd/localization" package
                 '/assets/js/vsapi_bhr.js',
                 '/assets/js/priority-load.js',
             ]
@@ -139,7 +139,7 @@ class ScriptProvider
                 'js/components/umt/FindUserDialog.js',
                 'js/components/umt/BranchManagementComponent.js',
                  'js/components/umt/RoleManagementComponent.js',
-                 'js/components/umt/RoleManagementTool.js',
+                // 'js/components/umt/RoleManagementTool.js',
 
                 'js/components/bhr/CreateContractDialog.js',
             ]

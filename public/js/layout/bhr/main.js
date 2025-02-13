@@ -106,11 +106,13 @@ const main_view = new function(){
 
            btn = VSUtil.closestLimited(e.target,'.lnk-lang');
            if(btn){
-            let lang = btn.dataset.lang;
+            const lang = btn.dataset.lang;
             LocaleManager.translateAll(lang);
             mThis.setLangMenu(lang);
             btn.closest('.dropdown-menu').classList.remove('show');
-            LocaleManager.saveLang(lang);
+            LocaleManager.saveLang(lang, (d)=>{
+                 LocaleManager.translateAll(lang);
+            });
             return;
            }
         }
