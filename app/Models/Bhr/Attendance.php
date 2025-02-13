@@ -77,7 +77,7 @@ class Attendance
 
         // unset($inputs['status']);
         $newID = DBX::saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
-        return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], $ss);
+        return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], 'Error message if any');
     }
 
     public function getStaffAttendanceListPaginate($filter = [], $ss = null)
