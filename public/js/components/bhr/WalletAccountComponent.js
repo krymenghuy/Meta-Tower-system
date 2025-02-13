@@ -361,10 +361,11 @@ var WalletAccountComponent = (function () {
     })
 
     mThis.elSearch.addEventListener("keyup", (e) => {
+        e.preventDefault();
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.WalletAccountListView) {
-                mThis.WalletAccountListView.showPage(mThis.getFitlerData());
+                mThis.WalletAccountListView.showPage(mThis.getFilterData());
             } else {
                 console.error("Wallet account is not defined");
             }
@@ -528,6 +529,7 @@ var WalletAccountComponent = (function () {
     mThis.getFilterData = ()=>{
         const els = mThis.divFilter.querySelectorAll('.filter-field');
         const p = {};
+        p.search_value = mThis.elSearch.value;
         els.forEach(el =>{
             const f = el.dataset.field;
             p[f] = el.value;

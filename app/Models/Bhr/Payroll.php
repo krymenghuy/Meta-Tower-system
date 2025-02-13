@@ -153,7 +153,10 @@ class Payroll
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("p.name LIKE %$search_value%");
+            $query->where(function ($q) use ($search_value) {
+                $q->where('p.name', 'LIKE', "%{$search_value}%")
+                ->orWhere('p.p_number', 'LIKE', "%{$search_value}%");
+            });
         }
         if ($authorized !== null) {
             $query->where('p.authorized', $authorized);
@@ -1035,8 +1038,6 @@ class Payroll
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $filter_by = $d->payroll_id ?? null;
         $branch_id = $d->branch_id ?? null;
         $sort_by = $d->sort_by ?? 'pl.id';
         $sort_order = $d->sort_order ?? 'asc';
