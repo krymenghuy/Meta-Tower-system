@@ -24,12 +24,12 @@
         "phpoffice/phpspreadsheet": "^2.0",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
-        "vsd/dbx": "dev-main",
-        "vsd/localization": "dev-main",
-        "vsd/money": "dev-main",
-        "vsd/response": "dev-main",
-        "vsd/storage": "*",
-        "vsd/xauth": "dev-main"
+        "vsd/dbx": "*",
+        "vsd/xauth": "*",
+        "vsd/response": "*",
+        "vsd/money": "*",
+        "vsd/localization": "*",
+        "vsd/storage": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -45,9 +45,7 @@
             "Opt\\": "app/Http/Traits/chapx/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Vsd\\Response\\": "src/",
-            "Vsd\\Database\\": "src/",
-            "Vsd\\Money\\": "src/"
+            "Vsd\\Response\\": "src/"
         },
        "files":[
            "app/helpers.php"
@@ -87,28 +85,28 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-localization.git"
+            "type": "path",
+            "url": "../../packages/localization"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-response.git"
+            "type": "path",
+            "url": "../../packages/response"
         },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-storage.git"
+         {
+            "type": "path",
+            "url": "../../packages/storage"
         },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-dbx.git"
+         {
+            "type": "path",
+            "url": "../../packages/dbx"
         },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-xauth.git"
+         {
+            "type": "path",
+            "url": "../../packages/xauth"
         },
-        {
-            "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-money.git"
+         {
+            "type": "path",
+            "url": "../../packages/money"
         }
     ]
 }
