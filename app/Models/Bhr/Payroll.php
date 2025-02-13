@@ -549,7 +549,6 @@ class Payroll
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
-            ->where('pl.emp_id', 7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
