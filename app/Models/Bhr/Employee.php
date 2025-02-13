@@ -543,7 +543,7 @@ class Employee //extends Model
         }
         foreach ($rows as &$row) {
             $row->nationality = Country::nationality($row->nationality_id, $countries);
-            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
 
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -692,7 +692,7 @@ class Employee //extends Model
             $row->image_url = $img;
             $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
-            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name');
+            $row->city_name = DB::table('loc_cities')->where('id', $row->birth_city_id)->value('name_kh');
         } else {
             $row = null; // Or handle the case where employee is not found
         }

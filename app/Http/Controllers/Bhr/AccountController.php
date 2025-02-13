@@ -119,8 +119,9 @@ class AccountController extends Controller
         $remarks = $req->remarks;
         $account_number = $req->account_number;
         $account_name = $req->account_name;
+        $balance = $req->balance;
         // function deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id = null, $ss)
-        $res = ($this->account->deposit($amount, $currency_code, $account_number, $account_name, $remarks, $id, $ss));
+        $res = ($this->account->deposit($amount,$balance, $currency_code, $account_number, $account_name, $remarks, $id, $ss));
         return JDV::raw($res);
     }
     public function withdraw(Request $req)
