@@ -311,7 +311,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/bhr/subttasks.svg') }}" />
+                            src="{{ asset('assets/images/bhr/diagram.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.Employee Benefits"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
@@ -322,7 +322,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="BenefitComponent" modid="262" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/notebook.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/list-task.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Benefit List"></span>
                             </a>
@@ -331,7 +331,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="EmployeeBenefitComponent" modid="273" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/staff_benefit.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Staff Benefits"></span>
                             </a>
@@ -340,7 +340,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="BenefitDisbursementComponent" modid="279" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/bhr/pc.svg') }}" />
+                                        src="{{ asset('assets/images/bhr/plan.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Special Disburse Plan"></span>
                             </a>
@@ -348,7 +348,7 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(280); ?>>
                             <a href="BenefitDisbursePolicyComponent" modid="280" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/sales_commissions.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/journal-check.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Disburse Policies"></span>
                             </a>
