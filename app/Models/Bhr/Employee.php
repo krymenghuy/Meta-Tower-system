@@ -1540,22 +1540,15 @@ class Employee //extends Model
                     $arr = (array) $row;
                     $inputs = $arr;
                     $emp_res = $employee->save($inputs,null,$ss);
-                 
-
-                   
                     if($emp_res->status_code ==200){
                         $success++;
                     }else{
                         DBX::rollback();
                         return $emp_res;
                     }
-
-
                 }
-
                     DBX::commit();
                     return DV::depends(1, ['success_count'=>$success]);
-
             }
             catch (Exception $e) {
                 DBX::rollback();

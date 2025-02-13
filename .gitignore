@@ -17,8 +17,10 @@
 /uploads
 .env
 .env.backup
-composer.json.local
 composer.json.backup.sam
+/composer.json.backup.sam
+composer.json.local
+/composer.json.local
 composer.lock
 .phpunit.result.cache
 docker-compose.override.yml
