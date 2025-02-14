@@ -171,9 +171,9 @@ class Employee //extends Model
         $emp_id = DBX::saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
       
         if ($emp_id && $created) {
-            if($arr['branch_id'] > 0){
-                DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $arr['branch_id']]);
-            }
+            // if($inputs['branch_id'] > 0){
+            //     DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $inputs['branch_id']]);
+            // }
             $prefix = 'LC';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $emp_id], $prefix, 5, null);
             // $new_code = $res->code;
