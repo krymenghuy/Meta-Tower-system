@@ -77,6 +77,7 @@ class Employee //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
+            'branch_id'=>'0|branch_id|exists='.DBX::$branch_table.'.id',
             'name' => '1|string|0-100',
             'name_kh' => '0|string|0-100',
             'email' => '1|email',
@@ -166,7 +167,12 @@ class Employee //extends Model
             $input_joining_date = convertDate($d->joining_date);
             $org_joining_date = convertDate($emp->joining_date);
             $change_joining_date =  $input_joining_date != $org_joining_date;
-            unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id']);
+            unset($inputs['emp_type_id'],$inputs['position_id'], $inputs['salary'],$inputs['work_shift_id'], $inputs['branch_id']);
+        }else{
+             $branch_id = $d->branch_id ?? null;
+             if(!$branch_id){
+                return DV::error('Please specify the branch, in which the employee is based in');
+             }
         }
         $emp_id = DBX::saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
       

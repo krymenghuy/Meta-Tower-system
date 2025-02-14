@@ -61,14 +61,18 @@ var EmployeeComponent =  new function () {
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
+            const op = {
                 id: null,
+                branch_id: mThis.el_branch.value,
                 btn: e.target,
                 onClose: () => {
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
-            
+            if(!op.branch_id || op.branch_id ==0){
+                cv_interact.warning('Please select a branch, in which the employee is based in');
+               return;
+            }
             EmployeeDialog.show(op);
         };
         mThis.btnImport.onclick = (e) => {
