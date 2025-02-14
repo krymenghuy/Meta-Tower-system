@@ -127,7 +127,7 @@ class EmployeeBenefit
             $employee = $row->emp_id;
             $row->emp_id = DB::table('employees')->where('code', $employee)->value('id');
             if (!$row->emp_id) {
-                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : លេខសំគាល់ខ្លួន '".($employee ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "សូមពិនិត្យព័ត៌មានសម្រាប់បុគ្គលិក $name : លេខសំគាល់ខ្លួន ".($employee ?: 'មិនបានបញ្ជាក់')." រកមិនឃើញនៅក្នុងប្រព័ន្ធ"];
             }
             $benefit = $row->benefit_id;
             $row->benefit_id = DB::table('benefits')->where('name', $benefit)->value('id');
