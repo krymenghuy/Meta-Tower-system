@@ -35,9 +35,8 @@ return [
     ],
     //Fee apps refer to apps that we do not need to control permissions or module access. Users can access to everything
     'free_apps' => [
-            // 'merchant_app_id' => env('MERCHANT_APP_ID', 'default_merchant_app_id'),
-            // 'merchant_portal_app_id' => env('MERCHANT_PORTAL_APP_ID', 'default_merchant_portal_app_id'),
-            // 'driver_app_id' => env('DRIVER_APP_ID', 'default_driver_app_id'),
-            // 'sales_app_id' => env('SALES_APP_ID', 'default_sales_app_id'),
+        // env('STUDENT_APP_ID', null),
+        // env('TEACHER_APP_ID', null),
+        // env('PARENT_APP_ID', null)
     ],
 ];
