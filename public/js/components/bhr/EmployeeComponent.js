@@ -3652,9 +3652,10 @@ const EmployeeDialog = (() => {
                         cssClass: "btn btn-sm btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
-                            p.photo = me.empImageBox
-                                ? me.empImageBox.getImage()
-                                : "";
+                            p.photo = me.empImageBox ? me.empImageBox.getImage() : "";
+                            p.branch_id = me.dataOptions.branch_id;
+                            console.log(1123,p);
+
                             vsapi
                                 .call(
                                     [
