@@ -214,7 +214,6 @@ class Payroll
         return DV::depends(1);
     }
 
-
     static function createDisburseTrack($payroll, $id,$ss){
        $nowTime = date('d-M-Y h:i');
        if(!$payroll) $payroll = DB::table('payrolls as p')->where('p.id',$id)->selectRaw('id,total,currency_code')->first();
