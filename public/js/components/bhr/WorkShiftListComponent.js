@@ -32,7 +32,7 @@ var WorkShiftListComponent = (function () {
             data: (data) => {
                 return [
                     `<span class="text-Capitalize d-block">${data.update_user}</span>`,
-                    `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`,
+                    `<span class="text-muted" style="font-size:80%;">${data.updated_at}</span>`,
                 ].join("");
             },
         },
