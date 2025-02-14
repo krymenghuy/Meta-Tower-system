@@ -7498,7 +7498,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../packages/response",
-                "reference": "421c8890b0139823404552bb8a1433cf73df40a9"
+                "reference": "a9044e40e669dc0cf66f252f7355a20d62282872"
             },
             "require": {
                 "php": ">=7.4"
