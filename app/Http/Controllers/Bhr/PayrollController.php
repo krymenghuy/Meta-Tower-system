@@ -128,7 +128,8 @@ class PayrollController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $res = $this->payrollModel->delete($req->id);
+        $id = $req->id ?? $req->payroll_id;
+        $res = $this->payrollModel->delete($id);
         return JDV::raw($res);
     }
 

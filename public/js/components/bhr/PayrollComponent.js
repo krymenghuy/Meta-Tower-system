@@ -244,13 +244,13 @@ var PayrollComponent = new (function () {
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
-                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+                mThis.PayrollListView.showPage(mThis.getFilterData());
         });
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+                mThis.PayrollListView.showPage(mThis.getFilterData());
             }, 200);
         });
 
@@ -415,7 +415,7 @@ var PayrollComponent = new (function () {
 
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
-                                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+                                mThis.PayrollListView.showPage(mThis.getFilterData());
                             } else cv_interact.error(res.error_message);
                         });
                 }
@@ -465,12 +465,9 @@ var PayrollComponent = new (function () {
         AddPayRollListDailog.show(op);
     };
     mThis.deletePayroll = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PayrollListView.showPage();
-            },
+            btn: menuLink
         };
         if (!AuthManager.allowed(478)) return;
         cv_interact.confirm(
@@ -492,9 +489,9 @@ var PayrollComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted successfully");
-                                mThis.PayrollListView.showPage();
-                            }
+                                cv_interact.success("Payroll has been deleted!");
+                                mThis.PayrollListView.showPage(mThis.getFilterData());
+                            } else cv_interact.error(res.error_message);
                         });
                 } else {
                     cv_interact.error(res.error_message);
@@ -503,7 +500,7 @@ var PayrollComponent = new (function () {
         );
     };
 
-    mThis.getDataFormFilter = () => {
+    mThis.getFilterData = () => {
         let filters = {
             search_value: mThis.elSearch.value,
         };
