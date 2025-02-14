@@ -163,7 +163,7 @@ div.role-card.selected > div.card-content {
            <div id="view_modules" data-view="view_modules" class="tab-page w-100" style="display:none">
                <div class="h-100">
                   <div id="mod_list" class="d-flex flex-column gap-2">
-                      <div class="w-50 d-flex justify-content-between align-items-center">
+                      <div class="w-50 gap-2 d-flex justify-content-between align-items-center">
                         <div class="w-50">
                           <select class="modal-select2 " id="mod_app_chooser"> </select>
                         </div>
@@ -171,7 +171,7 @@ div.role-card.selected > div.card-content {
                           <input id="_um_role_search_module" type="text" class="form-control rounded-5"  placeholder="Search module"/>
                         </div>
                         <div class="">
-                          <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 px-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class="text-nowrap " vslang="buttons.Print Modules"></span></a> 
+                          <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 text-nowrap px-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class="text-nowrap " vslang="buttons.Print Modules"></span></a> 
                         </div>
                       </div>
                       <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div> 
@@ -186,7 +186,7 @@ div.role-card.selected > div.card-content {
                             <div class="w-50 d-flex flex-row gap-2 justify-content-between align-items-center">
                                 <div style="min-width:250px"> <select class="modal-select2" id="prn_app_chooser"></select></div>
                                 <div><input id="prn_search" class="form-control rounded-5" placeholder="Search by code or name" autocomplete="off"></div>
-                                <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" text-nowrap" vslang="buttons.Print"></span></a> 
+                                <a href="javascript:void(0)" id="_um_role_print_permission" class="w-25 px-2 p-1 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" text-nowrap" vslang="buttons.Print"></span></a> 
                             </div>
                             <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div>
                         </div>

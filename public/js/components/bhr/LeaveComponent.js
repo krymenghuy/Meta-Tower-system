@@ -28,11 +28,15 @@ var LeaveComponent = (function () {
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                         <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                         <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
+                                <span style="font-size: 12px; font-weight: bold;">${
+                                    data.employee ?? ""
+                                }</span>
                                 <br/>
-                                <span class="text-muted" style="font-size: 11px; ">${data.title ?? ''}</span>
+                                <span class="text-muted" style="font-size: 11px; ">${
+                                    data.title ?? ""
+                                }</span>
                             </div>
                         </div>`;
             }
