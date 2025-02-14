@@ -1250,22 +1250,17 @@ function createUUIDV1()
 	// 	return strtolower(trim($string, '-'));
 	// }
 
-    function getStoragePath($private=false){
-        if($private)
-          {
-            $path = Storage::disk('private')->path('');
-          }else{
-             //$path = Storage::disk('public')->path('');
-             $path = getcwd().Config::get('app.storage_dir');
-          }
-        return $path;
-    }
-
-    //return public url
-    function getStorageUrl(){
-      return url('').Config::get('app.storage_dir'); //"/uploads/companies/";
-    }
-
+    // function getStoragePath($private=false){
+    //     if($private)
+    //       {
+    //         $path = Storage::disk('private')->path('');
+    //       }else{
+    //          //$path = Storage::disk('public')->path('');
+    //          $path = getcwd().Config::get('app.storage_dir');
+    //       }
+    //     return $path;
+    // }
+ 
     // //To upport misspelling version
     // function getAdminAppId(){
     //     return Config::get('app.app_id');
@@ -1285,12 +1280,12 @@ function createUUIDV1()
         return Config::get('app.pusher_channel_prefix');  //return "vsdev.";
     }
 
-    function topic_prefix($user_class=null){
-        $user_class = strtolower($user_class);
-        if($user_class ==='sales_agent')
-           return Config::get('app.fcm_topic_prefix_salesapp').$user_class;  //return "vsdev".$user_class;
-        else return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
-    }
+    // function topic_prefix($user_class=null){
+    //     $user_class = strtolower($user_class);
+    //     if($user_class ==='sales_agent')
+    //        return Config::get('app.fcm_topic_prefix_salesapp').$user_class;  //return "vsdev".$user_class;
+    //     else return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
+    // }
 
     function getServerKey($user_class=null){
         $user_class = strtolower($user_class);
@@ -1299,27 +1294,6 @@ function createUUIDV1()
         else return Config::get('app.fcm_server_key');
         //return "AAAAsd6RSXs:APA91bH79xi7hY-x1HIpHmwK0GiMq53MVdEc0ruVQt6r60Et8Ww6c1RP1YGs0_Sx_RCUDHvmfI1-Sa4v5KBIVwGha6AC_Q0410CIrwXdJ3KaPx_4c0ftVbfW8FplfJiW52kLbD21WIZT";
     }
-    function getAppIdByUserClass($user_class){
-        $user_class = strtolower($user_class);
-        if(!$user_class) return null;
-        switch($user_class){
-            case 'admin':
-                return Config::get('app.dms_app_id');
-                break;
-            case 'driver':
-                return Config::get('app.driver_app_id');
-                break;
-            case 'merchant':
-                return Config::get('app.merchant_app_id');
-                break;
-            case 'sales_agent':
-                return Config::get('app.sales_app_id');
-                break;
-            default:
-              return Config::get('app.dms_app_id');
-              break;
-        }
-     }
 
     function extendProps($cols=[],$d=null){
         if (!$cols) return $d;
