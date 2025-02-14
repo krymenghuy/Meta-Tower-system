@@ -1178,27 +1178,85 @@ var Choices = /** @class */function () {
       notice: notice
     };
   };
+ 
   Choices.prototype._searchChoices = function (value) {
     var newValue = typeof value === 'string' ? value.trim() : value;
     var currentValue = typeof this._currentValue === 'string' ? this._currentValue.trim() : this._currentValue;
+  
     if (newValue.length < 1 && newValue === "".concat(currentValue, " ")) {
       return 0;
     }
+  
     // If new value matches the desired length and is not the same as the current value with a space
     var haystack = this._store.searchableChoices;
     var needle = newValue;
-    var options = Object.assign(this.config.fuseOptions, {
-      keys: __spreadArray([], this.config.searchFields, true),
-      includeMatches: true
+  
+    // Modify haystack to ensure search works on the text inside HTML elements
+    var filteredHaystack = haystack.filter(choice => {
+      let labelText = choice.label;
+  
+      // Check if the label is a string (HTML content) and convert it to an HTMLElement
+      if (typeof choice.label === 'string') {
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = choice.label; // Parse HTML string into the element
+  
+        // Extract the text from the .choices__item_text span element
+        const textElement = tempElement.querySelector('.choices__item_text');
+        if (textElement) {
+          labelText = textElement.textContent.trim(); // Extract text from .choices__item_text
+        } else {
+          labelText = tempElement.textContent.trim(); // Fallback to full text content if no .choices__item_text
+        }
+      } else if (choice.label instanceof HTMLElement) {
+        // If label is already an HTMLElement, extract text content from .choices__item_text
+        const textElement = choice.label.querySelector('.choices__item_text');
+        if (textElement) {
+          labelText = textElement.textContent.trim(); // Use text content from the span
+        } else {
+          labelText = choice.label.textContent.trim(); // Fallback to text content if no .choices__item_text
+        }
+      }
+  
+      // Check if labelText contains the search needle (case-insensitive search)
+      return labelText.toLowerCase().includes(needle.toLowerCase());
     });
-    var fuse = new fuse_js_1.default(haystack, options);
-    var results = fuse.search(needle); // see https://github.com/krisk/Fuse/issues/303
+  
+    // Log the filtered haystack to see which choices passed the filter
+    console.log('Filtered Haystack with labelText containing search term:', filteredHaystack);
+  
+    // Update the current value and highlight position
     this._currentValue = newValue;
     this._highlightPosition = 0;
     this._isSearching = true;
-    this._store.dispatch((0, choices_1.filterChoices)(results));
-    return results.length;
+  
+    // Dispatch the filtered choices (results)
+    this._store.dispatch((0, choices_1.filterChoices)(filteredHaystack));
+  
+    return filteredHaystack.length;
   };
+  
+  
+   // Choices.prototype._searchChoices = function (value) {
+  //   var newValue = typeof value === 'string' ? value.trim() : value;
+  //   var currentValue = typeof this._currentValue === 'string' ? this._currentValue.trim() : this._currentValue;
+  //   if (newValue.length < 1 && newValue === "".concat(currentValue, " ")) {
+  //     return 0;
+  //   }
+  //   // If new value matches the desired length and is not the same as the current value with a space
+  //   var haystack = this._store.searchableChoices;
+  //   var needle = newValue;
+  //   var options = Object.assign(this.config.fuseOptions, {
+  //     keys: __spreadArray([], this.config.searchFields, true),
+  //     includeMatches: true
+  //   });
+  //   var fuse = new fuse_js_1.default(haystack, options);
+  //   var results = fuse.search(needle); // see https://github.com/krisk/Fuse/issues/303
+  //   this._currentValue = newValue;
+  //   this._highlightPosition = 0;
+  //   this._isSearching = true;
+  //   this._store.dispatch((0, choices_1.filterChoices)(results));
+  //   return results.length;
+  // };
   Choices.prototype._addEventListeners = function () {
     var documentElement = document.documentElement;
     // capture events - can cancel event processing or propagation
