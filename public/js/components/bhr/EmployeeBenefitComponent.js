@@ -28,10 +28,7 @@ var EmployeeBenefitComponent = new (function () {
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${
-                        data.image_url || main_view.asset_url + "/images/default/default-staff.png"
-                    }" alt=""
-                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.emp_name ?? ""
@@ -67,6 +64,13 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${VSMoney.formatAmount(data.amount, data.currency_code)}</p>`;
+            }
+        },
+        {
+            title: "Balance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
             }
         },
       
@@ -348,21 +352,13 @@ const EmployeeBenefitDialog = (() => {
                 DateTimePicker.init(me.controls.effective_date);
                 const taxOptionField = me.divModal.querySelector("#tax_option_id");
                 const flatTaxRateField = me.divModal.querySelector(".flat_tax_rate");
-                const BenefitField = me.divModal.querySelector("#benefit_id");
-                const effective_date = me.divModal.querySelector(".effective_date");
                 taxOptionField.addEventListener("change", () => {
                     flatTaxRateField.classList.toggle(
                         "d-none",
                         taxOptionField.value !== "3"
                     );
                 });
-                BenefitField.addEventListener("change", () => {
-                    const selectedValue = BenefitField.textContent;
-                    effective_date.classList.toggle(
-                        "d-none",
-                        selectedValue !== "Incentive"
-                    );
-                });
+                
             },
 
             prepareFormOptions: {
@@ -375,6 +371,21 @@ const EmployeeBenefitDialog = (() => {
                 },
             },
             onPrepareForm: (me, data) => {
+                console.log(202002,data);
+                
+                const BenefitField = me.divModal.querySelector("#benefit_id");
+                const effective_date = me.divModal.querySelector(".effective_date");
+                BenefitField.addEventListener("change", () => {
+                    const selectedValue = BenefitField.value;
+                    const benefit_disburse_policies =
+                        data.benefit_disburse_policies;
+                    const exists = benefit_disburse_policies.find(e => e.benefit_id === selectedValue);
+                    if (exists) {
+                        effective_date.classList.remove("d-none");
+                    } else {
+                        effective_date.classList.add("d-none");
+                    }
+                });
                 LocaleManager.translateZone(me.divModal);
                 me.controls.currency_code.value = VSMoney.getCurrency().code;
 

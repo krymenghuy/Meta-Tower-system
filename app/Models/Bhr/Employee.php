@@ -6,7 +6,7 @@ use App\Models\Bhr\Event;
 use DV;
 use XPublicStorage;
 use DBX;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\Umt\Branch;
 use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
