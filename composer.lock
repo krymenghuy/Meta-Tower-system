@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "245dbe50fe4c5aac85a02b3237dcb756",
+    "content-hash": "1f1ee4b8d5817312c118b727e717868b",
     "packages": [
         {
             "name": "apility/laravel-fcm",
@@ -7388,14 +7388,21 @@
         {
             "name": "vsd/dbx",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/dbx",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-dbx.git",
                 "reference": "b1fea654f36c2f996a4881b35d13f4266e4cf223"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/b1fea654f36c2f996a4881b35d13f4266e4cf223",
+                "reference": "b1fea654f36c2f996a4881b35d13f4266e4cf223",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7415,21 +7422,30 @@
                 }
             ],
             "description": "DBX is a class that is used to interact with databases in a special way for Vectorasoft developer team",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-dbx/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-dbx/issues"
+            },
+            "time": "2025-02-13T09:02:09+00:00"
         },
         {
             "name": "vsd/localization",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/localization",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-localization.git",
                 "reference": "ba8dbcded9d55608fa8d455fba03b8124313378c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-localization/zipball/ba8dbcded9d55608fa8d455fba03b8124313378c",
+                "reference": "ba8dbcded9d55608fa8d455fba03b8124313378c",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7449,21 +7465,30 @@
                 }
             ],
             "description": "Library for language translation in multiple languages developed by Vectorasoft",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-localization/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-localization/issues"
+            },
+            "time": "2025-02-13T09:01:51+00:00"
         },
         {
             "name": "vsd/money",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/money",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-money.git",
                 "reference": "59d8e18a578a934c31cffc81116e9c2fff2ccd58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/59d8e18a578a934c31cffc81116e9c2fff2ccd58",
+                "reference": "59d8e18a578a934c31cffc81116e9c2fff2ccd58",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7486,21 +7511,30 @@
                 }
             ],
             "description": "Money is a class that is used to manage currencies, exchange rates, conversion, and money amount formatting",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-money/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-money/issues"
+            },
+            "time": "2025-02-12T16:56:00+00:00"
         },
         {
             "name": "vsd/response",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-response.git",
+                "reference": "a9044e40e669dc0cf66f252f7355a20d62282872"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../packages/response",
-                "reference": "08f5dc92f5866beba2a20c29535cf91a449d91dd"
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-response/zipball/a9044e40e669dc0cf66f252f7355a20d62282872",
+                "reference": "a9044e40e669dc0cf66f252f7355a20d62282872",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7521,21 +7555,30 @@
                 }
             ],
             "description": "A generic response handler package",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-response/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-response/issues"
+            },
+            "time": "2025-02-14T03:28:31+00:00"
         },
         {
             "name": "vsd/storage",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/storage",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-storage.git",
                 "reference": "4cef99e34b68a798403f566ef73e6f8648095f97"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-storage/zipball/4cef99e34b68a798403f566ef73e6f8648095f97",
+                "reference": "4cef99e34b68a798403f566ef73e6f8648095f97",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7557,21 +7600,30 @@
                 }
             ],
             "description": "Store is used to manage file update and download, save photos and audio files and so on",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-storage/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-storage/issues"
+            },
+            "time": "2025-02-12T16:56:39+00:00"
         },
         {
             "name": "vsd/xauth",
             "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "../../packages/xauth",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:vectorasoft/lib-xauth.git",
                 "reference": "ed3a47b9cd38cd960e2e964dd7e8492add0f17ad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
+                "reference": "ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7591,9 +7643,11 @@
                 }
             ],
             "description": "Vectorasoft Authentication and authorization package",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/vectorasoft/lib-xauth/tree/main",
+                "issues": "https://github.com/vectorasoft/lib-xauth/issues"
+            },
+            "time": "2025-02-13T09:30:42+00:00"
         },
         {
             "name": "webmozart/assert",
