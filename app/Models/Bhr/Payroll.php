@@ -203,7 +203,6 @@ class Payroll
         return $row;
     }
 
-
     function delete($id = null)
     {
         $id = $id ?? $this->id;
