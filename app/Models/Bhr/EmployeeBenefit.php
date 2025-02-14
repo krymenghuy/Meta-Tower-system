@@ -52,12 +52,12 @@ class EmployeeBenefit
         $inputs = $res->values;
         $d = (object)$inputs;
         $inputs['effective_date'] = convertDate($d->effective_date);
-        if(!$id){
-            $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
-            if($id){
-                return DV::error('Duplicate Benefit id');
-            }
-        }
+        // if(!$id){
+        //     $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
+        //     if($id){
+        //         return DV::error('Duplicate Benefit id');
+        //     }
+        // }
 
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
@@ -114,7 +114,7 @@ class EmployeeBenefit
     static function validateData($rows) {
         $duplicate_benefit = [];
         foreach ($rows as &$row) {
-            $row = (object) $row; 
+            $row = (object) $row;
 
             $name = $row->name;
             $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
@@ -162,7 +162,7 @@ class EmployeeBenefit
             $data = self::convertImportedEmployeeBenefit($rows);
             $data = self::validateData($data);
             if(isset($data->error)) return DV::error($data->error);
-            
+
             $success = 0;
             DB::beginTransaction();
             try {
@@ -183,9 +183,9 @@ class EmployeeBenefit
                     $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
 
-                    
+
                     $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
-                   
+
                     $inputs = $res->values;
                     $duplicate = DB::table('emp_benefits')
                     ->where('emp_id', $inputs['emp_id'])
