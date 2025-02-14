@@ -59,22 +59,12 @@ class EmployeeBenefit
         $inputs = $res->values;
         $d = (object)$inputs;
         $inputs['effective_date'] = convertDate($d->effective_date);
-        if (!$id) {
-            $id = self::getEmpBenefitID($d->emp_id, $d->benefit_id, $d->effective_date);
-            if ($id) {
-                return DV::error('Duplicate Benefit');
-            }
-            $inputs['balance'] = $d->amount;
-        } else {
-            $existingRecord = DB::table('emp_benefits')->where('id', $id)->first();
-            if (!$existingRecord) {
-                return DV::error('Record not found.');
-            }
-            if ($d->amount < $existingRecord->balance) {
-                return DV::error('Amount cannot be less than the current balance.');
-            }
-            unset($inputs['balance']);
-        }
+        // if(!$id){
+        //     $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
+        //     if($id){
+        //         return DV::error('Duplicate Benefit id');
+        //     }
+        // }
 
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
@@ -136,6 +126,7 @@ class EmployeeBenefit
         $duplicate_benefit = [];
         foreach ($rows as &$row) {
             $row = (object) $row;
+            $row = (object) $row;
 
             $name = $row->name;
             $emp_benefit = $row->emp_id . $row->benefit_id . convertDate($row->effective_date);
@@ -184,7 +175,7 @@ class EmployeeBenefit
             $rows = self::readExcel($ss, $x->file_name, 2);
             $data = self::convertImportedEmployeeBenefit($rows);
             $data = self::validateData($data);
-            if (isset($data->error)) return DV::error($data->error);
+            if(isset($data->error)) return DV::error($data->error);
 
             $success = 0;
             DB::beginTransaction();
@@ -206,7 +197,10 @@ class EmployeeBenefit
                     ];
                     $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
+
+
                     $res = DBX::validateObject($arr, $v_rule, true, ['remarks' => $remarks], $ss->lang);
+
                     $inputs = $res->values;
                     $duplicate = DB::table('emp_benefits')
                         ->where('emp_id', $inputs['emp_id'])

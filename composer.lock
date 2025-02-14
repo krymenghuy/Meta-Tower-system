@@ -7442,6 +7442,12 @@
                 "reference": "567a33032aeca104da21ee491b25f89c0154f460",
                 "shasum": ""
             },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-localization/zipball/ba8dbcded9d55608fa8d455fba03b8124313378c",
+                "reference": "ba8dbcded9d55608fa8d455fba03b8124313378c",
+                "shasum": ""
+            },
             "require": {
                 "php": ">=7.4"
             },
@@ -7618,6 +7624,12 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
                 "reference": "b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
+                "shasum": ""
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
+                "reference": "ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
                 "shasum": ""
             },
             "require": {
