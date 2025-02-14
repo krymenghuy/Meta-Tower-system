@@ -2571,7 +2571,6 @@ var EmployeeComponent =  new function () {
                 EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
             },
         };
-        if (!AuthManager.allowed(208,false)) return;
         EmployeeDialog.show(op);
     };
 
@@ -2588,7 +2587,6 @@ var EmployeeComponent =  new function () {
                 mThis.EmployeeListView.showPage();
             },
         };
-        if (!AuthManager.allowed(316)) return;
         CreateContractDialog.show(op);
 
     };
@@ -3652,9 +3650,10 @@ const EmployeeDialog = (() => {
                         cssClass: "btn btn-sm btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
-                            p.photo = me.empImageBox
-                                ? me.empImageBox.getImage()
-                                : "";
+                            p.photo = me.empImageBox ? me.empImageBox.getImage() : "";
+                            p.branch_id = me.dataOptions.branch_id;
+                            console.log(1123,p);
+
                             vsapi
                                 .call(
                                     [

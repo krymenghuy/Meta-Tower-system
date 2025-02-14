@@ -23,9 +23,7 @@ var WarningComponent = (function () {
             className: "align-middle text-start",
             data: (data) => `
                 <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${
-                        data.image_url
-                    }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.name ?? ""
@@ -37,12 +35,14 @@ var WarningComponent = (function () {
         {
             title: "Warning Date",
             className: "align-middle",
-            data:(data)=>`<span class="text-danger">${data.warning_date}</span>`
+            data: (data) =>
+                `<span class="text-danger">${data.warning_date}</span>`,
         },
         {
             title: "Type",
             className: "align-middle",
-            data:(data)=>`<span class="text-primary-custom  px-2 text-center rounded-5">${data.warning_type}</span>`
+            data: (data) =>
+                `<span class="text-primary-custom  px-2 text-center rounded-5">${data.warning_type}</span>`,
         },
         {
             title: "Reason",
@@ -52,15 +52,22 @@ var WarningComponent = (function () {
         {
             title: "Remarks",
             className: "align-middle",
-             data:(data)=>`<span class="text-danger">${data.remarks ?? 'take time'}</span>`
+            data: (data) =>
+                `<span class="text-danger">${
+                    data.remarks ?? "take time"
+                }</span>`,
         },
         {
             title: "Create By",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
+                <span style="font-size: 14px; font-weight: bold;">${
+                    data.update_user ?? ""
+                }</span><br/>
+                <span style="font-size: 10px; color: #2b3991;">${
+                    data.updated_at ?? ""
+                }</span>
             </div>`,
         },
         {

@@ -33,8 +33,11 @@ var AccountManagementComponent = (function () {
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${
-                                data.image_url
-                            }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                                data.image_url ||
+                                main_view.asset_url +
+                                    "/images/default/default-staff.png"
+                            }" alt=""
+                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${
                                     data.emp_name ?? ""
