@@ -274,7 +274,7 @@ function employeeCV(div1, d = null) {
                 <div class="employee_cv">
                     <div class="emp_cv_header">
                         <div class="cv_header_left">
-                            <img src="${data.image_url}" alt="Profile Image">
+                            <img src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="Profile Image">
                         </div>
                         <div class="cv_header_right">
                             <h4>${data.name}</h4>
@@ -492,9 +492,7 @@ function paySlipReport(div, d = null) {
                         <div class="row cols-2 mb-0">
                             <div class="col-2">
                                 <div class="paySlip_img" data-id="" data-imageurl="">
-                                <img src="${
-                                    data.image_url
-                                }" alt="Profile Image">
+                                <img src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="Profile Image">
                                 </div>
                             </div>
                             <div class="col-5 p_profile_left">
@@ -3404,7 +3402,7 @@ function windowPrint(html, style) {
                 }/assets/css/ksm_style.css" media="print//"/>
                 <style>
                     *{
-                        margin:0;
+                        margin:10px;
                         padding:0;
                         box-sizing: border-box;
                         font-size:14px;
@@ -3582,7 +3580,7 @@ function exportToExcel() {
         const numTable = (HtmlString.match(new RegExp("<table", "g")) || [])
                 .length,
             numTh = (HtmlString.match(new RegExp("count-th", "g")) || [])
-                .length;
+                .length;        
         let startIndex = HtmlString.indexOf("<img"),
             endIndex = HtmlString.indexOf('"/>', startIndex);
 
@@ -3616,7 +3614,7 @@ function exportToExcel() {
                 HtmlString.indexOf("</h4>", HtmlString.indexOf("<h4")) + 5
             ).replace(
                 /\<h4/g,
-                '<h4 style="font-size:18px;font-weight:600"'
+                '<h4 style="font-size:16px;font-weight:600"'
             )}</th></tr>` + subTitle;
 
         let tblStartIndex = 0,
@@ -3724,8 +3722,8 @@ function exportToExcel() {
         });
 
         const style = {
-            text_center_th: `text-align:center; vertical-align:middle; font-size:16px; font-family:Khmer OS Battambang; color:#5578eb;`,
-            text_center_td: `text-align:center; vertical-align:middle; font-size:14px; font-family:Khmer OS Battambang; color:#000000;`,
+            text_center_th: `text-align:center; vertical-align:middle; font-size:14px; font-family:Khmer OS Battambang; color:#5578eb;`,
+            text_center_td: `text-align:left; vertical-align:middle; font-size:12px; font-family:Khmer OS Battambang; color:#000000;`,
         };
         const location =
             "data:application/vnd.oasis.opendocument.spreadsheet;base64,";
@@ -3759,6 +3757,7 @@ function exportToExcel() {
                     '<td style="' + style.text_center_td + '"'
                 )}</body>
         </html>`;
+        
         const uri =
             location + window.btoa(unescape(encodeURIComponent(excelTemplate)));
         const link = document.createElement("a");

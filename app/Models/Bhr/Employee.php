@@ -23,7 +23,7 @@ class Employee //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $xlsx_keys = [
-        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','date_of_birth','phone_number',
+        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','passport_expiry_date','date_of_birth','phone_number',
         'email','birth_city_id','nssf_id','marital_status','joining_date','branch_id','position_id','emp_type_id','work_shift_id','salary','address',
     ];
     protected static $img_dir = 'employees';
