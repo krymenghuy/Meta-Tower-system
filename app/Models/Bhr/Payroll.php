@@ -556,40 +556,53 @@ static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
         return ($amount1 + $amount2);
 }
 
-static function getFlatRateBenefits( $data,$emp_id,$payroll = null)
+static function getFlatRateBenefits($data, $emp_id, $payroll = null)
 {
-    $bfr_data = [];
-    $payroll_bfr_data =[];
-        $payroll_bfr_data = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month == 0)
-                ->groupBy('flat_tax_rate')
-                ->map(fn($group, $rate) => [
-                    'flat_tax_rate' => $rate,
-                    'amount' => $group->sum('used_amount')
-                ])->values()->toArray();
+    $merged = collect(array_merge(
+        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month == 0)
+            ->groupBy('flat_tax_rate')
+            ->map(fn($group, $rate) => [
+                'flat_tax_rate' => $rate,
+                'amount' => $group->sum('used_amount')
+            ])
+            ->values()
+            ->toArray(),
+        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month > 0)
+            ->groupBy('flat_tax_rate')
+            ->map(fn($group, $rate) => [
+                'flat_tax_rate' => $rate,
+                'amount' => $group->sum('used_amount') * ($payroll->days / $payroll->total_days)
+            ])
+            ->values()
+            ->toArray()
+    ));
 
-        $bfr_data = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month > 0)
-                ->groupBy('flat_tax_rate')
-                ->map(fn($group, $rate) => [
-                    'flat_tax_rate' => $rate,
-                    'amount' => $group->sum('used_amount')
-                ])->values()->toArray();
-
-        return array_merge($payroll_bfr_data,$bfr_data);
+    // Group by flat_tax_rate and sum up the amounts
+    return $merged->groupBy('flat_tax_rate')
+                  ->map(fn($group, $rate) => [
+                      'flat_tax_rate' => $rate,
+                      'amount' => $group->sum('amount')
+                  ])
+                  ->values()
+                  ->toArray();
 }
-
-static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = false,$payroll=null)
+   
+static function formatFlatRateBenefits($benefits, $emp_id)
 {
+    // Check if $benefits is a valid instance of Collection
     if (!$benefits instanceof \Illuminate\Support\Collection) {
+        // Optionally, handle this case, e.g., return an empty string or log a warning
         return '';
     }
 
-    return $benefits->filter(fn($x) => $x->tax_option_id == 3 && $x->emp_id == $emp_id && $x->can_disburse_all == $can_disburse_all)
+    // Process the benefits as before
+    return $benefits->filter(fn($x) => $x->tax_option_id == 3 && $x->emp_id == $emp_id)
                     ->groupBy('flat_tax_rate')
                     ->map(fn($group, $rate) => number_format($group->sum('balance'), 2) . '@' . $rate)
                     ->values()
                     ->implode('|');
 }
-
+ 
     //CalculatePayroll()
     function calculate($id = null, $ss = null)
     {
@@ -699,9 +712,7 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = f
         $benefits_not_taxable = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll);
 
         $beneits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
-
-
-
+ 
             if($row->allowance){
                 foreach ($row->allowance as $allowance) {
                             if ($allowance->allowance_currency != $row->payroll_currency) {
