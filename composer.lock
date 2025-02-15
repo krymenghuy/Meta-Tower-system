@@ -7391,12 +7391,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-dbx.git",
-                "reference": "b1fea654f36c2f996a4881b35d13f4266e4cf223"
+                "reference": "23b3e2c7de3639178e32319e92fbe5c365e2518c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/b1fea654f36c2f996a4881b35d13f4266e4cf223",
-                "reference": "b1fea654f36c2f996a4881b35d13f4266e4cf223",
+                "url": "https://api.github.com/repos/vectorasoft/lib-dbx/zipball/23b3e2c7de3639178e32319e92fbe5c365e2518c",
+                "reference": "23b3e2c7de3639178e32319e92fbe5c365e2518c",
                 "shasum": ""
             },
             "require": {
@@ -7426,7 +7426,7 @@
                 "source": "https://github.com/vectorasoft/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-dbx/issues"
             },
-            "time": "2025-02-13T09:02:09+00:00"
+            "time": "2025-02-14T09:00:49+00:00"
         },
         {
             "name": "vsd/localization",
@@ -7440,12 +7440,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/vectorasoft/lib-localization/zipball/567a33032aeca104da21ee491b25f89c0154f460",
                 "reference": "567a33032aeca104da21ee491b25f89c0154f460",
-                "shasum": ""
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-localization/zipball/ba8dbcded9d55608fa8d455fba03b8124313378c",
-                "reference": "ba8dbcded9d55608fa8d455fba03b8124313378c",
                 "shasum": ""
             },
             "require": {
@@ -7483,12 +7477,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-money.git",
-                "reference": "59d8e18a578a934c31cffc81116e9c2fff2ccd58"
+                "reference": "b56e4f808581a851d200936bedcde73d5acb5a29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/59d8e18a578a934c31cffc81116e9c2fff2ccd58",
-                "reference": "59d8e18a578a934c31cffc81116e9c2fff2ccd58",
+                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/b56e4f808581a851d200936bedcde73d5acb5a29",
+                "reference": "b56e4f808581a851d200936bedcde73d5acb5a29",
                 "shasum": ""
             },
             "require": {
@@ -7521,7 +7515,7 @@
                 "source": "https://github.com/vectorasoft/lib-money/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-money/issues"
             },
-            "time": "2025-02-12T16:56:00+00:00"
+            "time": "2025-02-14T08:44:45+00:00"
         },
         {
             "name": "vsd/response",
@@ -7624,12 +7618,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
                 "reference": "b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
-                "shasum": ""
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
-                "reference": "ed3a47b9cd38cd960e2e964dd7e8492add0f17ad",
                 "shasum": ""
             },
             "require": {

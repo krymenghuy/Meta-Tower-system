@@ -175,14 +175,14 @@ class Employee //extends Model
              }
         }
         $emp_id = DBX::saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1,false);
-      
+
         if ($emp_id && $created) {
             // if($inputs['branch_id'] > 0){
             //     DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $inputs['branch_id']]);
             // }
             $prefix = 'LC';
             $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $emp_id], $prefix, 5, null);
-         
+
         }else if($emp_id){
           //If user has changed the joining date, that can cause the seniority payment to be wrong
           if($change_joining_date){
@@ -192,7 +192,7 @@ class Employee //extends Model
         }
 
         if ($emp_id > 0) {
-            
+
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
@@ -304,10 +304,10 @@ class Employee //extends Model
         return DB::table('emp_benefits as eb')
                     ->join('benefits as b', 'eb.benefit_id', '=', 'b.id')
                     ->where('eb.emp_id', $emp_id)
-                    ->selectRaw('eb.id, eb.amount, eb.tax_option_id,eb.emp_id, eb.flat_tax_rate, eb.benefit_id,eb.currency_code,b.name,eb.effective_date')
+                    ->selectRaw('eb.id, eb.amount,eb.balance, eb.tax_option_id,eb.emp_id, eb.flat_tax_rate, eb.benefit_id,eb.currency_code,b.name,eb.effective_date')
                     ->get();
     }
-    static function getPayrollListBenefit($payroll_id, $emp_id ,$ss)
+    static function savePayrollListBenefit($payroll_id, $emp_id ,$ss)
     {
         // $withdraw_rate = 0;
         // $last_benefit_id = 0;
@@ -356,22 +356,24 @@ class Employee //extends Model
                 continue;
             }
 
-            $full_amount = $benefit->amount ?? 0;
+            $full_amount = $benefit->balance ?? 0;
             if($benefit->currency_code != $payroll->currency_code){
                 $full_amount = VSMoney::convert($ss,$full_amount,$benefit->currency_code,$payroll->currency_code,$payroll->exchange_rate);
             }
             $used_amount = $full_amount * $disburseInfo->withdraw_rate / 100;
             $inputs =  [
-                            "emp_id" => $emp_id,
-                            "payroll_id" => $payroll->id,
-                            "withdraw_rate" => $disburseInfo->withdraw_rate,
-                            "benefit_id" => $benefit_id,
-                            "full_amount" => $full_amount,
-                            "tax_option_id" => $benefit->tax_option_id,
-                            "flat_tax_rate" => $benefit->flat_tax_rate ?? 0,
-                            "used_amount" => $used_amount,
-                            "emp_benefit_id" => $benefit->id,
-                            "currency_code" => $payroll->currency_code
+                            'emp_id' => $emp_id,
+                            'payroll_id' => $payroll->id,
+                            'withdraw_rate' => $disburseInfo->withdraw_rate,
+                            'benefit_id' => $benefit_id,
+                            'full_amount' => $full_amount,
+                            'tax_option_id' => $benefit->tax_option_id,
+                            'flat_tax_rate' => $benefit->flat_tax_rate ?? 0,
+                            'used_amount' => $used_amount,
+                            'emp_benefit_id' => $benefit->id,
+                            'currency_code' => $payroll->currency_code,
+                            'target_month' => $disburseInfo->target_month,
+
                         ];
             $b_id = DB::table('payroll_list_benefits')->where('payroll_id', $payroll->id)->where('emp_id', $emp_id)->where('benefit_id', $benefit_id)->where('emp_benefit_id', $benefit->id)->value('id');
             $b_id = DBX::saveData($ss, 'payroll_list_benefits', ['id' => $b_id], $inputs, [], 1);
@@ -1461,7 +1463,7 @@ class Employee //extends Model
             }else{
                 $duplicates_nid[]=$nid;
             }
-            
+
             $nssf = trim($row->nssf_id);
             if ($nssf && in_array($nssf,$duplicates_nssf)) {
                 return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខ ប.​ប.ស​ ស្ទួន";
