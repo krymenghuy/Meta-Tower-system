@@ -49,6 +49,17 @@ class TaxBracket
         return DV::error('Error saving data');
     }
 
+    public static function get($tax_base =0){
+        $info = DB::table('tax_brackets')
+        ->where(function ($query) use ($tax_base) {
+            $query->whereRaw('lower_amount <= ?', [$tax_base])
+                ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$tax_base]);
+        })
+        ->select('rate', 'bias')
+        ->first();
+        return $info ?? (object)['rate'=>0,'bias'=>0];
+    }
+
     function getTaxBracketListPaginate($arr, $ss)
     {
         $d = (object) $arr;

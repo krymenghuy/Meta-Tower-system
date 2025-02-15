@@ -8,6 +8,7 @@ use DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
 use VSMoney;
+use App\Models\Bhr\TaxBracket;
 
 class Payroll
 {
@@ -467,46 +468,7 @@ class Payroll
         }
 
     }
-    // function reverseTransactions($id, $ss = null)
-    // {
-    //     $ss = $ss ?? $this->userInfo;
-    //     $authorized = self::isAuthorized($id);
-    //     if (!$authorized) {
-    //         return DV::error('Payroll is not authorizad yet!');
-    //     }
-    //     $isDisbursed = self::isDisbursed($id);
-    //     if ($isDisbursed) {
-    //         $rows = DB::table('transactions')->where('payroll_id', $id)->where('status', 'in')->selectRaw('id, account_id, amount, currency_code')->get();
-    //         $success_count = 0;
-    //         $failed_count = 0;
-    //         foreach ($rows as $row) {
-    //             $inputs = [
-    //                 'to_account_id' => 1,
-    //                 'payroll_id' => $id,
-    //                 'remarks' => null,
-    //                 'amount' => $row->amount,
-    //                 'trx_type' => 3,
-    //                 'status' => 'out'
-    //             ];
-    //             $account = new Account($row->account_id, $ss);
-    //             $res = $account->transferTo($inputs);
-    //             if ($res->status_code == 200) {
-    //                 $success_count++;
-    //                 DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
-    //                 DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
-    //             } else {
-    //                 $failed_count++;
-    //             }
-    //         }
-    //         if ($failed_count == 0 && $success_count > 0 || !$isDisbursed) {
-    //             DB::table('payrolls')->where('id', $id)->update(['disbursed' => 0]);
-    //             DB::table('payroll_list')->where('payroll_id', $id)->update(['disbursed' => 0]);
-    //             return DV::depends(1);
-    //         }
-    //         return DV::error("Failed to reset payroll!");
-    //     }
-    // }
-
+    
     function reset($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -531,15 +493,105 @@ class Payroll
         } else return DV::error('Failed to reset payroll because some payment transactions could not be reversed back to master payroll account');
 
     }
+  
+    static function getAllBenefits($emp_id, $payroll){
+      $str_emp = $emp_id? 'eb.emp_id ='.$emp_id : '1=1';  
+      $rows= DB::table('emp_benefits as eb')->whereRaw($str_emp)->where('eb.balance','>',0)->selectRaw('eb.id,eb.emp_id, eb.benefit_id,eb.tax_option_id,eb.amount,eb.balance,eb.currency_code,eb.flat_tax_rate')->get();
+      foreach($rows as &$row){
+          $info = self::getBenefitDisburseInfo($emp_id,$row->benefit_id, $payroll);
+          $row->can_disburse_all =  $info->error ? -1:  $info->target_month ==0;
+          //NOTE: $row->can_disburse_all = -1 (No disburse policy found).  $row->can_disburse_all  is NOT boolean. it is {-1 = no policy set ,0 =not disburse all,1 =can disburse all}
+      }
+      return $rows; 
+    }
 
+    static function getBenefitDisburseInfo($emp_id,$benefit_id,$payroll)
+    {
+        $str_where = "((target_month =0) OR (target_month = $payroll->month AND target_year = $payroll->year))";
+        $bd = DB::table('benefit_disbursements as bd')
+            ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
+            ->where('bd.emp_id', $emp_id)
+            ->where('bd.benefit_id', $benefit_id)
+            ->whereRaw($str_where)
+            ->selectRaw('bd.benefit_id, bd.withdraw_rate,b.name,bd.target_month')
+            ->first();
+
+        if($bd){
+            return (object)[
+                'benefit_id' => $bd->benefit_id,
+                'withdraw_rate' => $bd->withdraw_rate,
+                'target_month'=>$bd->target_month,
+                'error' => null
+            ];
+        }
+        $bdp = DB::table('benefit_disburse_policies')
+            ->where('benefit_id', $benefit_id)
+            ->whereRaw($str_where)
+            ->selectRaw('benefit_id, withdraw_rate,target_month')
+            ->first();
+        if($bdp){
+            return (object)[
+                'benefit_id' => $bdp->benefit_id,
+                'withdraw_rate' => $bdp->withdraw_rate,
+                'target_month'=>$bdp->target_month,
+                'error' => null
+            ];
+        }
+        $b = DB::table('benefits')->where('id', $benefit_id)->selectRaw('name')->first();
+        return (object)[
+            'error'=>'No disbursement policy found for '.($b?->name ?? 'benefit id '.$benefit_id),
+        ];
+
+    }
+
+/** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable} 
+ * NOTE: $payroll = {days,total_days}. if $payroll is given then getSimpleBenefits() returns the split amount, not total benefit
+*/
+static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
+{
+    if (!in_array($tax_option_id, [1, 2])) {
+        return 0;
+    }
+    $amount = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id)
+                   ->sum('used_amount');
+    if($payroll){
+        return $amount * ($payroll->days / $payroll->total_days);
+    } else return $amount;
+}
+
+static function getFlatRateBenefits($emp_id, $data)
+{
+    return $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3)
+                ->groupBy('flat_tax_rate,can_disburse_all')
+                ->map(fn($group, $rate, $can_disburse_all) => [
+                    'can_disburse_all'=>$can_disburse_all,
+                    'flat_tax_rate' => $rate,
+                    'amount' => $group->sum('used_amount')
+                ])->values()->toArray();
+}
+  
+static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1)
+{
+    if (!$benefits instanceof \Illuminate\Support\Collection) {
+        return '';
+    }
+
+    return $benefits->filter(fn($x) => $x->tax_option_id == 3 && $x->emp_id == $emp_id && $x->can_disburse_all == $can_disburse_all)
+                    ->groupBy('flat_tax_rate')
+                    ->map(fn($group, $rate) => number_format($group->sum('balance'), 2) . '@' . $rate)
+                    ->values()
+                    ->implode('|');
+}
 
     //CalculatePayroll()
     function calculate($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $payroll_id = $id ?? $this->id;
-        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed');
+        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed, start_date, end_date, currency_code');
         if (!$payroll) return DV::error('No Payroll ID provided');
+        $payroll->start_date = convertDate($payroll->start_date);
+        $payroll->start_date = convertDate($payroll->start_date);
         if ($payroll->authorized == 1) return DV::error('Cannot calculate payroll that as been authorized! The next step is to disburse payments to all staffs');
         if ($payroll->disbursed == 1) return DV::error('Cannot calculate any amounts because this payroll has been disbursed already!');
         $start_date = DBX::formatDate('p.start_date', 'start_date');
@@ -588,78 +640,91 @@ class Payroll
                 $row->apply_payroll_tax = DB::table('employees')
                 ->where('id', $row->emp_id)
                 ->value('apply_payroll_tax');
+            
+        $benefits = self::getAllBenefits($row->emp_id,$payroll);
 
-            $payroll_benefit = DB::table('benefit_disburse_policies as bdp')->where('bdp.target_month', 0)->selectRaw('bdp.benefit_id')->get();
-            $except_benefit_ids = [];
-            foreach ($payroll_benefit as $pb){
-                $benefit_id = $pb->benefit_id;
-                $except_benefit_ids [] = $benefit_id;
-                $payroll_benefit_taxable[] = DB::table('payroll_list_benefits')
-                    ->where('emp_id', $row->emp_id)
-                    ->where('payroll_id', $row->payroll_id)
-                    ->where('tax_option_id', 1)
-                    ->where('benefit_id', $benefit_id)
-                    ->sum('used_amount');
+        $benefits_disburse_all_1 = $benefits->filter(fn($x) => $x->tax_option_id == 1 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 1)->sum('balance');
+        $benefits_not_disburse_all_1 = $benefits->filter(fn($x) => $x->tax_option_id == 1 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 0)->sum('balance');
+ 
+        $benefits_disburse_all_2 = $benefits->filter(fn($x) => $x->tax_option_id == 2 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 1)->sum('balance');
+        $benefits_not_disburse_all_2 = $benefits->filter(fn($x) => $x->tax_option_id == 2 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 0)->sum('balance');
 
-                $payroll_benefit_non_tax[] = DB::table('payroll_list_benefits')
-                    ->where('emp_id', $row->emp_id)
-                    ->where('payroll_id', $row->payroll_id)
-                    ->where('tax_option_id', 2)
-                    ->where('benefit_id', $benefit_id)
-                    ->sum('used_amount');
+        // Benefits with flat tax rates (Grouped by flat_tax_rate)
+        $benefits_disburse_all_3 = self::formatFlatRateBenefits($benefits,$row->emp_id,1);
+        $benefits_not_disburse_all_3 = self::formatFlatRateBenefits($benefits,$row->emp_id,0);
+        //todo: Check benefits without disburse policy too
 
-                $payroll_benefit_flat_rate[] = DB::table('payroll_list_benefits')
-                    ->where('emp_id', $row->emp_id)
-                    ->where('payroll_id', $row->payroll_id)
-                    ->where('tax_option_id', 3)
-                    ->where('benefit_id', $benefit_id)
-                    ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
-            }
-            $row->payroll_benefit_taxable =array_sum($payroll_benefit_taxable);
-            $row->payroll_benefit_non_tax =array_sum($payroll_benefit_non_tax);
+            // $payroll_benefit = DB::table('benefit_disburse_policies as bdp')->where('bdp.target_month', 0)->selectRaw('bdp.benefit_id')->get();
+            // $except_benefit_ids = [];
+            // foreach ($payroll_benefit as $pb){
+            //     $benefit_id = $pb->benefit_id;
+            //     $except_benefit_ids [] = $benefit_id;
+            //     $payroll_benefit_taxable[] = DB::table('payroll_list_benefits')
+            //         ->where('emp_id', $row->emp_id)
+            //         ->where('payroll_id', $row->payroll_id)
+            //         ->where('tax_option_id', 1)
+            //         ->where('benefit_id', $benefit_id)
+            //         ->sum('used_amount');
 
-            if ($payroll_benefit_flat_rate) {
-                $usedAmountByTaxRate = [];
-                $benefitFlatRates = $payroll_benefit_flat_rate;
-                foreach ($benefitFlatRates as $bfrs) {
-                    foreach ($bfrs as $bfr) {
-                        // \Log::info('bfr'.json_encode($bfr));
-                    $taxRate = (float) isset($bfr->flat_tax_rate) ? $bfr->flat_tax_rate : 0;
-                    $usedAmount = (float) isset($bfr->used_amount) ? $bfr->used_amount : 0;
+            //     $payroll_benefit_non_tax[] = DB::table('payroll_list_benefits')
+            //         ->where('emp_id', $row->emp_id)
+            //         ->where('payroll_id', $row->payroll_id)
+            //         ->where('tax_option_id', 2)
+            //         ->where('benefit_id', $benefit_id)
+            //         ->sum('used_amount');
 
-                    if (!isset($usedAmountByTaxRate[$taxRate])) {
-                        $usedAmountByTaxRate[$taxRate] = 0;
-                    }
-                        $usedAmountByTaxRate[$taxRate] += $usedAmount;
-                    }
+            //     $payroll_benefit_flat_rate[] = DB::table('payroll_list_benefits')
+            //         ->where('emp_id', $row->emp_id)
+            //         ->where('payroll_id', $row->payroll_id)
+            //         ->where('tax_option_id', 3)
+            //         ->where('benefit_id', $benefit_id)
+            //         ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
+            // }
+            $row->payroll_benefit_taxable = $benefits_disburse_all_1 + $benefits_not_disburse_all_1;
+            $row->payroll_benefit_non_tax = $benefits_disburse_all_2 + $benefits_not_disburse_all_2;
 
-                }
-                $row->payroll_benefit_flat_rate = $benefitFlatRates;
+            // if ($payroll_benefit_flat_rate) {
+            //     $usedAmountByTaxRate = [];
+            //     $benefitFlatRates = $payroll_benefit_flat_rate;
+            //     foreach ($benefitFlatRates as $bfrs) {
+            //         foreach ($bfrs as $bfr) {
+            //             // \Log::info('bfr'.json_encode($bfr));
+            //         $taxRate = (float) isset($bfr->flat_tax_rate) ? $bfr->flat_tax_rate : 0;
+            //         $usedAmount = (float) isset($bfr->used_amount) ? $bfr->used_amount : 0;
+
+            //         if (!isset($usedAmountByTaxRate[$taxRate])) {
+            //             $usedAmountByTaxRate[$taxRate] = 0;
+            //         }
+            //             $usedAmountByTaxRate[$taxRate] += $usedAmount;
+            //         }
+
+            //     }
+                $row->payroll_benefit_flat_rate = $benefits_not_disburse_all_3.$benefits_disburse_all_3;
                 $row->payroll_bfr_used_amount = $usedAmountByTaxRate;
                 // \Log::info('usedAmountByTaxRate'.json_encode($usedAmountByTaxRate));
 
-            }
+            //}
 
-            $row->benefit_taxable = DB::table('payroll_list_benefits')
-                ->where('emp_id', $row->emp_id)
-                ->where('payroll_id', $row->payroll_id)
-                ->where('tax_option_id', 1)
-                ->whereNotIn('benefit_id',$except_benefit_ids)
-                ->sum('used_amount');
+            // $row->benefit_taxable = DB::table('payroll_list_benefits')
+            //     ->where('emp_id', $row->emp_id)
+            //     ->where('payroll_id', $row->payroll_id)
+            //     ->where('tax_option_id', 1)
+            //     ->whereNotIn('benefit_id',$except_benefit_ids)
+            //     ->sum('used_amount');
 
-            $row->benefit_non_tax = DB::table('payroll_list_benefits')
-                ->where('emp_id', $row->emp_id)
-                ->where('payroll_id', $row->payroll_id)
-                ->where('tax_option_id', 2)
-                ->whereNotIn('benefit_id',$except_benefit_ids)
-                ->sum('used_amount');
+            // $row->benefit_non_tax = DB::table('payroll_list_benefits')
+            //     ->where('emp_id', $row->emp_id)
+            //     ->where('payroll_id', $row->payroll_id)
+            //     ->where('tax_option_id', 2)
+            //     ->whereNotIn('benefit_id',$except_benefit_ids)
+            //     ->sum('used_amount');
 
-            $row->benefit_flat_rate = DB::table('payroll_list_benefits')
-                ->where('emp_id', $row->emp_id)
-                ->where('payroll_id', $row->payroll_id)
-                ->where('tax_option_id', 3)
-                ->whereNotIn('benefit_id',$except_benefit_ids)
-                ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
+            // $row->benefit_flat_rate = DB::table('payroll_list_benefits')
+            //     ->where('emp_id', $row->emp_id)
+            //     ->where('payroll_id', $row->payroll_id)
+            //     ->where('tax_option_id', 3)
+            //     ->whereNotIn('benefit_id',$except_benefit_ids)
+            //     ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
 
 
             if($row->allowance){
@@ -993,18 +1058,14 @@ class Payroll
         foreach ($employees as $emp) {
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
-            $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id, $ss);
-            if($payroll_list_benefit->status_code != 200){
-                return $payroll_list_benefit;
-            }
 
+            // $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id, $ss);
+            // if($payroll_list_benefit->status_code != 200)  return $payroll_list_benefit;
                 $taxable_benefits = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->where('tax_option_id',1)->sum('used_amount');
-
                 $tax_base = $emp_salary + ($taxable_benefits ?? 0);
                 if ($emp->salary_currency != $currency_code ) {
                     $tax_base = VSMoney::convert($ss, $tax_base, $emp->salary_currency, $currency_code, (1 / $exchange_rate));
                 }
-
 
             if ($emp->apply_payroll_tax == 1) {
                 if ($currency_code != VSMoney::$national_currency) {
@@ -1012,23 +1073,11 @@ class Payroll
                         $exchange_rate = 1;
                     }
                     $tax_base = VSMoney::convert($ss, $tax_base, VSMoney::$national_currency, $currency_code, $exchange_rate);
-                    $taxInfo = DB::table('tax_brackets')
-                        ->where(function ($query) use ($tax_base) {
-                            $query->whereRaw('lower_amount <= ?', [$tax_base])
-                                ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$tax_base]);
-                        })
-                        ->select('rate', 'bias')
-                        ->first();
+                    $taxInfo = TaxBracket::get($tax_base);  
                     $taxInfo->bias = VSMoney::convert($ss, $taxInfo->bias, VSMoney::$national_currency, $currency_code, (1 / $exchange_rate));
                     // \Log::info('bias : '.json_encode($taxInfo->bias));
                 }
-                    $taxInfo = DB::table('tax_brackets')
-                        ->where(function ($query) use ($tax_base) {
-                            $query->whereRaw('lower_amount <= ?', [$tax_base])
-                                ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$tax_base]);
-                        })
-                        ->select('rate', 'bias')
-                        ->first();
+                    $taxInfo = TaxBracket::get($tax_base); 
                 $emp->tax_rate = (object) [
                     'rate' => $taxInfo->rate,
                     'bias' => $taxInfo->bias
