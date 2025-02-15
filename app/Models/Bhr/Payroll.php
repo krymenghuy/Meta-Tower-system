@@ -713,37 +713,26 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = f
 
 
             $row->allowance = ($row->allowance ?? 0);
+            $row->count_days = $payroll->days;
             $row->benefit_taxable = $benefits_taxable ?? 0;
             $row->benefit_non_tax = $benefits_not_taxable ?? 0;
             $row->benefit_flat_rate = $beneits_flat_rate ?? 0;
         }
-        return $emps;
+        // return $emps;
         foreach ($emps as &$payroll) {
             $payroll->tax_base = 0;
             $payroll->total = 0;
-            $payroll_benefit_taxable = 0;
-            $payroll_benefit_non_tax = 0;
-            $payroll_benefit_flat_rate = 0;
             $benefit_taxable = 0;
             $benefit_non_tax = 0;
             $benefit_flat_rate = 0;
             $benefit_tax = 0;
             $payroll_total = 0;
-            $day_in_month = 0;
-            $total_bfr = 0;
-            $total_pbfr = 0;
 
-            $payroll_benefit_taxable = $payroll->payroll_benefit_taxable;
-            $payroll_benefit_non_tax = $payroll->payroll_benefit_non_tax;
-
-            $full_benefit_taxable = $payroll->benefit_taxable + $payroll_benefit_taxable ?? 0;
-
-            $payroll_start_date = convertDate($payroll->start_date);
-            $payroll_end_date = convertDate($payroll->end_date);
-
-            $salary = ($payroll->salary / $day_in_month) * $payroll_days;
-            $benefit_taxable = ($full_benefit_taxable / $day_in_month) * $payroll_days;
+            $salary = ($payroll->salary / $day_in_month) * $payroll->count_days;
+            $benefit_taxable = ($payroll->benefit_taxable / $day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax / $day_in_month) * $payroll_days;
+
+
 
             $payroll_bfr_used_amount = $payroll->payroll_bfr_used_amount;
             $bfr_used_amount = $payroll->bfr_used_amount;
