@@ -1017,6 +1017,7 @@ class Report
         // return $row;
 
     }
+    
     function getDailyCash($filter, $ss)
     {
 
