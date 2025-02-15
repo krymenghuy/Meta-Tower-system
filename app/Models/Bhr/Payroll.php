@@ -500,7 +500,7 @@ class Payroll
       foreach($rows as &$row){
           $info = self::getBenefitDisburseInfo($emp_id,$row->benefit_id, $payroll);
           $row->can_disburse_all =  $info->error ? -1:  $info->target_month ==0;
-          //NOTE: $row->can_disburse_all = -1 (No disburse policy found).  $row->can_disburse_all  is NOT boolean. it is {-1 = no policy set ,0 =not disburse all,1 =can disburse all}
+          //NOTE: $row->can_disburse_all = -1 (No disbursgit branche policy found).  $row->can_disburse_all  is NOT boolean. it is {-1 = no policy set ,0 =not disburse all,1 =can disburse all}
       }
       return $rows; 
     }
