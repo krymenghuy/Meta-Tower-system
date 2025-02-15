@@ -204,7 +204,6 @@ class Payroll
         return $row;
     }
 
-
     function delete($id = null)
     {
         $id = $id ?? $this->id;
@@ -215,7 +214,6 @@ class Payroll
         DB::table('payrolls')->where('id', $id)->delete();
         return DV::depends(1);
     }
-
 
     static function createDisburseTrack($payroll, $id,$ss){
        $nowTime = date('d-M-Y h:i');
@@ -470,7 +468,7 @@ class Payroll
         }
 
     }
-    
+
     function reset($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -495,58 +493,53 @@ class Payroll
         } else return DV::error('Failed to reset payroll because some payment transactions could not be reversed back to master payroll account');
 
     }
-  
+
     static function getAllBenefits($emp_id, $payroll){
-      $str_emp = $emp_id? 'eb.emp_id ='.$emp_id : '1=1';  
-      $rows= DB::table('emp_benefits as eb')->whereRaw($str_emp)->where('eb.balance','>',0)->selectRaw('eb.id,eb.emp_id, eb.benefit_id,eb.tax_option_id,eb.amount,eb.balance,eb.currency_code,eb.flat_tax_rate')->get();
-      foreach($rows as &$row){
-          $info = self::getBenefitDisburseInfo($emp_id,$row->benefit_id, $payroll);
-          $row->can_disburse_all =  $info->error ? -1:  $info->target_month ==0;
-          //NOTE: $row->can_disburse_all = -1 (No disbursgit branche policy found).  $row->can_disburse_all  is NOT boolean. it is {-1 = no policy set ,0 =not disburse all,1 =can disburse all}
-      }
-      return $rows; 
+      $str_emp = $emp_id? 'pb.emp_id ='.$emp_id : '1=1';
+      $rows= DB::table('payroll_list_benefits as pb')->whereRaw($str_emp)->where('pb.used_amount','>',0)->selectRaw('pb.id,pb.payroll_id,pb.emp_id,pb.benefit_id,pb.used_amount,pb.tax_option_id,pb.target_month')->get();
+      return $rows;
     }
 
-    static function getBenefitDisburseInfo($emp_id,$benefit_id,$payroll)
-    {
-        $str_where = "((target_month =0) OR (target_month = $payroll->month AND target_year = $payroll->year))";
-        $bd = DB::table('benefit_disbursements as bd')
-            ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
-            ->where('bd.emp_id', $emp_id)
-            ->where('bd.benefit_id', $benefit_id)
-            ->whereRaw($str_where)
-            ->selectRaw('bd.benefit_id, bd.withdraw_rate,b.name,bd.target_month')
-            ->first();
+    // static function getBenefitDisburseInfo($emp_id,$benefit_id,$payroll)
+    // {
+    //     $str_where = "((target_month =0) OR (target_month = $payroll->month AND target_year = $payroll->year))";
+    //     $bd = DB::table('benefit_disbursements as bd')
+    //         ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
+    //         ->where('bd.emp_id', $emp_id)
+    //         ->where('bd.benefit_id', $benefit_id)
+    //         ->whereRaw($str_where)
+    //         ->selectRaw('bd.benefit_id, bd.withdraw_rate,b.name,bd.target_month')
+    //         ->first();
 
-        if($bd){
-            return (object)[
-                'benefit_id' => $bd->benefit_id,
-                'withdraw_rate' => $bd->withdraw_rate,
-                'target_month'=>$bd->target_month,
-                'error' => null
-            ];
-        }
-        $bdp = DB::table('benefit_disburse_policies')
-            ->where('benefit_id', $benefit_id)
-            ->whereRaw($str_where)
-            ->selectRaw('benefit_id, withdraw_rate,target_month')
-            ->first();
-        if($bdp){
-            return (object)[
-                'benefit_id' => $bdp->benefit_id,
-                'withdraw_rate' => $bdp->withdraw_rate,
-                'target_month'=>$bdp->target_month,
-                'error' => null
-            ];
-        }
-        $b = DB::table('benefits')->where('id', $benefit_id)->selectRaw('name')->first();
-        return (object)[
-            'error'=>'No disbursement policy found for '.($b?->name ?? 'benefit id '.$benefit_id),
-        ];
+    //     if($bd){
+    //         return (object)[
+    //             'benefit_id' => $bd->benefit_id,
+    //             'withdraw_rate' => $bd->withdraw_rate,
+    //             'target_month'=>$bd->target_month,
+    //             'error' => null
+    //         ];
+    //     }
+    //     $bdp = DB::table('benefit_disburse_policies')
+    //         ->where('benefit_id', $benefit_id)
+    //         ->whereRaw($str_where)
+    //         ->selectRaw('benefit_id, withdraw_rate,target_month')
+    //         ->first();
+    //     if($bdp){
+    //         return (object)[
+    //             'benefit_id' => $bdp->benefit_id,
+    //             'withdraw_rate' => $bdp->withdraw_rate,
+    //             'target_month'=>$bdp->target_month,
+    //             'error' => null
+    //         ];
+    //     }
+    //     $b = DB::table('benefits')->where('id', $benefit_id)->selectRaw('name')->first();
+    //     return (object)[
+    //         'error'=>'No disbursement policy found for '.($b?->name ?? 'benefit id '.$benefit_id),
+    //     ];
 
-    }
+    // }
 
-/** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable} 
+/** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable}
  * NOTE: $payroll = {days,total_days}. if $payroll is given then getSimpleBenefits() returns the split amount, not total benefit
 */
 static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
@@ -554,43 +547,68 @@ static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
     if (!in_array($tax_option_id, [1, 2])) {
         return 0;
     }
-    $amount = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id)
-                   ->sum('used_amount');
-    if($payroll){
-        return $amount * ($payroll->days / $payroll->total_days);
-    } else return $amount;
+        $amount1 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month == 0)
+        ->sum('used_amount');
+        $amount2 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month > 0)
+        ->sum('used_amount');
+        $amount2 = $amount2 * $payroll->days / $payroll->total_days;
+
+        return ($amount1 + $amount2);
 }
 
-static function getFlatRateBenefits($emp_id, $data)
+static function getFlatRateBenefits($data, $emp_id, $payroll = null)
 {
-    return $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3)
-                ->groupBy('flat_tax_rate,can_disburse_all')
-                ->map(fn($group, $rate, $can_disburse_all) => [
-                    'can_disburse_all'=>$can_disburse_all,
-                    'flat_tax_rate' => $rate,
-                    'amount' => $group->sum('used_amount')
-                ])->values()->toArray();
+    $merged = collect(array_merge(
+        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month == 0)
+            ->groupBy('flat_tax_rate')
+            ->map(fn($group, $rate) => [
+                'flat_tax_rate' => $rate,
+                'amount' => $group->sum('used_amount')
+            ])
+            ->values()
+            ->toArray(),
+        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month > 0)
+            ->groupBy('flat_tax_rate')
+            ->map(fn($group, $rate) => [
+                'flat_tax_rate' => $rate,
+                'amount' => $group->sum('used_amount') * ($payroll->days / $payroll->total_days)
+            ])
+            ->values()
+            ->toArray()
+    ));
+
+    // Group by flat_tax_rate and sum up the amounts
+    return $merged->groupBy('flat_tax_rate')
+                  ->map(fn($group, $rate) => [
+                      'flat_tax_rate' => $rate,
+                      'amount' => $group->sum('amount')
+                  ])
+                  ->values()
+                  ->toArray();
 }
-  
-static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1)
+   
+static function formatFlatRateBenefits($benefits, $emp_id)
 {
+    // Check if $benefits is a valid instance of Collection
     if (!$benefits instanceof \Illuminate\Support\Collection) {
+        // Optionally, handle this case, e.g., return an empty string or log a warning
         return '';
     }
 
-    return $benefits->filter(fn($x) => $x->tax_option_id == 3 && $x->emp_id == $emp_id && $x->can_disburse_all == $can_disburse_all)
+    // Process the benefits as before
+    return $benefits->filter(fn($x) => $x->tax_option_id == 3 && $x->emp_id == $emp_id)
                     ->groupBy('flat_tax_rate')
                     ->map(fn($group, $rate) => number_format($group->sum('balance'), 2) . '@' . $rate)
                     ->values()
                     ->implode('|');
 }
-
+ 
     //CalculatePayroll()
     function calculate($id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $payroll_id = $id ?? $this->id;
-        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed, start_date, end_date, currency_code');
+        $payroll = self::getProps($payroll_id, 'id,name,authorized,disbursed,month,year,start_date, end_date,currency_code');
         if (!$payroll) return DV::error('No Payroll ID provided');
         $payroll->start_date = convertDate($payroll->start_date);
         $payroll->start_date = convertDate($payroll->start_date);
@@ -599,12 +617,17 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
+        $day_in_month = days_in_month($payroll->month, $payroll->year);
+        $payroll_days = dateDiff_days($payroll->start_date, $payroll->end_date) + 1;
+        $payroll->days = $payroll_days;
+        $payroll->total_days = $day_in_month;
+
         $emps = DB::table('payroll_list as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
-            // ->whereIn('pl.emp_id', [7,8])
+            ->where('pl.emp_id', 7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -623,8 +646,7 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                         pl.deduction,
                         e.status_id,
                         e.joining_date,
-                        e.last_rejoin_date,
-                        e.apply_payroll_tax
+                        e.last_rejoin_date
                        ')
             ->orderBy('e.id')
             ->get();
@@ -635,6 +657,47 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
         $fail_count = 0;
 
         foreach ($emps as $row) {
+
+            $resigned_or_new_start = false;
+            $count_days = $payroll->days;
+            $count_days_resign = -1;
+            $count_days_rejoin = -1;
+
+            $resign = self::count_days_resign($row->emp_id, $payroll->start_date, $payroll->end_date);
+            if ($resign->error) {
+                $issues_count++;
+                $fail_emps[] = (object)[
+                    'id' => $row->emp_id,
+                    'code' => $row->emp_code,
+                    'name' => $row->emp_name,
+                    'issue' => $resign->error
+                ];
+            } else {
+                $count_days_resign = $resign->count_days;
+                $resigned_or_new_start = $resign->resigned_or_new_start;
+            }
+
+            $rejoin = self::count_days_rejoin($row->status_id, $row->last_rejoin_date, $row->joining_date, $payroll->start_date, $payroll->end_date);
+            if ($rejoin->error) {
+                $issues_count++;
+                $fail_emps[] = (object)[
+                    'id' => $row->emp_id,
+                    'code' => $row->emp_code,
+                    'name' => $row->emp_name,
+                    'issue' => $rejoin->error
+                ];
+            } else {
+                if ($rejoin->count_days >= 0) {
+                    $count_days_rejoin = $rejoin->count_days;
+                    $resigned_or_new_start = $rejoin->resigned_or_new_start;
+                }
+            }
+            if ($count_days_resign >= 0 || $count_days_rejoin >= 0) {
+                $count_days = ($count_days_resign < 0 ? 0 : $count_days_resign) + ($count_days_rejoin < 0 ? 0 : $count_days_rejoin);
+            }
+
+            $payroll->days = $count_days;
+
             $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
                 ->selectRaw('id,allowance,currency_code as allowance_currency')
@@ -643,94 +706,13 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                 $row->apply_payroll_tax = DB::table('employees')
                 ->where('id', $row->emp_id)
                 ->value('apply_payroll_tax');
-            
+
         $benefits = self::getAllBenefits($row->emp_id,$payroll);
+        $benefits_taxable = self::getSimpleBenefits($benefits,$row->emp_id,1,$payroll);
+        $benefits_not_taxable = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll);
 
-        $benefits_disburse_all_1 = $benefits->filter(fn($x) => $x->tax_option_id == 1 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 1)->sum('balance');
-        $benefits_not_disburse_all_1 = $benefits->filter(fn($x) => $x->tax_option_id == 1 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 0)->sum('balance');
+        $beneits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
  
-        $benefits_disburse_all_2 = $benefits->filter(fn($x) => $x->tax_option_id == 2 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 1)->sum('balance');
-        $benefits_not_disburse_all_2 = $benefits->filter(fn($x) => $x->tax_option_id == 2 && $x->emp_id == $row->emp_id && $x->can_disburse_all == 0)->sum('balance');
-
-        // Benefits with flat tax rates (Grouped by flat_tax_rate)
-        $benefits_disburse_all_3 = self::formatFlatRateBenefits($benefits,$row->emp_id,1);
-        $benefits_not_disburse_all_3 = self::formatFlatRateBenefits($benefits,$row->emp_id,0);
-        //todo: Check benefits without disburse policy too
-
-            // $payroll_benefit = DB::table('benefit_disburse_policies as bdp')->where('bdp.target_month', 0)->selectRaw('bdp.benefit_id')->get();
-            // $except_benefit_ids = [];
-            // foreach ($payroll_benefit as $pb){
-            //     $benefit_id = $pb->benefit_id;
-            //     $except_benefit_ids [] = $benefit_id;
-            //     $payroll_benefit_taxable[] = DB::table('payroll_list_benefits')
-            //         ->where('emp_id', $row->emp_id)
-            //         ->where('payroll_id', $row->payroll_id)
-            //         ->where('tax_option_id', 1)
-            //         ->where('benefit_id', $benefit_id)
-            //         ->sum('used_amount');
-
-            //     $payroll_benefit_non_tax[] = DB::table('payroll_list_benefits')
-            //         ->where('emp_id', $row->emp_id)
-            //         ->where('payroll_id', $row->payroll_id)
-            //         ->where('tax_option_id', 2)
-            //         ->where('benefit_id', $benefit_id)
-            //         ->sum('used_amount');
-
-            //     $payroll_benefit_flat_rate[] = DB::table('payroll_list_benefits')
-            //         ->where('emp_id', $row->emp_id)
-            //         ->where('payroll_id', $row->payroll_id)
-            //         ->where('tax_option_id', 3)
-            //         ->where('benefit_id', $benefit_id)
-            //         ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
-            // }
-            $row->payroll_benefit_taxable = $benefits_disburse_all_1 + $benefits_not_disburse_all_1;
-            $row->payroll_benefit_non_tax = $benefits_disburse_all_2 + $benefits_not_disburse_all_2;
-
-            // if ($payroll_benefit_flat_rate) {
-            //     $usedAmountByTaxRate = [];
-            //     $benefitFlatRates = $payroll_benefit_flat_rate;
-            //     foreach ($benefitFlatRates as $bfrs) {
-            //         foreach ($bfrs as $bfr) {
-            //             // \Log::info('bfr'.json_encode($bfr));
-            //         $taxRate = (float) isset($bfr->flat_tax_rate) ? $bfr->flat_tax_rate : 0;
-            //         $usedAmount = (float) isset($bfr->used_amount) ? $bfr->used_amount : 0;
-
-            //         if (!isset($usedAmountByTaxRate[$taxRate])) {
-            //             $usedAmountByTaxRate[$taxRate] = 0;
-            //         }
-            //             $usedAmountByTaxRate[$taxRate] += $usedAmount;
-            //         }
-
-            //     }
-                $row->payroll_benefit_flat_rate = $benefits_not_disburse_all_3.$benefits_disburse_all_3;
- 
-                $row->payroll_bfr_used_amount = $usedAmountByTaxRate;
-                // \Log::info('usedAmountByTaxRate'.json_encode($usedAmountByTaxRate));
-
-            //}
-
-            // $row->benefit_taxable = DB::table('payroll_list_benefits')
-            //     ->where('emp_id', $row->emp_id)
-            //     ->where('payroll_id', $row->payroll_id)
-            //     ->where('tax_option_id', 1)
-            //     ->whereNotIn('benefit_id',$except_benefit_ids)
-            //     ->sum('used_amount');
-
-            // $row->benefit_non_tax = DB::table('payroll_list_benefits')
-            //     ->where('emp_id', $row->emp_id)
-            //     ->where('payroll_id', $row->payroll_id)
-            //     ->where('tax_option_id', 2)
-            //     ->whereNotIn('benefit_id',$except_benefit_ids)
-            //     ->sum('used_amount');
-
-            // $row->benefit_flat_rate = DB::table('payroll_list_benefits')
-            //     ->where('emp_id', $row->emp_id)
-            //     ->where('payroll_id', $row->payroll_id)
-            //     ->where('tax_option_id', 3)
-            //     ->whereNotIn('benefit_id',$except_benefit_ids)
-            //     ->selectRaw('emp_benefit_id,used_amount,flat_tax_rate')->get();
-
-
             if($row->allowance){
                 foreach ($row->allowance as $allowance) {
                             if ($allowance->allowance_currency != $row->payroll_currency) {
@@ -740,32 +722,13 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                         $row->allowance = $row->allowance->sum('allowance');
             }
 
-            if ($row->benefit_flat_rate) {
-                $usedAmountByTaxRate = [];
-                $benefitFlatRates = $row->benefit_flat_rate;
-                foreach ($benefitFlatRates as $bfr) {
-                    $taxRate =  $bfr->flat_tax_rate;
-                    $usedAmount = $bfr->used_amount;
 
-                    if (!isset($usedAmountByTaxRate[$taxRate])) {
-                        $usedAmountByTaxRate[$taxRate] = 0;
-                    }
-
-                    $usedAmountByTaxRate[$taxRate] += $usedAmount;
-                }
-                $row->benefit_flat_rate = $benefitFlatRates;
-                $row->bfr_used_amount = $usedAmountByTaxRate;
-            }
-            $row->all_benefit_taxable = $row->benefit_taxable + $row->payroll_benefit_taxable ?? 0;
-            $row->all_benefit_non_tax = $row->benefit_non_tax + $row->payroll_benefit_non_tax ?? 0;
-
-            $row->deduction = ($row->deduction ?? 0);
             $row->allowance = ($row->allowance ?? 0);
-            $row->benefit_taxable = ($row->benefit_taxable ?? 0);
-            $row->benefit_non_tax = ($row->benefit_non_tax ?? 0);
-            $row->benefit_flat_rate = ($row->benefit_flat_rate ?? 0);
+            $row->benefit_taxable = $benefits_taxable ?? 0;
+            $row->benefit_non_tax = $benefits_not_taxable ?? 0;
+            $row->benefit_flat_rate = $beneits_flat_rate ?? 0;
         }
-        // return $emps;
+        return $emps;
         foreach ($emps as &$payroll) {
             $payroll->tax_base = 0;
             $payroll->total = 0;
@@ -776,10 +739,6 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
             $benefit_non_tax = 0;
             $benefit_flat_rate = 0;
             $benefit_tax = 0;
-            $salary = 0;
-            $last_salary = 0;
-            $last_allowance = 0;
-            $last_bias = 0;
             $payroll_total = 0;
             $day_in_month = 0;
             $total_bfr = 0;
@@ -789,13 +748,12 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
             $payroll_benefit_non_tax = $payroll->payroll_benefit_non_tax;
 
             $full_benefit_taxable = $payroll->benefit_taxable + $payroll_benefit_taxable ?? 0;
-            $day_in_month = days_in_month($payroll->month, $payroll->year);
+
             $payroll_start_date = convertDate($payroll->start_date);
             $payroll_end_date = convertDate($payroll->end_date);
 
-            $payroll_days = dateDiff_days($payroll_start_date, $payroll_end_date) + 1;
             $salary = ($payroll->salary / $day_in_month) * $payroll_days;
-            $benefit_taxable = ($payroll->benefit_taxable / $day_in_month) * $payroll_days;
+            $benefit_taxable = ($full_benefit_taxable / $day_in_month) * $payroll_days;
             $benefit_non_tax = ($payroll->benefit_non_tax / $day_in_month) * $payroll_days;
 
             $payroll_bfr_used_amount = $payroll->payroll_bfr_used_amount;
@@ -807,9 +765,6 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
             foreach($bfr_used_amount as &$bfr)
             {
                $bfr = ($bfr / $day_in_month) * $payroll_days;
-               if (count($payroll_bfr_used_amount) === 0) {
-                    $bfr_data[0] = $bfr;
-                }
             }
 
             foreach($payroll_bfr_used_amount as $p_key => &$pbrf){
@@ -825,49 +780,14 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                     }
                 }
             }
-            // \Log::info('benefit_taxable: ' . json_encode($benefit_taxable). 'payroll_benefit_taxable: ' . json_encode($payroll_benefit_taxable). 'benefit_non_tax: ' . json_encode($benefit_non_tax));
+
             // return $bfr_data;
-            $resigned_or_new_start = false;
-            $count_days = $payroll_days;
-            $count_days_resign = -1;
-            $count_days_rejoin = -1;
-            $salary_used = $salary;
-            $all_benefit_taxable = $benefit_taxable + $payroll_benefit_taxable;
-            $all_benefit_non_tax = $benefit_non_tax + $payroll_benefit_non_tax;
-            $all_benefit_flat_rate = array_sum($bfr_data);
+            // $salary_used = $salary;
+            // $all_benefit_taxable = $benefit_taxable + $payroll_benefit_taxable;
+            // $all_benefit_non_tax = $benefit_non_tax + $payroll_benefit_non_tax;
+            // $all_benefit_flat_rate = array_sum($bfr_data);
 
-            $resign = self::count_days_resign($payroll->emp_id, $payroll_start_date, $payroll_end_date);
-            if ($resign->error) {
-                $issues_count++;
-                $fail_emps[] = (object)[
-                    'id' => $payroll->emp_id,
-                    'code' => $payroll->emp_code,
-                    'name' => $payroll->emp_name,
-                    'issue' => $resign->error
-                ];
-            } else {
-                $count_days_resign = $resign->count_days;
-                $resigned_or_new_start = $resign->resigned_or_new_start;
-            }
 
-            $rejoin = self::count_days_rejoin($payroll->status_id, $payroll->last_rejoin_date, $payroll->joining_date, $payroll_start_date, $payroll_end_date);
-            if ($rejoin->error) {
-                $issues_count++;
-                $fail_emps[] = (object)[
-                    'id' => $payroll->emp_id,
-                    'code' => $payroll->emp_code,
-                    'name' => $payroll->emp_name,
-                    'issue' => $rejoin->error
-                ];
-            } else {
-                if ($rejoin->count_days >= 0) {
-                    $count_days_rejoin = $rejoin->count_days;
-                    $resigned_or_new_start = $rejoin->resigned_or_new_start;
-                }
-            }
-            if ($count_days_resign >= 0 || $count_days_rejoin >= 0) {
-                $count_days = ($count_days_resign < 0 ? 0 : $count_days_resign) + ($count_days_rejoin < 0 ? 0 : $count_days_rejoin);
-            }
 
             $allowance = $payroll->allowance;
             $allowance_used = ($allowance / $day_in_month) * $payroll_days;
@@ -882,7 +802,7 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                 $bias_used = ($bias / $day_in_month) * $payroll_days;
                 $bias_per_day = $bias_used / $payroll_days;
                 $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
-                // \Log::info('all_benefit_taxable: ' . json_encode($all_benefit_taxable).'all_benefit_non_tax: ' . json_encode($all_benefit_non_tax));
+
                 if ($all_benefit_taxable > 0) {
                     $salary_used = $salary + $all_benefit_taxable;
                     $salary_per_day = $salary_used / $payroll_days;
@@ -893,25 +813,21 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                         $payroll->tax_base = 0;
                     }
                     $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
-                    // \Log::info('payroll tax base: ' . json_encode($payroll->tax_base). ' payroll total: ' . json_encode($payroll->total));
                 }
 
                 if ($all_benefit_non_tax > 0) {
                     if ($all_benefit_taxable > 0) {
                         $payroll->total += $all_benefit_non_tax;
-                        // \Log::info('payroll total: ' . json_encode($payroll->total));
                     } else {
                         $salary_used = $salary;
                         $salary_per_day = $salary_used / $payroll_days;
                         $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
-                        // \Log::info('last_salary : '.json_encode($last_salary).'last_allowance : '.json_encode($last_allowance).'tax_rate : '.json_encode($tax_rate).'last_bias : '.json_encode($last_bias));
                         if ($payroll->tax_base < 0) {
                             $payroll->tax_base = 0;
                         }
                         $payroll->total = ($last_salary + $all_benefit_non_tax) - ($payroll->tax_base + $deduction);
-                        // \Log::info('payroll tax base: ' . json_encode($payroll->tax_base). ' payroll total: ' . json_encode($payroll->total));
                     }
                 }
 
@@ -920,30 +836,29 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                     $benefit_tax = 0;
                     $benefit_flat_rate_data = [];
 
-                    if ($all_benefit_taxable > 0 || $all_benefit_non_tax > 0) {
+                    if ($benefit_taxable > 0 || $benefit_non_tax > 0) {
                         if (isset($bfr_data) && !empty($bfr_data)) {
-                            foreach ($bfr_data as $key => $bfr) {
-                                $benefit_flat_rate = $bfr;
-                                $flat_tax_rate = $key;
+                            foreach ($bfr_data as $data) {
+                                $benefit_flat_rate = $data['benefit_flat_rate'];
+                                $benefit_flat_tax_rate = $data['flat_tax_rate'];
 
                                 $benefit_flat_rate_sum += $benefit_flat_rate;
-                                $benefit_tax += $benefit_flat_rate * ($flat_tax_rate / 100);
+                                $benefit_tax += $benefit_flat_rate * ($benefit_flat_tax_rate / 100);
                             }
                         }
                         $payroll->total = ($payroll->total + $benefit_flat_rate_sum) - $benefit_tax;
-
-                        // \Log::info(['benefit_flat_rate_sum' => $benefit_flat_rate_sum, 'benefit_tax' => $benefit_tax],);
+                        // \Log::info(['benefit_flat_rate_sum' => $benefit_flat_rate_sum, 'benefit_tax' => $benefit_tax]);
                     } else {
                         $salary_used = $salary;
                         $salary_per_day = $salary_used / $payroll_days;
                         $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
-                        if (isset($bfr_data) && !empty($bfr_data)) {
-                            foreach ($bfr_data as $key => $bfr) {
-                                $benefit_flat_rate = $bfr;
-                                $flat_tax_rate = $key;
+                        if (isset($payroll->benefit_flat_rate_data) && !empty($payroll->benefit_flat_rate_data)) {
+                            foreach ($payroll->benefit_flat_rate_data as $data) {
+                                $benefit_flat_rate = $data['benefit_flat_rate'];
+                                $benefit_flat_tax_rate = $data['flat_tax_rate'];
 
                                 $benefit_flat_rate_sum += $benefit_flat_rate;
-                                $benefit_tax += $benefit_flat_rate * ($flat_tax_rate / 100);
+                                $benefit_tax += $benefit_flat_rate * ($benefit_flat_tax_rate / 100);
                             }
                         }
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
@@ -953,7 +868,7 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                         $payroll->total = ($last_salary + $benefit_flat_rate_sum) - ($payroll->tax_base + $benefit_tax + $deduction);
                     }
                 }
-                if ($all_benefit_taxable <= 0 && $all_benefit_non_tax <= 0 && $all_benefit_flat_rate <= 0) {
+                if ($benefit_taxable <= 0 && $benefit_non_tax <= 0 && $benefit_flat_rate <= 0) {
                     $salary_used = $salary;
                     $salary_per_day = $salary_used / $payroll_days;
                     $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
@@ -974,35 +889,35 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                 $salary_per_day = $salary_used / $payroll_days;
                 $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
 
-                if (isset($bfr_data) && !empty($bfr_data)) {
-                    foreach ($bfr_data as $key => $bfr) {
-                        $benefit_flat_rate = $bfr;
-                        $flat_tax_rate = $key;
+                if (isset($payroll->benefit_flat_rate_data) && !empty($payroll->benefit_flat_rate_data)) {
+                    foreach ($payroll->benefit_flat_rate_data as $data) {
+                        $benefit_flat_rate = $data['benefit_flat_rate'];
+                        $benefit_flat_tax_rate = $data['flat_tax_rate'];
+
                         $benefit_flat_rate_sum += $benefit_flat_rate;
                     }
                 }
                 $payroll->tax_base = 0;
                 $payroll->total = ($last_salary + $benefit_taxable + $benefit_non_tax + $benefit_flat_rate_sum) - $deduction;
-                // \Log::info('benefit_flat_rate_sum : '.json_encode($benefit_flat_rate_sum).'payroll total: ' . json_encode($payroll->total));
             }
 
-            // $flat_rate_details = null;
-            // if (isset($bfr_data)) {
-            //     foreach ($bfr_data as $key => $data) {
-            //         $flat_rate_details .= formatNumber($data, 2) . '@' . $key . '|';
-            //     }
-            // }
-            // \Log::info('flat_rate_details : ' . $flat_rate_details);
+            $flat_rate_details = null;
+            if (isset($payroll->benefit_flat_rate_data)) {
+                foreach ($payroll->benefit_flat_rate_data as $data) {
+                    $flat_rate_details .= formatNumber($data['benefit_flat_rate'], 2) . '@' . $data['flat_tax_rate'] . '|';
+                }
+            }
             $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
                 'count_day' => $count_days,
                 'p_salary' => $last_salary,
-                'benefit_taxable' => $all_benefit_taxable,
-                'benefit_non_tax' => $all_benefit_non_tax,
-                // 'benefit_flat_rate' => $flat_rate_details,
+                'benefit_taxable' => $benefit_taxable,
+                'benefit_non_tax' => $benefit_non_tax,
+                'benefit_flat_rate' => $flat_rate_details,
                 'p_allowance' => $last_allowance,
-                'p_bias' => $last_bias,
+                // 'tax_rate' => $tax_rate,
+                // 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
 
@@ -1076,8 +991,8 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
             $emp_salary = $emp->salary;
             $tax_base = $emp_salary;
 
-            // $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp->emp_id, $ss);
-            // if($payroll_list_benefit->status_code != 200)  return $payroll_list_benefit;
+            $payroll_list_benefit = Employee::savePayrollListBenefit($payroll_id, $emp->emp_id, $ss);
+            if($payroll_list_benefit->status_code != 200)
                 $taxable_benefits = DB::table('payroll_list_benefits')->where('payroll_id', $payroll_id)->where('emp_id', $emp->emp_id)->where('tax_option_id',1)->sum('used_amount');
                 $tax_base = $emp_salary + ($taxable_benefits ?? 0);
                 if ($emp->salary_currency != $currency_code ) {
@@ -1090,11 +1005,11 @@ static function formatFlatRateBenefits($benefits, $emp_id, $can_disburse_all = 1
                         $exchange_rate = 1;
                     }
                     $tax_base = VSMoney::convert($ss, $tax_base, VSMoney::$national_currency, $currency_code, $exchange_rate);
-                    $taxInfo = TaxBracket::get($tax_base);  
+                    $taxInfo = TaxBracket::get($tax_base);
                     $taxInfo->bias = VSMoney::convert($ss, $taxInfo->bias, VSMoney::$national_currency, $currency_code, (1 / $exchange_rate));
                     // \Log::info('bias : '.json_encode($taxInfo->bias));
                 }
-                    $taxInfo = TaxBracket::get($tax_base); 
+                    $taxInfo = TaxBracket::get($tax_base);
                 $emp->tax_rate = (object) [
                     'rate' => $taxInfo->rate,
                     'bias' => $taxInfo->bias
