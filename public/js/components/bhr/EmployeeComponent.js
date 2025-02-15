@@ -648,11 +648,11 @@ var EmployeeComponent =  new function () {
                                         <P class="pl-5 pr-2">:</p>
                                         <P class="text-white">${data.spouse_occ_code ?? "ទទេ"}</p>
                                     </div>
-                                    <div class="d-flex">
+                                    <!-- <div class="d-flex">
                                         <P class="text-nowrap width-p " vslang="titles.Country">Country</p>
                                         <P class="pl-5 pr-2">:</p>
                                         <P class="text-white">${data.city_name ?? "ទទេ"}</p>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                                  </div>`,

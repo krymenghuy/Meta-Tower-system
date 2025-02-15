@@ -388,7 +388,7 @@ var ReportCenterComponent = new (function () {
                             <i class="fa-solid px-1 fa-print"></i>
                             <span class="" vslang="buttons.Print"></span>
                         </button>
-                        <button data-name="btn_excel" class="btn-pdf" type="button">
+                        <button data-name="btn_excel" class="btn-pdf" id="btn_excel" type="button">
                             <i class="fa-solid px-1 text-primary-custom fa-file-pdf"></i>
                             <span class="text-primary-custom" vslang="buttons.Export"></span>
                         </button>
@@ -668,6 +668,12 @@ var ReportCenterComponent = new (function () {
                             res.error_message || "Something went wrong!"
                         );
                         mThis.isBusy = false;
+                    }
+                    if (res.data.title === "Print Employee CV") {
+                        const btn_excel = mThis.self.find("#btn_excel");
+                        if (btn_excel.length > 0 && btn_excel[0]) {
+                            btn_excel[0].classList.add("d-none");
+                        }
                     }
 
                     if (d && !$.isEmptyObject(d)) {
