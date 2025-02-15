@@ -33,11 +33,15 @@ var PayrollListComponent = new (function () {
             className: "align-middle text-start w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl border border-primary" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span class="text-nowrap">${data.emp_name ?? ''}</span>
+                                <span class="text-nowrap">${
+                                    data.emp_name ?? ""
+                                }</span>
                                 <br/>
-                                <small class="text-dark">${data.emp_position ?? ''}</small>
+                                <small class="text-dark">${
+                                    data.emp_position ?? ""
+                                }</small>
                             </div>
                         </div>`;
             }

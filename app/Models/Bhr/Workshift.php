@@ -63,7 +63,7 @@ class WorkShift
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-        $updated = DBX::formatTime('ws.update_date','update_date');
+        $updated = DBX::formatTime('ws.updated_at','updated_at');
         $query = DB::table('work_shifts as ws')
             ->whereRaw($str_search)
             ->selectRaw('ws.id, ws.name,'.$updated.',ws.update_user')->orderBy('ws.id', 'ASC');

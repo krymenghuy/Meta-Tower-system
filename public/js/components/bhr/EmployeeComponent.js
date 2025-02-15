@@ -2571,7 +2571,6 @@ var EmployeeComponent =  new function () {
                 EmployeeComponent.EmployeeListView.showPage(EmployeeComponent.getFilterData());
             },
         };
-        if (!AuthManager.allowed(208,false)) return;
         EmployeeDialog.show(op);
     };
 
@@ -2588,7 +2587,6 @@ var EmployeeComponent =  new function () {
                 mThis.EmployeeListView.showPage();
             },
         };
-        if (!AuthManager.allowed(316)) return;
         CreateContractDialog.show(op);
 
     };
