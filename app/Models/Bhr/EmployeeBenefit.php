@@ -44,7 +44,7 @@ class EmployeeBenefit
             'tax_option_id' => '1|choice|1,2,3|default=1',
             'flat_tax_rate' => '0|number',
             'effective_date' => '0|date',
-            'balance' => '0|number|default=0',
+            // 'balance' => '0|number|default=0',
             'amount' => '1|number',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
             'remarks' => '0|string|1-250',
@@ -59,12 +59,19 @@ class EmployeeBenefit
         $inputs = $res->values;
         $d = (object)$inputs;
         $inputs['effective_date'] = convertDate($d->effective_date);
-        // if(!$id){
+        if(!$id){
         //     $id = self::getEmpBenefitID($d->emp_id,$d->benefit_id,$d->effective_date);
         //     if($id){
         //         return DV::error('Duplicate Benefit id');
         //     }
-        // }
+            $inputs['balance'] = $d->amount;
+
+        }else {
+            $row = DB::table('emp_benefits')->where('id', $id)->selectRaw('balance,currency_code')->first();
+            if ($row->balance > $d->amount) {
+                return DV::error('Balance cannot be less than previous balance ??::'. VSMoney::formatAmount($row->balance, $row->currency_code));
+            }
+        }
 
         $id = DBX::saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id) {
