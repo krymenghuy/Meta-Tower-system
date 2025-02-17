@@ -2,6 +2,11 @@
     <div id="sub_content">
         <div class="d-flex justify-content-between w-100 p-4 mt-2 rounded-2 shadow" id="_divFilter">
             <div class="d-flex align-items-center w-50 gap-2">
+                <button class="d-flex justify-content-center align-items-center rounded-circle border-0 "
+                    style="background-color:#2b3991; width: 50px; height: 40px;" id="_btnBackToPayroll">
+                    <i class="fa-solid fa-reply-all tool-tip fs-6 text-white"> <span
+                            class="tool-tiptext fs-6 mt-2">Back</span></i>
+                </button>
                 <div class="d-flex align-items-center justify-content-end  w-50 ">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
                 </div>
@@ -17,8 +22,10 @@
             <div class="d-flex align-items-center justify-content-end w-50 px-3 gap-3">
                 <div class="d-flex justify-content-center w-50">
                     <div class="position-relative w-100">
-                        <input type="text" class="form-control filter-field btn_search ps-5" id="_search_payroll_list" placeholder="Search...">
-                        <i class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
+                        <input type="text" class="form-control filter-field btn_search ps-5"
+                            id="_search_payroll_list" placeholder="Search...">
+                        <i
+                            class="fa-solid fa-magnifying-glass position-absolute top-50 start-0 translate-middle-y ms-4 text-muted"></i>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
@@ -34,6 +41,11 @@
                         style="width: 40px; height: 40px;" id="_btnCalculate">
                         <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;"><span
                                 class="tool-tiptext fs-6">Calculate</span></i>
+                    </button>
+                    <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
+                        style="width: 40px; height: 40px;" id="_btnAuthorized">
+                        <i class="fa-solid fa-check tool-tip fs-6" style="color: #fff;"> <span
+                                class="tool-tiptext fs-6">Authorized</span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnDisburse">
@@ -69,7 +81,8 @@
             </div>
         </div>
 
-        <div id="payment_info" class="payment_details px-4 mt-3" style="height:500px; overflow-y:auto; overflow-x:hidden; scrollbar-width: none;"></div>
+        <div id="payment_info" class="payment_details px-4 mt-3"
+            style="height:500px; overflow-y:auto; overflow-x:hidden; scrollbar-width: none;"></div>
     </div>
 
 

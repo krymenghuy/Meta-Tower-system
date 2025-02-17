@@ -18,17 +18,20 @@ var EmployeeBenefitComponent = new (function () {
 
     mThis.cols = [
         {
-            title:"",
-            className:"align-middle",
-        }
-        ,
+            title: "",
+            className: "align-middle",
+        },
         {
             title: "Name",
             className: "align-middle",
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png" }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <img class="image-student-tbl" src="${
+                        data.image_url ||
+                        main_view.asset_url +
+                            "/images/default/default-staff.png"
+                    }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.emp_name ?? ""
@@ -51,29 +54,36 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
 
-       
         {
             title: "Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="text-primary p-0 m-0">${data.effective_date ?? "N/A"}</p>`;
-            }
+                return `<p class="text-primary p-0 m-0">${
+                    data.effective_date ?? "N/A"
+                }</p>`;
+            },
         },
         {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.amount, data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.amount,
+                    data.currency_code
+                )}</p>`;
+            },
         },
         {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.balance, data.currency_code)}</p>`;
-            }
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.balance,
+                    data.currency_code
+                )}</p>`;
+            },
         },
-      
+
         {
             title: "Tax Option",
             className: "align-middle",
@@ -90,7 +100,9 @@ var EmployeeBenefitComponent = new (function () {
             title: "Flat Tax Rate",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.flat_tax_rate ?? "0"} %</p>`;
+                return data.tax_option_id == "3"
+                    ? `<p class="p-0 m-0">${data.flat_tax_rate ?? "0"} %</p>`
+                    : `<p class="p-0 m-0">N/A</p>`;
             },
         },
         {
@@ -140,6 +152,7 @@ var EmployeeBenefitComponent = new (function () {
         };
         mThis.btnImport.onclick = (e) => {
             e.preventDefault();
+            if (!AuthManager.allowed(325)) return;
             FileChooser.chooseFile({
                 accept: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             },(d) => {

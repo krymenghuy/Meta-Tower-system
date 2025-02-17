@@ -259,7 +259,7 @@ class Payroll
         if(!$disburse_id) return;
         $payroll = self::getProps($payroll_id,'exchange_rate, currency_code');
         if(!$payroll) return DV::error('payroll ID does not exist');
-        $emps = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->join('payroll_list_benefits as pb','p.id','=','l.payroll_id')->where('p.id',$payroll_id)->selectRaw('id,emp_id, pb.emp_benefit_id')->get();
+        $emps = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->join('payroll_list_benefits as pb','p.id','=','l.payroll_id')->where('p.id',$payroll_id)->selectRaw('pb.emp_id, pb.emp_benefit_id')->get();
         DB::table('payroll_list_benefits')->where('payroll_id',$payroll_id)->update(['disbursed'=>0,'disburse_id'=>null]);
         //$since_date = date('Y-m-d', strtotime('-12 months'));
         //$since_last_year = DBX::convertToDate('pb.updated_at')." >='$since_date'";
@@ -268,7 +268,7 @@ class Payroll
             //$rows = DB::table('emp_benefits as b')->join('payroll_list_benefits as pb','b.id','=','pb.emp_benefit_id')->where('pb.payroll_id','<>',$payroll_id)->where('b.emp_id',$emp->id)->where('pb.disbursed',1)->whereNotNull('pb.disburse_id')->whereRaw($since_last_year)->selectRaw('emp_benefit_id')->get();
             foreach($emps as $row){
                  $emp_benefit_id = $row->emp_benefit_id ?? 0;
-                 DB::statement(DB::raw("UPDATE emp_benefits SET balance = amount - (SELECT SUM(used_amount) FROM payroll_list_benefits WHERE emp_benefit_id = $emp_benefit_id AND disbursed =1 AND disburse_id IS NOT NULL) WHERE id = $emp_benefit_id"));
+                 DB::statement(DB::raw("UPDATE emp_benefits SET balance = amount - IFNULL((SELECT SUM(used_amount) FROM payroll_list_benefits WHERE emp_benefit_id = $emp_benefit_id AND disbursed =1 AND disburse_id IS NOT NULL),0) WHERE id = $emp_benefit_id"));
                  $last_disburse_id = DB::table('payroll_list_benefits AS pb')->where('emp_benefit_id',$emp_benefit_id)->whereNotNull('pb.disburse_id')->orderByRaw('created_at DESC')->value('disburse_id');
                  DB::table('emp_benefits')->where('id',$emp_benefit_id)->update(['last_disburse_id'=>$last_disburse_id]);
             }
