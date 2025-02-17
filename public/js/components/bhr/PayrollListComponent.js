@@ -12,6 +12,8 @@ var PayrollListComponent = new (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_payroll_list");
     mThis.elFilterDisburse = mThis.self.querySelector("#el_filter_disburse");
     mThis.btnCalculate = mThis.self.querySelector("#_btnCalculate");
+    mThis.btnAuthorized = mThis.self.querySelector("#_btnAuthorized");
+    mThis.btnBackToPayroll = mThis.self.querySelector("#_btnBackToPayroll");
     mThis.btnDisburse = mThis.self.querySelector("#_btnDisburse");
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_payrollList");
     mThis.payment_info = mThis.self.querySelector("#payment_info");
@@ -224,7 +226,14 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
-
+        mThis.btnBackToPayroll.onclick = function (e) {
+            e.preventDefault();
+            let lnk = VSUtil.closestLimited(e.target, "#_btnBackToPayroll");            
+            if (lnk) {
+                VSRoute.showComponent("PayrollComponent");
+                return;
+            }
+        }
         mThis.btnDisburse.onclick = function (e) {
             e.preventDefault();
 
@@ -247,6 +256,34 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
+        mThis.btnAuthorized.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: mThis.elFilter.value
+            };           
+             cv_interact.confirm(
+                 'html:<span class="d-block fw-semibold text-success">Authorized this payroll list? </span><small>This process will authorized payroll list</small>',
+                 {
+                     title: "Authorize Payroll",
+                     context: "authorize",
+                     confirmButtonText: "Authorize",
+                 },
+                 function (e) {
+                     if (e) {
+                         vsapi
+                             .call(`${mThis.base_url}/hr/payroll/authorize`, op)
+                             .then((res) => {
+                                 if (res.status_code === 200) {
+                                     cv_interact.success(
+                                         "Authorized successfully"
+                                     );
+                                    //  mThis.PayrollList_ListView.showPage();
+                                 } else cv_interact.error(res.error_message);
+                             });
+                     }
+                 }
+             );
+        }
         mThis.btnReverse.onclick = function (e) {
             e.preventDefault();
 

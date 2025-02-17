@@ -51,15 +51,6 @@ var PayrollComponent = new (function () {
 
                         </div>`,
         },
-        // {
-        //     title: "Month",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const month = monthNames[data.month - 1] ?? '';
-        //         const year = data.year ?? '';
-        //         return `<p class="p-0 m-0">${month}${year}</p>`;
-        //     }
-        // },
         {
             title: "Duration",
             className: "align-middle w-15",
@@ -81,7 +72,10 @@ var PayrollComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${VSMoney.formatAmount(data.total,data.currency_code)}</p>`;
+                return `<p class="p-0 m-0">${VSMoney.formatAmount(
+                    data.total,
+                    data.currency_code
+                )}</p>`;
             },
         },
         {
@@ -116,23 +110,28 @@ var PayrollComponent = new (function () {
             title: "Authorize",
             className: "authorized text-nowrap align-middle",
             data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-5";
+                let cls_class = "text-white text-center border rounded-2";
                 let bg_color = "";
+                let cls_icon = "";
 
                 if (data.authorized === 1) {
                     cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
+                        "text-white text-center border border-success rounded-2 p-1";
                     bg_color = "#28a745";
+                    cls_icon = "fa fa-check text-center align-center justify-content-center";
                 } else if (data.authorized === 0) {
                     cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
+                        "text-white text-center align-center border border-warning rounded-2 p-1";
                     bg_color = "#ffc107";
+                    cls_icon = "fa fa-times text-center align-center justify-content-center";
+
                 }
 
                 return `<div><a class="d-block" data-authorized="${
                     data.authorized
                 }" data-id="${data.id}" href="javascript:void(0)">
                             <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <i class="${cls_icon}" style="font-size: 10px;"></i>
                                 ${data.authorized == 0 ? "Pending" : "Approved"}
                             </small>
                         </a></div>`;
@@ -142,27 +141,50 @@ var PayrollComponent = new (function () {
             title: "Disbursed",
             className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
-                let cls_class = "text-white text-center border rounded-5";
+                let cls_class = "text-white text-center border rounded-2";
                 let bg_color = "";
+                let cls_icon = "";
 
                 if (data.disbursed === 1) {
                     cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
+                        "text-white text-center border border-success rounded-2 p-1";
                     bg_color = "#28a745";
+                    cls_icon = "fa fa-check text-center align-center justify-content-center";
                 } else if (data.disbursed === 0) {
                     cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
+                        "text-white text-center border border-warning rounded-2 p-1";
                     bg_color = "#ffc107";
+                    cls_icon = "fa fa-times text-center align-center justify-content-center";
                 }
 
                 return `<div><a class="d-block" data-status="${
                     data.disbursed
                 }" data-id="${data.id}" href="javascript:void(0)">
                             <small style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <i class="${cls_icon}" style="font-size: 10px;"></i>
                                 ${data.disbursed == 0 ? "Pending" : "Disbursed"}
                             </small>
                         </a></div>`;
             },
+        },
+        {
+            title: "Actions",
+            className: "align-middle",
+            data: (data) =>
+                `<div class="d-flex align-items-center gap-1">
+                    <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
+                            style="width: 25px; height: 25px;" id="_btnAuthorized">
+                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">Authorized</span></i>
+                    </button>
+                    <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
+                            style="width: 25px; height: 25px;" id="_btnReset">
+                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">Reset</span></i>
+                    </button>
+                    <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
+                            style="width: 25px; height: 25px;" id="_btnDisburse">
+                            <i class="fa-solid fa-paper-plane tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">Disbursed</span></i>
+                    </button>
+                </div>`,
         },
         {
             title: "",
@@ -256,13 +278,30 @@ var PayrollComponent = new (function () {
 
         mThis.pr_table = mThis.PayrollListView.getTable();
         mThis.initDropdownMenus(mThis.pr_table);
+        mThis.setActionListeners();
 
         //mThis.cloneTable = mThis.self.querySelector('#_payroll_list');
         // console.log(7777,mThis.cloneTable.querySelector('tr'));
 
         mThis.initAlready = true;
     };
+    mThis.setActionListeners = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btnAuthorized");
+            if (btn) {
+                mThis.authorizePayroll(btn.dataset.id, btn);
+            }
 
+            btn = VSUtil.closestLimited(e.target, ".btnReset");
+            if (btn) {
+                mThis.resetPayroll(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btnDisbursed");
+            if (btn) {
+                mThis.disbursePayroll_all(btn.dataset.id, btn);
+            }
+        });
+    };
     mThis.initDropdownMenus = (table) => {
         console.log(666, table);
 
@@ -300,7 +339,7 @@ var PayrollComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const authorized = container.dataset.authorized;
-
+                
                 if (authorized == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
@@ -361,6 +400,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
+        
         if (!AuthManager.allowed(474)) return;
         cv_interact.confirm(
             "Authorize this payroll?",
