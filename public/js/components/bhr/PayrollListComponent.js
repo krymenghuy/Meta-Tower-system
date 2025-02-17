@@ -260,7 +260,9 @@ var PayrollListComponent = new (function () {
             e.preventDefault();
             const op = {
                 id: mThis.elFilter.value
-            };           
+            };    
+            if (!AuthManager.allowed(474)) return;
+            
              cv_interact.confirm(
                  'html:<span class="d-block fw-semibold text-success">Authorized this payroll list? </span><small>This process will authorized payroll list</small>',
                  {
@@ -689,6 +691,7 @@ var PayrollListComponent = new (function () {
 
     }
     mThis.addDeduction = (id, menuLink) => {
+        if (!AuthManager.allowed(214)) return;
 
         let op = {
             id: id,
@@ -698,7 +701,7 @@ var PayrollListComponent = new (function () {
 
             }
         };
-
+        
         AddDeductionDialog.show(op);
     }
 
@@ -900,6 +903,7 @@ const AddDeductionDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
                         p.id = me.dataOptions.id; // Get "id" from op
+                        if (!AuthManager.allowed(214)) return;
 
                         vsapi.call([main_view.base_url, '/hr/payroll/staff/add-deduction'].join(''), p, btn, null)
                             .then(res => {
