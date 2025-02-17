@@ -675,6 +675,12 @@ var ReportCenterComponent = new (function () {
                             btn_excel[0].classList.add("d-none");
                         }
                     }
+                    if (res.data.title === "Payslip Print") {
+                        const btn_pdf = mThis.self.find("#btn_excel");
+                        if (btn_pdf.length > 0 && btn_pdf[0]) {
+                            btn_pdf[0].classList.add("d-none");
+                        }
+                    }
 
                     if (d && !$.isEmptyObject(d)) {
                         switch (d.form) {
