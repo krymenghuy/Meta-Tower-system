@@ -24,6 +24,10 @@ return [
          'Please enter the details of each item'=>'សូមបញ្ចូលព័ត៌មានលំអិតនៃកញ្ចប់ទំនិញនីមួយៗ'  
     ],
     'titles' => [
+        'Authorize'=>'អនុម័ត',
+        'Reset'=>'ត្រឡប់វិញ',
+        'Reverse'=>'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',
+        'Disburse'=>'បើកប្រាក់',
         'Start Date' => 'ថ្ងៃចាប់ផ្តើម',
         'Staff Movement' => 'កាផ្លាស់ប្ដូរ​របស់បុគ្គលិក',
         'Staff Attendance' => 'អវត្តមាន​របស់បុគ្គលិក',

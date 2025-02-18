@@ -362,6 +362,8 @@ class Payroll
                      'phone_number' => $emp->phone_number,
                      'issue' => $res->error_message
                  ];
+                 \Log::error('Error in disbursement of payyroll: ');
+                 \Log::info(json_encode($failed_emps));
              }
          }
          if($failed_count > 0){
@@ -475,6 +477,23 @@ class Payroll
         return "Staff named $row->name dosn't have enough account balance";
     }
 
+    function removeStaff($emp_id, $id= null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $emp = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.payroll_id',$id)->where('emp_id',$emp_id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
+        \Log::info('test:: '.json_encode($emp));
+        if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
+        if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
+     
+        $x = DB::table('payroll_list')
+            ->where('payroll_id', $id)
+            ->where('emp_id',$emp_id)
+            ->delete();
+        return DV::depends($x,null,'Failed to remove staff from payroll');
+    }
+ 
+
     function reverseTransactions($id =null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -484,7 +503,7 @@ class Payroll
         if (!$authorized) return DV::error('Payroll is not authorizad yet!');
         $isDisbursed = self::isDisbursed($id);
         if (!$isDisbursed) {
-            return DV::error('Payroll has not been disbursed yet');
+            return DV::error('Payroll is not yet disbursed!');
         }
         $payroll = self::getProps($id,'last_disburse_id');
         if(!$payroll) return DV::error('Payroll ID does not exist');

@@ -5,8 +5,7 @@ namespace App\Models\Bhr;
 use Illuminate\Support\Facades\DB;
 use DBX;
 use Carbon\Carbon;
-
-
+ 
 class Dashboard
 {
     protected $id = null;
@@ -142,9 +141,9 @@ class Dashboard
 
 static function countEmployee($arr, $ss)
 {
-    $branch_id = $ss->branch_id;
+    //$branch_id = $ss->branch_id;
     $back_days = -90;
-    $start_date = convertDate(Carbon::now()->addDays($back_days));
+    //$start_date = convertDate(Carbon::now()->addDays($back_days));
 
     $rows = DB::table('employees AS emp')
         ->join('emp_types AS t', 'emp.emp_type_id', '=', 't.id') // Join with emp_types table
