@@ -174,15 +174,15 @@ var PayrollComponent = new (function () {
                 `<div class="d-flex align-items-center gap-1">
                     <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnAuthorized">
-                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">Authorize</span></i>
+                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Authorize','titles')}</span></i>
                     </button>
                     <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnReset">
-                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">Reset</span></i>
+                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Reset','titles')}</span></i>
                     </button>
                     <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnDisburse">
-                            <i class="fa-solid fa-paper-plane tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">Disbursed</span></i>
+                            <i class="fa-solid fa-paper-plane tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Disburse','titles')}</span></i>
                     </button>
                 </div>`,
         },
