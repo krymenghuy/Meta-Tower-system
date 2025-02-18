@@ -90,8 +90,8 @@ var EmployeeBenefitComponent = new (function () {
             data: (data) => {
                 return `
                 <p class="p-0 text-primary-custom m-0">${
-                    data.tax_option_id == "1" ? "Tax" : ""
-                }${data.tax_option_id == "2" ? "Non" : ""}${
+                    data.tax_option_id == "1" ? "Taxable" : ""
+                }${data.tax_option_id == "2" ? "Non Taxable" : ""}${
                     data.tax_option_id == "3" ? "Flat Rate" : ""
                 }`;
             },

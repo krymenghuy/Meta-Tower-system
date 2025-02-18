@@ -174,7 +174,7 @@ var PayrollComponent = new (function () {
                 `<div class="d-flex align-items-center gap-1">
                     <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnAuthorized">
-                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">Authorized</span></i>
+                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">Authorize</span></i>
                     </button>
                     <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnReset">
