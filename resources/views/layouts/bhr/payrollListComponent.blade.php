@@ -5,7 +5,7 @@
                 <button class="d-flex justify-content-center align-items-center rounded-circle border-0 "
                     style="background-color:#2b3991; width: 50px; height: 40px;" id="_btnBackToPayroll">
                     <i class="fa-solid fa-reply-all tool-tip fs-6 text-white"> <span
-                            class="tool-tiptext fs-6 mt-2">Back</span></i>
+                            class="tool-tiptext fs-6 mt-2" vslang="buttons.Back"></span></i>
                 </button>
                 <div class="d-flex align-items-center justify-content-end  w-50 ">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
@@ -32,30 +32,29 @@
 
                     <button class="d-flex justify-content-center align-items-center border-0 rounded-circle"
                         style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnImport">
-                        <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span
-                                class="tool-tiptext fs-6 ">Import Staff List</span></i>
-
+                        <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;">
+                            <span class="tool-tiptext fs-6 " vslang="buttons.Import Staff List"></span></i>
                     </button>
 
                     <button class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-circle "
                         style="width: 40px; height: 40px;" id="_btnCalculate">
-                        <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;"><span
-                                class="tool-tiptext fs-6">Calculate</span></i>
+                        <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;">
+                            <span class="tool-tiptext fs-6"vslang="buttons.Calculate" ></span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnAuthorized">
-                        <i class="fa-solid fa-check tool-tip fs-6" style="color: #fff;"> <span
-                                class="tool-tiptext fs-6">Authorize</span></i>
+                        <i class="fa-solid fa-check tool-tip fs-6" style="color: #fff;">
+                            <span class="tool-tiptext fs-6" vslang="buttons.Authorize"></span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnDisburse">
-                        <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"> <span
-                                class="tool-tiptext fs-6">Disburse</span></i>
+                        <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;">
+                            <span class="tool-tiptext fs-6" vslang="buttons.Disburse"></span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnReverseTransactions">
-                        <i class="fa-solid fa-refresh tool-tip fs-6" style="color: #fff;"> <span
-                                class="tool-tiptext fs-6">Reverse</span></i>
+                        <i class="fa-solid fa-refresh tool-tip fs-6" style="color: #fff;">
+                            <span class="tool-tiptext fs-6" vslang="buttons.Reverse"></span></i>
                     </button>
                 </div>
 

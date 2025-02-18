@@ -580,50 +580,50 @@ class Payroll
 /** return the amount of taxable or non-tax benefit. $tax_option_id = {1= Taxable, 2 = nontaxable}
  * NOTE: $payroll = {days,total_days}. if $payroll is given then getSimpleBenefits() returns the split amount, not total benefit
 */
-static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
-{
-    if (!in_array($tax_option_id, [1, 2])) {
-        return 0;
+    static function getSimpleBenefits($data,$emp_id,$tax_option_id,$payroll = null)
+    {
+        if (!in_array($tax_option_id, [1, 2])) {
+            return 0;
+        }
+            $amount1 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month == 0)
+            ->sum('used_amount');
+            $amount2 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month > 0)
+            ->sum('used_amount');
+            $amount2 = $amount2 * $payroll->days / $payroll->total_days;
+
+            return ($amount1 + $amount2);
     }
-        $amount1 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month == 0)
-        ->sum('used_amount');
-        $amount2 = $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id == $tax_option_id && $x->target_month > 0)
-        ->sum('used_amount');
-        $amount2 = $amount2 * $payroll->days / $payroll->total_days;
 
-        return ($amount1 + $amount2);
-}
+    static function getFlatRateBenefits($data, $emp_id, $payroll = null)
+    {
+        $merged = collect(array_merge(
+            $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month == 0)
+                ->groupBy('flat_tax_rate')
+                ->map(fn($group, $rate) => [
+                    'flat_tax_rate' => $rate,
+                    'amount' => $group->sum('used_amount')
+                ])
+                ->values()
+                ->toArray(),
+            $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month > 0)
+                ->groupBy('flat_tax_rate')
+                ->map(fn($group, $rate) => [
+                    'flat_tax_rate' => $rate,
+                    'amount' => $group->sum('used_amount') * ($payroll->days / $payroll->total_days)
+                ])
+                ->values()
+                ->toArray()
+        ));
 
-static function getFlatRateBenefits($data, $emp_id, $payroll = null)
-{
-    $merged = collect(array_merge(
-        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month == 0)
-            ->groupBy('flat_tax_rate')
-            ->map(fn($group, $rate) => [
-                'flat_tax_rate' => $rate,
-                'amount' => $group->sum('used_amount')
-            ])
-            ->values()
-            ->toArray(),
-        $data->filter(fn($x) => $x->emp_id == $emp_id && $x->tax_option_id === 3 && $x->target_month > 0)
-            ->groupBy('flat_tax_rate')
-            ->map(fn($group, $rate) => [
-                'flat_tax_rate' => $rate,
-                'amount' => $group->sum('used_amount') * ($payroll->days / $payroll->total_days)
-            ])
-            ->values()
-            ->toArray()
-    ));
-
-    // Group by flat_tax_rate and sum up the amounts
-    return $merged->groupBy('flat_tax_rate')
-                  ->map(fn($group, $rate) => [
-                      'flat_tax_rate' => $rate,
-                      'amount' => $group->sum('amount')
-                  ])
-                  ->values()
-                  ->toArray();
-}
+        // Group by flat_tax_rate and sum up the amounts
+        return $merged->groupBy('flat_tax_rate')
+                    ->map(fn($group, $rate) => [
+                        'flat_tax_rate' => $rate,
+                        'amount' => $group->sum('amount')
+                    ])
+                    ->values()
+                    ->toArray();
+    }
 
     static function formatFlatRateBenefits(array $benefits)
     {
@@ -658,7 +658,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
-            // ->where('pl.emp_id',7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -667,6 +666,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                         p.month,
                         p.year,
                         e.id as emp_id,
+                        e.code as emp_code,
                         e.name as emp_name,
                         el.name as emp_role,
                         pl.salary,
@@ -697,7 +697,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $resign = self::count_days_resign($row->emp_id, $payroll->start_date, $payroll->end_date);
             if ($resign->error) {
                 $issues_count++;
-                $fail_emps[] = (object)[
+                $issues[] = (object)[
                     'id' => $row->emp_id,
                     'code' => $row->emp_code,
                     'name' => $row->emp_name,
@@ -711,7 +711,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $rejoin = self::count_days_rejoin($row->status_id, $row->last_rejoin_date, $row->joining_date, $payroll->start_date, $payroll->end_date);
             if ($rejoin->error) {
                 $issues_count++;
-                $fail_emps[] = (object)[
+                $issues[] = (object)[
                     'id' => $row->emp_id,
                     'code' => $row->emp_code,
                     'name' => $row->emp_name,
@@ -757,7 +757,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $row->benefit_non_tax = $benefits_not_taxable ?? 0;
             $row->benefits_flat_rate = $benefits_flat_rate ?? [];
         }
-        // return $emps;
         foreach ($emps as &$payroll) {
             $payroll->tax_base = 0;
             $payroll->total = 0;
@@ -767,6 +766,27 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $benefit_tax = 0;
             $payroll_total = 0;
             $count_days = $payroll->count_days;
+
+            if ($count_days <= 0) {
+                $issues_count++;
+                $issues[] = (object)[
+                    'id' => $payroll->emp_id,
+                    'code' => $payroll->emp_code,
+                    'name' => $payroll->emp_name,
+                    'issue' => 'No days to calculate'
+                ];
+                continue;
+            }
+            if($payroll->salary <= 0){
+                $issues_count++;
+                $issues[] = (object)[
+                    'id' => $payroll->emp_id,
+                    'code' => $payroll->emp_code,
+                    'name' => $payroll->emp_name,
+                    'issue' => 'No salary to calculate'
+                ];
+                continue;
+            }
 
             $salary = ($payroll->salary / $day_in_month) * $count_days;
             $benefit_taxable = $payroll->benefit_taxable;
@@ -899,7 +919,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
-            // \Log::info('count days: ' . $count_days);
             $payroll_total = DB::table('payroll_list')
                 ->where('payroll_id', $payroll->payroll_id)
                 ->sum('total_salary');

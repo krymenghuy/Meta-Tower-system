@@ -182,7 +182,7 @@ var PayrollComponent = new (function () {
                     </button>
                     <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnDisburse">
-                            <i class="fa-solid fa-paper-plane tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Disburse','titles')}</span></i>
+                            <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Disburse','titles')}</span></i>
                     </button>
                 </div>`,
         },
@@ -339,7 +339,7 @@ var PayrollComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const authorized = container.dataset.authorized;
-                
+
                 if (authorized == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
@@ -400,7 +400,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        
+
         if (!AuthManager.allowed(474)) return;
         cv_interact.confirm(
             "Authorize this payroll?",
@@ -450,9 +450,7 @@ var PayrollComponent = new (function () {
                         )
 
                         .then((res) => {
-                            console.log(2929,res);
-                            console.log(404040,p);
-
+                           
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
                                 mThis.PayrollListView.showPage(mThis.getFilterData());
