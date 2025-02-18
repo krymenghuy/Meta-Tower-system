@@ -831,6 +831,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .image-student-tbl {
+    object-fit: cover !important;
     width: 8cqb;
     height: 70px;
     border-radius: 20%;
