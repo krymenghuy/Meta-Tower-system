@@ -133,6 +133,21 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
+    // public function removeStaff(Request $req)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, 215);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+    //     if (!isset($req->id) || !is_numeric($req->id)) {
+    //         return JDV::error('Invalid ID');
+    //     }
+    //     $id = $req->payroll_id;
+    //     $emp_id = $req->emp_id;
+    //     $res = $this->payrollModel->removeStaff($emp_id,$id,$ss);
+    //     return JDV::raw($res);
+    // }
+
     public function getFormOptions(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
