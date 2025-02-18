@@ -45,7 +45,7 @@
                     <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnAuthorized">
                         <i class="fa-solid fa-check tool-tip fs-6" style="color: #fff;"> <span
-                                class="tool-tiptext fs-6">Authorized</span></i>
+                                class="tool-tiptext fs-6">Authorize</span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-success rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnDisburse">

@@ -256,6 +256,7 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
+
         mThis.btnAuthorized.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -264,7 +265,7 @@ var PayrollListComponent = new (function () {
             if (!AuthManager.allowed(474)) return;
             
              cv_interact.confirm(
-                 'html:<span class="d-block fw-semibold text-success">Authorized this payroll list? </span><small>This process will authorized payroll list</small>',
+                 'html:<span class="d-block fw-semibold text-success">Authorize this payroll list? </span><small>This process will authorize payroll list</small>',
                  {
                      title: "Authorize Payroll",
                      context: "authorize",
@@ -277,7 +278,7 @@ var PayrollListComponent = new (function () {
                              .then((res) => {
                                  if (res.status_code === 200) {
                                      cv_interact.success(
-                                         "Authorized successfully"
+                                         "Payroll is now authorized successfully"
                                      );
                                     //  mThis.PayrollList_ListView.showPage();
                                  } else cv_interact.error(res.error_message);
