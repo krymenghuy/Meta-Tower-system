@@ -207,18 +207,9 @@ var PayrollListComponent = new (function () {
                             const d = res.data || {};
                             const error_count = d.error_count || 0;
                             const error_message = error_count > 0 ? `${error_count} cases failed`:'';
-                            cv_interact.success([`Payroll has been calculated. ${d.success_count || 0 } cases affected! `, error_message].join(''));
+                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases affected! ${d.issues_count}`].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            // if (res.data) {
-
-                            // } else {
-                            //     let formattedData = `
-                            //         On Calculate: ${res.data[1]}
-                            //         Calculated: ${res.data[5]}
-                            //     `;
-                            //     cv_interact.success(formattedData);
-                            //     mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            // }
+                            
                         } else {
                             cv_interact.warning(res.error_message);
                         }
@@ -460,12 +451,8 @@ var PayrollListComponent = new (function () {
                 return `${VSMoney.formatAmount(value.BFT,data.currency_code)} (${value.BFTR} %)`;
             })
             .join(' & ');
-            console.log(1122,div_BFT);
 
         }
-
-
-
          html += `
         <style>
             .payment_card {

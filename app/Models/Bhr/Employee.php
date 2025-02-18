@@ -309,29 +309,15 @@ class Employee //extends Model
     }
     static function savePayrollListBenefit($payroll_id, $emp_id ,$ss)
     {
-        // $withdraw_rate = 0;
-        // $last_benefit_id = 0;
+
         $full_amount = 0;
-        //$tax_option_id = 0;
         $used_amount = 0;
-        // $benefit_count = 0;
-        // $payroll_currency = null;
-        // $benefit_currency = null;
-        // $flat_tax_rate = 0;
-        // $result = [];
-        // $dates = null;
-        // $during_payroll = null;
         $effective_date = null;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
             ->selectRaw('p.id,p.month, p.year, p.currency_code, exchange_rate, p.start_date, p.end_date')
             ->first();
-
-        // $payroll_currency = $payroll->currency_code ?? null;
-        // $exchange_rate = $payroll->exchange_rate ?? 1;
-        // $payroll_start_date = convertDate($payroll->start_date);
-        // $payroll_end_date = convertDate($payroll->end_date);
 
         if (!$payroll){
             return DV::error('Payroll not found');

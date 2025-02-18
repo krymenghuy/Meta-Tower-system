@@ -470,9 +470,9 @@ class PayrollList
 
         if ($row) {
 
-            $row->allowance = DB::table('tax_allowances')
-                ->where('emp_id', $row->emp_id)
-                ->value('allowance');
+            // $row->allowance = DB::table('tax_allowances')
+            //     ->where('emp_id', $row->emp_id)
+            //     ->value('allowance');
 
 
             $row->deduction = $row->deduction ?? 0.00;
