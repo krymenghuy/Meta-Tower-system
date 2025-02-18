@@ -49,9 +49,10 @@ class WorkShift
 
         return DV::error('Error saving work shifts');
     }
+
     function getWorkShiftListPaginate($arr, $ss)
     {
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $d = (object) $arr;
 
 

@@ -15,6 +15,7 @@ var EmployeeComponent =  new function () {
     mThis.elEmployeeType = mThis.self.querySelector("#filter_employee_type");
     mThis.btnAdd = mThis.self.querySelector("#_btn_add_employee");
     mThis.btnImport = mThis.self.querySelector('#_btn_import_employee');
+    mThis.btnImport.style.display = 'none';
     mThis.btnBack = mThis.self.querySelector("#_btn_backTo_employee");
     mThis.btnPrintCV = mThis.self.querySelector("#_print_emp_cv");
     mThis.div_filter_fields = mThis.self.querySelector("#div_filter_filed");

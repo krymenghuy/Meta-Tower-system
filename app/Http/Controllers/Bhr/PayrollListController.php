@@ -29,12 +29,12 @@ class PayrollListController extends Controller
         return JDV::result($this->payrollListModel->getDetails($req->id, $ss));
     }
 
-    public function removeStaff(Request $req)
+    public function delete(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, 215);
         if ($ss->status_code !== 200)  return JDV::raw($ss);
         $id = $req->id;
-        $res = $this->payrollListModel->removeStaff($id);
+        $res = $this->payrollListModel->delete($id);
         return JDV::raw($res);
     }
 
