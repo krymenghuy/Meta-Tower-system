@@ -1200,30 +1200,27 @@ var Choices = /** @class */function () {
         const tempElement = document.createElement('div');
         tempElement.innerHTML = choice.label; // Parse HTML string into the element
   
-        // Extract the text from the .choices__item_text span element
-        const textElement = tempElement.querySelector('.choices__item_text');
-        if (textElement) {
-          labelText = textElement.textContent.trim(); // Extract text from .choices__item_text
-        } else {
-          labelText = tempElement.textContent.trim(); // Fallback to full text content if no .choices__item_text
-        }
-      } else if (choice.label instanceof HTMLElement) {
-        // If label is already an HTMLElement, extract text content from .choices__item_text
-        const textElement = choice.label.querySelector('.choices__item_text');
-        if (textElement) {
-          labelText = textElement.textContent.trim(); // Use text content from the span
-        } else {
-          labelText = choice.label.textContent.trim(); // Fallback to text content if no .choices__item_text
-        }
+        // // Extract the text from the .choices__item_text span element
+        // const textElement = tempElement.querySelector('.choices__item_text');
+        // if (textElement) {
+        //   labelText = textElement.textContent.trim(); // Extract text from .choices__item_text
+        // } else {
+        //   labelText = tempElement.textContent.trim(); // Fallback to full text content if no .choices__item_text
+        // }
       }
-  
+      //  else if (choice.label instanceof HTMLElement) {
+      //   // If label is already an HTMLElement, extract text content from .choices__item_text
+      //   const textElement = choice.label.querySelector('.choices__item_text');
+      //   if (textElement) {
+      //     labelText = textElement.textContent.trim(); // Use text content from the span
+      //   } else {
+      //     labelText = choice.label.textContent.trim(); // Fallback to text content if no .choices__item_text
+      //   }
+      // }
       // Check if labelText contains the search needle (case-insensitive search)
       return labelText.toLowerCase().includes(needle.toLowerCase());
     });
-  
-    // Log the filtered haystack to see which choices passed the filter
-    console.log('Filtered Haystack with labelText containing search term:', filteredHaystack);
-  
+   
     // Update the current value and highlight position
     this._currentValue = newValue;
     this._highlightPosition = 0;
@@ -3398,6 +3395,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.defaultState = void 0;
 exports.defaultState = [];
+
 function choices(state, action) {
   if (state === void 0) {
     state = exports.defaultState;
@@ -3469,10 +3467,14 @@ function choices(state, action) {
           // Set active state based on whether choice is
           // within filtered results
           choice.active = filterChoicesAction_1.results.some(function (_a) {
-            var item = _a.item,
-              score = _a.score;
+            // console.log('dd: ',_a);
+            // console.log('dd1: ',choice);
+            // var item = _a.item,
+            //   score = _a.score;
+            const item = _a;
             if (item.id === choice.id) {
-              choice.score = score;
+              choice.score = 9999;
+              //choice.score = score;
               return true;
             }
             return false;

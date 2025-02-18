@@ -331,7 +331,7 @@ const WarningDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column" style="color:#2b3991;font-size:11px;"><span> ${d.name} </span> <span> ${d.position} </span> </div></div>`;
+                            return `<div class="d-flex gap-2"><img class="img_select" style="object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column" style="color:#2b3991;font-size:11px;"><span class=""> ${d.name} </span> <span> ${d.position} </span> </div></div>`;
                         },
 
                         valueField: "id",
