@@ -228,7 +228,7 @@ var PayrollListComponent = new (function () {
         };
         mThis.btnBackToPayroll.onclick = function (e) {
             e.preventDefault();
-            let lnk = VSUtil.closestLimited(e.target, "#_btnBackToPayroll");            
+            let lnk = VSUtil.closestLimited(e.target, "#_btnBackToPayroll");
             if (lnk) {
                 VSRoute.showComponent("PayrollComponent");
                 return;
@@ -261,9 +261,9 @@ var PayrollListComponent = new (function () {
             e.preventDefault();
             const op = {
                 id: mThis.elFilter.value
-            };    
+            };
             if (!AuthManager.allowed(474)) return;
-            
+
              cv_interact.confirm(
                  'html:<span class="d-block fw-semibold text-success">Authorize this payroll list? </span><small>This process will authorize payroll list</small>',
                  {
@@ -461,6 +461,7 @@ var PayrollListComponent = new (function () {
                 return `${VSMoney.formatAmount(value.BFT,data.currency_code)} (${value.BFTR} %)`;
             })
             .join(' & ');
+            console.log(1122,div_BFT);
 
         }
 
@@ -703,7 +704,7 @@ var PayrollListComponent = new (function () {
 
             }
         };
-        
+
         AddDeductionDialog.show(op);
     }
 

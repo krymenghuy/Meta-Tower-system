@@ -233,7 +233,7 @@ class Payroll
     // static function getTotalBenefitUsed($emp_benefit_id){
     //    return DB::table('payroll_list_benefits')->where('emp_benefit_id',$emp_benefit_id)->sum('used_amount');
     // }
-    
+
     static function updatePayrollBenefitBalance($payroll_id, $emp_id, $disburse_id){
         DB::beginTransaction();
         try{
@@ -493,6 +493,7 @@ class Payroll
         return DV::depends($x,null,'Failed to remove staff from payroll');
     }
  
+
     function reverseTransactions($id =null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -627,9 +628,10 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
     static function formatFlatRateBenefits(array $benefits)
     {
         return collect($benefits)
-            ->map(fn($item) => number_format($item['amount'], 2) . '@' . $item['flat_tax_rate'])
+            ->map(fn($item) => number_format($item['amount'], 2, '.', '') . '@' . $item['flat_tax_rate'])
             ->implode('|');
     }
+
 
     //CalculatePayroll()
     function calculate($id = null, $ss = null)
@@ -656,7 +658,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
-            // ->where('pl.emp_id', 1)
+            // ->where('pl.emp_id',7)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -725,7 +727,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                 $count_days = ($count_days_resign < 0 ? 0 : $count_days_resign) + ($count_days_rejoin < 0 ? 0 : $count_days_rejoin);
             }
 
-            $payroll->days = $count_days;
 
             $row->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $row->emp_id)
@@ -739,7 +740,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $benefits = self::getAllBenefits($row->emp_id,$payroll);
             $benefits_taxable = self::getSimpleBenefits($benefits,$row->emp_id,1,$payroll);
             $benefits_not_taxable = self::getSimpleBenefits($benefits,$row->emp_id,2,$payroll);
-            $beneits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
+            $benefits_flat_rate = self::getFlatRateBenefits($benefits,$row->emp_id,$payroll);
 
             if($row->allowance){
                 foreach ($row->allowance as $allowance) {
@@ -751,11 +752,10 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             }
 
             $row->allowance = $row->allowance ?? 0;
-            $row->count_days = $payroll->days;
+            $row->count_days = $count_days;
             $row->benefit_taxable = $benefits_taxable ?? 0;
             $row->benefit_non_tax = $benefits_not_taxable ?? 0;
-            $row->benefits_flat_rate = $beneits_flat_rate ?? [];
-
+            $row->benefits_flat_rate = $benefits_flat_rate ?? [];
         }
         // return $emps;
         foreach ($emps as &$payroll) {
@@ -768,7 +768,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             $payroll_total = 0;
             $count_days = $payroll->count_days;
 
-            $salary = ($payroll->salary / $day_in_month) * $payroll->count_days;
+            $salary = ($payroll->salary / $day_in_month) * $count_days;
             $benefit_taxable = $payroll->benefit_taxable;
             $benefit_non_tax = $payroll->benefit_non_tax;
             $benefits_flat_rate = $payroll->benefits_flat_rate;
@@ -820,7 +820,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                 if ($total_benefit_flat_rate > 0) {
                     $benefit_flat_rate_sum = 0;
                     $benefit_tax = 0;
-                    //$benefit_flat_rate_data = [];
 
                     if ($benefit_taxable > 0 || $benefit_non_tax > 0) {
                         if (isset($benefits_flat_rate) && !empty($benefits_flat_rate)) {
@@ -868,7 +867,6 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             } else {
                 $benefit_flat_rate_sum = 0;
                 $benefit_tax = 0;
-                //$benefit_flat_rate_data = [];
 
                 $salary_used = $salary;
                 $salary_per_day = $salary_used / $payroll_days;
@@ -880,14 +878,14 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                         $benefit_flat_tax_rate = $bfr['flat_tax_rate'];
 
                         $benefit_flat_rate_sum += $benefit_flat_rate;
-                        $benefit_tax += $benefit_flat_rate * ($benefit_flat_tax_rate / 100);
                     }
                 }
                 $payroll->tax_base = 0;
                 $payroll->total = ($last_salary + $benefit_taxable + $benefit_non_tax + $benefit_flat_rate_sum) - $deduction;
             }
+            $flat_rate_details = null;
+            $flat_rate_details = self::formatFlatRateBenefits($benefits_flat_rate);
 
-            $flat_rate_details = self::formatFlatRateBenefits($beneits_flat_rate) ?? null;
 
             $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
@@ -901,7 +899,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
-
+            // \Log::info('count days: ' . $count_days);
             $payroll_total = DB::table('payroll_list')
                 ->where('payroll_id', $payroll->payroll_id)
                 ->sum('total_salary');
@@ -995,7 +993,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                     $taxInfo = TaxBracket::get($tax_base);
                     $last_bias = $taxInfo->bias;
                 }
-               
+
                 $emp->tax_rate = (object) [
                     'rate' => $taxInfo->rate,
                     'bias' => $taxInfo->bias
