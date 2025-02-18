@@ -25,12 +25,12 @@
             </div>
             <div class="d-flex justify-content-end w-50 gap-3">
                 <div class="d-flex filter-date-custom w-50">
-                    <label for="" class="form-label text-nowrap" style="color:#d1b54a;">Start Date :</label>
+                    <label for="" class="form-label text-nowrap" style="color:#d1b54a;" vslang = "filters.Start Date :"></label>
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="start_date"
                         placeholder="Start Date" />
                 </div>
                 <div class="d-flex filter-date-custom w-50">
-                    <label for="" class="form-label" style="color:#d1b54a;">End Date :</label>
+                    <label for="" class="form-label" style="color:#d1b54a;" vslang = "filters.End Date :"></label>
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="end_date"
                         placeholder="End Date" id="" />
                 </div>

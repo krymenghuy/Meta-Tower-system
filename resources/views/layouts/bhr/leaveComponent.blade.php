@@ -16,12 +16,12 @@
             </div>
             <div class="d-flex justify-content-end w-50">
                 <div class="d-flex filter-date-custom w-50">
-                    <label for="" class="form-label text-nowrap" style="color:#d1b54a;">Start Date :</label>
+                    <label for="" class="form-label text-nowrap" style="color:#d1b54a;" vslang = "filters.Start Date :"></label>
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="start_date"
                         placeholder="Start Date" />
                 </div>
                 <div class="d-flex filter-date-custom w-50">
-                    <label for="" class="form-label" style="color:#d1b54a;">End Date :</label>
+                    <label for="" class="form-label" style="color:#d1b54a;" vslang = "filters.End Date :"></label>
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="end_date"
                         placeholder="End Date" />
                 </div>
@@ -31,11 +31,11 @@
             <div class="d-flex justify-content-between w-100">
                 <div class="d-flex align-items-center position-relative" style="min-width: 300px;">
                     <input type="text" class="form-control filter-field btn_search ps-5" id="_search_leave" placeholder="Search here....">
-                    <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-4"></i> 
+                    <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-4"></i>
                 </div>
                 <button type="button" class="btn_add d-flex gap-2 align-items-center" id="_btnAddLeave">
                     <i class="fa-solid fa-person-walking-arrow-right fs-5 text-white"></i>
-                    <span>Leave Request</span>
+                    <span vslang = "buttons.Leave Request"></span>
                 </button>
             </div>
         </div>

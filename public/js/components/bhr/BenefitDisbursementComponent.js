@@ -15,6 +15,7 @@ var BenefitDisbursementComponent =  (function () {
     mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
     const monthNames = [
+        "All",
         "January",
         "February",
         "March",
@@ -60,7 +61,7 @@ var BenefitDisbursementComponent =  (function () {
             title: "Target Month",
             className: "align-middle",
             data: (data) => {
-                const month = monthNames[data.target_month - 1] ?? "";
+                const month = monthNames[data.target_month ] ?? "";
 
                 return `<p class="p-0 m-0">${month} </p>`;
             },
@@ -286,6 +287,7 @@ const BenefitDisburseDialog = (() => {
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     const months = [
+                        { value: 0, name: "All" },
                         { value: 1, name: "January" },
                         { value: 2, name: "February" },
                         { value: 3, name: "March" },
@@ -419,7 +421,7 @@ const BenefitDisburseDialog = (() => {
                         },
                     },
                     // onResponse: (me, res) => {
-                         
+
                     //     if (res.target_month && res.target_year) {
                     //         setTimeout(() => {
                     //             const monthSelect = me.divModal.querySelector(

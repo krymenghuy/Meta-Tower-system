@@ -207,9 +207,9 @@ var PayrollListComponent = new (function () {
                             const d = res.data || {};
                             const error_count = d.error_count || 0;
                             const error_message = error_count > 0 ? `${error_count} cases failed`:'';
-                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases affected! ${d.issues_count}`].join(''));
+                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases failed! ${d.issues_count}`].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            
+
                         } else {
                             cv_interact.warning(res.error_message);
                         }
@@ -731,7 +731,7 @@ var PayrollListComponent = new (function () {
         const op = {
             id: id,
             // payroll_id:payroll_id,
-            // emp_id: emp_id           
+            // emp_id: emp_id
         };
         if (!AuthManager.allowed(215)) return;
         cv_interact.confirm('Remove this staff from payroll?',{
@@ -747,7 +747,7 @@ var PayrollListComponent = new (function () {
                     }else cv_interact.error(res.error_message);
                 })
             }
-             
+
         });
 
     }
@@ -912,7 +912,7 @@ const AddDeductionDialog = (() => {
 
     return self;
 })();
- 
+
 const PayRollImportDailog = (()=>{
     const self = {};
     let dialogImport = null;

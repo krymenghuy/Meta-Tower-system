@@ -19,7 +19,7 @@
         <div class="d-flex align-items-center justify-content-end gap-3 w-25 ">
             <button type="button" class="btn_add" id="_btnAddpayroll">
                 <i class="fa fa-usd mr-2"></i>
-                <span>Add Payroll</span>
+                <span vslang="buttons.Add Payroll"></span>
             </button>
         </div>
     </div>
