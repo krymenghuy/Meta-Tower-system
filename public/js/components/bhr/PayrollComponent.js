@@ -539,7 +539,7 @@ var PayrollComponent = new (function () {
     };
 
     mThis.getFilterData = () => {
-        let filters = {
+        const filters = {
             search_value: mThis.elSearch.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -557,8 +557,6 @@ var PayrollComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, mThis.elAuthorized);
-
                 VSUtil.setComboItems(
                     mThis.elAuthorized,
                     d.authorized,
@@ -594,7 +592,6 @@ const AddPayRollListDailog = (() => {
     const self = {};
     let dialogAdd = null;
     self.show = (op) => {
-        console.log(999, op);
         const months = [
             { value: 0, name: "select month" },
             { value: 1, name: "Jan" },
@@ -629,7 +626,7 @@ const AddPayRollListDailog = (() => {
 
                         <div class="form-group col-4">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
-                            <select name="month" class="form-control data-input" data-field="month">
+                            <select name="month" class="data-input" data-field="month">
                                 ${months
                                     .map(
                                         (month) =>
@@ -640,7 +637,7 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="year" class="form-label" vslang="titles.Year"></label>
-                            <select name="year" class="form-control data-input" data-field="year">
+                            <select name="year" class="data-input" data-field="year">
                                 <option value="0">select year</option>
                                 ${years
                                     .map(
@@ -653,7 +650,7 @@ const AddPayRollListDailog = (() => {
 
                         <div class="form-group col-4">
                             <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
-                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
+                            <select name="p_number" class="data-input form_input" data-field="p_number">
                                 <option value="0">select number</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -678,7 +675,7 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
-                            <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                            <input name="exchange_rate" type="number" class="form-control data-input" data-field="exchange_rate" />
                         </div>
 
 
@@ -702,14 +699,14 @@ const AddPayRollListDailog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
+                        label: '<span class="text-warning" vslang="titles.Cancel"></span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: "<span vslang='titles.save'></span>",
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -730,11 +727,11 @@ const AddPayRollListDailog = (() => {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Updated payroll successfully"
+                                                "Payroll is updated successfully"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "Added payroll successfully"
+                                                "New payroll is created successfully"
                                             );
                                         }
                                     } else {
@@ -758,9 +755,9 @@ const AddPayRollListDailog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

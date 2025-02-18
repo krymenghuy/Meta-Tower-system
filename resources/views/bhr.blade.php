@@ -74,8 +74,8 @@
     <?php
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 6);
-    ScriptManager::render('bhr-primary-defer', 1, 16);
-    ScriptManager::render('bhr-components', 1, 192);
+    ScriptManager::render('bhr-primary-defer', 1, 17);
+    ScriptManager::render('bhr-components', 1, 193);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -168,7 +168,7 @@
                                     <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#2b3991;"><span class="tool-tiptext fs-6">Notifications</span></i>
+                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#2b3991;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -183,7 +183,7 @@
 
                                     <div class="dropdown shadow-lg rounded-5 bg-white app--list">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
-                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#2b3991;"><span class="tool-tiptext fs-6">Menu System</span></i>
+                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#2b3991;"></i>
                                             <span></span>
                                         </button>
 
