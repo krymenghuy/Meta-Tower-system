@@ -2096,12 +2096,7 @@ var EmployeeComponent =  new function () {
                                         cv_interact.success(
                                             "This employee has been promoted successfully!"
                                         );
-                                        //DO NOT go back to Employee List. But say on the Profile View
-                                        // EmployeeComponent.self
-                                        //     .querySelector(
-                                        //         "#_btn_backTo_employee"
-                                        //     )
-                                        //     .click();
+                                        mThis.showPage('profile_view', d.emp_id);
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -2386,30 +2381,7 @@ var EmployeeComponent =  new function () {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                 },
-                //  prepareFormOptions:{
-                //      modifyTitle:"",
-                //      createTitle:"Set Resign",
-                //      api:{
-                //         targetProp:"Set Resign",
-                //         endpoint: `${main_view.base_url}`,
-                //         params:(dataOption)=>{
-                //             return {"id":dataOption.id};
-                //         },
-                //      }
-                //  },
-                //  onShow:(me)=>{
-                //     me.controls.name.focus();
-                //     me.controls.name.select();
-                // },
-                //  onPrepareForm:(me,data)=>{
-                //      let fields = me.getFields();
-
-                //     //  const app_types = [
-                //     //     {value:0, label:"Web Application"},
-                //     //     {value:1, label:"Mobile App"}
-                //     //  ];
-                //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
-                //  }
+               
             });
         mThis.PromoteDialog.show(op);
     };
