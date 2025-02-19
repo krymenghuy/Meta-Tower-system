@@ -2,10 +2,16 @@
     <div id="sub_content">
         <div class="d-flex justify-content-between w-100 p-4 mt-2 rounded-2 shadow" id="_divFilter">
             <div class="d-flex align-items-center w-50 gap-2">
+
+
+                <button class="btn btn-warning d-none" id = "_btn_issues" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" vslang="buttons.Issues">
+                </button>
+
                 <button class="d-flex justify-content-center align-items-center rounded-circle border-0 "
                     style="background-color:#2b3991; width: 50px; height: 40px;" id="_btnBackToPayroll">
-                    <i class="fa-solid fa-reply-all tool-tip fs-6 text-white"> <span
-                            class="tool-tiptext fs-6 mt-2" vslang="buttons.Back"></span></i>
+                    <i class="fa-solid fa-reply-all tool-tip fs-6 text-white"> <span class="tool-tiptext fs-6 mt-2"
+                            vslang="buttons.Back"></span></i>
                 </button>
                 <div class="d-flex align-items-center justify-content-end  w-50 ">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
@@ -14,9 +20,9 @@
                     <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-end w-25 ">
+                {{-- <div class="d-flex align-items-center justify-content-end w-25 ">
                     <select type="id" id="el_filter_disburse" class="data-input filter-field"></select>
-                </div>
+                </div> --}}
             </div>
 
             <div class="d-flex align-items-center justify-content-end w-50 px-3 gap-3">
@@ -39,7 +45,7 @@
                     <button class="d-flex justify-content-center align-items-center bg-danger border-0 rounded-circle "
                         style="width: 40px; height: 40px;" id="_btnCalculate">
                         <i class="fa-solid fa-calculator tool-tip fs-6" style="color: #fff;">
-                            <span class="tool-tiptext fs-6"vslang="buttons.Calculate" ></span></i>
+                            <span class="tool-tiptext fs-6"vslang="buttons.Calculate"></span></i>
                     </button>
                     <button class="d-flex justify-content-center align-items-center bg-warning rounded-circle border-0 "
                         style="width: 40px; height: 40px;" id="_btnAuthorized">
@@ -59,6 +65,12 @@
                 </div>
 
 
+            </div>
+        </div>
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body m-2" id = "_issues_list">
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when
+                the user activates the relevant trigger.
             </div>
         </div>
         <div id="_payrollList_list" class="px-4 mt-3 h-100"></div>
