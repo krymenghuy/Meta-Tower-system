@@ -538,8 +538,6 @@ var AccountManagementComponent = (function () {
             .then((res) => {
                 if (res.status_code == 200) {
                     let d = res.data;
-                    // console.log(555,d);
-
                     mThis.renderTransaction(d);
                 }
             });
@@ -747,8 +745,6 @@ const AccountDialog = (() => {
 
                             p.id = me.dataOptions.id;
 
-                            // console.log(555,p);
-
                             vsapi
                                 .call(
                                     [
@@ -789,9 +785,6 @@ const AccountDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
                 },
 
                 onPrepareForm: (me) => {
@@ -814,8 +807,6 @@ const AccountDialog = (() => {
                     }
                 },
             });
-        // console.log(333,op);
-
         dialog.show(op);
     };
 
@@ -896,7 +887,6 @@ const DepositDialog = (() => {
 
                             p.id = me.dataOptions.id;
 
-                            // console.log(555,p);
                             if (!AuthManager.allowed(326)) return;
                             vsapi
                                 .call(
@@ -933,7 +923,7 @@ const DepositDialog = (() => {
                         },
                     },
                        onResponse: (me, res)=>{
-                         console.log('result from api "/form-options": ', res);
+                        //  console.log('result from api "/form-options": ', res);
                        }
                 },
 
@@ -1011,8 +1001,6 @@ const TransferDialog = (() => {
                     api: {
                         endpoint: `${main_view.base_url}/hr/account/form-options`,
                         params: (op) => {
-                            // console.log(1111,op);
-
                             return { id: op.id };
                         },
                     },
@@ -1028,8 +1016,6 @@ const TransferDialog = (() => {
                     exchange_rate.classList.add("d-none");
 
                     // account.onchange = (e) => {
-                    // console.log(1111,e);
-
                     let p = { account_number: account.value };
                     vsapi
                         .call(
@@ -1067,7 +1053,6 @@ const TransferDialog = (() => {
                                 from_account_info.innerHTML = div;
                             }
                         });
-
                     // };
 
                     to_account.onchange = (e) => {
@@ -1137,8 +1122,6 @@ const TransferDialog = (() => {
                             p.to_account_type = me.to_account_type;
                             p.to_account_currency_code = me.to_account_currency_code;
                             p.id = me.dataOptions.id;
-                            // console.log(1234, p);
-
                             if (
                                 me.to_account_currency_code != me.currency_code
                             ) {
@@ -1175,8 +1158,6 @@ const TransferDialog = (() => {
                                                 if (confirmation) {
                                                     p.from_account = {'account_number':p.account_number}
                                                     p.to_account = {'account_number':p.to_account_number}
-                                                    // console.log('Transfer data to be sent:', JSON.stringify(p));
-
                                                     vsapi
                                                         .call(
                                                             [
@@ -1188,8 +1169,6 @@ const TransferDialog = (() => {
                                                             null
                                                         )
                                                         .then((res) => {
-                                                            // console.log('Transfer response:', res);
-
                                                             if (
                                                                 res.status_code ===
                                                                     200 &&
@@ -1213,7 +1192,6 @@ const TransferDialog = (() => {
                                                             }
                                                         })
                                                         .catch((err) => {
-                                                            // console.log('Error during transfer:', err);
                                                             cv_interact.error(
                                                                 res.error_message ||
                                                                     "Error in processing transfer"
@@ -1230,7 +1208,6 @@ const TransferDialog = (() => {
                                     }
                                 })
                                 .catch((err) => {
-                                    // console.log('Error fetching confirmation:', err);
                                     cv_interact.error(
                                         "Error in processing confirmation"
                                     );

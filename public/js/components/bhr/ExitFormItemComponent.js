@@ -443,9 +443,7 @@ const FormItemDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log("API Response:", res);
-                    },
+
                 },
 
                 onPrepareForm: (me, data) => {
@@ -701,9 +699,7 @@ const ViewFormItemDialog = (() => {
                                     return { id: op.id };
                                 },
                             },
-                            onResponse: (me, res) => {
-                                console.log("API Response:", res);
-                            },
+
                         },
                     });
 

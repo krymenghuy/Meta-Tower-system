@@ -192,8 +192,6 @@ var EmployeeMovementComponent = (()=> {
             ],
 
             onClick:(menuLink, id, name)=>{
-                console.log(90,menuLink,80,id,70,name);
-
                 switch(name){
                     case 'edit_movement':{
                       mThis.editMovement(id, menuLink);
@@ -371,9 +369,6 @@ const MovementDialog = (()=>{
                     return {'id':op.id};
                  }
                },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
             },
 
             onPrepareForm:(me, data)=>{

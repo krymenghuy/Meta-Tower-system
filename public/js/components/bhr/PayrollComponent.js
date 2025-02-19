@@ -211,18 +211,13 @@ var PayrollComponent = new (function () {
             tableClass:
                 "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
-                //cloneTable = tr.parentElement.parentElement;
-                // console.log(1212,cloneTable);
                 tr.classList.add("tr_action");
-                // mThis.initDropdownMenus(cloneTable);
 
-                // mThis.initDropdownMenus(mThis.pr_table);
             },
         });
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
 
             let op = {
                 id: null,
@@ -279,10 +274,6 @@ var PayrollComponent = new (function () {
         mThis.pr_table = mThis.PayrollListView.getTable();
         mThis.initDropdownMenus(mThis.pr_table);
         mThis.setActionListeners();
-
-        //mThis.cloneTable = mThis.self.querySelector('#_payroll_list');
-        // console.log(7777,mThis.cloneTable.querySelector('tr'));
-
         mThis.initAlready = true;
     };
     mThis.setActionListeners = () => {
@@ -303,8 +294,6 @@ var PayrollComponent = new (function () {
         });
     };
     mThis.initDropdownMenus = (table) => {
-        console.log(666, table);
-
         const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_payroll_action",
@@ -369,15 +358,11 @@ var PayrollComponent = new (function () {
             },
         };
         new VSDropdownMenu(menuOptions);
-        // console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
-
         table.querySelectorAll("a.btn_payroll_action").forEach((e) => {
             const isAuthorized = e.dataset.authorized == "1";
-            console.log(9999, menuOptions.menus);
 
             menuOptions.menus.forEach((el, i) => {
                 // const action = el.dataset.mnuaction;
-                console.log(123, isAuthorized, 444, el);
                 if (isAuthorized) {
                     if (
                         el.name === "edit_payroll" ||
@@ -450,7 +435,7 @@ var PayrollComponent = new (function () {
                         )
 
                         .then((res) => {
-                           
+
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
                                 mThis.PayrollListView.showPage(mThis.getFilterData());
@@ -711,7 +696,6 @@ const AddPayRollListDailog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            // console.log(JSON.stringify(p,null,2));
                             vsapi
                                 .call(
                                     [
@@ -755,9 +739,7 @@ const AddPayRollListDailog = (() => {
                             return { id: op.id };
                         },
                     },
-                    // onResponse: (me, res) => {
-                    //     console.log('result from api "/form-options": ', res);
-                    // },
+
                 },
 
                 onPrepareForm: (me, data) => {

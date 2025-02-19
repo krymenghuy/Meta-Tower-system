@@ -144,12 +144,10 @@ var DepartmentComponent = new (function () {
             if (btn) {
                 mThis.deleteDepartment(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
 
     mThis.editDepartment = (id, menuLink) => {
-        console.log(234, id);
 
         let op = {
             id: id,
@@ -308,9 +306,7 @@ const DepartmentDialog = (()=>{
                     return {'id':op.id};
                  }
                },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
+
             },
 
             onPrepareForm:(me, data)=>{
@@ -324,114 +320,4 @@ const DepartmentDialog = (()=>{
 
     return self;
 })();
-// const DepartmentDialog = new (function () {
-//     const mThis = mThis;
-//     mThis.self = main_view.VSAppContent.querySelector("#dlg_sdl_add_Department");
-//     mThis.modal = new bootstrap.Modal(mThis.self);
-//     mThis.base_url = main_view.base_url;
-//     mThis.options = {};
 
-//     mThis.btnSave = mThis.self.querySelector("#dlg_sdl_add_department_btn_save");
-//     // mThis.elStatusId = mThis.self.querySelector("#_sdl_status_id");
-//     mThis.elTitle = mThis.self.querySelector(".modal-title");
-//     mThis.div_department_info = mThis.self.querySelector(
-//         "#_sdl_department_info"
-//     );
-
-//     mThis.btnSave.onclick = (e) => {
-//         e.preventDefault();
-//         let p = mThis.getDataForm();
-//         console.log(77777, p);
-
-//         vsapi
-//             .call(
-//                 `${mThis.base_url}/hr/department/save`,
-//                 p,
-//                 mThis.btnSave,
-//                 false
-//             )
-//             .then((res) => {
-//                 if (res.status_code === 200) {
-//                     mThis.modal.hide();
-//                     const d = res.data ?? {};
-//                     cv_interact.success("Department Saved Success!");
-//                     if (typeof mThis.options.onClose === "function")
-//                         mThis.options.onClose(p);
-//                 } else {
-//                     cv_interact.error(res.error_message);
-//                 }
-//             });
-//     };
-
-//     mThis.prepareData = (id, def, onFinish) => {
-//         if (!def) def = {};
-//         console.log(555555, id);
-//         vsapi
-//             .call(
-//                 `${mThis.base_url}/hr/department/form-options`,
-//                 { id: id },
-//                 null
-//             )
-//             .then((res) => {
-//                 let d = res.status_code === 200 ? res.data : {};
-//                 // VSUtil.setComboItems(
-//                 //     mThis.elStatusId,
-//                 //     d.status,
-//                 //     "id",
-//                 //     "name",
-//                 //     true,
-//                 //     "(Select Status)",
-//                 //     null
-//                 // );
-//                 console.log(33333, d);
-//                 onFinish(d);
-//             });
-//     };
-
-//     mThis.show = (options = {}) => {
-//         mThis.options = options;
-//         let id = options.id ?? null;
-//         console.log(123);
-
-//         mThis.prepareData(id, {}, (data) => {
-//             if (data.departments) {
-//                 mThis.elTitle.textContent = "Modify Department Information";
-//             } else {
-//                 mThis.elTitle.textContent = "Create Department";
-//             }
-//             mThis.setData(data.departments);
-//             mThis.modal.show();
-//         });
-//     };
-
-//     mThis.getDataForm = () => {
-//         const div = mThis.self;
-//         let p = { id: mThis.options.id };
-
-//         div.querySelectorAll(".data-input").forEach((el) => {
-//             const data_member = el.dataset.field;
-//             p[data_member] = el.value;
-//         });
-
-//         return p;
-//     };
-
-//     mThis.setData = (d = {}) => {
-//         const div = mThis.self;
-//         div.querySelectorAll(".data-input").forEach((el) => {
-//             const data_member = el.dataset.field;
-//             console.log(7777, data_member, "|", el);
-//             el.value = "";
-//         });
-
-//         console.log(4444, d);
-//         if (!d) return;
-
-//         div.querySelectorAll(".data-input").forEach((el) => {
-//             const data_member = el.dataset.field;
-//             console.log(7777, data_member, "|", el);
-
-//             el.value = d[data_member] || "";
-//         });
-//     };
-// })();

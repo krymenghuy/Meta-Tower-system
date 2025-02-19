@@ -6,10 +6,10 @@ var DashboardComponent =  (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
     // mThis.self = mThis.jm[0];
-   
+
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     mThis.onShow = (options) => {
-        if (!AuthManager.allowed(254,true)) return; 
+        if (!AuthManager.allowed(254,true)) return;
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector(".btn-db-fitler");
@@ -25,7 +25,7 @@ var DashboardComponent =  (function () {
     // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
     mThis.onHide = (options) => {
 
-    if (!AuthManager.allowed(254,true)) return; 
+    if (!AuthManager.allowed(254,true)) return;
         mThis.removeFilterButton();
     };
 
@@ -86,10 +86,8 @@ var DashboardComponent =  (function () {
             //     ].join('');
             // },
             contentCreated: (me) => {
-                console.log("Filter Content created! ", me.controls);
             },
             onSelect: (me, data) => {
-                console.log("selected data is  : ", data);
             },
         });
     };
@@ -652,13 +650,13 @@ var DashboardComponent =  (function () {
             parent.style.height = window.innerHeight - 100 + "px";
         };
     };
-  
+
     mThis.show = (options) => {
         if (!AuthManager.allowed(254,true)){
             mThis.self.innerHTML = renderUserHome();
             main_view.setContentView(mThis.self, mThis.title_prop);
             return;
-        } 
+        }
 
         mThis.setDashboardScroll();
         mThis.init();

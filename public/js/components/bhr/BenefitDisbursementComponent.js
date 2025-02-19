@@ -187,7 +187,6 @@ var BenefitDisbursementComponent =  (function () {
             if (btn) {
                 mThis.deleteBenefitDisburse(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
     mThis.editBenefitDisburse = (id, menulink) => {
@@ -262,7 +261,6 @@ var BenefitDisbursementComponent =  (function () {
                     "All Benefits",
                     null
                 );
-                console.log(1111, mThis.elBenefit);
             });
     };
     mThis.show = function () {

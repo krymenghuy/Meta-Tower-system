@@ -491,8 +491,6 @@ var WalletAccountComponent = (function () {
 
             if(res.status_code == 200){
                 let d = res.data;
-                // console.log(555,d);
-
                 mThis.renderWalletTransaction(d)
             }
         })
@@ -508,7 +506,6 @@ var WalletAccountComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                // console.log(1111, mThis.elFilter_department);
                VSUtil.setComboItems(mThis.elFilter_department, d.departments, 'id', 'name', '', '(All Departments)',null);
                onFinish();
 
@@ -634,19 +631,7 @@ const WalletAccountDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            // console.log(555,p);
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/account/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
+                            vsapi.call([main_view.base_url,"/hr/account/save",].join(""),p,btn,null).then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         if(me.dataOptions.id > 0)
@@ -674,34 +659,13 @@ const WalletAccountDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
                 },
-        //    "extendMethod":{
-        //     "setData":(me,data)=>{
-        //         me.controls.account_type.setAttribute('disabled',true);
-        //     }
-        //    },
+
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
                     me.setReadOnly(true,['account_type','account_number','currency_code'], {"currency_code":VSMoney.getCurrency().code});
-                    const isReadOnly =me.dataOptions.id > 0; 
+                    const isReadOnly =me.dataOptions.id > 0;
                     me.setReadOnly(isReadOnly,['balance','employee'], isReadOnly? null : {"balance":"0.00"});
-                    // me.controls.account_number.setAttribute('readOnly',true);
-                    // me.controls.currency_code.value = VSMoney.getCurrency().code;
-                    // me.controls.currency_code.setAttribute('disabled',true);
-
-                    // const balanceField = me.divModal.querySelector(
-                    //     '[data-field="balance"]'
-                    // );
-                    // if (balanceField) {
-                    //     if (me.dataOptions && me.dataOptions.id) {
-                    //         balanceField.disabled = true;
-                    //     } else {
-                    //         balanceField.disabled = false;
-                    //     }
-                    // }
                 },
             });
 
