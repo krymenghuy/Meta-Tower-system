@@ -489,7 +489,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/bhr/setting.svg') }}" />
+                            src="{{ asset('assets/images/icons/setting.png') }}" />
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.General Settings">General
                         Settings</span>

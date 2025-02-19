@@ -23,7 +23,9 @@ class ReportCenterController extends Controller
                 $include = ' AND 1 = 0';
             }
         }
-      $rows = DB::select("SELECT id, `name`, `hidden`, code,category,rpt.module_id,rpt.params,rpt.display_order,rpt.hidden FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 $include ORDER BY rpt.display_order ASC");
+        \Log::info(json_encode($include));
+
+      $rows = DB::select("SELECT id, `name`, `hidden`, code,category,rpt.module_id,rpt.params,rpt.display_order,rpt.hidden,rpt.permission_id FROM reports AS rpt WHERE IFNULL(rpt.hidden,0) = 0 $include ORDER BY rpt.display_order ASC");
       return JDV::json($rows);
    }
 
