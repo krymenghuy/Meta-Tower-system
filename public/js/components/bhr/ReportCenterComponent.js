@@ -88,15 +88,13 @@ var ReportCenterComponent = new (function () {
             .call(
                 `${main_view.base_url}/api/report-center/report-list`,
                 op,
-                null,
+                false,
                 null,
                 main_view.apiCluster
             )
             .then((res) => {
-                let data = [];
-                if (res.status_code === 200) {
-                    data = res.data;
-                }
+                const data = res.data || [];
+                console.log(data);
                 mThis.renderPanelBox(data);
             });
         if (typeof onFinish === "function") onFinish();
