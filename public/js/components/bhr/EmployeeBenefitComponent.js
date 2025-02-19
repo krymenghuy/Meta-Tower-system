@@ -385,6 +385,7 @@ const EmployeeBenefitDialog = (() => {
             onPrepareForm: (me, data) => {
 
                 const BenefitField = me.divModal.querySelector("#benefit_id");
+
                 const effective_date = me.divModal.querySelector(".effective_date");
                 BenefitField.addEventListener("change", () => {
                     const selectedValue = BenefitField.value;
@@ -397,6 +398,7 @@ const EmployeeBenefitDialog = (() => {
                         effective_date.classList.add("d-none");
                     }
                 });
+                BenefitField.dispatchEvent(new Event("change"));
                 LocaleManager.translateZone(me.divModal);
                 me.controls.currency_code.value = VSMoney.getCurrency().code;
 

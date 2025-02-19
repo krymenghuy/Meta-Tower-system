@@ -1,4 +1,5 @@
 "use strict";
+
 var PayrollListComponent = new (function () {
     const mThis = {};
     mThis.base_url = main_view.base_url;
@@ -10,7 +11,6 @@ var PayrollListComponent = new (function () {
     mThis.btnImport = mThis.self.querySelector("#_btnImport");
     mThis.divFilter = mThis.self.querySelector("#_divFilter");
     mThis.elSearch = mThis.self.querySelector("#_search_payroll_list");
-    mThis.elFilterDisburse = mThis.self.querySelector("#el_filter_disburse");
     mThis.btnCalculate = mThis.self.querySelector("#_btnCalculate");
     mThis.btnAuthorized = mThis.self.querySelector("#_btnAuthorized");
     mThis.btnBackToPayroll = mThis.self.querySelector("#_btnBackToPayroll");
@@ -20,6 +20,8 @@ var PayrollListComponent = new (function () {
     mThis.btnPrint = mThis.self.querySelector("#_print_pay_slip");
     mThis.btnReverse = mThis.self.querySelector("#_btnReverseTransactions");
     mThis.div_payrollList = mThis.self.querySelector('#_payrollList_list');
+    mThis.btnIssues = mThis.self.querySelector("#_btn_issues");
+    mThis.issues_list = mThis.self.querySelector("#_issues_list");
 
     mThis.cols = [
 
@@ -209,6 +211,7 @@ var PayrollListComponent = new (function () {
                             const error_message = error_count > 0 ? `${error_count} cases failed`:'';
                             cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases affected! ${d.issues_count}`].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            mThis.showIssues(d);
 
                         } else {
                             cv_interact.warning(res.error_message);
@@ -217,6 +220,29 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
+
+        mThis.showIssues = function (d) {
+            let issues_count = d.issues_count || 0;
+            if (issues_count > 0) {
+                mThis.btnIssues.classList.remove('d-none');
+
+                let html = '';
+                d.issues.forEach((issue) => {
+                    html += `
+                    <div class="d-flex flex-wrap gap-2">
+                        <span>Name: ${issue.name ?? 'N/A'}</span>
+                        <span>Issue: ${issue.issue ?? 'N/A'}</span>
+                        <div class="border w-100"></div>
+                    </div>`;
+                });
+                mThis.issues_list.innerHTML = html;
+            } else {
+                mThis.btnIssues.classList.add('d-none');
+                mThis.issues_list.innerHTML = null;
+                mThis.issues_list.parentElement.classList.remove('show');
+            }
+
+        }
         mThis.btnBackToPayroll.onclick = function (e) {
             e.preventDefault();
             let lnk = VSUtil.closestLimited(e.target, "#_btnBackToPayroll");
@@ -756,7 +782,7 @@ var PayrollListComponent = new (function () {
 
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        p.disbursed = mThis.elFilterDisburse.value;
+        // p.disbursed = mThis.elFilterDisburse.value;
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -787,7 +813,7 @@ var PayrollListComponent = new (function () {
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
-            VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
+            // VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
     };

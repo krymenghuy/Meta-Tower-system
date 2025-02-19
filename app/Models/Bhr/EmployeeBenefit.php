@@ -69,7 +69,7 @@ class EmployeeBenefit
         }else {
             $row = DB::table('emp_benefits')->where('id', $id)->selectRaw('balance,currency_code')->first();
             if ($row->balance > $d->amount) {
-                return DV::error('Balance cannot be less than previous balance ??::'. VSMoney::formatAmount($row->balance, $row->currency_code));
+                return DV::error('Amount cannot be less than previous balance ' . VSMoney::formatAmount($row->balance, $row->currency_code, false) . ' ' );
             }
         }
 

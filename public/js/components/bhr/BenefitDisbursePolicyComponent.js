@@ -246,18 +246,18 @@ const BdpDialog = (() => {
                 createContent: () => {
                     const months = [
                         { value: 0, name: "All" },
-                        { value: 1, name: "Jan" },
-                        { value: 2, name: "Feb" },
-                        { value: 3, name: "Mar" },
-                        { value: 4, name: "Apr" },
+                        { value: 1, name: "January" },
+                        { value: 2, name: "February" },
+                        { value: 3, name: "March" },
+                        { value: 4, name: "April" },
                         { value: 5, name: "May" },
-                        { value: 6, name: "Jun" },
-                        { value: 7, name: "Jul" },
-                        { value: 8, name: "Aug" },
-                        { value: 9, name: "Sep" },
-                        { value: 10, name: "Oct" },
-                        { value: 11, name: "Nov" },
-                        { value: 12, name: "Dec" },
+                        { value: 6, name: "June" },
+                        { value: 7, name: "July" },
+                        { value: 8, name: "August" },
+                        { value: 9, name: "September" },
+                        { value: 10, name: "October" },
+                        { value: 11, name: "November" },
+                        { value: 12, name: "December" },
                     ];
 
                     const currentYear = new Date().getFullYear();
