@@ -257,7 +257,9 @@ var ReportCenterComponent = new (function () {
             .off("click")
             .on("click", function (e) {
                 e.preventDefault();
-                if (!AuthManager.allowed(`${mThis.permissionID}.print`)) return;
+                console.log(54, mThis.permissionID);
+                
+                if (!AuthManager.allowed(`${mThis.permissionID}`)) return;
                 windowPrint(html);
             });
 
@@ -271,9 +273,9 @@ var ReportCenterComponent = new (function () {
             });
     };
 
-    this.renderReportType = (d) => {
+    this.renderReportType = (d) => {        
         d = d || [];
-        let html = null;
+        let html = null;        
         d.map((item) => {
             const filter = JSON.stringify(item.params).replace(/\"/g, "'");
             html = [

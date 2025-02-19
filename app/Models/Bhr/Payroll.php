@@ -639,7 +639,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
-            // ->where('pl.emp_id',7)
+            // ->where('pl.emp_id',1)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -880,7 +880,7 @@ static function getFlatRateBenefits($data, $emp_id, $payroll = null)
                 'p_bias' => $last_bias,
                 'total_salary' => $payroll->total
             ]);
-            // \Log::info('count days: ' . $count_days);
+            \Log::info('last allowance: ' . $last_allowance);
             $payroll_total = DB::table('payroll_list')
                 ->where('payroll_id', $payroll->payroll_id)
                 ->sum('total_salary');
