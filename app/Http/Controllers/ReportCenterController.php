@@ -34,8 +34,9 @@ class ReportCenterController extends Controller
                
             } else $reports[] = $row;
         }
-      return JDV::json($reports);
-   }
+
+   }      return JDV::json($reports);
+
 
    static function appExists($bin_app_id){
      return DB::table('um_applications')->where('id',$bin_app_id)->value('name');

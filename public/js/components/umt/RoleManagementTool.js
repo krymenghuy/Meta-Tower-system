@@ -1859,7 +1859,15 @@ this.ReportPanel = new function(){
 
     // },
            showCancelButton:true,
-           buttons:[
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
                 {
                   label:"<span>Save</span>",
                   cssClass:"btn btn-primary",
