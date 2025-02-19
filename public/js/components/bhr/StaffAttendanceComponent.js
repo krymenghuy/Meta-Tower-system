@@ -175,8 +175,6 @@ var StaffAttendanceComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(12,JSON.stringify(p));
-
         return p;
     };
     mThis.show = function () {
@@ -261,8 +259,6 @@ const StaffAttendanceDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id;
-                            console.log(90,p);
-
 
                             vsapi
                                 .call(
@@ -286,7 +282,6 @@ const StaffAttendanceDialog = (() => {
                     },
                 ],
                 contentCreated: (me, divModal) => {
-                    console.log(123,me);
                     DateTimePicker.init(me.controls.attendance_date);
 
                     me.saveStaffAttendance = (p) => {
@@ -306,9 +301,9 @@ const StaffAttendanceDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

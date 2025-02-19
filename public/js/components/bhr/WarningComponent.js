@@ -157,8 +157,6 @@ var WarningComponent = (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p.search_value, main_filters);
-
         return p;
     };
     mThis.initDropdownMenus = (table) => {
@@ -184,8 +182,6 @@ var WarningComponent = (function () {
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case "edit_warning": {
-                        console.log(98787653, id);
-
                         mThis.editWarning(id, menulink);
                         break;
                     }
@@ -265,7 +261,6 @@ var WarningComponent = (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, mThis.elSortBy);
             });
     };
 
@@ -391,9 +386,9 @@ const WarningDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

@@ -240,7 +240,6 @@ var LeaveUnFormComponent = (function () {
            },
 
             onClick:(menuLink, id, name)=>{
-                //console.log(90,menuLink,80,id,70,name);
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -272,7 +271,6 @@ var LeaveUnFormComponent = (function () {
         let tr = lnk.closest('tr');
 
         let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
-        console.log(321,tr,123,status_id);
 
         let inputOptions = {
             title: 'Set Leave Request Status',
@@ -298,7 +296,6 @@ var LeaveUnFormComponent = (function () {
                     id: id,
                     status_id: d.value
                 };
-                console.log(123,p);
 
                 vsapi.call(`${mThis.base_url}/hr/leave/update-status`,p).then(res => {
                     if(res.status_code === 200){
