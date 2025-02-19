@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f1ee4b8d5817312c118b727e717868b",
+    "content-hash": "245dbe50fe4c5aac85a02b3237dcb756",
     "packages": [
         {
             "name": "apility/laravel-fcm",
@@ -7611,21 +7611,14 @@
         {
             "name": "vsd/xauth",
             "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:vectorasoft/lib-xauth.git",
-                "reference": "b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-xauth/zipball/b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
-                "reference": "b55ad4374b71d0de969ca8ca5d7bba6ed9f2e7ac",
-                "shasum": ""
+                "type": "path",
+                "url": "../../packages/xauth",
+                "reference": "daf96136b24bd10711f9ed72e1a24b29eee58098"
             },
             "require": {
                 "php": ">=7.4"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -7645,11 +7638,9 @@
                 }
             ],
             "description": "Vectorasoft Authentication and authorization package",
-            "support": {
-                "source": "https://github.com/vectorasoft/lib-xauth/tree/main",
-                "issues": "https://github.com/vectorasoft/lib-xauth/issues"
-            },
-            "time": "2025-02-14T06:01:11+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "webmozart/assert",
@@ -10092,5 +10083,5 @@
         "php": "^7.3|^8.2.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
