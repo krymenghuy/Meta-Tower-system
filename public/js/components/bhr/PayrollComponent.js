@@ -174,15 +174,15 @@ var PayrollComponent = new (function () {
                 `<div class="d-flex align-items-center gap-1">
                     <button class="btnAuthorized d-flex justify-content-center align-items-center bg-info rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnAuthorized">
-                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">Authorize</span></i>
+                            <i class="fa-solid fa-check tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Authorize','titles')}</span></i>
                     </button>
                     <button class="btnReset d-flex justify-content-center align-items-center bg-danger rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnReset">
-                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">Reset</span></i>
+                            <i class="fa-solid fa-reply fs-10 tool-tip" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Reset','titles')}</span></i>
                     </button>
                     <button class="btnDisbursed d-flex justify-content-center align-items-center bg-success rounded-circle border-0" data-id="${data.id}"
                             style="width: 25px; height: 25px;" id="_btnDisburse">
-                            <i class="fa-solid fa-paper-plane tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">Disbursed</span></i>
+                            <i class="fa-solid fa-square-check tool-tip fs-6" style="color: #fff;"><span class="tool-tiptext">${LocaleManager.trans('Disburse','titles')}</span></i>
                     </button>
                 </div>`,
         },
@@ -339,7 +339,7 @@ var PayrollComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const authorized = container.dataset.authorized;
-                
+
                 if (authorized == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
@@ -400,7 +400,7 @@ var PayrollComponent = new (function () {
                 mThis.PayrollListView.showPage();
             },
         };
-        
+
         if (!AuthManager.allowed(474)) return;
         cv_interact.confirm(
             "Authorize this payroll?",
@@ -450,9 +450,7 @@ var PayrollComponent = new (function () {
                         )
 
                         .then((res) => {
-                            console.log(2929,res);
-                            console.log(404040,p);
-
+                           
                             if (res.status_code === 200) {
                                 cv_interact.success("Payroll has been reset!");
                                 mThis.PayrollListView.showPage(mThis.getFilterData());
@@ -541,7 +539,7 @@ var PayrollComponent = new (function () {
     };
 
     mThis.getFilterData = () => {
-        let filters = {
+        const filters = {
             search_value: mThis.elSearch.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -559,8 +557,6 @@ var PayrollComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, mThis.elAuthorized);
-
                 VSUtil.setComboItems(
                     mThis.elAuthorized,
                     d.authorized,
@@ -596,7 +592,6 @@ const AddPayRollListDailog = (() => {
     const self = {};
     let dialogAdd = null;
     self.show = (op) => {
-        console.log(999, op);
         const months = [
             { value: 0, name: "select month" },
             { value: 1, name: "Jan" },
@@ -631,7 +626,7 @@ const AddPayRollListDailog = (() => {
 
                         <div class="form-group col-4">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
-                            <select name="month" class="form-control data-input" data-field="month">
+                            <select name="month" class="data-input" data-field="month">
                                 ${months
                                     .map(
                                         (month) =>
@@ -642,7 +637,7 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="year" class="form-label" vslang="titles.Year"></label>
-                            <select name="year" class="form-control data-input" data-field="year">
+                            <select name="year" class="data-input" data-field="year">
                                 <option value="0">select year</option>
                                 ${years
                                     .map(
@@ -655,7 +650,7 @@ const AddPayRollListDailog = (() => {
 
                         <div class="form-group col-4">
                             <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
-                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
+                            <select name="p_number" class="data-input form_input" data-field="p_number">
                                 <option value="0">select number</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -680,7 +675,7 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-4">
                             <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
-                            <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                            <input name="exchange_rate" type="number" class="form-control data-input" data-field="exchange_rate" />
                         </div>
 
 
@@ -704,14 +699,14 @@ const AddPayRollListDailog = (() => {
 
                 buttons: [
                     {
-                        label: '<span class="text-warning">Cancel</span>',
+                        label: '<span class="text-warning" vslang="titles.Cancel"></span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
+                        label: "<span vslang='titles.save'></span>",
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
@@ -732,11 +727,11 @@ const AddPayRollListDailog = (() => {
                                         me.hide(true, p);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Updated payroll successfully"
+                                                "Payroll is updated successfully"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "Added payroll successfully"
+                                                "New payroll is created successfully"
                                             );
                                         }
                                     } else {
@@ -760,9 +755,9 @@ const AddPayRollListDailog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

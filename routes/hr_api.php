@@ -181,6 +181,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     //Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
     Route::post('/list', [PayrollController::class, 'getPayrollList']);
     Route::post('/staff-list', [PayrollController::class, 'getStaffList']);
+    Route::post('/staff/list', [PayrollController::class, 'getStaffList']);
     Route::post('/get-end-date', [PayrollController::class, 'getEndDate']);
     Route::post('/reset', [PayrollController::class, 'reset']);
     Route::post('/reset-reverse', [PayrollController::class, 'resetStatus']);
@@ -191,7 +192,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff
     Route::post('/save', [PayrollListController::class, 'addStaff']);
     Route::post('/list', [PayrollListController::class, 'getList']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
-    Route::post('/delete', [PayrollListController::class, 'removeStaff']);
+    Route::post('/remove', [PayrollListController::class, 'delete']);
     Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
     //Route::post('/import', [PayrollListController::class, 'importPayrollList']);
     //Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);

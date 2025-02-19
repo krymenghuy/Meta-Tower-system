@@ -16,7 +16,7 @@
     /* border-radius: 50px; */
   }
   .choices__list--dropdown {
-    max-height: 300px; /* Adjust the value as needed */
+    max-height: none; /* Adjust the value as needed */
     background-color: #fff;
     border-radius: 2px;
     position: absolute !important;

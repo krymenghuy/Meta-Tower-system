@@ -750,6 +750,8 @@ var ReportCenterComponent = new (function () {
         div.on("click", "li.report-name", function (e) {
             e.preventDefault();
             mThis.permissionID = e.currentTarget.dataset.permissionid;
+            console.log(83838,mThis.permissionID);
+            
             let params = $(this).data("filter").replaceAll("'", '"');
             params = JSON.parse(params);
             mThis.options.params = [];

@@ -309,19 +309,7 @@ class PayrollList
         }
         return $row;
     }
-
-    function removeStaff($id = null)
-    {
-        $id = $id ?? $this->id;
-        $payroll = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.id',$id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
-        if(!$payroll) return DV::Error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
-        if($payroll->authorized ==1 || $payroll->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
-        $x = DB::table('payroll_list')
-            ->where('id', $id)
-            ->delete();
-        return DV::depends(1, null, 'Failed to remove staff from payroll list');
-    }
-
+ 
     function getFormOptions($id, $ss)
     {
         $payroll_list = null;
@@ -345,6 +333,18 @@ class PayrollList
             'branches' => GeneralSettings::options_branch($ss),
             'payroll_list' => $payroll_list,
         ];
+    }
+
+    function delete($id = null)
+    {
+        $id = $id ?? $this->id;
+        $emp = DB::table('payrolls as p')->join('payroll_list as l','l.payroll_id','=','p.id')->where('l.id',$id)->selectRaw('p.id as payroll_id, l.id, p.authorized, p.disbursed AS payroll_disbursed, l.disbursed AS staff_disbursed')->first();
+        if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
+        if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
+        $x = DB::table('payroll_list')
+            ->where('id', $id)
+            ->delete();
+        return DV::depends($x,null,'Failed to remove staff from payroll');
     }
 
     // function disburseOne($id, $ss = null)
@@ -470,9 +470,9 @@ class PayrollList
 
         if ($row) {
 
-            $row->allowance = DB::table('tax_allowances')
-                ->where('emp_id', $row->emp_id)
-                ->value('allowance');
+            // $row->allowance = DB::table('tax_allowances')
+            //     ->where('emp_id', $row->emp_id)
+            //     ->value('allowance');
 
 
             $row->deduction = $row->deduction ?? 0.00;

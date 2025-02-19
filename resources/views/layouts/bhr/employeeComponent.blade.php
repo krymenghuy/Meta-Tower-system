@@ -1,5 +1,5 @@
 <style>
-  
+
     .card {
         border-radius: 5px;
         box-shadow: 0px 0px 3px 0px grey;
@@ -110,8 +110,8 @@
 
     }
 
-    
- 
+
+
 
     #_view_profile_container {
         padding-bottom: 20%;
@@ -193,12 +193,12 @@
                     <button class="d-flex justify-content-center bg-primary  align-items-center border-0 rounded-circle"
                         style="width: 40px; height: 40px;" id="_btn_add_employee">
                         <i class="fa-solid fa-user-plus tool-tip fs-6" style="color: #fff;"><span
-                                class="tool-tiptext fs-6 ">Add Staff</span></i>
+                                class="tool-tiptext fs-6​ " vslang = "buttons.Add Staff"></span></i>
                     </button>
-                    <button class="d-flex justify-content-center align-items-center border-0 bg-success rounded-circle"
+                    <button class="d-none justify-content-center align-items-center border-0 bg-success rounded-circle"
                         style="width: 40px; height: 40px;" id="_btn_import_employee">
                         <i class="fa-solid fa-file-import tool-tip fs-6" style="color: #fff;"><span
-                                class="tool-tiptext fs-6">Import Staff</span></i>
+                                class="tool-tiptext fs-6" vslang = "buttons.Import Staff"></span></i>
                     </button>
                 </div>
             </div>
