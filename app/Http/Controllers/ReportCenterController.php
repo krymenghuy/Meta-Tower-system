@@ -15,7 +15,10 @@ class ReportCenterController extends Controller
         if($ss->status_code !=200) return JDV::raw($ss);
         $user_id = $ss->user_id;
         $app_id = $req->app_id ?? null;
-        
+        if(!$app_id){
+             \Log::error('ReportCenterController->getReportList() requires app_id, which is not supplied!');
+             return JDV::json([]);
+        }
         $access_reports = XUser::getReports ($user_id,$app_id,null);
         $rows = DB::table('reports as rpt')->where('app_id',hex2bin($app_id))->selectRaw('rpt.id,rpt.permission_id,rpt.name,rpt.code,rpt.category,rpt.params,rpt.module_id,rpt.display_order,rpt.hidden')->orderByRaw('display_order ASC')->get();
         $reports = [];
@@ -34,10 +37,9 @@ class ReportCenterController extends Controller
                
             } else $reports[] = $row;
         }
-
-   }      return JDV::json($reports);
-
-
+        return JDV::json($reports);
+   }      
+ 
    static function appExists($bin_app_id){
      return DB::table('um_applications')->where('id',$bin_app_id)->value('name');
    }

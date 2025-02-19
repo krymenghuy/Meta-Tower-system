@@ -673,7 +673,7 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
       $public_folder = env('ASSET_URL');
       $public_folder =  $public_folder? $public_folder."/":null;
       return url('/')."/".$public_folder.$uri;
-    }
+   } 
 
     function getCurrentSubsId($use_env_value = false){
         $user = XAuthService::user();
