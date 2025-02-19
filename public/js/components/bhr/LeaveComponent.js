@@ -231,7 +231,6 @@ var LeaveComponent = (function () {
            },
 
             onClick:(menuLink, id, name)=>{
-                console.log(90,menuLink,80,id,70,name);
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -263,7 +262,6 @@ var LeaveComponent = (function () {
         let tr = lnk.closest('tr');
 
         let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
-        console.log(321,tr,123,status_id);
 
         let inputOptions = {
             title: 'Set Leave Request Status',
@@ -487,9 +485,7 @@ const LeaveRequestDialog = (()=>{
                             return { id: op.id };
                         },
                     },
-                    //    onResponse: (me, res)=>{
-                    //      console.log('result from api "/form-options": ', res);
-                    //    }
+
                 },
 
                 onPrepareForm: (me, data) => {

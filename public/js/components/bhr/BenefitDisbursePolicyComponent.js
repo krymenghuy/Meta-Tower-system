@@ -218,7 +218,6 @@ var BenefitDisbursePolicyComponent =  (function () {
                     "All Benefits",
                     null
                 );
-                console.log(1111, mThis.elBenefit);
             });
     };
     mThis.show = function () {
@@ -237,7 +236,6 @@ const BdpDialog = (() => {
     const self = {};
     let dialogAdd = null;
     self.show = (op) => {
-        console.log(999, op);
 
         dialogAdd =
             dialogAdd ||
@@ -261,7 +259,6 @@ const BdpDialog = (() => {
                         { value: 11, name: "Nov" },
                         { value: 12, name: "Dec" },
                     ];
-                    console.log(123, months.length);
 
                     const currentYear = new Date().getFullYear();
                     const years = Array.from(
@@ -371,9 +368,9 @@ const BdpDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

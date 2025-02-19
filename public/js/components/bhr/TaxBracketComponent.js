@@ -287,8 +287,6 @@ const TaxBracketDialog = (()=>{
                     const p = me.getData();
 
                     p.id = me.dataOptions.id;
-                    console.log(123,p);
-
                     vsapi.call( [main_view.base_url,'/hr/tax-bracket/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);

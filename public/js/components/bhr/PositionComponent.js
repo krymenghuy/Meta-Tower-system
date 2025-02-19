@@ -126,8 +126,6 @@ var PositionComponent =  (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        // console.log(222, p);
-
         return p;
     };
 
@@ -173,8 +171,6 @@ var PositionComponent =  (function () {
     };
 
     mThis.editPosition = (id, menuLink) => {
-        console.log(234, id);
-
         let op = {
             id: id,
             btn: menuLink,
@@ -229,8 +225,6 @@ var PositionComponent =  (function () {
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems( mThis.elDepartment, d.departments, "id", "name", true, "All Department", null);
-                console.log(38484,mThis.elDepartment);
-
             });
     };
 
@@ -325,8 +319,6 @@ const PositionDialog = (()=>{
                     const p = me.getData();
 
                     p.id = me.dataOptions.id; //get "id" from op
-                    console.log(111,p);
-
 
                     vsapi.call( [main_view.base_url,'/hr/position/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){

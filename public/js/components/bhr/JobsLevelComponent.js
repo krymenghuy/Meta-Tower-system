@@ -136,7 +136,6 @@ var JobsLevelComponent = new (function () {
             if (btn) {
                 mThis.deleteJobLevel(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
     mThis.editJobLevel = (id, menulink) => {
@@ -202,7 +201,6 @@ var JobsLevelComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, mThis.elSortBy);
             });
     };
     // Show component
@@ -319,9 +317,9 @@ const JobLevelDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log('result from api "/form-options": ', res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

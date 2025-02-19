@@ -27,7 +27,7 @@ const CreateContractDialog = (()=>{
                                 <option value="O">Other</option>
                             </select>
                         </div> -->
-                        
+
                            <div class="form-group w-100">
                             <label for="" class="form-label " vslang="titles.ID Card"></label>
                             <input name="director-nid" class="form-control data-input" data-field="com_rep_nid"  />
@@ -40,7 +40,7 @@ const CreateContractDialog = (()=>{
                             <label for="" class="form-label " vslang="titles.Location"></label>
                             <textarea name="com_address" class="form-control data-input" data-field="branch_address" ></textarea>
                         </div>
-                   
+
                     </div>
 
                     <div class="col-lg-6">
@@ -74,22 +74,22 @@ const CreateContractDialog = (()=>{
                             <label for="" class="form-label " vslang="titles.Address"></label>
                             <textarea name="emp-address" class="form-control data-input" data-field="emp_address"></textarea>
                         </div>
-                    
-                    
+
+
                     </div>
-                    
+
                 </div>
-               
+
             </div>`].join('');
             },
             // configSelect:[
-              
+
             // ],
             contentCreated:(me)=>{
 
             },
-            
-         
+
+
             prepareFormOptions:{
                 modifyTitle:"Create Contract",
                 createTitle:"Create Contract",
@@ -100,24 +100,24 @@ const CreateContractDialog = (()=>{
                     return { id: op.id };
                 },
                   onResponse: (me, res) => {
-                    
+
                 },
                     // params: {id:3}
                }
             },
             onPrepareForm:(me,data,fields,divModal)=>{
                 LocaleManager.translateZone(me.divModal);
-                
-                
+
+
                 // const branch = EmployeeComponent.getFilterData().branch_id;
                 // console.log(12,branch);
-                
+
                 // if(branch) {
                 //     me.controls.dir_branch.value = branch;
                 // }
                 // me.options.title = me.dataOptions.title||"Create Branch";
             },
-            
+
             buttons:[
                {
                  label:"<span>Cancel</span>",
@@ -136,18 +136,17 @@ const CreateContractDialog = (()=>{
                     const url = `${main_view.base_url}/create-contract/${d}`;
                     window.open(url, '_blank', 'noopener,noreferrer');
                     me.modal.hide(true, op);
-                    
-                });
-                
 
-                
+                });
+
+
+
                 }
-              }  
+              }
             ],
-        
+
          });
-        // console.log(1,op);
-        
+
         dialog.show(op);
      }
 

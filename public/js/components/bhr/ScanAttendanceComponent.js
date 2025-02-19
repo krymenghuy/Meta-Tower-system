@@ -52,7 +52,6 @@ var ScanAttendanceComponent = new function () {
 
     this.sendEmployeeCode = (elInput, op) => {
         elInput.value = '';
-        console.log(op);
         vsapi.call(`${mThis.base_url}/hr/employee/attendance/scan`, {
             employee_code: op.employee_code,
             current_date: op.current_date,
@@ -60,13 +59,11 @@ var ScanAttendanceComponent = new function () {
             force_checkin: op.force_checkin ?? 0,
             force_checkout: op.force_checkout ?? 0,
         }, null, false).then(res => {
-            console.log(res);
             if (res.status_code === 200) {
                 const d = res.data;
                 // mThis.popDialog(d);
 
                 mThis.renderTableEmployee();
-                console.log(123,d);
                 mThis.renderEmployeeImage(d);
 
             }
@@ -111,7 +108,6 @@ var ScanAttendanceComponent = new function () {
     }
 
     this.renderEmployee = (d) => {
-        console.log(555,d);
 
         const html = `<div class="d-flex">
             <div class="d-flex align-items-center justify-content-center w-50">
@@ -173,14 +169,11 @@ var ScanAttendanceComponent = new function () {
                     </tr>
                 </thead>
         `;
-        console.log(234,per_page);
         vsapi.call(`${mThis.base_url}/hr/employee/attendance/last-employees-scan`, {
             "per_page":per_page
         }, null, false).then(res => {
-            // console.log(123,res);
             if (res.status_code === 200) {
                 const d = res.data;
-                console.log(JSON.stringify(d,null,2));
                 if(d.length > 0){
                     html += `
                     <tbody>

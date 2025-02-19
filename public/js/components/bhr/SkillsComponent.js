@@ -290,8 +290,6 @@ const SkillDialog = (() => {
         });
         me.deleteSkillPhoto = (id) => {
             const p = {"id":id};
-            console.log(12,p);
-
             vsapi.call([main_view.base_url,'/hr/skills/delete/skill/photo'].join(''),p,false,false).then(res =>{
                 if(res.status_code == 200){
                   me.userImageBox.setImage(null);
@@ -351,41 +349,6 @@ const SkillDialog = (() => {
            }
         }
      ],
-    // configSelect: [
-    //     {
-    //         name: "emp_id",
-    //         data:"employees",
-    //         valueField: "id",
-    //         textField: "name",
-    //         filterData:(data,res)=>{
-    //             return data.options;
-    //         }
-    //     },
-    //     {
-    //         name: "module",
-    //         data: "modules",
-    //         filterOptions: {
-    //             triggerBy: "emp",
-    //             filter: (me, data, controls) => {
-    //                 return data.filter(x => x.emp_id === controls.emp.value);
-    //             }
-    //         },
-    //         valueField: "id",
-    //         textField: "name",
-    //         depends: {
-    //             triggerBy: "emp",
-    //             api: {
-    //                 endpoint: `${main_view.base_url}/api/module/list`,
-    //                 params: (me, dataOptions, controls) => {
-    //                     return { "emp_id": controls.emp.value };
-    //                 },
-    //                 onResponse: (me, res) => {
-    //                     console.log(111, res.data);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // ],
 
     prepareFormOptions: {
         createTitle: "New Employee Skill",

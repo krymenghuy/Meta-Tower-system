@@ -95,7 +95,7 @@ var EmployeeComponent =  new function () {
                     });
                 }
             });
-            
+
         };
 
         mThis.btnBack.onclick = function (e) {
@@ -953,7 +953,6 @@ var EmployeeComponent =  new function () {
                         const id = e.target
                             .closest("a")
                             .getAttribute("data-id");
-                        console.log(123, id);
 
                         let op = {
                             id: id,
@@ -1601,7 +1600,6 @@ var EmployeeComponent =  new function () {
                         let btn = document.querySelector(
                             ".lnk-add-tax-allowance"
                         );
-                        console.log(333, btn.dataset);
 
                         let op = {
                             id: null,
@@ -1777,7 +1775,6 @@ var EmployeeComponent =  new function () {
                         let btn = document.querySelector(
                             ".lnk-add-emp-document"
                         );
-                        console.log(333, btn.dataset);
 
                         let op = {
                             id: null,
@@ -2119,9 +2116,6 @@ var EmployeeComponent =  new function () {
                         params: (op) => {
                             return { id: op.id };
                         },
-                        // onResponse: (me, res) => {
-                        //     console.log(123, me, 321, res);
-                        // },
                     },
                 },
 
@@ -2196,7 +2190,7 @@ var EmployeeComponent =  new function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        
+
         if (!AuthManager.allowed(223)) return;
         mThis.ResignDialog =
             mThis.ResignDialog ||
@@ -2241,8 +2235,6 @@ var EmployeeComponent =  new function () {
                         label: "<span>Resign Now</span",
                         click: (me, btn, divModal) => {
                             let p = me.getData();
-                            //  p.emp_id = op.id;
-                            console.log(111, p);
                             vsapi
                                 .call(
                                     `${main_view.base_url}/hr/employee/set-resign-status`,
@@ -2461,7 +2453,7 @@ var EmployeeComponent =  new function () {
                             cv_interact.success(
                                 "The employee has been terminate"
                             );
-                            // if(tr) tr.dataset.status_id = d.value; 
+                            // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
                         } else cv_interact.error(res.error_message);
                     });
@@ -2756,8 +2748,6 @@ const AddEducation = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(11, p);
-
                             vsapi
                                 .call(
                                     [
@@ -2866,8 +2856,6 @@ const AddSchool = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(11, p);
-
                             vsapi
                                 .call(
                                     [
@@ -2945,8 +2933,6 @@ const AddOrganization = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(11, p);
-
                             vsapi
                                 .call(
                                     [
@@ -3020,7 +3006,6 @@ const AddDocumentType = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(11, p);
 
                             vsapi
                                 .call(
@@ -3173,9 +3158,6 @@ const AddExperience = (() => {
                         params: (op) => {
                             return { id: op.id }; // Pass ID to fetch data for edit
                         },
-                    },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
                     },
                 },
                 onPrepareForm: (me, data) => {
@@ -3458,11 +3440,7 @@ const EmployeeDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    // const salary = me.divModal.querySelector(".salary");
-                    // console.log(123,salary);
 
-                    // salary.classList.add("d-none");
-                    //Convert field to be DatePicker : start_date and end_date
                     DateTimePicker.init(me.controls.date_of_birth);
                     DateTimePicker.init(me.controls.joining_date);
                     DateTimePicker.init(me.controls.nid_expiry_date);
@@ -3653,7 +3631,6 @@ const EmployeeDialog = (() => {
                             const p = me.getData();
                             p.photo = me.empImageBox ? me.empImageBox.getImage() : "";
                             p.branch_id = me.dataOptions.branch_id;
-                            console.log(1123,p);
 
                             vsapi
                                 .call(
@@ -3697,9 +3674,6 @@ const EmployeeDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    // onResponse: (me, res) => {
-                    //     console.log('result from api "/form-options": ', res);
-                    // },
                 },
 
                 onPrepareForm: (me, data) => {
@@ -3764,7 +3738,6 @@ const AddSkillDialog = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(111, p);
                             vsapi
                                 .call(
                                     [
@@ -3997,8 +3970,6 @@ const PrintCV = (() => {
                             return { employee_id: op.employee_id };
                         },
                         onResponse: (me, res) => {
-                            console.log(123,res);
-
                         },
                     },
                 },
