@@ -160,8 +160,7 @@ var EmployeeBenefitComponent = new (function () {
                     vsapi.call(`${main_view.base_url}/hr/employee/benefit/import-emp-benefits`,{
                         file: d.dataUrl
                     },false).then(res => {
-                        console.log(123,res);
-                        
+
                         if(res.status_code === 200){
                             mThis.EmployeeBenefitListView.showPage(null);
                             cv_interact.success('Employees Benefit Were Import Successfully!');
@@ -172,7 +171,7 @@ var EmployeeBenefitComponent = new (function () {
                     });
                 }
             });
-            
+
         };
 
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
@@ -371,7 +370,7 @@ const EmployeeBenefitDialog = (() => {
                         taxOptionField.value !== "3"
                     );
                 });
-                
+
             },
 
             prepareFormOptions: {
@@ -384,8 +383,7 @@ const EmployeeBenefitDialog = (() => {
                 },
             },
             onPrepareForm: (me, data) => {
-                console.log(202002,data);
-                
+
                 const BenefitField = me.divModal.querySelector("#benefit_id");
                 const effective_date = me.divModal.querySelector(".effective_date");
                 BenefitField.addEventListener("change", () => {

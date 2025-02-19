@@ -207,7 +207,7 @@ var PayrollListComponent = new (function () {
                             const d = res.data || {};
                             const error_count = d.error_count || 0;
                             const error_message = error_count > 0 ? `${error_count} cases failed`:'';
-                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases failed! ${d.issues_count}`].join(''));
+                            cv_interact.success([`Payroll has been calculated : ${d.success_count || 0 } cases affected! ${d.issues_count}`].join(''));
                             mThis.PayrollList_ListView.showPage(mThis.getFilterData());
 
                         } else {
@@ -382,11 +382,12 @@ var PayrollListComponent = new (function () {
                     html:'<span class="ps-2  " vslang="titles.Remove from List">Remove from List</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"remove_staff"
+                    name:"delete_payroll_list"
                 },
 
             ],
             onShow: (me, container) => {
+
                 const menu = me.getActiveMenus(container);
                 const disburse = container.dataset.disbursed;
 
@@ -394,7 +395,7 @@ var PayrollListComponent = new (function () {
                 if (disburse == 1) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = (menu[item].dataset.mnuaction === 'remove_staff' || menu[item].dataset.mnuaction === 'add_deduction' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'delete_payroll_list' || menu[item].dataset.mnuaction === 'add_deduction' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
                         }
 
                     }
@@ -414,14 +415,12 @@ var PayrollListComponent = new (function () {
 
                     case 'disburse_payroll_list':{
                       const id = menuLink.dataset.id;
+                      //const payroll_id = menuLink.dataset.payrollid;
                       mThis.disburseOne(id, null, null, menuLink);
                       break;
                     }
-                    case 'remove_staff':{
-                        const id = menuLink.dataset.id;
-                        // const payroll_id = menuLink.dataset.payrollid;
-                        // const emp_id = menuLink.dataset.empid;
-                        mThis.removeStaff(id,menuLink);
+                    case 'delete_payroll_list':{
+                        mThis.deletePayrollList(id, menuLink);
                         break;
                       }
 
@@ -669,12 +668,8 @@ var PayrollListComponent = new (function () {
             id: id,
         }
         vsapi.call(`${main_view.base_url}/hr/payroll/staff/pay-slip`,op,false,false,false).then(res => {
-            console.log(666,res);
-
             if(res.status_code == 200){
                 let d = res.data;
-                console.log(555,d);
-
                 mThis.renderPayment(d);
             }
         })
@@ -712,7 +707,6 @@ var PayrollListComponent = new (function () {
         }, e =>{
             if(e){
                 vsapi.call(`${main_view.base_url}/hr/payroll/disburse-one`, p, false, false, false).then(res => {
-        console.log(3994, p);
 
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed successfully');
@@ -727,27 +721,31 @@ var PayrollListComponent = new (function () {
 
     }
 
-    mThis.removeStaff = (id, menuLink) => {
-        const op = {
+    mThis.deletePayrollList = (id, menuLink) => {
+        let op = {
             id: id,
-            // payroll_id:payroll_id,
-            // emp_id: emp_id
+            btn: menuLink,
+            onClose: () => {
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            }
         };
         if (!AuthManager.allowed(215)) return;
         cv_interact.confirm('Remove this staff from payroll?',{
             title: 'Remove Staff from Payroll',
             context: 'delete',
             confirmButtonText:"Remove"
-        },(e)=>{
+        },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll/staff/remove`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll/staff/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.info('The staff has been removed from payroll!');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                    }else cv_interact.error(res.error_message);
+                    }
                 })
             }
-
+            else {
+                cv_interact.error(res.error_message);
+            }
         });
 
     }
@@ -765,6 +763,7 @@ var PayrollListComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
+
         return p;
     };
 
@@ -781,12 +780,14 @@ var PayrollListComponent = new (function () {
                     payroll_id = payroll.id;
 
                 }
+
+
             });
 
 
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name','','(Select Payroll)',payroll_id);
-            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', '', 'All Branches', null);
-            VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', '', '(All Statuses)', null);
+            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
+            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branches', null);
+            VSUtil.setComboItems(mThis.elFilterDisburse, d.disbursed, 'id', 'name', true, 'Default', null);
             onFinish(d);
         });
     };
@@ -903,15 +904,13 @@ const AddDeductionDialog = (() => {
                     }
                 }
             ],
-
-
         });
-
         dialog.show(op);
     };
 
     return self;
 })();
+
 
 const PayRollImportDailog = (()=>{
     const self = {};
@@ -977,9 +976,6 @@ const PayRollImportDailog = (()=>{
                     return {'id':op.id};
                  }
                },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
             },
 
             onPrepareForm:(me, data)=>{
@@ -987,7 +983,6 @@ const PayRollImportDailog = (()=>{
                  me.controls.payroll_name.value = me.dataOptions.payroll_id;
                  me.controls.payroll_name.setAttribute('disabled',true);
             }
-
         });
 
         dialogImport.show(op);

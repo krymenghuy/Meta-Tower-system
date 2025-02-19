@@ -322,9 +322,9 @@ const ExitFormItemDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log("API Response:", res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log("API Response:", res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

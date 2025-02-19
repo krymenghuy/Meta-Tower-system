@@ -153,7 +153,6 @@ var CheckPointCategoryComponent =  (function () {
             if (btn) {
                 mThis.delete_check_points(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
     mThis.edit_check_points = (id, menulink) => {
@@ -311,9 +310,9 @@ const ExitCheckpointsDialog = (() => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (me, res) => {
-                        console.log("API Response:", res);
-                    },
+                    // onResponse: (me, res) => {
+                    //     console.log("API Response:", res);
+                    // },
                 },
 
                 onPrepareForm: (me, data) => {

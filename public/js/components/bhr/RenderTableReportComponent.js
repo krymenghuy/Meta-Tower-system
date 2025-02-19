@@ -188,9 +188,9 @@ function employeeBenefitsReport(div, data = null) {
 }
 function employeeCV(div1, d = null) {
     const div = div1 instanceof jQuery ? div1 : $(div1);
-    
+
     const data = d.data[0];
-    
+
     let html = "";
     if (data) {
         html = `<title>Employee CV</title>
@@ -355,7 +355,7 @@ function employeeCV(div1, d = null) {
                 </div>
             </div>`;
     }
-    
+
     div.html(html);
     togglePanelTable(div);
     HtmlString = html;
@@ -390,7 +390,7 @@ function windowPrintCV(html,style)
         <html>
             <head>
                 <title>CV Print</title>
-                
+
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -414,7 +414,7 @@ function windowPrintCV(html,style)
             </body>
         </html>`);
         myWindow.document.close();
-        
+
         setTimeout(() => {
             myWindow.focus();
             myWindow.print();
@@ -1004,7 +1004,6 @@ function jsonToTable(div, d) {
     const thead = d.header ?? [],
         tbody = d.list.data ?? [],
         company_info = d.company_profile ?? d.company_info ?? {};
-    console.log(d.list.data);
 
     const html = [
         `<div class="d-block position-relative min-height-top">
@@ -1665,7 +1664,6 @@ function totalPaymentByYear(div, d) {
                                 ((header = null),
                                 thead &&
                                     thead.map((th) => {
-                                        console.log("th", th.name);
                                         header = [
                                             header,
                                             th.key == "amount_paid" ||
@@ -2056,7 +2054,6 @@ function attendanceList(div, d) {
             headerMerged[10],
             headerMerged[9],
         ];
-        console.log(3434, [headerMerged]);
     }
 
     const html = [
@@ -3349,7 +3346,7 @@ function returnEmptyTD(length) {
 function togglePanelTable(div) {
     if(!div || div.length===0 ) return;
     let zoom = 100;
-    
+
     div.find("table.table").on("wheel", function (e) {
         if (e.originalEvent.shiftKey) {
             e.originalEvent.deltaY > 0 ? (zoom -= 0.7) : (zoom += 0.7);
@@ -3423,9 +3420,8 @@ function windowPrint(html, style) {
     } else cv_interact.warning("Select run report before print!");
 }
 function windowPrintExitForm(html, style) {
-    console.log(3834838, html);
-    if (html) { 
-    
+    if (html) {
+
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
@@ -3463,7 +3459,6 @@ function windowPrintExitForm(html, style) {
             </body>
         </html>`);
         myWindow.document.close();
-        console.log(window.document);
         setTimeout(() => {
             myWindow.focus();
             myWindow.print();
@@ -3472,9 +3467,8 @@ function windowPrintExitForm(html, style) {
     }
 }
 function windowPrintBenfit(html, style) {
-    console.log(3834838, html);
-    if (html) { 
-    
+    if (html) {
+
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
         <html>
@@ -3512,7 +3506,6 @@ function windowPrintBenfit(html, style) {
             </body>
         </html>`);
         myWindow.document.close();
-        console.log(window.document);
         setTimeout(() => {
             myWindow.focus();
             myWindow.print();
@@ -3523,7 +3516,6 @@ function windowPrintBenfit(html, style) {
 
 function windowPrintRole(html = null, style = null) {
     HtmlString = html ? html : HtmlString;
-    console.log(2134545787980968751341, HtmlString);
     if (HtmlString) {
         let myWindow = window.open("", "PRINT");
         myWindow.document.write(`<!DOCTYPE html>
@@ -3580,7 +3572,7 @@ function exportToExcel() {
         const numTable = (HtmlString.match(new RegExp("<table", "g")) || [])
                 .length,
             numTh = (HtmlString.match(new RegExp("count-th", "g")) || [])
-                .length;        
+                .length;
         let startIndex = HtmlString.indexOf("<img"),
             endIndex = HtmlString.indexOf('"/>', startIndex);
 
@@ -3757,7 +3749,7 @@ function exportToExcel() {
                     '<td style="' + style.text_center_td + '"'
                 )}</body>
         </html>`;
-        
+
         const uri =
             location + window.btoa(unescape(encodeURIComponent(excelTemplate)));
         const link = document.createElement("a");

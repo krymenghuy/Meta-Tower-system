@@ -126,7 +126,6 @@ var WorkShiftListComponent = (function () {
             if (btn) {
                 mThis.deleteWorkShift(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
     mThis.editWorkShift = (id, menulink) => {

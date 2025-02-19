@@ -108,10 +108,8 @@ var ExitFormComponent = (function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.ExitFormListView.showPage();
-                    console.log(9999, "cancel");
-                    
                 },
-                
+
             };
             if (!AuthManager.allowed(282)) return;
             ExitFormDialog.show(op);
@@ -361,9 +359,6 @@ const ExitFormDialog = (() => {
                         return { id: op.id };
                     },
                 },
-                onResponse: (me, res) => {
-                    console.log("API Response:", res);
-                },
             },
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
@@ -519,7 +514,6 @@ const ViewExitFormDialog = (() => {
                         htmlString
                             .querySelectorAll(".check-point-id")
                             .forEach((el) => {
-                                console.log(el);
                             });
                     };
                     me.saveCheckBoxes = (event, form_id) => {
@@ -527,8 +521,6 @@ const ViewExitFormDialog = (() => {
                         op.id = event.target.dataset.id;
                         op.form_id = form_id;
                         op.status_id = event.target.checked ? 1 : 0;
-                        console.log(444,op);
-                        
                         vsapi
                             .call(
                                 [
@@ -540,8 +532,6 @@ const ViewExitFormDialog = (() => {
                                 null
                             )
                             .then((res) => {
-                                console.log(3939,res);
-                                
                                 if (res.status_code == 200) {
                                     return;
                                 } else cv_interact.error(res.error_message);
@@ -630,7 +620,6 @@ const ViewExitFormDialog = (() => {
                                 form_id: me.dataOptions.form_id,
                                 id: me.dataOptions.form_id,
                             };
-                            console.log(1010, p);
                             if (!AuthManager.allowed(286)) return;
                             vsapi
                                 .call(
