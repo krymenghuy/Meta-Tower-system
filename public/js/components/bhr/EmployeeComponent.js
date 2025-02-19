@@ -2096,6 +2096,7 @@ var EmployeeComponent =  new function () {
                                         cv_interact.success(
                                             "This employee has been promoted successfully!"
                                         );
+                                        mThis.showPage('profile_view', d.emp_id);
                                         //DO NOT go back to Employee List. But say on the Profile View
                                         // EmployeeComponent.self
                                         //     .querySelector(
