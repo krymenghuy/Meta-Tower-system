@@ -13,7 +13,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
-        "All",
+        "Based on effective date",
         "January",
         "February",
         "March",
@@ -245,7 +245,7 @@ const BdpDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     const months = [
-                        { value: 0, name: "All" },
+                        { value: 0, name: "Based on effective date" },
                         { value: 1, name: "January" },
                         { value: 2, name: "February" },
                         { value: 3, name: "March" },

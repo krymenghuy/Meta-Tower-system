@@ -485,14 +485,14 @@ class Payroll
         \Log::info('test:: '.json_encode($emp));
         if(!$emp) return DV::error('The staff identity was not found in the payroll list. It seems he or she is not included in the payroll');
         if($emp->authorized ==1 || $emp->staff_disbursed ==1) return DV::error('Cannot remove the staff because the payroll has been authorized or disbursed already!');
-     
+
         $x = DB::table('payroll_list')
             ->where('payroll_id', $id)
             ->where('emp_id',$emp_id)
             ->delete();
         return DV::depends($x,null,'Failed to remove staff from payroll');
     }
- 
+
 
     function reverseTransactions($id =null, $ss = null)
     {
@@ -658,6 +658,7 @@ class Payroll
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('p.id', $payroll_id)
+            // ->where('pl.emp_id',6)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         ' . $start_date . ',
@@ -757,6 +758,8 @@ class Payroll
             $row->benefit_non_tax = $benefits_not_taxable ?? 0;
             $row->benefits_flat_rate = $benefits_flat_rate ?? [];
         }
+
+        // return $emps;
         foreach ($emps as &$payroll) {
             $payroll->tax_base = 0;
             $payroll->total = 0;
@@ -796,23 +799,18 @@ class Payroll
 
 
             $allowance = $payroll->allowance;
-            $allowance_used = ($allowance / $day_in_month) * $payroll_days;
-            $allowance_per_day = $allowance_used / $payroll_days;
-            $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_days : $allowance_used;
+            $last_allowance =  $allowance * $count_days/$day_in_month;
             $deduction = $payroll->deduction;
 
             if ($payroll->apply_payroll_tax == 1) {
 
                 $tax_rate = $payroll->tax_rate ?? 0;
                 $bias = $payroll->bias ?? 0;
-                $bias_used = ($bias / $day_in_month) * $payroll_days;
-                $bias_per_day = $bias_used / $payroll_days;
-                $last_bias = $resigned_or_new_start ? $bias_per_day * $count_days : $bias_used;
+                $last_bias = ($bias / $day_in_month) * $count_days;
+
 
                 if ($benefit_taxable > 0) {
-                    $salary_used = $salary + $benefit_taxable;
-                    $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
+                    $last_salary = $salary + $benefit_taxable;
 
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     if ($payroll->tax_base < 0) {
@@ -825,10 +823,7 @@ class Payroll
                     if ($benefit_taxable > 0) {
                         $payroll->total += $benefit_non_tax;
                     } else {
-                        $salary_used = $salary;
-                        $salary_per_day = $salary_used / $payroll_days;
-                        $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
-
+                        $last_salary = $salary;
                         $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                         if ($payroll->tax_base < 0) {
                             $payroll->tax_base = 0;
@@ -853,9 +848,7 @@ class Payroll
                         }
                         $payroll->total = ($payroll->total + $benefit_flat_rate_sum) - $benefit_tax;
                     } else {
-                        $salary_used = $salary;
-                        $salary_per_day = $salary_used / $payroll_days;
-                        $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
+                        $last_salary = $salary;
                         if (isset($benefits_flat_rate) && !empty($benefits_flat_rate)) {
                             foreach ($benefits_flat_rate as $bfr) {
                                 $benefit_flat_rate = $bfr['amount'];
@@ -873,10 +866,7 @@ class Payroll
                     }
                 }
                 if ($benefit_taxable <= 0 && $benefit_non_tax <= 0 && $total_benefit_flat_rate <= 0) {
-                    $salary_used = $salary;
-                    $salary_per_day = $salary_used / $payroll_days;
-                    $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
-
+                    $last_salary = $salary;
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
                     if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
@@ -887,10 +877,7 @@ class Payroll
             } else {
                 $benefit_flat_rate_sum = 0;
                 $benefit_tax = 0;
-
-                $salary_used = $salary;
-                $salary_per_day = $salary_used / $payroll_days;
-                $last_salary = $resigned_or_new_start ? $salary_per_day * $count_days : $salary_used;
+                $last_salary = $salary;
 
                 if (isset($benefits_flat_rate) && !empty($benefits_flat_rate)) {
                     foreach ($benefits_flat_rate as $bfr) {
@@ -905,7 +892,6 @@ class Payroll
             }
             $flat_rate_details = null;
             $flat_rate_details = self::formatFlatRateBenefits($benefits_flat_rate);
-
 
             $x = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,

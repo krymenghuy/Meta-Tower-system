@@ -15,7 +15,7 @@ var BenefitDisbursementComponent =  (function () {
     mThis.divFilter = mThis.self.querySelector("#container_benefit_disburse");
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
     const monthNames = [
-        "All",
+        "Based on effective date",
         "January",
         "February",
         "March",
@@ -285,7 +285,7 @@ const BenefitDisburseDialog = (() => {
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     const months = [
-                        { value: 0, name: "All" },
+                        { value: 0, name: "Based on effective date" },
                         { value: 1, name: "January" },
                         { value: 2, name: "February" },
                         { value: 3, name: "March" },
