@@ -23,7 +23,7 @@ class Employee //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $xlsx_keys = [
-        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','passport_expiry_date','date_of_birth','phone_number',
+        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','date_of_birth','phone_number',
         'email','birth_city_id','nssf_id','marital_status','joining_date','branch_id','position_id','emp_type_id','work_shift_id','salary','address',
     ];
     protected static $img_dir = 'employees';
@@ -1439,20 +1439,20 @@ class Employee //extends Model
             $name = trim($row->name);
             $phone = trim($row->phone_number);
             if ($phone && in_array($phone,$duplicates_phone)) {
-                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt លេខទូរស័ព្ទរបស់គាត់មិនត្រឺមត្រូវទេ ។"];
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt លេខទូរស័ព្ទរបស់គាត់ស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត ។"];
             }else{
                 $duplicates_phone[]=$phone;
             }
             $nid = trim($row->nid);
             if ($nid && in_array($nid,$duplicates_nid)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត";
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត ។"];
             }else{
                 $duplicates_nid[]=$nid;
             }
 
             $nssf = trim($row->nssf_id);
             if ($nssf && in_array($nssf,$duplicates_nssf)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខ ប.​ប.ស​ ស្ទួន";
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខប័ណ្ណ ប.​ប.ស​ ស្ទួន ។"];
             }else{
                 $duplicates_nssf[]=$nssf;
             }
@@ -1460,38 +1460,38 @@ class Employee //extends Model
             $nationality = trim($row->nationality_id);
             $nationality_id = DB::table('loc_countries')->where('nationality', $nationality)->value('id');
             if (!$nationality_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
             $row->nationality_id = $nationality_id;
 
             $branch = trim($row->branch_id);
             $row->branch_id = DB::table('um_branches')->where('name', $branch)->value('id');
             if (!$row->branch_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សាខា '".($branch ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name សាខា ".($branch ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
 
             $city =trim($row->birth_city_id);
             $row->birth_city_id = DB::table('loc_cities')->where('country_id',$row->nationality_id)->where('name_kh', $city)->value('id');
             if (!$row->birth_city_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : ទីកន្លែងកំណើត '".($city ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name ទីកន្លែងកំណើត ".($city ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
 
             $position = trim($row->position_id);
             $row->position_id = DB::table('positions')->where('title', $row->position_id)->value('id');
             if(!$row->position_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : position '".($position ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name position ".($position ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
 
             $emp_type = trim($row->emp_type_id);
             $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
             if(!$row->emp_type_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Type '".($emp_type ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name Type ".($emp_type ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
 
             $work_shift =trim($row->work_shift_id);
             $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
             if(!$row->work_shift_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Work Shift '".($work_shift ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name Work Shift ".($work_shift ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
         }
         return $rows;
@@ -1533,6 +1533,7 @@ class Employee //extends Model
                 foreach ((array)$data as $row) {
                     $arr = (array) $row;
                     $inputs = $arr;
+                    \Log::info(json_encode($inputs));
                     $emp_res = $employee->save($inputs,null,$ss);
                     if($emp_res->status_code ==200){
                         $success++;
