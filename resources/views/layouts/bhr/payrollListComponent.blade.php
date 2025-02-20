@@ -9,7 +9,7 @@
                 </button>
 
                 <button class="d-flex justify-content-center align-items-center rounded-circle border-0 "
-                    style="background-color:#2b3991; width: 50px; height: 40px;" id="_btnBackToPayroll">
+                    style="background-color:#2b3991; width: 40px; height: 40px;" id="_btnBackToPayroll">
                     <i class="fa-solid fa-reply-all tool-tip fs-6 text-white"> <span class="tool-tiptext fs-6 mt-2"
                             vslang="buttons.Back"></span></i>
                 </button>

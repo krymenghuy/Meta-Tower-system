@@ -542,18 +542,18 @@ var PayrollListComponent = new (function () {
                 <div class="payment-header">
                     <div class="payment-logo">
                         <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
-                    </div>
-                    <div class="payment-title">
+                        </div>
+                        <div class="payment-title">
                         <h4>Pay Slip : ${data.start_date} - ${data.end_date}</h4>
-                    </div>
-
-                </div>
-
-                <div class="payment_profile">
-                    <div class="row cols-2 mb-0">
+                        </div>
+                        
+                        </div>
+                        
+                        <div class="payment_profile">
+                        <div class="row cols-2 mb-0">
                         <div class="col-2">
-                            <div class="payment_img" data-id="" data-imageurl="">
-                                <img src="${data.image_url}" alt="Profile Image">
+                        <div class="payment_img" data-id="" data-imageurl="">
+                        <img class="image-student-tbl" src="${ data.image_url || main_view.asset_url + "/images/default/default-staff.png"}" alt="" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;"/>
                             </div>
                         </div>
                         <div class="col-5 p_profile_left">
