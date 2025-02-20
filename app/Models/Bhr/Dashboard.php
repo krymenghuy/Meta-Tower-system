@@ -5,7 +5,7 @@ namespace App\Models\Bhr;
 use Illuminate\Support\Facades\DB;
 use DBX;
 use Carbon\Carbon;
- 
+
 class Dashboard
 {
     protected $id = null;
@@ -43,6 +43,11 @@ class Dashboard
             ->orderBy('emp.joining_date', 'ASC')
             ->get();
 
+        $employee_types = DB::table('employees AS emp')
+            ->select('emp.id', 'emp.status_id', 'emp.emp_type_id', 'emp.joining_date')
+            ->orderBy('emp.joining_date', 'ASC')
+            ->get();
+
         $new_staff_count = 0;
         $new_probation_count = 0;
         $new_intern_count = 0;
@@ -51,12 +56,12 @@ class Dashboard
         foreach ($employee_rows as $emp) {
             if ($emp->status_id == 10) {
                 switch ($emp->emp_type_id) {
-                    case 1:
-                        $new_intern_count++;
-                        break;
-                    case 2:
-                        $new_probation_count++;
-                        break;
+                    // case 1:
+                    //     $new_intern_count++;
+                    //     break;
+                    // case 2:
+                    //     $new_probation_count++;
+                    //     break;
                     case 3:
                         $new_staff_count++;
                         break;
@@ -66,6 +71,18 @@ class Dashboard
             }
         }
 
+        foreach ($employee_types as $emp) {
+            if ($emp->status_id == 10) {
+                switch ($emp->emp_type_id) {
+                    case 1:
+                        $new_intern_count++;
+                        break;
+                    case 2:
+                        $new_probation_count++;
+                        break;
+                }
+            }
+        }
 
 
         $staff_counts = DB::table('employees as emp')
@@ -117,12 +134,12 @@ class Dashboard
             'probation_staff_count' => (object) [
                 'count' => $new_probation_count,
                 'title' => 'Probations',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
+                // 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'intern_staff_count' => (object) [
                 'count' => $new_intern_count,
                 'title' => 'Interns',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
+                // 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'warning_counts' => $warning_rows,
             'warning_staff_count' => (object) [
@@ -147,6 +164,7 @@ static function countEmployee($arr, $ss)
 
     $rows = DB::table('employees AS emp')
         ->join('emp_types AS t', 'emp.emp_type_id', '=', 't.id') // Join with emp_types table
+        ->where('emp.status_id', 10)
         // ->where('emp.branch_id', $branch_id) // Filter by branch
         // ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date])
         ->selectRaw("t.name AS category, COUNT(emp.id) AS count") // Group by employment type
@@ -156,7 +174,7 @@ static function countEmployee($arr, $ss)
     $labels = [];
     $values = [];
     $colors = [];
-    $base_colors = ['#2b3991', '#cab54a', '#32BCD3', '#cab54a', '#ECF140'];
+    $base_colors = [ '#32BCD3','#cab54a','#2b3991'];
 
     $total = 0;
     $staff_total = 0;

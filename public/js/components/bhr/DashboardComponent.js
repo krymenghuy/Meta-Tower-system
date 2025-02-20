@@ -643,11 +643,11 @@ var DashboardComponent =  (function () {
 
     mThis.setDashboardScroll = () => {
         const parent = mThis.self;
-        parent.style.height = window.innerHeight - 100 + "px";
+        parent.style.height = window.innerHeight - 70 + "px";
         parent.classList.add("overflow-y-auto");
         parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            parent.style.height = window.innerHeight - 100 + "px";
+            parent.style.height = window.innerHeight - 70 + "px";
         };
     };
 
