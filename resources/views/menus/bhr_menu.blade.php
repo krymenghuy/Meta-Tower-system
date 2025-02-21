@@ -187,11 +187,11 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Employee Management"></span>
                 </a>
             </li>
- 
-          
-             
+
+
+
             <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
- 
+
                 <?php v_display(null, [209]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -245,18 +245,18 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Uninformed Leaves"></span>
                 </a>
             </li>
- 
-            
+
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(275); ?>>
                 <a href="StaffAttendanceComponent" modid="275" class="menu-item kt-menu__link">
- 
+
                     <span class="kt-menu__link-icon">
                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/daily.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Daily Attendance"></span>
                 </a>
             </li>
- 
+
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                 <?php v_display(null, [277,278]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -296,7 +296,7 @@ function v_display($mod_id, $module_ids = null)
                     </ul>
                 </div>
             </li>
- 
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(252); ?>>
                 <a href="EmployeeMovementComponent" modid="252" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -313,7 +313,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/diagram.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Employee Benefits"></span>
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Benefits Management"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
@@ -333,7 +333,7 @@ function v_display($mod_id, $module_ids = null)
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/staff_benefit.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Staff Benefits"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Employee Benefits"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(279); ?>>
@@ -358,7 +358,7 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
 
- 
+
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                 <?php v_display(null, [242,251]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -413,7 +413,7 @@ function v_display($mod_id, $module_ids = null)
                 <h4 class="kt-menu__section-text " vslang="menus.Staff Discipline"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
-                        
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(248); ?>>
                 <a href="WarningComponent" modid="248" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -450,7 +450,7 @@ function v_display($mod_id, $module_ids = null)
                 <h4 class="kt-menu__section-text " vslang="menus.Data and Insights"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
- 
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
                 <a href="ReportCenterComponent" modid="247" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -540,7 +540,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Tax Brackets"></span>
                             </a>
                         </li>
-                        
+
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(264); ?>>
                             <a href="CheckPointCategoryComponent" modid="264" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -575,7 +575,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Holidays"></span>
                             </a>
-                        </li> 
+                        </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(283); ?>>
                             <a href="LocationComponent" modid="283" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

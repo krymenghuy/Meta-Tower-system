@@ -201,6 +201,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll/staff
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
     Route::post('/list', [PayrollController::class, 'getStaffList']);
     Route::post('/add-deduction', [PayrollListController::class, 'addDeduction']);
+    Route::post('/delete', [PayrollListController::class, 'delete']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {

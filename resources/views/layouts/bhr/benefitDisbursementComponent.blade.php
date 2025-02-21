@@ -19,6 +19,6 @@
         </div>
 
     </div>
-    <div id="_benefit_disburse_list" class="mt-4 p-3">
+    <div id="_benefit_disburse_list" class="mt-4">
     </div>
 </div>
