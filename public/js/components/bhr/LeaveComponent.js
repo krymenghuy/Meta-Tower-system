@@ -157,11 +157,11 @@ var LeaveComponent = (function () {
         mThis.initDropdownMenus(mThis.tblLeaves);
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 250) + 'px';
+        sh_parent.style.height = (window.innerHeight - 270) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 270) + 'px';
         }
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{

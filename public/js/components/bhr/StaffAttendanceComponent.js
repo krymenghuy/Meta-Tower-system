@@ -87,7 +87,7 @@ var StaffAttendanceComponent = (function () {
 
         mThis.StaffAttendanceListView = new ListView(mThis.divListView, {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            perPage: 10,
+            perPage: 20,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table rounded-3 overflow-hidden table--white header-uppercase",
@@ -109,11 +109,11 @@ var StaffAttendanceComponent = (function () {
 
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 310) + 'px';
+        sh_parent.style.height = (window.innerHeight - 325) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 310) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 325) + 'px';
         }
 
 

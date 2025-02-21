@@ -162,11 +162,6 @@
         padding: 0;
     }
 
-    #_work_shift_list_paginator {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: -30px;
-    }
 
     .header-container {
         display: flex;
@@ -345,7 +340,7 @@
         </div>
     </div>
 
-    <div id="_work_shift_header" class="mt-4 p-3"> 
+    <div id="_work_shift_header" class="mt-4 p-3">
     </div>
 
     <div id="_work_shift_body" class="p-2">

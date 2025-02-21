@@ -137,12 +137,12 @@ var EmployeeComponent =  new function () {
 
         mThis.initDropdownMenus(mThis.divlistView);
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = window.innerHeight - 220 + "px";
+        sh_parent.style.height = window.innerHeight - 215 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
         window.onresize = () => {
-            sh_parent.style.height = window.innerHeight - 220 + "px";
+            sh_parent.style.height = window.innerHeight - 215 + "px";
         };
 
         mThis.initAlready = true;
@@ -2381,7 +2381,7 @@ var EmployeeComponent =  new function () {
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                 },
-               
+
             });
         mThis.PromoteDialog.show(op);
     };
