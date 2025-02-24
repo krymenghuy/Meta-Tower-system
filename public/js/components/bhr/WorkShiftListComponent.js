@@ -84,11 +84,11 @@ var WorkShiftListComponent = (function () {
         };
         const listContainer = mThis.WorkShiftListsView.getListContainer();
         const sh_parent = listContainer;
-        sh_parent.style.height = (window.innerHeight - 235) + 'px';
+        sh_parent.style.height = (window.innerHeight - 250) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
         }
 
         mThis.initDropdownMenus(listContainer);
