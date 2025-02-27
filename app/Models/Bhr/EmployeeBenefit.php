@@ -315,7 +315,6 @@ class EmployeeBenefit
 
     static function getDetails($id, $ss)
     {
-        $branch_id = $ss->branch_id;
         $query = DB::table('emp_benefits as eb')
             ->join('employees as emp', 'emp.id', '=', 'eb.emp_id')
             ->join('benefits as b', 'b.id', '=', 'eb.benefit_id')
@@ -336,18 +335,13 @@ class EmployeeBenefit
             eb.remarks,
             eb.currency_code,
             emp.photo_file_name as emp_photo
-        ')
-            ->where('eb.branch_id', $branch_id)->where('eb.id', $id)->take(1)->first();
+        ')->where('eb.id', $id)->first();
         return $query;
     }
-
-
     function deleteBenefit($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
-
         $delete = DB::table('emp_benefits')->where('id', $id)->delete();
         return DV::depends($delete, null, 'Error deleting employee benefit');
     }

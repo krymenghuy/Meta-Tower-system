@@ -488,7 +488,7 @@ var ReportCenterComponent = new (function () {
             setTimeout(() => {
                 const btn = div[0].querySelector("#_rpt_btn_report");
                 if (btn) btn.click();
-            }, 300);
+            }, 200);
         }
     };
 
