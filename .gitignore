@@ -4,6 +4,7 @@
 /app/ScriptManagement/ScriptManager1.php
 /app/ScriptManagement/Minifier.php
 /app/StyleManagement/StyleManager.php
+app/Http/Middleware
 /node_modules
 /public/hot
 /public/storage

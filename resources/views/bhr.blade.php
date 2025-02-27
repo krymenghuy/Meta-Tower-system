@@ -74,8 +74,8 @@
     <?php
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 7);
-    ScriptManager::render('bhr-primary-defer', 1, 20);
-    ScriptManager::render('bhr-components', 1, 197);
+    ScriptManager::render('bhr-primary-defer', 1, 21);
+    ScriptManager::render('bhr-components', 1, 198);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
