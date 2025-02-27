@@ -51,7 +51,6 @@ var LocationComponent = new function(){
                 mThis.displayCountries();
             },
         };
-        // console.log(333, op);
 
         ZoneDialog1.show(op);
       });
@@ -60,7 +59,6 @@ var LocationComponent = new function(){
       e.preventDefault();
 
       let p = {'id':this.dataset.id};
-      console.log(p);
 
       if(!p.id) p.id=0;
           cv_interact.confirm('Delete this country?',{title:'Delete Country','context':'delete'},function(e){
@@ -121,7 +119,7 @@ var LocationComponent = new function(){
                             c = rows[i];
                             if (!c) break;
                             let html2 = [
-                                '<tr data-name="', c.name, '" data-id="', c.id, '">',
+                                '<tr data-name="', c.name, '" data-id="', c.id, '" id="country_row">',
                                 '<td><img class="image-student-tbl border border-primary" src="', c.image_url, '" alt="" ',
                                 'style="width: 80px; height: 40px; margin-right: 10px; border-radius: 0;"/></td>',
                                 '<td class="col_country_name text-uppercase">', c.name, '</td>',
@@ -216,7 +214,6 @@ var LocationComponent = new function(){
 
 //   this.btnOK.on('click', function (e) {
 //     let p = mThis.getData();
-//     //console.log(p);
 
 //     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
 //       if (res.status_code === 200) {
@@ -321,13 +318,11 @@ var ZoneTabView = new function(){
                 {
                   VSUtil.setComboItems(mThis.elFilter_city,rows,'id','name',true,'(Select a city)',def.city_id);
                   VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','name',true,'(Select a city)',def.city_id);
-                //   console.log(1111,rows);
                   //mThis.elFilter_city.val(rows[0]?rows[0].city_id:0).trigger('change'); //error 429 Too many requests
                 }
               else if (zone_name ==='district')
               {
                 VSUtil.setComboItems(mThis.elFilter_district,rows,'id','name',true,'(Select a district)',def.district_id);
-                console.log(2222,rows);
 
                 //mThis.elFilter_district.val(rows[0]?rows[0].district_id:0); //Cause some error "Maximum calls limit in laravel"
               } else if (zone_name ==='commune')
@@ -598,13 +593,14 @@ var ZoneTabView = new function(){
                  });
                   // this.sh_container = mThis.tblCities.getListContainer();
               // mThis.setEvents($(mThis.container));
-              // console.log(mThis.container.parentElement);
-              const sh_parent = mThis.tblCities;
-                  sh_parent[0].style.height = (window.innerHeight - 190)+'px';
-                  sh_parent[0].classList.add('overflow-y-auto');
-                  window.onresize = () => {
-                      sh_parent[0].style.height = (window.innerHeight - 190)+'px';
-                  }
+            // console.log(mThis.container.parentElement);
+            
+              // const sh_parent = mThis.tblCities;
+              //     sh_parent[0].style.height = (window.innerHeight - 230)+'px';
+              //     sh_parent[0].classList.add('overflow-y-auto');
+              //     window.onresize = () => {
+              //         sh_parent[0].style.height = (window.innerHeight - 230)+'px';
+              //     }
           }
 
           this.displayDistricts = function(city_id,isOnSelectChange=false) {
@@ -729,7 +725,6 @@ const ZoneDialog1 = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        // console.log(444,op);
 
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
@@ -894,7 +889,6 @@ const ZoneDialog1 = (() => {
                         p.flag = me.flagImageBox
                             ? me.flagImageBox.getImage()
                             : '';
-                            // console.log(1234,JSON.stringify(p));
                         vsapi
                             .call(
                                 [main_view.base_url, "/api/location/country/save"].join(""),
@@ -914,7 +908,6 @@ const ZoneDialog1 = (() => {
 
             //onClose: (canceled) => {},
         });
-        // console.log(555,op);
 
         dialog.show(op);
     };

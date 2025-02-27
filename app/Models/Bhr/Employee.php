@@ -4,6 +4,7 @@ namespace App\Models\Bhr;
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
 use DV;
+use Vtiful\Kernel\Format;
 use XPublicStorage;
 use DBX;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 use VSMoney;
 use Exception;
-
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 
@@ -23,7 +24,7 @@ class Employee //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $xlsx_keys = [
-        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','passport_expiry_date','date_of_birth','phone_number',
+        'name','name_kh','sex','nationality_id','nid','nid_expiry_date','passport_number','date_of_birth','phone_number',
         'email','birth_city_id','nssf_id','marital_status','joining_date','branch_id','position_id','emp_type_id','work_shift_id','salary','address',
     ];
     protected static $img_dir = 'employees';
@@ -81,7 +82,7 @@ class Employee //extends Model
             'name' => '1|string|0-100',
             'name_kh' => '0|string|0-100',
             'email' => '1|email',
-            'phone_number' => '1|phone|0-20',
+            'phone_number' => '1|phone|0-50',
             'sex' => '1|choice|f,F,m,M,o,O',
             'nationality_id' => '1|number',
             'date_of_birth' => '1|date',
@@ -109,10 +110,10 @@ class Employee //extends Model
         ];
 
         $checkUnique = null;
-        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars,'nssf_id' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
 
-        $inputs = $res->values;
+         $inputs = $res->values;
         $d = (object) $inputs;
         if($d->currency_code !== VSMoney::$base_currency) return DV::error('The salary currency must be ??::'.VSMoney::$base_currency);
         $nid = $d->nid ?? null;
@@ -124,11 +125,10 @@ class Employee //extends Model
 
         $passport_number = $d->passport_number;
         if($passport_number){
-            $expire_date = $d->passport_expiry_date ?? null;
+            $expire_date = $d->passport_expiry_date ?? $d->nid_expiry_date ?? null;
             if (!$expire_date) return DV::error('Expiry Date for passport is required');
             else $inputs['passport_expiry_date'] = convertDate($expire_date);
         } else $inputs['passport_expiry_date'] = null;
-
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
@@ -1396,7 +1396,7 @@ class Employee //extends Model
                 foreach($row as $index=>$value){
                     if($key<=count(self::$xlsx_keys)){
                         if($index>=0){
-                            $keeper[self::$xlsx_keys[$key]] = strNoSpace($value);
+                            $keeper[self::$xlsx_keys[$key]] = $value;
                         }
                     }
                     $key++;
@@ -1427,6 +1427,12 @@ class Employee //extends Model
         } while ($c);
         return $data_tracking;
     }
+    static function removeZeroWidthSpaces($string) {
+        // Remove zero-width space (U+200B)
+        return str_replace("\u{200B}", '', $string);
+    }
+   
+    
     static function validateData($rows) {
         $duplicates_phone = [];
         $duplicates_nid = [];
@@ -1437,61 +1443,66 @@ class Employee //extends Model
             $cnt++;
             $row = (object) $row;
             $name = trim($row->name);
-            $phone = trim($row->phone_number);
-            if ($phone && in_array($phone,$duplicates_phone)) {
-                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt លេខទូរស័ព្ទរបស់គាត់មិនត្រឺមត្រូវទេ ។"];
-            }else{
-                $duplicates_phone[]=$phone;
-            }
             $nid = trim($row->nid);
+            $nid_expiry_date = trim($row->nid_expiry_date);
+            $date_of_birth = trim($row->date_of_birth);
+            $joining_date = trim($row->joining_date);
+            $phone = trim($row->phone_number);
+            $nssf = trim($row->nssf_id);
+            $nationality = trim($row->nationality_id);
+            $branch = trim($row->branch_id);
+            $city = trim($row->birth_city_id);
+            $position = trim($row->position_id);
+            $emp_type = trim($row->emp_type_id);
+            $work_shift =trim($row->work_shift_id);
+
+            $row->date_of_birth = convertDate($date_of_birth);
+            $row->nid_expiry_date = convertDate($nid_expiry_date);
+            $row->joining_date = convertDate($joining_date);
+            if (empty($joining_date)) {
+                $row->joining_date = now()->format('d-M-Y');
+            }
+            $phone = preg_replace('/\s+/', '', $phone);
+            if ($phone && in_array($phone, $duplicates_phone)) {
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt លេខទូរស័ព្ទរបស់គាត់ស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត ។"];
+            } else {
+                $duplicates_phone[] = $phone;
+            }
             if ($nid && in_array($nid,$duplicates_nid)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត";
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខអត្តសញ្ញាណប័ណ្ណស្ទួនហ្នឺងបុគ្គលិផ្សេងទៀត ។"];
             }else{
                 $duplicates_nid[]=$nid;
             }
-
-            $nssf = trim($row->nssf_id);
             if ($nssf && in_array($nssf,$duplicates_nssf)) {
-                return $rows->error = "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខ ប.​ប.ស​ ស្ទួន";
+                return (object)['error' => "បុគ្គលិកឈ្មោះ $name លេខរៀងទី $cnt មានលេខប័ណ្ណ ប.​ប.ស​ ស្ទួន ។"];
             }else{
                 $duplicates_nssf[]=$nssf;
             }
-
-            $nationality = trim($row->nationality_id);
             $nationality_id = DB::table('loc_countries')->where('nationality', $nationality)->value('id');
             if (!$nationality_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name សញ្ជាតិ '".($nationality ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
             }
             $row->nationality_id = $nationality_id;
-
-            $branch = trim($row->branch_id);
             $row->branch_id = DB::table('um_branches')->where('name', $branch)->value('id');
             if (!$row->branch_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : សាខា '".($branch ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name សាខា ".($branch ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
-
-            $city =trim($row->birth_city_id);
-            $row->birth_city_id = DB::table('loc_cities')->where('country_id',$row->nationality_id)->where('name_kh', $city)->value('id');
+            $sanitizedCity = self::removeZeroWidthSpaces($city);
+            $row->birth_city_id = DB::table('loc_cities')->where('country_id',$row->nationality_id)->where('name_kh', $sanitizedCity)->value('id');
             if (!$row->birth_city_id) {
-                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : ទីកន្លែងកំណើត '".($city ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error' => "បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name ទីកន្លែងកំណើត ".($sanitizedCity ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
-
-            $position = trim($row->position_id);
             $row->position_id = DB::table('positions')->where('title', $row->position_id)->value('id');
             if(!$row->position_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : position '".($position ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name position ".($position ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
-
-            $emp_type = trim($row->emp_type_id);
             $row->emp_type_id = DB::table('emp_types')->where('name', $row->emp_type_id)->value('id');
             if(!$row->emp_type_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Type '".($emp_type ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name Type ".($emp_type ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
-
-            $work_shift =trim($row->work_shift_id);
             $row->work_shift_id = DB::table('work_shifts')->where('name', $row->work_shift_id)->value('id');
             if(!$row->work_shift_id){
-                return (object)['error'=>"ការបញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកឈ្មោះ $name : Work Shift '".($work_shift ?: 'មិនបានបញ្ជាក់')."' មិនត្រឺមត្រូវទេ"];
+                return (object)['error'=>"បញ្ចូលទិន្នន័យបរាជ័យ សម្រាប់បុគ្គលិកលេខរៀងទី $cnt ឈ្មោះ $name Work Shift ".($work_shift ?: 'មិនបានបញ្ជាក់')." មិនត្រឺមត្រូវទេ"];
             }
         }
         return $rows;
@@ -1533,6 +1544,7 @@ class Employee //extends Model
                 foreach ((array)$data as $row) {
                     $arr = (array) $row;
                     $inputs = $arr;
+                    \Log::info(json_encode($inputs));
                     $emp_res = $employee->save($inputs,null,$ss);
                     if($emp_res->status_code ==200){
                         $success++;

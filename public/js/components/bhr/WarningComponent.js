@@ -114,11 +114,11 @@ var WarningComponent = (function () {
         };
         const pr_tbl = mThis.WarningListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
 
 

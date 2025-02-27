@@ -13,7 +13,7 @@ var BenefitDisbursePolicyComponent =  (function () {
     mThis.elBenefit = mThis.self.querySelector("#el_benefit");
 
     const monthNames = [
-        "All",
+        "Based on effective date",
         "January",
         "February",
         "March",
@@ -114,11 +114,11 @@ var BenefitDisbursePolicyComponent =  (function () {
         };
         const pr_tbl = mThis.BdpListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
 
 
@@ -245,7 +245,7 @@ const BdpDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     const months = [
-                        { value: 0, name: "All" },
+                        { value: 0, name: "Based on effective date" },
                         { value: 1, name: "January" },
                         { value: 2, name: "February" },
                         { value: 3, name: "March" },

@@ -94,7 +94,6 @@ var ReportCenterComponent = new (function () {
             )
             .then((res) => {
                 const data = res.data || [];
-                console.log(data);
                 mThis.renderPanelBox(data);
             });
         if (typeof onFinish === "function") onFinish();
@@ -207,7 +206,6 @@ var ReportCenterComponent = new (function () {
         div.onclick = function(e){
             e.preventDefault();
             let btn = VSUtil.getElementByClass(e.target,'btn-run-report');
-            console.log(12,btn);
             
             if(btn){
                 const code =  btn.dataset.code;
@@ -255,7 +253,6 @@ var ReportCenterComponent = new (function () {
             .off("click")
             .on("click", function (e) {
                 e.preventDefault();
-                console.log(54, mThis.permissionID);
                 
                 if (!AuthManager.allowed(`${mThis.permissionID}`)) return;
                 windowPrint(html);
@@ -467,7 +464,6 @@ var ReportCenterComponent = new (function () {
                             has = true;
                             all_text = "All Level";
                         } else if (code === "referral" && item.text == "name") {
-                            console.log(1234, item.api);
                         }
                         VSUtil.setComboItems(el,data || [],item.value,item.text,'','All',default_id);
                         if (el.hasClass("fee_type_id")) {
@@ -653,8 +649,6 @@ var ReportCenterComponent = new (function () {
                 if (p[key] === "null") p[key] = null;
             });
 
-            console.log(JSON.stringify(end_point));
-            console.log(JSON.stringify(p, null, 2));
             p.staff ? (p.emp_id = p.staff) : "";
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
@@ -748,7 +742,6 @@ var ReportCenterComponent = new (function () {
         div.on("click", "li.report-name", function (e) {
             e.preventDefault();
             mThis.permissionID = e.currentTarget.dataset.permissionid;
-            console.log(83838,mThis.permissionID);
             
             let params = $(this).data("filter").replaceAll("'", '"');
             params = JSON.parse(params);

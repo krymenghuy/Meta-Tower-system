@@ -166,11 +166,11 @@ var ExitFormItemComponent = new (function () {
 
         const pr_tbl = mThis.ExitFormItemListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 240 + "px";
+        sh_parent.style.height = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 210 + "px";
+            sh_parent.style.maxHeight = window.innerHeight - 220 + "px";
         };
 
         mThis.initDropdownMenus(pr_tbl);

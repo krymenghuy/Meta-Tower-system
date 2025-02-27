@@ -57,11 +57,11 @@ var SkillsComponent = (function () {
         mThis.listContainer = mThis.SkillListView.getListContainer();
         mThis.setAction(div);
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 215) + 'px';
+        sh_parent.style.height = (window.innerHeight - 235) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 215) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 235) + 'px';
         }
 
 
