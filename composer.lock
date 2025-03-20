@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f1ee4b8d5817312c118b727e717868b",
+    "content-hash": "a3cdb490dc0c1d016d82a8f97af972b2",
     "packages": [
         {
             "name": "apility/laravel-fcm",
@@ -3816,21 +3816,73 @@
             "time": "2024-08-12T07:30:45+00:00"
         },
         {
-            "name": "phpoffice/phpspreadsheet",
-            "version": "2.3.8",
+            "name": "phpoffice/math",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "7a700683743bf1c4a21837c84b266916f1aa7d25"
+                "url": "https://github.com/PHPOffice/Math.git",
+                "reference": "fc2eb6d1a61b058d5dac77197059db30ee3c8329"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/7a700683743bf1c4a21837c84b266916f1aa7d25",
-                "reference": "7a700683743bf1c4a21837c84b266916f1aa7d25",
+                "url": "https://api.github.com/repos/PHPOffice/Math/zipball/fc2eb6d1a61b058d5dac77197059db30ee3c8329",
+                "reference": "fc2eb6d1a61b058d5dac77197059db30ee3c8329",
                 "shasum": ""
             },
             "require": {
-                "composer/pcre": "^1 || ^2 || ^3",
+                "ext-dom": "*",
+                "ext-xml": "*",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpunit/phpunit": "^7.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpOffice\\Math\\": "src/Math/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Progi1984",
+                    "homepage": "https://lefevre.dev"
+                }
+            ],
+            "description": "Math - Manipulate Math Formula",
+            "homepage": "https://phpoffice.github.io/Math/",
+            "keywords": [
+                "MathML",
+                "officemathml",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPOffice/Math/issues",
+                "source": "https://github.com/PHPOffice/Math/tree/0.2.0"
+            },
+            "time": "2024-08-12T07:30:45+00:00"
+        },
+        {
+            "name": "phpoffice/phpspreadsheet",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
+                "reference": "6ff18c3a8df3a945492f75ce455d77f7ad55dd5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/6ff18c3a8df3a945492f75ce455d77f7ad55dd5c",
+                "reference": "6ff18c3a8df3a945492f75ce455d77f7ad55dd5c",
+                "shasum": ""
+            },
+            "require": {
+                "composer/pcre": "^1||^2||^3",
                 "ext-ctype": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
@@ -3861,7 +3913,7 @@
                 "phpcompatibility/php-compatibility": "^9.3",
                 "phpstan/phpstan": "^1.1",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.6 || ^10.5",
+                "phpunit/phpunit": "^10.5",
                 "squizlabs/php_codesniffer": "^3.7",
                 "tecnickcom/tcpdf": "^6.5"
             },
@@ -3916,9 +3968,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/2.3.8"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/4.1.0"
             },
-            "time": "2025-02-08T03:01:45+00:00"
+            "time": "2025-03-02T06:52:24+00:00"
         },
         {
             "name": "phpoffice/phpword",
@@ -7640,12 +7692,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft/lib-money.git",
-                "reference": "b56e4f808581a851d200936bedcde73d5acb5a29"
+                "reference": "c5d94cbfd0accbec276f53a97a59c8c8974c8ade"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/b56e4f808581a851d200936bedcde73d5acb5a29",
-                "reference": "b56e4f808581a851d200936bedcde73d5acb5a29",
+                "url": "https://api.github.com/repos/vectorasoft/lib-money/zipball/c5d94cbfd0accbec276f53a97a59c8c8974c8ade",
+                "reference": "c5d94cbfd0accbec276f53a97a59c8c8974c8ade",
                 "shasum": ""
             },
             "require": {
@@ -7678,7 +7730,7 @@
                 "source": "https://github.com/vectorasoft/lib-money/tree/main",
                 "issues": "https://github.com/vectorasoft/lib-money/issues"
             },
-            "time": "2025-02-14T08:44:45+00:00"
+            "time": "2025-02-27T10:44:29+00:00"
         },
         {
             "name": "vsd/response",
