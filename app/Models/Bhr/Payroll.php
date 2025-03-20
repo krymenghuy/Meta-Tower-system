@@ -39,8 +39,7 @@ class Payroll
             'authorized' => '1|number|default = 0',
             'disbursed' => '1|number|default = 0',
             'currency_code' => '1|choice|KHR,USD|default=' . VSMoney::$base_currency,
-            'exchange_rate' => '0|number',
-
+            'exchange_rate' => '1|number|text=Exchange rate is required. If you use KHR, set it to 1',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang);

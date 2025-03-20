@@ -1334,7 +1334,6 @@ this.PermissionPanel = new function(){
         }));
         that.def_app_id = that.def_app_id || (apps[0]?.id);
         VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"All Applications",(that.def_app_id || ""));
-        console.log('ggh: ',that.elAppFilter.value );
         if(!that.elAppFilter.value){
             that.elAppFilter.value = '';
         }
