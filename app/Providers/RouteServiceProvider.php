@@ -38,20 +38,20 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
 
-            Route::prefix('hr')
-                ->middleware('api')
+            Route::prefix('ypg')
+                //->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/hr_api.php'));
+                ->group(base_path('routes/ypg_api.php'));
 
-            Route::prefix('mobile')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/hr_mobile_api.php'));
+            // Route::prefix('mobile')
+            // ->middleware('api')
+            // ->namespace($this->namespace)
+            // ->group(base_path('routes/hr_mobile_api.php'));
 
-            Route::prefix('acc')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/acc_api.php'));
+            // Route::prefix('acc')
+            //     ->middleware('api')
+            //     ->namespace($this->namespace)
+            //     ->group(base_path('routes/acc_api.php'));
 
             Route::middleware('web')
                 ->namespace($this->namespace)

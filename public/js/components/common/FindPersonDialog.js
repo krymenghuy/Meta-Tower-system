@@ -4,7 +4,7 @@ const FindContext = (()=>{
 
     self.fetchApis = {
         "staff":`${main_view.base_url}/api/employee/find`,
-        "employee":`${main_view.base_url}/hr/employee/list`,
+        "employee":`${main_view.base_url}/ypg/employee/list`,
         // "parent":`${main_view.base_url}/api/guardian/find`,
         //"user":`${main_view.base_url}/api/user/find`  
     };  

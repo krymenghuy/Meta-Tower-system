@@ -120,11 +120,11 @@ Route::get('test-count', function () {
 // });
 
 Route::get('/', function () {
-    return view('login.ypheng_login');
+    return view('login.ypg_login');
 });
 
 Route::get('logout', function () {
-    return view('login.ypheng_login');
+    return view('login.ypg_login');
 });
 
 //Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
@@ -157,7 +157,7 @@ Route::get('landingpoint', function () {
     return view('landing_page');
 });
 
-Route::get('ypheng/{componentName?}', function ($componentName = null) {
+Route::get('ypg/{componentName?}', function ($componentName = null) {
     if (!XAuthService::user()) {
         // return redirect('/')
         $base_url = url('/');
@@ -165,7 +165,7 @@ Route::get('ypheng/{componentName?}', function ($componentName = null) {
         return;
     };
     $data = ['defaultComponent' => $componentName];
-    return view('ypheng', $data);
+    return view('ypg', $data);
 });
 
 // Route::get('umt/{componentName?}', function ($componentName = null) {

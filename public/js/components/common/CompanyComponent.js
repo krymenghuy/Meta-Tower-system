@@ -12,7 +12,7 @@ var CompanyComponent = new function(){
 	this.fields =[];
    
 	this.displayCompanyInfo = ()=>{
-		vsapi.call(`${mThis.base_url}/hr/company/details`,null,null,false).then(res=>{
+		vsapi.call(`${mThis.base_url}/ypg/company/details`,null,null,false).then(res=>{
 			if(res.status_code===200){
 				console.log(JSON.stringify(res,null,2));
 					let d= StringSanitizer.sanitizeObject(res.data,null,['email','logo_url']);
@@ -27,7 +27,7 @@ var CompanyComponent = new function(){
 		this.btnSave.on('click',function(e){
 			let p = mThis.getData();	 
 			
-			vsapi.call(`${mThis.base_url}/hr/company/save-details`,p).then(res=>{
+			vsapi.call(`${mThis.base_url}/ypg/company/save-details`,p).then(res=>{
 				if(res.status_code===200){
 					cv_interact.success('Company information updated!','','info');
 				}else cv_interact.error(res.error_message);
@@ -42,7 +42,7 @@ var CompanyComponent = new function(){
 			   cv_interact.confirm('Delete this logo?',{title:'Delete Logo',context: 'delete'},e=> {
 				    if(e)
 					{
-					      vsapi.call(`${mThis.base_url}/hr/company/delete-logo`,null).then((res)=> {				 
+					      vsapi.call(`${mThis.base_url}/ypg/company/delete-logo`,null).then((res)=> {				 
 							 if (res.status_code === 200)
 							 {
 								 mThis.imgLogo.prop('src','');
@@ -60,7 +60,7 @@ var CompanyComponent = new function(){
 					if(d){
 						mThis.imgLogo.prop('src',d.dataUrl);
 						let p = {'photo_data':d.dataUrl,'file_type':d.file_type};
-						vsapi.call(`${mThis.base_url}/hr/company/save-logo`,p,null,false).then(res=>{
+						vsapi.call(`${mThis.base_url}/ypg/company/save-logo`,p,null,false).then(res=>{
 							if(res.status_code ===200){
 								let d = res.data;
 								mThis.imgLogo.prop('src',d.logo_url);

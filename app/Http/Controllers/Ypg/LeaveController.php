@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Http\Controllers\Ypg;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Ypg\Leave;
+use JDV;
+use XAuthService;
+
+class LeaveController extends Controller
+{
+    protected $leave=null;
+    public function __construct(){
+        $this->leave = new Leave();
+    }
+
+    public function save(Request $req)
+    {
+        $id = $req->id;
+        $prn_code = $id ? 240: 241;
+        $ss = XAuthService::verifyAuth($req, $prn_code);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $save = $this->leave->save($req->all(),$id,$ss);
+
+        return JDV::raw($save);
+    }
+
+    public function getLeaveListPaginate(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $data = $this->leave->getLeaveListPaginate($req->all(),$ss);
+
+        return JDV::result($data);
+    }
+
+    public function getLeaveUninformList(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $data = $this->leave->getLeaveUninformList($req->all(),$ss);
+
+        return JDV::result($data);
+    }
+
+    public function getDetails(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $leave = $this->leave->getDetails($req->id,$ss);
+
+        return JDV::result($leave);
+    }
+
+
+
+    public function delete(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, 242);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $res = $this->leave->delete($req->id, $ss);
+        return JDV::raw($res);
+    }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $data = $this->leave->getFormOptions($req->id,$ss);
+        return JDV::result($data);
+    }
+
+   public function updateStatus(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, 321);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        $id = $req->id;
+        $res = $this->leave->updateStatus($req->status_id, $id,$ss);
+
+        return JDV::raw($res);
+    }
+    public function getLeaveList(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new Leave();
+        return JDV::result($war->getLeaveList($req->all(), $ss));
+    }
+}

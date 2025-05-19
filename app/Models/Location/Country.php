@@ -9,7 +9,7 @@ use App\Models\Location\City;
 use Illuminate\Support\Facades\DB;
 use DBX;
 use Illuminate\Support\Facades\Cache;
-use App\Models\Bhr\GeneralSettings;
+use App\Models\Ypg\GeneralSettings;
 
 use XPublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
