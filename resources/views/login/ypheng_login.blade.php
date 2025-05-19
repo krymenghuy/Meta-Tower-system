@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" type="image/png" href="{{'assets/images/logo/lc_logo.svg'}}"/>
         <?php StyleManager::render('login-styles',1); ?>
-        <title>BHR System</title>
+        <title>Yav Pheng</title>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -227,8 +227,8 @@
                             </div>
                         </div>
                         <div class="vs-d-flex-copyright">
-                            <p>Vectorasoft Co.,LTD.</p>
-                            <p>Copyright &copy 2023. All rights reserved</p>
+                            <p>Yav Pheng project.</p>
+                            <p>Meta Association</p>
                         </div>
                     </div>
                 </div>

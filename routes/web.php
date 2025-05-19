@@ -120,11 +120,11 @@ Route::get('test-count', function () {
 // });
 
 Route::get('/', function () {
-    return view('login.hr_login');
+    return view('login.ypheng_login');
 });
 
 Route::get('logout', function () {
-    return view('login.hr_login');
+    return view('login.ypheng_login');
 });
 
 //Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
@@ -157,7 +157,7 @@ Route::get('landingpoint', function () {
     return view('landing_page');
 });
 
-Route::get('bhr/{componentName?}', function ($componentName = null) {
+Route::get('ypheng/{componentName?}', function ($componentName = null) {
     if (!XAuthService::user()) {
         // return redirect('/')
         $base_url = url('/');
@@ -165,20 +165,20 @@ Route::get('bhr/{componentName?}', function ($componentName = null) {
         return;
     };
     $data = ['defaultComponent' => $componentName];
-    return view('bhr', $data);
+    return view('ypheng', $data);
 });
 
-Route::get('umt/{componentName?}', function ($componentName = null) {
-    if (!XAuthService::user()) {
-        // return redirect('/')
-        $base_url = url('/');
-        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-        return;
-    };
-    $componentName = $componentName ?? 'RoleManagementComponent';
-    $data = ['defaultComponent' => $componentName];
-    return view('umt', $data);
-});
+// Route::get('umt/{componentName?}', function ($componentName = null) {
+//     if (!XAuthService::user()) {
+//         // return redirect('/')
+//         $base_url = url('/');
+//         echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+//         return;
+//     };
+//     $componentName = $componentName ?? 'RoleManagementComponent';
+//     $data = ['defaultComponent' => $componentName];
+//     return view('umt', $data);
+// });
 
 // Route::get('acc/{componentName?}',function($componentName= null){
 //     if(!XAuthService::user()){

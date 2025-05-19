@@ -5,7 +5,7 @@ namespace App\StyleManagement;
 class StyleProvider
 {
     protected static $bundles = [
-            'bhr-style'=>[
+            'ypheng-style'=>[
                 'output_file'=>'/dist/css/lc_hr_style.css?v=18',
                 'files' => [
                     'assets/css/vsstyle.css',/** Must be set before bootstrap**/

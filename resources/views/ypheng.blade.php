@@ -6,7 +6,7 @@
 <head>
     <base href="../">
     <meta charset="utf-8" />
-    <title>BHR</title>
+    <title>Yav Pheng</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/lc_logo.svg') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('bhr-style', 1, 9);
+    StyleManager::render('ypheng-style', 1, 9);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -74,8 +74,8 @@
     <?php
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 7);
-    ScriptManager::render('bhr-primary-defer', 1, 21);
-    ScriptManager::render('bhr-components', 1, 198);
+    ScriptManager::render('primary-defer', 1, 21);
+    ScriptManager::render('ypheng-components', 1, 198);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

@@ -47,7 +47,7 @@ class ScriptProvider
                 '/assets/js/vfs_fonts.js'
             ]
         ],
-        'bhr-primary-defer' => [
+        'primary-defer' => [
             'attr' => 'defer',
             'single_file' => 1,
             'output_file' => '/dist/js/dms.primary-defer.js?v=53',
@@ -82,7 +82,7 @@ class ScriptProvider
             ]
         ],
 
-        'bhr-components' => [
+        'ypheng-components' => [
             'attr' => 'defer',
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
