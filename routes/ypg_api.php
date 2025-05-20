@@ -11,6 +11,8 @@ use App\Http\Controllers\Ypg\DepartmentController;
 use App\Http\Controllers\Ypg\SkillController;
 
 use App\Http\Controllers\Ypg\MemberController;
+use App\Http\Controllers\Ypg\TaskTypeController;
+use App\Http\Controllers\Ypg\TaskAssignController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -91,5 +93,22 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->gro
     Route::post('/form-options', [MemberController::class, 'getFormOptions']);
     Route::post('/delete', [MemberController::class, 'delete']);
     Route::post('/update-status', [MemberController::class, 'updateStatus']);
+});
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('task-type')->group(function () {
+    Route::post('/save', [TaskTypeController::class, 'save']);
+    Route::post('/list-paginate', [TaskTypeController::class, 'getList']);
+    Route::post('/details', [TaskTypeController::class, 'getDetails']);
+    Route::post('/form-options', [TaskTypeController::class, 'getFormOptions']);
+    Route::post('/delete', [TaskTypeController::class, 'delete']);
+    Route::post('/update-status', [TaskTypeController::class, 'updateStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('task-assign')->group(function () {
+    Route::post('/save', [TaskAssignController::class, 'save']);
+    Route::post('/list-paginate', [TaskAssignController::class, 'getList']);
+    Route::post('/details', [TaskAssignController::class, 'getDetails']);
+    Route::post('/form-options', [TaskAssignController::class, 'getFormOptions']);
+    Route::post('/delete', [TaskAssignController::class, 'delete']);
+    Route::post('/update-status', [TaskAssignController::class, 'updateStatus']);
 });
