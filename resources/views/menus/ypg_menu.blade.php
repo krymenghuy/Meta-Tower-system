@@ -184,7 +184,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="EmployeeComponent" modid="241" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" /></span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Employee Management"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Employees Management"></span>
                 </a>
             </li>
 
