@@ -264,11 +264,12 @@
                             @include('layouts.ypg.employeeComponent')
                             @include('layouts.ypg.skillsComponent')
                             @include('layouts.ypg.departmentComponent')
-                           
                             @include('layouts.common.locationComponent')
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
+
+                            @include('layouts.ypg.memberComponent')
 
                         </div>
                     </div>

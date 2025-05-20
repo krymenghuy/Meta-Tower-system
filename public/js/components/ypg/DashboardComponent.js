@@ -4,8 +4,8 @@ var DashboardComponent =  (function () {
     const mThis = {};
     mThis.title_prop = "Dashboard";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
-    // mThis.self = mThis.jm[0];
+    mThis.jm = main_view.appContent.children("#_main_dashboardComponent");
+    mThis.self = mThis.jm[0];
 
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     mThis.onShow = (options) => {
@@ -93,13 +93,13 @@ var DashboardComponent =  (function () {
     };
 
     mThis.renderDBChartAllTop = (data) => {
-        data = data ? data : {};
+        data = data ? data : null;
         let html = [
             `<div class="chart-row py-3">`,
             `<div class="col-md-3">`,
                     '<div class="chart-container dashboard_chart ">',
                         '<span class="fw-semibold fs-5 text-primary-custom text-capitalize">',
-                            data.doughnutChart.title,
+                             !data?null: data.doughnutChart.title,
                         '</span>',
                         '<canvas id="doughnutChart"></canvas>',
                     '</div>',
@@ -121,8 +121,8 @@ var DashboardComponent =  (function () {
             `<img class="img--size" src="`,main_view.base_url,`/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${data.cards.new_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1" style="">`,data.cards.new_staff_count.title,`</div>`,
+            `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow   rounded-2" style="background-color:#27b7ff;">${ !data?null: data.cards.new_staff_count.count ?? 0}</span>`,
+            `<div class="text-primary mt-1" style="">`, !data?null: data.cards.new_staff_count.title,`</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -137,8 +137,8 @@ var DashboardComponent =  (function () {
             `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/letter.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5  text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.resigning_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1">${data.cards.resigning_staff_count.title}</div>`,
+            `<span class="fw-semibold fs-5  text-white px-2 border border-white shadow bg-warning rounded-2">${ !data?null: data.cards.resigning_staff_count.count ?? 0}</span>`,
+            `<div class="text-primary mt-1">${ !data?null: data.cards.resigning_staff_count.title}</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -153,8 +153,8 @@ var DashboardComponent =  (function () {
             `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop-work.svg" alt="Icon">`,
             `</div>`,
             `<div class="ms-3 text-center flex-fill">`,
-            `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.resigned_staff_count.count ?? 0}</span>`,
-            `<div class="text-primary mt-1">${data.cards.resigned_staff_count.title}</div>`,
+            `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${ !data?null: data.cards.resigned_staff_count.count ?? 0}</span>`,
+            `<div class="text-primary mt-1">${ !data?null: data.cards.resigned_staff_count.title}</div>`,
             `</div>`,
             `</div>`,
             `<hr style="border:1px solid #fff; margin:0;">`,
@@ -169,8 +169,8 @@ var DashboardComponent =  (function () {
             `</div>`
         ].join("");
         mThis.dbChartAll.innerHTML = html;
-        mThis.renderChartEmployee(data.doughnutChart);
-        mThis.employeeSalaryChart(data.barCharts);
+        // mThis.renderChartEmployee(data.doughnutChart);
+        // mThis.employeeSalaryChart(data.barCharts);
         // mThis.renderCompareChart(data.pieCharts);
     };
 
@@ -497,7 +497,7 @@ var DashboardComponent =  (function () {
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                     <p class="fs-6" style="color: #2b3991;">
-                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount(data.accounts.wallets.total_balance || 0)}
+                                        ${VSMoney.symbol('KHR') + VSMoney.formatAmount( !data?null: data.accounts.wallets.total_balance || 0)}
                                     </p>
                                 </div>
                             </div>
@@ -619,23 +619,15 @@ var DashboardComponent =  (function () {
     mThis.loadCards = (onFinish) => {
         const p = {};
 
-        vsapi
-            .call(
-                `${main_view.base_url}/ypg/dashboard/data`,
-                p,
-                null,
-                false,
-                false
-            )
-            .then((res) => {
-                const data = res.status_code === 200 ? res.data : {};
+        // vsapi.call(`${main_view.base_url}/ypg/dashboard/data`,p,null,false,false).then((res) => {
+            // const data = res.status_code === 200 ? res.data : {};
+                const data = null;
+            mThis.renderDBChartAllTop(data);
+            // mThis.renderDBCards(data);
+            // mThis.renderDBCardBottom(data);
 
-                mThis.renderDBChartAllTop(data);
-                mThis.renderDBCards(data);
-                mThis.renderDBCardBottom(data);
-
-                onFinish();
-            });
+            onFinish();
+        // });
     };
     mThis.prepareFormOptions = (data, onFinish) => {
         mThis.loadCards(onFinish);
@@ -661,12 +653,14 @@ var DashboardComponent =  (function () {
         mThis.setDashboardScroll();
         mThis.init();
         options = options || {};
-        //main_view.setTitle(mThis.title_prop);
+        main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            // mThis.jm.siblings().hide();
-            // mThis.jm.fadeIn(200);
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
         });
+        //  mThis.jm.siblings().hide();
+        //     mThis.jm.fadeIn(200);
     };
 
     const renderUserHome = ()=>{

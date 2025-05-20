@@ -113,7 +113,7 @@ class Employee //extends Model
         $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars,'nssf_id' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
 
-         $inputs = $res->values;
+        $inputs = $res->values;
         $d = (object) $inputs;
         if($d->currency_code !== VSMoney::$base_currency) return DV::error('The salary currency must be ??::'.VSMoney::$base_currency);
         $nid = $d->nid ?? null;
@@ -1431,8 +1431,8 @@ class Employee //extends Model
         // Remove zero-width space (U+200B)
         return str_replace("\u{200B}", '', $string);
     }
-   
-    
+
+
     static function validateData($rows) {
         $duplicates_phone = [];
         $duplicates_nid = [];

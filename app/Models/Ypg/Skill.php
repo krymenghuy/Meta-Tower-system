@@ -65,21 +65,21 @@ class Skill
     function getSkills($arr, $ss)
     {
         $d = (object) $arr;
-    
+
         $search_value = $d->search_value ?? null;
-    
+
         $query = DB::table('skills as s')
             ->selectRaw('s.id, s.title, s.description, s.image_file_name')
             ->where('s.branch_id', $ss->branch_id);
-    
+
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->whereRaw("(s.title LIKE '%" . $search_value . "%' OR s.description LIKE '%" . $search_value . "%')");
         }
-    
+
         $query->orderBy('s.id', 'asc');
         $rows = $query->get();
-    
+
         foreach ($rows as $row) {
             $row->image_url = '';
             if (!empty($row->emp_id) && $row->emp_photo) {
@@ -87,7 +87,7 @@ class Skill
             }
             unset($row->emp_photo);
         }
-    
+
         return $rows;
     }
     function getSkillsPaginate($arr, $ss)
@@ -112,10 +112,10 @@ class Skill
         ->leftJoin('emp_skills as es', 's.id', '=', 'es.skill_id')
         ->whereRaw($str_search)
         ->selectRaw('
-            s.id, 
-            s.title, 
-            s.description, 
-            s.image_file_name, 
+            s.id,
+            s.title,
+            s.description,
+            s.image_file_name,
             COUNT(es.emp_id) as count_member
         ')
         ->groupBy('s.id', 's.title', 's.description', 's.image_file_name')
@@ -136,7 +136,7 @@ class Skill
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-   
+
 
     function getDetails($id,$ss)
     {
@@ -156,7 +156,7 @@ class Skill
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-       
+
         $file_name = DB::table('skills as s')
             ->where('s.id', $id)
             ->take(1)
@@ -172,7 +172,7 @@ class Skill
             ->where('id', $id)
             ->where('branch_id', $ss->branch_id)
             ->delete();
-       
+
 
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
@@ -217,7 +217,7 @@ class Skill
     }
     public static function getSkillPhoto($id)
     {
-       
+
         $col_subs_id = DBX::getHex('s.subs_id', 'subs_id');
         $row = DB::table('skills as s')->where('id', $id)->selectRaw($col_subs_id . ',s.branch_id,s.image_file_name')->first();
         $def_image = self::defaultPhoto($row ? $row->subs_id : null);
