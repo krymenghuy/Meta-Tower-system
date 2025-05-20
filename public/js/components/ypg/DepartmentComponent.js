@@ -266,7 +266,7 @@ const DepartmentDialog = (()=>{
             buttons:[
                {
                 label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
+                cssClass:'btn btn-default btn--',
                 click:(me,btn)=>{
                     //Close with Cancel button
                     me.hide(false);
