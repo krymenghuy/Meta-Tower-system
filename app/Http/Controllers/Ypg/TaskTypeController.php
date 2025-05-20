@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Ypg;
 
-use App\Http\Controllers\Controller;
-use App\Models\Ypg\Member;
+use App\Models\Ypg\TaskType;
 use JDV;
 use XAuthService;
 use Illuminate\Http\Request;
-class MemberController extends Controller
+
+class TaskTypeController
 {
     public function save(Request $req)
     {
@@ -15,20 +15,20 @@ class MemberController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->member_id ?? $req->id;
-        $member = new Member($id, $ss);
-        $res = $member->save($req->all());
+        $id = $req->task_type_id ?? $req->id;
+        $taskType = new TaskType($id, $ss);
+        $res = $taskType->save($req->all());
         return JDV::raw($res);
     }
 
-    public function getList(Request $req)
+    public function getlist(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $member = new Member();
-        return JDV::result($member->getList($req->all(), $ss));
+        $taskType = new TaskType();
+        return JDV::result($taskType->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -40,8 +40,8 @@ class MemberController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $member = new Member();
-        return JDV::result($member->getDetails($req->id, $ss));
+        $taskType = new TaskType();
+        return JDV::result($taskType->getDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -50,8 +50,8 @@ class MemberController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $member = new Member();
-        return JDV::result($member->getFormOptions($req->id, $ss));
+        $taskType = new TaskType();
+        return JDV::result($taskType->getFormOptions($req->id, $ss));
     }
 
     public function delete(Request $req)
@@ -61,8 +61,8 @@ class MemberController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-        $member = new Member();
-        $res = $member->delete($id);
+        $taskType = new TaskType();
+        $res = $taskType->delete($id);
         return JDV::raw($res);
     }
 
@@ -72,10 +72,8 @@ class MemberController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-        $member = new Member();
-        $res = $member->updateStatus($req->status_id, $id,$ss);
+        $taskType = new TaskType();
+        $res = $taskType->updateStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
     }
-
-    
 }
