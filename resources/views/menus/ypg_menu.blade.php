@@ -559,15 +559,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Checkpoints"></span>
                             </a>
                         </li>
-                        {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="ExitFormItemComponent" modid="105" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/exit_item.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Items"></span>
-                            </a>
-                        </li>--}}
+                      
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(257); ?>>
                             <a href="HolidayComponent" modid="257" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
