@@ -25,7 +25,6 @@ class Department
     function save($arr, $id = null ,$ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string|0-100',

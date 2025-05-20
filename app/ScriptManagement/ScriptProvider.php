@@ -118,8 +118,9 @@ class ScriptProvider
                 'js/components/umt/BranchManagementComponent.js',
                 //'js/components/umt/RoleManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
-
                 'js/components/ypg/CreateContractDialog.js',
+
+                'js/components/ypg/MemberComponent.js',
             ]
         ],
 

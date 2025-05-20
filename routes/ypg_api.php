@@ -7,6 +7,10 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ypg\ReportController;
 use App\Http\Controllers\Ypg\GeneralSettingsController;
+use App\Http\Controllers\Ypg\DepartmentController;
+use App\Http\Controllers\Ypg\SkillController;
+
+use App\Http\Controllers\Ypg\MemberController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -58,4 +62,34 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('employee/payslip-print', [ReportController::class, 'getPayslipPrint']);
     Route::post('employee/employee-movement-report', [ReportController::class, 'getEmployeeMovementReport']);
     Route::post('employee/print-employee-cv', [ReportController::class, 'getPrintEmployeeCV']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getList']);
+    Route::post('/details', [DepartmentController::class, 'getDetails']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
+    Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->group(function () {
+    Route::post('/save', [SkillController::class, 'saveSkill']);
+    Route::post('/list', [SkillController::class, 'getSkillList']);
+    Route::post('/list-paginate', [SkillController::class, 'getSkillListPaginate']);
+    Route::post('/details', [SkillController::class, 'getDetails']);
+    Route::post('/delete', [SkillController::class, 'deleteSkill']);
+    Route::post('/form-options', [SkillController::class, 'getFormOptions']);
+    Route::post('/save/skill/photo', [SkillController::class, 'saveSkillPhoto']);
+    Route::post('/skill/photo', [SkillController::class, 'getSkillPhoto']);
+    Route::post('/delete/skill/photo', [SkillController::class, 'deleteSkillPhoto']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->group(function () {
+    Route::post('/save', [MemberController::class, 'save']);
+    Route::post('/list-paginate', [MemberController::class, 'getList']);
+    Route::post('/details', [MemberController::class, 'getDetails']);
+    Route::post('/form-options', [MemberController::class, 'getFormOptions']);
+    Route::post('/delete', [MemberController::class, 'delete']);
+    Route::post('/update-status', [MemberController::class, 'updateStatus']);
+
 });
