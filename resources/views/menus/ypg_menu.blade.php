@@ -2,7 +2,7 @@
     li.kt-menu__section {
         margin-top: 8px !important;
         margin-bottom:8px !important;
-        background: #dce5e5 !important;
+        background: #63626299 !important;
         border: 1px solid #dce5e5 !important;
         opacity: 0.9;
         padding: 10px;
@@ -36,7 +36,7 @@
     }
 
     #kt_aside_menu {
-        background-color: #2B3991;
+        background-color: #ffffff;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -45,7 +45,7 @@
     }
 
     .kt-menu__link-text {
-        color: #fff;
+        color: #2f2f2f;
     }
 
     .kt-menu__section {
@@ -70,7 +70,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #2b3991;
+        /* background-color: #2b3991; */
     }
 
     #_dms_aside_menus {
@@ -148,7 +148,7 @@ function v_display($mod_id, $module_ids = null)
         data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand-logo">
             <div class="company pt-3">
-                <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="" class="img-logo" />
+                <img src="{{ asset('assets/images/yavpheng/logo.png') }}" alt="" class="img-logo" />
                 <!-- <span class="company_name mt-3">LC CASH EXPRESS CO.,LTD.</span> -->
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
@@ -476,7 +476,7 @@ function v_display($mod_id, $module_ids = null)
 
              
             
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
                 <a href="ReportCenterComponent" modid="247" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
@@ -484,7 +484,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Report Center"></span>
                 </a>
-            </li> -->
+            </li>
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.System & Settings"></h4>
