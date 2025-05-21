@@ -187,7 +187,97 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Member Management"></span>
                 </a>
             </li>
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
+                data-ktmenu-submenu-toggle="hover"<?php v_display(null, [244, 240,245,239,255,264,265,257,283]); ?>>
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/icons/setting.png') }}" />
+                    </span>
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Task Management ">Task Management 
+                        </span>
+                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                </a>
+                <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                            <a href="TaskTypeComponent" modid="244" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Task Type"></span>
+                            </a>
+                        </li>
 
+                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                            <a href="TaskAssignComponent" modid="105" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Task Assign"></span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+
+
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
+                data-ktmenu-submenu-toggle="hover"<?php v_display(null, [244, 240,245,239,255,264,265,257,283]); ?>>
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/icons/setting.png') }}" />
+                    </span>
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Grave Slot Management ">Grave Slot Management 
+                        </span>
+                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                </a>
+                <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                            <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus. Slot Info"></span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+
+             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
+                data-ktmenu-submenu-toggle="hover"<?php v_display(null, [244, 240,245,239,255,264,265,257,283]); ?>>
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/icons/setting.png') }}" />
+                    </span>
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Grave & Deceased Registration ">Grave & Deceased Registration 
+                        </span>
+                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                </a>
+                <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                            <a href="RegisterDeceasedComponent" modid="244" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus. Register Deceased"></span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
 
 
             <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
@@ -375,11 +465,18 @@ function v_display($mod_id, $module_ids = null)
             </li> --}}
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.Data and Insights"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.Report Center"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
+            
+
+            
+
+
+             
+            
+            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
                 <a href="ReportCenterComponent" modid="247" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
@@ -387,7 +484,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Report Center"></span>
                 </a>
-            </li>
+            </li> -->
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.System & Settings"></h4>
