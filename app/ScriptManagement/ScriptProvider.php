@@ -121,6 +121,10 @@ class ScriptProvider
                 'js/components/ypg/CreateContractDialog.js',
 
                 'js/components/ypg/MemberComponent.js',
+                'js/components/ypg/TaskTypeComponent.js',
+                'js/components/ypg/TaskAssignComponent.js',
+                'js/components/ypg/SlotInfoComponent.js',
+                'js/components/ypg/RegisterDeceasedComponent.js',
             ]
         ],
 

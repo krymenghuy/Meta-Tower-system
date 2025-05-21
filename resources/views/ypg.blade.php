@@ -270,6 +270,10 @@
                             @include('layouts.umt.roleManagementComponent')
 
                             @include('layouts.ypg.memberComponent')
+                            @include('layouts.ypg.taskTypeComponent')
+                            @include('layouts.ypg.taskAssignComponent')
+                            @include('layouts.ypg.slotInfoComponent')
+                            @include('layouts.ypg.registerDeceasedComponent')
 
                         </div>
                     </div>
