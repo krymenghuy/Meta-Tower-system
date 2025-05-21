@@ -161,7 +161,7 @@ class Member
         return DV::error('Error deleting member');
     }
 
-     function updateStatus($status_id, $id = null, $ss = null)
+    function updateStatus($status_id, $id = null, $ss = null)
     {
 
         $ss = $ss ? $ss : $this->userInfo;
