@@ -259,7 +259,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/setting.png') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Grave & Deceased Registration ">Grave & Deceased Registration 
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus. Registration ">Grave & Deceased Registration 
                         </span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>

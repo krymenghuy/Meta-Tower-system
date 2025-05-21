@@ -37,9 +37,17 @@ var RegisterDeceasedComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
         },
-        
 
-        
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data, a, b) => {
+                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
+                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+            },
+        },
+
+
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
@@ -61,25 +69,25 @@ var RegisterDeceasedComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.RegisterDeceasedListView
- = new ListView('_register_deceased_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
-            perPage: 10,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
-            tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
-            listContainerClass: null
-        });
+            = new ListView('_register_deceased_list', {
+                fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+                perPage: 10,
+                apiCluster: main_view.apiCluster,
+                columns: mThis.cols,
+                tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
+                listContainerClass: null
+            });
 
-       
+
 
         mThis.tblLeaves = mThis.RegisterDeceasedListView
-.getTable();
+            .getTable();
 
         mThis.initDropdownMenus(mThis.tblLeaves);
 
 
         mThis.pl_container = mThis.RegisterDeceasedListView
-.getListContainer();
+            .getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         window.onresize = () => {
@@ -91,11 +99,11 @@ var RegisterDeceasedComponent = (function () {
             el.onchange = (e) => {
                 e.preventDefault();
                 mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                    .showPage(mThis.getFilterData());
             }
         });
 
-        
+
 
         mThis.initAlready = true;
     };
@@ -212,7 +220,7 @@ var RegisterDeceasedComponent = (function () {
                         cv_interact.success('The leave request status has been updated');
                         // if(tr) tr.dataset.statuscode = d.value;
                         mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                            .showPage(mThis.getFilterData());
                     }
                     else
                         cv_interact.error(res.error_message);
@@ -228,7 +236,7 @@ var RegisterDeceasedComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                    .showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(241)) return;
@@ -241,7 +249,7 @@ var RegisterDeceasedComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                    .showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -255,7 +263,7 @@ var RegisterDeceasedComponent = (function () {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.RegisterDeceasedListView
-.showPage();
+                            .showPage();
                     }
                 })
             }
@@ -279,10 +287,10 @@ var RegisterDeceasedComponent = (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData(), null, () => {
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
-        });
+            .showPage(mThis.getFilterData(), null, () => {
+                mThis.jm.siblings().hide();
+                mThis.jm.hide().fadeIn(200);
+            });
     }
     return mThis;
 })();

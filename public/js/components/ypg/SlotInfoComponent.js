@@ -221,11 +221,11 @@ var SlotInfoComponent = (function () {
             blankErrorMessage: "Status is not correct!",
             data: [{
                 status_id: "1",
-                name: "Active"
+                name: "Available"
             },
             {
                 status_id: "2",
-                name: "Inactive"
+                name: "Reserved"
             }],
             defaultValue: status_id
         };
