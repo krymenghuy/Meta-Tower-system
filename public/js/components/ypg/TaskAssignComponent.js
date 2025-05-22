@@ -18,13 +18,13 @@ var TaskAssignComponent = (function () {
         {
             title: "Member Name",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.member_name ?? ''}</span>`,
         },
 
         {
             title: "Task Title",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.task_title ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.task_type_title ?? ''}</span>`,
         },
         
        {
@@ -32,7 +32,7 @@ var TaskAssignComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => {
                 return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.assigned_date ?? '')
+                     (data.assign_date ?? '')
                 }</span>`;
             },
         },
@@ -67,7 +67,7 @@ var TaskAssignComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.TaskAssignListView = new ListView('_task_assign_list',{
-            fetchApi : `${main_view.base_url}/ypg/member/list-paginate`,
+            fetchApi : `${main_view.base_url}/ypg/task-assign/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -86,7 +86,7 @@ var TaskAssignComponent = (function () {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            // MemberDialog.show(op);
+            TaskAssignDialog.show(op);
         };
 
         mThis.tblLeaves = mThis.TaskAssignListView.getTable();
@@ -225,7 +225,7 @@ var TaskAssignComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/ypg/task-assign/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -263,13 +263,13 @@ var TaskAssignComponent = (function () {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?',{
-            title: 'Delete Member',
+        cv_interact.confirm('Delete this task assign?',{
+            title: 'Delete Task Assign',
             context: 'delete',
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/task-assign/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted successfully');
                         mThis.TaskAssignListView.showPage();
@@ -318,78 +318,52 @@ const TaskAssignDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-4">
-                                <label for="name" class="form-label" vslang="titles.Name"></label>
-                                <input id="name" name="name" class="form-control data-input" data-field="name">
+                            <div class="form-group col-6">
+                                <label for="member_id" class="form-label" vslang="titles.Member"></label>
+                                <select  name="member_id" class="form-control data-input" data-field="member_id"></select>
                             </div>
-                            <div class="form-group col-4">
-                                <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                <select id="sex" class="form-control data-input" data-field="sex">
-                                    <option value="">(Select Sex)</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
+
+                            <div class="form-group col-6">
+                                <label for="task_type_id" class="form-label" vslang="titles.Task Type"></label>
+                                <select  name="task_type_id" class="form-control data-input" data-field="task_type_id"></select>
                             </div>
-                            <div class="form-group col-4">
-                                <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                <select id="nationality_id" name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
+                        
+                            <div class="form-group col-6 expiry-wrapper">
+                                <label for="assign_date" class="form-label" vslang="titles.Assign Date"></label>
+                                <input  name="assign_date" class="form-control data-input" data-field="assign_date">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <input id="email" name="email" class="form-control data-input" data-field="email">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input id="phone_number" type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
-                                <select id="is_expiry" name="is_expiry" class="form-control data-input" data-field="is_expiry">
-                                    <option value="">(Select)</option>
-                                    <option value="0">Forever</option>
-                                    <option value="1">Expiry</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-                                <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="address" class="form-label" vslang="titles.Address"></label>
-                                <textarea id="address" class="form-control data-input" data-field="address"></textarea>
-                            </div>
+                            
                         </div>`
                     ].join("");
                 },
 
                 contentCreated: (me) => {
-                    DateTimePicker.init(me.controls.expiry_date);
-
-                    me.controls.is_expiry.onchange = (e) => {
-                        const expiryWrapper = me.controls.expiry_date.closest('.expiry-wrapper');
-                        if (expiryWrapper) {
-                            expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
-                        }
-                    };
+                    DateTimePicker.init(me.controls.assign_date);
 
 
                 },
                 configSelect: [
                     {
-                        name: "nationality_id",
-                        data: "countries",
-                        textField: "country",
+                        name: "member_id",
+                        data: "members",
+                        textField: "member_name",
+                        valueField: "id",
+                    },
+
+                    {
+                        name: "task_type_id",
+                        data: "task_types",
+                        textField: "task_type_title",
                         valueField: "id",
                     },
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Member",
-                    modifyTitle: "Edit Member",
-                    targetProp: "member_details",
+                    createTitle: "Add Task",
+                    modifyTitle: "Edit Task",
+                    targetProp: "task_assign",
                     api: {
-                        endpoint: [ main_view.base_url,"/ypg/member/form-options",].join(""),
+                        endpoint: [ main_view.base_url,"/ypg/task-assign/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -417,16 +391,16 @@ const TaskAssignDialog = (() => {
 
                             console.log(11, JSON.stringify(op, null, 2));
 
-                            vsapi.call([main_view.base_url,"/ypg/member/save",].join(""),op,btn,null).then((res) => {
+                            vsapi.call([main_view.base_url,"/ypg/task-assign/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Member has been updated successfully"
+                                            "Assign task has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New member has been added successfully"
+                                            "New task has been added successfully"
                                         );
                                     }
                                 } else {

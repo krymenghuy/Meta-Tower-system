@@ -55,12 +55,12 @@ var TaskTypeComponent = (function () {
          {
             title: "Updated by",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.updated_by ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.update_user ?? ''}</span>`,
         },
         {
             title: "Last Updated",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.last_updated ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.update_date ?? ''}</span>`,
         },
     //    {
     //         title: "Expiry Date",
