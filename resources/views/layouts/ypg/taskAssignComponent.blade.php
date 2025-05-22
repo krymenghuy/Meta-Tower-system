@@ -12,7 +12,7 @@
         <div class="d-flex align-items-center justify-content-end gap-2 w-50">
             <button type="button" class="btn_add" id="_btnTaskAssign">
                 <i class="fa fa-street-view mr-2"></i>
-                <span>Add Assignment</span>
+                <span>  Task Assign</span>
             </button>
         </div>
     </div>

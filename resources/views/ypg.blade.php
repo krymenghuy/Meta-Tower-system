@@ -119,7 +119,7 @@
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ececec;">
+                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#aaaaaa;">
                             <div class="mainview-top-right">
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
                                     <div style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
@@ -136,12 +136,12 @@
                                             data-menu="lang">
                                             <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px" />
-                                            <span id="_main_lang_name" class="text-primary-custom">
+                                            <span id="_main_lang_name" style="color:#aaaaaa;">
                                                 <?php
                                                 echo Session::get('lang_name', 'Khmer');
                                                 ?>
                                             </span>
-                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#2b3991;"></i>
+                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#aaaaaa;"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <span class="lang-menu-header"></span>
@@ -168,7 +168,7 @@
                                     <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#2b3991;"></i>
+                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#aaaaaa;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -183,12 +183,12 @@
 
                                     <div class="dropdown shadow-lg rounded-5 bg-white app--list">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
-                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#2b3991;"></i>
+                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#aaaaaa;"></i>
                                             <span></span>
                                         </button>
 
                                         <div class="dropdown-menu shadow-lg bg-white rounded-3 mt-3"
-                                            style="position:absolute;width:325px;left:-220px;top:35px">
+                                            style="position:absolute;width:250px;left:-220px;top:35px">
                                             <span class="app-menu-header"></span>
                                             <div class="main-app-menus">
                                                 <?php
@@ -202,7 +202,7 @@
                                                     if (!$app->is_mobile_app) {
                                                         $expected_user_class = $app->user_class ?? '';
                                                         $open_new_tab = $expected_user_class == $user->user_class ? '' : 'target="_blank"';
-                                                        $app_icon = empty($app->icon_file_name) ? '<i class="fa fa-cube"></i>' : $app->icon_file_name;
+                                                        $app_icon = empty($app->icon_file_name) ? '<i class="fa fa-cube m-2"></i>' : $app->icon_file_name;
                                                         $app_name = $app->name ?? $app->app_name;
                                                         echo ($cnt > 0 ? '<div class="dropdown-divider"></div>' : '') . '<span class="app-menu-item">' . '<a id="" class="dropdown-item" href="/' . $app->home_route . '" ' . $open_new_tab . '>' . $app_icon . ' ' . $app_name . '</a>' . '</span>';
                                                         $cnt++;
@@ -219,8 +219,8 @@
                                     <div class="dropdown shadow-lg rounded-5 bg-white user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <img class="mr-1" src="<?php echo $user->image_url; ?>" style="height:30px" />
-                                                <span class="text-primary-custom">
+                                            <img class="mr-2" src="<?php echo $user->image_url; ?>" style="height:25px" />
+                                                <span style="color:#aaaaaa;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
@@ -229,21 +229,21 @@
                                         </button>
 
                                         <div class="dropdown-menu dropdown-menu-left bg-white shadow-lg mt-3"
-                                            style="width:150px;position:absolute;left:-120px;top:40px;">
+                                            style="width:250px;position:absolute;left:-220px;top:35px;">
                                             <span class="user-menu-header"></span>
                                             <div class="main-user-menus">
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-cog"></i>
-                                                        About Yav Pheng Project
+                                                        <i class="fas fa-cog m-2"></i>
+                                                        About Yav Pheng
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_logout" class="dropdown-item"
                                                         href="javascript:void(0)">
-                                                        <i class="fas fa-sign-out-alt"></i>
+                                                        <i class="fas fa-sign-out-alt m-2"></i>
                                                         Log out
                                                     </a>
                                                 </span>
@@ -274,7 +274,7 @@
                             @include('layouts.ypg.taskAssignComponent')
                             @include('layouts.ypg.slotInfoComponent')
                             @include('layouts.ypg.registerDeceasedComponent')
-
+                            @include('layouts.ypg.recordrelationComponent')
                         </div>
                     </div>
                 </div>

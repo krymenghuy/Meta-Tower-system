@@ -6,6 +6,7 @@ var RegisterDeceasedComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_register_deceased_component");
     mThis.self = mThis.jm[0];
+    mThis.btnAdd = mThis.self.querySelector("#_btnRegisterDeceased");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_register_deceased");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
@@ -14,17 +15,17 @@ var RegisterDeceasedComponent = (function () {
     mThis.cols = [
 
         {
-            title: "Full Name",
+            title: "Register Deceased",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
         },
         {
-            title: "Date of Birth",
+            title: "Section / Zone",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
         },
         {
-            title: "Date of Death",
+            title: "Row and Position",
             className: "align-middle text-capitalize",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
@@ -33,13 +34,30 @@ var RegisterDeceasedComponent = (function () {
         },
 
         {
-            title: "Burial Date",
+            title: "Location Note",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
         },
-        
+        {
+            title: " Reserved By",
 
-        
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+        },
+        {
+            title: "Used by",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+        },
+
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data, a, b) => {
+                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
+                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+            },
+        },
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
@@ -60,8 +78,7 @@ var RegisterDeceasedComponent = (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.RegisterDeceasedListView
- = new ListView('_register_deceased_list', {
+        mThis.RegisterDeceasedListView = new ListView('_register_deceased_list', {
             fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -70,16 +87,26 @@ var RegisterDeceasedComponent = (function () {
             listContainerClass: null
         });
 
-       
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
 
-        mThis.tblLeaves = mThis.RegisterDeceasedListView
-.getTable();
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
+                }
+            };
+            if (!AuthManager.allowed(240)) return;
+            // MemberDialog.show(op);
+        };
+
+        mThis.tblLeaves = mThis.RegisterDeceasedListView.getTable();
 
         mThis.initDropdownMenus(mThis.tblLeaves);
 
 
-        mThis.pl_container = mThis.RegisterDeceasedListView
-.getListContainer();
+        mThis.pl_container = mThis.RegisterDeceasedListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         window.onresize = () => {
@@ -90,12 +117,17 @@ var RegisterDeceasedComponent = (function () {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
             }
         });
 
-        
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
 
         mThis.initAlready = true;
     };
@@ -104,6 +136,7 @@ var RegisterDeceasedComponent = (function () {
         let p = {
             status_id: mThis.elFilter_status.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
+            search_value: mThis.elSearch.value,
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -188,11 +221,11 @@ var RegisterDeceasedComponent = (function () {
             blankErrorMessage: "Status is not correct!",
             data: [{
                 status_id: "1",
-                name: "Active"
+                name: "Available"
             },
             {
                 status_id: "2",
-                name: "Inactive"
+                name: "Reserved"
             }],
             defaultValue: status_id
         };
@@ -211,8 +244,7 @@ var RegisterDeceasedComponent = (function () {
                         // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
                         cv_interact.success('The leave request status has been updated');
                         // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                        mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
                     }
                     else
                         cv_interact.error(res.error_message);
@@ -227,12 +259,12 @@ var RegisterDeceasedComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(241)) return;
-        RegisterDeceasedDialog.show(op);
+        RegisterDeceasedDialog
+            .show(op);
     }
 
     mThis.deleteMember = (id, menuLink) => {
@@ -240,8 +272,7 @@ var RegisterDeceasedComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData());
+                mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -254,8 +285,7 @@ var RegisterDeceasedComponent = (function () {
                 vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
-                        mThis.RegisterDeceasedListView
-.showPage();
+                        mThis.RegisterDeceasedListView.showPage();
                     }
                 })
             }
@@ -278,8 +308,7 @@ var RegisterDeceasedComponent = (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.RegisterDeceasedListView
-.showPage(mThis.getFilterData(), null, () => {
+        mThis.RegisterDeceasedListView.showPage(mThis.getFilterData(), null, () => {
             mThis.jm.siblings().hide();
             mThis.jm.hide().fadeIn(200);
         });
@@ -289,7 +318,6 @@ var RegisterDeceasedComponent = (function () {
 
 
 const RegisterDeceasedDialog
-
     = (() => {
         const self = {};
         let dialog = null;
@@ -371,11 +399,11 @@ const RegisterDeceasedDialog
 
                     ],
                     prepareFormOptions: {
-                        createTitle: "Add Member",
-                        modifyTitle: "Edit Member",
-                        targetProp: "member_details",
+                        createTitle: "Add Slot",
+                        modifyTitle: "Edit Slot",
+                        targetProp: "slot_details",
                         api: {
-                            endpoint: [main_view.base_url, "/ypg/member/form-options",].join(""),
+                            endpoint: [main_view.base_url, "/ypg/slotinfo/form-options",].join(""),
                             params: (op) => {
                                 return { id: op.id };
                             },
@@ -403,16 +431,16 @@ const RegisterDeceasedDialog
 
                                 console.log(11, JSON.stringify(op, null, 2));
 
-                                vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call([main_view.base_url, "/ypg/slotinfo/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Member has been updated successfully"
+                                                "Slot has been updated successfully"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New member has been added successfully"
+                                                "New slot has been added successfully"
                                             );
                                         }
                                     } else {

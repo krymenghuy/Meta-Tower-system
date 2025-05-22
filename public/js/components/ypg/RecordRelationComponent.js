@@ -1,53 +1,45 @@
 "use strict";
 
-var SlotInfoComponent = (function () {
+var RecordRelationComponent = (function () {
     const mThis = {};
-    mThis.title_prop = " Slot Info";
+    mThis.title_prop = " Record Relation";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_slot_info_component");
+    mThis.jm = main_view.appContent.children("#_main_record_relation_component");
     mThis.self = mThis.jm[0];
-    mThis.btnAdd = mThis.self.querySelector("#_btnSlotInfo");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_slot_info");
+    mThis.btnAdd = mThis.self.querySelector("#_btnRecordRelation");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_record_relation");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
-    mThis.elSearch = mThis.self.querySelector("#_search_slot_info");
+    mThis.elSearch = mThis.self.querySelector("#_search_record_relation");
 
     mThis.cols = [
 
         {
-            title: "Slot Number",
+            title: "First Name",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.name ?? 'null'}</span>`,
         },
         {
-            title: "Section / Zone",
+            title: "Last Name",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
         },
+        
         {
-            title: "Row and Position",
+            title: "Address ",
             className: "align-middle text-capitalize",
-            data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
+            data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
         },
-
         {
-            title: "Location Note",
+            title: " Phone Number",
+
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
         },
         {
-            title: " Reserved By",
-
+            title: "Related to",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
-        },
-        {
-            title: "Used by",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.related_to ?? ''}</span>`,
         },
 
         {
@@ -78,7 +70,7 @@ var SlotInfoComponent = (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.SlotInfoListView = new ListView('_slot_info_list', {
+        mThis.RecordRelationListView = new ListView('_record_relation_list', {
             fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -94,19 +86,19 @@ var SlotInfoComponent = (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                    mThis.RecordRelationListView.showPage(mThis.getFilterData());
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            // MemberDialog.show(op);
+            RecordRelationDialog.show(op);
         };
 
-        mThis.tblLeaves = mThis.SlotInfoListView.getTable();
+        mThis.tblLeaves = mThis.RecordRelationListView.getTable();
 
         mThis.initDropdownMenus(mThis.tblLeaves);
 
 
-        mThis.pl_container = mThis.SlotInfoListView.getListContainer();
+        mThis.pl_container = mThis.RecordRelationListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         window.onresize = () => {
@@ -117,7 +109,7 @@ var SlotInfoComponent = (function () {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.RecordRelationListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -125,7 +117,7 @@ var SlotInfoComponent = (function () {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.RecordRelationListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -244,7 +236,7 @@ var SlotInfoComponent = (function () {
                         // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
                         cv_interact.success('The leave request status has been updated');
                         // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                        mThis.RecordRelationListView.showPage(mThis.getFilterData());
                     }
                     else
                         cv_interact.error(res.error_message);
@@ -259,11 +251,11 @@ var SlotInfoComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.RecordRelationListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(241)) return;
-        SlotInfoDialog
+        RecordRelationdialog
             .show(op);
     }
 
@@ -272,7 +264,7 @@ var SlotInfoComponent = (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.RecordRelationListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -285,7 +277,7 @@ var SlotInfoComponent = (function () {
                 vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
-                        mThis.SlotInfoListView.showPage();
+                        mThis.RecordRelationListView.showPage();
                     }
                 })
             }
@@ -308,7 +300,7 @@ var SlotInfoComponent = (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.SlotInfoListView.showPage(mThis.getFilterData(), null, () => {
+        mThis.RecordRelationListView.showPage(mThis.getFilterData(), null, () => {
             mThis.jm.siblings().hide();
             mThis.jm.hide().fadeIn(200);
         });
@@ -317,7 +309,7 @@ var SlotInfoComponent = (function () {
 })();
 
 
-const SlotInfoDialog
+const RecordRelationdialog
     = (() => {
         const self = {};
         let dialog = null;
@@ -369,7 +361,7 @@ const SlotInfoDialog
                                 <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
                                 <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
                             </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-6">
                                 <label for="address" class="form-label" vslang="titles.Address"></label>
                                 <textarea id="address" class="form-control data-input" data-field="address"></textarea>
                             </div>
