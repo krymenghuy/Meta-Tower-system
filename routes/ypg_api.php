@@ -13,6 +13,8 @@ use App\Http\Controllers\Ypg\SkillController;
 use App\Http\Controllers\Ypg\MemberController;
 use App\Http\Controllers\Ypg\TaskTypeController;
 use App\Http\Controllers\Ypg\TaskAssignController;
+use App\Http\Controllers\Ypg\DeceasedRegistrationController;
+use App\Http\Controllers\Ypg\GraveSlotController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -111,4 +113,21 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('task-assign')
     Route::post('/form-options', [TaskAssignController::class, 'getFormOptions']);
     Route::post('/delete', [TaskAssignController::class, 'delete']);
     Route::post('/update-status', [TaskAssignController::class, 'updateStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deceased-registration')->group(function () {
+    Route::post('/save', [DeceasedRegistrationController::class, 'save']);
+    Route::post('/list-paginate', [DeceasedRegistrationController::class, 'getList']);
+    Route::post('/details', [DeceasedRegistrationController::class, 'getDetails']);
+    Route::post('/form-options', [DeceasedRegistrationController::class, 'getFormOptions']);
+    Route::post('/delete', [DeceasedRegistrationController::class, 'delete']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')->group(function () {
+    Route::post('/save', [GraveSlotController::class, 'save']);
+    Route::post('/list-paginate', [GraveSlotController::class, 'getList']);
+    Route::post('/details', [GraveSlotController::class, 'getDetails']);
+    Route::post('/form-options', [GraveSlotController::class, 'getFormOptions']);
+    Route::post('/delete', [GraveSlotController::class, 'delete']);
+     Route::post('/update-status', [GraveSlotController::class, 'updateStatus']);
 });

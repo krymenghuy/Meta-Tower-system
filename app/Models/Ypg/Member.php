@@ -165,6 +165,11 @@ class Member
     {
 
         $ss = $ss ? $ss : $this->userInfo;
+        $currentStatus = DB::table('members')->where('id', $id)->value('status_id');
+
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status');
+        }
         $x = DB::table('members')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,

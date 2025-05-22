@@ -33,12 +33,13 @@ class TaskType
         if ($res->error) {
             return DV::error($res->error);
         }
-
-        $exist = DB::table('task_types')
-            ->where('title', $arr['title'])
-            ->exists();
-        if ($exist) {
-            return DV::error('Task type already exist');
+        if(!$id){
+            $exist = DB::table('task_types')
+                ->where('title', $arr['title'])
+                ->exists();
+            if ($exist) {
+                return DV::error('Task type already exist');
+            }
         }
 
         $inputs = $res->values;
@@ -133,6 +134,12 @@ class TaskType
     {
 
         $ss = $ss ? $ss : $this->userInfo;
+
+        $currentStatus = DB::table('task_types')->where('id', $id)->value('status_id');
+
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status');
+        }
         $x = DB::table('task_types')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
