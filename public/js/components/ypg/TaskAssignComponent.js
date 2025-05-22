@@ -14,51 +14,25 @@ var TaskAssignComponent = (function () {
 
     mThis.cols = [
 
+        
         {
-            title: "ID",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
-        },
-        {
-            title: "Name",
+            title: "Member Name",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
         },
-        {
-            title: "Sex",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
-        },
 
         {
-            title: "Phone Number",
+            title: "Task Title",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.task_title ?? ''}</span>`,
         },
-        {
-            title: "Email",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
-        },
-        {
-            title: "Address",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
-        },
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
-        },
+        
        {
-            title: "Expiry Date",
+            title: "Assigned Date",
             className: "align-middle text-capitalize",
             data: (data) => {
                 return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
+                    data.is_expiry == 0 ? 'Forever' : (data.assigned_date ?? '')
                 }</span>`;
             },
         },

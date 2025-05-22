@@ -14,53 +14,63 @@ var TaskTypeComponent = (function () {
     mThis.cols = [
 
         {
-            title: "ID",
+            title: "Title",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.title ?? 'null'}</span>`,
         },
         {
-            title: "Name",
+            title: "Description",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`,
         },
-        {
-            title: "Sex",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
-        },
+        // {
+        //     title: "Sex",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => {
+        //         const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
+        //         return `<span class="text-primary-custom">${sexLabel}</span>`;
+        //     }
+        // },
 
-        {
-            title: "Phone Number",
+        // {
+        //     title: "Phone Number",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+        // },
+        // {
+        //     title: "Email",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+        // },
+        // {
+        //     title: "Address",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
+        // },
+        // {
+        //     title: "Nationality",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
+        // },
+         {
+            title: "Updated by",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.updated_by ?? ''}</span>`,
         },
         {
-            title: "Email",
+            title: "Last Updated",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.last_updated ?? ''}</span>`,
         },
-        {
-            title: "Address",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
-        },
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
-        },
-       {
-            title: "Expiry Date",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
-                }</span>`;
-            },
-        },
+    //    {
+    //         title: "Expiry Date",
+    //         className: "align-middle text-capitalize",
+    //         data: (data) => {
+    //             return `<span class="text-primary-custom">${
+    //                 data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
+    //             }</span>`;
+    //         },
+    //     },
 
 
         {
@@ -92,7 +102,7 @@ var TaskTypeComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.TaskTypeListView = new ListView('_task_type_list',{
-            fetchApi : `${main_view.base_url}/ypg/member/list-paginate`,
+            fetchApi : `${main_view.base_url}/ypg/task-type/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -111,7 +121,7 @@ var TaskTypeComponent = (function () {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            // MemberDialog.show(op);
+            TaskTpyeDialog.show(op);
         };
 
         mThis.tblLeaves = mThis.TaskTypeListView.getTable();
@@ -178,13 +188,13 @@ var TaskTypeComponent = (function () {
                     html:'<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_member"
+                    name:"edit_task_type"
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"delete_member"
+                    name:"delete_task_type"
                 },
             ],
             adjustPosition:{
@@ -199,11 +209,11 @@ var TaskTypeComponent = (function () {
                         mThis.changeStatus(id,menuLink);
                         break;
                     }
-                    case 'edit_member':{
+                    case 'edit_task_type':{
                       mThis.editMember(id, menuLink);
                       break;
                     }
-                    case 'delete_member':{
+                    case 'delete_task_type':{
                         mThis.deleteMember(id, menuLink);
                         break;
                       }
@@ -227,7 +237,7 @@ var TaskTypeComponent = (function () {
 
         let inputOptions = {
             title: 'Change Status',
-            dataLabel: "Member status",
+            dataLabel: "Task Type status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText:"Save",
@@ -250,7 +260,7 @@ var TaskTypeComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/ypg/task-type/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -276,7 +286,7 @@ var TaskTypeComponent = (function () {
             }
         };
         if (!AuthManager.allowed(241)) return;
-        // MemberDialog.show(op);
+        TaskTpyeDialog.show(op);
     }
 
     mThis.deleteMember = (id, menuLink) => {
@@ -288,13 +298,13 @@ var TaskTypeComponent = (function () {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?',{
-            title: 'Delete Member',
+        cv_interact.confirm('Delete this task type?',{
+            title: 'Delete task type',
             context: 'delete',
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/task-type/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted successfully');
                         mThis.TaskTypeListView.showPage();
@@ -329,141 +339,92 @@ var TaskTypeComponent = (function () {
 })();
 
 
-// const MemberDialog = (() => {
-//     const self = {};
-//     let dialog = null;
+const TaskTpyeDialog = (() => {
+    const self = {};
+    let dialog = null;
 
-//     self.show = (op) => {
-//         dialog =
-//             dialog ||
-//             new GeneralDialog({
-//                 cssClass: "modal-lg",
-//                 backdrop: "static",
-//                 keyboard: true,
-//                 createContent: () => {
-//                     return [
-//                         `<div class="row">
-//                             <div class="form-group col-4">
-//                                 <label for="name" class="form-label" vslang="titles.Name"></label>
-//                                 <input id="name" name="name" class="form-control data-input" data-field="name">
-//                             </div>
-//                             <div class="form-group col-4">
-//                                 <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-//                                 <select id="sex" class="form-control data-input" data-field="sex">
-//                                     <option value="">(Select Sex)</option>
-//                                     <option value="M">Male</option>
-//                                     <option value="F">Female</option>
-//                                     <option value="other">Other</option>
-//                                 </select>
-//                             </div>
-//                             <div class="form-group col-4">
-//                                 <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-//                                 <select id="nationality_id" name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
-//                             </div>
-//                             <div class="form-group col-4">
-//                                 <label for="email" class="form-label" vslang="titles.Email"></label>
-//                                 <input id="email" name="email" class="form-control data-input" data-field="email">
-//                             </div>
-//                             <div class="form-group col-4">
-//                                 <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-//                                 <input id="phone_number" type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
-//                             </div>
-//                             <div class="form-group col-4">
-//                                 <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
-//                                 <select id="is_expiry" name="is_expiry" class="form-control data-input" data-field="is_expiry">
-//                                     <option value="">(Select)</option>
-//                                     <option value="0">Forever</option>
-//                                     <option value="1">Expiry</option>
-//                                 </select>
-//                             </div>
-//                             <div class="form-group col-6 expiry-wrapper" style="display: none;">
-//                                 <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-//                                 <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
-//                             </div>
-//                             <div class="form-group col-12">
-//                                 <label for="address" class="form-label" vslang="titles.Address"></label>
-//                                 <textarea id="address" class="form-control data-input" data-field="address"></textarea>
-//                             </div>
-//                         </div>`
-//                     ].join("");
-//                 },
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
+                            <div class="form-group col-12">
+                                <label for="title" class="form-label" vslang="titles.Title"></label>
+                                <input name="title" class="form-control data-input" data-field="title">
+                            </div>
+                           
+                            <div class="form-group col-12">
+                                <label for="desciption" class="form-label" vslang="titles.Desciption"></label>
+                                <textarea name="desciption" class="form-control data-input" data-field="desciption"></textarea>
+                            </div>
+                        </div>`
+                    ].join("");
+                },
 
-//                 contentCreated: (me) => {
-//                     DateTimePicker.init(me.controls.expiry_date);
+                contentCreated: (me) => {
+                },
+                configSelect: [
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Task Type",
+                    modifyTitle: "Edit Task Type",
+                    targetProp: "task_type_details",
+                    api: {
+                        endpoint: [ main_view.base_url,"/ypg/task-type/form-options",].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
 
-//                     me.controls.is_expiry.onchange = (e) => {
-//                         const expiryWrapper = me.controls.expiry_date.closest('.expiry-wrapper');
-//                         if (expiryWrapper) {
-//                             expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
-//                         }
-//                     };
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
 
+                buttons: [
+                    {
+                        label:'<span class="text-white">Cancel</span>',
+                        cssClass:'btn btn-sm btn-warning',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label:'<span>Save</span>',
+                        cssClass:'btn btn-sm btn-primary',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
 
-//                 },
-//                 configSelect: [
-//                     {
-//                         name: "nationality_id",
-//                         data: "countries",
-//                         textField: "country",
-//                         valueField: "id",
-//                     },
+                            console.log(11, JSON.stringify(op, null, 2));
 
-//                 ],
-//                 prepareFormOptions: {
-//                     createTitle: "Add Member",
-//                     modifyTitle: "Edit Member",
-//                     targetProp: "member_details",
-//                     api: {
-//                         endpoint: [ main_view.base_url,"/ypg/member/form-options",].join(""),
-//                         params: (op) => {
-//                             return { id: op.id };
-//                         },
-//                     },
-//                 },
+                            vsapi.call([main_view.base_url,"/ypg/task-type/save",].join(""),op,btn,null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Member has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New member has been added successfully"
+                                        );
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
 
-//                 onPrepareForm: (me, data) => {
-//                     LocaleManager.translateZone(me.divModal);
-//                 },
-
-//                 buttons: [
-//                     {
-//                         label:'<span class="text-white">Cancel</span>',
-//                         cssClass:'btn btn-sm btn-warning',
-//                         click: (me, btn) => {
-//                             me.hide(false);
-//                         },
-//                     },
-//                     {
-//                         label:'<span>Save</span>',
-//                         cssClass:'btn btn-sm btn-primary',
-//                         click: (me, btn) => {
-//                             const op = me.getData();
-//                             op.id = me.dataOptions.id;
-
-//                             console.log(11, JSON.stringify(op, null, 2));
-
-//                             vsapi.call([main_view.base_url,"/ypg/member/save",].join(""),op,btn,null).then((res) => {
-//                                 if (res.status_code === 200) {
-//                                     me.hide(true, op);
-//                                     if (me.dataOptions.id > 0) {
-//                                         cv_interact.success(
-//                                             "Member has been updated successfully"
-//                                         );
-//                                     } else {
-//                                         cv_interact.success(
-//                                             "New member has been added successfully"
-//                                         );
-//                                     }
-//                                 } else {
-//                                     cv_interact.error(res.error_message);
-//                                 }
-//                             });
-//                         },
-//                     },
-//                 ],
-//             });
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
+    return self;
+})();
