@@ -13,7 +13,7 @@
 .btn_add {
     padding: 10px 20px;
     color: white;
-    background-color: #2b3991;
+    background-color: #38373a;
     border-radius: 20px;
     margin-top: 3px;
     cursor: pointer;
@@ -1804,9 +1804,9 @@ ul.list-filter-um li:not(li:last-child) {
 }
 
 .table--white thead th {
-    color: white !important;
+    color: rgb(255 255 255) !important;
     /* border-radius: 0.5rem !important; */
-    background-color: #2b3991 !important;
+    background-color: #38373a !important;
     font-size: 14px !important;
     padding: 10px !important;
 }

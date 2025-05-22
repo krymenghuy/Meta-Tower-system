@@ -90,7 +90,7 @@
         margin-bottom: 10px;
         font-size: 14px;
         font-weight: bold;
-        color: white;
+        color: #cab54a;
     }
 
     /* .company img {
@@ -149,7 +149,7 @@ function v_display($mod_id, $module_ids = null)
         <div class="kt-aside__brand-logo">
             <div class="company pt-3">
                 <img src="{{ asset('assets/images/yavpheng/logo.png') }}" alt="" class="img-logo" />
-                <!-- <span class="company_name mt-3">LC CASH EXPRESS CO.,LTD.</span> -->
+                <span class="company_name mt-3">LC CASH EXPRESS CO.,LTD.</span>
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
@@ -248,6 +248,17 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
 
+                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                            <a href="RecordRelationComponent" modid="244" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus. Record Relationship"></span>
+                            </a>
+                        </li>
+
+
                     </ul>
                 </div>
             </li>
@@ -259,7 +270,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/setting.png') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Grave & Deceased Registration ">Grave & Deceased Registration 
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus. Registration ">Grave & Deceased Registration 
                         </span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>
@@ -275,6 +286,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
 
+                        
                     </ul>
                 </div>
             </li>

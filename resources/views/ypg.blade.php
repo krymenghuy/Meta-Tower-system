@@ -274,7 +274,7 @@
                             @include('layouts.ypg.taskAssignComponent')
                             @include('layouts.ypg.slotInfoComponent')
                             @include('layouts.ypg.registerDeceasedComponent')
-
+                            @include('layouts.ypg.recordrelationComponent')
                         </div>
                     </div>
                 </div>
