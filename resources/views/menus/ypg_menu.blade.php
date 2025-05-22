@@ -149,7 +149,7 @@ function v_display($mod_id, $module_ids = null)
         <div class="kt-aside__brand-logo">
             <div class="company pt-3">
                 <img src="{{ asset('assets/images/yavpheng/logo.png') }}" alt="" class="img-logo" />
-                <span class="company_name mt-3">LC CASH EXPRESS CO.,LTD.</span>
+                <!-- <span class="company_name mt-3">YAV PHENG</span> -->
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
