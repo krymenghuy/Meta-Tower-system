@@ -232,8 +232,20 @@ class GeneralSettings //extends Model
     return $res;
     }
 
+    static function options_status($ss){
+        return DB::table('statuses')->selectRaw('id,name AS status')->get();
+    }
+
     static function options_member_status($ss){
         return DB::table('member_statuses')->selectRaw('id,name AS member_status')->get();
+    }
+
+    static function options_member($ss){
+        return DB::table('members')->selectRaw('id,name AS member_name')->get();
+    }
+
+    static function options_task_type($ss){
+        return DB::table('task_types')->selectRaw('id,title AS task_type_title')->get();
     }
 
 }

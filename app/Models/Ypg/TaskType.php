@@ -9,7 +9,7 @@ use DBX;
 
 class TaskType
 {
-     protected $id = null;
+    protected $id = null;
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -32,6 +32,13 @@ class TaskType
         $res = DBX::validateObject($arr, $v_rule, true, [], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
+        }
+
+        $exist = DB::table('task_types')
+            ->where('title', $arr['title'])
+            ->exists();
+        if ($exist) {
+            return DV::error('Task type already exist');
         }
 
         $inputs = $res->values;
@@ -70,12 +77,12 @@ class TaskType
             $str_moreWhere .= ' AND ty.status_id =\'' . $status_id . '\'';
         }
 
-
+        $update_date = DBX::formatDate("ty.updated_at", 'update_date');
         $query = DB::table('task_types as ty')
             ->join('member_statuses as ms', 'ms.id', '=', 'ty.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('ty.id, ty.title, ty.description, ty.status_id, ms.name as status')
+            ->selectRaw('ty.id, ty.title, ty.description, ty.status_id, ms.name as status,'.$update_date.',ty.update_user')
             ->orderBy('ty.id', 'asc');
 
         $clone_query = clone $query;
@@ -109,7 +116,7 @@ class TaskType
 
     }
 
-     public function delete($id)
+    public function delete($id)
     {
         $id = $id ?? $this->id;
         if (empty($id)) {
@@ -132,7 +139,7 @@ class TaskType
             'update_date'=>getNowTime(),
             'update_uid'=>$ss->user_id
         ]);
-        return DV::depends($x, ['member status', 'updated']);
+        return DV::depends($x, ['task type status', 'updated']);
     }
 
 }
