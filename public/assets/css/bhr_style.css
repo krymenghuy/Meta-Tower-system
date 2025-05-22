@@ -291,7 +291,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .notification-dropdown .con--header {
-    background-color: #ffa500;
+    background-color: #aaaaaa;
     padding: 10px 15px;
     font-size: 15px;
     font-weight: 500;
@@ -311,7 +311,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .main-user-menus .dropdown-item {
-    padding: 10px;
+    /* padding: 10px; */
 }
 
 .main-user-menus .user-menu-item .dropdown-item i {

@@ -1,6 +1,5 @@
 <div id="_main_dashboardComponent" style="display:none;">
-    <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
-    </div>
+  
     <div class="db_cards">
         <div class="row px-3" style="" id="db_cards">
 
