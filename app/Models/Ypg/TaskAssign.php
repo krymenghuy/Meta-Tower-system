@@ -9,7 +9,7 @@ use DBX;
 
 class TaskAssign
 {
-     protected $id = null;
+    protected $id = null;
     protected $userInfo = null;
 
     public function __construct($id = null, $userInfo = null)
@@ -35,12 +35,14 @@ class TaskAssign
             return DV::error($res->error);
         }
 
-        $exist = DB::table('task_assigns')
-            ->where('member_id', $arr['member_id'])
-            ->where('task_type_id', $arr['task_type_id'])
-            ->exists();
-        if ($exist) {
-            return DV::error('Task assign already exist');
+        if(!$id){
+            $exist = DB::table('task_assigns')
+                ->where('member_id', $arr['member_id'])
+                ->where('task_type_id', $arr['task_type_id'])
+                ->exists();
+            if ($exist) {
+                return DV::error('Task assign already exist');
+            }
         }
 
         $inputs = $res->values;
@@ -53,7 +55,7 @@ class TaskAssign
         return DV::error('Error saving task assign');
     }
 
-     public function getList($arr, $ss = null)
+    public function getList($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -84,7 +86,7 @@ class TaskAssign
         $query = DB::table('task_assigns as ta')
             ->join('members as m', 'm.id', '=', 'ta.member_id')
             ->join('task_types as ty', 'ty.id', '=', 'ta.task_type_id')
-            ->join('member_statuses as ms', 'ms.id', '=', 'ta.status_id')
+            ->join('statuses as s', 's.id', '=', 'ta.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw('
@@ -95,7 +97,7 @@ class TaskAssign
                 ' . $assign_date .',
                 m.name as member_name,
                 ty.title as task_type_title,
-                ms.name as status,
+                s.name as status,
                 ' . $update_date . ',
                 ta.update_user
             ')
@@ -165,6 +167,12 @@ class TaskAssign
     {
 
         $ss = $ss ? $ss : $this->userInfo;
+
+        $currentStatus = DB::table('task_assigns')->where('id', $id)->value('status_id');
+
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status');
+        }
         $x = DB::table('task_assigns')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
