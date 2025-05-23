@@ -5,25 +5,23 @@
 </style>
 
 <div id="_um_branchManagementComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex mt-4">
-        <div class="d-flex gap-2">
-            <div class="input-group input-group-sm flex-nowrap width--search-inner shadow justify-content-start">
-                <input type="search" class="form-control filter-field h-100" placeholder="Search branch" id="_um_search_branch"/>
-                <div class="input-group-text">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
+    <div class="d-flex gap-3">
+        <div class="input-group input-group-sm flex-nowrap width--search-inner shadow justify-content-start">
+            <input type="search" class="form-control filter-field h-100" placeholder="Search branch" id="_um_search_branch"/>
+            <div class="input-group-text">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </div>
-            <button id="_bm_btn_new" class="btn btn-primary-custom text-nowrap justify-content-end" type="button">
-                <i class="fa-solid fa-plus"></i>
-                <span class=" text-nowrap" vslang="buttons.New Branch"></span>
-            </button>
-           
         </div>
-        <div class="d-flex justify-content-end w-100">
-            <button id="_um_btn_pdf" class="d-none btn btn-sm btn-danger" type="button">
-                <span class="" vslang="buttons.PDF"></span>
-            </button>
-        </div>
+        <button id="_bm_btn_new" class="btn text-nowrap justify-content-end text-white" style="background-color:#38373a;" type="button">
+            <i class="fa-solid fa-plus"></i>
+            <span class=" text-nowrap" vslang="buttons.New Branch"></span>
+        </button>
+        
+    </div>
+    <div class="d-flex justify-content-end w-100">
+        <button id="_um_btn_pdf" class="d-none btn btn-sm btn-danger" type="button">
+            <span class="" vslang="buttons.PDF"></span>
+        </button>
     </div>
     <div class="table-responsive mt-3 table-responsive-hover">
         <div id="_branch_container" class=""></div>
