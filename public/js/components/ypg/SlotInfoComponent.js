@@ -17,37 +17,39 @@ var SlotInfoComponent = (function () {
         {
             title: "Slot Number",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.slot_number ?? 'null'}</span>`,
         },
         {
             title: "Section / Zone",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.zone ?? ''}</span>`,
         },
         {
-            title: "Row and Position",
+            title: "Grav Row ",
             className: "align-middle text-capitalize",
-            data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
+            data: (data) => `<span class="text-primary-custom">${data.grave_row ?? ''}</span>`,
+        },
+         {
+            title: "Position ",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.position ?? ''}</span>`,
         },
 
         {
             title: "Location Note",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.location_note ?? ''}</span>`,
         },
         {
             title: " Reserved By",
 
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.reversed_id ?? ''}</span>`,
         },
         {
             title: "Used by",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.used_id ?? ''}</span>`,
         },
 
         {
@@ -55,7 +57,7 @@ var SlotInfoComponent = (function () {
             className: "align-middle",
             data: (data, a, b) => {
                 const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status_id ?? ''}</span>`;
             },
         },
         {
@@ -79,7 +81,7 @@ var SlotInfoComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.SlotInfoListView = new ListView('_slot_info_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+            fetchApi: `${main_view.base_url}/ypg/grave-slot/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -98,7 +100,7 @@ var SlotInfoComponent = (function () {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            // MemberDialog.show(op);
+            SlotInfoDialog.show(op); 
         };
 
         mThis.tblLeaves = mThis.SlotInfoListView.getTable();
@@ -165,13 +167,13 @@ var SlotInfoComponent = (function () {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_member"
+                    name: "edit_slot_info"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_member"
+                    name: "delete_slot_info"
                 },
             ],
             adjustPosition: {
@@ -186,12 +188,12 @@ var SlotInfoComponent = (function () {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_member': {
-                        mThis.editMember(id, menuLink);
+                    case 'edit_slot_info': {
+                        mThis.editSlotInfo(id, menuLink);
                         break;
                     }
-                    case 'delete_member': {
-                        mThis.deleteMember(id, menuLink);
+                    case 'delete_slot_info': {
+                        mThis.deleteSlotInfo(id, menuLink);
                         break;
                     }
 
@@ -214,7 +216,7 @@ var SlotInfoComponent = (function () {
 
         let inputOptions = {
             title: 'Change Status',
-            dataLabel: "Member status",
+            dataLabel: "Slot Info Status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
@@ -237,7 +239,7 @@ var SlotInfoComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
+                vsapi.call(`${mThis.base_url}/ypg/grave-slot/update-status`, p).then(res => {
                     if (res.status_code === 200) {
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -253,7 +255,7 @@ var SlotInfoComponent = (function () {
         });
     }
 
-    mThis.editMember = (id, menuLink) => {
+    mThis.editSlotInfo = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -263,11 +265,10 @@ var SlotInfoComponent = (function () {
             }
         };
         if (!AuthManager.allowed(241)) return;
-        SlotInfoDialog
-            .show(op);
+        SlotInfoDialog.show(op);
     }
 
-    mThis.deleteMember = (id, menuLink) => {
+    mThis.deleteSlotInfo = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -276,13 +277,13 @@ var SlotInfoComponent = (function () {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?', {
-            title: 'Delete Member',
+        cv_interact.confirm('Delete this slot?', {
+            title: 'Delete slot',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.SlotInfoListView.showPage();
@@ -297,10 +298,10 @@ var SlotInfoComponent = (function () {
 
     mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'slot_info_status', true, 'All Statuses', null);
             })
     }
 
@@ -332,68 +333,58 @@ const SlotInfoDialog
                     createContent: () => {
                         return [
                             `<div class="row">
-                            <div class="form-group col-4">
-                                <label for="name" class="form-label" vslang="titles.Name"></label>
-                                <input id="name" name="name" class="form-control data-input" data-field="name">
+                            <div class="form-group col-6">
+                                <label for="slot_number" class="form-label" vslang="titles.Slot_number"></label>
+                                <input id="slot_number" name="slot_number" class="form-control data-input" data-field="slot_number">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                <select id="sex" class="form-control data-input" data-field="sex">
-                                    <option value="">(Select Sex)</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
+                            
+                           <div class="form-group col-6">
+                                <label for="zone" class="form-label" vslang="titles.Zone"></label>
+                                <input  name="zone" class="form-control data-input" data-field="zone">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                <select id="nationality_id" name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
+                            <div class="form-group col-6">
+                                <label for="grave_row" class="form-label" vslang="titles.Grave_Row"></label>
+                                <input  name="grave_row" class="form-control data-input" data-field="grave_row">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <input id="email" name="email" class="form-control data-input" data-field="email">
+                            
+                             <div class="form-group col-6">
+                                <label for="position" class="form-label" vslang="titles.Position"></label>
+                                <input  name="position" class="form-control data-input" data-field="position">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input id="phone_number" type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
+                            <div class="form-group col-6">
+                                <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
+                                <input  name="location_note" class="form-control data-input" data-field="location_note">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
-                                <select id="is_expiry" name="is_expiry" class="form-control data-input" data-field="is_expiry">
-                                    <option value="">(Select)</option>
-                                    <option value="0">Forever</option>
-                                    <option value="1">Expiry</option>
-                                </select>
+                            <div class="form-group col-6">
+                                <label for="reversed_id" class="form-label" vslang="titles.Reversed_id"></label>
+                                <input  name="reversed_id" class="form-control data-input" data-field="reversed_id">
                             </div>
-                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-                                <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
+                            <div class="form-group col-6">
+                                <label for="used_id" class="form-label" vslang="titles.Used_id"></label>
+                                <input  name="used_id" class="form-control data-input" data-field="used_id">
                             </div>
-                            <div class="form-group col-12">
-                                <label for="address" class="form-label" vslang="titles.Address"></label>
-                                <textarea id="address" class="form-control data-input" data-field="address"></textarea>
+                            <div class="form-group col-6">
+                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                <input  name="status_id" class="form-control data-input" data-field="status_id">
                             </div>
+                            
+
+                            
+                           
                         </div>`
                         ].join("");
                     },
 
                     contentCreated: (me) => {
-                        DateTimePicker.init(me.controls.expiry_date);
+                        // DateTimePicker.init(me.controls.expiry_date);
 
-                        me.controls.is_expiry.onchange = (e) => {
-                            const expiryWrapper = me.controls.expiry_date.closest('.expiry-wrapper');
-                            if (expiryWrapper) {
-                                expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
-                            }
-                        };
-
-
+                    
                     },
                     configSelect: [
                         {
-                            name: "nationality_id",
-                            data: "countries",
-                            textField: "country",
+                            name: "member_id",
+                            data: "members",
+                            textField: "member_name",
                             valueField: "id",
                         },
 
@@ -401,7 +392,7 @@ const SlotInfoDialog
                     prepareFormOptions: {
                         createTitle: "Add Slot",
                         modifyTitle: "Edit Slot",
-                        targetProp: "slot_details",
+                        targetProp: "grave_slot",
                         api: {
                             endpoint: [main_view.base_url, "/ypg/slotinfo/form-options",].join(""),
                             params: (op) => {
