@@ -123,7 +123,7 @@ var SkillsComponent = (function () {
                                         <p class="fs-6" style="color: #2b3991;">${d.title}</p>
                                         <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 100%;">
                                         <div class="d-flex justify-content-between px-2">
-                                            <small class="fw-semibold text-muted px-2">Count: <span class="text-primary">${d.count_member}</span></small>
+                                            <small class="fw-semibold text-success px-2">Active</small>
                                             <div class="justify-content-end action-buttons d-none gap-2">
                                                 <a href="javascript:void(0)" data-id="${d.id}" class="text-primary btn-edit-skill text-decoration-none">
                                                     <small><i class="fa-regular fa-pen-to-square fs-7"></i></small>
@@ -351,8 +351,8 @@ const SkillDialog = (() => {
      ],
 
     prepareFormOptions: {
-        createTitle: "New Employee Skill",
-        modifyTitle: "Edit Employee Skill",
+        createTitle: "Create Task",
+        modifyTitle: "Edit Task",
         targetProp: "skill",
         api: {
             endpoint: `${main_view.base_url}/ypg/skills/form-options`,

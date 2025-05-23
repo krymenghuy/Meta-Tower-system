@@ -210,7 +210,7 @@ var BranchManagementComponent = new function(){
     }
 
     this.renderHeaderList = () =>{
-        return [`<div data-roleid="" class="w-100 rounded-3 bg-primary-custom p-3 pb-0 box-shadow text-white mb-3 position-relative">
+        return [`<div data-roleid="" style="background-color:#38373a;" class="w-100 rounded-3  p-3 pb-0 box-shadow text-white mb-3 position-relative">
                 <div class="scope-user d-flex align-items-center row gy-2">
                     <div class="col">
                         <div class="d-block">
@@ -345,7 +345,7 @@ var BranchManagementComponent = new function(){
                                 <span class="text-capitalize">${branch.update_user}</span>
                             </p>
                             <p class="text-nowrap m-0">
-                                <small class="text-warning">${branch.updated_at}</small>
+                                <small class="text-muted">${branch.updated_at}</small>
                             </p>
                         </div>
                     </div>
@@ -376,7 +376,7 @@ var BranchManagementComponent = new function(){
                         <div class="d-flex flex-row width-locked-icon">
                           ${branch.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
                         </div>
-                            <button class="btn_um_action btn btn-sm btn-outline-primary-custom rounded-5 text-nowrap" type="button"   data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
+                            <button class="btn_um_action btn btn-sm btn-outline-secondary rounded-2 text-nowrap" type="button"   data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
                                 <span class=" " vslang="buttons.Action">Action</span>
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>
