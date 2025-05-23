@@ -35,7 +35,7 @@ class StyleProvider
                     'assets/css/vs-pagination.css',
                     'assets/css/sweetalert2.min.css',
                     'assets/plugins/chart.js/Chart.css',
-                    'assets/css/bhr_style.css', /** Must be placed below all.min.css **/
+                    'assets/css/ypg_style.css', /** Must be placed below all.min.css **/
                 ]
                 ],    
         'report-styles' => [
