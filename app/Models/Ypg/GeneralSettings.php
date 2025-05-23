@@ -250,4 +250,8 @@ class GeneralSettings //extends Model
         return DB::table('task_types')->selectRaw('id,title AS task_type_title')->get();
     }
 
+    static function options_deceased($ss){
+        return DB::table('deceased_registrations')->selectRaw('id,name AS deceased_name')->get();
+    }
+
 }

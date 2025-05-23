@@ -36,30 +36,47 @@ var SlotInfoComponent = (function () {
         },
 
         {
-            title: "Location Note",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.location_note ?? ''}</span>`,
-        },
-        {
             title: " Reserved By",
 
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.reversed_id ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.reversed_by ?? 'N/A'}</span>`,
         },
         {
             title: "Used by",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.used_id ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.used_by ?? 'N/A'}</span>`,
+        },
+        {
+            title: "Location Note",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.location_note ?? 'N/A'}</span>`,
         },
 
-        {
+       {
             title: "Status",
             className: "align-middle",
-            data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status_id ?? ''}</span>`;
+            data: (data) => {
+                let status = data.status ?? '';
+                let statusClass = '';
+
+                switch (status) {
+                    case 'Used':
+                        statusClass = 'text-warning';
+                        break;
+                    case 'Available':
+                        statusClass = 'text-success';
+                        break;
+                    case 'Reserved':
+                        statusClass = 'text-info';
+                        break;
+                    default:
+                        statusClass = 'text-primary-custom';
+                }
+
+                return `<span class="${statusClass}">${status}</span>`;
             },
         },
+
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
@@ -100,7 +117,7 @@ var SlotInfoComponent = (function () {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            SlotInfoDialog.show(op); 
+            SlotInfoDialog.show(op);
         };
 
         mThis.tblLeaves = mThis.SlotInfoListView.getTable();
@@ -318,8 +335,7 @@ var SlotInfoComponent = (function () {
 })();
 
 
-const SlotInfoDialog
-    = (() => {
+const SlotInfoDialog = (() => {
         const self = {};
         let dialog = null;
 
@@ -334,57 +350,60 @@ const SlotInfoDialog
                         return [
                             `<div class="row">
                             <div class="form-group col-6">
-                                <label for="slot_number" class="form-label" vslang="titles.Slot_number"></label>
-                                <input id="slot_number" name="slot_number" class="form-control data-input" data-field="slot_number">
+                                <label for="slot_number" class="form-label" vslang="titles.Slot number"></label>
+                                <input name="slot_number" class="form-control data-input" data-field="slot_number">
                             </div>
-                            
                            <div class="form-group col-6">
                                 <label for="zone" class="form-label" vslang="titles.Zone"></label>
-                                <input  name="zone" class="form-control data-input" data-field="zone">
+                                <input name="zone" class="form-control data-input" data-field="zone">
                             </div>
                             <div class="form-group col-6">
                                 <label for="grave_row" class="form-label" vslang="titles.Grave_Row"></label>
                                 <input  name="grave_row" class="form-control data-input" data-field="grave_row">
                             </div>
-                            
+
                              <div class="form-group col-6">
                                 <label for="position" class="form-label" vslang="titles.Position"></label>
-                                <input  name="position" class="form-control data-input" data-field="position">
+                                <input name="position" class="form-control data-input" data-field="position">
                             </div>
                             <div class="form-group col-6">
-                                <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
-                                <input  name="location_note" class="form-control data-input" data-field="location_note">
+                                <label for="reversed_id" class="form-label" vslang="titles.Reversed By"></label>
+                                <select name="reversed_id" class="form-control data-input" data-field="reversed_id"></select>
                             </div>
+
                             <div class="form-group col-6">
-                                <label for="reversed_id" class="form-label" vslang="titles.Reversed_id"></label>
-                                <input  name="reversed_id" class="form-control data-input" data-field="reversed_id">
+                                <label for="used_id" class="form-label" vslang="titles.Used By"></label>
+                                <select  name="used_id" class="form-control data-input" data-field="used_id"></select>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="used_id" class="form-label" vslang="titles.Used_id"></label>
-                                <input  name="used_id" class="form-control data-input" data-field="used_id">
-                            </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-6 d-none" >
                                 <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
                                 <input  name="status_id" class="form-control data-input" data-field="status_id">
                             </div>
-                            
+                            <div class="form-group col-12">
+                                <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
+                                <textarea  name="location_note" class="form-control data-input" data-field="location_note">
+                            </div>
 
-                            
-                           
+
+
                         </div>`
                         ].join("");
                     },
 
                     contentCreated: (me) => {
-                        // DateTimePicker.init(me.controls.expiry_date);
 
-                    
                     },
                     configSelect: [
                         {
-                            name: "member_id",
+                            name: "reversed_id",
                             data: "members",
                             textField: "member_name",
+                            valueField: "id",
+                        },
+                        {
+                            name: "used_id",
+                            data: "deceased_names",
+                            textField: "deceased_name",
                             valueField: "id",
                         },
 
@@ -394,7 +413,7 @@ const SlotInfoDialog
                         modifyTitle: "Edit Slot",
                         targetProp: "grave_slot",
                         api: {
-                            endpoint: [main_view.base_url, "/ypg/slotinfo/form-options",].join(""),
+                            endpoint: [main_view.base_url, "/ypg/grave-slot/form-options",].join(""),
                             params: (op) => {
                                 return { id: op.id };
                             },
@@ -420,9 +439,7 @@ const SlotInfoDialog
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
 
-                                console.log(11, JSON.stringify(op, null, 2));
-
-                                vsapi.call([main_view.base_url, "/ypg/slotinfo/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {

@@ -352,11 +352,11 @@ const MemberDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-4">
                                 <label for="name" class="form-label" vslang="titles.Name"></label>
-                                <input id="name" name="name" class="form-control data-input" data-field="name">
+                                <input name="name" class="form-control data-input" data-field="name">
                             </div>
                             <div class="form-group col-4">
                                 <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                <select id="sex" class="form-control data-input" data-field="sex">
+                                <select class="form-control data-input" data-field="sex">
                                     <option value="">(Select Sex)</option>
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
@@ -365,19 +365,19 @@ const MemberDialog = (() => {
                             </div>
                             <div class="form-group col-4">
                                 <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                <select id="nationality_id" name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
+                                <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
                             </div>
                             <div class="form-group col-4">
                                 <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <input id="email" name="email" class="form-control data-input" data-field="email">
+                                <input name="email" class="form-control data-input" data-field="email">
                             </div>
                             <div class="form-group col-4">
                                 <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input id="phone_number" type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
+                                <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
                             </div>
                             <div class="form-group col-4">
                                 <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
-                                <select id="is_expiry" name="is_expiry" class="form-control data-input" data-field="is_expiry">
+                                <select name="is_expiry" class="form-control data-input" data-field="is_expiry">
                                     <option value="">(Select)</option>
                                     <option value="0">Forever</option>
                                     <option value="1">Expiry</option>
@@ -385,11 +385,15 @@ const MemberDialog = (() => {
                             </div>
                             <div class="form-group col-6 expiry-wrapper" style="display: none;">
                                 <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-                                <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
+                                <input name="expiry_date" class="form-control data-input" data-field="expiry_date">
+                            </div>
+                            <div class="form-group col-6 d-none" >
+                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                <input  name="status_id" class="form-control data-input" data-field="status_id">
                             </div>
                             <div class="form-group col-12">
                                 <label for="address" class="form-label" vslang="titles.Address"></label>
-                                <textarea id="address" class="form-control data-input" data-field="address"></textarea>
+                                <textarea  class="form-control data-input" data-field="address"></textarea>
                             </div>
                         </div>`
                     ].join("");
@@ -446,8 +450,6 @@ const MemberDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-
-                            console.log(11, JSON.stringify(op, null, 2));
 
                             vsapi.call([main_view.base_url,"/ypg/member/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {
