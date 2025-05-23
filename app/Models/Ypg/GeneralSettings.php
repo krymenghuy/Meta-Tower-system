@@ -17,7 +17,7 @@ class GeneralSettings //extends Model
     $time_chars = [':','-'],
     $address_chars = ['.','#'],
     $image_chars = ['+',':',',',';','=','/','\\','?'],
-    $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+    $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%','-','.','_','#'];
 
     public static $upload_dirs =[
         "package"=>"package", //Package's photos directory
@@ -238,6 +238,10 @@ class GeneralSettings //extends Model
 
     static function options_member_status($ss){
         return DB::table('member_statuses')->selectRaw('id,name AS member_status')->get();
+    }
+
+    static function options_slot_status($ss){
+        return DB::table('slot_statuses')->selectRaw('id,name AS slot_status')->get();
     }
 
     static function options_member($ss){
