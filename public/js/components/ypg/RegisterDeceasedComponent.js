@@ -17,7 +17,7 @@ var RegisterDeceasedComponent = (function () {
         {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.member_id ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
         },
         {
             title: "Member Name",
@@ -25,11 +25,6 @@ var RegisterDeceasedComponent = (function () {
             data: (data) => `<span class="text-primary-custom">${data.member_name ?? ''}</span>`,
         },
 
-        {
-            title: "ID",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.id ?? 'null'}</span>`,
-        },
         {
             title: "Name",
             className: "align-middle text-capitalize",
@@ -65,16 +60,7 @@ var RegisterDeceasedComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.burial_date ?? ''}</span>`,
         },
-       
 
-        {
-            title: "Status",
-            className: "align-middle",
-            data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
-            },
-        },
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
@@ -171,13 +157,7 @@ var RegisterDeceasedComponent = (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -199,10 +179,7 @@ var RegisterDeceasedComponent = (function () {
              onClick:(menuLink, id, name)=>{
                 switch(name){
 
-                    case 'change_status':{
-                        mThis.changeStatus(id,menuLink);
-                        break;
-                    }
+
                     case 'edit_register_deceased':{
                       mThis.editRegister(id, menuLink);
                       break;
@@ -221,54 +198,6 @@ var RegisterDeceasedComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk) => {
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
-        let tr = lnk.closest('tr');
-
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-
-        let inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Register status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [{
-                status_id: "1",
-                name: "Available"
-            },
-            {
-                status_id: "2",
-                name: "Reserved"
-            }],
-            defaultValue: status_id
-        };
-
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value
-                };
-                if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/deceased-registration/save`, p).then(res => {
-                    if (res.status_code === 200) {
-                        // mThis.elFilter_leave_request_status.value = d.value;
-                        InputBox2.close();
-                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
-                        cv_interact.success('The leave request status has been updated');
-                        // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
-    }
 
     mThis.editRegister = (id, menuLink) => {
 
@@ -277,7 +206,7 @@ var RegisterDeceasedComponent = (function () {
             btn: menuLink,
             onClose: () => {
                 mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
-            }            
+            }
         };
 
         if (!AuthManager.allowed(241)) return;
@@ -349,11 +278,11 @@ const RegisterDeceasedDialog
                     createContent: () => {
                         return [
                             `<div class="row">
-                            <div class="form-group col-6">
+                            <div class="form-group col-12">
                                 <label for="member_id" class="form-label" vslang="titles.Member"></label>
                                 <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
                             </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-4">
                                 <label for="relation" class="form-label" vslang="titles.Relation"></label>
                                 <input  name="relation" class="form-control data-input" data-field="relation">
                             </div>
@@ -370,7 +299,7 @@ const RegisterDeceasedDialog
                                     <option value="other">Other</option>
                                 </select>
                             </div>
-                             
+
 
                             <div class="form-group col-4">
                                 <label for="date_of_birth" class="form-label" vslang="titles.Date of birth"></label>
@@ -384,10 +313,10 @@ const RegisterDeceasedDialog
                                 <label for="burial_date" class="form-label" vslang="titles.Burial date"></label>
                                 <input  name="burial_date" class="form-control data-input" data-field="burial_date">
                             </div>
-                            
-                           
-                        
-                           
+
+
+
+
                         </div>`
                         ].join("");
                     },
@@ -397,7 +326,7 @@ const RegisterDeceasedDialog
                          DateTimePicker.init(me.controls.date_of_death);
                           DateTimePicker.init(me.controls.date_of_birth);
 
-                        
+
 
 
                     },
@@ -440,8 +369,6 @@ const RegisterDeceasedDialog
                             click: (me, btn) => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
-
-                                console.log(11, JSON.stringify(op, null, 2));
 
                                 vsapi.call([main_view.base_url, "/ypg/deceased-registration/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {

@@ -14,7 +14,7 @@ var TaskAssignComponent = (function () {
 
     mThis.cols = [
 
-        
+
         {
             title: "Member Name",
             className: "align-middle text-capitalize",
@@ -26,7 +26,7 @@ var TaskAssignComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.task_type_title ?? ''}</span>`,
         },
-        
+
        {
             title: "Assigned Date",
             className: "align-middle text-capitalize",
@@ -92,7 +92,7 @@ var TaskAssignComponent = (function () {
         mThis.tblLeaves = mThis.TaskAssignListView.getTable();
 
         mThis.initDropdownMenus(mThis.tblLeaves);
-       
+
 
         mThis.pl_container = mThis.TaskAssignListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
@@ -327,12 +327,12 @@ const TaskAssignDialog = (() => {
                                 <label for="task_type_id" class="form-label" vslang="titles.Task Type"></label>
                                 <select  name="task_type_id" class="form-control data-input" data-field="task_type_id"></select>
                             </div>
-                        
+
                             <div class="form-group col-6 expiry-wrapper">
                                 <label for="assign_date" class="form-label" vslang="titles.Assign Date"></label>
                                 <input  name="assign_date" class="form-control data-input" data-field="assign_date">
                             </div>
-                            
+
                         </div>`
                     ].join("");
                 },
@@ -388,8 +388,6 @@ const TaskAssignDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-
-                            console.log(11, JSON.stringify(op, null, 2));
 
                             vsapi.call([main_view.base_url,"/ypg/task-assign/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {

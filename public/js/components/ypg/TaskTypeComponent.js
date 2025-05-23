@@ -20,38 +20,10 @@ var TaskTypeComponent = (function () {
         },
         {
             title: "Description",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-capitalize w-50",
             data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`,
         },
-        // {
-        //     title: "Sex",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => {
-        //         const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-        //         return `<span class="text-primary-custom">${sexLabel}</span>`;
-        //     }
-        // },
 
-        // {
-        //     title: "Phone Number",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
-        // },
-        // {
-        //     title: "Email",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
-        // },
-        // {
-        //     title: "Address",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
-        // },
-        // {
-        //     title: "Nationality",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
-        // },
          {
             title: "Updated by",
             className: "align-middle text-capitalize",
@@ -62,16 +34,6 @@ var TaskTypeComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.update_date ?? ''}</span>`,
         },
-    //    {
-    //         title: "Expiry Date",
-    //         className: "align-middle text-capitalize",
-    //         data: (data) => {
-    //             return `<span class="text-primary-custom">${
-    //                 data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
-    //             }</span>`;
-    //         },
-    //     },
-
 
         {
             title: "Status",
@@ -127,7 +89,7 @@ var TaskTypeComponent = (function () {
         mThis.tblLeaves = mThis.TaskTypeListView.getTable();
 
         mThis.initDropdownMenus(mThis.tblLeaves);
-       
+
 
         mThis.pl_container = mThis.TaskTypeListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
@@ -357,10 +319,13 @@ const TaskTpyeDialog = (() => {
                                 <label for="title" class="form-label" vslang="titles.Title"></label>
                                 <input name="title" class="form-control data-input" data-field="title">
                             </div>
-                           
+                            <div class="form-group col-12 d-none" >
+                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                <input  name="status_id" class="form-control data-input" data-field="status_id">
+                            </div>
                             <div class="form-group col-12">
-                                <label for="desciption" class="form-label" vslang="titles.Desciption"></label>
-                                <textarea name="desciption" class="form-control data-input" data-field="desciption"></textarea>
+                                <label for="description" class="form-label" vslang="titles.Description"></label>
+                                <textarea name="description" class="form-control data-input" data-field="description"></textarea>
                             </div>
                         </div>`
                     ].join("");
@@ -373,7 +338,7 @@ const TaskTpyeDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Task Type",
                     modifyTitle: "Edit Task Type",
-                    targetProp: "task_type_details",
+                    targetProp: "task_type",
                     api: {
                         endpoint: [ main_view.base_url,"/ypg/task-type/form-options",].join(""),
                         params: (op) => {
@@ -400,8 +365,6 @@ const TaskTpyeDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-
-                            console.log(11, JSON.stringify(op, null, 2));
 
                             vsapi.call([main_view.base_url,"/ypg/task-type/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {

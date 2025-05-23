@@ -92,7 +92,7 @@ class GraveSlot
             ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
             ->orderBy('gs.id', 'DESC');
 
 
@@ -119,7 +119,7 @@ class GraveSlot
         $query = DB::table('grave_slots as gs')
             ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
             ->where('gs.id', $id)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
             ->first();
 
         if($query){
@@ -139,6 +139,7 @@ class GraveSlot
             'grave_slot' => $grave_slot,
             'statuses' => GeneralSettings::options_slot_status($ss),
             'members' => GeneralSettings::options_member($ss),
+            'deceased_names' => GeneralSettings::options_deceased($ss),
         ];
     }
 

@@ -88,7 +88,7 @@ class DeceasedRegistration
         $query = DB::table('deceased_registrations as dr')
             ->join('members as m', 'm.id', '=', 'dr.member_id')
             ->whereRaw($str_search)
-            ->selectRaw('dr.id, dr.name, dr.sex,dr.relation,'. $date_of_birth . ',' . $date_of_death . ',' . $burial_date . ', dr.member_id, m.name as member_name')
+            ->selectRaw('dr.id, dr.name, dr.sex,dr.relation,'. $date_of_birth . ',' . $date_of_death . ',' . $burial_date . ', dr.member_id,m.code, m.name as member_name')
             ->orderBy('dr.id', 'desc');
 
         $clone_query = clone $query;

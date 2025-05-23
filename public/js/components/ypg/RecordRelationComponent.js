@@ -24,7 +24,7 @@ var RecordRelationComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
         },
-        
+
         {
             title: "Address ",
             className: "align-middle text-capitalize",
@@ -420,8 +420,6 @@ const RecordRelationdialog
                             click: (me, btn) => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
-
-                                console.log(11, JSON.stringify(op, null, 2));
 
                                 vsapi.call([main_view.base_url, "/ypg/slotinfo/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
