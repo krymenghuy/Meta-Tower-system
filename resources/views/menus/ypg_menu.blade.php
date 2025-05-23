@@ -196,10 +196,11 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.Task Management ">Task Management 
                         </span>
-                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
+                     
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                             <a href="TaskTypeComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -234,7 +235,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.Grave Slot Management ">Grave Slot Management 
                         </span>
-                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
@@ -272,7 +273,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus. Registration ">Grave & Deceased Registration 
                         </span>
-                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
@@ -522,7 +523,7 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.General Settings">General
                         Settings</span>
-                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
@@ -576,7 +577,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color" vslang="menus.System Managements">
                         System Managements
                     </span>
-                    <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
+                    <i class="kt-menu__ver-arrow la la-angle-right "></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
