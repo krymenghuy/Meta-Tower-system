@@ -8,9 +8,9 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end w-50">
-                <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btnAddSkill">
-                    <i class="fa fa-bullhorn mr-2"></i>
-                    <span>Add Skill</span>
+                <button type="button" class="btn_add" style="background-color:#38373a;" id="_btnAddSkill">
+                    <i class="fa fa-plus mr-2"></i>
+                    <span>Create Task</span>
                 </button>
             </div>
         </div>
