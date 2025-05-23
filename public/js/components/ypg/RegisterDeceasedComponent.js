@@ -15,17 +15,28 @@ var RegisterDeceasedComponent = (function () {
     mThis.cols = [
 
         {
-            title: "Register Deceased",
+            title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.member_id ?? 'null'}</span>`,
         },
         {
-            title: "Section / Zone",
+            title: "Member Name",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.member_name ?? ''}</span>`,
+        },
+
+        {
+            title: "ID",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.id ?? 'null'}</span>`,
+        },
+        {
+            title: "Name",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
         },
         {
-            title: "Row and Position",
+            title: "Gender",
             className: "align-middle text-capitalize",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
@@ -34,21 +45,27 @@ var RegisterDeceasedComponent = (function () {
         },
 
         {
-            title: "Location Note",
+            title: "Ralation",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.relation ?? ''}</span>`,
         },
         {
-            title: " Reserved By",
+            title: " Date of Birth",
 
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.date_of_birth ?? ''}</span>`,
         },
         {
-            title: "Used by",
+            title: "Date of Death",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.date_of_death ?? ''}</span>`,
         },
+         {
+            title: "Burial Date",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.burial_date ?? ''}</span>`,
+        },
+       
 
         {
             title: "Status",
@@ -79,7 +96,7 @@ var RegisterDeceasedComponent = (function () {
         if (mThis.initAlready) return;
 
         mThis.RegisterDeceasedListView = new ListView('_register_deceased_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+            fetchApi: `${main_view.base_url}/ypg/deceased-registration/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -98,7 +115,7 @@ var RegisterDeceasedComponent = (function () {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            // MemberDialog.show(op);
+            RegisterDeceasedDialog.show(op);
         };
 
         mThis.tblLeaves = mThis.RegisterDeceasedListView.getTable();
@@ -165,13 +182,13 @@ var RegisterDeceasedComponent = (function () {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_member"
+                    name: "edit_register_deceased"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_member"
+                    name: "delete_register_deceased"
                 },
             ],
             adjustPosition: {
@@ -179,24 +196,24 @@ var RegisterDeceasedComponent = (function () {
                 left: -300
             },
 
-            onClick: (menuLink, id, name) => {
-                switch (name) {
+             onClick:(menuLink, id, name)=>{
+                switch(name){
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                    case 'change_status':{
+                        mThis.changeStatus(id,menuLink);
                         break;
                     }
-                    case 'edit_member': {
-                        mThis.editMember(id, menuLink);
-                        break;
+                    case 'edit_register_deceased':{
+                      mThis.editRegister(id, menuLink);
+                      break;
                     }
-                    case 'delete_member': {
-                        mThis.deleteMember(id, menuLink);
+                    case 'delete_register_deceased':{
+                        mThis.deleteRegister(id, menuLink);
                         break;
-                    }
+                      }
 
-                    default: {
-                        break;
+                    default:{
+                      break;
                     }
                 }
             }
@@ -214,7 +231,7 @@ var RegisterDeceasedComponent = (function () {
 
         let inputOptions = {
             title: 'Change Status',
-            dataLabel: "Member status",
+            dataLabel: "Register status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
@@ -237,7 +254,7 @@ var RegisterDeceasedComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
+                vsapi.call(`${mThis.base_url}/ypg/deceased-registration/save`, p).then(res => {
                     if (res.status_code === 200) {
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -253,21 +270,21 @@ var RegisterDeceasedComponent = (function () {
         });
     }
 
-    mThis.editMember = (id, menuLink) => {
+    mThis.editRegister = (id, menuLink) => {
 
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
-            }
+            }            
         };
+
         if (!AuthManager.allowed(241)) return;
-        RegisterDeceasedDialog
-            .show(op);
+        RegisterDeceasedDialog.show(op);
     }
 
-    mThis.deleteMember = (id, menuLink) => {
+    mThis.deleteRegister = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -276,13 +293,13 @@ var RegisterDeceasedComponent = (function () {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?', {
-            title: 'Delete Member',
+        cv_interact.confirm('Delete this record?', {
+            title: 'Delete record',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/deceased-registration/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.RegisterDeceasedListView.showPage();
@@ -297,10 +314,10 @@ var RegisterDeceasedComponent = (function () {
 
     mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'register_status', true, 'All Statuses', null);
             })
     }
 
@@ -332,6 +349,14 @@ const RegisterDeceasedDialog
                     createContent: () => {
                         return [
                             `<div class="row">
+                            <div class="form-group col-6">
+                                <label for="member_id" class="form-label" vslang="titles.Member"></label>
+                                <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="relation" class="form-label" vslang="titles.Relation"></label>
+                                <input  name="relation" class="form-control data-input" data-field="relation">
+                            </div>
                             <div class="form-group col-4">
                                 <label for="name" class="form-label" vslang="titles.Name"></label>
                                 <input id="name" name="name" class="form-control data-input" data-field="name">
@@ -345,65 +370,52 @@ const RegisterDeceasedDialog
                                     <option value="other">Other</option>
                                 </select>
                             </div>
+                             
+
                             <div class="form-group col-4">
-                                <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                <select id="nationality_id" name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
+                                <label for="date_of_birth" class="form-label" vslang="titles.Date of birth"></label>
+                                <input  name="date_of_birth" class="form-control data-input" data-field="date_of_birth">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <input id="email" name="email" class="form-control data-input" data-field="email">
+                             <div class="form-group col-4">
+                                <label for="date_of_death" class="form-label" vslang="titles.Date of death"></label>
+                                <input  name="date_of_death" class="form-control data-input" data-field="date_of_death">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input id="phone_number" type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
+                             <div class="form-group col-4">
+                                <label for="burial_date" class="form-label" vslang="titles.Burial date"></label>
+                                <input  name="burial_date" class="form-control data-input" data-field="burial_date">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
-                                <select id="is_expiry" name="is_expiry" class="form-control data-input" data-field="is_expiry">
-                                    <option value="">(Select)</option>
-                                    <option value="0">Forever</option>
-                                    <option value="1">Expiry</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-                                <input id="expiry_date" name="expiry_date" class="form-control data-input" data-field="expiry_date">
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="address" class="form-label" vslang="titles.Address"></label>
-                                <textarea id="address" class="form-control data-input" data-field="address"></textarea>
-                            </div>
+                            
+                           
+                        
+                           
                         </div>`
                         ].join("");
                     },
 
                     contentCreated: (me) => {
-                        DateTimePicker.init(me.controls.expiry_date);
+                        DateTimePicker.init(me.controls.burial_date);
+                         DateTimePicker.init(me.controls.date_of_death);
+                          DateTimePicker.init(me.controls.date_of_birth);
 
-                        me.controls.is_expiry.onchange = (e) => {
-                            const expiryWrapper = me.controls.expiry_date.closest('.expiry-wrapper');
-                            if (expiryWrapper) {
-                                expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
-                            }
-                        };
+                        
 
 
                     },
                     configSelect: [
                         {
-                            name: "nationality_id",
-                            data: "countries",
-                            textField: "country",
+                            name: "member_id",
+                            data: "members",
+                            textField: "member_name",
                             valueField: "id",
                         },
 
                     ],
                     prepareFormOptions: {
-                        createTitle: "Add Slot",
-                        modifyTitle: "Edit Slot",
-                        targetProp: "slot_details",
+                        createTitle: "Register",
+                        modifyTitle: "Edit register",
+                        targetProp: "deceased_registration",
                         api: {
-                            endpoint: [main_view.base_url, "/ypg/slotinfo/form-options",].join(""),
+                            endpoint: [main_view.base_url, "/ypg/deceased-registration/form-options",].join(""),
                             params: (op) => {
                                 return { id: op.id };
                             },
@@ -431,16 +443,16 @@ const RegisterDeceasedDialog
 
                                 console.log(11, JSON.stringify(op, null, 2));
 
-                                vsapi.call([main_view.base_url, "/ypg/slotinfo/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call([main_view.base_url, "/ypg/deceased-registration/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Slot has been updated successfully"
+                                                "Register has been updated successfully"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New slot has been added successfully"
+                                                "New register has been added successfully"
                                             );
                                         }
                                     } else {
