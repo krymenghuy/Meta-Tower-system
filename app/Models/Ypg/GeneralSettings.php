@@ -223,11 +223,9 @@ class GeneralSettings //extends Model
 
   static function select_options($arr,$ss){
     $res = [
-        'branches' => self::options_branch($ss),
-        'leave_types' => self::options_leave_type($ss),
-        'emp_types' => self::options_emp_type(null,$ss),
-        'payrolls' => self::options_payroll($ss),
-        'employees' => self::options_employees($ss),
+        'statuses' => self::options_member_status($ss),
+        'members' => self::options_member($ss),
+
     ];
     return $res;
     }

@@ -105,6 +105,7 @@ class ScriptProvider
                 '/js/components/ypg/SkillsComponent.js',
                 '/js/components/ypg/EmployeeComponent.js',
                 '/js/components/ypg/DepartmentComponent.js',
+                '/js/components/ypg/RenderTableReportComponent.js',
                 '/js/components/ypg/ReportCenterComponent.js',
                 'js/components/ypg/WarningComponent.js',
                 'js/components/common/LocationComponent.js',

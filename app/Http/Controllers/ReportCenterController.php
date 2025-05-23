@@ -7,7 +7,7 @@ use JDV;
 use XUser;
 use XAuthservice;
 use DB;
-  
+
 class ReportCenterController extends Controller
 {
     function getReportList(Request $req){
@@ -34,12 +34,12 @@ class ReportCenterController extends Controller
                         $reports[] = $row;
                     }
                 }else $reports[] = $row;
-               
+
             } else $reports[] = $row;
         }
         return JDV::json($reports);
-   }      
- 
+   }
+
    static function appExists($bin_app_id){
      return DB::table('um_applications')->where('id',$bin_app_id)->value('name');
    }
@@ -51,7 +51,7 @@ class ReportCenterController extends Controller
     $bin_app_id = $app_id ? hex2bin($app_id):null;
     if(!$bin_app_id) return [];
     if(!self::appExists($bin_app_id)) return [];
-    
+
     $user_id = $ss->user_id;
     $is_master_account = $ss->is_master_account ?? 0;
 
@@ -78,15 +78,15 @@ class ReportCenterController extends Controller
     }
     $organized_reports = [];
     foreach($allowed_reports as $row){
-       $cat_name = $row->category; 
+       $cat_name = $row->category;
        if (!isset( $organized_reports[$cat_name])){
          $organized_reports[$cat_name] = [];
-         $organized_reports[$cat_name]['category'] = $cat_name; 
+         $organized_reports[$cat_name]['category'] = $cat_name;
          $organized_reports[$cat_name]['list'] = [];
        }
-       $organized_reports[$cat_name]['list'][] = $row; 
+       $organized_reports[$cat_name]['list'][] = $row;
     }
     return JDV::result( $organized_reports);
  }
- 
+
 }

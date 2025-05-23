@@ -1002,71 +1002,85 @@ function jsonToTable(div, d) {
         body = null,
         tr = null;
     const thead = d.header ?? [],
-        tbody = d.list.data ?? [],
+        tbody = d.data ?? [],
         company_info = d.company_profile ?? d.company_info ?? {};
 
     const html = [
         `<div class="d-block position-relative min-height-top">
-        <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
-            <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
-            <p class="text-center w-100 fs-5-1 get-subtitle  fs-5">${
-                d.sub_title ?? ""
-            }</p>
+            <div class="d-flex flex-column gap-2 justify-content-center align-items-center set-min-size-container-title">
+                <h4 class="text-center text-uppercase">${d.title ?? ""}</h4>
+                <p class="text-center w-100 fs-5-1 get-subtitle fs-5">${d.sub_title ?? ""}</p>
+            </div>
         </div>
-    </div>
-    <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
-        <table class="table table-bordered table_reports">
-            <thead>
-                <tr>
+        <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
+            <table class="table table-bordered table_reports">
+                <thead>
+                    <tr>
+                        ${
+                            ((header = null),
+                            thead.map((t) => {
+                                header = [
+                                    header,
+                                    `<th style="background-color:#fff3cd;text-transform:capitalize" class="bg-warning-subtle text-nowrap text-capitalize count-th">
+                                        ${t.name.toLowerCase() === "starting date" ? "Admission Date" :
+                                          t.name === "Tuition Fee" ? "School Fee" :
+                                          t.name ?? ""}
+                                    </th>`,
+                                ].join("");
+                            }),
+                            header ?? "")
+                        }
+                    </tr>
+                </thead>
+                <tbody>
                     ${
-                        ((header = null),
-                        thead.map((t) => {
-                            header = [
-                                header,
-                                `<th style="background-color:#fff3cd;text-transform:capitalize" class="bg-warning-subtle text-nowrap text-capitalize count-th">${
-                                    t.name.toLowerCase() === "starting date"
-                                        ? "Admission Date"
-                                        : t.name === "Tuition Fee"
-                                        ? "School Fee"
-                                        : t.name ?? ""
-                                }</th>`,
+                        ((body = null),
+                        tbody.map((row) => {
+                            body = [
+                                body,
+                                `<tr class="text-nowrap">${
+                                    ((tr = null),
+                                    thead.map((col) => {
+                                        let value = row[col.key] ?? "";
+                                        let cellClass = "text-capitalize";
+
+                                        if (col.key.toLowerCase() === "status") {
+                                            const statusVal = String(value).toLowerCase();
+                                            if (statusVal === "active") {
+                                                cellClass += " text-success";
+                                            } else if (statusVal === "inactive") {
+                                                cellClass += " text-danger";
+                                            }
+                                        }
+                                         if (col.key.toLowerCase() === "expiry_status") {
+                                            const statusVal = String(value).toLowerCase();
+                                            if (statusVal === "expired") {
+                                                cellClass += " text-warning";
+                                            }
+
+                                        }
+
+                                        tr = [
+                                            tr,
+                                            `<td class="${cellClass}">${value}</td>`,
+                                        ].join("");
+                                    }),
+                                    tr ?? "")
+                                }</tr>`,
                             ].join("");
                         }),
-                        header ?? "")
+                        body ?? "")
                     }
-                </tr>
-            </thead>
-            <tbody>
-                ${
-                    ((body = null),
-                    tbody.map((d) => {
-                        body = [
-                            body,
-                            `<tr class="text-nowrap">${
-                                ((tr = null),
-                                thead.map((k) => {
-                                    tr = [
-                                        tr,
-                                        `<td class="text-capitalize">${
-                                            d[k.key] ?? ""
-                                        }</td>`,
-                                    ].join("");
-                                }),
-                                tr ?? "")
-                            }</tr>`,
-                        ].join("");
-                    }),
-                    body ?? "")
-                }
-            </tbody>
-        </table>
-    </div>`,
+                </tbody>
+            </table>
+        </div>`,
     ].join("");
 
     div.html(html);
     togglePanelTable(div);
     HtmlString = html;
 }
+
 
 function referralFeeTable(div, d) {
     d = d ?? {};

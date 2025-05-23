@@ -156,7 +156,6 @@ var MemberComponent = (function () {
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
-            // leave_type_id: mThis.elFilter_leaveType.value,
             search_value: mThis.elSearch.value,
         };
 
