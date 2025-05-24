@@ -15,7 +15,7 @@ var MemberComponent = (function () {
     mThis.cols = [
 
         {
-            title: "ID",
+            title: "Member ID",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.code ?? 'N/A'}</span>`,
         },
@@ -39,7 +39,7 @@ var MemberComponent = (function () {
             data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
         },
         {
-            title: "Email",
+            title: "Nationality",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
         },
@@ -62,15 +62,32 @@ var MemberComponent = (function () {
                 }</span>`;
             },
         },
-
-
-        {
+       {
             title: "Status",
             className: "align-middle",
-            data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+            data: (data) => {
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'text-info';
+
+                if (status === 'inactive') {
+                    cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+                } else if (status === 'active') {
+                    cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+                }
+
+                return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
             },
+        },
+
+        {
+            title: "Updated By",
+            className: 'align-middle',
+            data: (data, index, tr)=>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize fw-semibold">${data.update_user ?? ''}</span>
+                    <small class="text-left text-muted">${data.updated_at ?? ''}</small>
+                </div>`;
+            }
         },
         {
             className: 'col_action align-middle',

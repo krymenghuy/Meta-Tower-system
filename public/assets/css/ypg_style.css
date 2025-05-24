@@ -44,7 +44,7 @@
     object-fit:cover"
 }
 .text-primary-custom {
-    color: #13183c;
+    color: #2b3991;
 }
 .bg-primary-custom {
     background-color: #2b3991;
@@ -1795,7 +1795,7 @@ ul.list-filter-um li:not(li:last-child) {
 
 .table--white {
     background: #ffffff !important;
-    color: #13183c !important;
+    color: #000000 !important;
     font-size: 14px !important;
     font-weight: 300 !important;
     /* text-align: left !important; */
