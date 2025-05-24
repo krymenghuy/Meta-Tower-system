@@ -15,63 +15,91 @@ var MemberComponent = (function () {
     mThis.cols = [
 
         {
-            title: "ID",
+            title: "Member ID",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
         },
         {
             title: "Name",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
-        },
-        {
-            title: "Sex",
-            className: "align-middle text-capitalize",
-            data: (data) => {
+            className: "align-middle",
+            data: (data) =>{
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
+                return `<span class=" d-block text-capitalize">${data.name ?? ''}</span>
+                        <small class="text-muted">${sexLabel}</small>`;
+            } 
         },
-
-        {
-            title: "Phone Number",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+         {
+            title: "Contact Info",
+            className: "align-middle",
+             data: (data, index, tr) => {
+                
+                return `<p class="text-capitalize pb-0 mb-1 d-block text-nowrap">${data.phone_number}</p>
+                        <p class="text-primary pb-0 mb-1 d-block text-nowrap">${data.email}</p>`;
+            },
+           
         },
         {
-            title: "Email",
+            title: "Date of birth",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
-        },
-        {
-            title: "Address",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
         },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
         },
-       {
+       
+       
+        {
+            title: "Address",
+            className: "align-middle text-capitalize",
+            data: (data, index, tr) => {
+                return `<div class="text-break" style="min-width:100px;">${data.address ?? 'N/A'}</div>`;
+            }
+        },
+       
+      {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
-                return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
-                }</span>`;
+                if (data.is_expiry == 0) {
+                    return `<span class="text-success">Never Expire</span>`;
+                } else {
+                    const date = data.expiry_date ?? '';
+                    return `<span class="text-warning">${date}</span>`;
+                }
             },
         },
-
-
-        {
+       {
             title: "Status",
             className: "align-middle",
-            data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+            data: (data) => {
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'text-info';
+
+                if (status === 'inactive') {
+                    cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+                } else if (status === 'active') {
+                    cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+                }
+
+                return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
             },
         },
+
+        {
+            title: "Updated By",
+            className: 'align-middle',
+            data: (data, index, tr)=>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize fw-semibold">${data.update_user ?? ''}</span>
+                    <small class="text-left text-muted">${data.updated_at ?? ''}</small>
+                </div>`;
+            }
+        },
+
+    
+
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {
