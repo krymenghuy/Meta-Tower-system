@@ -17,12 +17,12 @@ var MemberComponent = (function () {
         {
             title: "ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.name ?? 'N/A'}</span>`,
         },
         {
             title: "Sex",
@@ -36,29 +36,29 @@ var MemberComponent = (function () {
         {
             title: "Phone Number",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
         },
         {
             title: "Email",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
         },
         {
             title: "Address",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.address ?? 'N/A'}</span>`,
         },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.nationality ?? 'N/A'}</span>`,
         },
        {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
                 return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? '')
+                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? 'N/A')
                 }</span>`;
             },
         },

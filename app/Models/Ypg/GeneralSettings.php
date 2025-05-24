@@ -225,6 +225,8 @@ class GeneralSettings //extends Model
     $res = [
         'statuses' => self::options_member_status($ss),
         'members' => self::options_member($ss),
+        'task_statuses' => self::options_status($ss),
+        'task_types' => self::options_task_type($ss),
 
     ];
     return $res;
@@ -243,7 +245,19 @@ class GeneralSettings //extends Model
     }
 
     static function options_member($ss){
-        return DB::table('members')->selectRaw('id,name AS member_name')->get();
+        $row = DB::table('members')->selectRaw('id,name AS member_name')->get();
+         $new_row = [];
+        $new_row[] = (object) [
+            'member_name' => 'Select Member',
+            'id' => '',
+        ];
+        foreach ($row as $r) {
+            $new_row[] = (object) [
+                'member_name' => $r->member_name,
+                'id' => $r->id
+            ];
+        }
+        return $new_row;
     }
 
     static function options_task_type($ss){
@@ -251,7 +265,19 @@ class GeneralSettings //extends Model
     }
 
     static function options_deceased($ss){
-        return DB::table('deceased_registrations')->selectRaw('id,name AS deceased_name')->get();
+        $row = DB::table('deceased_registrations')->selectRaw('id,name AS deceased_name')->get();
+         $new_row = [];
+        $new_row[] = (object) [
+            'deceased_name' => 'Select Deceased',
+            'id' => '',
+        ];
+        foreach ($row as $r) {
+            $new_row[] = (object) [
+                'deceased_name' => $r->deceased_name,
+                'id' => $r->id
+            ];
+        }
+        return $new_row;
     }
 
 }

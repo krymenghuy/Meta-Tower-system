@@ -119,7 +119,7 @@ class TaskAssign
         $query = DB::table('task_assigns as ta')
             ->join('members as m', 'm.id', '=', 'ta.member_id')
             ->join('task_types as ty', 'ty.id', '=', 'ta.task_type_id')
-            ->join('member_statuses as ms', 'ms.id', '=', 'ta.status_id')
+            ->join('statuses as s', 's.id', '=', 'ta.status_id')
             ->where('ta.id', $id)
             ->selectRaw('
                 ta.id,
@@ -129,7 +129,7 @@ class TaskAssign
                 ' . $assign_date . ',
                 m.name as member_name,
                 ty.title as task_type_title,
-                ms.name as status
+                s.name as status
             ')
             ->first();
 
