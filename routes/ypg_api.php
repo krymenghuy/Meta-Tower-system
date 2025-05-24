@@ -56,6 +56,9 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('member/list-by-status', [ReportController::class, 'getMemberListByStatus']);
     Route::post('/expired-members', [ReportController::class, 'getExpiredMembers']);
     Route::post('/task-assign', [ReportController::class, 'getTaskAssign']);
+    Route::post('/grave-ownership' , [ReportController::class, 'getGraveOwnership']);
+    Route::post('/unused-grave-slot', [ReportController::class, 'getUnusedGraveSlot']);
+    Route::post('/deceased-registration', [ReportController::class, 'getDeceasedRegistration']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {

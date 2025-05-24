@@ -32,6 +32,26 @@ var ReportCenterComponent = new (function () {
             required: false,
             dot_object: "statuses",
         },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            api_params: {},
+            name: "task_status_id",
+            value_field: "id",
+            text_field: "status",
+            required: false,
+            dot_object: "task_statuses",
+        },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            api_params: {},
+            name: "task_id",
+            value_field: "id",
+            text_field: "task_type_title",
+            required: false,
+            dot_object: "task_types",
+        },
 
         {
             type: "select",
@@ -66,18 +86,10 @@ var ReportCenterComponent = new (function () {
 
     this.displayMainOptions = (onFinish = null) => {
         const op = { app_id: main_view.app_id };
-        vsapi
-            .call(
-                `${main_view.base_url}/api/report-center/report-list`,
-                op,
-                false,
-                null,
-                main_view.apiCluster
-            )
-            .then((res) => {
-                const data = res.data || [];
-                mThis.renderPanelBox(data);
-            });
+        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,op,false,null,main_view.apiCluster).then((res) => {
+            const data = res.data || [];
+            mThis.renderPanelBox(data);
+        });
         if (typeof onFinish === "function") onFinish();
     };
 
@@ -273,6 +285,11 @@ var ReportCenterComponent = new (function () {
     this.getFormGroupLabelText = (key) => {
         let label = {
            status_id: "Status",
+           task_status_id: "Status",
+           task_id: "Task Type",
+           member_id: "Member",
+           start_date: "Start Date",
+           end_date: "End Date",
         };
         return label[key] ?? key;
     };
@@ -516,6 +533,7 @@ var ReportCenterComponent = new (function () {
                 p[f] = el.val();
                 p.code = code;
             });
+            // console.log(11,p);
 
             if (p.required && !p.required.value && p.required.text)
                 cv_interact.warning(p.required.text);
@@ -531,7 +549,7 @@ var ReportCenterComponent = new (function () {
                     e.target.dataset.field == "start_date" ||
                     e.target.dataset.field == "end_date"
                 )
-                    if (op.start_date == "" || op.end_date == "") return;
+                    // if (op.start_date == "" || op.end_date == "") return;
                 if (btn) btn.click();
                 else if (btn) btn.click();
             };
@@ -578,6 +596,16 @@ var ReportCenterComponent = new (function () {
             case "task_assign":
                 end_point = "ypg/reports/task-assign";
                 break;
+            case "grave_ownership":
+                end_point = "ypg/reports/grave-ownership";
+                break;
+            case "unused_grave_slot":
+                end_point = "ypg/reports/unused-grave-slot";
+                break;
+            case "deceased_registration":
+                end_point = "ypg/reports/deceased-registration";
+                break;
+
             default:
                 end_point = null;
                 break;
