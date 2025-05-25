@@ -35,7 +35,7 @@ class Member
         $ss = $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-100',
+            'name' => '1|string|0-150',
             'sex' => '1|string|0-10',
             'phone_number' => '1|phone|0-50',
             'email' => '1|email',

@@ -109,6 +109,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/vectorasoft/lib-money.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft/lib-vsloquent.git"
         }
     ]
 }
