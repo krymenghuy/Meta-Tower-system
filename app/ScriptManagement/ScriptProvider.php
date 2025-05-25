@@ -88,7 +88,8 @@ class ScriptProvider
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
-                '/assets/js/VSRoute.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/vsroute/js/vsroute.2.js',
+                'https://cdn.vectoraclouds.com/frontcore/vsroute/core/vsroute_core.js',
                 '/js/layout/ypg/main.js',
                 //'/js/components/ypg/PDFReport.js',
                 '/assets/js/SearchWidget.js',
