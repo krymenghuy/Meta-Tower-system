@@ -94,7 +94,7 @@ function post_ajax(url, param_data = {}, onSuccess, busy_indicator, onFail = nul
 			//alert("SUCCESS: cookie value: " + _getCookieValue(cookie_name) + " VS header value: " + __csrfHash + "\n" + url);
 			if (response.status == 'OK' || response.status == 'ok') {
 
-				//response.data = StringSanitizer.sanitizeObject(response.data);
+				//response.data = Sanitizer.sanitizeObject(response.data);
 
 				/** This is the handled errors or validation errors caught and sent from server, so we can handle them and display in specific context, NOT general context **/
 				// var handled_err_status = (response.data)? response.data.status:null;

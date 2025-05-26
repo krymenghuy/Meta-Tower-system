@@ -52,7 +52,7 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/dms.primary-defer.js?v=53',
             'files' => [
-                '/assets/js/string_san.js',
+                'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 '/assets/js/vsutil.v2.js',
                 '/assets/js/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
@@ -88,8 +88,8 @@ class ScriptProvider
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
-                'https://cdn.vectoraclouds.com/frontcore/vsroute/js/vsroute.2.js',
-                'https://cdn.vectoraclouds.com/frontcore/vsroute/core/vsroute_core.js',
+                'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
+                'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute_core.js',
                 '/js/layout/ypg/main.js',
                 //'/js/components/ypg/PDFReport.js',
                 '/assets/js/SearchWidget.js',

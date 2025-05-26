@@ -207,7 +207,7 @@ var Validator = new function () {
     };
     //////////  The following member functions take element as argument ///////////////////////////////
     this.isNullOrEmpty1 = function (el) {
-        var d = el.val(); // String(StringSanitizer.sanitizeIn(el.val())).trim();
+        var d = el.val(); // String(Sanitizer.sanitizeIn(el.val())).trim();
         if (d =='' || d=='null' ) {
             el.parent().addClass('has-error');
             //el.val('');
@@ -264,7 +264,7 @@ var Validator = new function () {
         }
     };
     this.isBetween1 = function (el, min, max) {
-        var v = el.val(); // StringSanitizer.sanitizeIn(el.val());
+        var v = el.val(); // Sanitizer.sanitizeIn(el.val());
         if (v >= min && v <= max) {
             el.parent().removeClass('has-error');
             return true;
@@ -275,7 +275,7 @@ var Validator = new function () {
         }
     };
     this.atMost1 = function (el, number) {
-        var v = el.val(); // StringSanitizer.sanitizeIn(el.val());
+        var v = el.val(); // Sanitizer.sanitizeIn(el.val());
         if (v <= number) {
             el.parent().removeClass('has-error');
             return true;
@@ -286,7 +286,7 @@ var Validator = new function () {
         }
     };
     this.atLeast1 = function (el, number) {
-        var v = el.val(); //StringSanitizer.sanitizeIn(el.val());
+        var v = el.val(); //Sanitizer.sanitizeIn(el.val());
         if (v >= number) {
             el.parent().removeClass('has-error');
             return true;
@@ -298,7 +298,7 @@ var Validator = new function () {
     };
 
     this.isInteger1 = function (el) {
-        var val = el.val(); //StringSanitizer.sanitizeIn(el.val());
+        var val = el.val(); //Sanitizer.sanitizeIn(el.val());
         if (this.isInteger(val)) {
             el.parent().removeClass('has-error');
             return true;
@@ -309,7 +309,7 @@ var Validator = new function () {
     };
 
     this.isNumber1 = function (el) {
-		//StringSanitizer.sanitizeIn(el.val())
+		//Sanitizer.sanitizeIn(el.val())
         if (this.isNumber(el.val()))
         {
             el.parent().removeClass('has-error');
@@ -322,7 +322,7 @@ var Validator = new function () {
     };
     /* newer version of validation functions */
     this.avoidZero = function (el) {
-		//StringSanitizer.sanitizeIn(el.val()
+		//Sanitizer.sanitizeIn(el.val()
         if (parseFloat(el.val()) == 0) {
             el.parent().addClass('has-error');
             el.focus();

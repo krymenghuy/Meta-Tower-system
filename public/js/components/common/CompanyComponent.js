@@ -15,7 +15,7 @@ var CompanyComponent = new function(){
 		vsapi.call(`${mThis.base_url}/ypg/company/details`,null,null,false).then(res=>{
 			if(res.status_code===200){
 				console.log(JSON.stringify(res,null,2));
-					let d= StringSanitizer.sanitizeObject(res.data,null,['email','logo_url']);
+					let d= Sanitizer.sanitizeObject(res.data,null,['email','logo_url']);
 					mThis.setData(d);
 			}
 		});
