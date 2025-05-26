@@ -51,7 +51,7 @@
         },
        "files":[
            "app/helpers.php"
-       ] 
+       ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -109,6 +109,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/vectorasoft-org/lib-money.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft-org/lib-vsloquent.git"
         },
         {
             "type": "vcs",

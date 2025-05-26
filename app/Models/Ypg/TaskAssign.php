@@ -67,6 +67,8 @@ class TaskAssign
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
         $status_id = $d->status_id ?? null;
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
 
 
         $str_search = '1=1';
@@ -79,6 +81,12 @@ class TaskAssign
         }
         if($status_id){
             $str_moreWhere .= ' AND ta.status_id =\'' . $status_id . '\'';
+        }
+
+        if($start_date && $end_date){
+            $start_date = date('Y-m-d', strtotime($start_date));
+            $end_date = date('Y-m-d', strtotime($end_date));
+            $str_moreWhere .= ' AND ta.assign_date BETWEEN \'' . $start_date . '\' AND \'' . $end_date . '\'';
         }
         $update_date = DBX::formatDate("ty.updated_at", 'update_date');
         $assign_date = DBX::formatDate("ta.assign_date", 'assign_date');

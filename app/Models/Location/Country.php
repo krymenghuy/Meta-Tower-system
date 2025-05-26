@@ -120,7 +120,7 @@ class Country //extends Model
             $str_search = '(c.name LIKE \'%' . $search_value . '%\')';
         }
 
-        $create_date = DBX::$created_at;
+        $create_date = DBX::createdAt();
         $col_create_date = DBX::formatDate("c.$create_date", 'create_date');
 
         $query = DB::table('loc_countries AS c')

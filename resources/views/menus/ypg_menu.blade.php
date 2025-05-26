@@ -297,17 +297,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="DepartmentComponent" modid="244" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/department.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Departments"></span>
-                            </a>
-                        </li>
-
+                    
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="LocationComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -318,22 +308,6 @@ function v_display($mod_id, $module_ids = null)
                                     vslang="menus.Countries and Cities"></span>
                             </a>
                         </li>
-
-
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(239); ?>>
-                            <a href="SkillsComponent" modid="239" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/company_profile.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Skills"></span>
-                            </a>
-                        </li>
-
-
-
-
-
 
                     </ul>
                 </div>
