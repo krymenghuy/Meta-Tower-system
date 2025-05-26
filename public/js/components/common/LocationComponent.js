@@ -258,7 +258,7 @@ var LocationComponent = new function(){
 //   //    if(!def) def = {};
 //   //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
 //   //      if(res.status_code === 200){
-//   //        let rows = StringSanitizer.sanitizeObject(res.data);
+//   //        let rows = Sanitizer.sanitizeObject(res.data);
 //   //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);
 //   //        if(mThis.elCountry.val() >0) mThis.elCountry.trigger('change');
 //   //      }
@@ -312,7 +312,7 @@ var ZoneTabView = new function(){
 
      vsapi.call([mThis.base_url,'/api/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
         if (res.status_code===200){
-              let rows = StringSanitizer.sanitizeObject(res.data);
+              let rows = Sanitizer.sanitizeObject(res.data);
 
               if (zone_name ==='city')
                 {
@@ -571,7 +571,7 @@ var ZoneTabView = new function(){
 
                  vsapi.call([mThis.base_url,'/api/location/cities'].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
                      if (res.status_code===200){
-                          let rows = StringSanitizer.sanitizeObject(res.data);
+                          let rows = Sanitizer.sanitizeObject(res.data);
                           let i=0, c;
                           do{
                               c = rows[i];
@@ -621,7 +621,7 @@ var ZoneTabView = new function(){
 
              vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
                if(res.status_code===200){
-                let rows = StringSanitizer.sanitizeObject(res.data);
+                let rows = Sanitizer.sanitizeObject(res.data);
                 let i =0, c;
                 do{
                   c = rows[i];
@@ -657,7 +657,7 @@ var ZoneTabView = new function(){
                 mThis.tblCommunes_body.empty();
                 vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
                   if(res.status_code===200){
-                        let rows = StringSanitizer.sanitizeObject(res.data);
+                        let rows = Sanitizer.sanitizeObject(res.data);
                         let i =0, c;
                       do{
                         c = rows[i];
