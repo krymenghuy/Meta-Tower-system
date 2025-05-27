@@ -71,6 +71,9 @@ class DeceasedRegistration
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
+        $status_id = $d->status_id ?? null;
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
 
         $str_search = '1=1';
         $str_moreWhere = '1=1';
@@ -81,6 +84,12 @@ class DeceasedRegistration
             $str_search = "(dr.name LIKE '%" . $search_value . "%' OR m.name LIKE '%" . $search_value . "%')";
         }
 
+        if($start_date && $end_date){
+            $start_date = date('Y-m-d', strtotime($start_date));
+            $end_date = date('Y-m-d', strtotime($end_date));
+            $str_moreWhere .= ' AND dr.burial_date BETWEEN \'' . $start_date . '\' AND \'' . $end_date . '\'';
+        }
+
         $date_of_birth = DBX::formatDate("dr.date_of_birth", 'date_of_birth');
         $date_of_death = DBX::formatDate("dr.date_of_death", 'date_of_death');
         $burial_date = DBX::formatDate("dr.burial_date", 'burial_date');
@@ -88,6 +97,7 @@ class DeceasedRegistration
         $query = DB::table('deceased_registrations as dr')
             ->join('members as m', 'm.id', '=', 'dr.member_id')
             ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw('dr.id, dr.name, dr.sex,dr.relation,'. $date_of_birth . ',' . $date_of_death . ',' . $burial_date . ', dr.member_id,m.code, m.name as member_name')
             ->orderBy('dr.id', 'desc');
 

@@ -215,7 +215,6 @@ var ReportCenterComponent = new (function () {
 
     }
 
-
     this.controlPanel = (container) => {
         const reportTable = container.find("#_rpt_table").children();
         container.find("#_rpt_filter").on("click", function (e) {

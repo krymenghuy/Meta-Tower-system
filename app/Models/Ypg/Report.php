@@ -312,7 +312,7 @@ class Report
     function getGraveOwnership($filter, $ss = null)
     {
         $title = 'Grave Ownership Report';
-        // $sub_title = 'Grave Ownership';
+        $sub_title = 'Reversed and Used';
         $header_list = ['Member ID','Member Name','Sex','Phone', 'Relation','Tomb Owner','Sex','Slot Number', 'Status'];
         $key_list = ['code','member_name','member_sex','phone_number','tomb_owner_relation', 'tomb_owner','tomb_owner_sex','slot_number', 'status'];
 
