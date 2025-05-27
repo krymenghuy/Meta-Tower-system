@@ -338,7 +338,6 @@ class Report
         foreach ($rows as $row) {
 
             $row->status = DB::table('slot_statuses')->where('id', $row->status_id)->value('name') ?? null;
-
             $tomb_owner_info = null;
             $tomb_owner_info = DB::table('deceased_registrations')->where('id', $row->used_id)->selectRaw('id,name as tomb_owner,sex as tomb_owner_sex,relation')->first();
             $row->tomb_owner = $tomb_owner_info->tomb_owner ?? 'N/A';

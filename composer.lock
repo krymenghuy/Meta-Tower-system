@@ -7541,12 +7541,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-dbx.git",
-                "reference": "6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9"
+                "reference": "e5d387c7d85c7b150ad96750bb39412b271db136"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9",
-                "reference": "6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/e5d387c7d85c7b150ad96750bb39412b271db136",
+                "reference": "e5d387c7d85c7b150ad96750bb39412b271db136",
                 "shasum": ""
             },
             "require": {
@@ -7576,7 +7576,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-dbx/issues"
             },
-            "time": "2025-05-24T13:12:16+00:00"
+            "time": "2025-05-27T03:07:37+00:00"
         },
         {
             "name": "vsd/localization",

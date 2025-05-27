@@ -240,11 +240,9 @@ var RegisterDeceasedComponent = (function () {
     }
 
     mThis.prepareFormOptions = () => {
-
-        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-            })
+        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+        })
     }
 
     mThis.show = function () {

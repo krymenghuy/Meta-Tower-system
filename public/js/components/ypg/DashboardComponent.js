@@ -353,11 +353,9 @@ var DashboardComponent =  (function () {
         mThis.setDashboardScroll();
         mThis.init();
         options = options || {};
-        //main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            // mThis.jm.siblings().hide();
-            // mThis.jm.fadeIn(200);
+
         });
     };
 
