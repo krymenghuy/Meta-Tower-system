@@ -81,6 +81,7 @@ const main_view = new function(){
     };
 
     this.init = ()=>{
+      window.Sanitizer  = window.Sanitizer || StringSanitizer;
      //BEGIN:: process side menus click using VSRoute
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
        this.lnkLogout = this.side_menus.querySelector('#_main_lnkLogout');
