@@ -52,7 +52,8 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/dms.primary-defer.js?v=53',
             'files' => [
-                'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
+                'assets/js/vs_sanitizer.js',
+                //'https://cdn.vectoraclouds.com/frontcore/sanitizer/sanitizer.js',
                 '/assets/js/vsutil.v2.js',
                 '/assets/js/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
