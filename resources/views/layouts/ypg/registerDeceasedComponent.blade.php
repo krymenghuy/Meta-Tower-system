@@ -12,13 +12,13 @@
             </div>
         </div>
 
-        <div class="d-flex align-items-center justify-content-start w-50 gap-2">
-            <div class="d-flex align-items-center w-50">
+        <div class="d-flex align-items-end justify-content-end w-50">
+            <div class="d-flex align-items-end w-50">
                 <input type="text" class="form-control rounded-5 filter-field" id="_search_register_deceased"
                     placeholder="Search">
             </div>
 
-            <div class="d-flex align-items-center justify-content-end gap-2 w-25">
+            <div class="d-flex align-items-end justify-content-end w-25">
                 <button type="button" class="btn_add" id="_btnRegisterDeceased">
                     <i class="fa fa-street-view mr-2"></i>
                     <span>Register</span>

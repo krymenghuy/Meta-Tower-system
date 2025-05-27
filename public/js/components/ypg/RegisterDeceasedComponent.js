@@ -258,8 +258,7 @@ var RegisterDeceasedComponent = (function () {
 })();
 
 
-const RegisterDeceasedDialog
-    = (() => {
+const RegisterDeceasedDialog = (() => {
         const self = {};
         let dialog = null;
 
