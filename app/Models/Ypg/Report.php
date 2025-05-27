@@ -312,7 +312,7 @@ class Report
     function getGraveOwnership($filter, $ss = null)
     {
         $title = 'Grave Ownership Report';
-        // $sub_title = 'Grave Ownership';
+        $sub_title = 'Reversed and Used';
         $header_list = ['Member ID','Member Name','Sex','Phone', 'Relation','Tomb Owner','Sex','Slot Number', 'Status'];
         $key_list = ['code','member_name','member_sex','phone_number','tomb_owner_relation', 'tomb_owner','tomb_owner_sex','slot_number', 'status'];
 
@@ -338,7 +338,6 @@ class Report
         foreach ($rows as $row) {
 
             $row->status = DB::table('slot_statuses')->where('id', $row->status_id)->value('name') ?? null;
-
             $tomb_owner_info = null;
             $tomb_owner_info = DB::table('deceased_registrations')->where('id', $row->used_id)->selectRaw('id,name as tomb_owner,sex as tomb_owner_sex,relation')->first();
             $row->tomb_owner = $tomb_owner_info->tomb_owner ?? 'N/A';

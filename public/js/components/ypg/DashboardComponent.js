@@ -50,7 +50,6 @@ var DashboardComponent =  (function () {
                 `<div class="col-md-3">`,
                     `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
 
-                        // Member Never Expires
                         `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
                             `<div class="d-flex align-items-center p-2 mb-1">`,
                                 `<div class="bg--icon">`,
@@ -64,7 +63,6 @@ var DashboardComponent =  (function () {
                             `<hr style="border:1px solid #fff; margin:0;">`,
                         `</div>`,
 
-                        // Members Nearing Expiration
                         `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
                             `<div class="d-flex align-items-center p-2 mb-1">`,
                                 `<div class="bg--icon">`,
@@ -78,7 +76,6 @@ var DashboardComponent =  (function () {
                             `<hr style="border:1px solid #fff; margin:0;">`,
                         `</div>`,
 
-                        // Member Has Expired
                         `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">`,
                             `<div class="d-flex align-items-center p-2 mb-1">`,
                                 `<div class="bg--icon">`,
@@ -353,11 +350,9 @@ var DashboardComponent =  (function () {
         mThis.setDashboardScroll();
         mThis.init();
         options = options || {};
-        //main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            // mThis.jm.siblings().hide();
-            // mThis.jm.fadeIn(200);
+
         });
     };
 
