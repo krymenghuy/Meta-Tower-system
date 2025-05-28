@@ -39,13 +39,12 @@ var RegisterDeceasedComponent = (function () {
         },
 
         {
-            title: "Ralation",
+            title: "Relation",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.relation ?? ''}</span>`,
         },
         {
             title: " Date of Birth",
-
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.date_of_birth ?? ''}</span>`,
         },
