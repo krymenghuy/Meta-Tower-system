@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+<div id="_main_dashboardComponent" class="mobile-padding p-3" style="display:none"></div>
+=======
 <div id="_main_dashboardComponent" style="display:none;">
     <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
     </div>
@@ -18,6 +21,7 @@
         width: 100%;
         height: 100%;
     }
+>>>>>>> 3448493fd7e98ebffab9d945002422948fd537ad
 
     code {
         height: calc(100% - 45px);
