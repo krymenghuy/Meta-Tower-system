@@ -274,18 +274,22 @@ const RegisterDeceasedDialog = (() => {
                             `<div class="row">
                             <div class="form-group col-12">
                                 <label for="member_id" class="form-label" vslang="titles.Member"></label>
+                                 <span class="text-danger" >*</span>
                                 <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
                             </div>
                             <div class="form-group col-4">
                                 <label for="relation" class="form-label" vslang="titles.Relation"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="relation" class="form-control data-input" data-field="relation">
                             </div>
                             <div class="form-group col-4">
                                 <label for="name" class="form-label" vslang="titles.Name"></label>
+                                 <span class="text-danger" >*</span>
                                 <input id="name" name="name" class="form-control data-input" data-field="name">
                             </div>
                             <div class="form-group col-4">
                                 <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
+                                 <span class="text-danger" >*</span>
                                 <select id="sex" class="form-control data-input" data-field="sex">
                                     <option value="">(Select Sex)</option>
                                     <option value="M">Male</option>
@@ -297,14 +301,17 @@ const RegisterDeceasedDialog = (() => {
 
                             <div class="form-group col-4">
                                 <label for="date_of_birth" class="form-label" vslang="titles.Date of birth"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="date_of_birth" class="form-control data-input" data-field="date_of_birth">
                             </div>
                              <div class="form-group col-4">
                                 <label for="date_of_death" class="form-label" vslang="titles.Date of death"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="date_of_death" class="form-control data-input" data-field="date_of_death">
                             </div>
                              <div class="form-group col-4">
                                 <label for="burial_date" class="form-label" vslang="titles.Burial date"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="burial_date" class="form-control data-input" data-field="burial_date">
                             </div>
 
