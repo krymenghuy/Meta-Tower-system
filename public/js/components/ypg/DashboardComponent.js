@@ -1,39 +1,40 @@
 "use strict";
+var DashboardComponent = new function () {
+  const mThis = this;
+  this.title_prop = "Dashboard";
+  this.self = main_view.appContent.children('#_main_dashboardComponent');
 
-var DashboardComponent =  (function () {
-    const mThis = {};
-    mThis.title_prop = "Dashboard";
-    mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_dashboardComponent");
-    mThis.self = mThis.jm[0];
-
-
-
-    mThis.init = () => {
-      
-        mThis.initAlready = true;
-    };
+  this.init = () => {
+    if (mThis.initAlready) return;
+   
+      mThis.renderDashboard();
+    mThis.initAlready = true;
+  }
 
 
+
+  this.renderDashboard = (d) => {
+    const div = mThis.self;
    
 
-   
-
+    const html = [`<div class="mt-2 text-primary-custom"><h3>Welcome</h3> <h5> >>> YAV PHENG ASSOCIATION</h5> </div>
+                `].join('');
+    div.html(html);
+    
 
     
-    
-  
-
-    mThis.show = (options) => {
-        mThis.init();
-        options = options || {};
-        main_view.setTitle(mThis.title_prop);
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(200);
-       
-    };
-
    
-    return mThis;
-})();
+  }
+
+
+
+  this.show = (options) => {
+    mThis.init();
+    if (!options) options = {};
+    main_view.setTitle(mThis.title_prop);
+
+      mThis.renderDashboard();
+      mThis.self.siblings().hide();
+      mThis.self.fadeIn(250);
+  }
+}
