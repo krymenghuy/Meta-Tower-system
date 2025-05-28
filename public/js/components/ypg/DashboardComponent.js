@@ -3,7 +3,7 @@
 
 var DashboardComponent =  (function () {
     const mThis = {};
-    mThis.title_prop = "Dashboard";
+    mThis.title_prop = "WELCOME YAV PHENG ASSOCIATION";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
     // mThis.self = mThis.jm[0];

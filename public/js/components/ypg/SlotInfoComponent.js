@@ -336,7 +336,6 @@ const SlotInfoDialog = (() => {
                             </div>
 
                             <div class="form-group col-12">
-
                                 <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
                                 <textarea  name="location_note" class="form-control data-input" data-field="location_note">
                             </div>

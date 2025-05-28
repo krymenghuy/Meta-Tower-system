@@ -176,7 +176,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.Member Management"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.Member & Task Management"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
 
@@ -184,7 +184,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="MemberComponent" modid="241" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/member.png') }}" /></span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Member Management"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Member"></span>
                 </a>
             </li>
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
@@ -193,7 +193,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/task-mana.png') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Task Management ">Task Management
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Task ">Task
                     </span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
@@ -218,51 +218,37 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Task Assign"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Task Management"></span>
                             </a>
                         </li>
 
                     </ul>
                 </div>
             </li>
-
-             <li class="kt-menu__section" <?php v_display(-1); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.Grave Slot & Registration"></h4>
+            <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
+                <h4 class="kt-menu__section-text " vslang="menus.Registrations & Grave Slot"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/grave_slot.png') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus. Grave Slot "></span>
-                </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="RegisterDeceasedComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                        <!-- <i class="fa-regular fa-registered" style="color: #121212;"></i> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/register.png') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus. Register Deceased"></span>
                 </a>
             </li>
-
-
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/grave_slot.png') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color " vslang="menus. Grave Slot "></span>
+                </a>
+            </li>
             <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Report Center"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
-
-
-
-
-
-
-
-
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
                 <a href="ReportCenterComponent" modid="247" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -273,7 +259,7 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.System & Settings"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.Admin & Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
@@ -327,7 +313,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(268); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(268); ?>>
                             <a href="BranchManagementComponent" modid="268" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
@@ -335,7 +321,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Branch Management"></span>
                             </a>
-                        </li> --}}
+                        </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(101); ?>>
                             <a href="RoleManagementComponent" modid="101" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
