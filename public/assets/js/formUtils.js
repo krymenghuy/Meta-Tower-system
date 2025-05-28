@@ -1,6 +1,6 @@
 /** Dependency: 
  *  FormUntil class requires "vsapi.js" for api call
- *  FormUtil depends on string_san.js for method "StringSanitizer.sanitizeObject()"
+ *  FormUtil depends on string_san.js for method "Sanitizer.sanitizeObject()"
  *  FormUtil depends optionally on cv_interact.js for alert message
  *  FormUtil depends  on "vsutl.js" for VUTil.setSelect2_value(), VSUtil.showDialogError(dialog_id,error_text), VSUtil.hideDialogError(dialog_id)
  *  **/
@@ -142,7 +142,7 @@ class FormUntil{
        let that = this;
         vsapi.call(this.api_get,p).then((res)=>{
           if(res.status_code ===200){
-             let d = StringSanitizer.sanitizeObject(res.data,null,that.sanitize_excepts);
+             let d = Sanitizer.sanitizeObject(res.data,null,that.sanitize_excepts);
              onFinish(d);
           }else cv_interact.error(res.error_message);
         });

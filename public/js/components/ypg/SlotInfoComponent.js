@@ -25,7 +25,7 @@ var SlotInfoComponent = (function () {
             data: (data) => `<span class="text-primary-custom">${data.zone ?? ''}</span>`,
         },
         {
-            title: "Grav Row ",
+            title: "Grave Row ",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.grave_row ?? ''}</span>`,
         },
@@ -173,13 +173,7 @@ var SlotInfoComponent = (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -201,10 +195,6 @@ var SlotInfoComponent = (function () {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case 'edit_slot_info': {
                         mThis.editSlotInfo(id, menuLink);
                         break;
@@ -221,55 +211,6 @@ var SlotInfoComponent = (function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
-    }
-
-    mThis.changeStatus = (id, lnk) => {
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
-        let tr = lnk.closest('tr');
-
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-
-        let inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Slot Info Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [{
-                status_id: "1",
-                name: "Available"
-            },
-            {
-                status_id: "2",
-                name: "Reserved"
-            }],
-            defaultValue: status_id
-        };
-
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value
-                };
-                if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/grave-slot/update-status`, p).then(res => {
-                    if (res.status_code === 200) {
-                        // mThis.elFilter_leave_request_status.value = d.value;
-                        InputBox2.close();
-                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
-                        cv_interact.success('The leave request status has been updated');
-                        // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.SlotInfoListView.showPage(mThis.getFilterData());
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
     }
 
     mThis.editSlotInfo = (id, menuLink) => {
@@ -375,10 +316,7 @@ const SlotInfoDialog = (() => {
                                 <label for="used_id" class="form-label" vslang="titles.Used By"></label>
                                 <select  name="used_id" class="form-control data-input" data-field="used_id"></select>
                             </div>
-                            <div class="form-group col-6 d-none" >
-                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
-                                <input  name="status_id" class="form-control data-input" data-field="status_id">
-                            </div>
+
                             <div class="form-group col-12">
                                 <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
                                 <textarea  name="location_note" class="form-control data-input" data-field="location_note">
@@ -438,6 +376,14 @@ const SlotInfoDialog = (() => {
                             click: (me, btn) => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
+                                op.status_id = 1;
+
+                                if(me.controls.reversed_id.value > 0){
+                                   op.status_id = 2;
+                                }
+                                if(me.controls.used_id.value > 0){
+                                    op.status_id = 3;
+                                }
 
                                 vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {

@@ -21,15 +21,17 @@
         "laravelcollective/html": "^6.2",
         "milon/barcode": "^8.0",
         "phpmailer/phpmailer": "^6.9",
-        "phpoffice/phpspreadsheet": "^2.0",
+        "phpoffice/phpspreadsheet": "^4.1",
+        "phpoffice/phpword": "^1.3",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
         "vsd/dbx": "*",
-        "vsd/xauth": "*",
-        "vsd/response": "*",
-        "vsd/money": "*",
         "vsd/localization": "*",
-        "vsd/storage": "*"
+        "vsd/money": "*",
+        "vsd/response": "*",
+        "vsd/storage": "*",
+        "vsd/vsloquent": "dev-main",
+        "vsd/xauth": "dev-main"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -45,13 +47,11 @@
             "Opt\\": "app/Http/Traits/chapx/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Vsd\\Response\\": "src/",
-            "Vsd\\Database\\": "src/",
-            "Vsd\\Money\\": "src/"
+            "Vsd\\Response\\": "src/"
         },
        "files":[
            "app/helpers.php"
-       ] 
+       ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -88,27 +88,35 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-localization.git"
+            "url": "https://github.com/vectorasoft-org/lib-localization.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-response.git"
+            "url": "https://github.com/vectorasoft-org/lib-response.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-storage.git"
+            "url": "https://github.com/vectorasoft-org/lib-storage.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-dbx-v1.git"
+            "url": "https://github.com/vectorasoft-org/lib-dbx.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-xauth-single-db.git"
+            "url": "https://github.com/vectorasoft-org/lib-xauth.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/vectorasoft/lib-money.git"
+            "url": "https://github.com/vectorasoft-org/lib-money.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft-org/lib-vsloquent.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft-org/lib-vsloquent.git"
         }
     ]
 }

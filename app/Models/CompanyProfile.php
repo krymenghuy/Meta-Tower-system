@@ -19,7 +19,7 @@ class CompanyProfile //extends Model
    protected $userInfo = null;
    protected static $logo_dir ="identity";
    protected static $img_dir ='brand-images', $soc_media_img_dir ='social_media';
-  
+
    function __construct($userInfo=null){
       $this->userInfo = $userInfo;
    }
@@ -27,43 +27,51 @@ class CompanyProfile //extends Model
    function getUserInfo(){
     return $this->userInfo;
    }
-  
-   static function saveDetails($arr, $ss) {
-     //$subs_id = $ss->subs_id;
-     $customer_id = $ss->subscriber_id;
-     if(!$customer_id) return DV::error('Subscriber ID is not found!');
-     $bin_customer_id = hex2bin($customer_id);
-     $validate_rule = [
-       'name'=>'1|string|1-150',
-       'name_kh'=>'0|string|0-150',
-       'phone_number'=>'1|phone|0-80',
-       'email'=>'0|email|0-100',
-       'first_cp_name'=>'0|string|0-100',
-       'second_cp_name'=>'0|string|0-100',
-       'address'=>'0|string|0-250',
-       'address_kh'=>'0|string|0-250',
-       'first_cp_phone'=>'0|phone|0-50',
-       'second_cp_phone'=>'0|phone|0-50',
-       'logo'=>'0|image'
-     ];
-  
-     $res = DBX::validateObject($arr,$validate_rule,true,['email'=>['.','-','@']],$ss->lang,false,[]);
-     if($res->error) return DV::error($res->error);
-     $inputs = $res->values;
-     $logo = $inputs['logo'];
-     unset($inputs['logo']);
 
-     $address_kh = $inputs['address_kh'];
-     if(!$address_kh) $inputs['address_kh'] = $inputs['address'];
+    static function saveDetails($arr, $ss)
+{
+    //$subs_id = $ss->subs_id;
+    $customer_id = $ss->subscriber_id;
+    if (!$customer_id){
+      return DV::error('Customer ID is not found!');
+    }
+    $validate_rule = [
+      'name' => '1|string|1-150',
+      'name_kh' => '0|string|0-150',
+      'phone_number' => '1|phone|0-80',
+      'email' => '0|email|0-100',
+      'first_cp_name' => '0|string|0-100',
+      'second_cp_name' => '0|string|0-100',
+      'address' => '0|string|0-250',
+      'address_kh' => '0|string|0-250',
+      'first_cp_phone' => '0|phone|0-50',
+      'second_cp_phone' => '0|phone|0-50',
+      'logo' => '0|image'
+    ];
 
-     $name_kh = $inputs['name_kh'];
-     if (!$name_kh) $inputs['name_kh'] = $inputs['name'];
-     $customer_id = saveData($ss,'um_customers',['id'=>$bin_customer_id],$inputs,[],0,'binary');
-     if($customer_id){
-       if($logo) XPublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>$ss->branch_id,'dir_name'=>self::$logo_dir],null,$logo,['id'=>$customer_id,'store'=>'um_customers.logo_file_name']);
-     }
-     return DV::depends($customer_id,null,'Failed to update company information');
-   }  
+    $res = DBX::validateObject($arr, $validate_rule, true, ['email' => ['.', '-', '@'], 'address' => ['.', '-', ',', '#']], $ss->lang, false, []);
+    if ($res->error)
+      return DV::error($res->error);
+    $inputs = $res->values;
+    $logo = $inputs['logo'];
+    unset($inputs['logo']);
+
+    $address_kh = $inputs['address_kh'];
+    if (!$address_kh)
+      $inputs['address_kh'] = $inputs['address'];
+
+    $name_kh = $inputs['name_kh'];
+    if (!$name_kh)
+      $inputs['name_kh'] = $inputs['name'];
+     $customer_id = DBX::saveData($ss, 'um_customers',['id'=>$customer_id], $inputs, [], 0, 'binary');
+    if ($customer_id) {
+      if ($logo)
+        XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'branch_id' => $ss->branch_id, 'dir_name' => self::$logo_dir], null, $logo, ['id' => $customer_id, 'store' => 'um_customers.logo_file_name']);
+    }
+    return DV::depends($customer_id, null, 'Failed to update company information');
+  }
+
+
 
    static function contactInfo($ss){
     $subs_id = $ss->subs_id;
@@ -79,11 +87,11 @@ class CompanyProfile //extends Model
       'links'=>$links,
       'contact_info'=>$row
     ];
-  } 
+  }
 
   static function socialMediaList($ss){
     $customer_id = $ss->subscriber_id ?? null;
-    $branch_id = null; 
+    $branch_id = null;
     if(!$customer_id){
        $subs_id = $ss->subs_id ?? null;
        if($subs_id != null) {
@@ -130,8 +138,8 @@ class CompanyProfile //extends Model
       if (!$row) return null;
       $row->logo_url =self::logoUrl($ss);
       return $row;
-   } 
- 
+   }
+
   static function details($ss) {
     $customer_id = $ss->subscriber_id;
     if(!$customer_id) return null;
@@ -145,8 +153,8 @@ class CompanyProfile //extends Model
 
   /** Start Save  and retrieve company's logo **/
   static function saveLogo($d,$ss)
-  { 
-    //$branch_id = null; // $ss->branch_id; 
+  {
+    //$branch_id = null; // $ss->branch_id;
     $customer_id = $ss->subscriber_id;
     if(!$customer_id) return DV::error('Invalid subscriber ID');
     $bin_customer_id = hex2bin($customer_id);
@@ -163,7 +171,7 @@ class CompanyProfile //extends Model
     if($res->status ==='Error') return DV::error($res->error_message);
     return DV::depends(1);
   }
-  
+
   static function logoUrl($ss){
     $customer_id = $ss->subscriber_id;
     if(!$customer_id) return "";
@@ -179,7 +187,7 @@ class CompanyProfile //extends Model
     $ss = $ss ?? $this->userInfo;
     return self::logoUrl($ss);
   }
-   
+
   static function deleteLogo($ss)
   {
     $customer_id = $ss->subscriber_id;
@@ -188,8 +196,8 @@ class CompanyProfile //extends Model
     $branch_id = null;
 
      $row = DB::table('um_customers')->where('id', $bin_customer_id)->selectRaw('logo_file_name')->first();
-     if($row) XPublicStorage::delete(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir_name'=>self::$logo_dir],'image',$row->logo_file_name); 
+     if($row) XPublicStorage::delete(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir_name'=>self::$logo_dir],'image',$row->logo_file_name);
      DB::table('um_customers')->where('id',$bin_customer_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
-     return DV::depends(1); 
+     return DV::depends(1);
   }
 }

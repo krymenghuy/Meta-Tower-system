@@ -1046,19 +1046,37 @@ function jsonToTable(div, d) {
 
                                         if (col.key.toLowerCase() === "status") {
                                             const statusVal = String(value).toLowerCase();
-                                            if (statusVal === "active") {
+                                            if (statusVal === "active" || statusVal === "done") {
                                                 cellClass += " text-success";
-                                            } else if (statusVal === "inactive") {
+                                            } else if (statusVal === "inactive" || statusVal === "used") {
                                                 cellClass += " text-danger";
+                                            } else if (statusVal === "pending" || statusVal === "reserved") {
+                                                cellClass += " text-warning";
+                                            } else {
+                                                cellClass += " text-info";
                                             }
+
+
                                         }
-                                         if (col.key.toLowerCase() === "expiry_status") {
+                                        if (col.key.toLowerCase() === "expiry_status") {
                                             const statusVal = String(value).toLowerCase();
                                             if (statusVal === "expired") {
                                                 cellClass += " text-warning";
                                             }
-
                                         }
+
+                                        if (col.key.toLowerCase() === "sex" || col.key.toLowerCase() === "member_sex" || col.key.toLowerCase() === "tomb_owner_sex") {
+                                            let statusVal = String(value).toLowerCase();
+
+                                            if (statusVal === "m") statusVal = "male";
+                                            else if (statusVal === "f") statusVal = "female";
+                                            else if (statusVal === "o") statusVal = "other";
+
+                                            value = statusVal;
+                                            cellClass += " text-info";
+                                        }
+
+
 
                                         tr = [
                                             tr,

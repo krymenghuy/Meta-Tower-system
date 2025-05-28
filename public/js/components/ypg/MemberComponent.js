@@ -17,57 +17,49 @@ var MemberComponent = (function () {
         {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
-            className: "align-middle",
-            data: (data) =>{
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class=" d-block text-capitalize">${data.name ?? ''}</span>
-                        <small class="text-muted">${sexLabel}</small>`;
-            } 
-        },
-         {
-            title: "Contact Info",
-            className: "align-middle",
-             data: (data, index, tr) => {
-                
-                return `<p class="text-capitalize pb-0 mb-1 d-block text-nowrap">${data.phone_number}</p>
-                        <p class="text-primary pb-0 mb-1 d-block text-nowrap">${data.email}</p>`;
-            },
-           
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.name ?? 'N/A'}</span>`,
         },
         {
-            title: "Date of birth",
+            title: "Sex",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
+            data: (data) => {
+                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
+                return `<span class="text-primary-custom">${sexLabel}</span>`;
+            }
+        },
+
+        {
+            title: "Phone Number",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
         },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
         },
-       
-       
         {
             title: "Address",
             className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                return `<div class="text-break" style="min-width:100px;">${data.address ?? 'N/A'}</div>`;
-            }
+            data: (data) => `<span class="text-primary-custom">${data.address ?? 'N/A'}</span>`,
         },
-       
-      {
+        {
+            title: "Nationality",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-primary-custom">${data.nationality ?? 'N/A'}</span>`,
+        },
+       {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
-                if (data.is_expiry == 0) {
-                    return `<span class="text-success">Never Expire</span>`;
-                } else {
-                    const date = data.expiry_date ?? '';
-                    return `<span class="text-warning">${date}</span>`;
-                }
+                return `<span class="text-primary-custom">${
+                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? 'N/A')
+                }</span>`;
             },
         },
        {
@@ -97,9 +89,6 @@ var MemberComponent = (function () {
                 </div>`;
             }
         },
-
-    
-
         {
             className: 'col_action align-middle',
             data: function (data, row, display) {

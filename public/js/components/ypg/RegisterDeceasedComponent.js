@@ -8,7 +8,6 @@ var RegisterDeceasedComponent = (function () {
     mThis.self = mThis.jm[0];
     mThis.btnAdd = mThis.self.querySelector("#_btnRegisterDeceased");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_register_deceased");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_register_deceased");
 
@@ -137,8 +136,7 @@ var RegisterDeceasedComponent = (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
-            // leave_type_id: mThis.elFilter_leaveType.value,
+
             search_value: mThis.elSearch.value,
         };
 
@@ -242,12 +240,9 @@ var RegisterDeceasedComponent = (function () {
     }
 
     mThis.prepareFormOptions = () => {
-
-        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'register_status', true, 'All Statuses', null);
-            })
+        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+        })
     }
 
     mThis.show = function () {
@@ -263,8 +258,7 @@ var RegisterDeceasedComponent = (function () {
 })();
 
 
-const RegisterDeceasedDialog
-    = (() => {
+const RegisterDeceasedDialog = (() => {
         const self = {};
         let dialog = null;
 

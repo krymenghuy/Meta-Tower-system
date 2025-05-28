@@ -168,7 +168,7 @@ class Report
 
     function getMemberListByStatus($filter, $ss = null)
     {
-        $title = 'Member List';
+        $title = 'Membership List Report';
         // $sub_title = 'By Status';
         $header_list = ['ID', 'Name','Sex','Phone Number', 'Email', 'Nationality','Expiry Date', 'Address', 'Status'];
         $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiry_date', 'address', 'status'];
@@ -211,7 +211,7 @@ class Report
 
     function getExpiredMembers($filter, $ss = null)
     {
-        $title = 'Expired Members';
+        $title = 'Expired Memberships Report';
         $sub_title = 'Members having expired date';
         $header_list = ['ID', 'Name','Sex','Phone Number', 'Email', 'Nationality','Expiry Date', 'Status','Expiry Status'];
         $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiry_date', 'status', 'expiry_status'];
@@ -254,7 +254,7 @@ class Report
 
     function getTaskAssign($filter, $ss = null)
     {
-        $title = 'Task Assign';
+        $title = 'Task Assignments Report';
         // $sub_title = 'Task Assign';
         $header_list = ['Member ID','Member Name', 'Task Title','Assign Date', 'Status'];
         $key_list = ['code','member_name', 'task_type_title','assign_date', 'status'];
@@ -265,7 +265,7 @@ class Report
         $d = (object)$filter;
         $member_id = isset($d->member_id) ? $d->member_id : null;
         $task_id = isset($d->task_id) ? $d->task_id : null;
-        $status_id = isset($d->status_id) ? $d->status_id : null;
+        $task_status_id = isset($d->task_status_id) ? $d->task_status_id : null;
         $assign_date = DBX::formatDate("ta.assign_date", 'assign_date');
 
         $str_moreWhere = '1=1';
@@ -273,10 +273,10 @@ class Report
             $str_moreWhere .= ' AND ta.member_id =\'' . $member_id . '\'';
         }
         if ($task_id) {
-            $str_moreWhere .= ' AND ta.task_id =\'' . $task_id . '\'';
+            $str_moreWhere .= ' AND ta.task_type_id =\'' . $task_id . '\'';
         }
-        if ($status_id) {
-            $str_moreWhere .= ' AND ta.status_id =\'' . $status_id . '\'';
+        if ($task_status_id) {
+            $str_moreWhere .= ' AND ta.status_id =\'' . $task_status_id . '\'';
         }
 
     $query = DB::table('task_assigns as ta')
@@ -308,4 +308,135 @@ class Report
             'data' => $rows,
         ];
     }
+
+    function getGraveOwnership($filter, $ss = null)
+    {
+        $title = 'Grave Ownership Report';
+        $sub_title = 'Reversed and Used';
+        $header_list = ['Member ID','Member Name','Sex','Phone', 'Relation','Tomb Owner','Sex','Slot Number', 'Status'];
+        $key_list = ['code','member_name','member_sex','phone_number','tomb_owner_relation', 'tomb_owner','tomb_owner_sex','slot_number', 'status'];
+
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $d = (object)$filter;
+        $member_id = isset($d->member_id) ? $d->member_id : null;
+
+        $str_moreWhere = '1=1';
+        if ($member_id) {
+            $str_moreWhere .= ' AND m.id =\'' . $member_id . '\'';
+        }
+
+        $query = DB::table('members as m')
+                ->join('grave_slots as gs', 'gs.reversed_id', '=', 'm.id')
+                ->whereRaw($str_moreWhere)
+                ->selectRaw('m.id,m.code,m.name as member_name,m.sex as member_sex,m.phone_number,gs.slot_number,gs.used_id,gs.status_id')
+                ->orderBy('m.id', 'DESC');
+
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+
+            $row->status = DB::table('slot_statuses')->where('id', $row->status_id)->value('name') ?? null;
+            $tomb_owner_info = null;
+            $tomb_owner_info = DB::table('deceased_registrations')->where('id', $row->used_id)->selectRaw('id,name as tomb_owner,sex as tomb_owner_sex,relation')->first();
+            $row->tomb_owner = $tomb_owner_info->tomb_owner ?? 'N/A';
+            $row->tomb_owner_sex = $tomb_owner_info->tomb_owner_sex ?? 'N/A';
+            $row->tomb_owner_relation = $tomb_owner_info->relation ?? 'N/A';
+        }
+
+        return (object)[
+            'title' => $title ?? null,
+            'sub_title' => $sub_title ?? null,
+            'form' => 'simple',
+            'header' => $headers,
+            'data' => $rows,
+        ];
+    }
+
+    function getUnusedGraveSlot($filter, $ss = null)
+    {
+        $title = 'Unused Grave Slots Report';
+        // $sub_title = 'Unused Grave Slot';
+        $header_list = ['Slot Number','Section/Zone','Grave Row','Position','Location Note', 'Status'];
+        $key_list = ['slot_number','zone','grave_row','position','location_note', 'status'];
+
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $d = (object)$filter;
+        $status_id = isset($d->status_id) ? $d->status_id : null;
+
+        $str_moreWhere = '1=1';
+        if ($status_id) {
+            $str_moreWhere .= ' AND gs.status_id =\'' . $status_id . '\'';
+        }
+
+        $query = DB::table('grave_slots as gs')
+                ->whereRaw($str_moreWhere)
+                ->where('gs.status_id', 1)
+                ->selectRaw('gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.location_note,gs.status_id')
+                ->orderBy('gs.id', 'DESC');
+
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $row->status = DB::table('slot_statuses')->where('id', $row->status_id)->value('name') ?? null;
+        }
+
+        return (object)[
+            'title' => $title ?? null,
+            'sub_title' => $sub_title ?? null,
+            'form' => 'simple',
+            'header' => $headers,
+            'data' => $rows,
+        ];
+    }
+
+    function getDeceasedRegistration($filter, $ss = null)
+    {
+        $title = 'Deceased Registry Report';
+        $sub_title = 'Start date and end date filter by burial date.';
+        $header_list = ['Member ID','Member Name','Gender', 'Relation','Tomb Owner','Gender','Date of Birth','Date of Death','Burial Date'];
+        $key_list = ['code','member_name','member_sex','relation', 'tomb_owner','tomb_owner_sex','date_of_birth','date_of_death','burial_date'];
+
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $d = (object)$filter;
+        $member_id = isset($d->member_id) ? $d->member_id : null;
+        $start_date = isset($d->start_date) ? date('Y-m-d', strtotime($d->start_date)) : null;
+        $end_date = isset($d->end_date) ? date('Y-m-d', strtotime($d->end_date)) : null;
+        $str_moreWhere = '1=1';
+
+        if ($start_date && $end_date) {
+            $str_moreWhere .= " AND DATE(dr.burial_date) BETWEEN '$start_date' AND '$end_date'";
+        }
+
+        if ($member_id) {
+            $str_moreWhere .= " AND m.id ='$member_id'";
+        }
+
+
+        $date_of_birth = DBX::formatDate("dr.date_of_birth", 'date_of_birth');
+        $date_of_death = DBX::formatDate("dr.date_of_death", 'date_of_death');
+        $burial_date = DBX::formatDate("dr.burial_date", 'burial_date');
+
+        $query = DB::table('deceased_registrations as dr')
+                ->join('members as m', 'm.id', '=', 'dr.member_id')
+                ->whereRaw($str_moreWhere)
+                ->selectRaw('m.id,m.code,m.name as member_name,m.sex as member_sex,dr.relation,dr.name as tomb_owner,dr.sex as tomb_owner_sex,' . $date_of_birth . ',' . $date_of_death . ',' . $burial_date)
+                ->orderBy('dr.id', 'DESC');
+
+        $rows = $query->get();
+
+        return (object)[
+            'title' => $title ?? null,
+            'sub_title' => $sub_title ?? null,
+            'form' => 'simple',
+            'header' => $headers,
+            'data' => $rows,
+        ];
+    }
+
 }
