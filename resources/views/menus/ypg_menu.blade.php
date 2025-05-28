@@ -204,8 +204,9 @@ function v_display($mod_id, $module_ids = null)
                             <a href="TaskTypeComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/department.svg') }}" />
+                                    <!-- <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/icons/task-type.png') }}" /> -->
+                                        <i class="fa-solid fa-bars-staggered" style="color: #323439;"></i>
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Task Type"></span>
                             </a>

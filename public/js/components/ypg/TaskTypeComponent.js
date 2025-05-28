@@ -317,14 +317,17 @@ const TaskTpyeDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-12">
                                 <label for="title" class="form-label" vslang="titles.Title"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="title" class="form-control data-input" data-field="title">
                             </div>
                             <div class="form-group col-12 d-none" >
                                 <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="status_id" class="form-control data-input" data-field="status_id">
                             </div>
                             <div class="form-group col-12">
                                 <label for="description" class="form-label" vslang="titles.Description"></label>
+                                 <span class="text-danger" >*</span>
                                 <textarea name="description" class="form-control data-input" data-field="description"></textarea>
                             </div>
                         </div>`

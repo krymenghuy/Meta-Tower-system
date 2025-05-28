@@ -292,19 +292,23 @@ const SlotInfoDialog = (() => {
                             `<div class="row">
                             <div class="form-group col-6">
                                 <label for="slot_number" class="form-label" vslang="titles.Slot number"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="slot_number" class="form-control data-input" data-field="slot_number">
                             </div>
                            <div class="form-group col-6">
                                 <label for="zone" class="form-label" vslang="titles.Zone"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="zone" class="form-control data-input" data-field="zone">
                             </div>
                             <div class="form-group col-6">
                                 <label for="grave_row" class="form-label" vslang="titles.Grave_Row"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="grave_row" class="form-control data-input" data-field="grave_row">
                             </div>
 
                              <div class="form-group col-6">
                                 <label for="position" class="form-label" vslang="titles.Position"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="position" class="form-control data-input" data-field="position">
                             </div>
                             <div class="form-group col-6">
@@ -316,8 +320,19 @@ const SlotInfoDialog = (() => {
                                 <label for="used_id" class="form-label" vslang="titles.Used By"></label>
                                 <select  name="used_id" class="form-control data-input" data-field="used_id"></select>
                             </div>
+<<<<<<< HEAD
+                            <div class="form-group col-6 d-none" >
+                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                 <span class="text-danger" >*</span>
+                                <select  name="status_id" class="form-control data-input" data-field="status_id"></select>
+                                // <input  name="status_id" class="form-control data-input" data-field="status_id">
+                                
+                            </div>
+                            <div class="form-group col-6">
+=======
 
                             <div class="form-group col-12">
+>>>>>>> 3448493fd7e98ebffab9d945002422948fd537ad
                                 <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
                                 <textarea  name="location_note" class="form-control data-input" data-field="location_note">
                             </div>
