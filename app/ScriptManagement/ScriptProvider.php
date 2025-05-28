@@ -75,6 +75,7 @@ class ScriptProvider
                 '/assets/js/scripts.bundle.js',
                 //'/assets/js/datatables.bundle.min.js',/** to be removed soon */
                 '/assets/js/browsercontrol.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
                 '/assets/js/VSMoney.js',
             ],
             'no-minify' => [
@@ -103,12 +104,8 @@ class ScriptProvider
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/ypg/DashboardComponent.js',
-                '/js/components/ypg/SkillsComponent.js',
-                '/js/components/ypg/EmployeeComponent.js',
-                '/js/components/ypg/DepartmentComponent.js',
                 '/js/components/ypg/RenderTableReportComponent.js',
                 '/js/components/ypg/ReportCenterComponent.js',
-                'js/components/ypg/WarningComponent.js',
                 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',
                 'js/components/umt/ChangeRoleDialog.js',
@@ -120,14 +117,12 @@ class ScriptProvider
                 'js/components/umt/BranchManagementComponent.js',
                 //'js/components/umt/RoleManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
-                'js/components/ypg/CreateContractDialog.js',
-
                 'js/components/ypg/MemberComponent.js',
                 'js/components/ypg/TaskTypeComponent.js',
                 'js/components/ypg/TaskAssignComponent.js',
                 'js/components/ypg/SlotInfoComponent.js',
                 'js/components/ypg/RegisterDeceasedComponent.js',
-                'js/components/ypg/RecordRelationComponent.js',
+                // 'js/components/ypg/RecordRelationComponent.js',
             ]
         ],
 
