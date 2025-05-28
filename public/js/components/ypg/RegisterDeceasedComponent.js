@@ -12,51 +12,50 @@ var RegisterDeceasedComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_register_deceased");
 
     mThis.cols = [
-
         {
-            title: "Member ID",
+            title: "",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'null'}</span>`,
+            data: (data,index) => `<span class="text-primary-custom"></span>`,
         },
         {
-            title: "Member Name",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.member_name ?? ''}</span>`,
-        },
-
-        {
-            title: "Name",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`,
-        },
-        {
-            title: "Gender",
-            className: "align-middle text-capitalize",
-            data: (data) => {
+            title: "Deceased Name",
+            className: "align-middle",
+            data: (data) =>{
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
+                return `<p class="pb-0 mb-1 d-block text-nowrap text-capitalize">${data.name ?? ''}</p>
+                <small class="pb-0 mb-0 d-block text-muted">${sexLabel}</small>`
             }
-        },
-
-        {
-            title: "Relation",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.relation ?? ''}</span>`,
         },
         {
             title: " Date of Birth",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.date_of_birth ?? ''}</span>`,
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.date_of_birth ?? ''}</span>`,
         },
         {
             title: "Date of Death",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.date_of_death ?? ''}</span>`,
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.date_of_death ?? ''}</span>`,
+        },
+        {
+            title: "Grave Location",
+            className: "align-middle",
+            data: (data) => `<p class="mb-0 pb-0 text-nowrap">${data.slot_number}</p>
+                             <span class="text-nowrap text-primary">${data.zone}</span>`,
+        },
+        {
+            title: "Relationship",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.relation ?? ''}</span>`,
         },
          {
-            title: "Burial Date",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.burial_date ?? ''}</span>`,
+            title: "Arranged By",
+            className: 'align-middle',
+            data: (data, index, tr)=>{
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize fw-semibold">${data.member_name ?? ''}</span>
+                    <small class="text-left text-warning">${data.burial_date ?? ''}</small>
+                </div>`;
+            }
         },
 
         {
@@ -277,7 +276,7 @@ const RegisterDeceasedDialog = (() => {
                                 <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
                             </div>
                             <div class="form-group col-4">
-                                <label for="relation" class="form-label" vslang="titles.Relation"></label>
+                                <label for="relation" class="form-label" vslang="titles.Relationship"></label>
                                  <span class="text-danger" >*</span>
                                 <input  name="relation" class="form-control data-input" data-field="relation">
                             </div>

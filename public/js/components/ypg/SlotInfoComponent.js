@@ -320,19 +320,8 @@ const SlotInfoDialog = (() => {
                                 <label for="used_id" class="form-label" vslang="titles.Used By"></label>
                                 <select  name="used_id" class="form-control data-input" data-field="used_id"></select>
                             </div>
-<<<<<<< HEAD
-                            <div class="form-group col-6 d-none" >
-                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
-                                 <span class="text-danger" >*</span>
-                                <select  name="status_id" class="form-control data-input" data-field="status_id"></select>
-                                // <input  name="status_id" class="form-control data-input" data-field="status_id">
-                                
-                            </div>
-                            <div class="form-group col-6">
-=======
 
                             <div class="form-group col-12">
->>>>>>> 3448493fd7e98ebffab9d945002422948fd537ad
                                 <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
                                 <textarea  name="location_note" class="form-control data-input" data-field="location_note">
                             </div>
