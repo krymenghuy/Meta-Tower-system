@@ -313,7 +313,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(268); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(268); ?>>
                             <a href="BranchManagementComponent" modid="268" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
@@ -321,7 +321,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Branch Management"></span>
                             </a>
-                        </li> --}}
+                        </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(101); ?>>
                             <a href="RoleManagementComponent" modid="101" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

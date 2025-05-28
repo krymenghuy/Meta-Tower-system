@@ -5,7 +5,7 @@
 </style>
 
 <div id="_um_branchManagementComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex gap-3">
+    <div class="d-flex mt-3 gap-3">
         <div class="input-group input-group-sm flex-nowrap width--search-inner shadow justify-content-start">
             <input type="search" class="form-control filter-field h-100" placeholder="Search branch" id="_um_search_branch"/>
             <div class="input-group-text">

@@ -39,8 +39,8 @@ var RegisterDeceasedComponent = (function () {
         {
             title: "Grave Location",
             className: "align-middle",
-            data: (data) => `<p class="mb-0 pb-0 text-nowrap">${data.slot_number}</p>
-                             <span class="text-nowrap text-primary">${data.zone}</span>`,
+            data: (data) => `<p class="mb-0 pb-0 text-nowrap">${data.slot_number ?? 'Available'}</p>
+                             <span class="text-nowrap text-primary">${data.zone ?? 'No Zone'}</span>`,
         },
         {
             title: "Relationship",
@@ -60,17 +60,27 @@ var RegisterDeceasedComponent = (function () {
 
         {
             className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
+            // data: function (data, row, display) {
+            //     return `
+            //        <div class="d-flex justify-content-center align-items-center">
+            //             <div class="text-center gap-2 d-flex flex-wrap">
+            //                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            //                 </a>
+            //             </div>
+            //         </div>
+            //     `;
+            // }
+
+             data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                           <span vslang="buttons.Actions">Action</span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
+                    </a>
+                </div>`
         },
 
     ];
@@ -270,52 +280,47 @@ const RegisterDeceasedDialog = (() => {
                     createContent: () => {
                         return [
                             `<div class="row">
-                            <div class="form-group col-12">
-                                <label for="member_id" class="form-label" vslang="titles.Member"></label>
-                                 <span class="text-danger" >*</span>
-                                <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="relation" class="form-label" vslang="titles.Relationship"></label>
-                                 <span class="text-danger" >*</span>
-                                <input  name="relation" class="form-control data-input" data-field="relation">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="name" class="form-label" vslang="titles.Name"></label>
-                                 <span class="text-danger" >*</span>
-                                <input id="name" name="name" class="form-control data-input" data-field="name">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                 <span class="text-danger" >*</span>
-                                <select id="sex" class="form-control data-input" data-field="sex">
-                                    <option value="">(Select Sex)</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-
-
-                            <div class="form-group col-4">
+                                <div class="form-group col-8">
+                                    <label for="name" class="form-label" vslang="titles.Name"></label>
+                                    <span class="text-danger" >*</span>
+                                    <input id="name" name="name" class="form-control data-input" data-field="name">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
+                                    <span class="text-danger" >*</span>
+                                    <select id="sex" class="form-control data-input" data-field="sex">
+                                        <option value="">(Select Sex)</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-6">
                                 <label for="date_of_birth" class="form-label" vslang="titles.Date of birth"></label>
                                  <span class="text-danger" >*</span>
                                 <input  name="date_of_birth" class="form-control data-input" data-field="date_of_birth">
                             </div>
-                             <div class="form-group col-4">
+                             <div class="form-group col-6">
                                 <label for="date_of_death" class="form-label" vslang="titles.Date of death"></label>
                                  <span class="text-danger" >*</span>
                                 <input  name="date_of_death" class="form-control data-input" data-field="date_of_death">
                             </div>
-                             <div class="form-group col-4">
+                                
+                            <div class="form-group col-6">
+                                <label for="member_id" class="form-label" vslang="titles.Member"></label>
+                                 <span class="text-danger" >*</span>
+                                <select id="member_id" name="nationality_id" class="form-control data-input" data-field="member_id"></select>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="relation" class="form-label" vslang="titles.Relationship"></label>
+                                 <span class="text-danger" >*</span>
+                                <input  name="relation" class="form-control data-input" data-field="relation">
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="burial_date" class="form-label" vslang="titles.Burial date"></label>
                                  <span class="text-danger" >*</span>
                                 <input  name="burial_date" class="form-control data-input" data-field="burial_date">
                             </div>
-
-
-
-
                         </div>`
                         ].join("");
                     },
@@ -339,8 +344,8 @@ const RegisterDeceasedDialog = (() => {
 
                     ],
                     prepareFormOptions: {
-                        createTitle: "Register",
-                        modifyTitle: "Edit register",
+                        createTitle: "Register Deceased",
+                        modifyTitle: "Edit Register Deceased",
                         targetProp: "deceased_registration",
                         api: {
                             endpoint: [main_view.base_url, "/ypg/deceased-registration/form-options",].join(""),
