@@ -39,7 +39,7 @@ var MemberComponent = (function () {
             data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
         },
         {
-            title: "Nationality",
+            title: "Email",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
         },
