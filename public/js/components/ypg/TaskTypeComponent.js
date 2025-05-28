@@ -14,13 +14,17 @@ var TaskTypeComponent = (function () {
     mThis.cols = [
 
         {
+            title: "",
+            className: "align-middle text-capitalize",
+        },
+         {
             title: "Title",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-primary-custom">${data.title ?? 'null'}</span>`,
         },
         {
             title: "Description",
-            className: "align-middle text-capitalize w-50",
+            className: "align-middle text-capitalize ",
             data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`,
         },
 
@@ -39,23 +43,33 @@ var TaskTypeComponent = (function () {
             title: "Status",
             className: "align-middle",
             data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
-                return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
+                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning border border-warning rounded px-2 py-1 d-inline-block' : (data.status.toLowerCase() === 'active' ? 'text-success border border-success rounded px-2 py-1 d-inline-block' : 'text-info') : 'text-info';
+                return `<span class=" ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
             },
         },
         {
             className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
+            // data: function (data, row, display) {
+            //     return `
+            //        <div class="d-flex justify-content-center align-items-center">
+            //             <div class="text-center gap-2 d-flex flex-wrap">
+            //                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            //                 </a>
+            //             </div>
+            //         </div>
+            //     `;
+            // }
+
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                           <span vslang="buttons.Actions">Action</span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
+                    </a>
+                </div>`
         },
 
     ];

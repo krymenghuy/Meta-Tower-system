@@ -115,7 +115,7 @@ class Member
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw('m.id,m.code, m.update_user,'.$updated_at.',m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, ' . $expiry_date . '')
-            ->orderBy('m.name', 'asc');
+            ->orderBy('m.id', 'asc');
         $clone_query = clone $query;
         $count = $clone_query->count('m.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

@@ -62,17 +62,27 @@ var RegisterDeceasedComponent = (function () {
 
         {
             className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
+            // data: function (data, row, display) {
+            //     return `
+            //        <div class="d-flex justify-content-center align-items-center">
+            //             <div class="text-center gap-2 d-flex flex-wrap">
+            //                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            //                 </a>
+            //             </div>
+            //         </div>
+            //     `;
+            // }
+
+             data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                           <span vslang="buttons.Actions">Action</span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
+                    </a>
+                </div>`
         },
 
     ];
