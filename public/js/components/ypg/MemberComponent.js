@@ -6,7 +6,7 @@ var MemberComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_member_component");
     mThis.self = mThis.jm[0];
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddmember");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
@@ -22,47 +22,52 @@ var MemberComponent = (function () {
         {
             title: "Name",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Sex",
-            className: "align-middle text-capitalize",
-            data: (data) => {
+            data: (data) =>{
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
-            }
+                return `<span class=" d-block text-capitalize">${data.name ?? ''}</span>
+                        <small class="text-muted">${sexLabel}</small>`;
+            } 
         },
-
-        {
-            title: "Phone Number",
+         {
+            title: "Contact Info",
+            className: "align-middle",
+             data: (data, index, tr) => {
+                
+                return `<p class="text-capitalize pb-0 mb-1 d-block text-nowrap">${data.phone_number}</p>
+                        <p class="text-primary pb-0 mb-1 d-block text-nowrap">${data.email}</p>`;
+            },
+           
+        },
+         {
+            title: "Date of birth",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
         },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
         },
-        {
+               {
             title: "Address",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? 'N/A'}</span>`,
+            data: (data, index, tr) => {
+                return `<div class="text-break" style="min-width:100px;">${data.address ?? 'N/A'}</div>`;
+            }
         },
        {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
-                return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? 'N/A')
-                }</span>`;
+                if (data.is_expiry == 0) {
+                    return `<span class="text-success">Never Expire</span>`;
+                } else {
+                    const date = data.expiry_date ?? '';
+                    return `<span class="text-warning">${date}</span>`;
+                }
             },
         },
-       {
+        {
             title: "Status",
             className: "align-middle",
             data: (data) => {
@@ -78,6 +83,22 @@ var MemberComponent = (function () {
                 return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
             },
         },
+    //    {
+    //         title: "Status",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             const status = (data.status ?? '').toLowerCase();
+    //             let cls = 'text-info';
+
+    //             if (status === 'inactive') {
+    //                 cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+    //             } else if (status === 'active') {
+    //                 cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+    //             }
+
+    //             return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
+    //         },
+    //     },
 
         {
             title: "Updated By",
