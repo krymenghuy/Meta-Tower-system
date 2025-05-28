@@ -9,7 +9,7 @@
     pointer-events: none;
     opacity: 0.5; /* Optional: Visual indicator */
 }
- 
+
 .btn_add {
     padding: 10px 20px;
     color: white;
@@ -40,11 +40,11 @@
 .img_select{
     width:40px;
     height:40px;
-    border-radius:20px; 
+    border-radius:20px;
     object-fit:cover"
 }
 .text-primary-custom {
-    color: #13183c;
+    color: #2b3991;
 }
 .bg-primary-custom {
     background-color: #2b3991;
@@ -166,8 +166,8 @@ a.menu-selected .kt-menu__link-text {
     /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
         brightness(90%) contrast(91%); */
     filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
-    /* filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
-        brightness(100%) contrast(100%); */
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(100%) contrast(100%);
 }
 
 .kt-menu__link-icon img {
@@ -1795,7 +1795,7 @@ ul.list-filter-um li:not(li:last-child) {
 
 .table--white {
     background: #ffffff !important;
-    color: #13183c !important;
+    color: #000000 !important;
     font-size: 14px !important;
     font-weight: 300 !important;
     /* text-align: left !important; */

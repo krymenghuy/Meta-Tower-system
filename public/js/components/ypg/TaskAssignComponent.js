@@ -42,7 +42,7 @@ var TaskAssignComponent = (function () {
             title: "Status",
             className: "align-middle",
             data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'inactive' ? 'text-warning' : (data.status.toLowerCase() === 'active' ? 'text-success' : 'text-info') : 'text-info';
+                const cls = data.status ? data.status.toLowerCase() === 'pending' ? 'text-warning' : (data.status.toLowerCase() === 'done' ? 'text-success' : 'text-info') : 'text-info';
                 return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
             },
         },
@@ -202,19 +202,24 @@ var TaskAssignComponent = (function () {
 
         let inputOptions = {
             title: 'Change Status',
-            dataLabel: "Member status",
+            dataLabel: "Task assign status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText:"Save",
             blankErrorMessage: "Status is not correct!",
             data: [{
                 status_id: "1",
-                name: "Active"
+                name: "Pending"
             },
             {
                 status_id: "2",
-                name: "Inactive"
-            }],
+                name: "In progress"
+            },
+            {
+                status_id: "3",
+                name: "Done"
+            },
+        ],
             defaultValue: status_id
         };
 
@@ -250,6 +255,8 @@ var TaskAssignComponent = (function () {
                 mThis.TaskAssignListView.showPage(mThis.getFilterData());
             }
         };
+        console.log(11,op);
+
         if (!AuthManager.allowed(241)) return;
          TaskAssignDialog.show(op);
     }
@@ -312,13 +319,13 @@ const TaskAssignDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-6">
+                            <div class="form-group col-12">
                                 <label for="member_id" class="form-label" vslang="titles.Member"></label>
                                  <span class="text-danger" >*</span>
                                 <select  name="member_id" class="form-control data-input" data-field="member_id"></select>
@@ -329,7 +336,10 @@ const TaskAssignDialog = (() => {
                                  <span class="text-danger" >*</span>
                                 <select  name="task_type_id" class="form-control data-input" data-field="task_type_id"></select>
                             </div>
-
+                            <div class="form-group col-6 d-none" >
+                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
+                                <input  name="status_id" class="form-control data-input" data-field="status_id">
+                            </div>
                             <div class="form-group col-6 expiry-wrapper">
                                 <label for="assign_date" class="form-label" vslang="titles.Assign Date"></label>
                                  <span class="text-danger" >*</span>

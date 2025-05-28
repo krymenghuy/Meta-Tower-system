@@ -36,10 +36,15 @@ const PusherClient = new function(){
                 authorize: function authorize(socketId, callback) {
                     const p = {"socket_id":socketId,"channel_name":channel.name};
                     vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p,false,false).then(d =>{
-                        console.log('Pusher authorization succeeded!');
                         const auth_data = d.data || d;
                         //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
-                        callback(null, auth_data);
+                        if(auth_data){
+                             callback(null, auth_data);
+                             //console.log('Pusher authorization succeeded!');
+                        }else{
+                            console.error('Pusher authorization failed. This can happen when token expired!');
+                        }
+                       
                     });
                 }
             };

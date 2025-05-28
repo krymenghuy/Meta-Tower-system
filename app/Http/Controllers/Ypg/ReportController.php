@@ -48,6 +48,36 @@ class ReportController extends Controller
       return JDV::result($rpt->getTaskAssign($req->all(),$ss));
   }
 
+  function getGraveOwnership(Request $req)
+  {
+      $ss = XAuthService::verifyAuth($req, -1);
+      if ($ss->status_code !== 200) {
+          return JDV::raw($ss);
+      }
+      $rpt = new Report();
+      return JDV::result($rpt->getGraveOwnership($req->all(),$ss));
+  }
+
+  function getUnusedGraveSlot(Request $req)
+  {
+      $ss = XAuthService::verifyAuth($req, -1);
+      if ($ss->status_code !== 200) {
+          return JDV::raw($ss);
+      }
+      $rpt = new Report();
+      return JDV::result($rpt->getUnusedGraveSlot($req->all(),$ss));
+  }
+
+  function getDeceasedRegistration(Request $req)
+  {
+      $ss = XAuthService::verifyAuth($req, -1);
+      if ($ss->status_code !== 200) {
+          return JDV::raw($ss);
+      }
+      $rpt = new Report();
+      return JDV::result($rpt->getDeceasedRegistration($req->all(),$ss));
+  }
+
     //api getReportFilterOptions()| not web get
     function getReportFilterOptions(Request $req)
     {
