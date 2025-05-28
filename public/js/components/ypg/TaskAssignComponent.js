@@ -320,16 +320,19 @@ const TaskAssignDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-6">
                                 <label for="member_id" class="form-label" vslang="titles.Member"></label>
+                                 <span class="text-danger" >*</span>
                                 <select  name="member_id" class="form-control data-input" data-field="member_id"></select>
                             </div>
 
                             <div class="form-group col-6">
                                 <label for="task_type_id" class="form-label" vslang="titles.Task Type"></label>
+                                 <span class="text-danger" >*</span>
                                 <select  name="task_type_id" class="form-control data-input" data-field="task_type_id"></select>
                             </div>
 
                             <div class="form-group col-6 expiry-wrapper">
                                 <label for="assign_date" class="form-label" vslang="titles.Assign Date"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="assign_date" class="form-control data-input" data-field="assign_date">
                             </div>
 
