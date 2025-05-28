@@ -131,7 +131,7 @@ var ReportCenterComponent = new (function () {
             mThis.renderReportType(data),
             `</ul>
                                 </div>`,
-            
+
             // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
             //     <div class="h-img-report">
             //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
