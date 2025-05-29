@@ -391,6 +391,7 @@ var ReportCenterComponent = new (function () {
 
         mThis.runReport(div, p.code);
 
+
         div.find("[data-select='datepicker']").each(function () {
             DateTimePicker.init($(this));
         });
@@ -501,6 +502,7 @@ var ReportCenterComponent = new (function () {
             }
             p[f] = el.val();
         });
+
         return p;
     };
 
@@ -531,8 +533,9 @@ var ReportCenterComponent = new (function () {
                 }
                 p[f] = el.val();
                 p.code = code;
+            console.log(22,el[0].value);
+
             });
-            // console.log(11,p);
 
             if (p.required && !p.required.value && p.required.text)
                 cv_interact.warning(p.required.text);
@@ -540,6 +543,7 @@ var ReportCenterComponent = new (function () {
         });
 
         div[0].querySelectorAll(".data-filter").forEach((el) => {
+
             el.onchange = (e) => {
                 e.preventDefault();
                 let op = mThis.getDataFilter();
@@ -552,6 +556,7 @@ var ReportCenterComponent = new (function () {
                 if (btn) btn.click();
                 else if (btn) btn.click();
             };
+
         });
 
         div.find("#_rpt_btn_list").on("click", function (e) {
