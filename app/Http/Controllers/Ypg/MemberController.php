@@ -17,7 +17,7 @@ class MemberController extends Controller
         }
         $id = $req->member_id ?? $req->id;
         $member = new Member($id, $ss);
-        $res = $member->save($req->all());
+        $res = $member->save($req->all(),$id,$ss);
         return JDV::raw($res);
     }
 

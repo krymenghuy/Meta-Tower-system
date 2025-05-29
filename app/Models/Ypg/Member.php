@@ -29,14 +29,15 @@ class Member
         return null;
     }
 
-    public function save($arr, $id = null)
+    public function save($arr = [], $id = null,$ss=null)
     {
         $id = $id ?? $this->id;
-        $ss = $this->userInfo;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
             'name' => '1|string|0-150',
-            'sex' => '1|string|0-10',
+            'sex' => '1|choice|f,F,m,M,o,O',
             'phone_number' => '1|phone|0-50',
             'email' => '1|email',
             'address' => '0|string|0-250',
@@ -45,32 +46,36 @@ class Member
             'is_expiry' => '1|number|default = 0',
             'expiry_date' => '0|date',
         ];
-
-        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars,'address'=> GeneralSettings::$address_map_chars], $ss->lang, false, []);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $expiry_date = $res->values['expiry_date'] ?? null;
-        if ($expiry_date) {
-            $expiry_date = convertDate($expiry_date);
-            $res->values['expiry_date'] = $expiry_date;
-        }
-
+        $checkUnique = null;
+        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars,'address'=> GeneralSettings::$address_map_chars], $ss->lang, false, isset($arr[' id']) ? null : $checkUnique);
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $d = (object)$inputs;
-         $created = !$id;
-
+        $d = (object) $inputs;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
         $phone_check = $this->checkUniqueMemberByPhone($d->phone_number, $id);
         if ($phone_check) return DV::error($phone_check);
 
-
+        $expiry_date = $d->expiry_date ?? null;
+        $is_expiry = $d->is_expiry ?? 0;
+        if ($is_expiry == 1 && !$expiry_date) {
+            return DV::error('Expiry date is required');
+        }
+        if ($expiry_date) {
+            $converted_expiry= convertDate($expiry_date);
+            if (strtotime($converted_expiry) < strtotime(date('Y-m-d'))) {
+                return DV::error('Expiry date cannot be in the past.');
+            }
+            $inputs['expiry_date'] = $converted_expiry;
+        } else {
+            unset($inputs['expiry_date']);
+        }
+        $created = !$id;
         $new_id = DBX::saveData($ss, 'members', ['id' => $id], $inputs, [], 1, false);
 
         if ($new_id && $created) {
 
-            $prefix = 'YPG';
+            $prefix = 'YP';
             $res = setOfficialCode($branch_id, 'member_code_control', 'members', ['id' => $new_id], $prefix, 5, null);
 
         }
@@ -79,7 +84,7 @@ class Member
             return DV::depends($new_id, ['members' => $inputs, 'id' => $new_id]);
         }
 
-        return DV::error('Error saving member');
+        return DV::error('Failed to save member');
 
     }
 
@@ -114,8 +119,8 @@ class Member
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('m.id,m.code, m.update_user,'.$updated_at.',m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, ' . $expiry_date . '')
-            ->orderBy('m.id', 'asc');
+            ->selectRaw('m.id,m.code, m.update_user,'.$updated_at.',m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.nationality, m.status_id, ms.name as status, m.is_expiry, ' . $expiry_date . '')
+            ->orderBy('m.id', 'DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('m.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -145,6 +150,7 @@ class Member
             'member_details' => $member_details,
             'statuses' => GeneralSettings::options_member_status($ss),
             'countries' => GeneralSettings::options_country($ss),
+            'nationality' => GeneralSettings::options_nationality($ss),
         ];
 
     }
