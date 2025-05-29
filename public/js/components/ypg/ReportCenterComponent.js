@@ -131,7 +131,7 @@ var ReportCenterComponent = new (function () {
             mThis.renderReportType(data),
             `</ul>
                                 </div>`,
-            
+
             // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
             //     <div class="h-img-report">
             //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
@@ -391,6 +391,7 @@ var ReportCenterComponent = new (function () {
 
         mThis.runReport(div, p.code);
 
+
         div.find("[data-select='datepicker']").each(function () {
             DateTimePicker.init($(this));
         });
@@ -501,6 +502,7 @@ var ReportCenterComponent = new (function () {
             }
             p[f] = el.val();
         });
+
         return p;
     };
 
@@ -530,9 +532,11 @@ var ReportCenterComponent = new (function () {
                     p["simple"] = true;
                 }
                 p[f] = el.val();
+
                 p.code = code;
+                console.log(22,el[0].value);
+
             });
-            // console.log(11,p);
 
             if (p.required && !p.required.value && p.required.text)
                 cv_interact.warning(p.required.text);
@@ -540,18 +544,23 @@ var ReportCenterComponent = new (function () {
         });
 
         div[0].querySelectorAll(".data-filter").forEach((el) => {
+                        console.log(1,el);
+
             el.onchange = (e) => {
                 e.preventDefault();
                 let op = mThis.getDataFilter();
                 const btn = div[0].querySelector("#_rpt_btn_report");
-                if (
-                    e.target.dataset.field == "start_date" ||
-                    e.target.dataset.field == "end_date"
-                )
+                if (e.target.dataset.field == "start_date" ||e.target.dataset.field == "end_date"){}
                     // if (op.start_date == "" || op.end_date == "") return;
-                if (btn) btn.click();
-                else if (btn) btn.click();
+
+                if (btn)
+                {
+                    btn.click();
+                }
+
+                // else if (btn) btn.click();
             };
+
         });
 
         div.find("#_rpt_btn_list").on("click", function (e) {
