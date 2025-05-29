@@ -86,7 +86,7 @@ const main_view = new function(){
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
        this.lnkLogout = this.side_menus.querySelector('#_main_lnkLogout');
 
-       VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent");
+       VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",this.side_menus,false);
      //END:: process side menus click using VSRoute
 
         this.displayUserMenus();
