@@ -204,9 +204,8 @@ function v_display($mod_id, $module_ids = null)
                             <a href="TaskTypeComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <!-- <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/task-type.png') }}" /> -->
-                                        <i class="fa-solid fa-bars-staggered" style="color: #323439;"></i>
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/task.svg') }}" />
+                                        <!-- <i class="fa-solid fa-bars-staggered" style="color: #323439;"></i> -->
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Task Type"></span>
                             </a>
@@ -216,7 +215,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="TaskAssignComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                        src="{{ asset('assets/images/icons/task-list.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Task Management"></span>
                             </a>
@@ -232,7 +231,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="RegisterDeceasedComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/register.png') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/registered.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus. Register Deceased"></span>
                 </a>
@@ -240,7 +239,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/grave_slot.png') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus. Grave Slot "></span>
                 </a>
