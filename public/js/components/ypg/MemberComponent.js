@@ -21,7 +21,7 @@ var MemberComponent = (function () {
         {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-primary">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
@@ -37,38 +37,59 @@ var MemberComponent = (function () {
             className: "align-middle",
             data: (data, index, tr) => {
 
-                return `<p class="text-capitalize pb-0 mb-1 d-block text-nowrap">${data.phone_number}</p>
-                        <p class="text-primary pb-0 mb-1 d-block text-nowrap">${data.email}</p>`;
+                return `<div class="d-flex flex-column">
+                            <div class="d-flex">
+                                <small><i class="fas fa-phone text-success mt-1"></i></small><small class="text-dark ps-2">${data.phone_number}</small>
+                            </div>
+                            <div class="d-flex">
+                                <small><i class="fas fa-envelope text-warning mt-1"></i></small><small class="text-primary ps-2">${data.email}</small>
+                            </div>
+                        </div>`;
             },
 
         },
-        {
-            title: "Date of birth",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
-        },
+        // {
+        //     title: "Date of birth",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
+        // },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
         },
-        {
+       {
             title: "Address",
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
-                return `<div class="text-break" style="width:128px; word-break:break-word;">${data.address ?? 'N/A'}</div>`;
+                return `
+                    <div class="text-break" style="width:150px; word-break:break-word;">
+                        <i class="fa-solid fa-location-dot text-danger me-2"></i>${data.address ?? 'N/A'}
+                    </div>
+                `;
             }
         },
+
         {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
                 if (data.is_expiry == 0) {
                     return `<span class="text-success">Never Expire</span>`;
-                } else {
-                    const date = data.expiry_date ?? '';
-                    return `<span class="text-warning">${date}</span>`;
                 }
+                const dateStr = data.expiry_date ?? '';
+                if (!dateStr) {
+                    return `<span class="text-muted">N/A</span>`;
+                }
+                const today = new Date().setHours(0, 0, 0, 0);
+                const expiryDate = new Date(dateStr).setHours(0, 0, 0, 0);
+                if (expiryDate < today) {
+                    return `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>${dateStr} (Expired)</span>`;
+                }
+                if (expiryDate === today) {
+                    return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
+                }
+                return `<span class="text-dark">${dateStr}</span>`;
             },
         },
         {
@@ -466,8 +487,8 @@ const MemberDialog = (() => {
                 configSelect: [
                     {
                         name: "nationality_id",
-                        data: "countries",
-                        textField: "country",
+                        data: "nationality",
+                        textField: "nationality",
                         valueField: "id",
                     },
 
