@@ -532,8 +532,9 @@ var ReportCenterComponent = new (function () {
                     p["simple"] = true;
                 }
                 p[f] = el.val();
+
                 p.code = code;
-            console.log(22,el[0].value);
+                console.log(22,el[0].value);
 
             });
 
@@ -543,18 +544,21 @@ var ReportCenterComponent = new (function () {
         });
 
         div[0].querySelectorAll(".data-filter").forEach((el) => {
+                        console.log(1,el);
 
             el.onchange = (e) => {
                 e.preventDefault();
                 let op = mThis.getDataFilter();
                 const btn = div[0].querySelector("#_rpt_btn_report");
-                if (
-                    e.target.dataset.field == "start_date" ||
-                    e.target.dataset.field == "end_date"
-                )
+                if (e.target.dataset.field == "start_date" ||e.target.dataset.field == "end_date"){}
                     // if (op.start_date == "" || op.end_date == "") return;
-                if (btn) btn.click();
-                else if (btn) btn.click();
+
+                if (btn)
+                {
+                    btn.click();
+                }
+
+                // else if (btn) btn.click();
             };
 
         });
