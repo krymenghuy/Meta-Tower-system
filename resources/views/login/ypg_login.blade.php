@@ -189,10 +189,10 @@
     </head>
     <body onload="checkDevice()">
         <div class="vs-container-login">
-            <!-- <div>
+            <div>
                 <img class="img-background" src="{{asset(('assets/images/bhr/cemetery-background.png'))}}"/>
                 <div class="overlay-blur"></div>
-            </div> -->
+            </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
                     <!-- <img class="img-front"  src="{{ asset('assets/images/bhr/cemetery.png') }}"/> -->
@@ -227,8 +227,8 @@
                             </div>
                         </div>
                         <div class="vs-d-flex-copyright">
-                            <p>Yav Pheng project.</p>
-                            <p>Meta Association</p>
+                            <p>China Yav Pheng Association</p>
+                            <p>Copyright &copy; 2021</p>
                         </div>
                     </div>
                 </div>
