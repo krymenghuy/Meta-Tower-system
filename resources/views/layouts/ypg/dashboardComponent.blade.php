@@ -11,7 +11,6 @@
 
     </div>
 </div>
-
 <style>
     pre {
         margin: 0;
@@ -155,20 +154,6 @@
         scrollbar-width: none;
     }
 
-    /* #_main_dashboardComponent tr:hover {
-        background-color: skyblue;
-        cursor: pointer;
-    } */
-    /* .dashboard_top {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        grid-gap: 20px;
-        padding: 20px;
-        background-color: #f4f4f4;
-    } */
-
-
-
     .dashboard_center {
         display: flex;
         justify-content: center;
@@ -176,14 +161,6 @@
         padding: 20px 0px;
         gap: 1rem;
     }
-
-
-
-
-
-
-
-
 
     /* Icon size control */
     .img--size {
@@ -196,6 +173,6 @@
         padding: 1rem;
     }
     .custom-padding {
-        padding-left: 80px; 
+        padding-left: 80px;
     }
 </style>

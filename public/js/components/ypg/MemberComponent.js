@@ -6,7 +6,7 @@ var MemberComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_member_component");
     mThis.self = mThis.jm[0];
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddmember");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
@@ -15,54 +15,84 @@ var MemberComponent = (function () {
     mThis.cols = [
 
         {
+            title: "",
+            className: "align-middle text-capitalize",
+        },
+        {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.code ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-primary">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.name ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Sex",
-            className: "align-middle text-capitalize",
+            className: "align-middle  text-capitalize ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="text-primary-custom">${sexLabel}</span>`;
+                return `<span class=" d-block text-capitalize text-break" style="width:128px; word-break:break-word;">${data.name ?? ''}</span>
+                        <small class="text-muted">${sexLabel}</small>`;
+            }
+        },
+        {
+            title: "Contact Info",
+            className: "align-middle",
+            data: (data, index, tr) => {
+
+                return `<div class="d-flex flex-column">
+                            <div class="d-flex">
+                                <small><i class="fas fa-phone text-success mt-1"></i></small><small class="text-dark ps-2">${data.phone_number}</small>
+                            </div>
+                            <div class="d-flex">
+                                <small><i class="fas fa-envelope text-warning mt-1"></i></small><small class="text-primary ps-2">${data.email}</small>
+                            </div>
+                        </div>`;
+            },
+
+        },
+        // {
+        //     title: "Date of birth",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
+        // },
+        {
+            title: "Nationality",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
+        },
+       {
+            title: "Address",
+            className: "align-middle text-capitalize",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-break" style="width:150px; word-break:break-word;">
+                        <i class="fa-solid fa-location-dot text-danger me-2"></i>${data.address ?? 'N/A'}
+                    </div>
+                `;
             }
         },
 
         {
-            title: "Phone Number",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.phone_number ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.email ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Address",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.address ?? 'N/A'}</span>`,
-        },
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.nationality ?? 'N/A'}</span>`,
-        },
-       {
             title: "Expiry Date",
             className: "align-middle text-capitalize",
             data: (data) => {
-                return `<span class="text-primary-custom">${
-                    data.is_expiry == 0 ? 'Forever' : (data.expiry_date ?? 'N/A')
-                }</span>`;
+                if (data.is_expiry == 0) {
+                    return `<span class="text-success">Never Expire</span>`;
+                }
+                const dateStr = data.expiry_date ?? '';
+                if (!dateStr) {
+                    return `<span class="text-muted">N/A</span>`;
+                }
+                const today = new Date().setHours(0, 0, 0, 0);
+                const expiryDate = new Date(dateStr).setHours(0, 0, 0, 0);
+                if (expiryDate < today) {
+                    return `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>${dateStr} (Expired)</span>`;
+                }
+                if (expiryDate === today) {
+                    return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
+                }
+                return `<span class="text-dark">${dateStr}</span>`;
             },
         },
-       {
+        {
             title: "Status",
             className: "align-middle",
             data: (data) => {
@@ -78,11 +108,27 @@ var MemberComponent = (function () {
                 return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
             },
         },
+        //    {
+        //         title: "Status",
+        //         className: "align-middle",
+        //         data: (data) => {
+        //             const status = (data.status ?? '').toLowerCase();
+        //             let cls = 'text-info';
+
+        //             if (status === 'inactive') {
+        //                 cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+        //             } else if (status === 'active') {
+        //                 cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+        //             }
+
+        //             return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
+        //         },
+        //     },
 
         {
             title: "Updated By",
             className: 'align-middle',
-            data: (data, index, tr)=>{
+            data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize fw-semibold">${data.update_user ?? ''}</span>
                     <small class="text-left text-muted">${data.updated_at ?? ''}</small>
@@ -91,17 +137,27 @@ var MemberComponent = (function () {
         },
         {
             className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
+            // data: function (data, row, display) {
+            //     return `
+            //        <div class="d-flex justify-content-center align-items-center">
+            //             <div class="text-center gap-2 d-flex flex-wrap">
+            //                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            //                 </a>
+            //             </div>
+            //         </div>
+            //     `;
+            // }
+
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                           <span vslang="buttons.Actions">Action</span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
+                    </a>
+                </div>`
         },
 
     ];
@@ -109,8 +165,8 @@ var MemberComponent = (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.MemberListView = new ListView('_member_list',{
-            fetchApi : `${main_view.base_url}/ypg/member/list-paginate`,
+        mThis.MemberListView = new ListView('_member_list', {
+            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -151,13 +207,13 @@ var MemberComponent = (function () {
             pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.MemberListView.showPage(mThis.getFilterData());
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.MemberListView.showPage(mThis.getFilterData());
             }
-       });
+        });
 
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
@@ -177,63 +233,63 @@ var MemberComponent = (function () {
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-                const f = el.dataset.field;
-                p[f] = el.value;
+            const f = el.dataset.field;
+            p[f] = el.value;
         });
 
         return p;
     };
 
-    mThis.initDropdownMenus = (table)=>{
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_leave_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa fa-exchange fs-5 text-info"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass:"border-bottom pb-2",
-                    name:"change_status"
+                    cssClass: "border-bottom pb-2",
+                    name: "change_status"
                 },
                 {
-                    html:'<span class="ps-2 " vslang="titles.Modify"></span>',
-                    icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_member"
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_member"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete"></span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_member"
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_member"
                 },
             ],
-            adjustPosition:{
-                top:-200 ,
-                left:-300
-           },
+            adjustPosition: {
+                top: -200,
+                left: -300
+            },
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
+            onClick: (menuLink, id, name) => {
+                switch (name) {
 
-                    case 'change_status':{
-                        mThis.changeStatus(id,menuLink);
+                    case 'change_status': {
+                        mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_member':{
-                      mThis.editMember(id, menuLink);
-                      break;
+                    case 'edit_member': {
+                        mThis.editMember(id, menuLink);
+                        break;
                     }
-                    case 'delete_member':{
+                    case 'delete_member': {
                         mThis.deleteMember(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
             }
@@ -241,20 +297,20 @@ var MemberComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk)=>{
+    mThis.changeStatus = (id, lnk) => {
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
 
-        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
 
         let inputOptions = {
             title: 'Change Status',
             dataLabel: "Member status",
             valueMember: "status_id",
             textMember: "name",
-            confirmButtonText:"Save",
+            confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [{
                 status_id: "1",
@@ -267,15 +323,15 @@ var MemberComponent = (function () {
             defaultValue: status_id
         };
 
-        InputBox2.show(inputOptions,(d)=>{
-            if(d){
+        InputBox2.show(inputOptions, (d) => {
+            if (d) {
                 let p = {
                     id: id,
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`,p).then(res => {
-                    if(res.status_code === 200){
+                vsapi.call(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
+                    if (res.status_code === 200) {
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
                         // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
@@ -312,14 +368,14 @@ var MemberComponent = (function () {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?',{
+        cv_interact.confirm('Delete this member?', {
             title: 'Delete Member',
             context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.MemberListView.showPage();
                     }
@@ -335,16 +391,16 @@ var MemberComponent = (function () {
 
         vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            VSUtil.setComboItems(mThis.elFilter_status,d.statuses,'id','member_status',true,'All Statuses',null);
-        })
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
+            })
     }
 
     mThis.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.MemberListView.showPage(mThis.getFilterData(), null,()=>{
+        mThis.MemberListView.showPage(mThis.getFilterData(), null, () => {
             mThis.jm.siblings().hide();
             mThis.jm.hide().fadeIn(200);
         });
@@ -431,8 +487,8 @@ const MemberDialog = (() => {
                 configSelect: [
                     {
                         name: "nationality_id",
-                        data: "countries",
-                        textField: "country",
+                        data: "nationality",
+                        textField: "nationality",
                         valueField: "id",
                     },
 
@@ -442,7 +498,7 @@ const MemberDialog = (() => {
                     modifyTitle: "Edit Member",
                     targetProp: "member_details",
                     api: {
-                        endpoint: [ main_view.base_url,"/ypg/member/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/ypg/member/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -455,20 +511,20 @@ const MemberDialog = (() => {
 
                 buttons: [
                     {
-                        label:'<span class="text-white">Cancel</span>',
-                        cssClass:'btn btn-sm btn-warning',
+                        label: '<span class="text-white">Cancel</span>',
+                        cssClass: 'btn btn-sm btn-warning',
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label:'<span>Save</span>',
-                        cssClass:'btn btn-sm btn-primary',
+                        label: '<span>Save</span>',
+                        cssClass: 'btn btn-sm btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
 
-                            vsapi.call([main_view.base_url,"/ypg/member/save",].join(""),op,btn,null).then((res) => {
+                            vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {

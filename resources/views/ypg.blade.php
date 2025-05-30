@@ -261,9 +261,6 @@
                             @include('layouts.ypg.dashboardComponent')
                             @include('layouts.ypg.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
-                            @include('layouts.ypg.employeeComponent')
-                            @include('layouts.ypg.skillsComponent')
-                            @include('layouts.ypg.departmentComponent')
                             @include('layouts.common.locationComponent')
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
@@ -274,7 +271,7 @@
                             @include('layouts.ypg.taskAssignComponent')
                             @include('layouts.ypg.slotInfoComponent')
                             @include('layouts.ypg.registerDeceasedComponent')
-                            @include('layouts.ypg.recordrelationComponent')
+                            
                         </div>
                     </div>
                 </div>

@@ -7397,6 +7397,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/6e5ad15db7e243bda3002b16795f29ac64319f4b",
                 "reference": "6e5ad15db7e243bda3002b16795f29ac64319f4b",
+
                 "shasum": ""
             },
             "require": {
@@ -7427,6 +7428,7 @@
                 "issues": "https://github.com/vectorasoft-org/lib-dbx/issues"
             },
             "time": "2025-05-28T05:22:16+00:00"
+ 
         },
         {
             "name": "vsd/localization",

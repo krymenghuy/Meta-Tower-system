@@ -13,6 +13,10 @@ var SlotInfoComponent = (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_slot_info");
 
     mThis.cols = [
+         {
+            title: "",
+            className: "align-middle text-capitalize",
+        },
 
         {
             title: "Slot Number",
@@ -43,8 +47,8 @@ var SlotInfoComponent = (function () {
         },
         {
             title: "Used by",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.used_by ?? 'N/A'}</span>`,
+            className: "align-middle text-capitalize ",
+            data: (data) => `<span class="text-primary-custom  ">${data.used_by ?? 'N/A'}</span>`,
         },
         {
             title: "Location Note",
@@ -79,17 +83,27 @@ var SlotInfoComponent = (function () {
 
         {
             className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
+            // data: function (data, row, display) {
+            //     return `
+            //        <div class="d-flex justify-content-center align-items-center">
+            //             <div class="text-center gap-2 d-flex flex-wrap">
+            //                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            //                 </a>
+            //             </div>
+            //         </div>
+            //     `;
+            // }
+
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                           <span vslang="buttons.Actions">Action</span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
+                    </a>
+                </div>`
         },
 
     ];
@@ -292,19 +306,23 @@ const SlotInfoDialog = (() => {
                             `<div class="row">
                             <div class="form-group col-6">
                                 <label for="slot_number" class="form-label" vslang="titles.Slot number"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="slot_number" class="form-control data-input" data-field="slot_number">
                             </div>
                            <div class="form-group col-6">
                                 <label for="zone" class="form-label" vslang="titles.Zone"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="zone" class="form-control data-input" data-field="zone">
                             </div>
                             <div class="form-group col-6">
                                 <label for="grave_row" class="form-label" vslang="titles.Grave_Row"></label>
+                                 <span class="text-danger" >*</span>
                                 <input  name="grave_row" class="form-control data-input" data-field="grave_row">
                             </div>
 
                              <div class="form-group col-6">
                                 <label for="position" class="form-label" vslang="titles.Position"></label>
+                                 <span class="text-danger" >*</span>
                                 <input name="position" class="form-control data-input" data-field="position">
                             </div>
                             <div class="form-group col-6">
