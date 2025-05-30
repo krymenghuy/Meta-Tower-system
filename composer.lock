@@ -4,85 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b2756285fa3e5f918e56167a20aa93c",
+    "content-hash": "53ecf43db51a644c1be5755c4cd9c83b",
     "packages": [
-        {
-            "name": "apility/laravel-fcm",
-            "version": "v1.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/apility/Laravel-FCM.git",
-                "reference": "23b8feab8372b53d620edf7b94794b8e28ed0271"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/apility/Laravel-FCM/zipball/23b8feab8372b53d620edf7b94794b8e28ed0271",
-                "reference": "23b8feab8372b53d620edf7b94794b8e28ed0271",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.0|^7.0",
-                "illuminate/support": "^5.0|^6.0|^7.0|^8.0|^9.0",
-                "monolog/monolog": "^1.0|^2.0",
-                "php": ">=5.5.9"
-            },
-            "replace": {
-                "brozot/laravel-fcm": "*"
-            },
-            "require-dev": {
-                "laravel/laravel": "5.2.*",
-                "mockery/mockery": "0.9.*",
-                "phpunit/phpunit": "4.7.*",
-                "satooshi/php-coveralls": "dev-master"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "LaravelFCM\\FCMServiceProvider"
-                    ],
-                    "aliases": {
-                        "FCM": "LaravelFCM\\Facades\\FCM",
-                        "FCMGroup": "LaravelFCM\\Facades\\FCMGroup"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "LaravelFCM\\": "src/",
-                    "LaravelFCM\\Mocks\\": "tests/mocks"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Brosy",
-                    "email": "nicolas.brosy@gmail.com"
-                },
-                {
-                    "name": "Thomas Alrek",
-                    "email": "thomas@apility.no"
-                }
-            ],
-            "description": "Laravel / Lumen package for Firebase Cloud Messaging ",
-            "keywords": [
-                "FCM",
-                "Firebase Cloud Messaging",
-                "firebase",
-                "laravel",
-                "lumen",
-                "notification",
-                "push"
-            ],
-            "support": {
-                "source": "https://github.com/apility/Laravel-FCM/tree/v1.5.0"
-            },
-            "abandoned": true,
-            "time": "2022-10-06T11:25:51+00:00"
-        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.3.0",
@@ -2235,79 +2158,6 @@
             "time": "2025-01-27T14:24:01+00:00"
         },
         {
-            "name": "laravelcollective/html",
-            "version": "v6.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LaravelCollective/html.git",
-                "reference": "64ddfdcaeeb8d332bd98bef442bef81e39c3910b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/64ddfdcaeeb8d332bd98bef442bef81e39c3910b",
-                "reference": "64ddfdcaeeb8d332bd98bef442bef81e39c3910b",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/routing": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/session": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/view": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "php": ">=7.2.5"
-            },
-            "require-dev": {
-                "illuminate/database": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "mockery/mockery": "~1.0",
-                "phpunit/phpunit": "~8.5|^9.5.10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "6.x-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Collective\\Html\\HtmlServiceProvider"
-                    ],
-                    "aliases": {
-                        "Form": "Collective\\Html\\FormFacade",
-                        "Html": "Collective\\Html\\HtmlFacade"
-                    }
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "Collective\\Html\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Adam Engebretson",
-                    "email": "adam@laravelcollective.com"
-                },
-                {
-                    "name": "Taylor Otwell",
-                    "email": "taylorotwell@gmail.com"
-                }
-            ],
-            "description": "HTML and Form Builders for the Laravel Framework",
-            "homepage": "https://laravelcollective.com",
-            "support": {
-                "issues": "https://github.com/LaravelCollective/html/issues",
-                "source": "https://github.com/LaravelCollective/html"
-            },
-            "abandoned": "spatie/laravel-html",
-            "time": "2023-04-25T02:46:11+00:00"
-        },
-        {
             "name": "lcobucci/clock",
             "version": "3.3.1",
             "source": {
@@ -3815,16 +3665,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "4.2.0",
+            "version": "4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "5f6d7410e5fd72cac1aa67d4f05f4fe664d01ba6"
+                "reference": "d0ac70d610fb62ccad38c2696569ae1ad42acc70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/5f6d7410e5fd72cac1aa67d4f05f4fe664d01ba6",
-                "reference": "5f6d7410e5fd72cac1aa67d4f05f4fe664d01ba6",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/d0ac70d610fb62ccad38c2696569ae1ad42acc70",
+                "reference": "d0ac70d610fb62ccad38c2696569ae1ad42acc70",
                 "shasum": ""
             },
             "require": {
@@ -3915,9 +3765,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/4.2.0"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/4.3.1"
             },
-            "time": "2025-04-17T02:41:45+00:00"
+            "time": "2025-05-26T18:51:08+00:00"
         },
         {
             "name": "phpoffice/phpword",
@@ -5331,7 +5181,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v7.2.0",
+            "version": "v7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -5376,7 +5226,7 @@
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v7.2.0"
+                "source": "https://github.com/symfony/css-selector/tree/v7.3.0"
             },
             "funding": [
                 {
@@ -7062,16 +6912,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v6.4.21",
+            "version": "v6.4.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "bb92ea5588396b319ba43283a5a3087a034cb29c"
+                "reference": "7e3b3b7146c6fab36ddff304a8041174bf6e17ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/bb92ea5588396b319ba43283a5a3087a034cb29c",
-                "reference": "bb92ea5588396b319ba43283a5a3087a034cb29c",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/7e3b3b7146c6fab36ddff304a8041174bf6e17ad",
+                "reference": "7e3b3b7146c6fab36ddff304a8041174bf6e17ad",
                 "shasum": ""
             },
             "require": {
@@ -7137,7 +6987,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v6.4.21"
+                "source": "https://github.com/symfony/translation/tree/v6.4.22"
             },
             "funding": [
                 {
@@ -7153,7 +7003,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-07T19:02:30+00:00"
+            "time": "2025-05-29T07:06:44+00:00"
         },
         {
             "name": "symfony/translation-contracts",
@@ -7541,12 +7391,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-dbx.git",
-                "reference": "6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9"
+                "reference": "6e5ad15db7e243bda3002b16795f29ac64319f4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9",
-                "reference": "6cc2ce7ddf9bd0493c30b8a4691427deebc1b8c9",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/6e5ad15db7e243bda3002b16795f29ac64319f4b",
+                "reference": "6e5ad15db7e243bda3002b16795f29ac64319f4b",
                 "shasum": ""
             },
             "require": {
@@ -7576,7 +7426,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-dbx/issues"
             },
-            "time": "2025-05-24T13:12:16+00:00"
+            "time": "2025-05-28T05:22:16+00:00"
         },
         {
             "name": "vsd/localization",
@@ -7627,12 +7477,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-money.git",
-                "reference": "c5d94cbfd0accbec276f53a97a59c8c8974c8ade"
+                "reference": "72042ea31ffc201e9db76f6d2d18f411f420ed95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-money/zipball/c5d94cbfd0accbec276f53a97a59c8c8974c8ade",
-                "reference": "c5d94cbfd0accbec276f53a97a59c8c8974c8ade",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-money/zipball/72042ea31ffc201e9db76f6d2d18f411f420ed95",
+                "reference": "72042ea31ffc201e9db76f6d2d18f411f420ed95",
                 "shasum": ""
             },
             "require": {
@@ -7657,7 +7507,7 @@
             },
             "authors": [
                 {
-                    "name": "Sam"
+                    "name": "Samsethy"
                 }
             ],
             "description": "Money is a class that is used to manage currencies, exchange rates, conversion, and money amount formatting",
@@ -7665,7 +7515,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-money/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-money/issues"
             },
-            "time": "2025-02-27T10:44:29+00:00"
+            "time": "2025-05-30T04:41:09+00:00"
         },
         {
             "name": "vsd/response",
@@ -7760,12 +7610,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-vsloquent.git",
-                "reference": "663401198084d88913b9c3df7f0ebaf8c8984243"
+                "reference": "100df3ad75634965013a1513c85b6fd080f0ee9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/663401198084d88913b9c3df7f0ebaf8c8984243",
-                "reference": "663401198084d88913b9c3df7f0ebaf8c8984243",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/100df3ad75634965013a1513c85b6fd080f0ee9d",
+                "reference": "100df3ad75634965013a1513c85b6fd080f0ee9d",
                 "shasum": ""
             },
             "require": {
@@ -7775,13 +7625,25 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": []
+                    "providers": [
+                        "Vsd\\Vsloquent\\VsloquentServiceProvider"
+                    ]
                 }
             },
             "autoload": {
                 "psr-4": {
                     "Vsd\\Vsloquent\\": "src/"
                 }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Vsd\\Vsloquent\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php artisan package:discover --ansi"
+                ]
             },
             "license": [
                 "MIT"
@@ -7797,7 +7659,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-vsloquent/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-vsloquent/issues"
             },
-            "time": "2025-05-24T13:13:04+00:00"
+            "time": "2025-05-29T06:59:06+00:00"
         },
         {
             "name": "vsd/xauth",
@@ -7805,12 +7667,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "fba4f7fa0a39e35d080c70fe10f60bc08d65aa65"
+                "reference": "1fd093f5e1394c4462fe4294bcafee5619249cc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/fba4f7fa0a39e35d080c70fe10f60bc08d65aa65",
-                "reference": "fba4f7fa0a39e35d080c70fe10f60bc08d65aa65",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/1fd093f5e1394c4462fe4294bcafee5619249cc6",
+                "reference": "1fd093f5e1394c4462fe4294bcafee5619249cc6",
                 "shasum": ""
             },
             "require": {
@@ -7840,7 +7702,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-05-24T13:26:48+00:00"
+            "time": "2025-05-29T10:57:46+00:00"
         },
         {
             "name": "webmozart/assert",

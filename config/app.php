@@ -195,8 +195,6 @@ return [
         /*
          * Package Service Providers...
          */
-
-        Collective\Html\HtmlServiceProvider::class,
         // Intervention\Image\ImageServiceProvider::class,
 
         /*
