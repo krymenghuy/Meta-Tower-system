@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="icon" type="image/png" href="{{'assets/images/logo/lc_logo.svg'}}"/>
+        <link rel="icon" type="image/png" href="{{'assets/images/yavpheng/logo.png'}}"/>
         <?php StyleManager::render('login-styles',1); ?>
         <title>Yav Pheng</title>
         <script>
@@ -190,16 +190,16 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{asset(('assets/images/bhr/hr-bg-login.png'))}}"/>
+                <img class="img-background" src="{{asset(('assets/images/bhr/cemetery-background.png'))}}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front"  src="{{ asset('assets/images/bhr/hr-login.png') }}"/>
+                    <!-- <img class="img-front"  src="{{ asset('assets/images/bhr/cemetery.png') }}"/> -->
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <div class="vs--logo">
-                                <img class="w-100" src="{{ asset('assets/images/logo/lc_logo.svg') }}"/>
+                                <img class="w-100" src="{{ asset('assets/images/yavpheng/logo.png ') }}"/>
                             </div>
                             <h3 class="vs-title mt-4">Sign in to your account</h3>
                             <div class="vs-form-group">
@@ -223,12 +223,12 @@
                                     <div class="vs-d-flex-btn">
                                         <button class="btn-login" type="submit">LOGIN</button>
                                     </div>
-                                </form>
+                            </form>
                             </div>
                         </div>
                         <div class="vs-d-flex-copyright">
-                            <p>Yav Pheng project.</p>
-                            <p>Meta Association</p>
+                            <p>China Yav Pheng Association</p>
+                            <p>Copyright &copy; 2021</p>
                         </div>
                     </div>
                 </div>

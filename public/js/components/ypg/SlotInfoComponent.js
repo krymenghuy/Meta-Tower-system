@@ -65,16 +65,16 @@ var SlotInfoComponent = (function () {
 
                 switch (status) {
                     case 'Used':
-                        statusClass = 'text-warning';
+                        statusClass = 'text-warning border border-warning rounded px-2 py-1 d-inline-block';
                         break;
                     case 'Available':
-                        statusClass = 'text-success';
+                        statusClass = 'text-success border border-success rounded px-2 py-1 d-inline-block';
                         break;
                     case 'Reserved':
-                        statusClass = 'text-info';
+                        statusClass = 'text-info border border-info rounded px-2 py-1 d-inline-block';
                         break;
                     default:
-                        statusClass = 'text-primary-custom';
+                        statusClass = 'text-primary-custom border border-primary rounded px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${statusClass}">${status}</span>`;

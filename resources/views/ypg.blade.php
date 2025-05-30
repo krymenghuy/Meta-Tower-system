@@ -7,7 +7,7 @@
     <base href="../">
     <meta charset="utf-8" />
     <title>Yav Pheng</title>
-    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/lc_logo.svg') }}" />
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/logo.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />

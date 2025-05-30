@@ -45,7 +45,7 @@ var TaskAssignComponent = (function () {
             title: "Status",
             className: "align-middle",
             data: (data, a, b) => {
-                const cls = data.status ? data.status.toLowerCase() === 'pending' ? 'text-warning' : (data.status.toLowerCase() === 'done' ? 'text-success' : 'text-info') : 'text-info';
+                const cls = data.status ? data.status.toLowerCase() === 'pending' ? 'text-warning border border-warning rounded px-2 py-1 d-inline-block' : (data.status.toLowerCase() === 'done' ? 'text-success border border-success rounded px-2 py-1 d-inline-block' : 'text-info border border-info rounded px-2 py-1 d-inline-block') : 'text-info';
                 return `<span class="p-2 ${cls} text-white rounded-3 text-capitalize">${data.status ?? ''}</span>`;
             },
         },
