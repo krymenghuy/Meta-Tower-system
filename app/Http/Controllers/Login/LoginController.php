@@ -49,9 +49,8 @@ class LoginController extends Controller
                 //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
              }else{
                 if(isset($user->apps[1])){
-                    return redirect('landingpoint')
-                    ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
-                    //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
+                    return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
+                    //return redirect('landingpoint')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
                 }else if(isset($user->apps[0])){
                    $app = $user->apps[0] ?? null;
                    if(!$app){

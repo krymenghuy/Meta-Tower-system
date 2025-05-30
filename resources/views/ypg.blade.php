@@ -181,7 +181,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-5 bg-white app--list">
+                                    <div class="dropdown shadow-lg rounded-5 bg-white app--list d-none">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
                                         <i class="fa-solid fa-table tool-tip fs-5" style="color:#aaaaaa;"></i>
                                             <span></span>
