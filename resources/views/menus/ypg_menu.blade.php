@@ -191,7 +191,7 @@ function v_display($mod_id, $module_ids = null)
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [244, 240, 245, 239, 255, 264, 265, 257, 283]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/task-mana.png') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/taskkk.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text text-nowrap " vslang="menus.Task ">Task
                     </span>
@@ -251,7 +251,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(247); ?>>
                 <a href="ReportCenterComponent" modid="247" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/report.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/report.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Report Center"></span>
                 </a>
