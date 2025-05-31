@@ -190,7 +190,7 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{asset(('assets/images/bhr/background.png'))}}"/>
+                <img class="img-background" src="{{asset(('assets/images/bhr/bg-log.png'))}}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
