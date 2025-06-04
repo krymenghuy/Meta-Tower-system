@@ -38,20 +38,13 @@ class GarbageCollector {
              
             //  //Clean package_tracks, leave the last 10 days
             //  $before_date = date('Y-m-d', strtotime('-10 days'));
-            //  $pt_count = self::deletePackageTracks($before_date);
-            
-             //Clean general_tracks, leave the last 10 days
-             $before_date = date('Y-m-d', strtotime('-5 days'));
-             $gt_count = self::deleteGeneralTracks($before_date); 
-           
-            //  $before_date = date('Y-m-d', strtotime('-2 days'));
-            //  $photo_count = self::deletePackagePhotos($before_date); 
-         
+            //  $pt_count = self::deleteTracks($before_date);
+             
             //  $before_date = date('Y-m-d', strtotime('-7 months'));
             //  $archiveInfo = self::archivePackages($before_date);
             //  //DB::statement(DB::raw('UPDATE last_gc_time SET last_gc_time =\''.getNowTime().'\' WHERE id =1'));
             Log::info('Garbage Collector successfully cleaned up data at '.date('d M Y h:i'));
-            Log::info($notif_count.' notifications deleted. '.$gt_count.' general tracks deleted ');
+            Log::info($notif_count.' notifications deleted!');
      
         }catch(\Throwable $e){
            Log::error('Error in GarbageCollector::cleanAll() method');
@@ -99,45 +92,8 @@ class GarbageCollector {
             Log::error($e->getTraceAsString());
         }
     }
-     
-    //  static function archivePackages($before_date) {
-    //     try {
-    //         // Begin a database transaction
-    //         DB::beginTransaction();
-    
-    //         // Fetch records from the 'package' table created before $before_date
-    //         $packages = DB::table('package')
-    //             ->where('create_date', '<', $before_date)
-    //             ->get();
-    
-    //         // Check if there are records to move
-    //         if (!isset($packages[0])  || empty($packages)) {
-    //             return 0;  // No records to move, return null
-    //         }
-    //         // Batch insert fetched records into the 'archived_package' table
-    //         //Log::info(json_encode($records));
-    //         foreach($packages as $p){
-    //             DB::table('archived_package')->insert((array)$p);
-    //            // Delete copied records from the 'package' table
-    //             //$package_id = array_column($p, 'id');  // Assuming 'id' is the primary key column
-    //             DB::table('package')->where('id', $p->id)->delete();
-    //         }
-
-    //         // Commit the database transaction
-    //         DB::commit();
-    
-    //         return $packages->count(); // Successful operation, return null
-    
-    //     } catch (\Exception $e) {
-    //         // Rollback the database transaction in case of error
-    //         DB::rollback();
-    //         Log::error('Error in GarbageCollector::archivepackages() method');
-    //         Log::error($e->getMessage());
-    //         Log::error($e->getTraceAsString());
-    //     }
-    // }
- 
-    static function deletePackagePhotos($before_date){
+  
+    static function deletePhotos($before_date){
         $str_date = 'DATE(m.create_date) <=\''.$before_date.'\'';
         $rows = DB::table('order_images as m')->whereRaw($str_date)->selectRaw('m.id,m.branch_id,m.file_name')->get();
         $ids = [];
@@ -149,15 +105,12 @@ class GarbageCollector {
         return $cnt;
     }
 
-    static function deleteGeneralTracks($before_date){
+    static function deleteTracks($before_date){
         $str_date = 'DATE(create_date) <=\''.$before_date.'\'';
         return DB::table('general_tracks')->whereRaw($str_date)->delete();
     }
 
-    static function deletePackageTracks($before_date){
-        $str_date = 'DATE(create_date) <=\''.$before_date.'\'';
-        return DB::table('package_tracks')->whereRaw($str_date)->delete();
-    }
+     
 
     static function deleteNotifications($before_date){
         $str_date = 'DATE(create_date) <=\''.$before_date.'\'';

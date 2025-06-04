@@ -29,7 +29,6 @@ class AppServiceProvider extends ServiceProvider
         if (Config::get('app.enforce_ssl') == true) {
             URL::forceScheme('https');
         }
-
         // // Custom rate limiter based on user ID
         // $this->app->booted(function (){
         //     // $request = app('request'); // Capture the request from the container
