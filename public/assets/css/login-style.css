@@ -57,7 +57,7 @@
     height:90%;
     border-radius: 8px;
     display:flex;
-    background-color: #bdc4dd61;
+    background-color: #c1beaa4d;
     align-items:center;
     justify-content:center;
     flex-direction:column;
@@ -139,7 +139,7 @@
     align-items:center;
     justify-content:center;
     flex-direction: column;
-    color:#fff;
+    color:#64635e;
     font-size:14px;
 }
 
