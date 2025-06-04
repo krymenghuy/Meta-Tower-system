@@ -169,7 +169,6 @@ return [
          * Laravel Framework Service Providers...
          */
         Illuminate\Auth\AuthServiceProvider::class,
-        Opt\ChapProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
@@ -257,15 +256,13 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         //'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Sanitizer'=>App\Security\Sanitizer::class,
         'PHPCrypto'=>App\Security\PHPCrypto::class,
-        'SQLDB'=>App\DB\SQLDB::class,
+        //'SQLDB'=>App\DB\SQLDB::class,
         'ScriptManager'=>App\ScriptManagement\ScriptManager::class,
         'StyleManager'=>App\StyleManagement\StyleManager::class
     ]

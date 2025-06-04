@@ -90,7 +90,6 @@ class ScriptProvider
             'files' => [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
-                'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute_core.js',
                 '/js/layout/ypg/main.js',
                 //'/js/components/ypg/PDFReport.js',
                 '/assets/js/SearchWidget.js',
