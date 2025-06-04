@@ -49,7 +49,10 @@ class LoginController extends Controller
                 //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
              }else{
                 if(isset($user->apps[1])){
-                    return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
+                    return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false))
+                     ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                    ->header('Pragma', 'no-cache')
+                    ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
                     //return redirect('landingpoint')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
                 }else if(isset($user->apps[0])){
                    $app = $user->apps[0] ?? null;
