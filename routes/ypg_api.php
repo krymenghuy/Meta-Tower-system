@@ -9,6 +9,8 @@ use App\Http\Controllers\Ypg\ReportController;
 use App\Http\Controllers\Ypg\GeneralSettingsController;
 
 use App\Http\Controllers\Ypg\MemberController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\Ypg\TaskTypeController;
 use App\Http\Controllers\Ypg\TaskAssignController;
 use App\Http\Controllers\Ypg\DeceasedRegistrationController;
@@ -105,4 +107,22 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')-
     Route::post('/form-options', [GraveSlotController::class, 'getFormOptions']);
     Route::post('/delete', [GraveSlotController::class, 'delete']);
      Route::post('/update-status', [GraveSlotController::class, 'updateStatus']);
+});
+   
+//begin::CarController
+
+ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('car')->group(function () {
+    Route::post('/save',[CarController::class,'saveCar']);
+    Route::post('/list-paginate',[CarController::class,'getListPaginate']);
+    Route::post('/details',[CarController::class,'detailsCar']);
+    Route::post('/delete',[CarController::class,'delete']);
+});
+
+//begin::BookController
+
+ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('book')->group(function () {
+    Route::post('/save',[BookController::class,'saveBook']);
+    Route::post('/list-paginate',[BookController::class,'getListPaginate']);
+    Route::post('/details',[BookController::class,'detailsBook']);
+    Route::post('/delete',[BookController::class,'delete']);
 });
