@@ -57,7 +57,7 @@
     height:90%;
     border-radius: 8px;
     display:flex;
-    background-color: #c1beaa4d;
+    background-color: #869fb54d;
     align-items:center;
     justify-content:center;
     flex-direction:column;
@@ -123,6 +123,7 @@
     font-size:16px;
     color:#fff;
     cursor:pointer;
+    margin-top: 8px;
 }
 .vs-login .vs-form-group .vs-d-flex-btn .btn-login:hover{
     background-color: #fff;
@@ -134,12 +135,13 @@
 .vs-login .vs-d-flex-copyright{
     width:100%;
     /* display:none; */
+   margin-top: 8px;
     display:flex;
     height:20%;
     align-items:center;
     justify-content:center;
     flex-direction: column;
-    color:#64635e;
+    color:#e8e1dc;
     font-size:14px;
 }
 
