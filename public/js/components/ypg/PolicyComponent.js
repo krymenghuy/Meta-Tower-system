@@ -1,10 +1,10 @@
 "use strict";
 
-var MemberComponent = (function () {
+var PolicyComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Member Management";
+    mThis.title_prop = "Policy";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_member_component");
+    mThis.jm = main_view.appContent.children("#_main_policy_component");
     mThis.self = mThis.jm[0];
     mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
@@ -163,8 +163,8 @@ var MemberComponent = (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.MemberListView = new ListView('_member_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+        mThis.MemberListView = new ListView('_policy_list', {
+            fetchApi: `${main_view.base_url}/ypg/policy/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,

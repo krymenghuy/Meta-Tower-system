@@ -13,7 +13,7 @@
 .btn_add {
     padding: 10px 20px;
     color: white;
-    background-color: #38373a;
+    background-color: #27444a;
     border-radius: 20px;
     margin-top: 3px;
     cursor: pointer;
@@ -392,7 +392,7 @@ g
 .show--title {
     margin: 18px 0;
     padding: 10px 15px;
-    background-color: #fff;
+    background-color: #27444a;
     border-radius: 30px;
 }
 
@@ -1814,7 +1814,7 @@ ul.list-filter-um li:not(li:last-child) {
 .table--white thead th {
     color: rgb(255 255 255) !important;
     /* border-radius: 0.5rem !important; */
-    background-color: #38373a !important;
+    background-color: #27444a !important;
     font-size: 14px !important;
     padding: 10px !important;
 }

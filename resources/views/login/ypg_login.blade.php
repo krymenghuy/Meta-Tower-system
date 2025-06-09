@@ -3,9 +3,9 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="icon" type="image/png" href="{{'assets/images/yavpheng/logo.png'}}"/>
+        <link rel="icon" type="image/png" href="{{'assets/images/yavpheng/CYPA_logo.png'}}"/>
         <?php StyleManager::render('login-styles',1); ?>
-        <title>Yav Pheng</title>
+        <title>Yav Pheng Association</title>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -199,7 +199,7 @@
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <div class="vs--logo">
-                                <img class="w-100" src="{{ asset('assets/images/yavpheng/logo.png ') }}"/>
+                                <img class="w-100" src="{{ asset('assets/images/yavpheng/CYPA_logo.png ') }}"/>
                             </div>
                             <h3 class="vs-title mt-4">Sign in to your account</h3>
                             <div class="vs-form-group">
