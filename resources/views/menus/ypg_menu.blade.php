@@ -149,7 +149,7 @@ function v_display($mod_id, $module_ids = null)
         <div class="kt-aside__brand-logo">
             <div class="company pt-3">
                 <!-- <img src="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" alt="" class="img-logo" /> -->
-                <img src="{{ asset('assets/images/yavpheng/logo1.png') }}" alt="" class="img-logo" />
+                <img src="{{ asset('assets/images/yavpheng/logo_yp.jpg') }}" alt="" class="img-logo" />
                 <!-- <span class="company_name mt-3">YAV PHENG</span> -->
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
@@ -181,7 +181,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Home"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Home Screen"></span>
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
@@ -299,7 +299,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Policy "></span>
+                                <span class="kt-menu__link-text font-color" vslang="menus.Policy">Policy</span>
                             </a>
                         </li>
 

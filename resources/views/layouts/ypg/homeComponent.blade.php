@@ -1,49 +1,260 @@
-<div id="_main_home_component" class="mt-2" style="display:none;">
-    <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-3" style="background-color:#63777c;" id="_divFilter_home">
+<div id="_main_home_component" class="mt-2" style="display: none;">
+<div id="_home_list" class="mt-4 overflow-scroll">
+  <div class="slide-map-wrapper">
+    <div class="slide-container">
+      <div class="slides">
+        <img src="{{ asset('assets/images/yavpheng/image-1.jpg') }}" class="active">
+        <img src="{{ asset('assets/images/yavpheng/image-2.jpg') }}">
+        <img src="{{ asset('assets/images/yavpheng/image-3.jpg') }}">
+        <img src="{{ asset('assets/images/yavpheng/image-4.jpg') }}">
+        <img src="{{ asset('assets/images/yavpheng/image-5.jpg') }}">
+      </div>
+
+      <div class="buttons">
+        <span class="next">&#10095;</span>
+        <span class="prev">&#10094;</span>
+      </div>
+
+      <div class="dotsContainer">
+        <div class="dot active" attr='0' onclick="switchImage(this)"></div>
+        <div class="dot" attr='1' onclick="switchImage(this)"></div>
+        <div class="dot" attr='2' onclick="switchImage(this)"></div>
+        <div class="dot" attr='3' onclick="switchImage(this)"></div>
+        <div class="dot" attr='4' onclick="switchImage(this)"></div>
+      </div>
     </div>
 
-    <div id="_home_list" class="p-3">
-        <div class="container">
-    <div class="row">
-      <!-- Slide Navigation -->
-      <div class="col-md-12 mb-3">
-        <h5>Slide Navigation</h5>
-        <div class="swiper mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">Slide 1</div>
-            <div class="swiper-slide">Slide 2</div>
-            <div class="swiper-slide">Slide 3</div>
-            <div class="swiper-slide">Slide 4</div>
-          </div>
-
-          <div class="swiper-button-next"></div>
-          <div class="swiper-button-prev"></div>
-        </div>
-      </div>
-
-      <div class="col-md-12 mb-3">
-        <h5>Grave Yard Map</h5>
-        <img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" usemap="#image-map" class="img-fluid" alt="Map Example" />
-
-        <map name="image-map">
-          <area shape="rect" coords="50,50,200,200" href="#" alt="Zone A" title="Zone A">
-          <area shape="rect" coords="250,50,400,200" href="#" alt="Zone B" title="Zone B">
-        </map>
-      </div>
+    <div class="box-map">
+      <img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" style="width:100%; height: 350px;">
     </div>
   </div>
-
-  <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-  <script>
-    const swiper = new Swiper(".mySwiper", {
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-    });
-  </script>
-
-    </div>
 </div>
+
+</div>
+
+	<style type="text/css">
+
+    .slide-map-wrapper {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.slide-container {
+  width: 800px;
+}
+
+.slides img {
+  width: 100%;
+  height: auto;
+  display: none;
+}
+
+.slides img.active {
+  display: block;
+}
+
+.box-map {
+  width: 400px;
+}
+
+			.slide-container{
+			position: relative;
+			width: 800px;
+			height: 620px;
+			border: 3px solid #ede6d6;
+			box-shadow: 0 0 8px 2px rgba(0,0,0,0.2);
+		}
+		.slide-container .slides{
+			width: 100%;
+			height: calc(100% - 40px);
+			position: relative;
+			overflow: hidden;
+		}
+    	.slide-container .box-map{
+			width: 400px;
+			height: calc(100% - 40px);
+			position: relative;
+			overflow: hidden;
+		}
+		.slide-container .slides img{
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			object-fit: cover;
+		}
+		.slide-container .slides img:not(.active){
+			top: 0;
+			left: -100%;
+		}
+		span.next, span.prev{
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			padding: 14px;
+			color: #eee;
+			font-size: 24px;
+			font-weight: bold;
+			transition: 0.5s;
+			border-radius: 3px;
+			user-select: none;
+			cursor: pointer;
+			z-index: 1;
+		}
+		span.next{
+			right: 20px;
+		}
+		span.prev{
+			left: 20px;
+		}
+		span.next:hover, span.prev:hover{
+			background-color: #ede6d6;
+			opacity: 0.8;
+			color: #222;
+		} 
+		.dotsContainer{
+			position: absolute;
+			bottom: 5px;
+			z-index: 3;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		.dotsContainer .dot{
+			width: 15px;
+			height: 15px;
+			margin: 0px 2px;
+			border: 3px solid #bbb;
+			border-radius: 50%;
+			display: inline-block;
+			cursor: pointer;
+			transition: background-color 0.6s ease;
+		}
+		.dotsContainer .active{
+			background-color: #555;
+		}
+
+		@keyframes next1{
+			from{
+				left: 0%
+			}
+			to{
+				left: -100%;
+			}
+		}
+		@keyframes next2{
+			from{
+				left: 100%
+			}
+			to{
+				left: 0%;
+			}
+		}
+
+		@keyframes prev1{
+			from{
+				left: 0%
+			}
+			to{
+				left: 100%;
+			}
+		}
+		@keyframes prev2{
+			from{
+				left: -100%
+			}
+			to{
+				left: 0%;
+			}
+		}
+
+	</style>
+  <script type="text/javascript">
+	
+	// Access the Images
+	let slideImages = document.querySelectorAll('img');
+	// Access the next and prev buttons
+	let next = document.querySelector('.next');
+	let prev = document.querySelector('.prev');
+	// Access the indicators
+	let dots = document.querySelectorAll('.dot');
+
+	var counter = 0;
+
+	// Code for next button
+	next.addEventListener('click', slideNext);
+	function slideNext(){
+	slideImages[counter].style.animation = 'next1 0.5s ease-in forwards';
+	if(counter >= slideImages.length-1){
+		counter = 0;
+	}
+	else{
+		counter++;
+	}
+	slideImages[counter].style.animation = 'next2 0.5s ease-in forwards';
+	indicators();
+	}
+
+	// Code for prev button
+	prev.addEventListener('click', slidePrev);
+	function slidePrev(){
+	slideImages[counter].style.animation = 'prev1 0.5s ease-in forwards';
+	if(counter == 0){
+		counter = slideImages.length-1;
+	}
+	else{
+		counter--;
+	}
+	slideImages[counter].style.animation = 'prev2 0.5s ease-in forwards';
+	indicators();
+	}
+
+	// Auto slideing
+	function autoSliding(){
+		deletInterval = setInterval(timer, 3000);
+		function timer(){
+			slideNext();
+			indicators();
+		}
+	}
+	autoSliding();
+
+	// Stop auto sliding when mouse is over
+	const container = document.querySelector('.slide-container');
+	container.addEventListener('mouseover', function(){
+		clearInterval(deletInterval);
+	});
+
+	// Resume sliding when mouse is out
+	container.addEventListener('mouseout', autoSliding);
+
+	// Add and remove active class from the indicators
+	function indicators(){
+		for(i = 0; i < dots.length; i++){
+			dots[i].className = dots[i].className.replace(' active', '');
+		}
+		dots[counter].className += ' active';
+	}
+
+	// Add click event to the indicator
+	function switchImage(currentImage){
+		currentImage.classList.add('active');
+		var imageId = currentImage.getAttribute('attr');
+		if(imageId > counter){
+		slideImages[counter].style.animation = 'next1 0.5s ease-in forwards';
+		counter = imageId;
+		slideImages[counter].style.animation = 'next2 0.5s ease-in forwards';
+		}
+		else if(imageId == counter){
+			return;
+		}
+		else{
+		slideImages[counter].style.animation = 'prev1 0.5s ease-in forwards';
+		counter = imageId;
+		slideImages[counter].style.animation = 'prev2 0.5s ease-in forwards';	
+		}
+		indicators();
+	}
+
+</script>
