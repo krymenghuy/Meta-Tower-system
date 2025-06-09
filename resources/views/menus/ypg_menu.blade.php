@@ -36,7 +36,7 @@
     }
 
     #kt_aside_menu {
-        background-color: #2B3991;
+        background-color: #27444a;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -70,7 +70,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #2b3991;
+        background-color: #27444a
     }
 
     #_dms_aside_menus {
@@ -148,7 +148,7 @@ function v_display($mod_id, $module_ids = null)
         data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand-logo">
             <div class="company pt-3">
-                <img src="{{ asset('assets/images/yavpheng/logo1.png') }}" alt="" class="img-logo" />
+                <img src="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" alt="" class="img-logo" />
                 <!-- <span class="company_name mt-3">YAV PHENG</span> -->
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
@@ -166,13 +166,21 @@ function v_display($mod_id, $module_ids = null)
         </div>
 
         <ul class="kt-menu__nav" id="_dms_aside_menus">
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(254); ?>>
+            <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(254); ?>>
                 <a href="DashboardComponent" modid="254" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
+                </a>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
+                <a href="HomeComponent" modid="270" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Home"></span>
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
@@ -225,7 +233,7 @@ function v_display($mod_id, $module_ids = null)
                 </div>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.Registrations & Grave Slot"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.Grave Slot Registration"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
@@ -283,6 +291,16 @@ function v_display($mod_id, $module_ids = null)
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
+
+
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                            <a href="policyComponent" modid="244" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Policy "></span>
+                            </a>
+                        </li>
 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="LocationComponent" modid="105" class="menu-item kt-menu__link">

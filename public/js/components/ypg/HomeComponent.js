@@ -1,10 +1,10 @@
 "use strict";
 
-var MemberComponent = (function () {
+var HomeComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Member Management";
+    mThis.title_prop = "Home";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_member_component");
+    mThis.jm = main_view.appContent.children("#_main_home_component");
     mThis.self = mThis.jm[0];
     mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
@@ -73,7 +73,7 @@ var MemberComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data) => {
                 if (data.is_expiry == 0) {
-                    return `<span class="text-success">Permanent</span>`;
+                    return `<span class="text-success">Never Expire</span>`;
                 }
                 const dateStr = data.expiry_date ?? '';
                 if (!dateStr) {

@@ -1,4 +1,4 @@
-<div id="_main_member_component" class="mt-2" style="display:none;">
+<div id="_main_policy_component" class="mt-2" style="display:none;">
     <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-3" style="background-color:#63777c;" id="_divFilter_member">
         <div class="d-flex align-items-center justify-content-start w-50 gap-2">
             <div class="d-flex align-items-center w-50">
@@ -16,5 +16,5 @@
             </button>
         </div>
     </div>
-    <div id="_member_list" class="p-3"></div>
+    <div id="_policy_list" class="p-3"></div>
 </div>
