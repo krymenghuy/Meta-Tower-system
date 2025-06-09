@@ -294,9 +294,9 @@ function v_display($mod_id, $module_ids = null)
 
 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="policyComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="PolicyComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Policy "></span>
                             </a>
