@@ -103,6 +103,7 @@ class ScriptProvider
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/ypg/DashboardComponent.js',
+                '/js/components/ypg/HomeComponent.js',
                 '/js/components/ypg/RenderTableReportComponent.js',
                 '/js/components/ypg/ReportCenterComponent.js',
                 'js/components/common/LocationComponent.js',
