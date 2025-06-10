@@ -222,6 +222,7 @@
                                     </div>
                                     <div class="vs-d-flex-btn">
                                         <button class="btn-login" type="submit">LOGIN</button>
+                                        <button class="btn-login" type="submit">SIGN UP</button>
                                     </div>
                             </form>
                             </div>

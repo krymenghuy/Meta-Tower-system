@@ -123,6 +123,9 @@ class ScriptProvider
                 'js/components/ypg/SlotInfoComponent.js',
                 'js/components/ypg/RegisterDeceasedComponent.js',
                 'js/components/ypg/PolicyComponent.js',
+                'js/components/ypg/StructureComponent.js',
+
+
                 // 'js/components/ypg/RecordRelationComponent.js',
             ]
         ],

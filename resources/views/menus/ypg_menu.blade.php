@@ -267,8 +267,24 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.Admin & Settings"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.About Company"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                 <a href="StructureComponent" modid="244" class="menu-item kt-menu__link">
+                     <span class="kt-menu__link-icon">
+                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/structure.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color" vslang="menus.Association Structure"></span>
+                </a>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+                 <a href="PolicyComponent" modid="244" class="menu-item kt-menu__link">
+                     <span class="kt-menu__link-icon">
+                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color" vslang="menus.Association Policy"></span>
+                </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                 <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
@@ -277,6 +293,12 @@ function v_display($mod_id, $module_ids = null)
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Company Profile"></span>
                 </a>
+            </li>
+            
+
+             <li class="kt-menu__section" <?php v_display(-1); ?>>
+                <h4 class="kt-menu__section-text " vslang="menus.Admin & Settings"></h4>
+                <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
 
 
@@ -293,15 +315,6 @@ function v_display($mod_id, $module_ids = null)
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
 
-
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="PolicyComponent" modid="244" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color" vslang="menus.Policy">Policy</span>
-                            </a>
-                        </li>
 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="LocationComponent" modid="105" class="menu-item kt-menu__link">
