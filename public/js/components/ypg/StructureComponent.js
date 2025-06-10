@@ -21,7 +21,7 @@ var StructureComponent = new (function () {
 
         const img = document.createElement('img');
         img.src = '/assets/images/yavpheng/Structure_ypg.jpg';
-        img.style.width  = '80%';
+        img.style.width  = '70%';
         img.style.height = 'auto';
 
         imgContainer.appendChild(img);

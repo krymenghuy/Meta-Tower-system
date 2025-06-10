@@ -55,7 +55,6 @@ var MemberComponent = (function () {
                     const url = data.telegram_link.trim();
                     const displayText = url.replace(/^https?:\/\/t\.me\//, '');
 
-                    // ជ្រើស​តើ​ជា​លេខទូរស័ព្ទ​ឬ​​ username
                     const deepLink = displayText.startsWith('+')
                         ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
                         : `tg://resolve?domain=${displayText}`;
@@ -66,8 +65,7 @@ var MemberComponent = (function () {
                             target="_blank"
                             title="Open in Telegram"
                             aria-label="Telegram">
-                                <i class="fa-brands fa-telegram"></i>
-                                <i class="bi bi-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
+                                <i class="fa-brands fa-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
                             </a>`;
                 }
 
@@ -92,7 +90,7 @@ var MemberComponent = (function () {
             data: (data, index, tr) => {
                 return `
                     <div class="text-break" style="width:150px; word-break:break-word;">
-                        <i class="fa-solid fa-location-dot text-danger me-2"></i>${data.address ?? 'N/A'}
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i>${data.address ?? 'N/A'}
                     </div>
                 `;
             }
@@ -112,7 +110,7 @@ var MemberComponent = (function () {
                 const today = new Date().setHours(0, 0, 0, 0);
                 const expiryDate = new Date(dateStr).setHours(0, 0, 0, 0);
                 if (expiryDate < today) {
-                    return `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>${dateStr} (Expired Date)</span>`;
+                    return `<span class="text-capitalize"><i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr} <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p></span>`;
                 }
                 if (expiryDate === today) {
                     return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
