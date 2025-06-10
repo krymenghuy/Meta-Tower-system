@@ -475,11 +475,11 @@ const MemberDialog = (() => {
                                 <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
                             </div>
                             <div class="form-group col-4">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiry"></label>
+                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiration Date"></label>
                                 <select name="is_expiry" class="form-control data-input" data-field="is_expiry">
                                     <option value="">(Select)</option>
-                                    <option value="0">Forever</option>
-                                    <option value="1">Expiry</option>
+                                    <option value="0">Permanent</option>
+                                    <option value="1">Will Expire</option>
                                 </select>
                             </div>
                             <div class="form-group col-6 expiry-wrapper" style="display: none;">

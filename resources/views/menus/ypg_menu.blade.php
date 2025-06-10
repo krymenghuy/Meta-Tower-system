@@ -181,7 +181,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Home Screen"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Home"></span>
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
@@ -267,7 +267,7 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
-                <h4 class="kt-menu__section-text " vslang="menus.About Company"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.About Association"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
@@ -291,7 +291,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Company Profile"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Association Profile"></span>
                 </a>
             </li>
             
