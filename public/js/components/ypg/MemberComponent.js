@@ -46,6 +46,7 @@ var MemberComponent = (function () {
             },
 
         },
+    
         {
             title: "Telegram",
             className: "align-middle",
@@ -53,14 +54,27 @@ var MemberComponent = (function () {
                 if (data.telegram_link && data.telegram_link.trim() !== '') {
                     const url = data.telegram_link.trim();
                     const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-                    return `<a href="${url}" 
-                            onclick="event.preventDefault(); window.location='tg://${displayText.startsWith('+') ? 'resolve?phone=' + displayText.replace(/^\+/, '') : 'resolve?domain=' + displayText}';"
-                            class="text-nowrap text-decoration-none"
-                            target="_blank">${displayText}</a>`;
+
+                    // ជ្រើស​តើ​ជា​លេខទូរស័ព្ទ​ឬ​​ username
+                    const deepLink = displayText.startsWith('+')
+                        ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
+                        : `tg://resolve?domain=${displayText}`;
+
+                    return `<a href="${url}"
+                            onclick="event.preventDefault(); window.location='${deepLink}';"
+                            class="text-decoration-none"
+                            target="_blank"
+                            title="Open in Telegram"
+                            aria-label="Telegram">
+                                <i class="fa-brands fa-telegram"></i>
+                                <i class="bi bi-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
+                            </a>`;
                 }
+
                 return '<span class="text-muted">N/A</span>';
             }
         },
+
 
 
 
