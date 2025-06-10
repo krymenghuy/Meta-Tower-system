@@ -57,7 +57,7 @@
     height:90%;
     border-radius: 8px;
     display:flex;
-    background-color: #869fb54d;
+    background-color: #98a3bfde;
     align-items:center;
     justify-content:center;
     flex-direction:column;
@@ -110,11 +110,11 @@
     width:100%;
     margin-top:20px;
     display:flex;
-    justify-content:center;
+    justify-content: space-between;
 }
 
 .vs-login .vs-form-group .vs-d-flex-btn .btn-login{
-    width:50%;
+    width:48%;
     height:35px;
     border-radius: 10px;
     /* border-radius:5px 40px 5px 40px; */
