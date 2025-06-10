@@ -7391,13 +7391,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-dbx.git",
-                "reference": "6e5ad15db7e243bda3002b16795f29ac64319f4b"
+                "reference": "b2528dfb0860141572fde13207874d58aa3507e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/6e5ad15db7e243bda3002b16795f29ac64319f4b",
-                "reference": "6e5ad15db7e243bda3002b16795f29ac64319f4b",
-
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/b2528dfb0860141572fde13207874d58aa3507e8",
+                "reference": "b2528dfb0860141572fde13207874d58aa3507e8",
                 "shasum": ""
             },
             "require": {
@@ -7427,8 +7426,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-dbx/issues"
             },
-            "time": "2025-05-28T05:22:16+00:00"
- 
+            "time": "2025-06-04T05:35:35+00:00"
         },
         {
             "name": "vsd/localization",
@@ -7612,12 +7610,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-vsloquent.git",
-                "reference": "100df3ad75634965013a1513c85b6fd080f0ee9d"
+                "reference": "72e270319541fc6cb620f8f43a66cc50e359ec4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/100df3ad75634965013a1513c85b6fd080f0ee9d",
-                "reference": "100df3ad75634965013a1513c85b6fd080f0ee9d",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/72e270319541fc6cb620f8f43a66cc50e359ec4e",
+                "reference": "72e270319541fc6cb620f8f43a66cc50e359ec4e",
                 "shasum": ""
             },
             "require": {
@@ -7661,7 +7659,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-vsloquent/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-vsloquent/issues"
             },
-            "time": "2025-05-29T06:59:06+00:00"
+            "time": "2025-06-02T11:10:34+00:00"
         },
         {
             "name": "vsd/xauth",
@@ -7669,12 +7667,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "1fd093f5e1394c4462fe4294bcafee5619249cc6"
+                "reference": "48f74d6d18b943b6518a05d738b206962451382e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/1fd093f5e1394c4462fe4294bcafee5619249cc6",
-                "reference": "1fd093f5e1394c4462fe4294bcafee5619249cc6",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/48f74d6d18b943b6518a05d738b206962451382e",
+                "reference": "48f74d6d18b943b6518a05d738b206962451382e",
                 "shasum": ""
             },
             "require": {
@@ -7704,7 +7702,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-05-29T10:57:46+00:00"
+            "time": "2025-06-10T11:27:09+00:00"
         },
         {
             "name": "webmozart/assert",

@@ -9,16 +9,16 @@ return [
             'new_user_password_required' => 1,
             'fcm_topic_prefix'=>'bhr'
         ],
-        'sales_agent' => [
-            'used' => 1,
-            'name' => 'Sales Agent',
+        'member' => [
+            'used' => 0,
+            'name' => 'Member',
             'token_age' => 0,
             'login_type' => 'phone',
             'new_user_password_required' => 1
         ]
     ],
     'profile_tables' => [
-        //'merchant' => ['table' => 'sender', 'key_field' => 'id', 'code_field' => 'code', 'photo_field' => 'photo_file_name'],
+        'member' => ['table' => 'members', 'key_field' => 'id', 'code_field' => 'code', 'photo_field' => 'photo_file_name'],
         //'driver' => ['table' => 'driver', 'key_field' => 'id', 'code_field' => 'code', 'photo_field' => 'photo_file_name'],
         //'sales_agent' => ['table' => 'sales_agents', 'key_field' => 'id', 'code_field' => 'code', 'photo_field' => 'photo_file_name'],
         'admin' => ['table' => 'um_users', 'key_field' => 'id', 'code_field' => 'official_code', 'photo_field' => 'photo_file_name']
