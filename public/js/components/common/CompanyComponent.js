@@ -1,7 +1,7 @@
 'use strict';
 var CompanyComponent = new function(){
     let mThis = this;
-	this.title_prop = "Company Profile";
+	this.title_prop = "Association Profile";
     this.base_url =main_view.base_url;
     this.self = main_view.appContent.children('#_main_companyComponent');
     this.btnSave = this.self.find('#_main_comp_btnSaveProfile');
