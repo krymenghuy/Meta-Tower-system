@@ -10,11 +10,13 @@ var PolicyComponent = (function () {
 
 
 
- mThis.show = function () {
+    mThis.show = function () {
         main_view.setTitle(mThis.title_prop);
-        
+
         mThis.jm.siblings().hide();
         mThis.jm.fadeIn(200);
     };
     return mThis;
 })();
+
+
