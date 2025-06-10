@@ -114,13 +114,33 @@ class Member
         }
         $expiry_date = DBX::formatDate("m.expiry_date", 'expiry_date');
         $updated_at = DBX::formatTime("m.updated_at", 'updated_at');
+
+        $telegram_link = "CONCAT('https://t.me/+', REPLACE(REPLACE(REPLACE(m.phone_number, '+', ''), ' ', ''), '-', '')) AS telegram_link";
         $query = DB::table('members as m')
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('m.id,m.code, m.update_user,'.$updated_at.',m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.nationality, m.status_id, ms.name as status, m.is_expiry, ' . $expiry_date . '')
+            ->selectRaw("
+                m.id,
+                m.code,
+                m.update_user,
+                $updated_at,
+                m.name,
+                m.sex,
+                m.phone_number,
+                m.email,
+                m.address,
+                m.nationality_id,
+                c.nationality,
+                m.status_id,
+                ms.name as status,
+                m.is_expiry,
+                $expiry_date,
+                $telegram_link
+            ")
             ->orderBy('m.id', 'DESC');
+
         $clone_query = clone $query;
         $count = $clone_query->count('m.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

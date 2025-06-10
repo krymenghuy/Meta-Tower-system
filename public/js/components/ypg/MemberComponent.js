@@ -46,16 +46,46 @@ var MemberComponent = (function () {
             },
 
         },
-        // {
-        //     title: "Date of birth",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-nowrap">${'01-May-2004' ?? ''}</span>`,
-        // },
+    
+        {
+            title: "Telegram",
+            className: "align-middle",
+            data: (data) => {
+                if (data.telegram_link && data.telegram_link.trim() !== '') {
+                    const url = data.telegram_link.trim();
+                    const displayText = url.replace(/^https?:\/\/t\.me\//, '');
+
+                    // ជ្រើស​តើ​ជា​លេខទូរស័ព្ទ​ឬ​​ username
+                    const deepLink = displayText.startsWith('+')
+                        ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
+                        : `tg://resolve?domain=${displayText}`;
+
+                    return `<a href="${url}"
+                            onclick="event.preventDefault(); window.location='${deepLink}';"
+                            class="text-decoration-none"
+                            target="_blank"
+                            title="Open in Telegram"
+                            aria-label="Telegram">
+                                <i class="fa-brands fa-telegram"></i>
+                                <i class="bi bi-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
+                            </a>`;
+                }
+
+                return '<span class="text-muted">N/A</span>';
+            }
+        },
+
+
+
+
+
+
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
-        },
+        }, 
+       
        {
             title: "Address",
             className: "align-middle text-capitalize",
@@ -82,7 +112,7 @@ var MemberComponent = (function () {
                 const today = new Date().setHours(0, 0, 0, 0);
                 const expiryDate = new Date(dateStr).setHours(0, 0, 0, 0);
                 if (expiryDate < today) {
-                    return `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>${dateStr} (Expired)</span>`;
+                    return `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>${dateStr} (Expired Date)</span>`;
                 }
                 if (expiryDate === today) {
                     return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
