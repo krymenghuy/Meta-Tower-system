@@ -274,6 +274,7 @@
 
                             @include('layouts.ypg.homeComponent')
                             @include('layouts.ypg.policyComponent')
+                            @include('layouts.ypg.structureComponent')
 
 
                         
