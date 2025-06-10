@@ -2,7 +2,7 @@
 
 var HomeComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Welcome to CPY Association";
+    mThis.title_prop = "Welcome to Yav Pheng Association";
     mThis.base_url = main_view.base_url;
     mThis.jm = main_view.appContent.children("#_main_home_component");
     mThis.self = mThis.jm[0];

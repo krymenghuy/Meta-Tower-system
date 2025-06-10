@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 /** begin:RoleManagementComponent */
 var RoleManagementComponent = new function(){
     const mThis = this;
@@ -242,7 +242,7 @@ var RoleManagementComponent = new function(){
         if(state === 1){
            //div.classList.add('d-flex');
            //div.style.display ='flex';
-          // *** Todo: later put funcitons slideDown() and slideUp() in general reusable library
+          // *** Todo: later put functions slideDown() and slideUp() in general reusable library
            slideDown(div,duration,()=>{
             mThis.lnkToggleRoleList.dataset.state =1;
             mThis.lnkToggleRoleList.innerHTML = `<i class="fa fa-minimize text-white fs-6"></i>`;
@@ -365,7 +365,6 @@ var RoleManagementComponent = new function(){
             RoleDialog.show(op);
         });
 
-        mThis.btnPrint.style.display ='none';
         mThis.btnPrint.addEventListener('click', e =>{
             e.preventDefault();
             let op = {
@@ -515,8 +514,7 @@ const RoleTabView = new function(){
      this.loadApps =()=>{
         let p = {
             subs_id: main_view.subs_id,
-            role_id:mThis.selected_role.role_id,
-            order_by:'display_order'
+            role_id:mThis.selected_role.role_id
         };
         vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
@@ -606,7 +604,6 @@ const RoleTabView = new function(){
     this.btnAddRoleMember = this.divSelf.querySelector('#_um_role_add_member');
     this.btnCreateUser = this.divSelf.querySelector('#_um_role_create_user');
     this.btnPrintUser = this.divSelf.querySelector('#_um_role_print_user');
-    this.btnPrintUser.style.display = 'none';
     this.elSearchUser = this.divSelf.querySelector('#_um_role_search_user');
    
     // this.resetPassword = (user_id, lnk)=>{
@@ -768,17 +765,7 @@ this.ModulePanel = new function(){
     const that = this;
     this.divSelf =  mThis.tabBody.querySelector('#view_modules');
     this.btnPrintModule = this.divSelf.querySelector('#_um_role_print_module');
-    this.btnPrintModule.style.display = 'none';
     this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
-    //this.elSearchModule = this.divSelf.querySelector('#_um_role_search_module');
-    this.elSearchModule = this.divSelf.querySelector('#_um_role_search_module');
-    this.elSearchModule.onkeyup = e =>{
-        setTimeout(() =>{
-            const op = {"search_value":this.elSearchModule.value};
-            that.displayModules(mThis.selected_role.role_id, that.def_app_id, op);
-        },250);
-    };
-
     this.elAppFilter.onchange = e=>{
       e.preventDefault();
       that.def_app_id = e.target.value;
@@ -787,19 +774,21 @@ this.ModulePanel = new function(){
 
     //loadAppOptions
     this.loadAppChoices = async ()=>{
-        const apps = await getAccessibleApps();
+        let apps = await getAccessibleApps();
        
-        const icon_apps = apps.map(x =>({
+        let icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value : "");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"(All Apps)",(that.def_app_id || ""));
-        if(!that.elAppFilter.value) that.elAppFilter.value = ''; 
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"(All Apps)",(that.def_app_id || ""));
+
+        that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
 
-    this.displayModules = (role_id,app_id, op = {})=>{ 
+    this.displayModules = (role_id,app_id)=>{ 
+        console.log(3,role_id);
+
         role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
         mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
 
@@ -845,9 +834,10 @@ this.ModulePanel = new function(){
             }
         });
 
-        const p = {"role_id":role_id,"app_id":app_id, order_by:'display_order', search_value: (op.search_value ?? '')};
+        let p = {"role_id":role_id,"app_id":app_id};
         vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
-            const data = res.status_code ==200 ? res.data : [];
+            console.log(3,res);
+            let data = res.status_code ==200 ? res.data : [];
             mThis.modulesList.setData(data);
         });
        
@@ -877,7 +867,6 @@ this.PermissionPanel = new function(){
     const that = this;
     this.divSelf =  mThis.tabBody.querySelector('#view_permissions');
     this.btnPrintPermission = this.divSelf.querySelector('#_um_role_print_permission');
-    this.btnPrintPermission.style.display = 'none';
     this.elAppFilter = mThis.self.querySelector('#prn_app_chooser');
     this.elSearchPrn = mThis.self.querySelector('#prn_search');
     this.elAppFilter.onchange = e=>{
@@ -904,9 +893,7 @@ this.PermissionPanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || "";
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"All Applications",(that.def_app_id || ""));
-        if(!that.elAppFilter.value) that.elAppFilter.value = '';
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"All Applications",(that.def_app_id || ""));
     }
 
     this.displayPermissionList = (role_id, app_id,search_value)=>{
@@ -943,7 +930,6 @@ this.PermissionPanel = new function(){
                     prn_id: item_id,
                     status_id: statusInfo.status_id
                 };
-                
                 vsapi.call(`${main_view.base_url}/api/role/permissions/set-status`,p,false,false).then(res =>{
                      if(res.status_code ==200){
                         return;
@@ -953,8 +939,7 @@ this.PermissionPanel = new function(){
             }
         });
      
-            const p = {"role_id":role_id,"app_id":app_id, "search_value":search_value,'order_by':'display_order'};
-                
+            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
             vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);
@@ -963,7 +948,7 @@ this.PermissionPanel = new function(){
     
     this.btnPrintPermission.addEventListener('click', e =>{
         e.preventDefault();
-        const op = {
+        let op = {
             role_id: mThis.selected_role.role_id,
             action: 'gen_permissions',
             onClose:(d)=>{
@@ -1003,15 +988,17 @@ this.ReportPanel = new function(){
     }
 
     this.loadAppChoices = async ()=>{
-        const apps =  await getAccessibleApps();; 
-        const icon_apps = apps.map(x =>({
+        let apps =  await getAccessibleApps();; 
+      
+        let icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value:"");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'','(All Apps)',that.def_app_id || '');
-        if(!that.elAppFilter.value) that.elAppFilter.value = '';
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
+        
+        that.displayReportList(mThis.selected_role.role_id, that.def_app_id, that.elSearchRpt.value);
+
     }
 
     function hasMoreThanOneKey(obj) {
@@ -1061,7 +1048,7 @@ this.ReportPanel = new function(){
             onStatusChange:(statusInfo,item_id,parent_id)=>{
                 const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;               
  
-                const p = {role_id: role_id, prn_id:item_id, app_id:null, status_id : statusInfo.status_id, 'order_by':'display_order'};
+                const p = {role_id: role_id, prn_id:item_id, app_id:null, status_id : statusInfo.status_id};
                 vsapi.call([main_view.base_url,'/api/role/reports/set-status'].join(''),p, null,false).then(res =>{
                     if (res.status_code==200){
                     }else cv_interact.warning(res.error_message);
@@ -2192,7 +2179,7 @@ const RoleDialog = (()=>{
             delete(op.action);
 
             vsapi.call(`${main_view.base_url}/api/role/modules`, {
-                role_id: op.role_id, order_by:'display_order'
+                role_id: op.role_id
             }, null).then(res => {
                 if(res.status_code === 200)
                 {
