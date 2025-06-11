@@ -21,14 +21,14 @@ var MemberComponent = (function () {
         {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary">${data.code ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
             className: "align-middle  text-capitalize ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class=" d-block text-capitalize text-break" style="width:128px; word-break:break-word;">${data.name ?? ''}</span>
+                return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;">${data.name ?? ''}</span>
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
@@ -39,7 +39,7 @@ var MemberComponent = (function () {
 
                 return `<div class="d-flex flex-column">
                             <div class="d-flex">
-                                <small><i class="fas fa-phone text-success mt-1"></i></small><small class="text-dark ps-2">${data.phone_number}</small>
+                                <span class="text-nowrap text-yp-custom">${data.phone_number}</span>
                             </div>
                             
                         </div>`;
@@ -81,7 +81,7 @@ var MemberComponent = (function () {
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap">${data.nationality ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
         }, 
        
        {
@@ -89,7 +89,7 @@ var MemberComponent = (function () {
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-break" style="width:150px; word-break:break-word;">
+                    <div class="text-break text-yp-custom" style="width:150px; word-break:break-word;">
                         <i class="fa-solid fa-location-dot text-primary me-2"></i>${data.address ?? 'N/A'}
                     </div>
                 `;
@@ -97,25 +97,25 @@ var MemberComponent = (function () {
         },
 
         {
-            title: "Expiration Date",
+            title: "Expiration",
             className: "align-middle text-capitalize",
             data: (data) => {
                 if (data.is_expiry == 0) {
-                    return `<span class="text-success">Permanent</span>`;
+                    return `<span class="text-yp-custom">Permanent</span>`;
                 }
-                const dateStr = data.expiry_date ?? '';
+                const dateStr = data.expiration ?? '';
                 if (!dateStr) {
                     return `<span class="text-muted">N/A</span>`;
                 }
                 const today = new Date().setHours(0, 0, 0, 0);
-                const expiryDate = new Date(dateStr).setHours(0, 0, 0, 0);
-                if (expiryDate < today) {
-                    return `<span class="text-capitalize"><i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr} <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p></span>`;
+                const expiration_date = new Date(dateStr).setHours(0, 0, 0, 0);
+                if (expiration_date < today) {
+                    return `<span class="text-yp-custom"><i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr} <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p></span>`;
                 }
-                if (expiryDate === today) {
+                if (expiration_date === today) {
                     return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
                 }
-                return `<span class="text-dark">${dateStr}</span>`;
+                return `<span class="text-yp-custom">${dateStr}</span>`;
             },
         },
         {
@@ -156,7 +156,7 @@ var MemberComponent = (function () {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize fw-semibold">${data.update_user ?? ''}</span>
+                    <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ?? ''}</span>
                     <small class="text-left text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
@@ -178,7 +178,7 @@ var MemberComponent = (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                       <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
                            <span vslang="buttons.Actions">Action</span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
@@ -214,24 +214,20 @@ var MemberComponent = (function () {
             MemberDialog.show(op);
         };
 
-        mThis.tblLeaves = mThis.MemberListView.getTable();
 
-        mThis.initDropdownMenus(mThis.tblLeaves);
-        // const pr_tbl = mThis.MemberListView.getListContainer();
-        // const sh_parent = pr_tbl;
-        // sh_parent.style.height = (window.innerHeight - 180) + 'px';
-        // sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
-        // window.onresize = () => {
-        //     sh_parent.style.maxHeight = (window.innerHeight - 180) + 'px';
-        // }
-
-        mThis.pl_container = mThis.MemberListView.getListContainer();
-        const pl_parent = mThis.pl_container.parentElement;
-        pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        const pr_tbl = mThis.MemberListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
         }
+        mThis.tblMembers = mThis.MemberListView.getTable();
+        mThis.initDropdownMenus(mThis.tblMembers);
+
+
+     
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
@@ -449,9 +445,13 @@ const MemberDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label for="name" class="form-label" vslang="titles.Name"></label>
                                 <input name="name" class="form-control data-input" data-field="name">
+                            </div>
+                              <div class="form-group col-6">
+                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
+                                <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
                             </div>
                             <div class="form-group col-4">
                                 <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
@@ -466,25 +466,18 @@ const MemberDialog = (() => {
                                 <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
                                 <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
                             </div>
+                          
                             <div class="form-group col-4">
-                                <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <input name="email" class="form-control data-input" data-field="email">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiration Date"></label>
+                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiration"></label>
                                 <select name="is_expiry" class="form-control data-input" data-field="is_expiry">
                                     <option value="">(Select)</option>
                                     <option value="0">Permanent</option>
                                     <option value="1">Will Expire</option>
                                 </select>
                             </div>
-                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiry_date" class="form-label" vslang="titles.Expiry Date"></label>
-                                <input name="expiry_date" class="form-control data-input" data-field="expiry_date">
+                            <div class="form-group col-4 expiry-wrapper" style="display: none;">
+                                <label for="expiration" class="form-label" vslang="titles.Expiration"></label>
+                                <input name="expiration" class="form-control data-input" data-field="expiration">
                             </div>
                             <div class="form-group col-6 d-none" >
                                 <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
@@ -499,10 +492,10 @@ const MemberDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    DateTimePicker.init(me.controls.expiry_date);
+                    DateTimePicker.init(me.controls.expiration);
 
                     me.controls.is_expiry.onchange = (e) => {
-                        const expiryWrapper = me.controls.expiry_date.closest('.expiry-wrapper');
+                        const expiryWrapper = me.controls.expiration.closest('.expiry-wrapper');
                         if (expiryWrapper) {
                             expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
                         }

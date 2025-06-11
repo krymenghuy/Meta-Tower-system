@@ -39,15 +39,14 @@ class Member
             'name' => '1|string|0-150',
             'sex' => '1|choice|f,F,m,M,o,O',
             'phone_number' => '1|phone|0-50',
-            'email' => '1|email',
             'address' => '0|string|0-250',
             'nationality_id' => '1|number',
             'status_id' => '1|number|default = 1',
             'is_expiry' => '1|number|default = 0',
-            'expiry_date' => '0|date',
+            'expiration' => '0|date',
         ];
         $checkUnique = null;
-        $res = DBX::validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars,'address'=> GeneralSettings::$address_map_chars], $ss->lang, false, isset($arr[' id']) ? null : $checkUnique);
+        $res = DBX::validateObject($arr, $v_rule, true, ['address'=> GeneralSettings::$address_map_chars], $ss->lang, false, isset($arr[' id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -56,19 +55,19 @@ class Member
         $phone_check = $this->checkUniqueMemberByPhone($d->phone_number, $id);
         if ($phone_check) return DV::error($phone_check);
 
-        $expiry_date = $d->expiry_date ?? null;
+        $expiration = $d->expiration ?? null;
         $is_expiry = $d->is_expiry ?? 0;
-        if ($is_expiry == 1 && !$expiry_date) {
-            return DV::error('Expiry date is required');
+        if ($is_expiry == 1 && !$expiration) {
+            return DV::error('Expiration date is required');
         }
-        if ($expiry_date) {
-            $converted_expiry= convertDate($expiry_date);
+        if ($expiration) {
+            $converted_expiry= convertDate($expiration);
             if (strtotime($converted_expiry) < strtotime(date('Y-m-d'))) {
                 return DV::error('Expiry date cannot be in the past.');
             }
-            $inputs['expiry_date'] = $converted_expiry;
+            $inputs['expiration'] = $converted_expiry;
         } else {
-            unset($inputs['expiry_date']);
+            unset($inputs['expiration']);
         }
         $created = !$id;
         $new_id = DBX::saveData($ss, 'members', ['id' => $id], $inputs, [], 1, false);
@@ -112,7 +111,7 @@ class Member
         if($status_id){
             $str_moreWhere .= ' AND m.status_id =\'' . $status_id . '\'';
         }
-        $expiry_date = DBX::formatDate("m.expiry_date", 'expiry_date');
+        $expiry_date = DBX::formatDate("m.expiration", 'expiration');
         $updated_at = DBX::formatTime("m.updated_at", 'updated_at');
 
         $telegram_link = "CONCAT('https://t.me/+', REPLACE(REPLACE(REPLACE(m.phone_number, '+', ''), ' ', ''), '-', '')) AS telegram_link";
@@ -129,7 +128,6 @@ class Member
                 m.name,
                 m.sex,
                 m.phone_number,
-                m.email,
                 m.address,
                 m.nationality_id,
                 c.nationality,
@@ -156,7 +154,7 @@ class Member
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->where('m.id', $id)
-            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiry_date')
+            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration')
             ->first();
         return $query;
     }

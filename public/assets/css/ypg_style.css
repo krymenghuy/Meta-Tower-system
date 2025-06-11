@@ -12,8 +12,8 @@
 
 .btn_add {
     padding: 10px 20px;
-    color: white;
-    background-color: #27444a;
+    color: #27444a;
+    background-color: #fff;
     border-radius: 20px;
     margin-top: 3px;
     cursor: pointer;
@@ -21,6 +21,7 @@
     text-decoration: none;
 
 }
+
 /* .listview-container{
     border-radius: 15px;
     border: 1px solid #dee2e6 !important;
@@ -43,19 +44,22 @@
     border-radius:20px;
     object-fit:cover"
 }
+.text-yp-custom {
+    color: #27444a;
+}
 .text-dark-custom {
     color: #38373a;
 }
-.bg-dark-custom {
-    background-color: #38373a;
+.bg-yp-custom {
+    background-color: #27444a;
 }
-.btn-outline-dark-custom {
-    color: #38373a;
-    border-color: #38373a;
+.btn-outline-yp-custom {
+    color: #27444a;
+    border-color: #27444a;
 }
-.btn-outline-dark-custom:hover {
+.btn-outline-yp-custom:hover {
     color: #fff;
-    background-color: #38373a;
+    background-color: #27444a;
 }
 .border-dark-custom {
     border-color: 2px solid #38373a;
@@ -1455,8 +1459,7 @@ input[data-select="_formpicker"].data-invoice::placeholder {
     margin-bottom: 0.5rem;
 }
 
-.form-group {
-}
+
 .tbl-image-size,
 .image-logo-tbl {
     width: 50px;
@@ -1812,9 +1815,9 @@ ul.list-filter-um li:not(li:last-child) {
 }
 
 .table--white thead th {
-    color: rgb(255 255 255) !important;
+    color: #fff !important;
     /* border-radius: 0.5rem !important; */
-    background-color: #27444a !important;
+    background-color:  #27444a !important;
     font-size: 14px !important;
     padding: 10px !important;
 }
