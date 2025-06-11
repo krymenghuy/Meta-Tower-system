@@ -136,7 +136,7 @@ class Member
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->where('m.id', $id)
-            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiry_date')
+            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration')
             ->first();
         return $query;
     }
