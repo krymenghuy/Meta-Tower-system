@@ -47,7 +47,7 @@
                                 <div class="vs-d-flex-btn" style="margin-top: 10px;">
                                     <p style="text-align:center; width:100%;">
                                         Already have an account?
-                                        <a href="{{ url('/login') }}" style="color:#007bff; text-decoration:none;">Log in</a>
+                                        <a href="/logout" style="color:#007bff; text-decoration:none;">Log in</a>
                                     </p>
                                 </div>
                                 

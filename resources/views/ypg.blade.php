@@ -131,17 +131,17 @@
                                 </div>
                                 <div id="_main_top_right_menus"
                                     class="d-flex flex-row gap-2 w-50 flex-wrap px-5 justify-content-end align-items-center">
-                                    <div class="dropdown shadow-lg rounded-5 bg-white choose--language">
+                                    <div class="dropdown shadow-lg rounded-5 choose--language">
                                         <button id="_main_btn_lang" class="btn-dropdown align--language"
                                             data-menu="lang">
                                             <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px" />
-                                            <span id="_main_lang_name" style="color:#aaaaaa;">
+                                            <span id="_main_lang_name" style="color:#fff;">
                                                 <?php
                                                 echo Session::get('lang_name', 'Khmer');
                                                 ?>
                                             </span>
-                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#aaaaaa;"></i>
+                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#fff;"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <span class="lang-menu-header"></span>
@@ -165,10 +165,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
+                                    <div class="dropdown  shadow-lg rounded-5 nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#aaaaaa;"></i>
+                                            <i class="fa-solid fa-bell tool-tip fs-5" style="color:#fff;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -183,11 +183,11 @@
 
                                     <div class="dropdown shadow-lg rounded-5 bg-white app--list d-none">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
-                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#aaaaaa;"></i>
+                                        <i class="fa-solid fa-table tool-tip fs-5" style="color:#fff;"></i>
                                             <span></span>
                                         </button>
 
-                                        <div class="dropdown-menu shadow-lg bg-white rounded-3 mt-3"
+                                        <div class="dropdown-menu shadow-lg rounded-3 mt-3"
                                             style="position:absolute;width:250px;left:-220px;top:35px">
                                             <span class="app-menu-header"></span>
                                             <div class="main-app-menus">
@@ -216,11 +216,11 @@
 
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-5 bg-white user--info">
+                                    <div class="dropdown shadow-lg rounded-5 user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img class="mr-2" src="<?php echo $user->image_url; ?>" style="height:25px" />
-                                                <span style="color:#aaaaaa;">
+                                                <span style="color:#fff;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';

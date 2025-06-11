@@ -220,14 +220,14 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .choose--language {
-    background-color: #fff;
+    background-color: #27444a;
     padding: 10px;
     border-radius: 20px;
     margin-left: 15px;
 }
 
 .nav--notification {
-    /* background-color: #fff; */
+    background-color: #27444a;
     padding: 10px;
     /* border-radius: 50%; */
     width: 40px;
@@ -242,7 +242,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .app--list {
-    /* background-color: #fff; */
+    background-color: #27444a;
     padding: 10px;
     /* border-radius: 20px; */
     width: 40px;
@@ -250,6 +250,8 @@ a.menu-selected .kt-menu__link-text {
     margin-left: 15px;
 }
 .user--info {
+    background-color: #27444a;
+    
     padding: 10px;
     margin-left: 15px;
 }

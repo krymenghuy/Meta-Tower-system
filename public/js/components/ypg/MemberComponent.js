@@ -1,18 +1,18 @@
 "use strict";
 
-var MemberComponent = (function () {
-    const mThis = {};
-    mThis.title_prop = "Member Management";
-    mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_member_component");
-    mThis.self = mThis.jm[0];
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
-    mThis.elSearch = mThis.self.querySelector("#_search_member");
+var MemberComponent = new (function () {
+    const mThis = this;
+    
+    this.title_prop = "Member Management";
+    this.base_url = main_view.base_url;
+    this.self = main_view.VSAppContent.querySelector("#_main_member_component");
+    this.btnAdd = mThis.self.querySelector("#_btnAddMember");
+    this.divFilter = mThis.self.querySelector("#_divFilter_member");
+    this.elFilter_status = mThis.self.querySelector('#el_status');
+    this.elLeaveType = mThis.self.querySelector("#el_leave_type");
+    this.elSearch = mThis.self.querySelector("#_search_member");
 
-    mThis.cols = [
+    this.cols = [
 
         {
             title: "",
@@ -188,7 +188,7 @@ var MemberComponent = (function () {
 
     ];
 
-    mThis.init = () => {
+    this.init = () => {
         if (mThis.initAlready) return;
 
         mThis.MemberListView = new ListView('_member_list', {
@@ -248,7 +248,7 @@ var MemberComponent = (function () {
         mThis.initAlready = true;
     };
 
-    mThis.getFilterData = () => {
+    this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
@@ -262,7 +262,7 @@ var MemberComponent = (function () {
         return p;
     };
 
-    mThis.initDropdownMenus = (table) => {
+    this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
@@ -319,7 +319,7 @@ var MemberComponent = (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk) => {
+    this.changeStatus = (id, lnk) => {
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -368,7 +368,7 @@ var MemberComponent = (function () {
         });
     }
 
-    mThis.editMember = (id, menuLink) => {
+    this.editMember = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -381,7 +381,7 @@ var MemberComponent = (function () {
         MemberDialog.show(op);
     }
 
-    mThis.deleteMember = (id, menuLink) => {
+    this.deleteMember = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -409,25 +409,25 @@ var MemberComponent = (function () {
         });
     }
 
-    mThis.prepareFormOptions = () => {
+    this.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
+                if(typeof onFinish ==='function') onFinish();
             })
     }
 
-    mThis.show = function () {
+    this.show = (options) => {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.MemberListView.showPage(mThis.getFilterData(), null, () => {
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
+        mThis.options = options;
+        mThis.prepareFormOptions(()=>{
+            main_view.setContentView(mThis.self,mThis.title_prop);
+            mThis.MemberListView.showPage(mThis.getFilterData());
         });
-    }
-    return mThis;
+        
+    };
 })();
 
 
