@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 9);
+    StyleManager::render('ypg-style', 1, 11);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -75,7 +75,7 @@
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 7);
     ScriptManager::render('primary-defer', 1, 21);
-    ScriptManager::render('ypg-components', 1, 198);
+    ScriptManager::render('ypg-components', 1, 201);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

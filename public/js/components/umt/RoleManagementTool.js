@@ -509,7 +509,7 @@ const RoleTabView = new function(){
      cv_interact.info('Swap Item feature is not yet available');
   }
 
-  mThis.deleteItem = (type,tr, item_id, onFinish = null)=>{
+  mThis.deleteItem = (type,div_item, item_id, onFinish = null)=>{
      let msg = `delete this ${type}?`;
      cv_interact.confirm(msg, {title:`Delete ${type}`, context:'delete'}, e=>{
          if(e){
@@ -534,11 +534,10 @@ const RoleTabView = new function(){
               }
             }
 
-            const p = {id:item_id};
-            console.log('del: ',p);
+            let p = {id:item_id};
             vsapi.call(endpoint,p,false,false,false).then(res=>{
                 if(res.status_code ===200){
-                    tr?.remove();
+                    div_item?.closest('.item-wrapper').remove();
                     if(onFinish) onFinish();
                 }else cv_interact.warning(res.error_message);
             });
@@ -590,13 +589,13 @@ const RoleTabView = new function(){
                                 let d = lnk.closest('.item-wrapper')?.dataset;
                                  d =d || {};
                                 let item_id = d.id;
-                                const ds = {
+                                let ds = {
                                   report_id: d.reportid,
                                   code: d.code,
                                   params: d.params,
-                                  //pdf: d.export_pdf,
-                                  //excel : d.export_excel,
-                                  //export_csv: d.export_csv,
+                                  export_pdf: d.export_pdf,
+                                  export_excel : d.export_excel,
+                                  export_csv: d.export_csv,
                                   display_order : d.displayorder
                                 }
                                 if(!item_id){
@@ -604,11 +603,12 @@ const RoleTabView = new function(){
                                     return;
                                 }
                                 /** NOTE that the api/report/save() will handling saving or creating new report in both tables, first in "um_permissions" and then in table "reports" */ 
-                                const op = {
+                                let op = {
                                     id:item_id,
                                     app_id : app_id,
                                     ...ds // This variable "ds" contains all necessary report's attributes such as report_group, code, params,export_excel, export_pdf, 
                                 }
+     
                                 //Modify module, permission, and report
                                 mThis.editItem(type, op); 
                                 return;
@@ -667,7 +667,7 @@ const RoleTabView = new function(){
      let div = this.divAppList.parentElement?.querySelector('.app_action_buttons');
      if(!div){
         div = this.divAppList.parentElement;
-        div.insertAdjacentHTML('afterbegin',`<div class="app_action_buttons mb-2"> <a href="javascript:void(0)" class="lnk_add_app btn-sm btn-outline-primary rounded-3 p-2">New Application</a></div>`);
+        div.insertAdjacentHTML('afterbegin',`<div class="app_action_buttons"> <a href="javascript:void(0)" class="lnk_add_app p-2">New Application</a></div>`);
         let btn = div.querySelector( 'a.lnk_add_app'); 
         if(btn){
             btn.onclick = e =>{
@@ -679,10 +679,9 @@ const RoleTabView = new function(){
     
     //displayAppList()
      this.loadApps =()=>{
-        const p = {
+        let p = {
             subs_id: main_view.subs_id,
-            role_id:mThis.selected_role.role_id,
-            order_by:'display_order'
+            role_id:mThis.selected_role.role_id
         };
         vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
@@ -759,7 +758,7 @@ const RoleTabView = new function(){
      }
  
      this.createApp = (op)=>{
-        that.AppDialog = that.AppDialog || new GeneralDialog({
+        that.AppDialog = that.AppDialog || new GeneralDialog({  
          createContent:()=>{
            return [
              `<div class="form-group col-md-12">
@@ -767,32 +766,20 @@ const RoleTabView = new function(){
                 <div><input class="form-control data-input"  name="name" data-field="name" /></div>
                 </div>`,
               `<div class="form-group col-md-12">
-                <label class="form-label" vslang="titles.App Name">Is Mobile App</label>
+                <label class="form-label" vslang="titles.Is Mobile App">Is Mobile App</label>
                 <div><select class="form-control data-input" name="is_mobile_app" data-field="is_mobile_app">
                 </select></div>
                </div>`,
 
                `<div class="form-group col-md-12">
-               <label class="form-label" vslang="titles.App Name">Home Route</label>
+               <label class="form-label" vslang="titles.Home Route">Home Route</label>
                <div><input class="form-control data-input" name="home_route" data-field="home_route" /></div>
               </div>`,
              `<div class="form-group col-md-12">
               <label class="form-label" vslang="titles.User Class">User Class</label>
               <div><select class="data-input" name="user_class" data-field="user_class"></select></div>
              </div>`,
-             `<div class="form-group col-md-12">
-               <label class="form-label" vslang="titles.Use App ID">Use App ID</label> <a href="javascript:void(0)" name="lnk_create_appid" class="ml-2"><i class="fa fa-pencil"></i></a>
-               <div><input name="use_app_id" class="data-input form-control" name="use_app_id" data-field="use_app_id"/></div>
-             </div>`,
             ].join('');
-         },
-         contentCreated:(me)=>{
-            me.controls.lnk_create_appid.onclick = e =>{
-               vsapi.get([main_view.base_url, '/api/settings/utils/uuid'].join(''),{},null,false).then(data =>{
-                  console.log('ggg: ',data);
-                  me.controls.use_app_id.value = data.uuid;
-               });
-            };
          },
          showCancelButton:true,
          configSelect:[
@@ -805,15 +792,23 @@ const RoleTabView = new function(){
          ],
          buttons:[
             {
-                label:"<span>Save</span",
+              label:'<span vslang="buttons.Cancel"></span>',
+              click:(me,btn)=>{
+                 me.hide(false);
+              }
+            },
+            {
+                label:"<span vslang='buttons.Save'>Save</span",
+                   cssClass:'btn btn-primary',
                 click:(me, btn,divModal)=>{
-                     let p = me.getData();
+                     const p = me.getData();
                      
                      p.subs_id = main_view.subs_id;
                      if(!p.subs_id){
                         cv_interact.error('subs_id is missing!');
                         return;
                      }
+                     console.log(2,p);
                      vsapi.call(`${main_view.base_url}/api/application/save`,p,btn,false).then(res =>{
                           if(res.status_code ==200){
                              me.hide(true,p);
@@ -832,9 +827,9 @@ const RoleTabView = new function(){
                 params:(dataOption)=>{
                     return {"id":dataOption.id};
                 },
-                onResponse:(me,res)=>{
-                     console.log(res.data);
-                }
+                // onResponse:(me,res)=>{
+                //      console.log(res.data);
+                // }
              }
          },
          onPrepareForm:(me)=>{
@@ -1016,23 +1011,11 @@ const RoleTabView = new function(){
 this.ModulePanel = new function(){
     const that = this;
     this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
-    this.elSearchModule = mThis.self.querySelector('#_um_role_search_module');
-    this.elSearchModule.onkeyup = e =>{
-        setTimeout(() =>{
-            const op = {"search_value": this.elSearchModule.value};
-            that.displayModules(mThis.selected_role.role_id, that.def_app_id, op);
-        },250);
-    };
-
-    this.elAppFilter.onchange = e => {
+    this.elAppFilter.onchange = e=>{
       e.preventDefault();
       that.def_app_id = e.target.value;
       that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
-
-    this.refreshModuleList = ()=>{
-        that.elAppFilter.dispatchEvent(new Event("change"));
-    };
 
     //loadAppOptions
     this.loadAppChoices = async ()=>{
@@ -1043,14 +1026,13 @@ this.ModulePanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value : "");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"(All Apps)",(that.def_app_id || ''));
-        if(!that.elAppFilter.value) that.elAppFilter.value ='';
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"(All Apps)",(that.def_app_id || ""));
+        
+        that.displayModules(mThis.selected_role.role_id, that.def_app_id);
+
     }
 
-    this.displayModules = (role_id,app_id, op = {})=>{
-            if (!that.elAppFilter.value) that.elAppFilter.value = ''; // (All Applications)
-            role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+    this.displayModules = (role_id,app_id)=>{
             mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
             let div = mThis.div_modules.parentElement?.querySelector('.mod_action_buttons');
             if(!div){
@@ -1087,16 +1069,9 @@ this.ModulePanel = new function(){
             }
 
             mThis.modulesList = mThis.modulesList || new  UMExpandItemView(mThis.div_modules,{
-                showDeveloperTools:true,
                 emptyInfoText:"No module control list",
                 headerClass:"mod-category",
                 itemName:"Module",
-                onEditItem: (id,tr,itemName) =>{
-                    mThis.ModulePanel.createOrUpdateModule({app_id: app_id, id:id, onClose: mThis.ModulePanel.refreshModuleList} );
-                },
-                onDeleteItem:(id ,tr,itemName) =>{
-                    mThis.deleteItem(itemName,tr,id, mThis.ModulePanel.refreshModuleList);
-                },
                 statuses:{
                     1: {
                     name:'Allowed',  
@@ -1132,9 +1107,10 @@ this.ModulePanel = new function(){
                     });
                 }
             });
-            const p = {"role_id":role_id,"app_id":app_id, order_by:'display_order', search_value: (op.search_value ?? '')};
+
+            const p = {"role_id":role_id,"app_id":app_id};
             vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
-                const data = res.status_code ==200 ? res.data : [];
+                let data = res.status_code ==200 ? res.data : [];
                 mThis.modulesList.setData(data);
                 mThis.setItemActionButtons(mThis.modulesList.getContainer(), app_id,"module");
             });
@@ -1170,7 +1146,7 @@ this.ModulePanel = new function(){
          }
 
          this.exportModules= (app_id) =>{
-            const d = that.getModuleList();
+            let d = that.getModuleList();
             RoleManagementComponent.exportData(d,"modules");
           }
        
@@ -1210,55 +1186,38 @@ this.ModulePanel = new function(){
                     `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
                  `</div>`,
                  `<div class="form-group col-md-12">`,
-                 `<label class="form-label" vslang="titles.Module ID (optional)">Module ID (optional)</label>`,
-                 `<div><input type="number" name="force_module_id" class="form-control data-input" data-field="force_module_id" /></div>`,
-               `</div>`,
-                 `<div class="form-group col-md-12">`,
                    `<label class="form-label" vslang="titles.Visibility">Visibility</label>`,
                    `<div><select name="visibility"  class="data-input" data-field="hidden"></select></div>`,
                  `</div>`,
                ].join('');
               },
               //showCancelButton:true,
-               buttons: [
+              buttons:[
                 {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => me.hide(false),
+                  label:"Cancel",
+                  click:(me,btn)=>{
+                     me.hide(false);
+                  }
                 },
                    {
                      label:"<span>Save</span>",
+                     cssClass:'btn btn-primary',
                      click:(me,dataOptions, divModal)=>{
                          let p = me.getData();
                          vsapi.call(`${main_view.base_url}/api/module/save`,p,false,false,false).then(res =>{
                              if(res.status_code == 200){
                                 me.hide();
-                                const app_id = me.controls.app.value; 
+                                let app_id = me.controls.app.value; 
                                 if(app_id){
                                   that.elAppFilter.value = app_id;
                                   that.elAppFilter.dispatchEvent(new Event("change"));
                                 }
-                                const change_id_error = res.data.change_id_error ?? null;
-                                if(change_id_error){
-                                   cv_interact.warning('html::Module name has been saved! <span calss="text-danger">' + change_id_error + '</span>');
-                                }
-                                else cv_interact.success(['Module ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
+                                cv_interact.success(['Module ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
                              }else cv_interact.error(res.error_message); 
                          })
                      }
                  }
               ],
-              extendMethod:{
-                 "getData":(me)=>{
-                     const force_mid = me.controls.force_module_id;
-                     if(force_mid> 0){
-                        return {"force_module_id":force_mid};   
-                     }else return {};
-                  },
-                  "setData":(me,data)=>{
-                     me.controls.force_module_id.value = data.id ?? data.module_id ?? '';
-                 }
-              },
               configSelect:[
                 {
                     name:"visibility",
@@ -1311,10 +1270,6 @@ this.PermissionPanel = new function(){
         that.displayPermissionList(mThis.selected_role.role_id, that.def_app_id, that.elSearchPrn.value);
     }
 
-    this.refreshPermissionList = ()=>{
-        that.elAppFilter.dispatchEvent(new Event("change"));
-    };
-
     this.elSearchPrn.onkeyup = e =>{
        e.preventDefault();
        setTimeout(()=>{
@@ -1327,17 +1282,16 @@ this.PermissionPanel = new function(){
     }
 
     this.loadAppChoices = async ()=>{
-        const apps =  await getAccessibleApps();
-        const icon_apps = apps.map(x =>({
+        let apps =  await getAccessibleApps();
+        let icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (apps[0]?.id);
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"All Applications",(that.def_app_id || ""));
-        if(!that.elAppFilter.value){
-            that.elAppFilter.value = '';
-        }
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"All Applications",(that.def_app_id || ""));
+        
+        that.displayPermissionList(mThis.selected_role.role_id, that.def_app_id, that.elSearchPrn.value);
+
     }
 
     this.displayPermissionList = (role_id, app_id,search_value)=>{
@@ -1380,17 +1334,10 @@ this.PermissionPanel = new function(){
 
         that.prnAttributes = ['category','module_id'];
         mThis.permissionList = mThis.permissionList || new UMExpandItemView( mThis.div_permissions,{
-            showDeveloperTools:true,
             emptyInfoText:"No permission control",
             headerClass:"prn-category",
             itemDataset: that.prnAttributes,
             itemName:"Permission",
-            onEditItem: (id,tr,itemName) =>{
-                mThis.PermissionPanel.createOrUpdatePermission({app_id: app_id, id:id, onClose: mThis.PermissionPanel.refreshPermissionList} );
-            },
-            onDeleteItem:(id ,tr,itemName) =>{
-                mThis.deleteItem(itemName,tr, id, mThis.PermissionPanel.refreshPermissionList);
-            },
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -1422,7 +1369,7 @@ this.PermissionPanel = new function(){
             }
         });
      
-            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value, 'order_by':'display_order'};
+            let p = {"role_id":role_id,"app_id":app_id, "search_value":search_value};
             vsapi.call(`${main_view.base_url}/api/role/permissions`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.permissionList.setData(data);
@@ -1431,8 +1378,7 @@ this.PermissionPanel = new function(){
     }
 
     this.deletePermission = (id)=>{
-       const p = {id:id};
-       if (!that.elAppFilter.value) that.elAppFilter.value = ''; // (All Applications)
+       let p = {id:id};
        cv_interact.confirm("Delete this module?",{title:"Delete Module",context:'delete'}, e=>{
          if(e){
             vsapi.call(`${main_view.base_url}/api/module/delete`,p,false,false).then(res=>{
@@ -1534,11 +1480,12 @@ this.PermissionPanel = new function(){
                 me.org_actions = d.actions; //remember original actions if any , especially useful in case of Editing existing permission
              } 
            },
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => me.hide(false),
+           buttons:[
+              {
+                  label:"Cancel",
+                  click:(me,btn)=>{
+                     me.hide(false);
+                  }
                 },
                 {
                   label:"<span>Save</span>",
@@ -1598,9 +1545,9 @@ this.PermissionPanel = new function(){
                           params: (me,dataOptions,controls)=>{
                               return {"app_id": controls.app.value};
                           },
-                          onResponse:(me,res)=>{
-                               console.log(111,res.data);
-                          }
+                        //   onResponse:(me,res)=>{
+                        //        console.log(111,res.data);
+                        //   }
                       }
   
                   }
@@ -1628,9 +1575,9 @@ this.PermissionPanel = new function(){
               me.controls.category.onchange = e =>{
                  const cat = (e.target.value || '').toLowerCase();
                  if(cat ==='report'){
-                    me.actions.value = 'view|print|excel'; 
+                    me.actions.value = 'view|print|export_pdf|export_excel|export_csv'; 
                  }else{
-                    me.actions.value = me.org_actions || '';
+                    me,actions.value = me.org_actions;
                  } 
               };
            },
@@ -1673,12 +1620,8 @@ this.ReportPanel = new function(){
                  that.elAppFilter.value = "";
             }
             that.elAppFilter.dispatchEvent(new Event("change"));
-        },200);
+        },250);
     }
-
-    this.refreshReportList = ()=>{
-        that.elAppFilter.dispatchEvent(new Event("change"));
-    };
 
     this.loadAppChoices = async ()=>{
         let apps =  await getAccessibleApps();; 
@@ -1688,9 +1631,7 @@ this.ReportPanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value:"");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'','(All Apps)',that.def_app_id || '');
-        if(!that.elAppFilter.value) that.elAppFilter.value = '';
-        that.elAppFilter.dispatchEvent(new Event('change'));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
     }
 
     this.displayReportList = async (role_id,app_id,search_value) => {
@@ -1746,20 +1687,13 @@ this.ReportPanel = new function(){
         }
        
         //ReportAttributes is only used for collecting report list when user Export report list to .json file, and used for Editing existing report.
-        that.reportAttributes = ['report_id','category','module_id','report_group','code','params','excel','pdf','display_order'];
+        that.reportAttributes = ['report_id','category','module_id','report_group','code','params','export_pdf','export_excel','export_csv','display_order'];
         mThis.reportList = mThis.reportList || new  UMExpandItemView(mThis.div_reports,{
-            showDeveloperTools:true,
             emptyInfoText:"No controlled reports",
             headerClass:"rpt-category",
             permissionActions: that.reportActions,
             itemDataset: that.reportAttributes,
             itemName:"Report",
-            onEditItem: (id,tr,itemName) =>{
-                mThis.ReportPanel.createOrUpdateReport({app_id: app_id, id:id, onClose: mThis.ReportPanel.refreshReportList} );
-            },
-            onDeleteItem:(id ,tr,itemName) =>{
-                mThis.deleteItem(itemName,tr,id, mThis.ReportPanel.refreshReportList);
-            },
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -1787,7 +1721,7 @@ this.ReportPanel = new function(){
 
         });
 
-        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value, 'order_by':'display_order'};
+        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
         vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
              const d = res.status_code ==200? res.data: {};
              mThis.reportList.setData(d);
@@ -1858,14 +1792,12 @@ this.ReportPanel = new function(){
 
     // },
            showCancelButton:true,
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => {
-                        //Close with Cancel button
-                        me.hide(false);
-                    },
+           buttons:[
+              {
+                  label:"Cancel",
+                  click:(me,btn)=>{
+                     me.hide(false);
+                  }
                 },
                 {
                   label:"<span>Save</span>",
@@ -1933,7 +1865,7 @@ this.ReportPanel = new function(){
            ],
            extendMethod:{
               "setData":(me,data)=>{
-                  if(!me.dataOptions.id || me.dataOptions.id ==0) me.controls.actions.value = 'view|print|excel|csv';
+                  if(!me.dataOptions.id || me.dataOptions.id ==0) me.controls.actions.value = 'view|print|export_excel|export_pdf|export_csv';
               }
            },
            prepareFormOptions:{
