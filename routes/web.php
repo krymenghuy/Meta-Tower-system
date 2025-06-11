@@ -126,6 +126,11 @@ Route::get('/', function () {
 Route::get('logout', function () {
     return view('login.ypg_login');
 });
+Route::get('signup', function () {
+    return view('login.ypg_signup');
+   
+
+});
 
 //Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 //Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);
@@ -148,6 +153,10 @@ Route::get('attendance', function () {
 // Route::get('/export-db031181', [DbExportController::class, 'exportDatabase']);
 // Route::get('/export-dbbydate031181/{date?}', [DbExportController::class, 'exportDataByDate']);
 
+
+
+
+
 Route::get('landingpoint', function () {
     if (!XAuthService::user()) {
         $base_url = url('/');
@@ -156,6 +165,7 @@ Route::get('landingpoint', function () {
     };
     return view('landing_page');
 });
+
 
 Route::get('ypg/{componentName?}', function ($componentName = null) {
     if (!XAuthService::user()) {

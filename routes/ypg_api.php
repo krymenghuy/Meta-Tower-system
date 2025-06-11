@@ -3,6 +3,8 @@
 use App\Http\Controllers\Ypg\DashboardController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Signup\SignupController;
+
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ypg\ReportController;
@@ -27,6 +29,12 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 // Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
 // Route::post('/employee/attendance/last-employees-scan',[AttendanceController::class,'getLastEmployeesScan']);
 // Route::post('/create-contract', [ContractController::class, 'createContract']);
+
+Route::get('/signup', function () {
+    return view('signup');
+});
+Route::post('/register', 'Auth\RegisterController@register'); 
+
 
 //begin::CompanyProfileController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function () {

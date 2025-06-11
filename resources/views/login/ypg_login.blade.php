@@ -222,8 +222,16 @@
                                     </div>
                                     <div class="vs-d-flex-btn">
                                         <button class="btn-login" type="submit">LOGIN</button>
-                                        <button class="btn-login" type="submit">SIGN UP</button>
+                                        <br>
+                                        
+                                        <p style="text-align:center; font-size:16px;">
+                                            Don't you have an account?
+                                            <a href="/signup" style="color: #007bff; text-decoration: none;">Sign up</a>
+                                        </p>
+
+                                       
                                     </div>
+                                   
                             </form>
                             </div>
                         </div>
@@ -237,3 +245,19 @@
         </div>
     </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
