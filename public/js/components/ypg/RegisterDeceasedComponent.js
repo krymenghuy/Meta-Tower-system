@@ -1,11 +1,10 @@
 "use strict";
 
-var RegisterDeceasedComponent = (function () {
-    const mThis = {};
+var RegisterDeceasedComponent = new (function () {
+    const mThis = this;
     mThis.title_prop = " Register Deceased";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_register_deceased_component");
-    mThis.self = mThis.jm[0];
+    mThis.self = main_view.VSAppContent.querySelector("#_main_register_deceased_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnRegisterDeceased");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_register_deceased");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
@@ -22,38 +21,38 @@ var RegisterDeceasedComponent = (function () {
             className: "align-middle",
             data: (data) =>{
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<p class="pb-0 mb-1 d-block text-nowrap text-capitalize">${data.name ?? ''}</p>
+                return `<p class="pb-0 mb-1 d-block text-nowrap text-capitalize text-yp-custom">${data.name ?? ''}</p>
                 <small class="pb-0 mb-0 d-block text-muted">${sexLabel}</small>`
             }
         },
         {
             title: " Date of Birth",
             className: "align-middle",
-            data: (data) => `<span class="text-nowrap">${data.date_of_birth ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.date_of_birth ?? ''}</span>`,
         },
         {
             title: "Date of Death",
             className: "align-middle",
-            data: (data) => `<span class="text-nowrap">${data.date_of_death ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.date_of_death ?? ''}</span>`,
         },
         {
             title: "Grave Location",
             className: "align-middle",
-            data: (data) => `<p class="mb-0 pb-0 text-nowrap">${data.slot_number ?? 'Available'}</p>
-                             <span class="text-nowrap text-primary">${data.zone ?? 'No Zone'}</span>`,
+            data: (data) => `<p class="mb-0 pb-0 text-yp-custom text-nowrap">${data.slot_number ?? 'Available'}</p>
+                             <span class="text-nowrap text-yp-custom">${data.zone ?? 'No Zone'}</span>`,
         },
         {
             title: "Relationship",
             className: "align-middle",
-            data: (data) => `<span class="text-nowrap">${data.relation ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.relation ?? ''}</span>`,
         },
          {
             title: "Arranged By",
             className: 'align-middle',
             data: (data, index, tr)=>{
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize fw-semibold">${data.member_name ?? ''}</span>
-                    <small class="text-left text-warning">${data.burial_date ?? ''}</small>
+                    <span class="text-capitalize text-yp-custom fw-semibold">${data.member_name ?? ''}</span>
+                    <small class="text-left text-yp-custom">${data.burial_date ?? ''}</small>
                 </div>`;
             }
         },
@@ -75,7 +74,7 @@ var RegisterDeceasedComponent = (function () {
              data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                       <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
                            <span vslang="buttons.Actions">Action</span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
@@ -111,17 +110,20 @@ var RegisterDeceasedComponent = (function () {
             RegisterDeceasedDialog.show(op);
         };
 
-        mThis.tblLeaves = mThis.RegisterDeceasedListView.getTable();
-
-        mThis.initDropdownMenus(mThis.tblLeaves);
+        
 
 
         mThis.pl_container = mThis.RegisterDeceasedListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+            pl_parent.classList.add("overflow-y-auto");
+            pl_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
+        mThis.tblRegister = mThis.RegisterDeceasedListView.getTable();
+
+        mThis.initDropdownMenus(mThis.tblRegister);
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
@@ -247,22 +249,21 @@ var RegisterDeceasedComponent = (function () {
         });
     }
 
-    mThis.prepareFormOptions = () => {
+    mThis.prepareFormOptions = (onFinish=null) => {
         vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
+            onFinish();
         })
     }
 
     mThis.show = function () {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.RegisterDeceasedListView.showPage(mThis.getFilterData(), null, () => {
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
+        main_view.setContentView(mThis.self,mThis.title_prop);
+        mThis.prepareFormOptions(()=>{
+            mThis.RegisterDeceasedListView.showPage(mThis.getFilterData());
         });
-    }
-    return mThis;
+       
+    };
 })();
 
 
