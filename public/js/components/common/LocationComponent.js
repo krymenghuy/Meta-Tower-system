@@ -108,7 +108,7 @@ var LocationComponent = new function(){
          if(res.status_code===200){
             let rows = res.data;
             let i=0,c;
-            let html = ['<tr class=" color-text text-white bg-primary-custom">',
+            let html = ['<tr class="color-text text-yp-custom bg-primary-custom">',
                         `<th>Flag</th>`,
                         `<th>Country </th>`,
                         `<th>Currency Code</th>`,
@@ -578,10 +578,10 @@ var ZoneTabView = new function(){
                               if(!c) break;
                                   let html = ['<tr data-cityname="',c.name,'" data-cityid="',c.id,'">',
                                   '<td><i class="icon-city-default"></i></td>',
-                                  '<td class="col_city_name">',c.name,'</td>',
+                                  '<td class="col_city_name text-yp-custom">',c.name,'</td>',
                                   '<td class="col_action">',
-                                  '<a href="#" class="_sttn_loc_edit_city" data-cityid="',c.id,'"><i class="fa fa-edit" style="color:green;font-size:1.3em"></i></a>&nbsp;&nbsp;',
-                                  '<a href="#" class="_sttn_loc_delete_city" data-cityid="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.3em"></i></a>',
+                                  '<a href="#" class="_sttn_loc_edit_city" data-cityid="',c.id,'"><i class="fa fa-edit" style="color:#27444a;font-size:1.3em"></i></a>&nbsp;&nbsp;',
+                                  '<a href="#" class="_sttn_loc_delete_city" data-cityid="',c.id,'"><i class="fa-regular fa-trash-can text-warning" style="font-size:1.3em"></i></a>',
                                   '</td>',
                                   '</tr>'].join('');
                                   mThis.tblCities_body.append(html);

@@ -1,11 +1,10 @@
 "use strict";
 
-var SlotInfoComponent = (function () {
-    const mThis = {};
-    mThis.title_prop = " Slot Info";
+var SlotInfoComponent = new (function () {
+    const mThis = this;
+    this.title_prop = " Slot Info";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_slot_info_component");
-    mThis.self = mThis.jm[0];
+    mThis.self = main_view.VSAppContent.querySelector("#_main_slot_info_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSlotInfo");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_slot_info");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
@@ -21,39 +20,39 @@ var SlotInfoComponent = (function () {
         {
             title: "Slot Number",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.slot_number ?? 'null'}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.slot_number ?? 'null'}</span>`,
         },
         {
             title: "Section / Zone",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.zone ?? ''}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.zone ?? ''}</span>`,
         },
         {
             title: "Grave Row ",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.grave_row ?? ''}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.grave_row ?? ''}</span>`,
         },
          {
             title: "Position ",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.position ?? ''}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.position ?? ''}</span>`,
         },
 
         {
             title: " Reserved By",
 
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.reversed_by ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.reversed_by ?? 'N/A'}</span>`,
         },
         {
             title: "Used by",
             className: "align-middle text-capitalize ",
-            data: (data) => `<span class="text-primary-custom  ">${data.used_by ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom  ">${data.used_by ?? 'N/A'}</span>`,
         },
         {
             title: "Location Note",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-primary-custom">${data.location_note ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.location_note ?? 'N/A'}</span>`,
         },
 
        {
@@ -134,18 +133,20 @@ var SlotInfoComponent = (function () {
             SlotInfoDialog.show(op);
         };
 
-        mThis.tblLeaves = mThis.SlotInfoListView.getTable();
-
-        mThis.initDropdownMenus(mThis.tblLeaves);
+       
 
 
         mThis.pl_container = mThis.SlotInfoListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        pl_parent.classList.add("overflow-y-auto");
+        pl_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
+        mThis.tblSlot = mThis.SlotInfoListView.getTable();
 
+        mThis.initDropdownMenus(mThis.tblSlot);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -268,26 +269,25 @@ var SlotInfoComponent = (function () {
         });
     }
 
-    mThis.prepareFormOptions = () => {
+    mThis.prepareFormOptions = (onFinish = null) => {
 
         vsapi.call(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'slot_info_status', true, 'All Statuses', null);
+                onFinish();
             })
     }
 
     mThis.show = function () {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.SlotInfoListView.showPage(mThis.getFilterData(), null, () => {
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
+        main_view.setContentView(mThis.self,mThis.title_prop);
+        mThis.prepareFormOptions(()=>{
+        mThis.SlotInfoListView.showPage(mThis.getFilterData());
         });
     }
-    return mThis;
 })();
+
 
 
 const SlotInfoDialog = (() => {
