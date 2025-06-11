@@ -94,9 +94,9 @@ div.role-card.selected > div.card-content {
         <div class="d-flex flex-row justify-content-between align-items-center p-1">
             <div class="d-flex flex-row justify-content-between align-items-center" style="min-width:40%">
                  <div>
-                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-danger shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
+                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-yp-custom shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
                  </div> 
-                 <div class="" id="um_search_widget"></div>
+                 <div class="text-yp-custom" id="um_search_widget"></div>
             </div>
             <div class="d-flex flex-row justify-content-between w-100">
                 <div class="d-flex flex-row justify-content-start align-items-center p-2">
@@ -105,14 +105,14 @@ div.role-card.selected > div.card-content {
                 </div>
                <div class="d-flex flex-row gap-2">
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_lnkNewRole" class="shadow-lg bg-primary rounded-4 p-2">
+                          <a href="javascript:void(0)" id="_lnkNewRole" class="shadow-lg bg-yp-custom rounded-4 p-2">
                              <span class=" text-nowrap text-white" vslang="buttons.Add Role"></span>
                           </a>
                       </div>
                     
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_um_btn_pdf" class="shadow-lg bg-danger rounded-4 p-2">
-                              <i class="fa fa-print text-white"></i> <span class=" text-white" vslang="buttons.Print"></span>
+                          <a href="javascript:void(0)" id="_um_btn_pdf" class="shadow-lg bg-yp-custom rounded-4 p-2">
+                              <i class="fa fa-print text-white mx-1"> </i> <span class=" text-white" vslang="buttons.Print"></span>
                           </a>
                       </div>
                </div>
