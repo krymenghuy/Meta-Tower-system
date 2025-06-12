@@ -709,6 +709,8 @@ var ZoneTabView = new function(){
         let option = {title:'Rename City','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'City Name','defaultValue':name};
         InputBox1.show(option,function(d){
            let p = {'id':id,'name':d,'country_id':country_id};
+           console.log(13,p);
+           
            vsapi.call([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
              if(res.status_code===200) {
                mThis.displayCities(country_id);

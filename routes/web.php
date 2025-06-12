@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bhr\ExcelReportController;
 use App\Http\Controllers\Bhr\ContractController;
 use App\Http\Controllers\Login\LoginController;
-use App\Http\Controllers\Auth\SignupController; 
+use App\Http\Controllers\Register\RegisterController; 
 
 //use App\Http\Controllers\DbExportController;
 // use Illuminate\Http\Request;
@@ -128,10 +128,10 @@ Route::get('/', function () {
 Route::get('logout', function () {
     return view('login.ypg_login');
 });
-// In routes/web.php
 
-Route::get('/signup', [SignupController::class, 'showRegistrationForm'])->name('signup');
-Route::post('/register', [SignupController::class, 'register'])->name('register');
+Route::get('register', function () {
+    return view('register.ypg_register');
+});
 
 // Also ensure you have a login route for the "Already have an account?" link
 Route::get('/login', function () {
@@ -146,7 +146,7 @@ Route::get('/login', function () {
 //Route::get('merchant-invoice/{q}', [WebReportController::class, 'merchant_invoice']);
 
 Route::post('processLogin', [LoginController::class, 'processLogin']);
-Route::post('processSignup', [LoginController::class, 'processSignup']);
+Route::post('processRegister', [RegisterController::class, 'processRegister']);
 // Route::post('process_mac_login', [LoginController::class, 'process_mac_login']);
 
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in

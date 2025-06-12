@@ -14,8 +14,11 @@ var CompanyComponent = new function(){
 	this.displayCompanyInfo = ()=>{
 		vsapi.call(`${mThis.base_url}/ypg/company/details`,null,null,false).then(res=>{
 			if(res.status_code===200){
-				console.log(JSON.stringify(res,null,2));
+				// console.log(JSON.stringify(res,null,2));
+					console.log(123,res.data);
+
 					let d= Sanitizer.sanitizeObject(res.data,null,['email','logo_url']);
+					
 					mThis.setData(d);
 			}
 		});
@@ -63,8 +66,10 @@ var CompanyComponent = new function(){
 						vsapi.call(`${mThis.base_url}/ypg/company/save-logo`,p,null,false).then(res=>{
 							if(res.status_code ===200){
 								let d = res.data;
-								mThis.imgLogo.prop('src',d.logo_url);
+								console.log(12,d);
+								
 								cv_interact.success('Logo has been saved');
+								mThis.imgLogo.prop('src',d.logo_url);
 							}else cv_interact.warning(res.error_message);
 						});
 					}

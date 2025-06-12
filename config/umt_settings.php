@@ -10,7 +10,7 @@ return [
             'fcm_topic_prefix'=>'bhr'
         ],
         'member' => [
-            'used' => 0,
+            'used' => 1,
             'name' => 'Member',
             'token_age' => 0,
             'login_type' => 'phone',

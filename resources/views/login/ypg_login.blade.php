@@ -226,7 +226,7 @@
                                         
                                         <p style="text-align:center; font-size:16px;">
                                             Don't you have an account?
-                                            <a href="/signup" style="color: #007bff; text-decoration: none;">Sign up</a>
+                                            <a href="/register" style="color: #007bff; text-decoration: none;">Sign up</a>
                                         </p>
 
                                     </div>

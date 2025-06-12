@@ -22,13 +22,22 @@
                         </div>
                         <h3 class="vs-title mt-4">Create your account</h3>
                         <div class="vs-form-group">
-                            <form action="{{ url('/processSignup') }}" method="POST">
+                            <form action="{{ url('/processRegister') }}" method="POST">
                                 {{ csrf_field() }}
-                                <div>
-                                    <span class="error_text">
-                                        <?php if(session()->has('signup_error')) echo session('signup_error'); ?>
-                                    </span>
+                                <div style="margin-bottom: 10px; text-align: center;">
+                                    @if(session('signup_error'))
+                                        <span class="error_text" style="color:red;">
+                                            {{ session('signup_error') }}
+                                        </span>
+                                    @endif
+
+                                    @if(session('signup_success'))
+                                        <span class="success_text" style="color:green;">
+                                            {{ session('signup_success') }}
+                                        </span>
+                                    @endif
                                 </div>
+
                                 <div class="vs-d-flex">
                                     <label for="username" class="vs-form-label">Username</label>
                                     <input type="text" class="vs-form-control" name="username" placeholder="Enter username" required/>
