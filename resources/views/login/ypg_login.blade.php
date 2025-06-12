@@ -214,11 +214,11 @@
                                     </div>
                                     <div class="vs-d-flex">
                                         <label for="username" class="vs-form-label">Username</label>
-                                        <input type="text" class="vs-form-control" name="login_name" placeholder="Please enter username"/>
+                                        <input type="text" class="vs-form-control" name="login_name" placeholder="Enter username"/>
                                     </div>
                                     <div class="vs-d-flex">
                                         <label for="username" class="vs-form-label">Password</label>
-                                        <input type="password" class="vs-form-control" name="password" placeholder="Pleace enter password"/>
+                                        <input type="password" class="vs-form-control" name="password" placeholder="Enter password"/>
                                     </div>
                                     <div class="vs-d-flex-btn">
                                         <button class="btn-login" type="submit">LOGIN</button>
