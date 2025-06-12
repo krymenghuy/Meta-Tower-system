@@ -179,7 +179,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                 <a href="HomeComponent" modid="270" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/home-page.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Home"></span>
                 </a>
