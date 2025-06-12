@@ -13,7 +13,7 @@ var StructureComponent = new (function () {
 
         const scrollContainer = document.createElement('div');
         scrollContainer.style.overflow = 'auto';
-        scrollContainer.style.maxHeight = '80vh'; 
+        scrollContainer.style.maxHeight = '85vh'; 
         scrollContainer.style.padding = '10px';
 
         const imgContainer = document.createElement('div');
