@@ -30,10 +30,6 @@ Route::middleware([CustomRateLimiter::class])->group(function () {
 // Route::post('/employee/attendance/last-employees-scan',[AttendanceController::class,'getLastEmployeesScan']);
 // Route::post('/create-contract', [ContractController::class, 'createContract']);
 
-Route::get('/signup', function () {
-    return view('signup');
-});
-Route::post('/register', 'Auth\RegisterController@register'); 
 
 
 //begin::CompanyProfileController
