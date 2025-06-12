@@ -229,7 +229,6 @@
                                             <a href="/signup" style="color: #007bff; text-decoration: none;">Sign up</a>
                                         </p>
 
-                                       
                                     </div>
                                    
                             </form>
