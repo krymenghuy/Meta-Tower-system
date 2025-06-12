@@ -35,6 +35,7 @@ class CompanyProfile //extends Model
     if (!$customer_id){
       return DV::error('Customer ID is not found!');
     }
+    $bin_customer_id = hex2bin($customer_id);
     $validate_rule = [
       'name' => '1|string|1-150',
       'name_kh' => '0|string|0-150',
@@ -63,7 +64,7 @@ class CompanyProfile //extends Model
     $name_kh = $inputs['name_kh'];
     if (!$name_kh)
       $inputs['name_kh'] = $inputs['name'];
-     $customer_id = DBX::saveData($ss, 'um_customers',['id'=>$customer_id], $inputs, [], 0, 'binary');
+     $customer_id = DBX::saveData($ss, 'um_customers',['id'=>$bin_customer_id], $inputs, [], 0, 'binary');
     if ($customer_id) {
       if ($logo)
         XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'branch_id' => $ss->branch_id, 'dir_name' => self::$logo_dir], null, $logo, ['id' => $customer_id, 'store' => 'um_customers.logo_file_name']);
@@ -197,7 +198,7 @@ class CompanyProfile //extends Model
 
      $row = DB::table('um_customers')->where('id', $bin_customer_id)->selectRaw('logo_file_name')->first();
      if($row) XPublicStorage::delete(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir_name'=>self::$logo_dir],'image',$row->logo_file_name);
-     DB::table('um_customers')->where('id',$bin_customer_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
+     DB::table('um_customers')->where('id',$bin_customer_id)->update(array('logo_file_name'=>null));
      return DV::depends(1);
   }
 }
