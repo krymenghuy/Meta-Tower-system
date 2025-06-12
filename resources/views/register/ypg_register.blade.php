@@ -36,8 +36,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* background-image: url('https://ideogram.ai/assets/image/lossless/response/uVaaSLs1RNaW821-kn9Tw'); */
-            background-image: url('assets/images/yavpheng/History006.jpg');
+            background-image: url('https://ideogram.ai/assets/image/lossless/response/uVaaSLs1RNaW821-kn9Tw');
+            /* background-image: url('assets/images/yavpheng/History006.jpg'); */
             background-position: center; 
             background-repeat: no-repeat;    
             z-index: 2;
