@@ -276,7 +276,7 @@ var RoleManagementComponent = new function(){
         if(mThis.initAlready) return;
 
         mThis.searchWidget = new SearchWidget(mThis.div_search_widget,{
-            inputClass:'form-control-sm form-control border border-secondary rounded-4',
+            inputClass:'form-control-sm text-yp-custom form-control border border-secondary rounded-4',
             placeHolder:'Search role or user',
             onkeyup:(value,e)=>{
                 clearTimeout(mThis.search_timeout);
