@@ -258,7 +258,6 @@ var SlotInfoComponent = new (function () {
             if (e) {
                 vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        cv_interact.success('Deleted successfully');
                         mThis.SlotInfoListView.showPage();
                     }
                 })

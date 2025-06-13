@@ -291,7 +291,6 @@ var TaskAssignComponent = (function () {
             if(e){
                 vsapi.call(`${main_view.base_url}/ypg/task-assign/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
                         mThis.TaskAssignListView.showPage();
                     }
                 })
