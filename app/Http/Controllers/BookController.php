@@ -20,7 +20,7 @@ class BookController extends Controller
         $res = $book->save($req->all());
         return JDV::raw($res);
     }
-    public function delete(Request $req)
+    public function deleteBook(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -31,4 +31,28 @@ class BookController extends Controller
         $res = $book->delete($id);
         return JDV::raw($res);
     }
+
+     public function getlistBook(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $book = new Book();
+        return JDV::result($book->getListBook($req->all(), $ss));
+    }
+
+    public function detailsBook(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $book = new Book();
+        return JDV::result($book->DetailsBook($req->id, $ss));
+    }
+
 }
