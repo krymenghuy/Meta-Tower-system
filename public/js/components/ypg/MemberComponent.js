@@ -103,7 +103,7 @@ var MemberComponent = new (function () {
                 if (data.is_expiry == 0) {
                     return `<span class="text-yp-custom">Permanent</span>`;
                 }
-                const dateStr = data.expiration ?? '';
+                const dateStr = data.expiration_date ?? '';
                 if (!dateStr) {
                     return `<span class="text-muted">N/A</span>`;
                 }

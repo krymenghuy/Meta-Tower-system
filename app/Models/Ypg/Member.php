@@ -111,7 +111,7 @@ class Member
         if($status_id){
             $str_moreWhere .= ' AND m.status_id =\'' . $status_id . '\'';
         }
-        $expiry_date = DBX::formatDate("m.expiration", 'expiration');
+        $expiry_date = DBX::formatDate("m.expiration_date", 'expiration_date');
         $updated_at = DBX::formatTime("m.updated_at", 'updated_at');
 
         $telegram_link = "CONCAT('https://t.me/+', REPLACE(REPLACE(REPLACE(m.phone_number, '+', ''), ' ', ''), '-', '')) AS telegram_link";
@@ -154,7 +154,7 @@ class Member
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->where('m.id', $id)
-            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration')
+            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration_date')
             ->first();
         return $query;
     }
