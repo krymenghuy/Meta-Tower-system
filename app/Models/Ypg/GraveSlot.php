@@ -24,38 +24,29 @@ class GraveSlot
         $ss = $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'slot_number' => '1|string|0-100',
-            'zone' => '1|string|0-100',
-            'grave_row' => '1|number',
-            'position' => '1|string|0-100',
-            'reversed_id' => '0|number',
-            'used_id' => '0|number',
-            'location_note'=>'0|string|0-350',
+            'slot_number' => '1|string|0-20',
+            'deceased_name' => '1|string|0-100',
+            'size' => '1|choice|S,M,L',
+            'recommender' => '0|string|0-100',
+            'file_name'=> '0|image',
+            'location_note'=>'0|string|0-250',
             'status_id' => '1|number|default = 1',
 
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, true, ['slot_number' => GeneralSettings::$address_map_chars, 'zone' => GeneralSettings::$address_map_chars, 'position' => GeneralSettings::$address_map_chars], $ss->lang, false);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
-        if(!$id){
-            $exist = DB::table('grave_slots')
-                ->where('slot_number', $arr['slot_number'])
-                ->where('zone', $arr['zone'])
-                ->where('grave_row', $arr['grave_row'])
-                ->where('position', $arr['position'])
-                ->exists();
-            if ($exist) {
-                return DV::error('Grave slot already exist');
-            }
-        }
+        $res = DBX::validateObject($arr, $v_rule, true, ['slot_number' => GeneralSettings::$address_map_chars], $ss->lang, false);
+        if($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $d = (object)$inputs;
-
-        $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
+        $slot_number = $d->slot_number ?? null;
+        if($slot_number){
+            $checkUnque = DB::table('grave_slots')->where('slot_number',$inputs['slot_number'])->where('branch_id', $branch_id)->select('id')->first();
+            if ($checkUnque) {
+                return DV::error('This Grave Slot already exists.');
+            }
+        }
+        return $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends($id, ['grave_slots' => $inputs, 'id' => $id]);
         }

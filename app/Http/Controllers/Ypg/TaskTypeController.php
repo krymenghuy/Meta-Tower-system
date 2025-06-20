@@ -7,7 +7,7 @@ use JDV;
 use XAuthService;
 use Illuminate\Http\Request;
 
-class TaskTypeController
+class TaskTypeController 
 {
     public function save(Request $req)
     {

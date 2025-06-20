@@ -29,11 +29,11 @@
             <div class="col-lg-9">
                 <div class="row">
                     <div class="form-group col-lg-12">
-                        <label for="name_kh" class="control-label text-text" vslang="titles.Company Name (khmer)">Company Name (Khmer)</label>
+                        <label for="name_kh" class="control-label text-text" vslang="titles.Association Name (khmer)">Association Name (Khmer)</label>
                         <input type="text" class="form-control data-input" data-field="name_kh">
                     </div>
                     <div class="form-group col-lg-12">
-                        <label for="name" class="control-label " vslang="titles.Company Name (English)">Company Name (English)</label>
+                        <label for="name" class="control-label " vslang="titles.Association Name (English)">Association Name (English)</label>
                         <input type="text" class="form-control data-input" data-field="name">
                     </div>
                 </div>

@@ -224,10 +224,10 @@
                                         <button class="btn-login" type="submit">LOGIN</button>
                                         <br>
                                         
-                                        <p style="text-align:center; font-size:16px;">
+                                        <!-- <p style="text-align:center; font-size:16px;">
                                             Don't you have an account?
                                             <a href="/register" style="color: #007bff; text-decoration: none;">Sign up</a>
-                                        </p>
+                                        </p> -->
 
                                     </div>
                                    
