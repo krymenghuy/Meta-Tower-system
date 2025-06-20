@@ -238,14 +238,14 @@ function v_display($mod_id, $module_ids = null)
                 <h4 class="kt-menu__section-text " vslang="menus.Grave Slot Registration"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
+            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="RegisterDeceasedComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/registered.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus. Register Deceased"></span>
                 </a>
-            </li>
+            </li> -->
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
