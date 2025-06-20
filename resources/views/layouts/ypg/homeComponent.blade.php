@@ -1,8 +1,8 @@
 <div id="_main_home_component" class="mt-2" style="display: none;">
 <div id="_home_list" class="mt-4 ">
   <div class="slide-map-wrapper">
-    <div class="slide-container">
-      <div class="slides">
+    <div class="slide-container" id="slideContainer">
+      <!-- <div class="slides">
         <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">
         <img src="{{ asset('assets/images/yavpheng/History002.jpg') }}">
         <img src="{{ asset('assets/images/yavpheng/History003.jpg') }}">
@@ -23,16 +23,53 @@
         <div class="dot" attr='3' onclick="switchImage(this)"></div>
         <div class="dot" attr='4' onclick="switchImage(this)"></div>
         <div class="dot" attr='5' onclick="switchImage(this)"></div>
-      </div>
+      </div> -->
     </div>
+   <div class="d-flex box-hleft" id="boxGraveMap" style="flex-direction: column; gap: 10px;">
+		<!-- <div class="box-map">
+			<img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" style="width:100%; height: 380px; object-fit: cover;">
+		</div>
+		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 0; background-color: #fefefe;">
+			<h5 style="text-align: center; color:#fff; background-color: #4b442b; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
+				Grave Yard Map
+			</h5>
+			<div style="padding: 10px; display: flex; justify-content: space-around; font-size: 14px;">
+				<div style="text-align: center;">
+					<div style="font-weight: bold;">Grave S</div>
+					<div style="font-size: 18px;">45</div>
+				</div>
+				<div style="text-align: center;">
+					<div style="font-weight: bold;">Grave M</div>
+					<div style="font-size: 18px;">30</div>
+				</div>
+				<div style="text-align: center;">
+					<div style="font-weight: bold;">Grave L</div>
+					<div style="font-size: 18px;">18</div>
+				</div>
+			</div>
+		</div>
+		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 6px; background-color: #fefefe;">
+			<div class="d-flex w-100 flex-column justify-content-between h-100" style="background-color: #4b442b;">
+			<div class="d-flex align-items-center p-2">
+				<div class="bg--icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff;">
+					<img class="img--size" src="\assets\images\yavpheng\CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+				</div>
+				<div class="ms-3 flex-fill text-center">
+					<span class="fw-semibold fs-5 text-white px-3 py-1 border border-white shadow bg-yp-custom rounded-2 d-inline-block">
+						10
+					</span>
+					<div class="text-white mt-3 fw-semibold">
+						Member Count
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="box-map">
-		<h4 style="text-align: center; background-color: #f5f5f5; color:#27444a; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
-			Grave Yard Map
-		</h4>
-		<img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" style="width:100%; height: 380px;">
-		
+		</div> -->
 	</div>
+
+
+
 
   </div>
 </div>
@@ -40,15 +77,13 @@
 </div>
 
   <style>
-	/* Wrapper scroll */
 #_home_list {
-	max-height: 700px; /* ឬក៏ height: 100vh; ប្រសិនបើចង់ scroll ចាប់ពីព្រលប់ទាំងមូល */
+	max-height: 700px; 
 	overflow-y: auto;
 	padding: 10px;
 	box-sizing: border-box;
 }
 
-/* Keep structure layout */
 .slide-map-wrapper {
 	display: flex;
 	gap: 20px;
@@ -57,7 +92,6 @@
 	flex-wrap: nowrap;
 }
 
-/* Slide box */
 .slide-container {
 	position: relative;
 	width: 800px;
@@ -67,7 +101,6 @@
 	flex-shrink: 0;
 }
 
-/* Image slide section */
 .slides {
 	position: relative;
 	width: 100%;
@@ -90,14 +123,19 @@
 	z-index: 1;
 }
 
-/* Map box */
+.box-hleft {
+	width: 400px;
+	height: auto;
+}
+
 .box-map {
 	width: 400px;
-	height: 480px;
+	height: auto;
 	border: 3px solid #ede6d6;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
 	overflow: hidden;
+	padding: 0;
 }
 
 .box-map img {
@@ -105,6 +143,7 @@
 	height: 100%;
 	object-fit: cover;
 }
+
 
 /* Arrow buttons */
 .buttons span {
@@ -137,7 +176,6 @@ span.prev:hover {
 	color: #222;
 }
 
-/* Navigation dots */
 .dotsContainer {
 	position: absolute;
 	bottom: 5px;
@@ -162,37 +200,5 @@ span.prev:hover {
 }
 
   </style>
-  <script>
-const slideImages = document.querySelectorAll('.slides img');
-const next = document.querySelector('.next');
-const prev = document.querySelector('.prev');
-const dots = document.querySelectorAll('.dot');
-const container = document.querySelector('.slide-container');
 
-let counter = 0;
-let autoPlay = setInterval(slideNext, 3000);
-
-next.addEventListener('click', slideNext);
-prev.addEventListener('click', slidePrev);
-container.addEventListener('mouseover', () => clearInterval(autoPlay));
-container.addEventListener('mouseout', () => autoPlay = setInterval(slideNext, 3000));
-dots.forEach(dot => dot.addEventListener('click', () => gotoSlide(+dot.getAttribute('attr'))));
-
-function slideNext(){
-  changeSlide((counter + 1) % slideImages.length);
-}
-function slidePrev(){
-  changeSlide((counter - 1 + slideImages.length) % slideImages.length);
-}
-function gotoSlide(index){
-  if(index !== counter) changeSlide(index);
-}
-function changeSlide(index){
-  slideImages[counter].classList.remove('active');
-  dots[counter].classList.remove('active');
-  counter = index;
-  slideImages[counter].classList.add('active');
-  dots[counter].classList.add('active');
-}
-</script>
 
