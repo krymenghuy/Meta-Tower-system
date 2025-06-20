@@ -18,24 +18,16 @@ var SlotInfoComponent = new (function () {
         },
 
         {
-            title: "Slot Number",
+            title: "Numbero",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom">${data.slot_number ?? 'null'}</span>`,
         },
+        
+        
         {
-            title: "Section / Zone",
+            title: "Deceased Name ",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.zone ?? ''}</span>`,
-        },
-        {
-            title: "Grave Row ",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.grave_row ?? ''}</span>`,
-        },
-         {
-            title: "Position ",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.position ?? ''}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.deceased_name ?? ''}</span>`,
         },
 
         {
@@ -50,9 +42,24 @@ var SlotInfoComponent = new (function () {
             data: (data) => `<span class="text-yp-custom  ">${data.used_by ?? 'N/A'}</span>`,
         },
         {
+            title: "Grave Size (S, M, L)",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom">${data.grave_size ?? ''}</span>`,
+        },
+        {
             title: "Location Note",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom">${data.location_note ?? 'N/A'}</span>`,
+        },
+        {
+            title: "Recommender",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom">${data.recommender ?? ''}</span>`,
+        },
+        {
+            title: "Last Updated ",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom">${data.last_updated ?? ''}</span>`,
         },
 
        {

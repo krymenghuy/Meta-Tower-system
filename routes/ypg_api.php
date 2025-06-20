@@ -117,7 +117,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')-
 
  Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('car')->group(function () {
     Route::post('/save',[CarController::class,'saveCar']);
-    Route::post('/list-paginate',[CarController::class,'getListPaginate']);
+    Route::post('/list-paginate',[CarController::class,'getListCar']);
+    Route::post('/form-options', [CarController::class, 'getFormOptions']);
     Route::post('/details',[CarController::class,'detailsCar']);
     Route::post('/delete',[CarController::class,'delete']);
 });
@@ -128,5 +129,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')-
     Route::post('/save',[BookController::class,'saveBook']);
     Route::post('/list-paginate',[BookController::class,'getListBook']);
     Route::post('/details',[BookController::class,'detailsBook']);
+    Route::post('/form-options', [BookController::class, 'getFormOptions']);
     Route::post('/delete',[BookController::class,'deleteBook']);
 });

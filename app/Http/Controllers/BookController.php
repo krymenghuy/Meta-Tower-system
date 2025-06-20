@@ -54,5 +54,14 @@ class BookController extends Controller
         $book = new Book();
         return JDV::result($book->DetailsBook($req->id, $ss));
     }
+    public function getFormOptions(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $book = new Book();
+        return JDV::result($book->getFormOptions($req->id, $ss));
+    }
 
 }
