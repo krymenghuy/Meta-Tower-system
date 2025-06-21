@@ -269,7 +269,7 @@
                             @include('layouts.ypg.memberComponent')
                             @include('layouts.ypg.taskTypeComponent')
                             @include('layouts.ypg.taskAssignComponent')
-                            @include('layouts.ypg.slotInfoComponent')
+                            @include('layouts.ypg.graveInfoComponent')
                             @include('layouts.ypg.registerDeceasedComponent')
 
                             @include('layouts.ypg.homeComponent')
