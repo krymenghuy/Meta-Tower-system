@@ -72,17 +72,17 @@ class GraveSlot
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(gs.name LIKE '%" . $search_value . "%' OR gs.slot_number LIKE '%" . $search_value . "%' OR gs.zone LIKE '%" . $search_value . "%')";
+            $str_search = "(gs.deceased_name LIKE '%" . $search_value . "%' OR gs.slot_number LIKE '%" . $search_value . "%')";
         }
         if($status_id){
-            $str_moreWhere .= ' AND ta.status_id =\'' . $status_id . '\'';
+            $str_moreWhere .= ' AND gs.status_id =\'' . $status_id . '\'';
         }
-
+        $updated_at = DBX::formatTime('gs.updated_at','updated_at');
         $query = DB::table('grave_slots as gs')
-            ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
+            ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.size,gs.recommender,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
             ->orderBy('gs.id', 'DESC');
 
 
@@ -91,12 +91,7 @@ class GraveSlot
         $count = $clone_query->count('gs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as &$row) {
-
-            $row->reversed_by = DB::table('members')->where('id', $row->reversed_id)->value('name');
-            $row->used_by = DB::table('deceased_registrations')->where('id', $row->used_id)->value('name');
-
-        }
+     
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -107,16 +102,12 @@ class GraveSlot
         $ss = $ss ?? $this->userInfo;
 
         $query = DB::table('grave_slots as gs')
-            ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
+            ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->where('gs.id', $id)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
             ->first();
 
-        if($query){
-            $query->reversed_by = DB::table('members')->where('id', $query->reversed_id)->value('name');
-            $query->used_by = DB::table('deceased_registrations')->where('id', $query->used_id)->value('name');
-
-        }
+     
         return $query;
     }
 
@@ -127,7 +118,7 @@ class GraveSlot
 
         return (object) [
             'grave_slot' => $grave_slot,
-            'statuses' => GeneralSettings::options_slot_status($ss),
+            'statuses' => GeneralSettings::options_grave_status($ss),
             'members' => GeneralSettings::options_member($ss),
             'deceased_names' => GeneralSettings::options_deceased($ss),
         ];

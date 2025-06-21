@@ -234,10 +234,10 @@ function v_display($mod_id, $module_ids = null)
                 </div>
             </li> -->
 
-            <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
+            <!-- <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Grave Slot Registration"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li>
+            </li> -->
             <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                 <a href="RegisterDeceasedComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -247,11 +247,11 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li> -->
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                <a href="SlotInfoComponent" modid="244" class="menu-item kt-menu__link">
+                <a href="GraveInfoComponent" modid="244" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus. Grave Slot "></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Grave List"></span>
                 </a>
             </li>
             <!-- <li class="kt-menu__section" <?php v_display(-1); ?>>
@@ -267,10 +267,10 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li> -->
 
-            <li class="kt-menu__section" <?php v_display(-1); ?>>
+            <!-- <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.About Association"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li>
+            </li> -->
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                  <a href="StructureComponent" modid="244" class="menu-item kt-menu__link">
                      <span class="kt-menu__link-icon">

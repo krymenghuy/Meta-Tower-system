@@ -20,14 +20,14 @@ var PolicyComponent = new (function () {
         imgContainer.className = 'd-flex justify-content-center align-items-start'; 
 
         const imgChinese = document.createElement('img');
-        imgChinese.src = '/assets/images/yavpheng/Policy-Chinese.jpg';
+        imgChinese.src = '/assets/images/yavpheng/policy-chinese.jpg';
         imgChinese.style.width = '47%'; 
         imgChinese.style.height = 'auto';
         imgChinese.style.marginRight = '15px'; 
         imgContainer.appendChild(imgChinese);
 
         const imgKhmer = document.createElement('img');
-        imgKhmer.src = '/assets/images/yavpheng/Policy-Khmer.jpg';
+        imgKhmer.src = '/assets/images/yavpheng/policy-khmer.jpg';
         imgKhmer.style.width = '47%'; 
         imgKhmer.style.height = 'auto';
         imgContainer.appendChild(imgKhmer);
