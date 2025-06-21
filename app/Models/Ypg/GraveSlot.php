@@ -27,7 +27,7 @@ class GraveSlot
             'slot_number' => '1|string|0-20',
             'deceased_name' => '1|string|0-100',
             'size' => '1|choice|S,M,L',
-            'recommender' => '0|string|0-100',
+            'recommender' => '0|string|1-100',
             'file_name'=> '0|image',
             'location_note'=>'0|string|0-250',
             'status_id' => '1|number|default = 1',
@@ -39,16 +39,15 @@ class GraveSlot
 
         $inputs = $res->values;
         $d = (object)$inputs;
-        $slot_number = $d->slot_number ?? null;
-        if($slot_number){
-            $checkUnque = DB::table('grave_slots')->where('slot_number',$inputs['slot_number'])->where('branch_id', $branch_id)->select('id')->first();
+        if(!$id){
+            $checkUnque = DB::table('grave_slots')->where('slot_number',$inputs['slot_number'])->exists();
             if ($checkUnque) {
                 return DV::error('This Grave Slot already exists.');
             }
         }
-        return $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends($id, ['grave_slots' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['grave_slots' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving grave slot');
     }
