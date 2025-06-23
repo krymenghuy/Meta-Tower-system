@@ -111,7 +111,7 @@ return [
                 'js/components/ypg/MemberComponent.js',
                 'js/components/ypg/TaskTypeComponent.js',
                 'js/components/ypg/TaskAssignComponent.js',
-                'js/components/ypg/SlotInfoComponent.js',
+                'js/components/ypg/GraveInfoComponent.js',
                 'js/components/ypg/RegisterDeceasedComponent.js',
                 'js/components/ypg/PolicyComponent.js',
                 'js/components/ypg/StructureComponent.js',

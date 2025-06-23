@@ -75,7 +75,7 @@
     ScriptManager::render('priority-one', 1, 5);
     ScriptManager::render('primary', 1, 8);
     ScriptManager::render('primary-defer', 1, 25);
-    ScriptManager::render('ypg-components', 1, 205);
+    ScriptManager::render('ypg-components', 1, 207);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -269,7 +269,7 @@
                             @include('layouts.ypg.memberComponent')
                             @include('layouts.ypg.taskTypeComponent')
                             @include('layouts.ypg.taskAssignComponent')
-                            @include('layouts.ypg.slotInfoComponent')
+                            @include('layouts.ypg.graveInfoComponent')
                             @include('layouts.ypg.registerDeceasedComponent')
 
                             @include('layouts.ypg.homeComponent')

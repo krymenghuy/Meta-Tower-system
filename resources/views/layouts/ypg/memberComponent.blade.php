@@ -3,6 +3,7 @@
         <div class="d-flex align-items-center justify-content-start w-50 gap-2">
             <div class="d-flex align-items-center w-50">
                 <input type="text" class="form-control rounded-5 filter-field" id="_search_member" placeholder="Search Member">
+
             </div>
             <div class="d-flex align-items-center justify-content-end w-25">
                 <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>

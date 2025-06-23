@@ -24,40 +24,30 @@ class GraveSlot
         $ss = $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'slot_number' => '1|string|0-100',
-            'zone' => '1|string|0-100',
-            'grave_row' => '1|number',
-            'position' => '1|string|0-100',
-            'reversed_id' => '0|number',
-            'used_id' => '0|number',
-            'location_note'=>'0|string|0-350',
+            'slot_number' => '1|string|0-20',
+            'deceased_name' => '1|string|0-100',
+            'size' => '1|choice|S,M,L',
+            'recommender' => '0|string|1-100',
+            'file_name'=> '0|image',
+            'location_note'=>'0|string|0-250',
             'status_id' => '1|number|default = 1',
 
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, true, ['slot_number' => GeneralSettings::$address_map_chars, 'zone' => GeneralSettings::$address_map_chars, 'position' => GeneralSettings::$address_map_chars], $ss->lang, false);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-
-        if(!$id){
-            $exist = DB::table('grave_slots')
-                ->where('slot_number', $arr['slot_number'])
-                ->where('zone', $arr['zone'])
-                ->where('grave_row', $arr['grave_row'])
-                ->where('position', $arr['position'])
-                ->exists();
-            if ($exist) {
-                return DV::error('Grave slot already exist');
-            }
-        }
+        $res = DBX::validateObject($arr, $v_rule, true, ['slot_number' => GeneralSettings::$address_map_chars], $ss->lang, false);
+        if($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $d = (object)$inputs;
-
+        if(!$id){
+            $checkUnque = DB::table('grave_slots')->where('slot_number',$inputs['slot_number'])->exists();
+            if ($checkUnque) {
+                return DV::error('This Grave Slot already exists.');
+            }
+        }
         $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends($id, ['grave_slots' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['grave_slots' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving grave slot');
     }
@@ -82,17 +72,17 @@ class GraveSlot
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(gs.name LIKE '%" . $search_value . "%' OR gs.slot_number LIKE '%" . $search_value . "%' OR gs.zone LIKE '%" . $search_value . "%')";
+            $str_search = "(gs.deceased_name LIKE '%" . $search_value . "%' OR gs.slot_number LIKE '%" . $search_value . "%')";
         }
         if($status_id){
-            $str_moreWhere .= ' AND ta.status_id =\'' . $status_id . '\'';
+            $str_moreWhere .= ' AND gs.status_id =\'' . $status_id . '\'';
         }
-
+        $updated_at = DBX::formatTime('gs.updated_at','updated_at');
         $query = DB::table('grave_slots as gs')
-            ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
+            ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.size,gs.recommender,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
             ->orderBy('gs.id', 'DESC');
 
 
@@ -101,12 +91,7 @@ class GraveSlot
         $count = $clone_query->count('gs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as &$row) {
-
-            $row->reversed_by = DB::table('members')->where('id', $row->reversed_id)->value('name');
-            $row->used_by = DB::table('deceased_registrations')->where('id', $row->used_id)->value('name');
-
-        }
+     
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -117,16 +102,12 @@ class GraveSlot
         $ss = $ss ?? $this->userInfo;
 
         $query = DB::table('grave_slots as gs')
-            ->join('slot_statuses as s', 's.id', '=', 'gs.status_id')
+            ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->where('gs.id', $id)
-            ->selectRaw('gs.id,gs.slot_number,gs.zone,gs.grave_row,gs.position,gs.reversed_id,gs.used_id,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
             ->first();
 
-        if($query){
-            $query->reversed_by = DB::table('members')->where('id', $query->reversed_id)->value('name');
-            $query->used_by = DB::table('deceased_registrations')->where('id', $query->used_id)->value('name');
-
-        }
+     
         return $query;
     }
 
@@ -137,7 +118,7 @@ class GraveSlot
 
         return (object) [
             'grave_slot' => $grave_slot,
-            'statuses' => GeneralSettings::options_slot_status($ss),
+            'statuses' => GeneralSettings::options_grave_status($ss),
             'members' => GeneralSettings::options_member($ss),
             'deceased_names' => GeneralSettings::options_deceased($ss),
         ];

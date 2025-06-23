@@ -32,81 +32,120 @@
             background: rgba(0, 0, 0, 0.4);
         } */
         .login-box {
+            height: 100vh;
+            width: 100%;
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: url('https://ideogram.ai/assets/image/lossless/response/uVaaSLs1RNaW821-kn9Tw');
-            /* background-image: url('assets/images/yavpheng/History006.jpg'); */
+            /* background-image: url('https://ideogram.ai/assets/image/lossless/response/uVaaSLs1RNaW821-kn9Tw'); */
+            background-image: url('assets/images/yavpheng/bg_ok3.webp');
             background-position: center; 
             background-repeat: no-repeat;    
             z-index: 2;
             position: relative;
+            background-size: cover;
+         
         }
         .login-form {
             width: 100%;
             max-width: 500px;
-            padding: 30px;
-            background-color: white;
+            padding: 10px;
+            background-color: #66827b;
+            /* background-image: url('assets/images/yavpheng/bg_ok.webp'); */
+
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
+       
+       .logo-register {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
         .logo {
             width: 120px;
-            margin: 0 auto;
-            display: block;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #27444a;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
+
         .form-title {
             text-align: center;
             margin-top: 20px;
             font-size: 24px;
             font-weight: bold;
+            color:white;
         }
         .form-group {
             margin-top: 15px;
+            text-align: center; 
         }
+
         .form-label {
             font-weight: 600;
             margin-bottom: 5px;
             display: block;
+            text-align: left; 
+            margin-left: 10%;
+            color:white;
         }
+
         .form-control {
-            width: 100%;
+            width: 80%;
             padding: 10px;
             font-size: 15px;
             border: 1px solid #ccc;
-            border-radius: 6px;
+            border-radius: 16px;
+            display: block;
+            margin: 0 auto;
         }
+
         .error_text {
             color: red;
             font-size: 14px;
         }
         .btn-submit {
-            width: 100%;
-            margin-top: 20px;
+            width: 30%;
+            margin: 15px auto 0 auto;
             padding: 10px;
             font-size: 16px;
-            background: #007bff;
+            background: #fccc2b;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 16px;
             cursor: pointer;
+            display: block;
+            text-align: center;
         }
+
         .btn-submit:hover {
             background: #0056b3;
         }
+
         .redirect-login {
-            margin-top: 15px;
+            margin-top: 20px;
             text-align: center;
+            color:#fff;
         }
         .redirect-login a {
-            color: #007bff;
-            text-decoration: none;
-        }
+        color: #fccc00;
+        font-size:bold;
+        text-decoration: none;
+        transition: color 0.3s ease, text-decoration 0.3s ease;
+    }
+
+    .redirect-login a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
         .copyright {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: center;
-            color: #777;
+            color: #ffff;
             font-size: 13px;
         }
     </style>
@@ -120,7 +159,9 @@
 
         <div class="login-box">
             <div class="login-form">
-                <img src="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" class="logo" />
+                <div class="logo-register">
+                    <img src="{{ asset('assets/images/yavpheng/logo_yp.jpg') }}" class="logo" />
+                </div>
                 <h3 class="form-title">Create Your Account</h3>
 
                 <form action="{{ url('/processRegister') }}" method="POST">

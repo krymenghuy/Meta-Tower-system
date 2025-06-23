@@ -240,8 +240,8 @@ class GeneralSettings //extends Model
         return DB::table('member_statuses')->selectRaw('id,name AS member_status')->get();
     }
 
-    static function options_slot_status($ss){
-        return DB::table('slot_statuses')->selectRaw('id,name AS slot_status')->get();
+    static function options_grave_status($ss){
+        return DB::table('grave_statuses')->selectRaw('id,name AS grave_status')->get();
     }
 
     static function options_member($ss){

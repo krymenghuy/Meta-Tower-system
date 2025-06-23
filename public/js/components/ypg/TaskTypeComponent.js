@@ -282,7 +282,6 @@ var TaskTypeComponent = (function () {
             if(e){
                 vsapi.call1(`${main_view.base_url}/ypg/task-type/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
-                        cv_interact.success('Deleted successfully');
                         mThis.TaskTypeListView.showPage();
                     }
                 })

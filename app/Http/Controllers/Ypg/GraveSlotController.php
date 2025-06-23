@@ -28,8 +28,8 @@ class GraveSlotController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $slot = new GraveSlot();
-        return JDV::result($slot->getList($req->all(), $ss));
+        $grave = new GraveSlot();
+        return JDV::result($grave->getList($req->all(), $ss));
     }
 
    public function getDetails(Request $req)

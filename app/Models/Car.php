@@ -17,7 +17,7 @@ class Car //extends Model
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    public function save($arr, $id = null)
+    public function saveCar($arr, $id = null)
     {
         $id = $id ?? $this->id;
         $ss = $this->userInfo;
@@ -43,5 +43,44 @@ class Car //extends Model
         }
         return DV::error('Error saving cars');
     }
+
+     public function delete($id)
+    {
+        $id = $id ?? $this->id;
+        if (empty($id)) {
+            return DV::error('Invalid ID');
+        }
+        $res = DB::table('cars')->where('id', $id)->delete();
+        if ($res) {
+            return DV::depends(1, ['id' => $id]);
+        }
+        return DV::error('Error deleting car');
+    }
+
+    public function DetailsCar($id, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+
+        $rows = DB::table('cars')
+            ->where('id', $id)
+            ->selectRaw('id,brand_name,color,year')->first();
+        return $rows;
+        
+    }
+    public function getFormOptions($id,$ss)
+    {
+        $cars_id = $ss->subs_id;
+        $cars = self::DetailsCar($id) ?? null;
+
+        return (object) [
+            'cars' => $cars,
+            
+        ];
+
+    }
+    
+
+    
     
 }

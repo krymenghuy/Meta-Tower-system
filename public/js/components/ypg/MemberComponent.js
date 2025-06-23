@@ -19,6 +19,11 @@ var MemberComponent = new (function () {
             className: "align-middle text-capitalize",
         },
         {
+            title: "photo",
+            className: "align-middle",
+            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/logo/logo_add.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+        },
+        {
             title: "Member ID",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom">${data.code ?? 'N/A'}</span>`,
@@ -72,11 +77,6 @@ var MemberComponent = new (function () {
                 return '<span class="text-muted">N/A</span>';
             }
         },
-
-
-
-
-
 
         {
             title: "Nationality",
@@ -398,7 +398,6 @@ var MemberComponent = new (function () {
             if (e) {
                 vsapi.call1(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        cv_interact.success('Deleted successfully');
                         mThis.MemberListView.showPage();
                     }
                 })

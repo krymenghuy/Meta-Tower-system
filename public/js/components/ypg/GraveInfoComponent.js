@@ -1,58 +1,60 @@
 "use strict";
 
-var SlotInfoComponent = new (function () {
+var GraveInfoComponent = new (function () {
     const mThis = this;
-    this.title_prop = " Slot Info";
+    this.title_prop = "Grave List";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_slot_info_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnSlotInfo");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_slot_info");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_grave_info_component");
+    mThis.RegisterGrave = mThis.self.querySelector("#_btnRegisterGrave");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_grave_info");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
-    mThis.elSearch = mThis.self.querySelector("#_search_slot_info");
+    mThis.elSearch = mThis.self.querySelector("#_search_grave_info");
 
     mThis.cols = [
          {
-            title: "",
-            className: "align-middle text-capitalize",
+            title: "Numero",
+            className: "align-middle",
+            data:(data,index)=>{
+                return `<p class="p-0 mb-0 text-center">${index+1}</p>`;
+            }
         },
-
         {
-            title: "Slot Number",
+            title: "photo",
+            className: "align-middle",
+            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/CYPA_logo.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+        },
+        {
+            title: "Grave Slot",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom">${data.slot_number ?? 'null'}</span>`,
         },
         {
-            title: "Section / Zone",
+            title: "Deceased Name",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.zone ?? ''}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.deceased_name ?? ''}</span>`,
         },
         {
-            title: "Grave Row ",
+            title: "Size",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.grave_row ?? ''}</span>`,
-        },
-         {
-            title: "Position ",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.position ?? ''}</span>`,
-        },
-
-        {
-            title: " Reserved By",
-
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.reversed_by ?? 'N/A'}</span>`,
+            data: (data) => `<p class="p-0 mb-0 text-warning text-center">${data.size ?? ''}</p>`,
         },
         {
-            title: "Used by",
-            className: "align-middle text-capitalize ",
-            data: (data) => `<span class="text-yp-custom  ">${data.used_by ?? 'N/A'}</span>`,
+            title: "Recommender",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom">${data.recommender ?? ''}</span>`,
         },
         {
-            title: "Location Note",
+            title: "Remarks",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom">${data.location_note ?? 'N/A'}</span>`,
+        },
+        {
+            title: "Last Updated ",
+            className: "align-middle text-capitalize",
+            data: (data) => `
+            <p class="p-0 mb-0 text-yp-custom">${data.update_user}</p>
+            <small class="text-muted">${data.updated_at ?? ''}</small>`,
         },
 
        {
@@ -64,16 +66,11 @@ var SlotInfoComponent = new (function () {
 
                 switch (status) {
                     case 'Used':
-                        statusClass = 'text-warning border border-warning rounded px-2 py-1 d-inline-block';
+                        statusClass = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
                         break;
                     case 'Available':
                         statusClass = 'text-success border border-success rounded px-2 py-1 d-inline-block';
                         break;
-                    case 'Reserved':
-                        statusClass = 'text-info border border-info rounded px-2 py-1 d-inline-block';
-                        break;
-                    default:
-                        statusClass = 'text-primary-custom border border-primary rounded px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${statusClass}">${status}</span>`;
@@ -82,18 +79,6 @@ var SlotInfoComponent = new (function () {
 
         {
             className: 'col_action align-middle',
-            // data: function (data, row, display) {
-            //     return `
-            //        <div class="d-flex justify-content-center align-items-center">
-            //             <div class="text-center gap-2 d-flex flex-wrap">
-            //                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-            //                 </a>
-            //             </div>
-            //         </div>
-            //     `;
-            // }
-
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -110,7 +95,7 @@ var SlotInfoComponent = new (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.SlotInfoListView = new ListView('_slot_info_list', {
+        mThis.GraveInfoListView = new ListView('_grave_info_list', {
             fetchApi: `${main_view.base_url}/ypg/grave-slot/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -119,24 +104,24 @@ var SlotInfoComponent = new (function () {
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function (e) {
+        mThis.RegisterGrave.onclick = function (e) {
             e.preventDefault();
 
             let op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                    mThis.GraveInfoListView.showPage(mThis.getFilterData());
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            SlotInfoDialog.show(op);
+            RegisterGraveDialog.show(op);
         };
 
        
 
 
-        mThis.pl_container = mThis.SlotInfoListView.getListContainer();
+        mThis.pl_container = mThis.GraveInfoListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
         pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         pl_parent.classList.add("overflow-y-auto");
@@ -144,14 +129,14 @@ var SlotInfoComponent = new (function () {
         window.onresize = () => {
             pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
-        mThis.tblSlot = mThis.SlotInfoListView.getTable();
+        mThis.tblSlot = mThis.GraveInfoListView.getTable();
 
         mThis.initDropdownMenus(mThis.tblSlot);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.GraveInfoListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -159,7 +144,7 @@ var SlotInfoComponent = new (function () {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.GraveInfoListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -234,11 +219,11 @@ var SlotInfoComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.GraveInfoListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(241)) return;
-        SlotInfoDialog.show(op);
+        RegisterGraveDialog.show(op);
     }
 
     mThis.deleteSlotInfo = (id, menuLink) => {
@@ -246,7 +231,7 @@ var SlotInfoComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.SlotInfoListView.showPage(mThis.getFilterData());
+                mThis.GraveInfoListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -258,8 +243,7 @@ var SlotInfoComponent = new (function () {
             if (e) {
                 vsapi.call1(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        cv_interact.success('Deleted successfully');
-                        mThis.SlotInfoListView.showPage();
+                        mThis.GraveInfoListView.showPage();
                     }
                 })
             }
@@ -270,12 +254,11 @@ var SlotInfoComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish = null) => {
-
         vsapi.call1(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'slot_info_status', true, 'All Statuses', null);
-                onFinish();
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'grave_status', true, 'All Statuses', null);
+               if(typeof onFinish ==='function') onFinish();
             })
     }
 
@@ -283,14 +266,14 @@ var SlotInfoComponent = new (function () {
         mThis.init();
         main_view.setContentView(mThis.self,mThis.title_prop);
         mThis.prepareFormOptions(()=>{
-        mThis.SlotInfoListView.showPage(mThis.getFilterData());
+        mThis.GraveInfoListView.showPage(mThis.getFilterData());
         });
     }
 })();
 
 
 
-const SlotInfoDialog = (() => {
+const RegisterGraveDialog = (() => {
         const self = {};
         let dialog = null;
 
@@ -305,38 +288,31 @@ const SlotInfoDialog = (() => {
                         return [
                             `<div class="row">
                             <div class="form-group col-6">
-                                <label for="slot_number" class="form-label" vslang="titles.Slot number"></label>
+                                <label for="slot_number" class="form-label" vslang="titles.Grave Slot"></label>
                                  <span class="text-danger" >*</span>
                                 <input name="slot_number" class="form-control data-input" data-field="slot_number">
                             </div>
-                           <div class="form-group col-6">
-                                <label for="zone" class="form-label" vslang="titles.Zone"></label>
+                            <div class="form-group col-6">
+                                <label for="Deceased_name" class="form-label" vslang="titles.Deceased Name"></label>
                                  <span class="text-danger" >*</span>
-                                <input name="zone" class="form-control data-input" data-field="zone">
+                                <input  name="Deceased_name" class="form-control data-input" data-field="deceased_name">
                             </div>
                             <div class="form-group col-6">
-                                <label for="grave_row" class="form-label" vslang="titles.Grave_Row"></label>
-                                 <span class="text-danger" >*</span>
-                                <input  name="grave_row" class="form-control data-input" data-field="grave_row">
-                            </div>
-
-                             <div class="form-group col-6">
-                                <label for="position" class="form-label" vslang="titles.Position"></label>
-                                 <span class="text-danger" >*</span>
-                                <input name="position" class="form-control data-input" data-field="position">
+                                <label for="size" class="form-label" vslang="titles.Size">Size</label>
+                                <span class="text-danger">*</span>
+                                <select name="size" class="form-control data-input" data-field="size" required>
+                                    <option value="">-- Select Size --</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                </select>
                             </div>
                             <div class="form-group col-6">
-                                <label for="reversed_id" class="form-label" vslang="titles.Reversed By"></label>
-                                <select name="reversed_id" class="form-control data-input" data-field="reversed_id"></select>
+                                <label for="recommender" class="form-label" vslang="titles.Recommender"></label>
+                                <select name="recommender" class="form-control data-input" data-field="recommender"></select>
                             </div>
-
-                            <div class="form-group col-6">
-                                <label for="used_id" class="form-label" vslang="titles.Used By"></label>
-                                <select  name="used_id" class="form-control data-input" data-field="used_id"></select>
-                            </div>
-
                             <div class="form-group col-12">
-                                <label for="location_note" class="form-label" vslang="titles.Location_note"></label>
+                                <label for="location_note" class="form-label" vslang="titles.Remarks"></label>
                                 <textarea  name="location_note" class="form-control data-input" data-field="location_note">
                             </div>
 
@@ -351,22 +327,16 @@ const SlotInfoDialog = (() => {
                     },
                     configSelect: [
                         {
-                            name: "reversed_id",
+                            name: "recommender",
                             data: "members",
                             textField: "member_name",
                             valueField: "id",
-                        },
-                        {
-                            name: "used_id",
-                            data: "deceased_names",
-                            textField: "deceased_name",
-                            valueField: "id",
-                        },
-
+                        }
+                        
                     ],
                     prepareFormOptions: {
-                        createTitle: "Add Slot",
-                        modifyTitle: "Edit Slot",
+                        createTitle: "Add Grave",
+                        modifyTitle: "Edit Grave",
                         targetProp: "grave_slot",
                         api: {
                             endpoint: [main_view.base_url, "/ypg/grave-slot/form-options",].join(""),
@@ -394,25 +364,21 @@ const SlotInfoDialog = (() => {
                             click: (me, btn) => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
-                                op.status_id = 1;
+                                console.log(1234,op);
+                                
 
-                                if(me.controls.reversed_id.value > 0){
-                                   op.status_id = 2;
-                                }
-                                if(me.controls.used_id.value > 0){
-                                    op.status_id = 3;
-                                }
+                               
 
                                 vsapi.call1([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
                                             cv_interact.success(
-                                                "Slot has been updated successfully"
+                                                "Grave has been updated successfully"
                                             );
                                         } else {
                                             cv_interact.success(
-                                                "New slot has been added successfully"
+                                                "New Grave has been saved successfully"
                                             );
                                         }
                                     } else {
