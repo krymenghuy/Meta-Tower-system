@@ -243,6 +243,10 @@ class GeneralSettings //extends Model
     static function options_grave_status($ss){
         return DB::table('grave_statuses')->selectRaw('id,name AS grave_status')->get();
     }
+     static function options_recommender($ss){
+        return  DB::table('members')->selectRaw('id,name AS recommender')->get();
+
+     }
 
     static function options_member($ss){
         $row = DB::table('members')->selectRaw('id,name AS member_name')->get();

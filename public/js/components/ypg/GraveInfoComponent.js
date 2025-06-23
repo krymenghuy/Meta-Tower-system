@@ -7,7 +7,6 @@ var GraveInfoComponent = new (function () {
     mThis.RegisterGrave = mThis.self.querySelector("#_btnRegisterGrave");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_grave_info");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_grave_info");
 
     mThis.cols = [
@@ -36,8 +35,13 @@ var GraveInfoComponent = new (function () {
         {
             title: "Size",
             className: "align-middle text-capitalize",
-            data: (data) => `<p class="p-0 mb-0 text-warning text-center">${data.size ?? ''}</p>`,
+            data: (data) => `
+                <span class="badge bg-light text-warning border border-warning fw-bold d-block text-center py-1">
+                    ${data.size ?? ''}
+                </span>
+            `,
         },
+
         {
             title: "Recommender",
             className: "align-middle text-capitalize",
@@ -80,8 +84,8 @@ var GraveInfoComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-dark-custom rounded-3 text-nowrap">
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
                            <span vslang="buttons.Actions">Action</span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
@@ -128,9 +132,9 @@ var GraveInfoComponent = new (function () {
         window.onresize = () => {
             pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
         }
-        mThis.tblSlot = mThis.GraveInfoListView.getTable();
+        mThis.tblGrave = mThis.GraveInfoListView.getTable();
 
-        mThis.initDropdownMenus(mThis.tblSlot);
+        mThis.initDropdownMenus(mThis.tblGrave);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -153,7 +157,6 @@ var GraveInfoComponent = new (function () {
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
-            // leave_type_id: mThis.elFilter_leaveType.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -168,22 +171,22 @@ var GraveInfoComponent = new (function () {
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn-grave-action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
 
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2" vslang="titles.Edit Grave"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_slot_info"
+                    name: "edit_grave"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Delete Grave"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_slot_info"
+                    name: "delete_grave"
                 },
             ],
             adjustPosition: {
@@ -194,12 +197,12 @@ var GraveInfoComponent = new (function () {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'edit_slot_info': {
-                        mThis.editSlotInfo(id, menuLink);
+                    case 'edit_grave': {
+                        mThis.editGrave(id, menuLink);
                         break;
                     }
-                    case 'delete_slot_info': {
-                        mThis.deleteSlotInfo(id, menuLink);
+                    case 'delete_grave': {
+                        mThis.deleteGrave(id, menuLink);
                         break;
                     }
 
@@ -212,7 +215,7 @@ var GraveInfoComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editSlotInfo = (id, menuLink) => {
+    mThis.editGrave = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -225,7 +228,7 @@ var GraveInfoComponent = new (function () {
         RegisterGraveDialog.show(op);
     }
 
-    mThis.deleteSlotInfo = (id, menuLink) => {
+    mThis.deleteGrave = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -253,9 +256,11 @@ var GraveInfoComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish = null) => {
-        vsapi.call1(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
+        vsapi.call1(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
+                console.log(12,res.data);
+                
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'grave_status', true, 'All Statuses', null);
                if(typeof onFinish ==='function') onFinish();
             })
@@ -275,8 +280,9 @@ var GraveInfoComponent = new (function () {
 const RegisterGraveDialog = (() => {
         const self = {};
         let dialog = null;
-
+        
         self.show = (op) => {
+
             dialog =
                 dialog ||
                 new GeneralDialog({
@@ -337,7 +343,7 @@ const RegisterGraveDialog = (() => {
                         const div_grave_photo = me.controls.div_grave_photo;
                         me.graveImageBox = new ImageBox(div_grave_photo,{
                             defaultPhotoName:'default-skill',
-                            containerClass:'skill-profile-container',
+                            containerClass:'grave-profile-container',
                             imgClass:"data-input",
                             dataset:{"field" :"photo"},
                             beforeDeleteImage: async ()=> {
@@ -404,9 +410,16 @@ const RegisterGraveDialog = (() => {
                     },
 
                     onPrepareForm: (me, data) => {
+                        console.log(12,data);
+                        
                         LocaleManager.translateZone(me.divModal);
                     },
+                    extendMethod: {
+                    setData: (me, data) => {
+                        me.graveImageBox.setImage(data.image_url);
 
+                    },
+                },
                     buttons: [
                         {
                             label: '<span class="text-white">Cancel</span>',
