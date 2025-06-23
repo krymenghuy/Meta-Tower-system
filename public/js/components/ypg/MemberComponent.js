@@ -444,29 +444,41 @@ const MemberDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-6">
-                                <label for="name" class="form-label" vslang="titles.Name"></label>
-                                <input name="name" class="form-control data-input" data-field="name">
+                            <div class="col-3">
+                                <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
+                                    <div name="div_grave_photo" class="data-input h-100" data-field="photo">
+
+                                    </div>
+                                </div>                            
                             </div>
-                              <div class="form-group col-6">
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="form-group col-12">
+                                        <label for="name" class="form-label" vslang="titles.Name"></label>
+                                        <input name="name" class="form-control data-input" data-field="name">
+                                    </div>
+                                   
+                                    <div class="form-group col-6">
+                                        <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
+                                        <select class="form-control data-input" data-field="sex">
+                                            <option value="">(Select Sex)</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
+                                        <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
+                                    </div>
+                                     
+                                </div>
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
                                 <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
                             </div>
-                            <div class="form-group col-4">
-                                <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                <select class="form-control data-input" data-field="sex">
-                                    <option value="">(Select Sex)</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
-                            </div>
-                          
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiration"></label>
                                 <select name="is_expiry" class="form-control data-input" data-field="is_expiry">
                                     <option value="">(Select)</option>
@@ -474,7 +486,7 @@ const MemberDialog = (() => {
                                     <option value="1">Will Expire</option>
                                 </select>
                             </div>
-                            <div class="form-group col-4 expiry-wrapper" style="display: none;">
+                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
                                 <label for="expiration" class="form-label" vslang="titles.Expiration"></label>
                                 <input name="expiration" class="form-control data-input" data-field="expiration">
                             </div>
