@@ -1,5 +1,4 @@
 "use strict";
-
 var GraveInfoComponent = new (function () {
     const mThis = this;
     this.title_prop = "Grave List";
@@ -241,11 +240,11 @@ var GraveInfoComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call1(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op,{ agent:null, loader:null, useCache:true, cacheTTL:3000, cluster:null }).then(res => {
                     if (res.status_code == 200) {
                         mThis.GraveInfoListView.showPage();
                     }
-                })
+                });
             }
             else {
                 cv_interact.error(res.error_message);
