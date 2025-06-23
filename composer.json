@@ -28,6 +28,7 @@
     "vsd/localization": "*",
     "vsd/money": "*",
     "vsd/response": "*",
+    "vsd/script-manager": "dev-main",
     "vsd/storage": "*",
     "vsd/vsloquent": "dev-main",
     "vsd/xauth": "dev-main"
@@ -115,6 +116,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/vectorasoft-org/lib-vsloquent.git"
+    },
+      {
+      "type": "vcs",
+      "url": "https://github.com/vectorasoft-org/lib-script-manager.git"
     }
   ]
 }

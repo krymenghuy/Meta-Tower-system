@@ -70,7 +70,7 @@ const CreateLoginDialog = (()=>{
             //    me.showProfile =  (code) =>{
             //       let fields = ['full_name','email','phone_number','login_name']; 
             //       let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
-            //       vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+            //       vsapi.call1([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
             //       let d = res.status_code ==200? res.data: {};
             //       d = d || {}; 
             //       me.fieldList.forEach(el =>{
@@ -125,7 +125,7 @@ const CreateLoginDialog = (()=>{
                me.showProfile =  (code) =>{
                   let fields = ['full_name','email','phone_number','login_name']; 
                   let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
-                  vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+                  vsapi.call1([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
                   let d = res.status_code ==200? res.data: {};
                   d = d || {}; 
                   // me.fieldList.forEach(el =>{
@@ -220,7 +220,7 @@ const CreateLoginDialog = (()=>{
                   let p = me.getData();
                      p.photo = me.controls.userImageBox ? me.controls.userImageBox.getImage(): '';
                      // console.log(111,p);
-                     vsapi.call([main_view.base_url,'/api/user/save'].join(''),p,false,false).then(res =>{
+                     vsapi.call1([main_view.base_url,'/api/user/save'].join(''),p,false,false).then(res =>{
                          if(res.status_code == 200){
                              me.modal.hide(true,p);
                          }else cv_interact.error(res.error_message);

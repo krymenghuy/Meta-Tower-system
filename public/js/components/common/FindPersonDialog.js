@@ -182,7 +182,7 @@ const FindPersonDialog = (()=>{
 
                me.beginSearch = (search_value,tbl,context) =>{
                    let p = {"search_value":search_value};
-                   vsapi.call(context.fetchApi,p,false,false).then(res =>{
+                   vsapi.call1(context.fetchApi,p,false,false).then(res =>{
                      let data = res.status_code ==200 ? res.data : [];
                      me.renderItems(data,tbl,context.columns);
                    });

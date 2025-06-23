@@ -103,7 +103,7 @@ var UserManagementComponent = new function(){
     }
 
     this.loadFormPrint = (open,end_point) => {
-        vsapi.call(`${main_view.base_url}/${end_point}`,null,false).then(res => {
+        vsapi.call1(`${main_view.base_url}/${end_point}`,null,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
                 let html = '', tbody = '';
@@ -365,7 +365,7 @@ var UserManagementComponent = new function(){
                         context: 'delete'
                     },(e) => {
                         if(e){
-                            vsapi.call(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
                                 if(res.status_code === 200){
                                     mThis.userListView.showPage(mThis.getFilterData());
                                 }
@@ -418,7 +418,7 @@ var UserManagementComponent = new function(){
                 },(e) => {
                     if(e){
                         delete(op.user_name);
-                        vsapi.call(`${main_view.base_url}/api/user/set-lock-status`,op,null,false).then(res => {
+                        vsapi.call1(`${main_view.base_url}/api/user/set-lock-status`,op,null,false).then(res => {
                             if(res.status_code === 200){
                                 const parentElement = button ? button.closest('.scope-user') : div.previousElementSibling;
                                 btn = button ? btn = button : btn;
@@ -565,7 +565,7 @@ var UserManagementComponent = new function(){
     }
 
     this.prepareFormOption = (onFinish=null) => {
-        vsapi.call(`${main_view.base_url}/api/user/options-user-class`,null,null,false).then(res => {
+        vsapi.call1(`${main_view.base_url}/api/user/options-user-class`,null,null,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data,
                 el = mThis.elfilter_userclass;
@@ -607,7 +607,7 @@ const AddUserDialogOld = new function(){
                 p.id = options.user_id;
                 if(p.password === p.confirm_password){
                     delete(p.confirm_password);
-                    vsapi.call([main_view.base_url,end_point].join(''),p,btnSave).then(res => {
+                    vsapi.call1([main_view.base_url,end_point].join(''),p,btnSave).then(res => {
                         if(res.status_code === 200){
                             $(mThis.self).modal('hide');
                             let msg =['New login "',p.login_name,'"', (p.full_name? ` for ${p.full_name}`:''),' has been created successfully!'].join('');
@@ -629,7 +629,7 @@ const AddUserDialogOld = new function(){
                 p.login_name = options.user_name;
                 if(p.password == p.confirm_password){
                     delete(p.confirm_password);
-                    vsapi.call(`${main_view.base_url+end_point}`,p,btnSave).then(res => {
+                    vsapi.call1(`${main_view.base_url+end_point}`,p,btnSave).then(res => {
                         if(res.status_code === 200){
                             $(mThis.self).modal('hide');
                             if(typeof options.onClose === 'function') options.onClose();
@@ -754,7 +754,7 @@ const AddUserDialogOld = new function(){
     this.renderCreateUser = (modalDiv,options, onFinish) => {
         const def = options.default || {};
         const div = modalDiv.querySelector('.modal-body');
-        vsapi.call(`${main_view.base_url}/api/user/form-options`,null,options.button,false).then(res => {
+        vsapi.call1(`${main_view.base_url}/api/user/form-options`,null,options.button,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
                 let option = '';
@@ -888,7 +888,7 @@ const AddUserDialogOld = new function(){
                 if(elUserClass){
                     elUserClass.onchange = (e)=>{
                         e.preventDefault();
-                        vsapi.call(`${main_view.base_url}/api/role/options-role`,{
+                        vsapi.call1(`${main_view.base_url}/api/role/options-role`,{
                             user_class: elUserClass.value
                         },null,false).then(res=>{
                             let roles = res.status_code === 200 ? res.data: [];
@@ -930,7 +930,7 @@ const AddUserDialogOld = new function(){
     }
 
     this.loadFormDetails = (div, options) => {
-        vsapi.call(`${main_view.base_url}/api/user/details`,{
+        vsapi.call1(`${main_view.base_url}/api/user/details`,{
             id: options.id || options.user_id 
         },null,false).then(res => {
             if(res.status_code === 200){
@@ -1203,7 +1203,7 @@ const AddUserDialogOld = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(108)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/role/delete`,p, null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/role/delete`,p, null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRowForRole(this,{
                                         btn: previousBtn,
@@ -1229,12 +1229,12 @@ const AddUserDialogOld = new function(){
                                     confirmButtonText: 'Remove'
                                 },(e) => {
                                     if(e){
-                                        vsapi.call(`${main_view.base_url}/api/user/role/delete`,{
+                                        vsapi.call1(`${main_view.base_url}/api/user/role/delete`,{
                                             user_id: p.user_id,
                                             role_id: previousRoleId
                                         },btn,false).then(res => {
                                             if(res.status_code === 200){
-                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
+                                                vsapi.call1(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
                                                     if(res.status_code === 200){
                                                         mThis.resetRowForRole(this,{
                                                             btn: previousBtn,
@@ -1259,7 +1259,7 @@ const AddUserDialogOld = new function(){
                                 });
                             }
                             else{
-                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
+                                vsapi.call1(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
                                     if(res.status_code === 200){
                                         mThis.resetRowForRole(this,{
                                             btn: previousBtn,
@@ -1293,7 +1293,7 @@ const AddUserDialogOld = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p, null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/permission/delete`,p, null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1304,7 +1304,7 @@ const AddUserDialogOld = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1329,7 +1329,7 @@ const AddUserDialogOld = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(115)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/module/delete`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1340,7 +1340,7 @@ const AddUserDialogOld = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(114)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/add`,p,null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/module/add`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1365,7 +1365,7 @@ const AddUserDialogOld = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1376,7 +1376,7 @@ const AddUserDialogOld = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
+                            vsapi.call1(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1520,7 +1520,7 @@ const AddUserDialogOld = new function(){
                 break;
         }
         if(end_point){
-            vsapi.call(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
+            vsapi.call1(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
                 if(res.status_code === 200){
                     const d = res.data;
                     if(typeof onFinish === 'function') onFinish(d);

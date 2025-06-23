@@ -70,17 +70,56 @@ const main_view = new function(){
     //         if(div) div.remove();
     //     }
     //    }
-
     // };
 
     this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
-        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
+        vsapi.call1([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
             onFinish(res.data || res);
         }); 
     };
 
-    this.init = ()=>{
+    mThis.init_vsapi = async () => {
+        await vsapi.init({
+            authType: vsapi.authTypes.BEARER,
+            //fetchTokenUrl:'/api/vsx-sec/token',
+            tokenResolver: async () => {
+            const res = await fetch('/api/vsx-sec/token', { 
+                credentials: 'include',
+                headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+                } 
+            });
+            const json = await res.json();
+            if(json.status_code ==200){
+                return json.data.token;
+            }else{
+                 alert('[vsapi] tokenResolver() got error: ' + json.error_message);
+                 console.error('[vsapi] tokenResolver() got error: ' , json);
+                 return null;
+             }
+            },
+
+            // Optional: override token access mode explicitly
+            tokenAccessMode: 'httpOnly',
+            defaultLoaderSelector: '#vs_loader',
+            useStreamingProgress: true,
+            useCache: true,
+            cacheTTL: 5000,
+
+            // online: () => {
+            //   console.log('🟢 Back online');
+            // },
+
+            // offline: () => {
+            //   console.warn('🔴 Connection lost');
+            // }
+
+            // You can later add: resolveAuthHeaders, or switch authType to 'custom' etc.
+        });
+        };
+
+    this.init = async() => {
       window.Sanitizer  = window.Sanitizer || StringSanitizer;
      //BEGIN:: process side menus click using VSRoute
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
@@ -245,13 +284,13 @@ const main_view = new function(){
         }
     }
 
-    this.setTitle = (title_prop=null)=>{
+ mThis.setTitle = (title_prop=null)=>{
         const title = LocaleManager.trans(title_prop,'titles');
         mThis.elScreenTitle.textContent = title;
         mThis.elScreenTitle_mobile.textContent = title;
-        mThis.elScreenTitle.dataset.langprop = `titles.${title_prop}`;
-        mThis.elScreenTitle_mobile.dataset.langprop = `titles.${title_prop}`;
-    }
+        mThis.elScreenTitle.setAttribute('valang',`titles.${title_prop}`);
+        mThis.elScreenTitle_mobile.setAttribute('vslang',`titles.${title_prop}`);
+}
 
     this.deleteAllCookies = () => {
         const cookies = document.cookie.split(';');
@@ -295,7 +334,7 @@ const main_view = new function(){
     }
 
     this.displayNotifications = ()=> {
-        vsapi.call(`${mThis.base_url}/api/user/notifications`,null,false,false).then((res)=>{
+        vsapi.call1(`${mThis.base_url}/api/user/notifications`,null,false,false).then((res)=>{
             let i=0;
             if(res.status_code ===200){
                 let d = res.data;
@@ -335,7 +374,7 @@ const main_view = new function(){
 
     this.displayTasks =()=> {
         let items =null;
-        vsapi.call(`${mThis.base_url}/api/user/pending-requests`,null,false,false).then((res)=>{
+        vsapi.call1(`${mThis.base_url}/api/user/pending-requests`,null,false,false).then((res)=>{
             if(res.status_code===200){
                 let d = res.data;
                 let i=0;
@@ -369,7 +408,7 @@ const main_view = new function(){
     };
 
     mThis.updateNotificationCount = ()=>{
-        vsapi.call(`${mThis.base_url}/api/user/unread-count`,null,false,false).then((res)=>{
+        vsapi.call1(`${mThis.base_url}/api/user/unread-count`,null,false,false).then((res)=>{
             if(res.status_code ===200){
                 let d = res.data;
                 const span = mThis.btnNotif.querySelector('.number--notification');
@@ -413,22 +452,11 @@ const main_view = new function(){
 
 };
 
-window.addEventListener('DOMContentLoaded',function(){
-
-    // function setUpChatIdentity(user){
-    //     window.$crisp.push(["set", "user:email", user.email]);
-    //     window.$crisp.push(["set", "user:nickname", user.login_name]);
-    //     window.$crisp.push(["set", "user:phone", user.phone_number]);
-    //     window.$crisp.push(["set", "user:avatar", user.avatar ?? user.image_url]);
-    //     window.$crisp.push(["set", "user:company", ['HOUXPRESS']]);
-    //     window.$crisp.push(["set", "session:data", [
-    //       ["user_class", user.user_class],
-    //       ["role_id", user.role_id],
-    //       ["role_name", user.role_name]
-    //     ]]);
-    // }
-
+window.addEventListener('DOMContentLoaded',async()=>{
+    main_view.init_vsapi();
     main_view.init();
+    LocaleManager.translateZone(main_view.appContent);
+    main_view.setLangMenu(LocaleManager.currentLanguage.code);   
     //VSRoute.onShowComponent = main_view.onShowComponent;
 
     LocaleManager.translateZone(main_view.appContent);

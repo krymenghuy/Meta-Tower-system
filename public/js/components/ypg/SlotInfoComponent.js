@@ -256,7 +256,7 @@ var SlotInfoComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
+                vsapi.call1(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.SlotInfoListView.showPage();
@@ -271,7 +271,7 @@ var SlotInfoComponent = new (function () {
 
     mThis.prepareFormOptions = (onFinish = null) => {
 
-        vsapi.call(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
+        vsapi.call1(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'slot_info_status', true, 'All Statuses', null);
@@ -403,7 +403,7 @@ const SlotInfoDialog = (() => {
                                     op.status_id = 3;
                                 }
 
-                                vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call1([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {

@@ -236,7 +236,7 @@ var RegisterDeceasedComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/deceased-registration/delete`, op, false, false, false).then(res => {
+                vsapi.call1(`${main_view.base_url}/ypg/deceased-registration/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         cv_interact.success('Deleted successfully');
                         mThis.RegisterDeceasedListView.showPage();
@@ -250,7 +250,7 @@ var RegisterDeceasedComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish=null) => {
-        vsapi.call(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null).then(res => {
+        vsapi.call1(`${main_view.base_url}/ypg/deceased-registration/details`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             onFinish();
         })
@@ -375,7 +375,7 @@ const RegisterDeceasedDialog = (() => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
 
-                                vsapi.call([main_view.base_url, "/ypg/deceased-registration/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call1([main_view.base_url, "/ypg/deceased-registration/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {

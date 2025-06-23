@@ -259,11 +259,8 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
-        //'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Sanitizer'=>App\Security\Sanitizer::class,
         'PHPCrypto'=>App\Security\PHPCrypto::class,
-        //'SQLDB'=>App\DB\SQLDB::class,
-        'ScriptManager'=>App\ScriptManagement\ScriptManager::class,
         'StyleManager'=>App\StyleManagement\StyleManager::class
     ]
 ];

@@ -243,7 +243,7 @@ var TaskAssignComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/task-assign/update-status`,p).then(res => {
+                vsapi.call1(`${mThis.base_url}/ypg/task-assign/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -289,7 +289,7 @@ var TaskAssignComponent = (function () {
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/ypg/task-assign/delete`,op,false,false,false).then(res => {
+                vsapi.call1(`${main_view.base_url}/ypg/task-assign/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted successfully');
                         mThis.TaskAssignListView.showPage();
@@ -304,7 +304,7 @@ var TaskAssignComponent = (function () {
 
     mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call1(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
             const d = res.status_code == 200 ? res.data : {};
             VSUtil.setComboItems(mThis.elFilter_status,d.statuses,'id','member_status',true,'All Statuses',null);
@@ -415,7 +415,7 @@ const TaskAssignDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
 
-                            vsapi.call([main_view.base_url,"/ypg/task-assign/save",].join(""),op,btn,null).then((res) => {
+                            vsapi.call1([main_view.base_url,"/ypg/task-assign/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {

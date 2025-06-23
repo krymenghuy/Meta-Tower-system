@@ -36,7 +36,8 @@ class LoginController extends Controller
         $result = XAuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
         if ($result->status_code ===200) {
             $user = $result->user;
-                $access_token =Crypt::encryptString($user->access_token);
+                //$access_token =Crypt::encryptString($user->access_token);
+                $access_token = $user->access_token;
                 unset($user->access_token);
                  XAuthService::login($user);
                 //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
@@ -45,14 +46,15 @@ class LoginController extends Controller
              if($user->default_app){
                 $app = $user->default_app;
                 return redirect($app->home_route)
-                ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
+                ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,true));
                 //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
              }else{
+                  \Log::info('sent token: '.$access_token. '  cookie name: '.$cookie_name);
                 if(isset($user->apps[1])){
-                    return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false))
-                     ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-                    ->header('Pragma', 'no-cache')
-                    ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+                    return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,true));
+                    //->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                    //->header('Pragma', 'no-cache')
+                    //->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
                     //return redirect('landingpoint')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
                 }else if(isset($user->apps[0])){
                    $app = $user->apps[0] ?? null;
@@ -66,7 +68,7 @@ class LoginController extends Controller
                       return;
                    }
                    return redirect($route_name)
-                   ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,false));
+                   ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,true));
                    //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
                 }   
              }
@@ -89,9 +91,10 @@ class LoginController extends Controller
             //  }    
             
         } else{
+            return redirect()->back()->with('login_error', $result->error_message);
             //$request->session()->flash('login_error',$result->error_message); 
-            Session::put('login_error',$result->error_message);
-            return redirect('');
+            //Session::put('login_error',$result->error_message);
+             
         }
         
     }
