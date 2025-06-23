@@ -36,7 +36,6 @@ class LoginController extends Controller
         $result = XAuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
         if ($result->status_code ===200) {
             $user = $result->user;
-                //$access_token =Crypt::encryptString($user->access_token);
                 $access_token = $user->access_token;
                 unset($user->access_token);
                  XAuthService::login($user);
@@ -49,7 +48,6 @@ class LoginController extends Controller
                 ->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,true));
                 //->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));
              }else{
-                  \Log::info('sent token: '.$access_token. '  cookie name: '.$cookie_name);
                 if(isset($user->apps[1])){
                     return redirect('ypg')->withCookie(cookie($cookie_name,$access_token,0,'/',null,true,true));
                     //->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
