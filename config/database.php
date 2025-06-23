@@ -16,7 +16,6 @@ return [
     */
 
     'default' => env('DB_CONNECTION', 'mysql'),
-
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -52,6 +51,28 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8',
+            'collation' => 'utf8_general_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'max_retries' => 3,
+            'retry_delay' => 100,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                //PDO::ATTR_PERSISTENT => true, // Enable persistent connections
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+         'auth_db' => [
+            'driver' => 'mysql',
+            'url' => env('AUTHDB_DATABASE_URL'),
+            'host' => env('AUTHDB_HOST', '127.0.0.1'),
+            'port' => env('AUTHDB_PORT', '5432'),
+            'database' => env('AUTHDB_DATABASE', 'forge'),
+            'username' => env('AUTHDB_USERNAME', 'forge'),
+            'password' => env('AUTHDB_PASSWORD', ''),
+            'unix_socket' => env('AUTHDB_SOCKET', ''),
             'charset' => 'utf8',
             'collation' => 'utf8_general_ci',
             'prefix' => '',

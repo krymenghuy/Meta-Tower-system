@@ -1,5 +1,6 @@
 <?php
 return [
+    'connection' => env('AUTHDB_CONNECTION', 'auth_db'),
     'user_classes' => [
         'admin' => [
             'used' => 1,
