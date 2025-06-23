@@ -30,7 +30,7 @@ class StyleProvider
                     'assets/css/choices.custom.css',
                     'assets/css/vsa_dropdown_button.css',
                     'assets/css/vs-dropdown-menu.css',
-                    'assets/css/loader.css',
+                    'assets/css/vs_loader.css',
                     'assets/css/jquery.datepicker2.css',
                     'assets/css/vs-pagination.css',
                     'assets/css/sweetalert2.min.css',

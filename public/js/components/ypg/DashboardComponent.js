@@ -318,7 +318,7 @@ var DashboardComponent =  (function () {
     mThis.loadCards = (onFinish) => {
         const p = {};
 
-        vsapi.call(`${main_view.base_url}/ypg/dashboard/data`,p,null,false,false).then((res) => {
+        vsapi.call1(`${main_view.base_url}/ypg/dashboard/data`,p,null,false,false).then((res) => {
             const data = res.status_code === 200 ? res.data : {};
             mThis.renderDBChartAllTop(data);
             mThis.renderDBCards(data);

@@ -236,7 +236,7 @@ var TaskTypeComponent = (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/task-type/update-status`,p).then(res => {
+                vsapi.call1(`${mThis.base_url}/ypg/task-type/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -280,7 +280,7 @@ var TaskTypeComponent = (function () {
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/ypg/task-type/delete`,op,false,false,false).then(res => {
+                vsapi.call1(`${main_view.base_url}/ypg/task-type/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         mThis.TaskTypeListView.showPage();
                     }
@@ -294,7 +294,7 @@ var TaskTypeComponent = (function () {
 
     mThis.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call1(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
             const d = res.status_code == 200 ? res.data : {};
             VSUtil.setComboItems(mThis.elFilter_status,d.statuses,'id','member_status',true,'All Statuses',null);
@@ -382,7 +382,7 @@ const TaskTpyeDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
 
-                            vsapi.call([main_view.base_url,"/ypg/task-type/save",].join(""),op,btn,null).then((res) => {
+                            vsapi.call1([main_view.base_url,"/ypg/task-type/save",].join(""),op,btn,null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {

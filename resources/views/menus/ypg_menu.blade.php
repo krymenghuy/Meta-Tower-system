@@ -381,8 +381,10 @@ function v_display($mod_id, $module_ids = null)
 
 <script>
     let __dx = document.querySelector('#_dms_aside_menus');
-    LocaleManager.translateZone(__dx, null, () => {
-        return;
+    document.addEventListener('DOMContentLoaded',()=>{
+         LocaleManager.translateZone(__dx, null, () => {
+            return;
+         });
     });
     __dx.style.display = 'block';
     __dx.style.height = (window.innerHeight - 65) + 'px';

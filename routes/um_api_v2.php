@@ -71,6 +71,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report-center
 });
 
 Route::middleware([CustomRateLimiter::class])->group(function(){
+    Route::get('/vsx-sec/token', [XAuthServiceController::class, 'getToken']);
     Route::post('logout', [XAuthServiceController::class, 'logout']);
     Route::get('auth/um-options', [XUserController::class, 'getUserManagementOptions']);
     Route::post('encryptData', [XAuthServiceController::class, 'encryptData']);
