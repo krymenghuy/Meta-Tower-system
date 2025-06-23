@@ -22,7 +22,7 @@ var GraveInfoComponent = new (function () {
         {
             title: "photo",
             className: "align-middle",
-            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/CYPA_logo.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/bg_ok2.webp`}" alt="" style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px;"/>`,
         },
         {
             title: "Grave Slot",
@@ -288,34 +288,46 @@ const RegisterGraveDialog = (() => {
                     createContent: () => {
                         return [
                             `<div class="row">
-                            <div class="form-group col-6">
-                                <label for="slot_number" class="form-label" vslang="titles.Grave Slot"></label>
-                                 <span class="text-danger" >*</span>
-                                <input name="slot_number" class="form-control data-input" data-field="slot_number">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="Deceased_name" class="form-label" vslang="titles.Deceased Name"></label>
-                                 <span class="text-danger" >*</span>
-                                <input  name="Deceased_name" class="form-control data-input" data-field="deceased_name">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="size" class="form-label" vslang="titles.Size">Size</label>
-                                <span class="text-danger">*</span>
-                                <select name="size" class="form-control data-input" data-field="size" required>
-                                    <option value="">-- Select Size --</option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="recommender" class="form-label" vslang="titles.Recommender"></label>
-                                <select name="recommender" class="form-control data-input" data-field="recommender"></select>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="location_note" class="form-label" vslang="titles.Remarks"></label>
-                                <textarea  name="location_note" class="form-control data-input" data-field="location_note">
-                            </div>
+                                <div class="col-3">
+                                    <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
+                                        <div name="div_grave_photo" class="data-input h-100" data-field="photo">
+
+                                        </div>
+                                    </div>                            
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <div class="form-group col-6">
+                                            <label for="slot_number" class="form-label" vslang="titles.Grave Slot"></label>
+                                            <span class="text-danger" >*</span>
+                                            <input name="slot_number" class="form-control data-input" data-field="slot_number" />
+                                        </div>
+                                        <div class="form-group col-6">
+                                            <label for="Deceased_name" class="form-label" vslang="titles.Deceased Name"></label>
+                                            <span class="text-danger" >*</span>
+                                            <input  name="Deceased_name" class="form-control data-input" data-field="deceased_name" />
+                                        </div>
+                                        <div class="form-group col-6">
+                                            <label for="size" class="form-label" vslang="titles.Size">Size</label>
+                                            <span class="text-danger">*</span>
+                                            <select name="size" class="form-control data-input" data-field="size" required>
+                                                <option value="">-- Select Size --</option>
+                                                <option value="S">S</option>
+                                                <option value="M">M</option>
+                                                <option value="L">L</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-6">
+                                            <label for="recommender" class="form-label" vslang="titles.Recommender"></label>
+                                            <select name="recommender" class="form-control data-input" data-field="recommender"></select>
+                                        </div>
+                            
+                                    </div>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label for="location_note" class="form-label" vslang="titles.Remarks"></label>
+                                    <textarea  name="location_note" class="form-control data-input" data-field="location_note">
+                                </div>
 
 
 
@@ -323,16 +335,62 @@ const RegisterGraveDialog = (() => {
                         ].join("");
                     },
 
-                    contentCreated: (me) => {
+                      contentCreated: (me) =>{
+                        const div_grave_photo = me.controls.div_grave_photo;
+                        me.graveImageBox = new ImageBox(div_grave_photo,{
+                            defaultPhotoName:'default-skill',
+                            containerClass:'skill-profile-container',
+                            imgClass:"data-input",
+                            dataset:{"field" :"photo"},
+                            beforeDeleteImage: async ()=> {
+                                if(me.dataOptions.id > 0){
+                                    const answer = await cv_interact.confirm('Are you sure to delete this grave photo?', {title:'Delete Photo','context':'delete'});
+                                    if(answer){
+                                        me.deleteGravePhoto(me.dataOptions.id);
+                                        return true;
+                                    } else return false;
+
+                                }
+                                return true;
+                            },
+                            onOpenImage: (img)=>{
+                                if(me.dataOptions.id > 0){
+                                me.saveGravePhoto(img, me.dataOptions.id);
+                            }
+                            },
+                        });
+                        me.deleteGravePhoto = (id) => {
+                            const p = {"id":id};
+                            vsapi.call([main_view.base_url,'/ypg/grave-slot/photo/delete'].join(''),p,false,false).then(res =>{
+                                if(res.status_code == 200){
+                                me.graveImageBox.setImage(null);
+                                cv_interact.info('Profile photo was deleted!');
+                                }else cv_interact.error(res.error_message);
+                            });
+                        }
+                        me.saveGravePhoto =  (photo,id) =>{
+                            let p = {'photo':photo,'id':id};
+                            vsapi.call([main_view.base_url,'/ypg/grave-slot/photo/save'].join(''),p,false).then(res =>{
+                            if(res.status_code ==200){
+                                me.graveImageBox.setImage(res.data.image_url);
+                            cv_interact.success('Grave photo was saved!');
+                            }else cv_interact.error(res.error_message);
+                            });
+                        };
+
+
+
+
+
 
                     },
                     configSelect: [
                         {
                             name: "recommender",
-                            data: "members",
+                            data: "recommenders",
                             textField: "member_name",
                             valueField: "id",
-                        }
+                        },
                         
                     ],
                     prepareFormOptions: {
@@ -365,10 +423,8 @@ const RegisterGraveDialog = (() => {
                             click: (me, btn) => {
                                 const op = me.getData();
                                 op.id = me.dataOptions.id;
+                                op.photo = me.graveImageBox? me.graveImageBox.getImage(): '';
                                 console.log(1234,op);
-                                
-
-                               
 
                                 vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {

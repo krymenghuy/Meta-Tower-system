@@ -106,6 +106,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deceased-regi
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')->group(function () {
     Route::post('/save', [GraveSlotController::class, 'save']);
+    Route::post('/photo', [GraveSlotController::class, 'getPhoto']);
+    Route::post('/photo/save', [GraveSlotController::class, 'savePhoto']);
+    Route::post('/photo/delete', [GraveSlotController::class, 'deletePhoto']);
     Route::post('/list-paginate', [GraveSlotController::class, 'getList']);
     Route::post('/details', [GraveSlotController::class, 'getDetails']);
     Route::post('/form-options', [GraveSlotController::class, 'getFormOptions']);
