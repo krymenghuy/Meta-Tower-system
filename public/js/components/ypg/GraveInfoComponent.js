@@ -241,7 +241,7 @@ var GraveInfoComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
+                vsapi.call1(`${main_view.base_url}/ypg/grave-slot/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.GraveInfoListView.showPage();
                     }
@@ -254,8 +254,7 @@ var GraveInfoComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish = null) => {
-
-        vsapi.call(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
+        vsapi.call1(`${main_view.base_url}/ypg/grave-slot/details`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'grave_status', true, 'All Statuses', null);
@@ -370,7 +369,7 @@ const RegisterGraveDialog = (() => {
 
                                
 
-                                vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call1([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {

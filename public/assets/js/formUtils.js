@@ -67,7 +67,7 @@ class FormUntil{
          let that = this;
          let d = this.getData();
          if(d.has_error) return;
-         vsapi.call(this.api_save,d.data).then(res=>{
+         vsapi.call1(this.api_save,d.data).then(res=>{
                if(res.status_code === 200){
                   if(typeof this.option.onClose === 'function') this.option.onClose(res);
                   this.self.modal('hide');
@@ -140,7 +140,7 @@ class FormUntil{
        let p ={};
        p[this.identity_prop] = id;
        let that = this;
-        vsapi.call(this.api_get,p).then((res)=>{
+        vsapi.call1(this.api_get,p).then((res)=>{
           if(res.status_code ===200){
              let d = Sanitizer.sanitizeObject(res.data,null,that.sanitize_excepts);
              onFinish(d);

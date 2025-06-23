@@ -86,7 +86,7 @@ var ReportCenterComponent = new (function () {
 
     this.displayMainOptions = (onFinish = null) => {
         const op = { app_id: main_view.app_id };
-        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,op,false,null,main_view.apiCluster).then((res) => {
+        vsapi.call1(`${main_view.base_url}/api/report-center/report-list`,op,false,null,main_view.apiCluster).then((res) => {
             const data = res.data || [];
             mThis.renderPanelBox(data);
         });
@@ -423,7 +423,7 @@ var ReportCenterComponent = new (function () {
     this.renderSelect = (div, code = null) => {
         mThis.options.params.map((item, index, array) => {
             let data = [];
-            vsapi.call(item.api, item.param, null, false).then((res) => {
+            vsapi.call1(item.api, item.param, null, false).then((res) => {
                 if (res.status_code === 200) {
                     data = res.data;
                     data = item.dot_object ? data[item.dot_object] : data;

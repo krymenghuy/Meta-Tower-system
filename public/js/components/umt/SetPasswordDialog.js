@@ -69,7 +69,7 @@ const SetPasswordDialog = (()=>{
                     delete(p.confirm_password);
                     
                     let login_name = me.dataOptions.login_name ?? "";
-                    vsapi.call([main_view.base_url,'/api/user/set-password'].join(''),p,btn,false).then(res => {
+                    vsapi.call1([main_view.base_url,'/api/user/set-password'].join(''),p,btn,false).then(res => {
                         if(res.status_code === 200)
                         {
                             me.hide(true);

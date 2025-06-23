@@ -17,6 +17,7 @@ class APIAuthenticate
         /** XAuthService::getWebToken() will return access_token that is stored in web http cookie from Web page (e.g Backend system) */
         //$token =XAuthService::getWebToken($request, $token_encrypted);
         $token = $request->bearerToken() ?? (($request->header('Authorization') ?: $request->query('api_token')));
+        \Log::info(json_encode($request));
         $ss = XAuthService::authenticateToken($token,false,$lang);
         // Set $def_lang based on the 'lang' property of $ss
         $def_lang = $ss->lang ?? 'en';
