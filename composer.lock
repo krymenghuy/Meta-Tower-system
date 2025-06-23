@@ -7725,12 +7725,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-vsloquent.git",
-                "reference": "72e270319541fc6cb620f8f43a66cc50e359ec4e"
+                "reference": "e6e52dc1f8737b5f1eb83accb1225bb5a767ab09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/72e270319541fc6cb620f8f43a66cc50e359ec4e",
-                "reference": "72e270319541fc6cb620f8f43a66cc50e359ec4e",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/e6e52dc1f8737b5f1eb83accb1225bb5a767ab09",
+                "reference": "e6e52dc1f8737b5f1eb83accb1225bb5a767ab09",
                 "shasum": ""
             },
             "require": {
@@ -7774,7 +7774,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-vsloquent/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-vsloquent/issues"
             },
-            "time": "2025-06-02T11:10:34+00:00"
+            "time": "2025-06-23T07:22:55+00:00"
         },
         {
             "name": "vsd/xauth",
@@ -7782,12 +7782,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "659f4ad6fd824a94843983bdc38a9cd031be061b"
+                "reference": "7e746294dff0e6765c8708420844fcf8a77c8175"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/659f4ad6fd824a94843983bdc38a9cd031be061b",
-                "reference": "659f4ad6fd824a94843983bdc38a9cd031be061b",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/7e746294dff0e6765c8708420844fcf8a77c8175",
+                "reference": "7e746294dff0e6765c8708420844fcf8a77c8175",
                 "shasum": ""
             },
             "require": {
@@ -7817,7 +7817,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-06-23T05:42:50+00:00"
+            "time": "2025-06-23T07:37:25+00:00"
         },
         {
             "name": "webmozart/assert",

@@ -44,7 +44,7 @@ var RoleManagementComponent = new function(){
     }
 
     this.deleteRole = (role_id)=>{
-        let p = {id:role_id};
+        const p = {id:role_id};
         vsapi.call1([main_view.base_url,'/api/role/delete'].join(''),p,false,false).then(res =>{
            if(res.status_code ==200){
              mThis.loadRoles(mThis.getFilterData(),roles =>{

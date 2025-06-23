@@ -104,8 +104,8 @@ const main_view = new function(){
             tokenAccessMode: 'httpOnly',
             defaultLoaderSelector: '#vs_loader',
             useStreamingProgress: true,
-            useCache: true,
-            cacheTTL: 5000,
+            //useCache: true,
+            //cacheTTL: 3000,
 
             // online: () => {
             //   console.log('🟢 Back online');
