@@ -323,7 +323,7 @@ const RegisterGraveDialog = (() => {
                                         </div>
                                         <div class="form-group col-6">
                                             <label for="recommender" class="form-label" vslang="titles.Recommender"></label>
-                                            <select name="recommender" class="form-control data-input" data-field="recommender"></select>
+                                            <select name="recommender_id" class="form-control data-input" data-field="recommender_id"></select>
                                         </div>
                             
                                     </div>
@@ -390,7 +390,7 @@ const RegisterGraveDialog = (() => {
                     },
                     configSelect: [
                         {
-                            name: "recommender",
+                            name: "recommender_id",
                             data: "recommenders",
                             textField: "member_name",
                             valueField: "id",

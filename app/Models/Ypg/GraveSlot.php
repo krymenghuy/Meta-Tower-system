@@ -28,7 +28,7 @@ class GraveSlot
             'slot_number' => '1|string|0-20',
             'deceased_name' => '1|string|0-100',
             'size' => '1|choice|S,M,L',
-            'recommender' => '0|string|1-100',
+            'recommender_id' => '1|number|exists=members.id',
             'photo'=> '0|image',
             'location_note'=>'0|string|0-250',
             'status_id' => '1|number|default = 1',
@@ -94,7 +94,7 @@ class GraveSlot
             ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.file_name,gs.size,gs.recommender,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.file_name,gs.size,gs.recommender_id,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
             ->orderBy('gs.id', 'ASC');
 
 
@@ -122,7 +122,7 @@ class GraveSlot
         $query = DB::table('grave_slots as gs')
             ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->where('gs.id', $id)
-            ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender_id,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
             ->first();
 
      
