@@ -6,12 +6,13 @@ use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
+use XPublicStorage;
 
 class GraveSlot
 {
     protected $id = null;
     protected $userInfo = null;
-
+    protected static $img_dir = 'grave_slots';
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -28,17 +29,20 @@ class GraveSlot
             'deceased_name' => '1|string|0-100',
             'size' => '1|choice|S,M,L',
             'recommender' => '0|string|1-100',
-            'file_name'=> '0|image',
+            'photo'=> '0|image',
             'location_note'=>'0|string|0-250',
             'status_id' => '1|number|default = 1',
 
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, true, ['slot_number' => GeneralSettings::$address_map_chars], $ss->lang, false);
+        $res = DBX::validateObject($arr, $v_rule, true, ['photo'=>GeneralSettings::$image_chars,'slot_number' => GeneralSettings::$address_map_chars], $ss->lang, false);
         if($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $d = (object)$inputs;
+        $photo = $d->photo;
+        unset($inputs['photo']);
+        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
         if(!$id){
             $checkUnque = DB::table('grave_slots')->where('slot_number',$inputs['slot_number'])->exists();
             if ($checkUnque) {
@@ -47,6 +51,14 @@ class GraveSlot
         }
         $id = DBX::saveData($ss, 'grave_slots', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
+            if ($delete_prev_image) {
+            $file_name = DB::table('grave_slots')->where('id', $id)->take(1)->value('file_name');
+            if ($file_name) {
+                XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+            }
+            DB::table('grave_slots')->where('id', $id)->update(['file_name' => null]);
+            }
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'grave_slots.file_name']);
             return DV::depends(1, ['grave_slots' => $inputs, 'id' => $id]);
         }
         return DV::error('Error saving grave slot');
@@ -82,8 +94,8 @@ class GraveSlot
             ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.size,gs.recommender,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
-            ->orderBy('gs.id', 'DESC');
+            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.file_name,gs.size,gs.recommender,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
+            ->orderBy('gs.id', 'ASC');
 
 
 
@@ -91,7 +103,13 @@ class GraveSlot
         $count = $clone_query->count('gs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-     
+     foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->file_name) {
+                $row->image_url = self::profilePicture($row->id,$ss);
+            }
+            unset($row->file_name);
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -119,8 +137,7 @@ class GraveSlot
         return (object) [
             'grave_slot' => $grave_slot,
             'statuses' => GeneralSettings::options_grave_status($ss),
-            'members' => GeneralSettings::options_member($ss),
-            'deceased_names' => GeneralSettings::options_deceased($ss),
+            'recommenders' => GeneralSettings::options_member($ss),
         ];
     }
 
@@ -156,6 +173,48 @@ class GraveSlot
 
         return DV::depends($x, ['grave slot status', 'updated']);
     }
+    static function savePhoto($photo_data,$file_type = null, $id = null, $ss = null){
+        $id = $id ?? $id;
+        $ss = $ss ?? $ss;
+        $col_subs_id = DBX::getHex('gs.subs_id', 'subs_id');
+        $grave = DB::table('grave_slots as gs')->where('gs.id', $id)->selectRaw($col_subs_id . ',gs.id,gs.branch_id,gs.file_name')->first();
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if (!$grave) {
+            return DV::error('Grave identity is not correct!');
+        }
+        if ($delete_image) {
+            XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $grave->file_name);
+            DB::table('grave_slots')->where('id', $id)->update(['file_name' => null]);
+        }
+        $res = XPublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'grave_slots.file_name']);
+        if($res->status ==='Error') return $res;
+        $img = self::profilePicture($id,$ss);
+        return DV::depends(1,['image_url'=>$img]);
 
+    }
+    function deletePhoto($id = null, $ss = null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $grave = DB::table('grave_slots as gs')->where('id', $id)->selectRaw('id,file_name')->first();
+        if (!$grave) return DV::error('Grave identity is not correct!');
+        XPublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $grave->file_name);
+        DB::table('grave_slots')->where('id', $id)->update(['file_name' => null]);
+        return DV::success();
+    }
+    static function profilePicture($id,$ss)
+    {
+        $col_subs_id = DBX::getHex('gs.subs_id', 'subs_id');
+        $row = DB::table('grave_slots as gs')->where('gs.id', $id)->selectRaw($col_subs_id . ',gs.branch_id,gs.file_name')->first();
+        $def_image = self::defaultPhoto($row ? $row->subs_id : null);
+        $url = '';
+        if ($row) {
+            $url = XPublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'images') . $row->file_name;
+            return validateUrl($url, $def_image);
+        } else return $def_image;
+    }
+    static function defaultPhoto($subs_id)
+    {
+        return url('') . '/assets/images/default/default-staff.png';
+    }
 
 }

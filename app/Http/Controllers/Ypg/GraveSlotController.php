@@ -77,4 +77,28 @@ class GraveSlotController extends Controller
         $res = $slot->updateStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
     }
+    function savePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->id ?? $req->slot_id;
+        $photo = $req->photo ?? $req->img;
+        $res = GraveSlot::savePhoto($photo,null,$id,$ss);
+        return JDV::raw($res);
+    }
+    function deletePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->slot_id ?? $req->id;
+        $grave = new GraveSlot($id,$ss);
+        $res = $grave->deletePhoto($id);
+        return JDV::raw($res);
+    }
+       function getPhoto(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id ?? $req->slot_id;
+        $img = GraveSlot::profilePicture($id, $ss);
+        return JDV::result($img);
+    }
 }
