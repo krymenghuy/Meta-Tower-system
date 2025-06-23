@@ -52,7 +52,7 @@ var LocationComponent = new function(){
           cv_interact.confirm('Delete this country?',{title:'Delete Country','context':'delete'},function(e){
                 if(e)
                 {
-                    vsapi.call1([mThis.base_url,'/api/location/country/delete'].join(''),p).then((res)=>{
+                    vsapi.call([mThis.base_url,'/api/location/country/delete'].join(''),p).then((res)=>{
                       if(res.status_code===200){
 
                         mThis.displayCountries();
@@ -92,7 +92,7 @@ var LocationComponent = new function(){
       mThis.selected_country_id = null;
 
       mThis.tblCountries_body.html(null);
-      vsapi.call1([mThis.base_url,'/api/location/countries'].join(''),null,null).then((res)=>{
+      vsapi.call([mThis.base_url,'/api/location/countries'].join(''),null,null).then((res)=>{
          if(res.status_code===200){
             let rows = Sanitizer.sanitizeObject(res.data);
             console.log(res.data);
@@ -192,7 +192,7 @@ var LocationComponent = new function(){
 //     let p = mThis.getData();
 //     //console.log(p);
 
-//     vsapi.call1(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
+//     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
 //       if (res.status_code === 200) {
 //         mThis.self.modal('hide');
 //         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
@@ -223,7 +223,7 @@ var LocationComponent = new function(){
 
 //   this.prepareFormData = (id, def, onFinish) => {
 
-//     vsapi.call1(`${main_view.base_url}/api/location/options-country`, { 'id': id }, null).then(res => {
+//     vsapi.call(`${main_view.base_url}/api/location/options-country`, { 'id': id }, null).then(res => {
 //       let d = res.status_code === 200 ? res.data : {};
 //       // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
 //       // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
@@ -233,7 +233,7 @@ var LocationComponent = new function(){
 
 //   // this.loadCountries = (def)=>{
 //   //    if(!def) def = {};
-//   //    vsapi.call1(`${mThis.base_url}/api/location/options-country`,null).then(res => {
+//   //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
 //   //      if(res.status_code === 200){
 //   //        let rows = Sanitizer.sanitizeObject(res.data);
 //   //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);
@@ -287,7 +287,7 @@ var ZoneTabView = new function(){
       method_name = 'location/options-village';
     }
 
-     vsapi.call1([mThis.base_url,'/api/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
+     vsapi.call([mThis.base_url,'/api/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
         if (res.status_code===200){
               let rows = Sanitizer.sanitizeObject(res.data);
 
@@ -386,7 +386,7 @@ var ZoneTabView = new function(){
                   InputBox1.show(option,function(d){
                     if(d){
                        let p = {'id':id,'country_id':CountryListPanel.selected_country_id,'name':d,'name_kh':d};
-                       vsapi.call1([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
+                       vsapi.call([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
                          if(res.status_code===200) {
                             mThis.displayCities(CountryListPanel.selected_country_id);
                          } else cv_interact.error(res.error_message);
@@ -420,7 +420,7 @@ var ZoneTabView = new function(){
                   InputBox1.show(option,function(d){
                     if(d){
                         let p = {'city_id':mThis.elFilter_city.val(),'name':d,'name_kh':d};
-                        vsapi.call1([mThis.base_url,'/api/location/district/save'].join(''),p,null,false).then((res)=>{
+                        vsapi.call([mThis.base_url,'/api/location/district/save'].join(''),p,null,false).then((res)=>{
                           if(res.status_code === 200) {
                               mThis.elFilter_city.trigger('change');
                               //mThis.displayDistricts(p.city_id);
@@ -444,7 +444,7 @@ var ZoneTabView = new function(){
                 InputBox1.show(option,function(d){
                   if(d){
                         let p = {'district_id':mThis.elFilter_district.val(),'name':d,'name_kh':d};
-                        vsapi.call1([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
+                        vsapi.call([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
                           if(res.status_code===200) {
                             mThis.displayCommunes(p.district_id);
                           } else cv_interact.error(res.error_message);
@@ -460,7 +460,7 @@ var ZoneTabView = new function(){
                //p.id = p.city_id;
                cv_interact.confirm('Delete this city?',{title:'Delete City',context:'delete'},function(e){
                  if(e){
-                   vsapi.call1([mThis.base_url,'/api/location/city/delete'].join(''),p).then((res)=>{
+                   vsapi.call([mThis.base_url,'/api/location/city/delete'].join(''),p).then((res)=>{
                      if(res.status_code===200){
                          mThis.displayCities(mThis.country_id);
                      } else cv_interact.error(res.error_message);
@@ -477,7 +477,7 @@ var ZoneTabView = new function(){
               //p.id = p.city_id;
               cv_interact.confirm('Delete this commune?',{'title':'Delete Commune',context:'delete'},function(e){
                 if(e){
-                  vsapi.call1([mThis.base_url,'/api/location/commune/delete'].join(''),p,null,false).then(res=>{
+                  vsapi.call([mThis.base_url,'/api/location/commune/delete'].join(''),p,null,false).then(res=>{
                     if(res.status_code===200){
                       mThis.displayCommunes(mThis.elFilter_district.val());
                     } else cv_interact.error(res.error_message);
@@ -493,7 +493,7 @@ var ZoneTabView = new function(){
               //p.id = p.city_id;
               cv_interact.confirm('Delete this distrinct?',{title:'Delete District',context:'delete'},function(e){
                 if(e){
-                  vsapi.call1([mThis.base_url,'/api/location/district/delete'].join(''),p).then((res)=>{
+                  vsapi.call([mThis.base_url,'/api/location/district/delete'].join(''),p).then((res)=>{
                     if(res.status_code===200){
                       mThis.displayDistricts(mThis.elFilter_city.val());
                     } else cv_interact.error(res.error_message);
@@ -545,7 +545,7 @@ var ZoneTabView = new function(){
                  p.country_id = country_id;
                  mThis.tblCities_body.empty();
 
-                 vsapi.call1([mThis.base_url,'/api/location/cities'].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
+                 vsapi.call([mThis.base_url,'/api/location/cities'].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
                      if (res.status_code===200){
                           let rows = Sanitizer.sanitizeObject(res.data);
                           let i=0, c;
@@ -595,7 +595,7 @@ var ZoneTabView = new function(){
              p.city_id = city_id;
              mThis.tblDistricts_body.empty();
 
-             vsapi.call1([mThis.base_url,'/api/location/districts'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
+             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
                if(res.status_code===200){
                 let rows = Sanitizer.sanitizeObject(res.data);
                 let i =0, c;
@@ -631,7 +631,7 @@ var ZoneTabView = new function(){
                 if(!district_id) district_id = mThis.elFilter_district.val();
                 p.district_id = district_id;
                 mThis.tblCommunes_body.empty();
-                vsapi.call1([mThis.base_url,'/api/location/communes'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
+                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,null,LocationComponent.apiCluster).then(res=>{
                   if(res.status_code===200){
                         let rows = Sanitizer.sanitizeObject(res.data);
                         let i =0, c;
@@ -661,7 +661,7 @@ var ZoneTabView = new function(){
             InputBox1.show(option,function(d){
                let p = {'id':id,'name':d,'district_id':district_id};
 
-               vsapi.call1([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
+               vsapi.call([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
                  if(res.status_code===200) {
                      mThis.displayCommunes(district_id);
                  } else cv_interact.error(res.error_message);
@@ -673,7 +673,7 @@ var ZoneTabView = new function(){
           let option = {title:'Rename District','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'District Name','defaultValue':name};
           InputBox1.show(option,function(d){
              let p = {'id':id,'name':d,'city_id':city_id};
-             vsapi.call1([mThis.base_url,'/api/location/district/save'].join(''),p).then((res)=>{
+             vsapi.call([mThis.base_url,'/api/location/district/save'].join(''),p).then((res)=>{
                if(res.status_code===200) {
                   mThis.displayDistricts(city_id);
                } else cv_interact.error(res.error_message);
@@ -685,7 +685,7 @@ var ZoneTabView = new function(){
         let option = {title:'Rename City','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'City Name','defaultValue':name};
         InputBox1.show(option,function(d){
            let p = {'id':id,'name':d,'country_id':country_id};
-           vsapi.call1([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
+           vsapi.call([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
              if(res.status_code===200) {
                mThis.displayCities(country_id);
              } else cv_interact.error(res.error_message);

@@ -352,7 +352,7 @@ var MemberComponent = new (function () {
                     status_id: d.value
                 };
                 if (!AuthManager.allowed(321)) return;
-                vsapi.call1(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
+                vsapi.call(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
                     if (res.status_code === 200) {
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -396,7 +396,7 @@ var MemberComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call1(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.MemberListView.showPage();
                     }
@@ -410,7 +410,7 @@ var MemberComponent = new (function () {
 
     this.prepareFormOptions = (onFinish) => {
 
-        vsapi.call1(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
@@ -554,7 +554,7 @@ const MemberDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
 
-                            vsapi.call1([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {

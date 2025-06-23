@@ -70,7 +70,7 @@ const CreateBranchDialog = (()=>{
               //   me.showProfile =  (code) =>{
               //       let fields = ['full_name','email','phone_number','login_name']; 
               //       let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
-              //       vsapi.call1([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+              //       vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
               //         let d = res.status_code ==200? res.data: {};
               //         d = d || {}; 
               //         me.fieldList.forEach(el =>{
@@ -134,7 +134,7 @@ const CreateBranchDialog = (()=>{
                   let p = me.getData();
                   p.id = me.dataOptions.id||'';
                   console.log(11234,JSON.stringify(p,null,2));
-                    vsapi.call1([main_view.base_url,'/api/branch/save'].join(''),p,false,false).then(res =>{
+                    vsapi.call([main_view.base_url,'/api/branch/save'].join(''),p,false,false).then(res =>{
                         if(res.status_code ==200){
                             cv_interact.success('success!');
                             me.hide(true,p);

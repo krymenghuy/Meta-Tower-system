@@ -26,7 +26,7 @@ ChangeLoginNameDialog = (()=>{
                     label:"<span>Change Now</span>",
                     click:(me,btn,divModal)=>{
                         let p = me.getData();
-                        vsapi.call1(`${main_view.base_url}/api/user/change-login-name`,p,btn,false,false).then(res =>{
+                        vsapi.call(`${main_view.base_url}/api/user/change-login-name`,p,btn,false,false).then(res =>{
                             if(res.status_code ==200){
                                 me.hide(true,p);
                                 cv_interact.success(['Login name has been changed to ',p.login_name].join(''));
