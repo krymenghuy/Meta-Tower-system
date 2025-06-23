@@ -59,7 +59,7 @@ const ChangeRoleDialog = (()=>{
                 click:(me,btn,divModal)=>{
                     let p = me.getData();
                     p.id = me.dataOptions.id || me.dataOptions.user_id;
-                    vsapi.call1(`${main_view.base_url}/api/user/role/change`,p,false,false,false).then(res=>{
+                    vsapi.call(`${main_view.base_url}/api/user/role/change`,p,false,false,false).then(res=>{
                         if (res.status_code === 200) 
                             me.hide(true,res.data);
                         else

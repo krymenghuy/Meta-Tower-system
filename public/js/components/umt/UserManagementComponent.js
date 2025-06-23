@@ -131,7 +131,7 @@ var UserManagementComponent = new function(){
                 if(e)
                 {
                     let p = {id: user_id};
-                    vsapi.call1(`${main_view.base_url}/api/umt-settings/delete`,p,false,false).then(res => {
+                    vsapi.call(`${main_view.base_url}/api/umt-settings/delete`,p,false,false).then(res => {
                         if(res.status_code === 200)
                         {
                             mThis.userListView.showPage(mThis.getFilterData());
@@ -340,7 +340,7 @@ var UserManagementComponent = new function(){
                         cv_interact.error('subs_id is missing!');
                         return;
                      }
-                     vsapi.call1(`${main_view.base_url}/api/user/linked-user/create`,p,btn,false).then(res =>{
+                     vsapi.call(`${main_view.base_url}/api/user/linked-user/create`,p,btn,false).then(res =>{
                           if(res.status_code ==200){
                              me.hide(true,p);
                              cv_interact.success('Linked user has been created successfully!');
@@ -448,7 +448,7 @@ var UserManagementComponent = new function(){
                                 // cv_interact.error("Not yet allow");
                                 // p.category =lnk.dataset.category??'bill_payment';
         
-                                // vsapi.call1(`${main_view.base_url}/api/user/role-change`,p,false,false,false).then(res=>{
+                                // vsapi.call(`${main_view.base_url}/api/user/role-change`,p,false,false,false).then(res=>{
                                 //     if (res.status_code === 200) {
                                 //         cv_interact.success('Success!');
                                 //         mThis.userListView.showPage(mThis.getFilterData());
@@ -503,13 +503,13 @@ var UserManagementComponent = new function(){
     function onAppStatusChange(branch_id, allowed ,user_id) {
         let p = {user_id: user_id, branch_id: branch_id, allowed : allowed};
  
-        vsapi.call1(`${main_view.base_url}/api/user/set-user-branch`,p,false,false,false).then(res =>{
+        vsapi.call(`${main_view.base_url}/api/user/set-user-branch`,p,false,false,false).then(res =>{
             if(res.status_code ==200){
             }else cv_interact.warning(res.error_message);
         });
     }
     this.getDataBranch = (user_id,onFinish) => {
-        vsapi.call1(`${main_view.base_url}/api/branch/form-options`,{user_id : user_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/branch/form-options`,{user_id : user_id},null,false).then(res => {
             if(res.status_code === 200)
             {
                 const d = res.data ?? [];
@@ -577,7 +577,7 @@ var UserManagementComponent = new function(){
     }
 
     this.loadFormPrint = (open,end_point) => {
-        vsapi.call1(`${main_view.base_url}/${end_point}`,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/${end_point}`,null,false).then(res => {
             if(res.status_code === 200){
                 const d = res.data;
                 let html = '', tbody = '';
@@ -906,7 +906,7 @@ var UserManagementComponent = new function(){
                     },(e) => {
                         if(e)
                         {
-                            vsapi.call1(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
                                 if(res.status_code === 200)
                                 {
                                     UserManagementComponent.userListView.showPage(mThis.getFilterData());
@@ -940,7 +940,7 @@ var UserManagementComponent = new function(){
                     if(e)
                     {
                         delete(op.user_name);
-                        vsapi.call1(`${main_view.base_url}/api/user/status/update`,op,null,false).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/user/status/update`,op,null,false).then(res => {
                             if(res.status_code === 200)
                             {
                                 const parentElement = button ? button.closest('.scope-user') : div.previousElementSibling;
@@ -1042,7 +1042,7 @@ var UserManagementComponent = new function(){
  
                             // p.category =lnk.dataset.category??'bill_payment';
     
-                            vsapi.call1(`${main_view.base_url}/api/user/role/change`,p,false,false,false).then(res=>{
+                            vsapi.call(`${main_view.base_url}/api/user/role/change`,p,false,false,false).then(res=>{
                                 if (res.status_code === 200) {
                                     cv_interact.success('Success!');
                                     mThis.userListView.showPage(mThis.getFilterData());
@@ -1103,7 +1103,7 @@ var UserManagementComponent = new function(){
                 cv_interact.confirm('Delete this linked user?',{"context":"delete",title:"Delete Linked User"},e =>{
                      if(e){
                          let p = {id: btn1.dataset.id,subs_id:main_view.subs_id};
-                         vsapi.call1(`${main_view.base_url}/api/user/linked-user/delete`,p,false,false).then(res =>{
+                         vsapi.call(`${main_view.base_url}/api/user/linked-user/delete`,p,false,false).then(res =>{
                              if(res.status_code ==200){
                                const div = btn1.closest('div.link-user-container');
                                if(div) div.remove();
@@ -1213,7 +1213,7 @@ var UserManagementComponent = new function(){
     }
 
     this.prepareFormOption = (onFinish=null) => {
-        vsapi.call1(`${main_view.base_url}/api/user/form-options`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/user/form-options`,null,null,false).then(res => {
             if(res.status_code === 200)
             {
                 const d = res.data ?? [],
@@ -1286,7 +1286,7 @@ var UserManagementComponent = new function(){
                         // cv_interact.error("Not yet allow");
                         // p.category =lnk.dataset.category??'bill_payment';
     
-                        // vsapi.call1(`${main_view.base_url}/api/user/role-change`,p,false,false,false).then(res=>{
+                        // vsapi.call(`${main_view.base_url}/api/user/role-change`,p,false,false,false).then(res=>{
                         //     if (res.status_code === 200) {
                         //         cv_interact.success('Success!');
                         //         mThis.userListView.showPage(mThis.getFilterData());
@@ -1319,7 +1319,7 @@ var UserManagementComponent = new function(){
       
     }
     this.getAuthorizationReport = (user_id,onFinish) => {
-        vsapi.call1(`${main_view.base_url}/api/user/authorization-report`,{user_id : user_id},null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/user/authorization-report`,{user_id : user_id},null,false).then(res => {
             if(res.status_code === 200)
             {
                 const d = res.data ?? [];
@@ -1601,7 +1601,7 @@ const ReportDialog123 = new function(){
         if(end_point)
         {
             // console.log('params',params);
-            vsapi.call1(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
+            vsapi.call(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
                 if(res.status_code === 200)
                 {
                     const d = res.data;

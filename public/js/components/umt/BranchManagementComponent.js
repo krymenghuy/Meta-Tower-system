@@ -61,7 +61,7 @@ var BranchManagementComponent = new function(){
                 console.log('test::',emp);
                 //This "id" is branch_id
                 const data = {"branch_id":id,"emp_id":emp.id};
-                vsapi.call1(`${main_view.base_url}/api/branch/set-director`,data,false,null).then(res => {
+                vsapi.call(`${main_view.base_url}/api/branch/set-director`,data,false,null).then(res => {
                    if(res.status_code === 200)
                    {
                     mThis.branchListView.showPage(mThis.getFilterData());
@@ -73,7 +73,7 @@ var BranchManagementComponent = new function(){
                 // d.student_id = btn.dataset.id;
                 // d.referal_id = btn.dataset.referalid;
                 // d.referrer_id = d.id;
-                // vsapi.call1(`${main_view.base_url}/api/student/set-referrer`,d,false,false,false).then(res =>{
+                // vsapi.call(`${main_view.base_url}/api/student/set-referrer`,d,false,false,false).then(res =>{
                 //     if(res.status_code ==200){
                 //         EnrolledStudentsComponent.studentListView.showPage(mThis.getFilterData());
                 //         cv_interact.success('Referrer has been updated!');
@@ -116,7 +116,7 @@ var BranchManagementComponent = new function(){
                 },(e) => {
                     if(e)
                     {
-                        vsapi.call1(`${main_view.base_url}/api/branch/delete`,op,null).then(res => {
+                        vsapi.call(`${main_view.base_url}/api/branch/delete`,op,null).then(res => {
                             if(res.status_code === 200)
                             {
                                cv_interact.info('Branch was deleted!');
@@ -413,7 +413,7 @@ var BranchManagementComponent = new function(){
     }
 
     this.prepareFormOption = (onFinish=null) => {
-        vsapi.call1(`${main_view.base_url}/api/user/form-options`,null,null,false).then(res => {
+        vsapi.call(`${main_view.base_url}/api/user/form-options`,null,null,false).then(res => {
             if(res.status_code === 200)
             {
                 const d = res.data ?? [],

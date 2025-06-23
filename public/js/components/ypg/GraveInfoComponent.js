@@ -256,7 +256,7 @@ var GraveInfoComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish = null) => {
-        vsapi.call1(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log(12,res.data);
@@ -437,7 +437,7 @@ const RegisterGraveDialog = (() => {
                                 op.photo = me.graveImageBox? me.graveImageBox.getImage(): '';
                                 console.log(1234,op);
 
-                                vsapi.call1([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
+                                vsapi.call([main_view.base_url, "/ypg/grave-slot/save",].join(""), op, btn, null).then((res) => {
                                     if (res.status_code === 200) {
                                         me.hide(true, op);
                                         if (me.dataOptions.id > 0) {
