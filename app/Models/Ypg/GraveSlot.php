@@ -91,10 +91,11 @@ class GraveSlot
         }
         $updated_at = DBX::formatTime('gs.updated_at','updated_at');
         $query = DB::table('grave_slots as gs')
+            ->join('members as m','m.id','=','gs.recommender_id')
             ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.file_name,gs.size,gs.recommender_id,'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
+            ->selectRaw('gs.id,gs.slot_number,gs.deceased_name,gs.file_name,gs.size,gs.recommender_id,m.name as recommender'.$updated_at.',gs.update_user,gs.file_name,gs.location_note,gs.status_id,s.name AS status')
             ->orderBy('gs.id', 'ASC');
 
 
