@@ -7782,12 +7782,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "7e746294dff0e6765c8708420844fcf8a77c8175"
+                "reference": "554d783ad0dcc352f785c42234b465b46b84ea04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/7e746294dff0e6765c8708420844fcf8a77c8175",
-                "reference": "7e746294dff0e6765c8708420844fcf8a77c8175",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/554d783ad0dcc352f785c42234b465b46b84ea04",
+                "reference": "554d783ad0dcc352f785c42234b465b46b84ea04",
                 "shasum": ""
             },
             "require": {
@@ -7817,7 +7817,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-06-23T07:37:25+00:00"
+            "time": "2025-06-23T10:06:26+00:00"
         },
         {
             "name": "webmozart/assert",
