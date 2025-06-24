@@ -125,6 +125,11 @@ class GraveSlot
             ->where('gs.id', $id)
             ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender_id,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
             ->first();
+            if($query){
+                $img = self::profilePicture($id,$ss);
+                $query->image_url = $img;
+                $query->photo = $img;
+            } else $query = null;
 
      
         return $query;
