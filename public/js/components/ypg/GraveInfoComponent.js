@@ -243,11 +243,20 @@ var GraveInfoComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op,{ agent:null, loader:null, useCache:true, cacheTTL:3000, cluster:null }).then(res => {
+               vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op,{ useCache:false }).then(res => {
                     if (res.status_code == 200) {
                         mThis.GraveInfoListView.showPage();
                     }
                 });
+
+
+vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op,{ }).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.GraveInfoListView.showPage();
+                    }
+                });
+
+
             }
             else {
                 cv_interact.error(res.error_message);
@@ -256,14 +265,12 @@ var GraveInfoComponent = new (function () {
     }
 
     mThis.prepareFormOptions = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                console.log(12,res.data);
-                
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'grave_status', true, 'All Statuses', null);
-               if(typeof onFinish ==='function') onFinish();
-            })
+        vsapi.call(`${main_view.base_url}/ypg/grave-slot/delete`, op,{ agent:null, loader:null, useCache:false }).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.GraveInfoListView.showPage();
+                    }
+                });
+
     }
 
     mThis.show = function () {
