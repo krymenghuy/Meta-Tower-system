@@ -72,10 +72,10 @@
         }
     </style>
     <?php
-    ScriptManager::render('priority-one', 1, 6);
-    ScriptManager::render('primary', 1, 9);
-    ScriptManager::render('primary-defer', 1, 26);
-    ScriptManager::render('ypg-components', 1, 208);
+    ScriptManager::render('priority-one', 1, 7);
+    ScriptManager::render('primary', 1, 10);
+    ScriptManager::render('primary-defer', 1, 27);
+    ScriptManager::render('ypg-components', 1, 209);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
