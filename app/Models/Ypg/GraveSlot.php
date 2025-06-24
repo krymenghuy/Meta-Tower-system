@@ -40,7 +40,7 @@ class GraveSlot
 
         $inputs = $res->values;
         $d = (object)$inputs;
-        $photo = $d->photo;
+        $photo = $d->photo ?? null;
         unset($inputs['photo']);
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
         if(!$id){
@@ -120,19 +120,19 @@ class GraveSlot
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $query = DB::table('grave_slots as gs')
+        $row = DB::table('grave_slots as gs')
             ->join('grave_statuses as s', 's.id', '=', 'gs.status_id')
             ->where('gs.id', $id)
             ->selectRaw('gs.id,gs.slot_number,gs.size,gs.recommender_id,gs.file_name,gs.deceased_name,gs.location_note,gs.status_id,s.name AS status')
             ->first();
-            if($query){
+            if($row){
                 $img = self::profilePicture($id,$ss);
-                $query->image_url = $img;
-                $query->photo = $img;
-            } else $query = null;
+                $row->image_url = $img;
+                $row->photo = $img;
+            } else $row = null;
 
      
-        return $query;
+        return $row;
     }
 
     public function getFormOptions($id,$ss)

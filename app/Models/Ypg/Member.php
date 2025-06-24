@@ -13,6 +13,7 @@ class Member
     protected $id = null;
     protected $userInfo = null;
 
+    protected static $img_dir ="members";
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -44,17 +45,18 @@ class Member
             'status_id' => '1|number|default = 1',
             'is_expiry' => '1|number|default = 0',
             'expiration' => '0|date',
+            'photo' => '0|image'
         ];
         $checkUnique = null;
         $res = DBX::validateObject($arr, $v_rule, true, ['address'=> GeneralSettings::$address_map_chars], $ss->lang, false, isset($arr[' id']) ? null : $checkUnique);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
+        $photo = $d->photo ?? null;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
         $phone_check = $this->checkUniqueMemberByPhone($d->phone_number, $id);
         if ($phone_check) return DV::error($phone_check);
-
         $expiration = $d->expiration ?? null;
         $is_expiry = $d->is_expiry ?? 0;
         if ($is_expiry == 1 && !$expiration) {
@@ -69,20 +71,27 @@ class Member
         } else {
             unset($inputs['expiration']);
         }
+        unset($input['photo']);
+        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
         $created = !$id;
         $new_id = DBX::saveData($ss, 'members', ['id' => $id], $inputs, [], 1, false);
 
         if ($new_id && $created) {
-
             $prefix = 'YP';
             $res = setOfficialCode($branch_id, 'member_code_control', 'members', ['id' => $new_id], $prefix, 5, null);
 
         }
-
-        if ($new_id > 0) {
-            return DV::depends($new_id, ['members' => $inputs, 'id' => $new_id]);
+        if ($id > 0) {
+            if ($delete_prev_image) {
+            $file_name = DB::table('members')->where('id', $id)->take(1)->value('photo_file_name');
+            if ($file_name) {
+                XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
+            }
+            DB::table('members')->where(column: 'id', $id)->update(['photo_file_name' => null]);
+            }
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'members.photo_file_name']);
+            return DV::depends(1, ['members' => $inputs, 'id' => $id]);
         }
-
         return DV::error('Failed to save member');
 
     }
@@ -150,13 +159,18 @@ class Member
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $query = DB::table('members as m')
+        $row = DB::table('members as m')
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->join('member_statuses as ms', 'ms.id', '=', 'm.status_id')
             ->where('m.id', $id)
-            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration_date')
+            ->selectRaw('m.id,m.code, m.name,m.sex,m.photo_file_name, m.phone_number, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, m.expiration_date')
             ->first();
-        return $query;
+             if($row){
+                $img = self::profilePicture($id,$ss);
+                $row->image_url = $img;
+                $row->photo = $img;
+            } else $row = null;
+        return $row;
     }
 
     public function getFormOptions($id,$ss)
@@ -176,11 +190,8 @@ class Member
     public function delete($id)
     {
         $id = $id ?? $this->id;
-        if (empty($id)) {
-            return DV::error('Invalid ID');
-        }
-        $res = DB::table('members')->where('id', $id)->delete();
-        if ($res) {
+        $deleted = DB::table('members')->where('id', $id)->delete();
+        if ($deleted) {
             return DV::depends(1, ['id' => $id]);
         }
         return DV::error('Error deleting member');
