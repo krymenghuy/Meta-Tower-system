@@ -17,11 +17,40 @@ var GraveInfoComponent = new (function () {
                 return `<p class="p-0 mb-0 text-center">${index+1}</p>`;
             }
         },
-        {
-            title: "photo",
-            className: "align-middle",
-            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/bg_ok2.webp`}" alt="" style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px;"/>`,
-        },
+        // {
+        //     title: "Photo",
+        //     className: "align-middle",
+        //     data: (data) => `
+        //         <div class="hover-image-wrapper" style="position: relative; display: inline-block;">
+        //             <img 
+        //                 class="image-student-tbl" 
+        //                 src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/bg_ok2.webp`}" 
+        //                 alt="profile" 
+        //                 style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px; object-fit: cover;"
+        //             />
+        //             <div class="image-tooltip-preview">
+        //                 <img src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/bg_ok2.webp`}" />
+        //             </div>
+        //         </div>
+        //     `,
+        // },
+    {
+        title: "Photo",
+        className: "align-middle",
+        data: (data) => `
+            <img 
+                class="btn-grave-photo" 
+                src="${data.image_url}" 
+                data-id="${data.id}" 
+                data-member_id="${data.recommender_id}" 
+                style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px; cursor: pointer;"
+            />
+        `,
+    },
+
+
+
+
         {
             title: "Grave Slot",
             className: "align-middle text-capitalize",
@@ -150,6 +179,19 @@ var GraveInfoComponent = new (function () {
                 mThis.GraveInfoListView.showPage(mThis.getFilterData());
             }, 250);
         });
+        mThis.tblGrave.addEventListener("click", function (e) {
+            let btn = e.target.closest(".btn-grave-photo");
+            if (btn) {
+                let op = {
+                    id: btn.dataset.id,
+                    member_id: btn.dataset.member_id, // not recommender_id here since you use data-member_id
+                    image_url: btn.src, // get image directly from <img src="">
+                };
+                PreViewDialog.show(op);
+            }
+        });
+
+
 
         mThis.initAlready = true;
     };
@@ -268,10 +310,44 @@ var GraveInfoComponent = new (function () {
         mThis.init();
         main_view.setContentView(mThis.self,mThis.title_prop);
         mThis.prepareFormOptions(()=>{
-            mThis.GraveInfoListView.showPage(mThis.getFilterData());
+        mThis.GraveInfoListView.showPage(mThis.getFilterData());
         });
     }
 })();
+const PreViewDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        const imageUrl = op?.image_url || '';
+
+        const dialog = new GeneralDialog({
+            cssClass: "modal-lg modal-content-vs-dialog",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return `
+                    <div class="text-center p-3">
+                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
+                    </div>
+                `;
+            },
+            contentCreated: (me) => {},
+            prepareFormOptions: {
+                createTitle: "Image Preview",
+                modifyTitle: "Image Preview",
+            },
+            onPrepareForm: (me, data) => {},
+            buttons: [],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+
+
 
 
 
@@ -375,7 +451,7 @@ const RegisterGraveDialog = (() => {
                             vsapi.call([main_view.base_url,'/ypg/grave-slot/photo/save'].join(''),p,false).then(res =>{
                             if(res.status_code ==200){
                                 me.graveImageBox.setImage(res.data.image_url);
-                            // cv_interact.success('Grave photo was saved!');
+                            cv_interact.success('Grave photo was saved!');
                             }else cv_interact.error(res.error_message);
                             });
                         };

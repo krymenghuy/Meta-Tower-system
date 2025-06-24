@@ -9,7 +9,6 @@ var MemberComponent = new (function () {
     this.btnAdd = mThis.self.querySelector("#_btnAddMember");
     this.divFilter = mThis.self.querySelector("#_divFilter_member");
     this.elFilter_status = mThis.self.querySelector('#el_status');
-    this.elLeaveType = mThis.self.querySelector("#el_leave_type");
     this.elSearch = mThis.self.querySelector("#_search_member");
 
     this.cols = [
@@ -163,18 +162,6 @@ var MemberComponent = new (function () {
         },
         {
             className: 'col_action align-middle',
-            // data: function (data, row, display) {
-            //     return `
-            //        <div class="d-flex justify-content-center align-items-center">
-            //             <div class="text-center gap-2 d-flex flex-wrap">
-            //                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-            //                     <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-            //                 </a>
-            //             </div>
-            //         </div>
-            //     `;
-            // }
-
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -446,7 +433,7 @@ const MemberDialog = (() => {
                         `<div class="row">
                             <div class="col-3">
                                 <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
-                                    <div name="div_grave_photo" class="data-input h-100" data-field="photo">
+                                    <div name="div_member_photo" class="data-input h-100" data-field="photo">
 
                                     </div>
                                 </div>                            
