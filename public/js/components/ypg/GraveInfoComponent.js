@@ -256,11 +256,9 @@ var GraveInfoComponent = new (function () {
     }
 
      mThis.prepareFormOptions = (onFinish = null) => {
-        vsapi.call(`${main_view.base_url}/ypg/grave-slot/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/ypg/grave-slot/form-options`,{},{})
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(12,res.data);
-                
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'grave_status', true, 'All Statuses', null);
                if(typeof onFinish ==='function') onFinish();
             })
@@ -270,7 +268,7 @@ var GraveInfoComponent = new (function () {
         mThis.init();
         main_view.setContentView(mThis.self,mThis.title_prop);
         mThis.prepareFormOptions(()=>{
-        mThis.GraveInfoListView.showPage(mThis.getFilterData());
+            mThis.GraveInfoListView.showPage(mThis.getFilterData());
         });
     }
 })();
@@ -377,7 +375,7 @@ const RegisterGraveDialog = (() => {
                             vsapi.call([main_view.base_url,'/ypg/grave-slot/photo/save'].join(''),p,false).then(res =>{
                             if(res.status_code ==200){
                                 me.graveImageBox.setImage(res.data.image_url);
-                            cv_interact.success('Grave photo was saved!');
+                            // cv_interact.success('Grave photo was saved!');
                             }else cv_interact.error(res.error_message);
                             });
                         };
