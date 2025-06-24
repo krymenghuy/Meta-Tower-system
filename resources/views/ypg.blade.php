@@ -71,13 +71,13 @@
             border-bottom: 1px solid #EDF3F7;
         }
     </style>
-    <?php
+    <!-- <?php
     ScriptManager::render('priority-one', 1, 7);
     ScriptManager::render('primary', 1, 10);
     ScriptManager::render('primary-defer', 1, 27);
     ScriptManager::render('ypg-components', 1, 209);
     //ScriptManager::render('pdfmake', 1);
-    ?>
+    ?> -->
 </head>
 
 <body style="display:none"
