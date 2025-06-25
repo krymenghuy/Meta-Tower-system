@@ -240,6 +240,13 @@ const main_view = new function(){
         mThis.btnLang.querySelector('img').setAttribute('src',icon_url);
         mThis.btnLang.dataset.lang = lang;
         LocaleManager.lang = lang;
+        const body = document.body;
+        body.classList.remove('font-kh', 'font-en');
+        if (lang === 'km') {
+            body.classList.add('font-kh');
+        } else {
+            body.classList.add('font-en');
+        }
     }
 
     this.addNotificationItem = (notif, update_count = true) => {

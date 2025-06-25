@@ -70,12 +70,25 @@
             color: #fff;
             border-bottom: 1px solid #EDF3F7;
         }
+      .font-kh {
+            /* font-family: Arial, Helvetica, serif; */
+            font-family: Verdana, sans-serif;
+           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+
+        }
+
+        .font-en {
+            font-family: Verdana, sans-serif;
+            /* font-family: Arial, sans-serif; */
+           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+        }
+
     </style>
     <?php
     ScriptManager::render('priority-one', 1, 7);
     ScriptManager::render('primary', 1, 10);
     ScriptManager::render('primary-defer', 1, 27);
-    ScriptManager::render('ypg-components', 1, 209);
+    ScriptManager::render('ypg-components', 1, 210);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
