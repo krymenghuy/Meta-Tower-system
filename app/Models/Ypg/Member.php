@@ -92,7 +92,6 @@ public function save($arr = [], $id = null, $ss = null)
         $prefix = 'YP';
         setOfficialCode($branch_id, 'member_code_control', 'members', ['id' => $id], $prefix, 5, null);
     }
-
     if ($id > 0) {
         if ($delete_prev_image) {
             $file_name = DB::table('members as m')->where('m.id', $id)->take(1)->value('m.photo_file_name');
@@ -106,17 +105,8 @@ public function save($arr = [], $id = null, $ss = null)
 
             DB::table('members')->where('id', $id)->update(['photo_file_name' => null]);
         }
-
-        XPublicStorage::saveImage([
-            'branch_id' => null,
-            'subs_id'   => $ss->subs_id,
-            'dir'       => self::$img_dir
-        ], null, $photo, null, [
-            'id'    => $id,
-            'store' => 'members.photo_file_name'
-        ]);
-
-        return DV::depends(1, ['members' => $inputs, 'id' => $id]);
+       XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'members.photo_file_name']);
+       return DV::depends(1, ['members' => $inputs, 'id' => $id]);
     }
 
     return DV::error('Failed to save member');

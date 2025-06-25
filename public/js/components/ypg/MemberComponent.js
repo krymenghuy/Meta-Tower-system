@@ -550,8 +550,8 @@ const MemberDialog = (() => {
                         // }
                     });
 
-                    me.deleteProfilePhoto = (emp_id) => {
-                        const p = { id: emp_id };
+                    me.deleteProfilePhoto = (member_id) => {
+                        const p = { id: member_id };
                         vsapi
                             .call(
                                 [
@@ -572,8 +572,8 @@ const MemberDialog = (() => {
                             });
                     };
 
-                    me.saveProfilePhoto = (photo, emp_id) => {
-                        const p = { photo: photo, id: emp_id };
+                    me.saveProfilePhoto = (photo, member_id) => {
+                        const p = { photo: photo, id: member_id };
                         vsapi
                             .call(
                                 [
