@@ -95,28 +95,47 @@ var MemberComponent = new (function () {
             }
         },
 
-        {
-            title: "Expiration",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                if (data.is_expiry == 0) {
-                    return `<span class="text-yp-custom">Permanent</span>`;
-                }
-                const dateStr = data.expiration_date ?? '';
-                if (!dateStr) {
-                    return `<span class="text-muted">N/A</span>`;
-                }
-                const today = new Date().setHours(0, 0, 0, 0);
-                const expiration_date = new Date(dateStr).setHours(0, 0, 0, 0);
-                if (expiration_date < today) {
-                    return `<span class="text-yp-custom"><i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr} <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p></span>`;
-                }
-                if (expiration_date === today) {
-                    return `<span class="text-warning"><i class="fas fa-exclamation-triangle me-1"></i>${dateStr} (Expires Today)</span>`;
-                }
-                return `<span class="text-yp-custom">${dateStr}</span>`;
-            },
-        },
+{
+    title: "Expiration",
+    className: "align-middle text-capitalize",
+    data: (data) => {
+        const isExpired = parseInt(data.is_expired ?? 0);
+        const dateStr = data.expiration_date ?? '';
+        
+        
+        if (isExpired === 0) {
+            return `<span class="text-yp-custom">Permanent</span>`;
+        }
+
+        if (!dateStr) {
+            return `<span class="text-muted">N/A</span>`;
+        }
+
+        const today = new Date().setHours(0, 0, 0, 0);
+        const expirationDate = new Date(dateStr).setHours(0, 0, 0, 0);
+
+        if (expirationDate < today) {
+            return `
+                <span class="text-nowrap text-yp-custom">
+                    <i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr}
+                    <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p>
+                </span>
+            `;
+        }
+
+        if (expirationDate === today) {
+            return `
+                <span class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-1"></i>${dateStr}
+                    <small class="text-warning">(Expires Today)</small>
+                </span>
+            `;
+        }
+
+        return `<span class="text-yp-custom">${dateStr}</span>`;
+    }
+},
+
         {
             title: "Status",
             className: "align-middle",
@@ -466,16 +485,15 @@ const MemberDialog = (() => {
                                 <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
                             </div>
                             <div class="form-group col-6">
-                                <label for="is_expiry" class="form-label text-primary-custom" vslang="titles.Expiration"></label>
-                                <select name="is_expiry" class="form-control data-input" data-field="is_expiry">
-                                    <option value="">(Select)</option>
+                                <label for="is_expired" class="form-label text-primary-custom" vslang="titles.Expiration"></label>
+                                <select name="is_expired" class="form-control data-input" data-field="is_expired">
                                     <option value="0">Permanent</option>
                                     <option value="1">Will Expire</option>
                                 </select>
                             </div>
                             <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiration" class="form-label" vslang="titles.Expiration"></label>
-                                <input name="expiration" class="form-control data-input" data-field="expiration">
+                                <label for="expiration_date" class="form-label" vslang="titles.Expiration Date"></label>
+                                <input name="expiration_date" class="form-control data-input" data-field="expiration_date">
                             </div>
                             <div class="form-group col-6 d-none" >
                                 <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
@@ -490,10 +508,92 @@ const MemberDialog = (() => {
                 },
 
                 contentCreated: (me) => {
-                    DateTimePicker.init(me.controls.expiration);
+                    DateTimePicker.init(me.controls.expiration_date);
+                    const div_member_photo = me.controls.div_member_photo;
 
-                    me.controls.is_expiry.onchange = (e) => {
-                        const expiryWrapper = me.controls.expiration.closest('.expiry-wrapper');
+                    me.MemberImageBox = new ImageBox(div_member_photo, {
+                        defaultPhotoName: "default-staff",
+                        containerClass: "member-profile-container",
+                        imgClass: "data-input",
+                        dataset: {
+                            field: "photo",
+                        } /** please set field: photo so that we can use for both Edit and Create easily */,
+                        //dataset: { field: "image_url" },
+                        beforeDeleteImage: async () => {
+                            if (me.dataOptions.id > 0) {
+                                const answer = await cv_interact.confirm(
+                                    "Are you sure to delete this profile photo?",
+                                    { title: "Delete Photo", context: "delete" }
+                                );
+                                if (answer) {
+                                    me.deleteProfilePhoto(me.dataOptions.id);
+                                    return true;
+                                } else return false;
+                            }
+                            return true;
+                        },
+                        //When user browse new photo and loads it in the IMG element
+                        onOpenImage: (img) => {
+                            if (me.dataOptions.id > 0) {
+                                me.saveProfilePhoto(img, me.dataOptions.id);
+                            }
+                        },
+                        // onImageLoaded: (img)=>{
+                        //    if(me.dataOptions.id > 0){
+                        //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
+                        //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
+                        //             if(res.status_code == 200){
+                        //             cv_interact.info('Profile photo was deleted!');
+                        //             }else cv_interact.error(res.error_message);
+                        //         });
+                        //    }
+                        // }
+                    });
+
+                    me.deleteProfilePhoto = (member_id) => {
+                        const p = { id: member_id };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/ypg/member/profile/photo/delete",
+                                ].join(""),
+                                p,
+                                false,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.MemberImageBox.setImage(null);
+                                    cv_interact.info(
+                                        "Profile photo was deleted!"
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    };
+
+                    me.saveProfilePhoto = (photo, member_id) => {
+                        const p = { photo: photo, id: member_id };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/ypg/member/profile/photo/save",
+                                ].join(""),
+                                p,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.MemberImageBox.setImage(res.data.image_url);
+                                    cv_interact.success(
+                                        "Profile photo was saved!"
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    };
+                    me.controls.is_expired.onchange = (e) => {
+                        const expiryWrapper = me.controls.expiration_date.closest('.expiry-wrapper');
                         if (expiryWrapper) {
                             expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
                         }
@@ -523,9 +623,17 @@ const MemberDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                        console.log(12,data);
+
                     LocaleManager.translateZone(me.divModal);
                 },
+                
+                extendMethod: {
+                    setData: (me, data) => {
+                        me.MemberImageBox.setImage(data.photo);
 
+                    }
+                },
                 buttons: [
                     {
                         label: '<span class="text-white">Cancel</span>',
@@ -540,7 +648,9 @@ const MemberDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-
+                            op.photo = me.MemberImageBox? me.MemberImageBox.getImage(): '';
+                            console.log(2222,op);
+                            
                             vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
