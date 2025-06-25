@@ -85,10 +85,10 @@
 
     </style>
     <?php
-    ScriptManager::render('priority-one', 1, 7);
-    ScriptManager::render('primary', 1, 10);
-    ScriptManager::render('primary-defer', 1, 27);
-    ScriptManager::render('ypg-components', 1, 210);
+    ScriptManager::render('priority-one', 1, 8);
+    ScriptManager::render('primary', 1, 11);
+    ScriptManager::render('primary-defer', 1, 28);
+    ScriptManager::render('ypg-components', 1, 211);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

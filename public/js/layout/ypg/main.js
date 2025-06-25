@@ -295,7 +295,7 @@ const main_view = new function(){
         const title = LocaleManager.trans(title_prop,'titles');
         mThis.elScreenTitle.textContent = title;
         mThis.elScreenTitle_mobile.textContent = title;
-        mThis.elScreenTitle.setAttribute('valang',`titles.${title_prop}`);
+        mThis.elScreenTitle.setAttribute('vslang',`titles.${title_prop}`);
         mThis.elScreenTitle_mobile.setAttribute('vslang',`titles.${title_prop}`);
 }
 

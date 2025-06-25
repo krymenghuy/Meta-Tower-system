@@ -383,10 +383,12 @@ function v_display($mod_id, $module_ids = null)
     let __dx = document.querySelector('#_dms_aside_menus');
     document.addEventListener('DOMContentLoaded',()=>{
          LocaleManager.translateZone(__dx, null, () => {
+          
             return;
          });
+        __dx.style.display = 'block';
     });
-    __dx.style.display = 'block';
+
     __dx.style.height = (window.innerHeight - 65) + 'px';
     __dx.style.overflowY = 'auto';
 
