@@ -220,7 +220,7 @@ class GraveSlot
     }
     static function defaultPhoto($subs_id)
     {
-        return url('') . '/assets/images/default/default-staff.png';
+        return url('') . '/assets/images/yavpheng/grave_default.jpg';
     }
 
 }

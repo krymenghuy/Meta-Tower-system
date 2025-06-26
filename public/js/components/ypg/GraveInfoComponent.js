@@ -326,15 +326,26 @@ const PreViewGraveDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return `
-                    <div class="text-center p-3">
-                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
+                    <div class="text-center">
+                        <img src="${imageUrl}" alt="No image available." style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
                     </div>
                 `;
             },
-            contentCreated: (me) => {},
+            contentCreated: (me) => {
+                 const footer = me.divModal.querySelector('.modal-footer');
+                const header  = me.divModal.querySelector('.modal-header');
+                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
+                const btnClose = me.divModal.querySelector('.modal-header button');
+                btnClose.classList.add('text-white');
+                footer.classList.add('d-none');
+                headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style='border-radius: 25px !important;';
+                header.classList.add('bg-yp-custom','modal-header-custom');
+            },
             prepareFormOptions: {
-                createTitle: "Image Preview",
-                modifyTitle: "Image Preview",
+                createTitle: "Preview Grave Photo",
+                modifyTitle: "Preview Grave Photo",
             },
             onPrepareForm: (me, data) => {},
             buttons: [],

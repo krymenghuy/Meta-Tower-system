@@ -20,7 +20,7 @@ var MemberComponent = new (function () {
         {
             title: "photo",
             className: "align-middle",
-            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/logo/logo_add.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
         },
         {
             title: "Member ID",
@@ -694,15 +694,26 @@ const PreViewMemberDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return `
-                    <div class="text-center p-3">
+                    <div class="text-center">
                         <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
                     </div>
                 `;
             },
-            contentCreated: (me) => {},
+            contentCreated: (me) => {
+                const footer = me.divModal.querySelector('.modal-footer');
+                const header  = me.divModal.querySelector('.modal-header');
+                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
+                const btnClose = me.divModal.querySelector('.modal-header button');
+                btnClose.classList.add('text-white');
+                footer.classList.add('d-none');
+                headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style='border-radius: 25px !important;';
+                header.classList.add('bg-yp-custom','modal-header-custom');
+            },
             prepareFormOptions: {
-                createTitle: "Image Preview",
-                modifyTitle: "Image Preview",
+                createTitle: "Preview Member Profile",
+                modifyTitle: "Preview Member Profile",
             },
             onPrepareForm: (me, data) => {},
             buttons: [],
