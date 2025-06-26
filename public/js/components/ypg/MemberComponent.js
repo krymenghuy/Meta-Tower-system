@@ -331,7 +331,7 @@ var MemberComponent = new (function () {
         //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
 
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        let status_id = VSUtil.properCase(tr ? tr.dataset.status_id : "");
 
         let inputOptions = {
             title: 'Change Status',
