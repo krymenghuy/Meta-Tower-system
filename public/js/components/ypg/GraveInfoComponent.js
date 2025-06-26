@@ -39,7 +39,7 @@ var GraveInfoComponent = new (function () {
         className: "align-middle",
         data: (data) => `
             <img 
-                class="btn-grave-photo" 
+                class="btn-view-grave-photo" 
                 src="${data.image_url}" 
                 data-id="${data.id}" 
                 data-member_id="${data.recommender_id}" 
@@ -180,14 +180,14 @@ var GraveInfoComponent = new (function () {
             }, 250);
         });
         mThis.tblGrave.addEventListener("click", function (e) {
-            let btn = e.target.closest(".btn-grave-photo");
+            let btn = e.target.closest(".btn-view-grave-photo");
             if (btn) {
                 let op = {
                     id: btn.dataset.id,
                     member_id: btn.dataset.member_id, // not recommender_id here since you use data-member_id
                     image_url: btn.src, // get image directly from <img src="">
                 };
-                PreViewDialog.show(op);
+                PreViewGraveDialog.show(op);
             }
         });
 
@@ -314,7 +314,7 @@ var GraveInfoComponent = new (function () {
         });
     }
 })();
-const PreViewDialog = (() => {
+const PreViewGraveDialog = (() => {
     const self = {};
 
     self.show = (op) => {

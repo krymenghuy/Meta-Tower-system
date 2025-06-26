@@ -20,7 +20,7 @@ var MemberComponent = new (function () {
         {
             title: "photo",
             className: "align-middle",
-            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/logo/logo_add.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/logo/logo_add.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
         },
         {
             title: "Member ID",
@@ -36,25 +36,18 @@ var MemberComponent = new (function () {
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
+         {
+            title: "Nationality",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
+        }, 
         {
             title: "Contact Info",
             className: "align-middle",
-            data: (data, index, tr) => {
-
-                return `<div class="d-flex flex-column">
-                            <div class="d-flex">
-                                <span class="text-nowrap text-yp-custom">${data.phone_number}</span>
-                            </div>
-                            
-                        </div>`;
-            },
-
-        },
-    
-        {
-            title: "Telegram",
-            className: "align-middle",
             data: (data) => {
+                const phone = data.phone_number || 'N/A';
+
+                let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
                 if (data.telegram_link && data.telegram_link.trim() !== '') {
                     const url = data.telegram_link.trim();
                     const displayText = url.replace(/^https?:\/\/t\.me\//, '');
@@ -63,25 +56,28 @@ var MemberComponent = new (function () {
                         ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
                         : `tg://resolve?domain=${displayText}`;
 
-                    return `<a href="${url}"
-                            onclick="event.preventDefault(); window.location='${deepLink}';"
-                            class="text-decoration-none"
-                            target="_blank"
-                            title="Open in Telegram"
-                            aria-label="Telegram">
-                                <i class="fa-brands fa-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
-                            </a>`;
+                    telegramHTML = `
+                        <a href="${url}"
+                        onclick="event.preventDefault(); window.location='${deepLink}';"
+                        class="text-decoration-none d-inline-flex align-items-center mt-1"
+                        target="_blank"
+                        title="Open in Telegram"
+                        aria-label="Telegram">
+                            <i class="fa-brands fa-telegram me-1" style="font-size:1rem; color:#229ED9;"></i>
+                            <small class="text-nowrap">${displayText}</small>
+                        </a>`;
                 }
 
-                return '<span class="text-muted">N/A</span>';
+                return `
+                    <div class="d-flex flex-column">
+                        <div><i class="fa-solid fa-phone me-1 text-success" style="font-size:1rem;"></i><span class="text-nowrap text-yp-custom">${phone}</span></div>
+                        <div>${telegramHTML}</div>
+                    </div>`;
             }
         },
 
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
-        }, 
+
+       
        
        {
             title: "Address",
@@ -250,6 +246,16 @@ var MemberComponent = new (function () {
                 mThis.MemberListView.showPage(mThis.getFilterData());
             }, 250);
         });
+        mThis.tblMembers.addEventListener("click",function(e){
+            let btn = e.target.closest(".btn-view-member-photo");
+            if(btn){
+                let op = {
+                    id:btn.dataset.member_id,
+                    image_url:btn.src
+                };
+                PreViewMemberDialog.show(op);
+            }
+        })
 
         mThis.initAlready = true;
     };
@@ -671,6 +677,37 @@ const MemberDialog = (() => {
                     },
                 ],
             });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+const PreViewMemberDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        const imageUrl = op?.image_url || '';
+
+        const dialog = new GeneralDialog({
+            cssClass: "modal-lg modal-content-vs-dialog",
+            backdrop: false,
+            keyboard: true,
+            createContent: () => {
+                return `
+                    <div class="text-center p-3">
+                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
+                    </div>
+                `;
+            },
+            contentCreated: (me) => {},
+            prepareFormOptions: {
+                createTitle: "Image Preview",
+                modifyTitle: "Image Preview",
+            },
+            onPrepareForm: (me, data) => {},
+            buttons: [],
+        });
+
         dialog.show(op);
     };
 

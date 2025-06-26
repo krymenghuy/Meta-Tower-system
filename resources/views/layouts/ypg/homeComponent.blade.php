@@ -1,6 +1,5 @@
-<div id="_main_home_component" class="mt-2" style="display: none;">
-<div id="_home_list" class="mt-4 ">
-  <div class="slide-map-wrapper">
+<div id="_main_home_component" style="display: none;">
+  <div class="slide-map-wrapper mt-5">
     <div class="slide-container" id="slideContainer">
       <!-- <div class="slides">
         <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">
@@ -72,17 +71,19 @@
 
 
   </div>
-</div>
 
 </div>
 
   <style>
-#_home_list {
-	max-height: 700px; 
-	overflow-y: auto;
-	padding: 10px;
-	box-sizing: border-box;
-}
+#_main_home_component {
+        display: flex;
+        flex-direction: column;
+        height: 630px;
+        /* background-color: #fff; */
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
 
 .slide-map-wrapper {
 	display: flex;
