@@ -176,8 +176,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                <a href="HomeComponent" modid="270" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
+                <a href="HomeComponent" modid="238" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/home-page.svg') }}" />
                     </span>
@@ -189,8 +189,8 @@ function v_display($mod_id, $module_ids = null)
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li> -->
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(241); ?>>
-                <a href="MemberComponent" modid="241" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(239); ?>>
+                <a href="MemberComponent" modid="239" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/member.png') }}" /></span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Member"></span>
