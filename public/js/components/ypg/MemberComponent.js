@@ -20,7 +20,7 @@ var MemberComponent = new (function () {
         {
             title: "photo",
             className: "align-middle",
-            data:(data) => `<img class="image-student-tbl" src="${data.image_url || `${main_view.base_url}/assets/images/logo/logo_add.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
         },
         {
             title: "Member ID",
@@ -36,25 +36,18 @@ var MemberComponent = new (function () {
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
+         {
+            title: "Nationality",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
+        }, 
         {
             title: "Contact Info",
             className: "align-middle",
-            data: (data, index, tr) => {
-
-                return `<div class="d-flex flex-column">
-                            <div class="d-flex">
-                                <span class="text-nowrap text-yp-custom">${data.phone_number}</span>
-                            </div>
-                            
-                        </div>`;
-            },
-
-        },
-    
-        {
-            title: "Telegram",
-            className: "align-middle",
             data: (data) => {
+                const phone = data.phone_number || 'N/A';
+
+                let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
                 if (data.telegram_link && data.telegram_link.trim() !== '') {
                     const url = data.telegram_link.trim();
                     const displayText = url.replace(/^https?:\/\/t\.me\//, '');
@@ -63,25 +56,28 @@ var MemberComponent = new (function () {
                         ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
                         : `tg://resolve?domain=${displayText}`;
 
-                    return `<a href="${url}"
-                            onclick="event.preventDefault(); window.location='${deepLink}';"
-                            class="text-decoration-none"
-                            target="_blank"
-                            title="Open in Telegram"
-                            aria-label="Telegram">
-                                <i class="fa-brands fa-telegram" style="font-size:1.2rem; color:#229ED9;"></i>
-                            </a>`;
+                    telegramHTML = `
+                        <a href="${url}"
+                        onclick="event.preventDefault(); window.location='${deepLink}';"
+                        class="text-decoration-none d-inline-flex align-items-center mt-1"
+                        target="_blank"
+                        title="Open in Telegram"
+                        aria-label="Telegram">
+                            <i class="fa-brands fa-telegram me-1" style="font-size:1rem; color:#229ED9;"></i>
+                            <small class="text-nowrap">${displayText}</small>
+                        </a>`;
                 }
 
-                return '<span class="text-muted">N/A</span>';
+                return `
+                    <div class="d-flex flex-column">
+                        <div><i class="fa-solid fa-phone me-1 text-success" style="font-size:1rem;"></i><span class="text-nowrap text-yp-custom">${phone}</span></div>
+                        <div>${telegramHTML}</div>
+                    </div>`;
             }
         },
 
-        {
-            title: "Nationality",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
-        }, 
+
+       
        
        {
             title: "Address",
@@ -250,6 +246,16 @@ var MemberComponent = new (function () {
                 mThis.MemberListView.showPage(mThis.getFilterData());
             }, 250);
         });
+        mThis.tblMembers.addEventListener("click",function(e){
+            let btn = e.target.closest(".btn-view-member-photo");
+            if(btn){
+                let op = {
+                    id:btn.dataset.member_id,
+                    image_url:btn.src
+                };
+                PreViewMemberDialog.show(op);
+            }
+        })
 
         mThis.initAlready = true;
     };
@@ -331,7 +337,7 @@ var MemberComponent = new (function () {
         //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
 
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        let status_id = VSUtil.properCase(tr ? tr.dataset.status_id : "");
 
         let inputOptions = {
             title: 'Change Status',
@@ -470,7 +476,7 @@ const MemberDialog = (() => {
                                             <option value="">(Select Sex)</option>
                                             <option value="M">Male</option>
                                             <option value="F">Female</option>
-                                            <option value="other">Other</option>
+                                            <option value="O">Other</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-6">
@@ -511,12 +517,12 @@ const MemberDialog = (() => {
                     DateTimePicker.init(me.controls.expiration_date);
                     const div_member_photo = me.controls.div_member_photo;
 
-                    me.MemberImageBox = new ImageBox(div_member_photo, {
-                        defaultPhotoName: "default-staff",
+                    me.memberImageBox = new ImageBox(div_member_photo, {
+                        defaultPhotoName: "default-skill",
                         containerClass: "member-profile-container",
                         imgClass: "data-input",
                         dataset: {
-                            field: "photo",
+                            "field": "photo",
                         } /** please set field: photo so that we can use for both Edit and Create easily */,
                         //dataset: { field: "image_url" },
                         beforeDeleteImage: async () => {
@@ -550,8 +556,8 @@ const MemberDialog = (() => {
                         // }
                     });
 
-                    me.deleteProfilePhoto = (member_id) => {
-                        const p = { id: member_id };
+                    me.deleteProfilePhoto = (id) => {
+                        const p = { id: id };
                         vsapi
                             .call(
                                 [
@@ -564,7 +570,7 @@ const MemberDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.MemberImageBox.setImage(null);
+                                    me.memberImageBox.setImage(null);
                                     cv_interact.info(
                                         "Profile photo was deleted!"
                                     );
@@ -572,8 +578,8 @@ const MemberDialog = (() => {
                             });
                     };
 
-                    me.saveProfilePhoto = (photo, member_id) => {
-                        const p = { photo: photo, id: member_id };
+                    me.saveProfilePhoto = (photo, id) => {
+                        const p = { "photo": photo, "id": id };
                         vsapi
                             .call(
                                 [
@@ -585,7 +591,7 @@ const MemberDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.MemberImageBox.setImage(res.data.image_url);
+                                    me.memberImageBox.setImage(res.data.image_url);
                                     cv_interact.success(
                                         "Profile photo was saved!"
                                     );
@@ -630,7 +636,7 @@ const MemberDialog = (() => {
                 
                 extendMethod: {
                     setData: (me, data) => {
-                        me.MemberImageBox.setImage(data.photo);
+                        me.memberImageBox.setImage(data.image_url);
 
                     }
                 },
@@ -648,7 +654,7 @@ const MemberDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            op.photo = me.MemberImageBox? me.MemberImageBox.getImage(): '';
+                            op.photo = me.memberImageBox? me.memberImageBox.getImage(): '';
                             console.log(2222,op);
                             
                             vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
@@ -671,6 +677,48 @@ const MemberDialog = (() => {
                     },
                 ],
             });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+const PreViewMemberDialog = (() => {
+    const self = {};
+
+    self.show = (op) => {
+        const imageUrl = op?.image_url || '';
+
+        const dialog = new GeneralDialog({
+            cssClass: "modal-lg modal-content-vs-dialog",
+            backdrop: false,
+            keyboard: true,
+            createContent: () => {
+                return `
+                    <div class="text-center">
+                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
+                    </div>
+                `;
+            },
+            contentCreated: (me) => {
+                const footer = me.divModal.querySelector('.modal-footer');
+                const header  = me.divModal.querySelector('.modal-header');
+                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
+                const btnClose = me.divModal.querySelector('.modal-header button');
+                btnClose.classList.add('text-white');
+                footer.classList.add('d-none');
+                headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style='border-radius: 25px !important;';
+                header.classList.add('bg-yp-custom','modal-header-custom');
+            },
+            prepareFormOptions: {
+                createTitle: "Preview Member Profile",
+                modifyTitle: "Preview Member Profile",
+            },
+            onPrepareForm: (me, data) => {},
+            buttons: [],
+        });
+
         dialog.show(op);
     };
 
