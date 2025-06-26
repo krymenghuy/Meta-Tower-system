@@ -476,7 +476,7 @@ const MemberDialog = (() => {
                                             <option value="">(Select Sex)</option>
                                             <option value="M">Male</option>
                                             <option value="F">Female</option>
-                                            <option value="other">Other</option>
+                                            <option value="O">Other</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-6">
@@ -517,12 +517,12 @@ const MemberDialog = (() => {
                     DateTimePicker.init(me.controls.expiration_date);
                     const div_member_photo = me.controls.div_member_photo;
 
-                    me.MemberImageBox = new ImageBox(div_member_photo, {
-                        defaultPhotoName: "default-staff",
+                    me.memberImageBox = new ImageBox(div_member_photo, {
+                        defaultPhotoName: "default-skill",
                         containerClass: "member-profile-container",
                         imgClass: "data-input",
                         dataset: {
-                            field: "photo",
+                            "field": "photo",
                         } /** please set field: photo so that we can use for both Edit and Create easily */,
                         //dataset: { field: "image_url" },
                         beforeDeleteImage: async () => {
@@ -556,8 +556,8 @@ const MemberDialog = (() => {
                         // }
                     });
 
-                    me.deleteProfilePhoto = (member_id) => {
-                        const p = { id: member_id };
+                    me.deleteProfilePhoto = (id) => {
+                        const p = { id: id };
                         vsapi
                             .call(
                                 [
@@ -570,7 +570,7 @@ const MemberDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.MemberImageBox.setImage(null);
+                                    me.memberImageBox.setImage(null);
                                     cv_interact.info(
                                         "Profile photo was deleted!"
                                     );
@@ -578,8 +578,8 @@ const MemberDialog = (() => {
                             });
                     };
 
-                    me.saveProfilePhoto = (photo, member_id) => {
-                        const p = { photo: photo, id: member_id };
+                    me.saveProfilePhoto = (photo, id) => {
+                        const p = { "photo": photo, "id": id };
                         vsapi
                             .call(
                                 [
@@ -591,7 +591,7 @@ const MemberDialog = (() => {
                             )
                             .then((res) => {
                                 if (res.status_code == 200) {
-                                    me.MemberImageBox.setImage(res.data.image_url);
+                                    me.memberImageBox.setImage(res.data.image_url);
                                     cv_interact.success(
                                         "Profile photo was saved!"
                                     );
@@ -636,7 +636,7 @@ const MemberDialog = (() => {
                 
                 extendMethod: {
                     setData: (me, data) => {
-                        me.MemberImageBox.setImage(data.photo);
+                        me.memberImageBox.setImage(data.image_url);
 
                     }
                 },
@@ -654,7 +654,7 @@ const MemberDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            op.photo = me.MemberImageBox? me.MemberImageBox.getImage(): '';
+                            op.photo = me.memberImageBox? me.memberImageBox.getImage(): '';
                             console.log(2222,op);
                             
                             vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {

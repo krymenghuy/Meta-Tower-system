@@ -30,7 +30,7 @@ class Member
         return null;
     }
 
-public function save($arr = [], $id = null, $ss = null)
+public function save($arr = [], $id = null)
 {
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
@@ -48,10 +48,7 @@ public function save($arr = [], $id = null, $ss = null)
         'photo' => '0|image'
     ];
 
-    $checkUnique = null;
-    $res = DBX::validateObject($arr, $v_rule, true, [
-        'address' => GeneralSettings::$address_map_chars
-    ], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
+    $res = DBX::validateObject($arr, $v_rule, true, ['photo'=>GeneralSettings::$image_chars,'address' => GeneralSettings::$address_map_chars], $ss->lang, false);
 
     if ($res->error) return DV::error($res->error);
 
