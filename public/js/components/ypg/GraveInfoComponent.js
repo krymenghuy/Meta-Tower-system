@@ -39,7 +39,7 @@ var GraveInfoComponent = new (function () {
         className: "align-middle",
         data: (data) => `
             <img 
-                class="btn-grave-photo" 
+                class="btn-view-grave-photo" 
                 src="${data.image_url}" 
                 data-id="${data.id}" 
                 data-member_id="${data.recommender_id}" 
@@ -180,14 +180,14 @@ var GraveInfoComponent = new (function () {
             }, 250);
         });
         mThis.tblGrave.addEventListener("click", function (e) {
-            let btn = e.target.closest(".btn-grave-photo");
+            let btn = e.target.closest(".btn-view-grave-photo");
             if (btn) {
                 let op = {
                     id: btn.dataset.id,
                     member_id: btn.dataset.member_id, // not recommender_id here since you use data-member_id
                     image_url: btn.src, // get image directly from <img src="">
                 };
-                PreViewDialog.show(op);
+                PreViewGraveDialog.show(op);
             }
         });
 
@@ -314,7 +314,7 @@ var GraveInfoComponent = new (function () {
         });
     }
 })();
-const PreViewDialog = (() => {
+const PreViewGraveDialog = (() => {
     const self = {};
 
     self.show = (op) => {
@@ -326,15 +326,26 @@ const PreViewDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return `
-                    <div class="text-center p-3">
-                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
+                    <div class="text-center">
+                        <img src="${imageUrl}" alt="No image available." style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
                     </div>
                 `;
             },
-            contentCreated: (me) => {},
+            contentCreated: (me) => {
+                 const footer = me.divModal.querySelector('.modal-footer');
+                const header  = me.divModal.querySelector('.modal-header');
+                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
+                const btnClose = me.divModal.querySelector('.modal-header button');
+                btnClose.classList.add('text-white');
+                footer.classList.add('d-none');
+                headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style='border-radius: 25px !important;';
+                header.classList.add('bg-yp-custom','modal-header-custom');
+            },
             prepareFormOptions: {
-                createTitle: "Image Preview",
-                modifyTitle: "Image Preview",
+                createTitle: "Preview Grave Photo",
+                modifyTitle: "Preview Grave Photo",
             },
             onPrepareForm: (me, data) => {},
             buttons: [],

@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 14);
+    StyleManager::render('ypg-style', 1, 15);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -72,13 +72,14 @@
         }
       .font-kh {
             /* font-family: Arial, Helvetica, serif; */
-            font-family: Verdana, sans-serif;
+            /* font-family: Verdana, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
-
+            font-family: 'Battambang';
         }
 
         .font-en {
             font-family: Verdana, sans-serif;
+            font-family: 'Battambang';
             /* font-family: Arial, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
@@ -88,7 +89,7 @@
     ScriptManager::render('priority-one', 1, 8);
     ScriptManager::render('primary', 1, 11);
     ScriptManager::render('primary-defer', 1, 28);
-    ScriptManager::render('ypg-components', 1, 211);
+    ScriptManager::render('ypg-components', 1, 212);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
