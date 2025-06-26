@@ -3,7 +3,7 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    font-family: "Poppins";
+    /* font-family: "Poppins"; */
 }
   .disabled {
     pointer-events: none;
@@ -1884,25 +1884,4 @@ tr {
 .w-15 {
     width: 15%;
 }
-.hover-image-wrapper .image-tooltip-preview {
-    display: none;
-    position: absolute;
-    top: -10px;
-    left: 50px;
-    z-index: 999;
-    border: 1px solid #ccc;
-    background: #fff;
-    padding: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
 
-.hover-image-wrapper .image-tooltip-preview img {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 5px;
-    object-fit: cover;
-}
-
-.hover-image-wrapper:hover .image-tooltip-preview {
-    display: block;
-}

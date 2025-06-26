@@ -193,8 +193,8 @@ let main_view = new function(){
         const title = LocaleManager.trans(title_prop,'titles');
         mThis.elScreenTitle.textContent = title;
         mThis.elScreenTitle_mobile.textContent = title;
-        mThis.elScreenTitle.dataset.langprop = `titles.${title_prop}`;
-        mThis.elScreenTitle_mobile.dataset.langprop = `titles.${title_prop}`;
+        mThis.elScreenTitle.setAttribute('vslang',`titles.${title_prop}`);
+        mThis.elScreenTitle_mobile.setAttribute('vslang',`titles.${title_prop}`);
     }
 
     this.deleteAllCookies = () => {

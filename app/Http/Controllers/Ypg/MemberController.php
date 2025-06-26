@@ -77,5 +77,32 @@ class MemberController extends Controller
         return JDV::raw($res);
     }
 
+    function getProfilePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        $id = $req->member_id ?? $req->id;
+        $img = Member::profilePicture($id,$ss);
+        return JDV::result($img);
+    }
+    function saveProfilePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->member_id ?? $req->id;
+        $photo = $req->photo ?? $req->img;
+        $res = Member::saveProfilePicture($photo,null,$id,$ss);
+        return JDV::raw($res);
+    }
+     function deleteProfilePhoto(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->employee_id ?? $req->id;
+        $emp = new Member($id, $ss);
+        $res = $emp->deleteProfilePicture($id);
+        return JDV::raw($res);
+    }
+
     
 }

@@ -322,7 +322,7 @@ const PreViewDialog = (() => {
 
         const dialog = new GeneralDialog({
             cssClass: "modal-lg modal-content-vs-dialog",
-            backdrop: "static",
+            backdrop: false,
             keyboard: true,
             createContent: () => {
                 return `

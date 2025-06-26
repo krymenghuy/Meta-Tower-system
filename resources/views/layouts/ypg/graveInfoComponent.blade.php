@@ -11,7 +11,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-50">
             <button type="button" class="btn_add" id="_btnRegisterGrave">
-                <span>Register Grave</span>
+                <span vslang="buttons.Add Grave"></span>
             </button>
         </div>
     </div>

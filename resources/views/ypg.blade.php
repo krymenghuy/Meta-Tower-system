@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 13);
+    StyleManager::render('ypg-style', 1, 14);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -70,12 +70,33 @@
             color: #fff;
             border-bottom: 1px solid #EDF3F7;
         }
+      .font-kh {
+            /* font-family: Arial, Helvetica, serif; */
+            font-family: Verdana, sans-serif;
+           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+
+        }
+
+        .font-en {
+            font-family: Verdana, sans-serif;
+            /* font-family: Arial, sans-serif; */
+           /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+        }
+
     </style>
+<<<<<<< HEAD
     <!-- <?php
     ScriptManager::render('priority-one', 1, 7);
     ScriptManager::render('primary', 1, 10);
     ScriptManager::render('primary-defer', 1, 27);
     ScriptManager::render('ypg-components', 1, 209);
+=======
+    <?php
+    ScriptManager::render('priority-one', 1, 8);
+    ScriptManager::render('primary', 1, 11);
+    ScriptManager::render('primary-defer', 1, 28);
+    ScriptManager::render('ypg-components', 1, 211);
+>>>>>>> 21665287d01f73b2a15cbaa3893fd8fb81bd8beb
     //ScriptManager::render('pdfmake', 1);
     ?> -->
 </head>
