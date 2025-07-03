@@ -130,7 +130,7 @@ public function save($arr = [], $id = null)
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(m.name LIKE '%" . $search_value . "%' OR m.phone_number ='" . $search_value . " ' OR m.code ='" . $search_value . "')";
+            $str_search = "(m.name LIKE '%" . $search_value . "%' OR m.phone_number LIKE '%" . $search_value . "%' OR m.code ='" . $search_value . "')";
         }
         if($status_id){
             $str_moreWhere .= ' AND m.status_id =\'' . $status_id . '\'';
