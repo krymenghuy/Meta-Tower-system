@@ -450,71 +450,102 @@ const MemberDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return [
-                        `<div class="row">
-                            <div class="col-3">
-                                <div style="height:180px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">
-                                    <div name="div_member_photo" class="data-input h-100" data-field="photo">
-
+                    `<form>
+                            <div class="row justify-content-center">
+                                <div class="col-3 text-center">
+                                    <div class="data-input border border-secondary rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
+                                    <div name="div_member_photo" class="data-input h-100 w-100" data-field="photo"></div>
                                     </div>
-                                </div>                            
-                            </div>
-                            <div class="col-9">
-                                <div class="row">
-                                    <div class="form-group col-12">
-                                        <label for="name" class="form-label" vslang="titles.Name"></label>
-                                        <input name="name" class="form-control data-input" data-field="name">
-                                    </div>
-                                   
-                                    <div class="form-group col-6">
-                                        <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                        <select class="form-control data-input" data-field="sex">
-                                            <option value="">(Select Sex)</option>
-                                            <option value="M">Male</option>
-                                            <option value="F">Female</option>
-                                            <option value="O">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="nationality_id" class="form-label" vslang="titles.Nationality"></label>
-                                        <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
-                                    </div>
-                                     
+                                    <label class="mt-2 text-muted small d-block">Upload Profile Photo</label>
                                 </div>
+                                </div>
+
+
+                            <div class="material-input">
+                                <input type="text" name="name" required class="data-input" data-field="name" placeholder=" " />
+                                <label>Member Name</label>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <input type="number" name="phone_number" class="form-control data-input" data-field="phone_number">
+                            <div class="material-input">
+                                <select required  placeholder=" " class="data-input" data-field="sex">
+                                    <option value="">Select Gender</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                                <label class="d-none">Gender</label>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="is_expired" class="form-label text-primary-custom" vslang="titles.Expiration"></label>
-                                <select name="is_expired" class="form-control data-input" data-field="is_expired">
+                            <div class="material-input">
+                                <select   name="nationality_id" required placeholder=" " class="data-input" data-field="nationality_id">
+                                <option value="">Select Expiration</option>
+                                </select>
+                                <label class="d-none">Nationality</label>
+                            </div>
+
+
+                            <div class="material-input">
+                                <input type="number" name="phone_number" required class="data-input" data-field="phone_number" placeholder=" " />
+                                <label>Phone Number</label>
+                            </div>
+
+                            <div class="material-input">
+                                <select name="is_expired" class="data-input" data-field="is_expired" required placeholder=" ">
                                     <option value="0">Permanent</option>
                                     <option value="1">Will Expire</option>
                                 </select>
+                                <label class="d-none">Expiration</label>
                             </div>
-                            <div class="form-group col-6 expiry-wrapper" style="display: none;">
-                                <label for="expiration_date" class="form-label" vslang="titles.Expiration Date"></label>
-                                <input name="expiration_date" class="form-control data-input" data-field="expiration_date">
+
+                            <div class="material-input expiry-wrapper" style="display: none;">
+                                <input name="expiration_date" class="data-input" data-field="expiration_date" placeholder=" " />
+                                <label>Expiration Date</label>
                             </div>
-                            <div class="form-group col-6 d-none" >
-                                <label for="status_id" class="form-label" vslang="titles.Status_id"></label>
-                                <input  name="status_id" class="form-control data-input" data-field="status_id">
+
+                            <div class="d-none material-input">
+                                <input name="status_id" class="data-input" data-field="status_id" placeholder=" " />
+                                <label>Status ID</label>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="address" class="form-label" vslang="titles.Address"></label>
-                                <textarea  class="form-control data-input" data-field="address"></textarea>
+
+                            <div class="material-input">
+                                <textarea class="data-input" data-field="address" placeholder=" "></textarea>
+                                <label>Address</label>
                             </div>
-                        </div>`
+                    </form>`
                     ].join("");
+
                 },
 
                 contentCreated: (me) => {
                     DateTimePicker.init(me.controls.expiration_date);
+                    const footer = me.divModal.querySelector('.modal-footer');
+                    const header = me.divModal.querySelector('.modal-header');
+                    const headerTitle = header.querySelector('.modal-title');
+                    const btnClose = header.querySelector('button');
+
+                    btnClose.classList.add('d-none');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 25px !important;';
+
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+
+                    const logo = document.createElement('img');
+                    logo.src = '/assets/images/yavpheng/logo_yp.jpg';
+                    logo.alt = 'Logo';
+                    logo.classList.add('img-logo', 'mb-2');
+                    logo.style.height = '80px';
+
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(logo);
+                    headerWrapper.appendChild(headerTitle);
+
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+
                     const div_member_photo = me.controls.div_member_photo;
 
                     me.memberImageBox = new ImageBox(div_member_photo, {
@@ -617,8 +648,8 @@ const MemberDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Member",
-                    modifyTitle: "Edit Member",
+                    createTitle: "ADD YAV PHENG MEMBER",
+                    modifyTitle: "EDIT YAV PHENG MEMBER",
                     targetProp: "member_details",
                     api: {
                         endpoint: [main_view.base_url, "/ypg/member/form-options",].join(""),
@@ -649,8 +680,8 @@ const MemberDialog = (() => {
                         },
                     },
                     {
-                        label: '<span>Save</span>',
-                        cssClass: 'btn btn-sm btn-primary',
+                        label: '<span class= "text-white">Submit</span>',
+                        cssClass: 'btn btn-sm bg-yp-custom',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
