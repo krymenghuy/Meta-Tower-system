@@ -157,7 +157,7 @@
 }
 .choices__list--single .choices__item {
     width: 100%;
-    /* color: #2b3991; */
+    color: #777777;
 }
 .choices__list--multiple {
     display: inline;

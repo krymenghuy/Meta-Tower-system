@@ -210,7 +210,21 @@ class GeneralSettings //extends Model
 
 
     static function options_nationality($ss){
-        return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
+        $rows = DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
+         $new_row = [];
+        $new_row[] = (object)[
+            'nationality' => 'Select Nationality',
+            'id' => '',
+
+        ];
+        foreach($rows as $row){
+            $new_row[] = (object)[
+                'nationality'=>$row->nationality,
+                'id' => $row->id
+            ];
+
+        }
+        return $new_row;
     }
     static function loc_options_city($ss){
         return DB::table('loc_cities')->selectRaw('id as birth_city_id,name as city_name')->orderByRaw('name ASC')->get();
