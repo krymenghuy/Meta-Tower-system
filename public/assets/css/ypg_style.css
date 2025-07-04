@@ -53,6 +53,15 @@
 .bg-yp-custom {
     background-color: #27444a;
 }
+.btn-yp-custom {
+    background-color: #27444a;
+    color: #fff;
+    border-color: #fff;
+}
+.btn-yp-custom:hover {
+    color: #fff;
+    background-color: #197082;
+}
 .btn-outline-yp-custom {
     color: #27444a;
     border-color: #27444a;

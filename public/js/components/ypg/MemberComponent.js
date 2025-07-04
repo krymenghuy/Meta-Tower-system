@@ -681,7 +681,7 @@ const MemberDialog = (() => {
                     },
                     {
                         label: '<span class= "text-white">Submit</span>',
-                        cssClass: 'btn btn-sm bg-yp-custom',
+                        cssClass: 'btn btn-sm btn-yp-custom',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
