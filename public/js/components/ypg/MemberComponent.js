@@ -20,7 +20,7 @@ var MemberComponent = new (function () {
         {
             title: "photo",
             className: "align-middle",
-            data: (data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>`,
+            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
         {
             title: "Member ID",
@@ -180,7 +180,7 @@ var MemberComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
+                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
                            <span vslang="buttons.Actions">Action</span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
@@ -198,7 +198,7 @@ var MemberComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             listContainerClass: null
         });
 
@@ -219,11 +219,11 @@ var MemberComponent = new (function () {
 
         const pr_tbl = mThis.MemberListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        sh_parent.style.height = (window.innerHeight - 240) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
         }
         mThis.tblMembers = mThis.MemberListView.getTable();
         mThis.initDropdownMenus(mThis.tblMembers);
@@ -660,9 +660,11 @@ const MemberDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    console.log(12, data);
-
+                        console.log(12,data);
                     LocaleManager.translateZone(me.divModal);
+                    const btnClose = header.querySelector('button');
+
+                    btnClose.classList.add('d-none');
                 },
 
                 extendMethod: {

@@ -78,8 +78,9 @@
         }
 
         .font-en {
-            font-family: Verdana, sans-serif;
-            font-family: 'Battambang';
+            /* font-family: Verdana, sans-serif;
+            font-family: 'Battambang'; */
+            font-family: 'Segoe UI', sans-serif;
             /* font-family: Arial, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
@@ -145,7 +146,7 @@
                                 </div>
                                 <div id="_main_top_right_menus"
                                     class="d-flex flex-row gap-2 w-50 flex-wrap px-5 justify-content-end align-items-center">
-                                    <div class="dropdown shadow-lg rounded-5 choose--language">
+                                    <div class="dropdown shadow-lg rounded-2 choose--language">
                                         <button id="_main_btn_lang" class="btn-dropdown align--language"
                                             data-menu="lang">
                                             <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}"
@@ -179,7 +180,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="dropdown  shadow-lg rounded-5 nav--notification">
+                                    <div class="dropdown  shadow-lg rounded-2 nav--notification d-none">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
                                             <i class="fa-solid fa-bell tool-tip fs-5" style="color:#fff;"></i>
@@ -195,7 +196,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-5 bg-white app--list d-none">
+                                    <div class="dropdown shadow-lg rounded-2 bg-white app--list d-none">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
                                         <i class="fa-solid fa-table tool-tip fs-5" style="color:#fff;"></i>
                                             <span></span>
@@ -230,7 +231,7 @@
 
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-5 user--info">
+                                    <div class="dropdown shadow-lg rounded-2 user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img class="mr-2" src="<?php echo $user->image_url; ?>" style="height:25px" />

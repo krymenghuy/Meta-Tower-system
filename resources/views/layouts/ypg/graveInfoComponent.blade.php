@@ -20,18 +20,7 @@
     <div id="_grave_info_list" class="mt-3"></div>
 </div>
 <style>
-   * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    body {
-      margin: 0;
-      background-color: #f5f5f5;
-      padding-top: 30px;
-    }
-    form {
-      padding: 10px;
-    }
+ 
 
 
 </style>
