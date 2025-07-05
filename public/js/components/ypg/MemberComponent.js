@@ -2,7 +2,7 @@
 
 var MemberComponent = new (function () {
     const mThis = this;
-    
+
     this.title_prop = "Member Management";
     this.base_url = main_view.base_url;
     this.self = main_view.VSAppContent.querySelector("#_main_member_component");
@@ -36,11 +36,11 @@ var MemberComponent = new (function () {
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
-         {
+        {
             title: "Nationality",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
-        }, 
+        },
         {
             title: "Contact Info",
             className: "align-middle",
@@ -77,9 +77,9 @@ var MemberComponent = new (function () {
         },
 
 
-       
-       
-       {
+
+
+        {
             title: "Address",
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
@@ -91,46 +91,46 @@ var MemberComponent = new (function () {
             }
         },
 
-{
-    title: "Expiration",
-    className: "align-middle text-capitalize",
-    data: (data) => {
-        const isExpired = parseInt(data.is_expired ?? 0);
-        const dateStr = data.expiration_date ?? '';
-        
-        
-        if (isExpired === 0) {
-            return `<span class="text-yp-custom">Permanent</span>`;
-        }
+        {
+            title: "Expiration",
+            className: "align-middle text-capitalize",
+            data: (data) => {
+                const isExpired = parseInt(data.is_expired ?? 0);
+                const dateStr = data.expiration_date ?? '';
 
-        if (!dateStr) {
-            return `<span class="text-muted">N/A</span>`;
-        }
 
-        const today = new Date().setHours(0, 0, 0, 0);
-        const expirationDate = new Date(dateStr).setHours(0, 0, 0, 0);
+                if (isExpired === 0) {
+                    return `<span class="text-yp-custom">Permanent</span>`;
+                }
 
-        if (expirationDate < today) {
-            return `
+                if (!dateStr) {
+                    return `<span class="text-muted">N/A</span>`;
+                }
+
+                const today = new Date().setHours(0, 0, 0, 0);
+                const expirationDate = new Date(dateStr).setHours(0, 0, 0, 0);
+
+                if (expirationDate < today) {
+                    return `
                 <span class="text-nowrap text-yp-custom">
                     <i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr}
                     <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p>
                 </span>
             `;
-        }
+                }
 
-        if (expirationDate === today) {
-            return `
+                if (expirationDate === today) {
+                    return `
                 <span class="text-warning">
                     <i class="fas fa-exclamation-triangle me-1"></i>${dateStr}
                     <small class="text-warning">(Expires Today)</small>
                 </span>
             `;
-        }
+                }
 
-        return `<span class="text-yp-custom">${dateStr}</span>`;
-    }
-},
+                return `<span class="text-yp-custom">${dateStr}</span>`;
+            }
+        },
 
         {
             title: "Status",
@@ -229,7 +229,7 @@ var MemberComponent = new (function () {
         mThis.initDropdownMenus(mThis.tblMembers);
 
 
-     
+
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
@@ -246,12 +246,12 @@ var MemberComponent = new (function () {
                 mThis.MemberListView.showPage(mThis.getFilterData());
             }, 250);
         });
-        mThis.tblMembers.addEventListener("click",function(e){
+        mThis.tblMembers.addEventListener("click", function (e) {
             let btn = e.target.closest(".btn-view-member-photo");
-            if(btn){
+            if (btn) {
                 let op = {
-                    id:btn.dataset.member_id,
-                    image_url:btn.src
+                    id: btn.dataset.member_id,
+                    image_url: btn.src
                 };
                 PreViewMemberDialog.show(op);
             }
@@ -426,18 +426,18 @@ var MemberComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
-                if(typeof onFinish ==='function') onFinish();
+                if (typeof onFinish === 'function') onFinish();
             })
     }
 
     this.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
-            main_view.setContentView(mThis.self,mThis.title_prop);
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.MemberListView.showPage(mThis.getFilterData());
         });
-        
+
     };
 })();
 
@@ -455,7 +455,7 @@ const MemberDialog = (() => {
                 keyboard: true,
                 createContent: () => {
                     return [
-                    `<form>
+                        `<form>
                             <div class="row justify-content-center">
                                 <div class="col-3 text-center">
                                     <div class="data-input border border-secondary rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
@@ -666,7 +666,7 @@ const MemberDialog = (() => {
 
                     btnClose.classList.add('d-none');
                 },
-                
+
                 extendMethod: {
                     setData: (me, data) => {
                         me.memberImageBox.setImage(data.image_url);
@@ -687,9 +687,9 @@ const MemberDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            op.photo = me.memberImageBox? me.memberImageBox.getImage(): '';
-                            console.log(2222,op);
-                            
+                            op.photo = me.memberImageBox ? me.memberImageBox.getImage() : '';
+                            console.log(2222, op);
+
                             vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
@@ -734,21 +734,21 @@ const PreViewMemberDialog = (() => {
             },
             contentCreated: (me) => {
                 const footer = me.divModal.querySelector('.modal-footer');
-                const header  = me.divModal.querySelector('.modal-header');
+                const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
                 const btnClose = me.divModal.querySelector('.modal-header button');
                 btnClose.classList.add('text-white');
                 footer.classList.add('d-none');
-                headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
+                headerTitle.classList.add('justify-content-center', 'text-white', 'w-100', 'd-flex');
                 header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style='border-radius: 25px !important;';
-                header.classList.add('bg-yp-custom','modal-header-custom');
+                header.parentElement.style = 'border-radius: 25px !important;';
+                header.classList.add('bg-yp-custom', 'modal-header-custom');
             },
             prepareFormOptions: {
                 createTitle: "Preview Member Profile",
                 modifyTitle: "Preview Member Profile",
             },
-            onPrepareForm: (me, data) => {},
+            onPrepareForm: (me, data) => { },
             buttons: [],
         });
 
