@@ -1,5 +1,5 @@
 <div id="_main_home_component" style="display: none;">
-  <div class="slide-map-wrapper mt-5">
+  <div class="slide-map-wrapper my-3">
     <div class="slide-container" id="slideContainer">
       <!-- <div class="slides">
         <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">

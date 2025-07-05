@@ -3,7 +3,7 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
-    /* font-family: "Poppins"; */
+   
 }
   .disabled {
     pointer-events: none;
@@ -289,7 +289,7 @@ a.menu-selected .kt-menu__link-text {
     z-index: 10;
     box-shadow: none;
     top: 33px;
-    min-width: 9rem;
+    min-width: 8rem;
     padding: 10px 0;
 }
 
@@ -408,7 +408,7 @@ g
     margin: 18px 0;
     padding: 10px 15px;
     background-color: #27444a;
-    border-radius: 30px;
+    border-radius: 8px;
 }
 
 .h--card {
@@ -1894,7 +1894,7 @@ tr {
     width: 15%;
 }
 
- .material-input {
+.material-input {
     position: relative;
     margin-bottom: 24px;
 }
@@ -1903,18 +1903,19 @@ tr {
 .material-input select,
 .material-input textarea {
     width: 100%;
-    padding: 14px 12px 6px 12px;
+    padding: 18px 12px 6px 18px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 14px;
+    color: #777777;
     background: white;
     outline: none;
     transition: border-color 0.3s;
 }
 
-
 .material-input input:focus,
-.material-input select:focus {
+.material-input select:focus,
+.material-input textarea:focus {
     border-color: #0f6694;
 }
 
@@ -1924,23 +1925,25 @@ tr {
 .material-input select:not(:placeholder-shown) ~ label,
 .material-input textarea:focus ~ label,
 .material-input textarea:not(:placeholder-shown) ~ label {
-    top: -10px;
+    top: -0px;
     left: 10px;
     font-size: 12px;
     color: #0f6694;
 }
+
 .material-input label {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #777;
-  background-color: white;
-  padding: 0 4px;
-  transition: 0.2s ease all;
-  pointer-events: none;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #777;
+    background-color: white;
+    padding: 0 4px;
+    transition: 0.2s ease all;
+    pointer-events: none;
 }
+
 
   
 
