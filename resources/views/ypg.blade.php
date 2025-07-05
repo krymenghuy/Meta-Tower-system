@@ -72,11 +72,7 @@
         }
       .font-kh {
             /* font-family: Arial, Helvetica, serif; */
-<<<<<<< HEAD
-            font-family: "Khmer OS Battambang";
-=======
             /* font-family: Verdana, sans-serif; */
->>>>>>> bedfed2b177a3260f2a36216eac7dd8dd08bc1ef
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
             font-family: 'Battambang';
         }
