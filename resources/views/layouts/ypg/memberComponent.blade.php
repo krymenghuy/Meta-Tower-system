@@ -10,10 +10,12 @@
             </div>
 
         </div>
+        
         <div class="d-flex align-items-center justify-content-end gap-2 w-50">
             <button type="button" class="btn_add" id="_btnAddMember">
                 <i class="fa fa-street-view mr-2"></i>
                 <span>Add Member</span>
+                
             </button>
         </div>
     </div>
