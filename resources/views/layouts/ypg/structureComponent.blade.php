@@ -8,7 +8,7 @@
 
 .structure-frame {
   position: relative;
-  width: 460px;
+  width: 550px;
   border: 1px solid #ddd;
   background-color:#27444a;
 }
@@ -22,7 +22,7 @@
 
 .img-structure {
   max-width: 100%;
-  height: 600px;
+  height: 700px;
 }
 
 </style>
