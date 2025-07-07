@@ -492,14 +492,18 @@ const RegisterGraveDialog = (() => {
                         dataset: { "field": "photo" },
                         beforeDeleteImage: async () => {
                             if (me.dataOptions.id > 0) {
-                                const answer = await cv_interact.confirm('Are you sure to delete this grave photo?', {
+                                const yes = await cv_interact.confirm('Are you sure to delete this grave photo?', {
                                     title: 'Delete Photo',
                                     context: 'delete'
                                 });
-                                if (answer) {
+                                if (yes) {
+                                    //delete Photo from database
                                     me.deleteGravePhoto(me.dataOptions.id);
                                     return true;
                                 } else return false;
+                            }else{
+                                //Clear Photo when user clicks on Delete photo
+                                me.graveImageBox.setImage(null);
                             }
                             return true;
                         },
@@ -577,7 +581,8 @@ const RegisterGraveDialog = (() => {
                     },
                 },
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
+                   // LocaleManager.translateZone(me.divModal);
+                   return;
                 },
                 extendMethod: {
                     setData: (me, data) => {

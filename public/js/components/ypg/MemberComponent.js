@@ -84,8 +84,8 @@ var MemberComponent = new (function () {
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-break text-yp-custom" style="width:150px; word-break:break-word;">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i>${data.address ?? 'N/A'}
+                    <div class="text-yp-custom" style="width:150px;">
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
                     </div>
                 `;
             }
@@ -558,20 +558,25 @@ const MemberDialog = (() => {
                         //dataset: { field: "image_url" },
                         beforeDeleteImage: async () => {
                             if (me.dataOptions.id > 0) {
-                                const answer = await cv_interact.confirm(
+                                const yes = await cv_interact.confirm(
                                     "Are you sure to delete this profile photo?",
                                     { title: "Delete Photo", context: "delete" }
                                 );
-                                if (answer) {
+                                if (yes) {
+                                    //delete member's photo from backend
                                     me.deleteProfilePhoto(me.dataOptions.id);
                                     return true;
                                 } else return false;
+                            }else{
+                                 //Case of Create new member, just clear photo
+                                 me.memberImageBox.setImage(null);
                             }
                             return true;
                         },
                         //When user browse new photo and loads it in the IMG element
                         onOpenImage: (img) => {
                             if (me.dataOptions.id > 0) {
+                                //This is case of Editing Existing member information
                                 me.saveProfilePhoto(img, me.dataOptions.id);
                             }
                         },
@@ -660,17 +665,15 @@ const MemberDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                        console.log(12,data);
-                    LocaleManager.translateZone(me.divModal);
+                    //LocaleManager.translateZone(me.divModal); //Translation is automatic!
+                    const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-
-                    btnClose.classList.add('d-none');
+                    if(btnClose) btnClose.classList.add('d-none');
                 },
 
                 extendMethod: {
                     setData: (me, data) => {
                         me.memberImageBox.setImage(data.image_url);
-
                     }
                 },
                 buttons: [
@@ -688,7 +691,6 @@ const MemberDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
                             op.photo = me.memberImageBox ? me.memberImageBox.getImage() : '';
-                            console.log(2222, op);
 
                             vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
@@ -735,7 +737,7 @@ const PreViewMemberDialog = (() => {
             contentCreated: (me) => {
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
+                const Title = me.divModal.querySelector('.modal-header .modal-title');
                 const btnClose = me.divModal.querySelector('.modal-header button');
                 btnClose.classList.add('text-white');
                 footer.classList.add('d-none');
