@@ -52,6 +52,9 @@
 }
 .bg-yp-custom {
     background-color: #27444a;
+    border-top-left-radius : 25px;
+    border-top-right-radius : 25px;
+
 }
 .btn-yp-custom {
     background-color: #27444a;
@@ -111,7 +114,7 @@
 }
 
 .dropdown-item {
-    color: dark;
+    color: #000;;
 }
 .dropdown-item:hover {
     color: #38373a;
@@ -300,7 +303,7 @@ a.menu-selected .kt-menu__link-text {
 
 .lang-menu-item .dropdown-item {
     background-color: #fff;
-    border-radius: 20px;
+    border-radius: 5px;
     margin: 10px 0;
     box-shadow: 0px 4px 4px #00000040;
 }
@@ -719,7 +722,8 @@ g
     height: 69vh;
 }
 
-.table > thead > tr > th {
+.table > thead > tr > th, td {
+    text-align: center;
     font-size: 1rem;
     color: #0e75d9;
     white-space: nowrap;
@@ -1848,7 +1852,7 @@ tr {
     /* color: #626786 !important; */
     /* font-size: small !important; */
     font-weight: normal !important;
-    text-align: start !important;
+    /* text-align: start !important; */
     /* border: 0 !important; */
 }
 
