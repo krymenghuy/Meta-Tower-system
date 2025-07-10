@@ -88,8 +88,9 @@
     </style>
     <?php
     ScriptManager::render('priority-one', 1, 9);
-    ScriptManager::render('primary', 1, 12);
-    ScriptManager::render('primary-defer', 1, 29);
+    ScriptManager::render('primary', 1, 13);
+    ScriptManager::render('primary-defer', 1, 30);
+
     ScriptManager::render('ypg-components', 1, 217);
     //ScriptManager::render('pdfmake', 1);
     ?>
@@ -139,8 +140,7 @@
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
                                     <div style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
                                         <div>
-                                            <h6 class="screen-title mb-0 " vslang="titles.dashboard"
-                                          style="color:#ffffff;" id="screen_title">Dashboard</h6>
+                                            <span class="screen-title mb-0 " vslang="titles.dashboard" id="screen_title"></span>
                                        </div>
                                     </div>
                                 </div>

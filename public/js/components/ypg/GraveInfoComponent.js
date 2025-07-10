@@ -179,10 +179,10 @@ mThis.cols = [
             let statusClass = '';
             switch (status) {
                 case 'Used':
-                    statusClass = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+                    statusClass = 'text-danger px-2 py-1 d-inline-block';
                     break;
                 case 'Available':
-                    statusClass = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+                    statusClass = 'text-success px-2 py-1 d-inline-block';
                     break;
             }
             return `<span class="${statusClass}">${status}</span>`;
@@ -195,7 +195,7 @@ mThis.cols = [
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                    <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
-                        <span vslang="buttons.Actions">Action</span>
+                        <span><i class="fa fa-pencil"></i></span>
                         <i class="fa-solid fa-caret-down"></i>
                    </button>
                 </a>
@@ -205,8 +205,8 @@ mThis.cols = [
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        mThis.GraveInfoListView = new ListView('_grave_info_list', {
+       mThis.gListView = mThis.gListView || mThis.self.querySelector('#_grave_info_list');
+        mThis.GraveInfoListView = new ListView(mThis.gListView, {
             fetchApi: `${main_view.base_url}/ypg/grave-slot/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
@@ -392,7 +392,7 @@ const PreViewGraveDialog = (() => {
                 `;
             },
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.expiration_date); // This line seems unrelated to PreViewGraveDialog and might be a copy-paste error.
+                //DateTimePicker.init(me.controls.expiration_date,{}); // This line seems unrelated to PreViewGraveDialog and might be a copy-paste error.
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
@@ -516,7 +516,7 @@ const RegisterGraveDialog = (() => {
 
                     me.deleteGravePhoto = (id) => {
                         const p = { "id": id };
-                        vsapi.call([main_view.base_url, '/ypg/grave-slot/photo/delete'].join(''), p, false, false).then(res => {
+                        vsapi.call([main_view.base_url, '/ypg/grave-slot/photo/delete'].join(''), p, {loader:false}).then(res => {
                             if (res.status_code == 200) {
                                 me.graveImageBox.setImage(null);
                                 cv_interact.info('Profile photo was deleted!');
@@ -526,7 +526,7 @@ const RegisterGraveDialog = (() => {
 
                     me.saveGravePhoto = (photo, id) => {
                         let p = { 'photo': photo, 'id': id };
-                        vsapi.call([main_view.base_url, '/ypg/grave-slot/photo/save'].join(''), p, false).then(res => {
+                        vsapi.call([main_view.base_url, '/ypg/grave-slot/photo/save'].join(''), p, {loader:false}).then(res => {
                             if (res.status_code == 200) {
                                 me.graveImageBox.setImage(res.data.image_url);
                                 cv_interact.success('Grave photo was saved!');
@@ -605,7 +605,7 @@ const RegisterGraveDialog = (() => {
                             op.id = me.dataOptions.id;
                             op.photo = me.graveImageBox ? me.graveImageBox.getImage() : ''; 
 
-                            vsapi.call([main_view.base_url, "/ypg/grave-slot/save"].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/ypg/grave-slot/save"].join(""), op,{loader:false,agent:btn}).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {

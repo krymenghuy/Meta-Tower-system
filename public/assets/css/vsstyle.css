@@ -131,12 +131,7 @@ body {
     padding-top: 60px !important;
   }
 }
-
-tr.row-selected td {
-  background-color: #3f3cc6;
-  color: #fff;
-}
-
+ 
 .row-expanded {
   max-height: 500px;
   opacity: 1;

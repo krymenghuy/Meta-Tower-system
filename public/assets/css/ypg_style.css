@@ -410,10 +410,15 @@ g
 .show--title {
     margin: 18px 0;
     padding: 10px 15px;
-    background-color: #27444a;
-    border-radius: 8px;
-}
 
+    /* background-color: #27444a; */
+    /* border-radius: 8px; */
+}
+.show--title .screen-title{
+    color:#27444a;
+    font-size: 1.5em ;
+    font-weight: bold;
+}
 .h--card {
     height: 11vh;
 }
@@ -1802,7 +1807,7 @@ ul.list-filter-um li:not(li:last-child) {
     cursor: pointer !important;
 }
 .table--blue tr:hover {
-    background: #0281b3 !important;
+    background: #27444a;
     color: #ffffff !important;
     font-size: small !important;
     font-weight: normal !important;
@@ -1812,11 +1817,16 @@ ul.list-filter-um li:not(li:last-child) {
 .table--blue thead th {
     color: #ffffff !important;
     /* border-radius: 0.5rem !important; */
-    background-color: #2b3991 !important;
+    background-color: #27444a !important;
 }
 
 .row {
     gap: 0 !important;
+}
+
+tr.row-selected td {
+  background-color: #27444a;;
+  color: #fff;
 }
 
 .table--white {

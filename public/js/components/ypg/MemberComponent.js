@@ -1,17 +1,17 @@
 "use strict";
 
-var MemberComponent = new (function () {
-    const mThis = this;
+var MemberComponent =   ( () => {
+    const mThis = {};
 
-    this.title_prop = "Member Management";
-    this.base_url = main_view.base_url;
-    this.self = main_view.VSAppContent.querySelector("#_main_member_component");
-    this.btnAdd = mThis.self.querySelector("#_btnAddMember");
-    this.divFilter = mThis.self.querySelector("#_divFilter_member");
-    this.elFilter_status = mThis.self.querySelector('#el_status');
-    this.elSearch = mThis.self.querySelector("#_search_member");
+    mThis.title_prop = "Member Management";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_member_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elSearch = mThis.self.querySelector("#_search_member");
 
-    this.cols = [
+    mThis.cols = [
 
         {
             title: "",
@@ -140,9 +140,9 @@ var MemberComponent = new (function () {
                 let cls = 'text-info';
 
                 if (status === 'inactive') {
-                    cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
+                    cls = 'text-danger px-2 py-1 d-inline-block';
                 } else if (status === 'active') {
-                    cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
+                    cls = 'text-success px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
@@ -181,7 +181,7 @@ var MemberComponent = new (function () {
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
-                           <span vslang="buttons.Actions">Action</span>
+                           <span><i class="fa fa-pencil"></i></span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
                     </a>
@@ -190,7 +190,7 @@ var MemberComponent = new (function () {
 
     ];
 
-    this.init = () => {
+    mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.MemberListView = new ListView('_member_list', {
@@ -205,7 +205,7 @@ var MemberComponent = new (function () {
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
-            let op = {
+            const op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
@@ -260,7 +260,7 @@ var MemberComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
@@ -274,7 +274,7 @@ var MemberComponent = new (function () {
         return p;
     };
 
-    this.initDropdownMenus = (table) => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
@@ -331,7 +331,7 @@ var MemberComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.changeStatus = (id, lnk) => {
+    mThis.changeStatus = (id, lnk) => {
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -380,7 +380,7 @@ var MemberComponent = new (function () {
         });
     }
 
-    this.editMember = (id, menuLink) => {
+    mThis.editMember = (id, menuLink) => {
 
         let op = {
             id: id,
@@ -393,7 +393,7 @@ var MemberComponent = new (function () {
         MemberDialog.show(op);
     }
 
-    this.deleteMember = (id, menuLink) => {
+    mThis.deleteMember = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -420,7 +420,7 @@ var MemberComponent = new (function () {
         });
     }
 
-    this.prepareFormOptions = (onFinish) => {
+    mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
             .then(res => {
@@ -430,7 +430,7 @@ var MemberComponent = new (function () {
             })
     }
 
-    this.show = (options) => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
@@ -439,6 +439,7 @@ var MemberComponent = new (function () {
         });
 
     };
+    return mThis;
 })();
 
 
@@ -457,7 +458,7 @@ const MemberDialog = (() => {
                     return [
                         `<form>
                             <div class="row justify-content-center">
-                                <div class="col-3 text-center">
+                                <div class="col-3">
                                     <div class="data-input border border-secondary rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
                                     <div name="div_member_photo" class="data-input h-100 w-100" data-field="photo"></div>
                                     </div>
@@ -500,7 +501,7 @@ const MemberDialog = (() => {
                             </div>
 
                             <div class="material-input expiry-wrapper" style="display: none;">
-                                <input name="expiration_date" class="data-input" data-field="expiration_date" placeholder=" " />
+                                <input name="expiration_date" type="vsdate" class="data-input" data-field="expiration_date" placeholder=" " />
                                 <label>Expiration Date</label>
                             </div>
 
@@ -717,6 +718,7 @@ const MemberDialog = (() => {
 
     return self;
 })();
+
 const PreViewMemberDialog = (() => {
     const self = {};
 
@@ -737,7 +739,8 @@ const PreViewMemberDialog = (() => {
             contentCreated: (me) => {
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
-                const Title = me.divModal.querySelector('.modal-header .modal-title');
+                // const Title = me.divModal.querySelector('.modal-header .modal-title');
+                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
                 const btnClose = me.divModal.querySelector('.modal-header button');
                 btnClose.classList.add('text-white');
                 footer.classList.add('d-none');
