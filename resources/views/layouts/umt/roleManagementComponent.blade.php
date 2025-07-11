@@ -3,7 +3,7 @@
   /* .tr-disallowed td.prn-name {
     color: #000;
   } */
-  .card-content.card:hover{
+  .card:hover{
     cursor: pointer;
     border:1px solid #ffb822 !important;
     
@@ -94,9 +94,9 @@ div.role-card.selected > div.card-content {
         <div class="d-flex flex-row justify-content-between align-items-center p-1">
             <div class="d-flex flex-row justify-content-between align-items-center" style="min-width:40%">
                  <div>
-                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-yp-custom shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
+                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-danger shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
                  </div> 
-                 <div class="text-yp-custom" id="um_search_widget"></div>
+                 <div class="" id="um_search_widget"></div>
             </div>
             <div class="d-flex flex-row justify-content-between w-100">
                 <div class="d-flex flex-row justify-content-start align-items-center p-2">
@@ -105,14 +105,14 @@ div.role-card.selected > div.card-content {
                 </div>
                <div class="d-flex flex-row gap-2">
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_lnkNewRole" class="shadow-lg bg-yp-custom rounded-4 p-2">
+                          <a href="javascript:void(0)" id="_lnkNewRole" class="shadow-lg bg-primary rounded-4 p-2">
                              <span class=" text-nowrap text-white" vslang="buttons.Add Role"></span>
                           </a>
                       </div>
                     
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_um_btn_pdf" class="shadow-lg bg-yp-custom rounded-4 p-2">
-                              <i class="fa fa-print text-white mx-1"> </i> <span class=" text-white" vslang="buttons.Print"></span>
+                          <a href="javascript:void(0)" id="_um_btn_pdf" class="shadow-lg bg-danger rounded-4 p-2">
+                              <i class="fa fa-print text-white"></i> <span class=" text-white" vslang="buttons.Print"></span>
                           </a>
                       </div>
                </div>
@@ -145,7 +145,7 @@ div.role-card.selected > div.card-content {
                         <a href="javascript:void(0)" id="_um_role_create_user" class=""><span class=" pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4" vslang="buttons.New Account"></span></a>
                       </div>
                       <div class=" pt-2 gap-2">
-                        <a href="javascript:void(0)" id="_um_role_print_user" class="pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class="text-nowrap" vslang="buttons.Print Users"></span></a>
+                        <a href="javascript:void(0)" id="_um_role_print_user" class="pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Users"></span></a>
                       </div>
                   </div>
                   <div class="mt-2">
@@ -163,15 +163,12 @@ div.role-card.selected > div.card-content {
            <div id="view_modules" data-view="view_modules" class="tab-page w-100" style="display:none">
                <div class="h-100">
                   <div id="mod_list" class="d-flex flex-column gap-2">
-                      <div class="w-50 gap-2 d-flex justify-content-between align-items-center">
-                        <div class="w-50">
-                          <select class="modal-select2 " id="mod_app_chooser"> </select>
-                        </div>
-                        <div>
-                          <input id="_um_role_search_module" type="text" class="form-control rounded-5"  placeholder="Search module"/>
-                        </div>
+                      <div class="w-50 d-flex justify-content-between align-items-center">
+                        <div class="w-75">
+                          <select class="modal-select2 " id="mod_app_chooser"> </select> 
+                        </div> 
                         <div class="">
-                          <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 text-nowrap px-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class="text-nowrap " vslang="buttons.Print Modules"></span></a> 
+                          <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Modules"></span></a> 
                         </div>
                       </div>
                       <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div> 
@@ -185,8 +182,8 @@ div.role-card.selected > div.card-content {
                         <div id="mod_list" class="d-flex flex-column gap-2">
                             <div class="w-50 d-flex flex-row gap-2 justify-content-between align-items-center">
                                 <div style="min-width:250px"> <select class="modal-select2" id="prn_app_chooser"></select></div>
-                                <div><input id="prn_search" class="form-control rounded-5" placeholder="Search by code or name" autocomplete="off"></div>
-                                <a href="javascript:void(0)" id="_um_role_print_permission" class="w-25 px-2 p-1 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" text-nowrap" vslang="buttons.Print"></span></a> 
+                                <div><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
+                                <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print"></span></a> 
                             </div>
                             <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div>
                         </div>
@@ -199,9 +196,9 @@ div.role-card.selected > div.card-content {
                  <div id="mod_list" class="d-flex flex-column gap-2">
                     
                   <form action="">
-                      <div class="w-50 d-flex flex-row justify-content-between gap-2">
-                          <div class="w-100"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
-                          <div class="w-100"><input id="rpt_search" type="text" class="form-control rounded-5" placeholder="Search by code or name"></div>
+                      <div class="w-50 d-flex flex-row justify-content-between">
+                          <div style="min-width:350px"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
+                          <div><input id="rpt_search" type="text" class="form-control" placeholder="Search by code or name"></div>
                       </div>
                   </form>
 

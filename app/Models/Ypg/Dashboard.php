@@ -39,15 +39,15 @@ class Dashboard
         $task_assign = DB::table('task_assigns')->count();
         $task_type = DB::table('task_types')->count();
 
-        $member_never_expired = DB::table('members')->where('is_expiry', 0)->count();
+        $member_never_expired = DB::table('members')->where('is_expired', 0)->count();
         $member_expired_date = DB::table('members')
-            ->where('is_expiry', 1)
-            ->whereDate('expiry_date', '<', $today)
+            ->where('is_expired', 1)
+            ->whereDate('expiration_date', '<', $today)
             ->count();
 
         $member_near_expiry = DB::table('members')
-            ->where('is_expiry', 1)
-            ->whereBetween('expiry_date', [$today, $targetDate])
+            ->where('is_expired', 1)
+            ->whereBetween('expiration_date', [$today, $targetDate])
             ->count();
 
 

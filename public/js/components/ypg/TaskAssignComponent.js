@@ -4,8 +4,7 @@ var TaskAssignComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Task Assign";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_task_assign_component");
-    mThis.self = mThis.jm[0];
+    mThis.self = main_view.VSAppContent.querySelector ("#_main_task_assign_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnTaskAssign");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_task_assign");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
@@ -312,11 +311,9 @@ var TaskAssignComponent = (function () {
 
     mThis.show = function () {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.TaskAssignListView.showPage(mThis.getFilterData(), null,()=>{
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
+            main_view.setContentView(mThis.self, mThis.title_prop);
         });
     }
     return mThis;

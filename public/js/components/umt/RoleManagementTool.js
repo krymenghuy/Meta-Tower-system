@@ -5,8 +5,8 @@ var RoleManagementComponent = new function(){
     this.selected_role = null;
     this.title_prop = 'Role Management';
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children('#_um_roleManagementComponent');
-    this.self = this.jm[0];
+    this.self = main_view.VSAppContent.querySelector('#_um_roleManagementComponent');
+
     this.div_role_list = this.self.querySelector('div#_um_rolelist');    
     //this.tblCard_body = this.self.querySelector('div#_um_card');    
 //  console.log(mThis.tblCard_body);
@@ -44,7 +44,7 @@ var RoleManagementComponent = new function(){
     }
 
     this.deleteRole = (role_id)=>{
-        const p = {id:role_id};
+        let p = {id:role_id};
         vsapi.call([main_view.base_url,'/api/role/delete'].join(''),p,false,false).then(res =>{
            if(res.status_code ==200){
              mThis.loadRoles(mThis.getFilterData(),roles =>{
@@ -407,8 +407,6 @@ var RoleManagementComponent = new function(){
         mThis.options = options;
         mThis.div_role_list.style.maxHeight='';
 
-        main_view.setTitle(mThis.title_prop);
-  
         mThis.loadRoles(this.getFilterData(), roles =>{
   
             mThis.setRoleListState(1,0);
@@ -416,9 +414,7 @@ var RoleManagementComponent = new function(){
            // mThis.setEvent();
 
         });
-
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(200);
+        main_view.setContentView(mThis.self, mThis.title_prop);
     }
 
     this.updateSelectRole = function(col_name, data){
@@ -683,8 +679,12 @@ const RoleTabView = new function(){
             subs_id: main_view.subs_id,
             role_id:mThis.selected_role.role_id
         };
+        console.log(22,p);
+        
         vsapi.call(`${main_view.base_url}/api/role/apps`,p,false,false).then(res=>{
             let apps = res.status_code ==200? res.data : [];
+            console.log(11,res);
+            
             that.renderContent(apps);
         });
      }
