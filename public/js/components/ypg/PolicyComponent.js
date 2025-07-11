@@ -12,24 +12,19 @@ var PolicyComponent = new (function () {
         imageBox.innerHTML = '';
 
         const scrollContainer = document.createElement('div');
-        scrollContainer.style.overflow = 'auto';
-        scrollContainer.style.maxHeight = '85vh';
-        scrollContainer.style.padding = '10px';
+        scrollContainer.className = 'policy-scroll-container';
 
         const imgContainer = document.createElement('div');
-        imgContainer.className = 'd-flex justify-content-center align-items-start'; 
+        imgContainer.className = 'policy-img-wrapper';
 
         const imgChinese = document.createElement('img');
         imgChinese.src = '/assets/images/yavpheng/policy_chinese.jpg';
-        imgChinese.style.width = '47%'; 
-        imgChinese.style.height = 'auto';
-        imgChinese.style.marginRight = '15px'; 
+        imgChinese.className = 'policy-img policy-img-left';
         imgContainer.appendChild(imgChinese);
 
         const imgKhmer = document.createElement('img');
         imgKhmer.src = '/assets/images/yavpheng/policy_khmer.jpg';
-        imgKhmer.style.width = '47%'; 
-        imgKhmer.style.height = 'auto';
+        imgKhmer.className = 'policy-img';
         imgContainer.appendChild(imgKhmer);
 
         scrollContainer.appendChild(imgContainer);

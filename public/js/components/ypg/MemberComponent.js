@@ -2,7 +2,6 @@
 
 var MemberComponent =   ( () => {
     const mThis = {};
-
     mThis.title_prop = "Member Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_member_component");
@@ -219,11 +218,11 @@ var MemberComponent =   ( () => {
 
         const pr_tbl = mThis.MemberListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 240) + 'px';
+        sh_parent.style.height = (window.innerHeight - 220) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
         }
         mThis.tblMembers = mThis.MemberListView.getTable();
         mThis.initDropdownMenus(mThis.tblMembers);

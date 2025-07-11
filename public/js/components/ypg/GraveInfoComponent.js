@@ -230,11 +230,11 @@ mThis.cols = [
 
         mThis.pl_container = mThis.GraveInfoListView.getListContainer();
         const pl_parent = mThis.pl_container.parentElement;
-        pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+        pl_parent.style.maxHeight = (window.innerHeight - 180) + 'px';
         pl_parent.classList.add("overflow-y-auto");
         pl_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            pl_parent.style.maxHeight = (window.innerHeight - 170) + 'px';
+            pl_parent.style.maxHeight = (window.innerHeight - 180) + 'px';
         }
         mThis.tblGrave = mThis.GraveInfoListView.getTable();
 

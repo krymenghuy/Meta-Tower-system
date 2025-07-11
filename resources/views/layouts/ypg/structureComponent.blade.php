@@ -5,6 +5,9 @@
   justify-content: center;
   align-items: center;
 } */
+    #_main_structure_component {
+  padding: 25px 10px;
+}
  .structure-container {
   max-width: 100%;
   display: flex;
@@ -34,13 +37,13 @@
 
 .img-structure {
   max-width: 100%;
-  height: 630px;
+  height: 635px;
 }
 
 </style>
 
-<div id="_main_structure_component" style="display: none;">
-  <div class="structure-container" id="structureContainer">
+<div id="_main_structure_component" style="display:none;">
+    <div class="structure-container" id="structureContainer">
     <!-- <div class="structure-frame">
       <div class="structure-front-image">
         <img class="img-structure" src="{{ asset('assets/images/yavpheng/Structure_ypg.jpg') }}"/>
