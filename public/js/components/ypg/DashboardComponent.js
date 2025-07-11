@@ -1,25 +1,28 @@
 "use strict";
 
-
 var DashboardComponent =  (function () {
     const mThis = {};
     mThis.title_prop = "WELCOME YAV PHENG ASSOCIATION";
     mThis.base_url = main_view.base_url;
+
     mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
+    mThis.divTitle = document.querySelector('#screen_title_wrapper');
     // mThis.self = mThis.jm[0];
 
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title
     mThis.onShow = (options) => {
         if (!AuthManager.allowed(254,true)) return;
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
-        const divTitle = main_view.divTitle;
-        let btn = divTitle.querySelector(".btn-db-fitler");
-        if (btn) return;
-        divTitle.insertAdjacentHTML(
-            "beforeend",
-            '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>'
-        );
-        btn = divTitle.querySelector(".btn-db-fitler");
+        if (mThis.divTitle){
+            let btn = mThis.divTitle.querySelector(".btn-db-fitler");
+            if (btn) return;
+            mThis.divTitle.insertAdjacentHTML(
+                "beforeend",
+                '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>'
+            );
+            btn = mThis.divTitle.querySelector(".btn-db-fitler");
+        }
+       
     };
 
     mThis.init = () => {

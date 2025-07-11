@@ -23,7 +23,7 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/dms.primary.js?v=2',
             'files' => [
-                '/assets/material-js/jquery.min.js',
+                //'/assets/material-js/jquery.min.js',
                 '/assets/js/Chart/Chart.js',
             ]
         ],
@@ -63,7 +63,7 @@ return [
                 //'/assets/js/date.js',
                 'https://cdn.vectoraclouds.com/frontcore/utils/DateHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.js',
-                '/assets/js/jquery.datepicker2.js',
+                //'/assets/js/jquery.datepicker2.js',
                 '/assets/js/toastr.min.js',
                 '/assets/js/init.toastr.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/layout.js',
@@ -107,7 +107,7 @@ return [
                 'js/components/umt/CreateBranchDialog.js',
                 'js/components/umt/CreateLoginDialog.js',
                 'js/components/umt/FindUserDialog.js',
-                'js/components/umt/BranchManagementComponent.js',
+                //'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
                 'js/components/ypg/MemberComponent.js',
                 'js/components/ypg/TaskTypeComponent.js',
@@ -124,7 +124,7 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/report-scripts.js',
             'files' => [
-                '/assets/material-js/jquery.min.js',
+                //'/assets/material-js/jquery.min.js',
                 '/assets/material-js/bootstrap.min.js'
             ]
         ],

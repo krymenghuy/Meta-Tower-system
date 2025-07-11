@@ -171,14 +171,14 @@ class Report
         $title = 'Membership List Report';
         // $sub_title = 'By Status';
         $header_list = ['ID', 'Name','Sex','Phone Number', 'Email', 'Nationality','Expiry Date', 'Address', 'Status'];
-        $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiry_date', 'address', 'status'];
+        $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiration_date', 'address', 'status'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
 
         $d = (object)$filter;
         $status_id = isset($d->status_id) ? $d->status_id : null;
-        $expiry_date = DBX::formatDate("m.expiry_date", 'expiry_date');
+        $expiration_date = DBX::formatDate("m.expiration_date", 'expiration_date');
 
         $str_moreWhere = '1=1';
         if ($status_id) {
@@ -189,14 +189,14 @@ class Report
             ->join('member_statuses as ms', 'm.status_id', '=', 'ms.id')
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
             ->whereRaw($str_moreWhere)
-            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry,'.$expiry_date.' ');
+            ->selectRaw('m.id,m.code, m.name,m.sex, m.phone_number, m.email, m.address, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expired,'.$expiration_date.' ');
 
         $rows = $query->get();
 
         foreach ($rows as $row) {
             unset($row->id);
-            if($row->is_expiry == 0){
-                $row->expiry_date = 'Forever';
+            if($row->is_expired == 0){
+                $row->expiration_date = 'Forever';
 
             }
         }
@@ -214,7 +214,7 @@ class Report
         $title = 'Expired Memberships Report';
         $sub_title = 'Members having expired date';
         $header_list = ['ID', 'Name','Sex','Phone Number', 'Email', 'Nationality','Expiry Date', 'Status','Expiry Status'];
-        $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiry_date', 'status', 'expiry_status'];
+        $key_list = ['code', 'name','sex','phone_number', 'email', 'nationality','expiration_date', 'status', 'expiry_status'];
 
         $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
         $headers = $this->createMulKeyValue('name', $header_list, $key_props);
@@ -227,14 +227,14 @@ class Report
             $str_moreWhere .= ' AND m.status_id =\'' . $status_id . '\'';
         }
 
-        $expiry_date = DBX::formatDate("m.expiry_date", 'expiry_date');
+        $expiration_date = DBX::formatDate("m.expiration_date", 'expiration_date');
         $query = DB::table('members as m')
             ->join('member_statuses as ms', 'm.status_id', '=', 'ms.id')
             ->join('loc_countries as c', 'c.id', '=', 'm.nationality_id')
-            ->where('m.is_expiry', 1)
+            ->where('m.is_expired', 1)
             ->whereRaw($str_moreWhere)
-            ->whereDate('m.expiry_date', '<', date('Y-m-d'))
-            ->selectRaw('m.id, m.code, m.name, m.sex, m.phone_number, m.email, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expiry, '.$expiry_date);
+            ->whereDate('m.expiration_date', '<', date('Y-m-d'))
+            ->selectRaw('m.id, m.code, m.name, m.sex, m.phone_number, m.email, m.nationality_id, c.name as nationality, m.status_id, ms.name as status, m.is_expired, '.$expiration_date);
 
         $rows = $query->get();
 

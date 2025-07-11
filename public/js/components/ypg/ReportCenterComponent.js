@@ -1,101 +1,152 @@
-"use strict";
-var ReportCenterComponent = new (function () {
-    const mThis = this;
-    this.title_prop = "Report Center";
-    this.self = main_view.appContent.children("#_main_reportCenterComponent");
-    this.options = {};
-    this.permissionID = null;
+'use strict';
+var ReportCenterComponent = (()=> {
+    const mThis = {};
+    mThis.title_prop = "Report Center";
+    mThis.self = main_view.VSAppContent.querySelector('#_main_reportCenterComponent');
+    mThis.options = {};
+    mThis.permissionID = null;
 
-    this.init = () => {
-        if (mThis.initAlready) return;
+    mThis.init = () => {
+        if(mThis.initAlready) return;
         mThis.initAlready = true;
-    };
+    }
 
-    this.filter_fields = [
+    mThis.filter_fields = [
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/reports/options-receiver`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
             api_params: {},
-            name: "receiver_uid",
-            value_field: "id",
-            text_field: "name",
-            required: false,
+            name: 'group_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: true,
+            dot_object: 'groups'
         },
-
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/reports/options-receiver`,
             api_params: {},
-            name: "status_id",
-            value_field: "id",
-            text_field: "member_status",
-            required: false,
-            dot_object: "statuses",
+            name: 'receiver_uid',
+            value_field: 'id',
+            text_field: 'name',
+            required: false
         },
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
             api_params: {},
-            name: "task_status_id",
-            value_field: "id",
-            text_field: "status",
+            name: 'is_paid',
+            value_field: 'is_paid',
+            text_field: 'name',
             required: false,
-            dot_object: "task_statuses",
+            dot_object:'pmt_status'
         },
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
             api_params: {},
-            name: "task_id",
-            value_field: "id",
-            text_field: "task_type_title",
+            name: 'campus_id',
+            value_field: 'id',
+            text_field: 'campus',
             required: false,
-            dot_object: "task_types",
+            dot_object: 'campuses'
         },
-
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
             api_params: {},
-            name: "branch_id",
-            value_field: "id",
-            text_field: "branch_name",
+            name: 'from_campus_id',
+            value_field: 'id',
+            text_field: 'campus',
             required: false,
-            dot_object: "branches",
+            dot_object: 'campuses'
         },
         {
-            type: "select",
-            api_fetch: `${main_view.base_url}/ypg/form-option`,
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
             api_params: {},
-            name: "member_id",
-            value_field: "id",
-            text_field: "member_name",
+            name: 'to_campus_id',
+            value_field: 'id',
+            text_field: 'campus',
             required: false,
-            dot_object: "members",
-        },
-
-        {
-            type: "date",
-            name: "start_date",
+            dot_object: 'campuses'
         },
         {
-            type: "date",
-            name: "end_date",
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: 'fee_type_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: false,
+            dot_object: 'non_fee_types'
         },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: 'level_id',
+            value_field: 'id',
+            text_field: 'level',
+            required: false,
+            dot_object: 'levels'
+        },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: 'leave_type_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: false,
+            dot_object: 'leave_types'
+        },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: 'student_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: false,
+            dot_object: 'students'
+        },
+        {
+            type: 'select',
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: 'request_type_id',
+            value_field: 'id',
+            text_field: 'name',
+            required: false,
+            dot_object: 'request_type'
+        },
+        {
+            type: 'date',
+            name: 'start_date'
+        },
+        {
+            type: 'date',
+            name: 'end_date'
+        }
     ];
 
-    this.displayMainOptions = (onFinish = null) => {
-        const op = { app_id: main_view.app_id };
-        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,op,false,null,main_view.apiCluster).then((res) => {
-            const data = res.data || [];
+    mThis.displayMainOptions = (onFinish = null) => {
+        const op = {"app_id" : main_view.app_id};
+        vsapi.call(`${main_view.base_url}/api/report-center/report-list`,op,null,null,main_view.apiCluster).then(res => {
+            let data = [];
+            if(res.status_code === 200)
+            {
+                data = res.data;
+            }
+        // console.log(6666,data);
             mThis.renderPanelBox(data);
         });
-        if (typeof onFinish === "function") onFinish();
-    };
+        if(typeof onFinish === 'function') onFinish();
+    }
 
-    this.renderPanelBox = (data) => {
-        const html = [
-            `<div id="_div_filter" class="d-none">
+    mThis.renderPanelBox = (data) => {
+        const html = [`<div id="_div_filter" class="d-none">
             <div class="d-flex p-3 justify-content-between align-items-center bg-white rounded-3 overflow-hidden">
                 <div>
                     <button id="_rpt_filter" class="btn-filter me-2" style="width: 80px;" type="button">
@@ -103,6 +154,7 @@ var ReportCenterComponent = new (function () {
                     </button>
                 </div>
                 <div id="_div_filter_top" style="height:  ; max-width: 80% overflow-y: scroll;"></div>
+
                 <div>
                     <div class="d-flex justify-content-end gap-2">
                         <button id="_rpt_pdf" class="btn-print" type="button">
@@ -118,264 +170,204 @@ var ReportCenterComponent = new (function () {
             </div>
         </div>
         <div id="_rpt_container" style="position: ; z-index: 99;">
-            <div class="row row-cols-lg-2 gy-2 d-flex mt-3" >
-                <div id="_rpt_list" class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="row">
-                        <div class="card-report col-lg-6">
-                            <div class="row gy-2 w-100 h-100">
-                                <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                    <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
-                                    <ul class="del-marker h-100" style=" max-height: ${
-                                        window.innerHeight - 160 + "px"
-                                    }; ">  `,
-            mThis.renderReportType(data),
-            `</ul>
-                                </div>`,
-
-            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
-            //     <div class="h-img-report">
-            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
-            //     </div>
-            //  </div>`,
-            `</div>
-                        </div>
-                        <div class="d-flex col-lg-6">
-                            <div class="gy-2 w-100 h-100">
-                                <div class="bg-white border d-flex justify-content-center border-info h-100">
-                                    <div id="" class=" my-auto rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                        <h6 class="text-uppercase w-50 mt-4 mx-auto fs-4 text-center" style="color:#eccf67;">Veiw Report History</h6>
-                                        <div class="d-none container w-50 mx-auto align-items-center">
-                                            <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -60px; z-index: 9;"></i>
-                                        <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
-                                            placeholder="Search report...">
-                                        </div>
-                                        <div class="row w-75 mx-auto my-3">
-                                            <div class="col-lg-3">
-                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="attendance_report">
-                                                    <span class="p-2 border rounded-5"> A </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="employee_benefits_report">
-                                                    <span class="p-2 border rounded-5"> P </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="wallet_account_list">
-                                                    <span class="p-2 border rounded-5"> E </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="btn-run-report border p-4 rounded-4 text-center" data-code="print_employee_CV">
-                                                    <span class="p-2 border rounded-5"> E </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="row row-cols-lg-2 gy-2 d-flex" >
+                <div id="_rpt_list" class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="card-report">
+                        <div class="row gy-2 w-100 h-100">
+                            <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <h6 class="text-uppercase">List of report</h6>
+                                <ul class="del-marker h-100" style=" max-height: ${(window.innerHeight - 160)+'px'}; ">  `,
+                                  mThis.renderReportType(data),
+                                `</ul>
+                            </div>`,
+                            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
+                            //     <div class="h-img-report">
+                            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
+                            //     </div>
+                            //  </div>`,
+                        `</div>
                     </div>
                 </div>
-
                 <!-- <div class="col-sm-12 col-md-6 col-lg-6 m-0">
                     <div id="_rpt_input_filter" class="card-report d-block"></div>
                 </div> -->
                 <div class="col">
                 <div id="_rpt_input_filter" class=" d-block"></div>
-                </div>
+                </div> 
             </div>
         </div>
-        <div id="_rpt_table" class="container-table overflow-hover-auto" ></div>`,
-        ].join("");
-        mThis.setEvent(mThis.self);
+        <div id="_rpt_table" class="container-table overflow-hover-auto" ></div>`].join('');
 
-        mThis.self.html(html);
-        mThis.getValueWhenClick(mThis.self.find("#_rpt_name"));
+        mThis.self.innerHTML = html;
+        mThis.getValueWhenClick(mThis.self.querySelector('#_rpt_name'));
         mThis.controlPanel(mThis.self);
         LocaleManager.translateZone(mThis.self);
-    };
-    this.setEvent = (div)=>{
-        div = div[0];
-        div.onclick = function(e){
-            e.preventDefault();
-            let btn = VSUtil.getElementByClass(e.target,'btn-run-report');
-
-            if(btn){
-                const code =  btn.dataset.code;
-                div.querySelectorAll('.report-name').forEach(btn=>{
-                    if(btn.dataset.code == code){
-
-                        btn.click();
-                    }
-                })
-
-            }
-        }
-
     }
 
-    this.controlPanel = (container) => {
-        const reportTable = container.find("#_rpt_table").children();
-        container.find("#_rpt_filter").on("click", function (e) {
+    // mThis.toggle_filter = (rpt_list)=>{
+    //     let rpt_container = mThis.self.find('#_rpt_container');
+    //     let div_filter_top = mThis.self.find('#_div_filter_top');
+
+    //     // Toggle the HTML content between `rpt_container` and `div_filter_top`
+    //     if (rpt_list.is(':visible')) {
+    //         div_filter_top.html(rpt_container.html());
+    //         rpt_container.html('');
+    //     // console.log(2,div_filter_top);
+    //     } else {
+    //         rpt_container.html(div_filter_top.html());
+    //         div_filter_top.html('');
+    //     // console.log(1,rpt_container);
+    //     }
+
+    //     // Find the `#_rpt_input_filter` element in the currently visible container
+    //     const rpt_input_filter = rpt_container.is(':empty') ? div_filter_top.find('#_rpt_input_filter') : rpt_container.find('#_rpt_input_filter');
+
+    //     // Toggle classes for all `div.el_filter` elements
+    //     rpt_input_filter[0].querySelectorAll('div.el_filter').forEach(el => {
+    //         el.classList.toggle('col-lg-2');
+    //         el.classList.toggle('col-lg-6');
+    //     });
+    // }
+
+    mThis.controlPanel = (div) => {
+        const tbl = div.find('#_rpt_table').children();
+        if(tbl.length === 0)
+            HtmlString = null;
+
+        div.find('#_rpt_filter').on('click',function(e)
+        {
             e.preventDefault();
+            const rpt_list = div.find('#_rpt_list');
+            rpt_list.slideToggle('slow');
+            const div_filter = mThis.self.find('#_div_filter');
+            div_filter.toggle('d-none');
+            const rpt_input_filter = mThis.self.find('#_rpt_input_filter');
+            rpt_input_filter[0].querySelectorAll('div.el_filter').forEach(el => {
+                el.classList.toggle('col-lg-2');
+                el.classList.toggle('col-lg-6');
+            });
+            rpt_input_filter.find('#_rpt_btn_list').slideToggle('slow');
+            rpt_input_filter.find('#_rpt_btn_print').slideToggle('slow');
+            
+            rpt_input_filter.children().slideToggle('slow');
 
-            const reportList = container.find("#_rpt_list");
-            const filterContainer = mThis.self.find("#_div_filter");
-            const filterInputs = mThis.self.find("#_rpt_input_filter");
-            const filterElements =
-                filterInputs[0]?.querySelectorAll("div.el_filter");
-
-            if (reportList.length) reportList.slideToggle("slow");
-            // if (filterContainer.length) filterContainer.toggleClass("d-none");
-
-            if (filterElements) {
-                filterElements.forEach((element) => {
-                    element.classList.toggle("col-lg-2");
-                    element.classList.toggle("col-lg-6");
-                });
-            }
-
-            filterInputs.find("#_rpt_btn_list").slideToggle("slow");
-            filterInputs.find("#_rpt_btn_print").slideToggle("slow");
-            filterInputs.children().slideToggle("slow");
+            // mThis.toggle_filter(rpt_list);
         });
 
-        container
-            .find("#_rpt_pdf")
-            .off("click")
-            .on("click", function (e) {
-                e.preventDefault();
+        div.find('#_rpt_pdf').off('click').on('click',function(e)
+        {
+            e.preventDefault();
+            if(!AuthManager.allowed(mThis.permissionID+'.print')) return;
+            windowPrint();
+        });
 
-                if (!AuthManager.allowed(`${mThis.permissionID}`)) return;
-                windowPrint(html);
-            });
+        div.find('#_rpt_excel').off('click').on('click',function(e)
+        {
+            e.preventDefault();
+            if(!AuthManager.allowed(mThis.permissionID+'.excel')) return;
+            exportToExcel();
+        });
+    }
 
-        container
-            .find("#_rpt_excel")
-            .off("click")
-            .on("click", function (e) {
-                e.preventDefault();
-                if (!AuthManager.allowed(`${mThis.permissionID}.excel`)) return;
-                exportToExcel();
-            });
-    };
-
-    this.renderReportType = (d) => {
+    mThis.renderReportType = (d) => {
         d = d || [];
         let html = null;
-        d.map((item) => {
-            const filter = JSON.stringify(item.params).replace(/\"/g, "'");
-            html = [
-                html,
-                `<li class="report-name" data-filter="${filter}" data-code="${
-                    item.code
-                }" data-permissionid="${item.permission_id}">
-                <i class="fa-brands text-primary-custom fa-pushed"></i>
-                <span class="text-capitalize text-primary-custom">${
-                    item.name || ""
-                }</span>
-            </li>`,
-            ].join("");
+
+        // console.log(343453524234,JSON.stringify(d, null, 2));
+        d.map(item => {
+           
+            // console.log(111,item);
+            // const filter = JSON.stringify(item.filters).replace(/\"/g,'\'');
+            const filter = JSON.stringify(item.params).replace(/\"/g,'\'');
+            html = [html, `<li class="report-name" data-filter="${filter}" data-code="${item.code}" data-permissionid="${item.permission_id}">
+                <i class="fa-regular fa-rectangle-list"></i>
+                <span class="text-capitalize">${item.name || ''}</span>
+            </li>`].join('');
         });
-        return html || "";
-    };
+        return html || '';
+    }
 
-    this.getFormGroupLabelText = (key) => {
+    mThis.getFormGroupLabelText = (key)=>{
         let label = {
-           status_id: "Status",
-           task_status_id: "Status",
-           task_id: "Task Type",
-           member_id: "Member",
-           start_date: "Start Date",
-           end_date: "End Date",
+            'student_id':'Student',
+            'campus_id':'Campus',
+            'level_id':'Level',
+            'leave_type_id':'Leave Type',
+            'is_paid':'Pmt Status',
+            'from_campus_id':'From Campus',
+            'to_campus_id':'To Campus',
+            'fee_type_id':'Fee Type',
+            'start_date':'Start Date',
+            'end_date':'End Date',
+            'group_id':'Group',
         };
-        return label[key] ?? key;
-    };
+        return label[key]??key;
+    }
 
-    this.renderFilters = (div, p) => {
+    mThis.renderFilters = (div, p) => {
         p = p || {};
-
-        let html = null,
-            inner_html = null;
-        if (p.param) {
-            const values = p.param.split("|");
-            const param = values.map((value) => value.trim());
-            param.map((item) => {
-                mThis.filter_fields.map((f) => {
-                    if (f.type === "select" && f.name === item) {
-                        const id = ["select_", f.name].join("");
-                        inner_html = [
-                            inner_html,
-                            `<div class="el_filter col-lg-6">
+        let html = null, inner_html = null;
+        if(p.param){
+            const values = p.param.split('|');
+            // Trim whitespace from each value (optional, but recommended)
+            const param = values.map(value => value.trim());
+            param.map(item => {
+            // // console.log(111,item.key);
+                mThis.filter_fields.map(f => {
+                //console.log(222,f.type,'|',f.name,'|',item);
+                    if(f.type === 'select' && f.name === item)
+                    {
+                        const id = ['select_',f.name].join('');
+                        inner_html = [inner_html,`<div class="el_filter col-lg-6">
                             <div class="form-group">
-                                <label for="${
-                                    item.key
-                                }" class="form-label text-capitalize " style="color:#eccf67;" vslang="titles.${
-                                mThis.getFormGroupLabelText(item) || ""
-                            }"></label>
+                                <label for="${item.key}" class="form-label text-capitalize " vslang="titles.${mThis.getFormGroupLabelText(item)  || ''}"></label>
                                 <div class="width-select-in-form">
-                                    <select id="${id}" class="${
-                                f.name
-                            } modal-select2 data-input data-filter" data-field="${item}"></select>
+                                    <select id="${id}" class="${f.name} modal-select2 data-input data-filter" data-field="${item}"></select>
                                 </div>
                             </div>
-                        </div>`,
-                        ].join("");
-                        mThis.getDataOption(
-                            f.api_fetch,
-                            f.api_params,
-                            f.value_field,
-                            f.text_field,
-                            f.required,
-                            f.dot_object,
-                            id
-                        );
-                    } else if (f.type === "date" && f.name === item) {
-                        inner_html = [
-                            inner_html,
-                            `<div class="el_filter col-lg-6">
+                        </div>`].join('');
+                        mThis.getDataOption(f.api_fetch, f.api_params, f.value_field, f.text_field, f.required, f.dot_object, id);
+                    }
+                    else if(f.type === 'date' && f.name === item)
+                    {
+                        inner_html = [inner_html, `<div class="el_filter col-lg-6">
                             <div class="form-group">
-                                <label for="${item}" class="form-label text-capitalize" style="color:#eccf67;" vslang="titles.${
-                                mThis.getFormGroupLabelText(item) || ""
-                            }"></label>
-                                <input data-select="datepicker" class="form-control rounded-5 data-input data-filter" data-field="${item}"/>
+                                <label for="${item}" class="form-label text-capitalize " vslang="titles.${mThis.getFormGroupLabelText(item) || ''}"></label>
+                                <input data-select="datepicker" class="form-control data-input data-filter" data-field="${item}"/>
                             </div>
-                        </div>`,
-                        ].join("");
+                        </div>`].join('');
                     }
                 });
             });
-        } else {
+        }
+        else
+        {
             inner_html = `<div class="col">
                 <div class="d-flex align-items-center justify-content-center">
                     <h4 class="text-muted">No Filter</h4>
                 </div>
             </div>`;
         }
+        // console.log(333,inner_html);
         html = `<div class="row card-report m-0" style="max-height:; display: none;">
-                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center gap-3" >
+                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center" >
                     <div id="_rpt_btn_list" class="p-0 text-end" style="display: none; width: 80px">
                         <button  class="btn-filter" type="button">
-                            <i class="fa-solid px-1 fa-paper-plane"></i>
                             <span class="" vslang="buttons.Filter"></span>
                         </button>
                     </div>
-                    ${
-                        inner_html ||
-                        `<div class="col">
+                    ${inner_html || `<div class="col">
                         <h4 class="text-muted text-center">No Filter</h4>
-                    </div>`
-                    }
-
+                    </div>`}
+                    
                     <div id="_rpt_btn_print" class="col text-nowrap" style="display: none;">
                         <button data-name="btn_pdf" class="btn-print" type="button">
-                            <i class="fa-solid px-1 fa-print"></i>
+                            <i class="fa-solid fa-print"></i>
                             <span class="" vslang="buttons.Print"></span>
                         </button>
-                        <button data-name="btn_excel" class="btn-pdf" id="btn_excel" type="button">
-                            <i class="fa-solid px-1 text-primary-custom fa-file-pdf"></i>
-                            <span class="text-primary-custom" vslang="buttons.Export"></span>
+                        <button data-name="btn_excel" class="btn-pdf" type="button">
+                            <i class="fa-regular fa-file-pdf"></i>
+                            <span class="" vslang="buttons.Export"></span>
                         </button>
                     </div>
                 </div>
@@ -387,27 +379,19 @@ var ReportCenterComponent = new (function () {
             </div>`;
 
         div.html(html);
-        mThis.renderSelect(div, p.code);
+        mThis.renderSelect(div,p.code);
+        mThis.runReport(div,p.code);
 
-        mThis.runReport(div, p.code);
+        div.find("[data-select='datepicker']").each(function()
+        {
+			DateTimePicker.init($(this));
+		});
+        div.find('select.modal-select2').select2();
+        LocaleManager.translateZone('_rpt_input_filter');
+       
+    }
 
-
-        div.find("[data-select='datepicker']").each(function () {
-            DateTimePicker.init($(this));
-        });
-        // div.find("select.modal-select2").select2();
-        LocaleManager.translateZone("_rpt_input_filter");
-    };
-
-    this.getDataOption = (
-        api,
-        param,
-        value,
-        text,
-        required,
-        dot_object,
-        id
-    ) => {
+    mThis.getDataOption = (api, param, value, text, required, dot_object, id) => {
         mThis.options.params = mThis.options.params ? mThis.options.params : [];
         mThis.options.params.push({
             api: api,
@@ -416,302 +400,360 @@ var ReportCenterComponent = new (function () {
             text: text,
             required: required,
             dot_object: dot_object,
-            dom_id: id,
+            dom_id: id
         });
-    };
+    }
 
-    this.renderSelect = (div, code = null) => {
-        mThis.options.params.map((item, index, array) => {
+    mThis.renderSelect = (div, code = null) => {
+        mThis.options.params.map((item,index,array) => {
             let data = [];
-            vsapi.call(item.api, item.param, null, false).then((res) => {
-                if (res.status_code === 200) {
+            vsapi.call(item.api, item.param, null, false).then(res => {
+                if(res.status_code === 200)
+                {
                     data = res.data;
                     data = item.dot_object ? data[item.dot_object] : data;
                     const el = div.find(`#${item.dom_id}`);
-                    if (el) {
-                        item.required
-                            ? el.attr("data-required", item.required)
-                            : false;
-                        let has = null,
-                            all_text = null,
-                            default_id = null;
-                        if (
-                            code === "print_employee_CV" &&
-                            item.text == "employee_name"
-                        ) {
-
-                            default_id = data[0]?.id;
-                        } else if (
-                            code === "income_by_class" &&
-                            item.text == "level"
-                        ) {
+                    if(el)
+                    {
+                        item.required ? el.attr('data-required',item.required) : false;
+                        let has = null , all_text = null , default_id = null;
+                        if(code === 'total_student_payment_history' && item.text == 'level'){
                             has = true;
-                            all_text = "All Level";
-                        } else if (
-                            code === "non_tuition_fee" &&
-                            item.text == "level"
-                        ) {
-                            has = true;
-                            all_text = "All Level";
-                        } else if (code === "referral" && item.text == "name") {
+                            all_text = 'All Level';
                         }
-                        VSUtil.setComboItems(el,data || [],item.value,item.text,'','All',default_id);
-                        if (el.hasClass("fee_type_id")) {
-                            el.find("option").each(function () {
+                        else if(code === 'income_by_class' && item.text == 'level'){
+                            has = true;
+                            all_text = 'All Level';
+                        }
+                        else if(code === 'non_tuition_fee' && item.text == 'level'){
+                            has = true;
+                            all_text = 'All Level';
+                        }else if(code === 'referral' && item.text == 'name'){
+                        // console.log(1234,item.api);
+                        }
+                    // console.log(234,item);
+                        VSUtil.setComboItems(el, (data || []), item.value, item.text, has , all_text, null);
+                        if(el.hasClass('fee_type_id'))
+                        {
+                            el.find('option').each(function()
+                            {
                                 const option = this;
-                                if (option.textContent == "Tuition Fee")
-                                    option.remove();
+                                if(option.textContent == 'Tuition Fee') option.remove();
                             });
                         }
                         if (index === array.length - 1) {
-                            const btn =
-                                div[0].querySelector("#_rpt_btn_report");
+                            const btn = div[0].querySelector('#_rpt_btn_report');
                             if (btn) {
                                 btn.click();
                             }
                         }
                     }
                 }
+          
             });
+            
         });
-        if (mThis.options.params.length == 0) {
-            setTimeout(() => {
-                const btn = div[0].querySelector("#_rpt_btn_report");
-                if (btn) btn.click();
-            }, 200);
-        }
-    };
+    }
 
-    this.getDataFilter = (div = null) => {
-        div = div || mThis.self.find("#_rpt_input_filter");
+    mThis.getDataFilter =(div = null) =>{
+        div = div || mThis.self.find('#_rpt_input_filter');
         let p = {};
-        div.find(".data-input").each(function () {
+        div.find('.data-input').each(function()
+        {
             const el = $(this);
-            const title = el.is("input")
-                ? el.prev().text()
-                : el.parent().prev().text();
-            const f = el.data("field");
-            if (el.data("required")) {
-                p["required"] = {
-                    text: [mThis.capitalize(title), "cannot empty!"].join(" "),
-                    value: el.val(),
+            const title = el.is('input') ? el.prev().text() : el.parent().prev().text();
+            const f = el.data('field');
+            if(el.data('required'))
+            {
+                p['required'] = {
+                    'text': [mThis.capitalize(title),'cannot empty!'].join(' '),
+                    'value': el.value
                 };
             }
-            if (el.data("form") == "simple") {
-                p["simple"] = true;
+            if(el.data('form') == 'simple')
+            {
+                p['simple'] = true;
             }
-            p[f] = el.val();
+            p[f] = el.value;
         });
-
         return p;
-    };
+    }
 
-    this.runReport = (div, code) => {
-
-        div.find("#_rpt_btn_report").on("click", function (e) {
+    mThis.runReport = (div,code) => {
+        div.find('#_rpt_btn_report').on('click',function(e)
+        {
             e.preventDefault();
-            let p = {code : code};
-
-            div.find(".data-input").each(function () {
-
+            // const filterTop = mThis.self.find('.div_filter_top');
+            // const input_filter = mThis.self.find('#_rpt_container');
+            // if (input_filter.is(':visible')) {
+            //     input_filter.show('slow');
+            // }else{
+            //     // input_filter.show('slow');
+            // }
+            let p = {};
+            div.find('.data-input').each(function()
+            {
                 const el = $(this);
-
-                const title = el.is("input")
-                    ? el.prev().text()
-                    : el.parent().prev().text();
-                const f = el.data("field");
-                if (el.data("required")) {
-                    p["required"] = {
-                        text: [mThis.capitalize(title), "cannot empty!"].join(
-                            " "
-                        ),
-                        value: el.val(),
+                const title = el.is('input') ? el.prev().text() : el.parent().prev().text();
+                const f = el.data('field');
+                if(el.data('required'))
+                {
+                    p['required'] = {
+                        'text': [mThis.capitalize(title),'cannot empty!'].join(' '),
+                        'value': el.value
                     };
                 }
-                if (el.data("form") == "simple") {
-                    p["simple"] = true;
+                if(el.data('form') == 'simple')
+                {
+                    p['simple'] = true;
                 }
                 p[f] = el.val();
-
                 p.code = code;
-                console.log(22,el[0].value);
+        });
+        // console.log(222333,p);
 
-            });
-
-            if (p.required && !p.required.value && p.required.text)
+            if(p.required && !(p.required.value) && p.required.text)
                 cv_interact.warning(p.required.text);
-            else mThis.getDataTable(div.closest(".main-container"), p);
+            else
+                mThis.getDataTable(div.closest('.main-container'),p);
         });
 
-        div[0].querySelectorAll(".data-filter").forEach((el) => {
-                        console.log(1,el);
-
+        div[0].querySelectorAll('.data-filter').forEach(el =>{
+            
             el.onchange = (e) => {
                 e.preventDefault();
-                let op = mThis.getDataFilter();
-                const btn = div[0].querySelector("#_rpt_btn_report");
-                if (e.target.dataset.field == "start_date" ||e.target.dataset.field == "end_date"){}
-                    // if (op.start_date == "" || op.end_date == "") return;
-
-                if (btn)
-                {
-                    btn.click();
-                }
-
-                // else if (btn) btn.click();
-            };
-
+                let op = mThis.getDataFilter(); 
+            // console.log(9999,e);
+                const btn = div[0].querySelector('#_rpt_btn_report');
+                if(e.target.dataset.field == 'start_date' || e.target.dataset.field == 'end_date')
+                    if(op.start_date == '' || op.end_date == '') return;
+                        if(btn) 
+                        btn.click();
+                else
+                    if(btn) 
+                        btn.click();
+            }
         });
 
-        div.find("#_rpt_btn_list").on("click", function (e) {
+        div.find('#_rpt_btn_list').on('click',function(e)
+        {
             e.preventDefault();
-            const filterTop = mThis.self.find("#_rpt_filter");
+            const filterTop = mThis.self.find('#_rpt_filter');
             filterTop.click();
         });
 
-        div.find("#_rpt_btn_print").on("click", function (e) {
+        div.find('#_rpt_btn_print').on('click',function(e)
+        {
             e.preventDefault();
-            let btn = e.target.closest("button");
-            if (btn.dataset.name == "btn_pdf") {
-                mThis.self.find("#_rpt_pdf").click();
-            } else if (btn.dataset.name == "btn_excel") mThis.self.find("#_rpt_excel").click();
+            let btn = e.target.closest('button');
+        // console.log(3,btn);
+            if(btn.dataset.name == 'btn_pdf'){
+                mThis.self.find('#_rpt_pdf').click();
+            }else if(btn.dataset.name == 'btn_excel')
+                mThis.self.find('#_rpt_excel').click();
+
         });
-    };
 
-    this.capitalize = (str, lower = false) =>
-        (lower ? str.toLowerCase() : str).replace(
-            /(?:^|\s|["'([{])+\S/g,
-            (match) => match.toUpperCase()
-        );
+    }
 
-    this.getDataTable = (div, p) => {
+    mThis.capitalize = (str, lower = false) => (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
+
+    mThis.getDataTable = (div, p ) => {
         let end_point = null;
-        if (mThis.isBusy) {
-            setTimeout(() => {
-                mThis.getDataTable(div, p);
-            }, 500);
+        if(mThis.isBusy){
+            setTimeout(()=>{
+                mThis.getDataTable(div, p );
+            },500);
             return;
         }
         mThis.isBusy = true;
-
-        switch (p.code) {
-            case "member":
-                end_point = "ypg/reports/member/list-by-status";
+        switch(p.code)
+        {
+            case 'student_attendance':
+                end_point = 'api/reports/enrollment/attendance/list';
                 break;
-            case "expired_membership":
-                end_point = "ypg/reports/expired-members";
+            case 'daily_cash':
+                end_point = 'api/reports/finance/daily-cash-list';
                 break;
-            case "task_assign":
-                end_point = "ypg/reports/task-assign";
+            case 'monthly_cash':
+                end_point = 'api/reports/finance/monthly-cash-list';
                 break;
-            case "grave_ownership":
-                end_point = "ypg/reports/grave-ownership";
+            case 'referral':
+                end_point = 'api/reports/finance/referral-fee-list';
                 break;
-            case "unused_grave_slot":
-                end_point = "ypg/reports/unused-grave-slot";
+            case 'non_tuition_fee':
+                end_point = 'api/reports/finance/non-tuition-fee-list';
                 break;
-            case "deceased_registration":
-                end_point = "ypg/reports/deceased-registration";
+            case 'income_by_category':
+                end_point = 'api/reports/finance/income-by-categories';
                 break;
-
+            case 'deposit':
+                end_point = 'api/reports/finance/deposite-list';
+                break;
+            case 'payment_by_month':
+                end_point = 'api/reports/finance/total-by-month';
+                break;
+            case 'payment_by_year':
+                end_point = 'api/reports/finance/total-by-year';
+                break;
+            case 'total_student_payment_history':
+                end_point = 'api/reports/finance/total-student-payment-history';
+                break;
+            case 'total_payment_history_by_year':
+                end_point = 'api/reports/finance/total-payment-history-year';
+                break;
+            case 'leave_students':
+                end_point = 'api/reports/enrollment/dropped-out-students';
+                break;
+            case 'comeback_student':
+                end_point = 'api/reports/enrollment/comeback-students';
+                break;
+            case 'school_fee':
+                end_point = 'api/reports/finance/school-fee-list';
+                break;
+            case 'student_payment_history':
+                end_point = 'api/reports/finance/student-payment-history';
+                break;
+            case 'income_by_class':
+                end_point = 'api/reports/finance/income-by-class';
+                break;
+            case 'transferred_in_student_by_campus':
+                end_point = 'api/reports/enrollment/request-change';
+                break;
+            case 'cross_year_payment':
+                end_point = 'api/reports/finance/cross-year-payment';
+                break;
+            case 'upgrade_fees':
+                end_point = 'api/reports/finance/upgrade-fee';
+                break;
             default:
                 end_point = null;
                 break;
         }
 
-        if (end_point) {
-            const containerTable = div.find("#_rpt_table");
+        if(end_point)
+        {
+            const containerTable = div.find('#_rpt_table');
 
-            ["required", "code"].forEach((key) => {
-                delete p[key];
+            ['required','code'].forEach(key => {
+                delete(p[key]);
             });
-            Object.keys(p).forEach((key) => {
-                if (p[key] === "null") p[key] = null;
+            Object.keys(p).forEach(key => {
+                if(p[key] === 'null') p[key] = null;
+            });
+            
+            vsapi.call(`${main_view.base_url}/${end_point}`,p,null,false).then(res => {
+                let d = {};
+
+                if(res.status_code === 200)
+                {
+                    d = res.data;
+                }
+                else{
+                    cv_interact.error(res.error_message || 'Something went wrong!');
+                    mThis.isBusy = false;
+                }
+            // console.log(22223,d);
+
+                if(d && !($.isEmptyObject(d)))
+                {
+                    switch(d.form)
+                    {
+                        case 'simple':
+                            jsonToTable(containerTable,d);
+                            break;
+                        case 'referral':
+                            referralFeeTable(containerTable,d);
+                            break;
+                        case 'school_fee':
+                        case 'non_tuition':
+                            nonTuitionFeeTable(containerTable,d);
+                            break;
+                        case 'income_by_category':
+                            incomeByCategoryTable(containerTable,d);
+                            break;
+                        case 'total_payment':
+                            totalPaymentByYear(containerTable,d);
+                            break;
+                        case 'total_student_payment_history':
+                            totalStudentPaymentHistory(containerTable,d);
+                            break;
+                        case 'leave_student':
+                            leaveStudent(containerTable,d);
+                            break;
+                        case 'comeback_student':
+                            comebackStudent(containerTable,d);
+                            break;
+                        case 'student_payment_history':
+                            studentPaymentHistory(containerTable,d);
+                            break;
+                        case 'income_by_class':
+                            incomeByClassTable(containerTable,d);
+                            break;
+                        case 'student_change_campus':
+                            studentChangeCampus(containerTable,d);
+                            break;
+                        case 'cross_year_payment':
+                            crossYearPayment(containerTable, d);
+                            break;
+                        case 'upgrade_fee':
+                            upgradeFee(containerTable,d);
+                            break;
+                        default:
+                            studentAttendance(containerTable,d);
+                            break;
+                    }
+                    mThis.isBusy = false;
+                }
             });
 
-            p.staff ? (p.emp_id = p.staff) : "";
-            vsapi
-                .call(`${main_view.base_url}/${end_point}`, p, null, false)
-                .then((res) => {
-                    let d = {};
-
-                    if (res.status_code === 200) {
-                        d = res.data;
-                    } else {
-                        cv_interact.error(
-                            res.error_message || "Something went wrong!"
-                        );
-                        mThis.isBusy = false;
-                    }
-                    if (res.data.title === "Print Employee CV") {
-                        const btn_excel = mThis.self.find("#btn_excel");
-                        if (btn_excel.length > 0 && btn_excel[0]) {
-                            btn_excel[0].classList.add("d-none");
-                        }
-                    }
-                    if (res.data.title === "Payslip Print") {
-                        const btn_pdf = mThis.self.find("#btn_excel");
-                        if (btn_pdf.length > 0 && btn_pdf[0]) {
-                            btn_pdf[0].classList.add("d-none");
-                        }
-                    }
-
-                    if (d && !$.isEmptyObject(d)) {
-                        switch (d.form) {
-                            case "simple":
-                                jsonToTable(containerTable, d);
-                                break;
-
-                            case "member":
-                                memberList(containerTable, d);
-                                break;
-                            default:
-                                studentAttendance(containerTable, d);
-                                break;
-                        }
-                        mThis.isBusy = false;
-                    }
-                });
-
-            containerTable[0].style.height = window.innerHeight - 240 + "px";
+            
+            containerTable[0].style.height = (window.innerHeight - 240)+'px';
             window.onresize = () => {
-                containerTable[0].style.height =
-                    window.innerHeight - 240 + "px";
-            };
-        } else {
-            cv_interact.warning("This report doesn't exist!");
+                containerTable[0].style.height = (window.innerHeight - 240)+'px';
+            }
+        }
+        else{
+            cv_interact.warning('This report doesn\'t exist!');
             mThis.isBusy = false;
         }
-    };
+    }
 
-    this.getValueWhenClick = (div) => {
-        div.on("click", "li.report-name", function (e) {
-            e.preventDefault();
-            mThis.permissionID = e.currentTarget.dataset.permissionid;
+    mThis.getValueWhenClick = (div) => {
 
-            let params = $(this).data("filter").replaceAll("'", '"');
-            params = JSON.parse(params);
-            mThis.options.params = [];
-            $(this)
-                .addClass("text-primary-custom")
-                .siblings()
-                .removeClass("text-primary-custom");
-            let p = {
-                code: $(this).data("code"),
-                param: params,
-            };
-            mThis.renderFilters(mThis.self.find("#_rpt_input_filter"), p);
-            mThis.self.find(".div_filter_top").html = "<div></div>";
-        });
-    };
+        div.onclick = e =>{
+           e.preventDefault();
+           const target = e.target;
+           const lnk = VSUtil.closestLimited(target, 'li.report-name');
+           if(lnk){
+                mThis.permissionID = lnk.dataset.permissionid;
+                let params = lnk.dataset.filter?.replaceAll('\'','\"');
+                params = JSON.parse(params);
+                mThis.options.params = [];
+                lnk.addClass('text-primary').siblings().removeClass('text-primary');
+                const p = {
+                    'code': lnk.dataset.code,
+                    'param': params
+                };
+                mThis.divReportFilter = mThis.divReportFilter  || mThis.self.querySelector('#_rpt_input_filter')
+                mThis.renderFilters(mThis.divReportFilter , p);
+                mThis.divFilterTop =  mThis.divFilterTop || mThis.self.querySelector('.div_filter_top');
+                mThis.divFilterTop.innerHTML = '<div></div>';
+               return;
+           }
 
-    this.show = (options) => {
+        };
+ 
+        
+    }
+
+    mThis.show = (options) => {
         mThis.init(); //NOTE: initOnce init one time only
-        if (!options) options = {};
-        main_view.setTitle(mThis.title_prop);
+        if(!options) options = {};
         mThis.displayMainOptions(() => {
-            mThis.self.siblings().hide();
-            mThis.self.fadeIn(200);
+             main_view.setContentView(mThis.self,mThis.title_prop);
         });
-    };
+    }
+    return mThis;
 })();
+//end::ReportCenterComponent

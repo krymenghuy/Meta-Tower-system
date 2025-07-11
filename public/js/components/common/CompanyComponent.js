@@ -1,124 +1,189 @@
 'use strict';
-var CompanyComponent = new function(){
-    let mThis = this;
-	this.title_prop = "Association Profile";
-    this.base_url =main_view.base_url;
-    this.self = main_view.appContent.children('#_main_companyComponent');
-    this.btnSave = this.self.find('#_main_comp_btnSaveProfile');
+var CompanyComponent = (function(){
+    const mThis = {};
+	mThis.title_prop = "company_profile";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector('#_main_companyComponent');
+    mThis.divScroll = mThis.self.querySelector('#_div_cpn_scroll');
+    mThis.btnSave = mThis.self.querySelector('#_main_comp_btnSaveProfile');
 
-	this.imgLogo = this.self.find('#com_imgLogo');
-	this.btnChooseLogo = this.self.find('#com_btnChooseLogo');
-	this.btnDeleteLogo = this.self.find('#com_btnDeleteLogo');
-	this.fields =[];
+	mThis.imgLogo = mThis.self.querySelector('#com_imgLogo');
+	mThis.btnChooseLogo = mThis.self.querySelector('#com_btnChooseLogo');
+	mThis.btnDeleteLogo = mThis.self.querySelector('#com_btnDeleteLogo');
+	mThis.fields = [];
 
-	this.displayCompanyInfo = ()=>{
-		vsapi.call(`${mThis.base_url}/ypg/company/details`,null,null,false).then(res=>{
-			if(res.status_code===200){
-				// console.log(JSON.stringify(res,null,2));
-					console.log(123,res.data);
-
-					let d= Sanitizer.sanitizeObject(res.data,null,['email','logo_url']);
-					
-					mThis.setData(d);
+	mThis.displayCompanyInfo = ()=>{
+		vsapi.call(`${mThis.base_url}/api/company/details`,false,null,main_view.apiCluster).then(res => {
+			if(res.status_code ==200){
+				const d = res.data;
+				mThis.setData(d);
 			}
 		});
 	}
 
-	//begin:: CompanyComponent.init()
-    this.init = ()=>{
-		if(mThis.initAlready) return;
-		this.btnSave.on('click',function(e){
-			let p = mThis.getData();
+	mThis.setScroll = ()=>{
+        const parent = mThis.divScroll;
+        parent.style.height = (window.innerHeight - 100)+'px';
+        parent.classList.add('overflow-y-auto');
+        parent.classList.add('overflow-x-hidden');
+        window.onresize = () => {
+            parent.style.height = (window.innerHeight - 100)+'px';
+        }
+    }
 
-			vsapi.call(`${mThis.base_url}/ypg/company/save-details`,p).then(res=>{
-				if(res.status_code===200){
-					cv_interact.success('Company information updated!','','info');
-				}else cv_interact.error(res.error_message);
+	//begin:: CompanyComponent.init()
+    mThis.init = ()=>{
+		if (mThis.initAlready) return;
+		mThis.setScroll();
+
+		mThis.btnSave.addEventListener('click', function(e) {
+            e.preventDefault();
+            const p = mThis.getData();
+            if (!AuthManager.allowed(259)) return;
+
+            vsapi.call(`${mThis.base_url}/api/company/save-details`, p, null).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Company information updated!', '', 'info');
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            });
+        });
+
+		mThis.self.querySelectorAll('.data-input').forEach(function(e){
+			mThis.fields.push({
+				element: e,
+				dataMember: e.dataset.field
 			});
 		});
 
-		  mThis.self.find('.data-input').each(function(){
-             mThis.fields.push({"element":$(this), "dataMember":$(this).data('field') });
-		  });
-		 this.btnDeleteLogo.off('click').on('click',e=>{
-			   e.preventDefault();
-			   cv_interact.confirm('Delete this logo?',{title:'Delete Logo',context: 'delete'},e=> {
-				    if(e)
-					{
-					      vsapi.call(`${mThis.base_url}/ypg/company/delete-logo`,null).then((res)=> {
-							 if (res.status_code === 200)
-							 {
-								 mThis.imgLogo.prop('src','');
-								 cv_interact.success('Logo deleted!');
-							 }
-							 else cv_interact.error(res.error_message);
-						});
-					}
-			   });
-		   });
+        mThis.btnDeleteLogo.addEventListener('click',function(e){
 
-		   this.btnChooseLogo.off('click').on('click',function(e) {
-			   e.preventDefault();
-			   FileChooser.chooseFile(null,d=>{
-					if(d){
-						mThis.imgLogo.prop('src',d.dataUrl);
-						let p = {'photo_data':d.dataUrl,'file_type':d.file_type};
-						vsapi.call(`${mThis.base_url}/ypg/company/save-logo`,p,null,false).then(res=>{
-							if(res.status_code ===200){
-								let d = res.data;
-								console.log(12,d);
-								
-								cv_interact.success('Logo has been saved');
-								mThis.imgLogo.prop('src',d.logo_url);
-							}else cv_interact.warning(res.error_message);
-						});
-					}
-			   });
-		   });
+			e.preventDefault();
 
-		   mThis.initAlready = true;
+			if(!AuthManager.allowed(259)) return;
+			cv_interact.confirm('Delete this logo?',{
+				title:'Delete Logo',
+				context: 'delete'
+			},e => {
+				if(e){
+					vsapi.call(`${mThis.base_url}/api/company/delete-logo`,null).then((res)=> {
+						if(res.status_code === 200){
+							mThis.imgLogo.prop('src','');
+							cv_interact.success('Logo deleted!');
+						}
+						else
+							cv_interact.error(res.error_message );
+					});
+				}
+			});
+		});
+
+        mThis.btnChooseLogo.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (!AuthManager.allowed(259)) return;
+
+            FileChooser.chooseFile(null, d => {
+                if (d) {
+                    mThis.imgLogo.src = d.dataUrl;
+
+                    let p = {
+                        photo_data: d.dataUrl,
+                        file_type: d.file_type
+                    };
+
+                    console.log(11, JSON.stringify(p, null, 2));
+
+                    vsapi.call(`${main_view.base_url}/api/company/save-logo`, p, null, false).then(res => {
+                        if (res.status_code === 200) {
+                            let d = res.data;
+                            cv_interact.success('Logo has been saved');
+                            mThis.imgLogo.src = d.logo_url; // Update image from server
+                        } else {
+                            cv_interact.warning(res.error_message);
+                        }
+                    });
+                }
+            });
+        });
+
+
+		mThis.initAlready = true;
     }
     //end:: CompanyComponent.init()
 
-    this.show = (option)=>{
-	  mThis.init();
-	  mThis.displayCompanyInfo();
-	  main_view.setTitle(mThis.title_prop);
-      mThis.self.siblings().hide();
-	  mThis.self.fadeIn(250);
+    mThis.show = (option)=>{
+		mThis.init(); //init one time only
+		if(!option) option = {};
+        main_view.setContentView(mThis.self, mThis.title_prop);
+        mThis.displayCompanyInfo();
     }
 
-    this.hide = ()=>{
+    mThis.hide = () => {
         mThis.self.hide();
     }
 
-    this.setData= function(com)
-	  {
-		if(!com) return;
-		 let i=0, c;
-         do{
-			 c = mThis.fields[i];
-			 if (!c) break;
-			  if(c.element.is('img')) c.element.prop('src',com.logo_url);
-			  else if (c.element.is('select')) c.element.val(com[c.dataMember]).trigger('change');
-			  else c.element.val(com[c.dataMember]);
-			 i++;
-		 }while(c);
+    mThis.setData = function(com) {
+        let i = 0, c;
+        console.log(123, com);
 
-	  };
+        do {
+            c = mThis.fields[i];
+            if (!c) break;
 
-	  //NOTE: getData() does NOT include logo data with its returned object.
-      this.getData= function()
-	  {
-		 let i=0, c;
-		 let d = {};
-         do{
-			 c = mThis.fields[i];
-			 if (!c) break;
-			 d[c.dataMember] = c.element.val();
-			 i++;
-		 }while(c);
+            const el = c.element; // DOM element
+            const value = com[c.dataMember] ?? '';
 
-         return d;
-	  };
-}
+            if (el.tagName === 'IMG') {
+                el.src = com.logo_url ?? '';
+            } else if (el.tagName === 'SELECT') {
+                el.value = value;
+                el.dispatchEvent(new Event('change')); // trigger change event manually
+            } else {
+                el.value = value;
+            }
+
+            i++;
+        } while (c);
+    };
+
+
+	//NOTE: getData() does NOT include logo data with its returned object.
+	mThis.getData = function() {
+        let i = 0, c;
+        let d = {};
+
+        do {
+            c = mThis.fields[i];
+            if (!c) break;
+
+            const el = c.element;
+
+            // If it's an input/select/textarea, get the value
+            if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
+                d[c.dataMember] = el.value;
+            } else if (el.tagName === 'IMG') {
+                d[c.dataMember] = el.src;
+            } else {
+                d[c.dataMember] = '';
+            }
+
+            i++;
+        } while (c);
+
+        // Clean up phone numbers
+        ['phone_number', 'first_cp_phone'].forEach(key => {
+            if (d[key]) {
+                d[key] = d[key].replace(/\D/g, '').trim();
+            } else {
+                d[key] = '';
+            }
+        });
+
+        return d;
+    };
+
+	return mThis;
+})();
+

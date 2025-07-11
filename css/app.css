@@ -11436,12 +11436,6 @@ div#kt_aside_brand {
   background: #2471A3;
 }
 
-div#kt_aside_menu_wrapper {
-  background: #2471A3;
-  box-sizing: border-box;
-  box-shadow: -6px 6px 2px -3px rgba(100, 100, 100, .1);
-}
-
 /**begin::scrollbar style for all**/
 * {
   scrollbar-width: thin;
@@ -11832,10 +11826,7 @@ div#kt_aside_brand {
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
-div#kt_aside_menu_wrapper {
-  background: white;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-}
+
 
 ul#_dms_aside_menus {
   background: white;

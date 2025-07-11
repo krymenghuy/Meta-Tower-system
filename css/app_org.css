@@ -11451,11 +11451,6 @@ div#kt_aside_brand {
   background: #2471A3;
 }
 
-div#kt_aside_menu_wrapper {
-  background: #2471A3;
-  box-sizing: border-box;
-  box-shadow: -6px 6px 2px -3px rgba(100, 100, 100, .1);
-}
 
 /**begin::scrollbar style for all**/
 * {

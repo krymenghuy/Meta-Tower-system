@@ -8,7 +8,7 @@
 <div id="_sttn_locationsComponent"   style="display:none;padding:20px 0 0">
   <div class="bg-white p-3 rounded-3">
     <div class="row">
-      <div class="col-lg-6">
+      <div class="col-lg-5">
         <div id="_sttn_loc_countryListpanel" class="border-style1 rounded-3 border" style="margin-top:35px;background-color:#F6FAFA;padding:10px;height:550px;">
           <span class="py-2 text-yp-custom fw-bold" style="font-size:15px">Countries</span>
           <a id="_sttn_loc_lnkNewCountry" href="javascript:void(0)">
@@ -20,11 +20,11 @@
           </table>
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-7">
         <div class="tab-view" id="_sttn_loc_subLocationTabView" style="margin-top: 40px">
           <div class="tab-header gap-2  set-parent-active">
             <a href="javascript:void(0)" class="tab-button" data-viewname="cities" data-target="_sttn_tabpanel_cities">
-              <span class="bg-white text-yp-custom rounded-3 p-2 border">CITIES (PROVINCE)</span>
+              <span class="bg-white text-yp-custom rounded-3 p-2 border">PROVINCE(CITY)</span>
             </a>
             <a href="javascript:void(0)" class="tab-button" data-viewname="districts" data-target="_sttn_tabpanel_districts">
               <span class="bg-white text-yp-custom rounded-3 p-2 border">DISTRICTS (KHAN)</span>
@@ -32,15 +32,24 @@
             <a href="javascript:void(0)" class="tab-button" data-viewname="communes" data-target="_sttn_tabpanel_communes">
               <span class="bg-white text-yp-custom rounded-3 p-2 border">COMMUNES(SANGKAT)</span>
             </a>
+             <a href="javascript:void(0)" class="tab-button" data-viewname="villages" data-target="_sttn_tabpanel_villages">
+              <span class="bg-white text-yp-custom rounded-3 p-2 border">Villages(PHOUM)</span>
+            </a>
           </div>
           <div class="tab-body mt-3">
             <div class="tab-panel border-style1" id="_sttn_tabpanel_cities" style="height:450px" data-viewname="cities">
               <a id="_sttn_loc_lnkNewCity" href="javascript:void(0)" class="btn btn-sm btn-outline-yp-custom btn-hover">
                 <span>Add City</span>
               </a>
-              <div id="_sttn_loc_tblCities" class="table-responsive p-3 rounded-3 border mt-2 table-responsive-hover" style="height:470px">
+              <div id="_sttn_loc_tblCities" class="table-responsive p-3 rounded-3 border mt-2 " style="height:470px">
                 <table  class="table fixed-body-table">
-                  <thead></thead>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Province(City)</th>
+                      <th>Province KH (City KH)</th>
+                    </tr>
+                  </thead>
                   <tbody id="_sttn_loc_tblCities_body"></tbody>
                 </table>
               </div>
@@ -54,12 +63,13 @@
                   <span class="text-no-wrap">Add district</span>
                 </button>
               </div>
-              <div class="table-responsive p-3 rounded-3 border mt-2 table-responsive-hover" style="height:470px">
+              <div class="table-responsive p-3 rounded-3 border mt-2 " style="height:470px">
                 <table id="_sttn_loc_tblDistricts" class="table fixed-body-table">
                   <thead>
                     <tr>
                       <th>District</th>
-                      <th>City</th>
+                      <th>District KH</th>
+                      <th>Province</th>
                       <th>Country</th>
                       <th></th>
                     </tr>
@@ -68,6 +78,7 @@
                 </table>
               </div>
             </div>
+
             <div class="tab-panel border-style1" id="_sttn_tabpanel_communes" style="height:300px" data-viewname="communes">
               <div class="d-flex gap-2">
                 <div class="min-width-select">
@@ -80,11 +91,12 @@
                   <span>Add commune</span>
                 </button>
               </div>
-              <div class="table-responsive rounded-3 border p-3 table-responsive-hover mt-2" style="height:460px">
+              <div class="table-responsive rounded-3 border p-3  mt-2" style="height:460px">
                 <table id="_sttn_loc_tblCommunes" class="table fixed-body-table">
                   <thead>
                     <tr>
-                      <th>Commune (Sangkat)</th>
+                      <th>Commune</th>
+                      <th>Commune KH</th>
                       <th>District (Khan)</th>
                       <th>City (Province)</th>
                     </tr>
@@ -93,6 +105,37 @@
                 </table>
               </div>
             </div>
+
+            <div class="tab-panel border-style1" id="_sttn_tabpanel_villages" style="height:300px" data-viewname="villages">
+              <div class="d-flex gap-2">
+                <div class="min-width-select">
+                  <select class="modal-select2" id="_sttn_loc_filter_city_village"></select>
+                </div>
+                <div class="min-width-select">
+                  <select class="modal-select2" id="_sttn_loc_filter_district_village"></select>
+                </div>
+                <div class="min-width-select">
+                  <select class="modal-select2" id="_sttn_loc_filter_commune"></select>
+                </div>
+                <button id="_sttn_loc_lnkNewVillage" class="btn btn-sm btn-outline-success font-weight-bolder">
+                  <span>Add Village</span>
+                </button>
+              </div>
+              <div class="table-responsive rounded-3 border p-3  mt-2" style="height:460px">
+                <table id="_sttn_loc_tblVillages" class="table fixed-body-table">
+                  <thead>
+                    <tr>
+                      <th>Village</th>
+                      <th>Village KH</th>
+                      <th>Commune</th>
+                      <th>District</th>
+                    </tr>
+                  </thead>
+                  <tbody id="_sttn_loc_tblVillages_body"></tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

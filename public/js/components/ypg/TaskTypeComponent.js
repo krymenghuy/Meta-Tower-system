@@ -4,8 +4,8 @@ var TaskTypeComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Task Type";
     mThis.base_url = main_view.base_url;
-    mThis.jm = main_view.appContent.children("#_main_task_type_component");
-    mThis.self = mThis.jm[0];
+    mThis.self = main_view.VSAppContent.querySelector("#_main_task_type_component");
+
     mThis.btnAdd = mThis.self.querySelector("#_btnTaskType");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_task_type");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
@@ -303,11 +303,9 @@ var TaskTypeComponent = (function () {
 
     mThis.show = function () {
         mThis.init();
-        main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.TaskTypeListView.showPage(mThis.getFilterData(), null,()=>{
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(200);
+            main_view.setContentView(mThis.self, mThis.title_prop);
         });
     }
     return mThis;
