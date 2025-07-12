@@ -21,20 +21,20 @@ var CompanyComponent = (function(){
 		});
 	}
 
-	mThis.setScroll = ()=>{
-        const parent = mThis.divScroll;
-        parent.style.height = (window.innerHeight - 100)+'px';
-        parent.classList.add('overflow-y-auto');
-        parent.classList.add('overflow-x-hidden');
-        window.onresize = () => {
-            parent.style.height = (window.innerHeight - 100)+'px';
-        }
-    }
+	// mThis.setScroll = ()=>{
+    //     const parent = mThis.divScroll;
+    //     parent.style.height = (window.innerHeight - 100)+'px';
+    //     parent.classList.add('overflow-y-auto');
+    //     parent.classList.add('overflow-x-hidden');
+    //     window.onresize = () => {
+    //         parent.style.height = (window.innerHeight - 100)+'px';
+    //     }
+    // }
 
 	//begin:: CompanyComponent.init()
     mThis.init = ()=>{
 		if (mThis.initAlready) return;
-		mThis.setScroll();
+		//mThis.setScroll();
 
 		mThis.btnSave.addEventListener('click', function(e) {
             e.preventDefault();
