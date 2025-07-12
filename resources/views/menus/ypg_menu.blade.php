@@ -154,15 +154,15 @@ function v_display($mod_id, $module_ids = null)
         </div>
          <div class="" id ="_dms_aside_menus" style="display:none;">
                 <ul class="kt-menu__nav">
-                        <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(254); ?>>
+                        <!-- <li class="kt-menu__item d-none" aria-haspopup="true" /><?php v_display(254); ?>>
                             <a href="DashboardComponent" modid="254" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
+                                  <i class="fas fa-chart-line icons opacity-icons"></i> -->
+                                    <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                             </a>
-                        </li>
+                        </li>  -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
                             <a href="HomeComponent" modid="238" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

@@ -136,13 +136,13 @@
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
                         <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ffffff;">
                             <div class="mainview-top-right">
-                                <div class="show--title mx-4 p-3 flex-grow-1 ">
+                                <!-- <div class="show--title mx-4 p-3 flex-grow-1 ">
                                     <div id="screen_title_wrapper" style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
                                         <div>
                                             <span class="screen-title mb-0 " vslang="titles.dashboard" id="screen_title"></span>
                                        </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div id="_main_top_right_menus"
                                     class="d-flex flex-row gap-2 w-50 flex-wrap px-5 justify-content-end align-items-center">
                                     <div class="dropdown shadow-lg rounded-2 choose--language">
