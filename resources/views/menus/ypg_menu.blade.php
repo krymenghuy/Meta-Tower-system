@@ -147,7 +147,7 @@ function v_display($mod_id, $module_ids = null)
                         </svg>
                     </span>
                 </button>
-                <button class="kt-aside__brand-aside-toggler kt-aside__brand-aside-toggler--left" id="kt_aside_toggler">
+                <button class="kt-aside__brand-aside-toggler kt-aside__brand-aside-toggler--left text-white" id="kt_aside_toggler">
                     <span></span>
                 </button>
             </div>
@@ -298,7 +298,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text text-nowrap " vslang="menus.General Settings">General
                                     Settings</span>
-                                <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                                <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                             </a>
                             <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                                 <ul class="kt-menu__subnav">
@@ -328,7 +328,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color" vslang="menus.System Managements">
                                     System Managements
                                 </span>
-                                <i class="kt-menu__ver-arrow la la-angle-right "></i>
+                                <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                             </a>
                             <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                                 <ul class="kt-menu__subnav">
