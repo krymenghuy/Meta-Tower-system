@@ -147,22 +147,22 @@ function v_display($mod_id, $module_ids = null)
                         </svg>
                     </span>
                 </button>
-                <button class="kt-aside__brand-aside-toggler kt-aside__brand-aside-toggler--left" id="kt_aside_toggler">
+                <button class="kt-aside__brand-aside-toggler kt-aside__brand-aside-toggler--left text-white" id="kt_aside_toggler">
                     <span></span>
                 </button>
             </div>
         </div>
          <div class="" id ="_dms_aside_menus" style="display:none;">
                 <ul class="kt-menu__nav">
-                        <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(254); ?>>
+                        <!-- <li class="kt-menu__item d-none" aria-haspopup="true" /><?php v_display(254); ?>>
                             <a href="DashboardComponent" modid="254" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
+                                  <i class="fas fa-chart-line icons opacity-icons"></i> -->
+                                    <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/dashboard1.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                             </a>
-                        </li>
+                        </li>  -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
                             <a href="HomeComponent" modid="238" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -298,7 +298,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text text-nowrap " vslang="menus.General Settings">General
                                     Settings</span>
-                                <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                                <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                             </a>
                             <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                                 <ul class="kt-menu__subnav">
@@ -328,7 +328,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color" vslang="menus.System Managements">
                                     System Managements
                                 </span>
-                                <i class="kt-menu__ver-arrow la la-angle-right "></i>
+                                <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                             </a>
                             <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                                 <ul class="kt-menu__subnav">

@@ -1,7 +1,7 @@
 'use strict';
 var CompanyComponent = (function(){
     const mThis = {};
-	mThis.title_prop = "company_profile";
+	mThis.title_prop = "Association Profile";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector('#_main_companyComponent');
     mThis.divScroll = mThis.self.querySelector('#_div_cpn_scroll');
