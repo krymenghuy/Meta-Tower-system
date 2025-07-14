@@ -8,6 +8,7 @@ use App\Models\Location\Country;
 use App\Models\Location\City;
 use App\Models\Location\District;
 use App\Models\Location\Commune;
+use App\Models\Location\Village;
 use JDV;
 use XAuthService;
 
@@ -35,7 +36,7 @@ class LocationController extends Controller
         }
 
         if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
+            return JDV::error('Invalid Country ID');
         }
 
         return JDV::result($this->country->getDetailCountry($req->id, $ss));
@@ -84,6 +85,14 @@ class LocationController extends Controller
     return JDV::error($res->error_message);
   }
 
+  function saveVillage(Request $req){
+    $ss =XAuthService::verifyAuth($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+    $res = Village::save($req->all(),$ss);
+    if($res->status ==='OK') return JDV::success(['village'=>$res->village]);
+    return JDV::error($res->error_message);
+  }
+
   function getCountryList(Request $req){
     $ss =XAuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
@@ -105,6 +114,12 @@ class LocationController extends Controller
     $ss =XAuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     return JDV::result(Commune::list($req->district_id,$ss));
+  }
+
+  function getVillageList(Request $req){
+    $ss =XAuthService::verifyAuth($req,-1);
+    if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
+    return JDV::result(Village::list($req->commune_id,$ss));
   }
 
   function deleteCountry(Request $req){
@@ -164,6 +179,13 @@ class LocationController extends Controller
     return JDV::result(Commune::options_commune($district_id,$ss));
   }
 
+  function getComboItems_village(Request $req){
+    $ss =XAuthService::verifyAuth($req,-1);
+    if($ss->status_code !=200) return $ss; //user not authenticated
+    $commune_id = $req->commune_id?$req->commune_id:-1;
+    return JDV::result(Village::options_village($commune_id,$ss));
+  }
+
   function deleteFlag(Request $req){
     $ss = XAuthService::verifyAuth($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
@@ -184,4 +206,31 @@ class LocationController extends Controller
      }
 
 
+    function getCityFromOption(Request $req){
+      $ss =XAuthService::verifyAuth($req,-1);
+      if($ss->status_code !=200) return $ss;
+      $city = new City();
+      return JDV::result($city->getCityFromOption($req->id,$ss));
+    }
+
+    function getDistrictFromOption(Request $req){
+      $ss =XAuthService::verifyAuth($req,-1);
+      if($ss->status_code !=200) return $ss;
+      $district = new District();
+      return JDV::result($district->getDistrictFromOption($req->id,$ss));
+    }
+
+    function getCommuneFromOption(Request $req){
+      $ss =XAuthService::verifyAuth($req,-1);
+      if($ss->status_code !=200) return $ss;
+      $commune = new Commune();
+      return JDV::result($commune->getCommuneFromOption($req->id,$ss));
+    }
+
+    function getVillageFromOption(Request $req){
+      $ss =XAuthService::verifyAuth($req,-1);
+      if($ss->status_code !=200) return $ss;
+      $village = new Village();
+      return JDV::result($village->getVillageFromOption($req->id,$ss));
+    }
 }
