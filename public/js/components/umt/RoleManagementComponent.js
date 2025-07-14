@@ -761,19 +761,19 @@ const RoleTabView = new function(){
 /** end: Userpanel defintion */
      
 /** begin: ModulePanel defintion */
-this.ModulePanel = new function(){
-    const that = this;
-    this.divSelf =  mThis.tabBody.querySelector('#view_modules');
-    this.btnPrintModule = this.divSelf.querySelector('#_um_role_print_module');
-    this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
-    this.elAppFilter.onchange = e=>{
+mThis.ModulePanel = new function(){
+    const that = {};
+    that.divSelf =  mThis.tabBody.querySelector('#view_modules');
+    that.btnPrintModule = that.divSelf.querySelector('#_um_role_print_module');
+    that.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
+    that.elAppFilter.onchange = e=>{
       e.preventDefault();
       that.def_app_id = e.target.value;
       that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
 
     //loadAppOptions
-    this.loadAppChoices = async ()=>{
+    that.loadAppChoices = async ()=>{
         let apps = await getAccessibleApps();
        
         let icon_apps = apps.map(x =>({
@@ -786,7 +786,7 @@ this.ModulePanel = new function(){
         that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
 
-    this.displayModules = (role_id,app_id)=>{ 
+    that.displayModules = (role_id,app_id)=>{ 
         console.log(3,role_id);
 
         role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
@@ -843,7 +843,7 @@ this.ModulePanel = new function(){
        
     }
 
-    this.btnPrintModule.addEventListener('click', e =>{
+    that.btnPrintModule.addEventListener('click', e =>{
         e.preventDefault();
         let op = {
             role_id: mThis.selected_role.role_id,

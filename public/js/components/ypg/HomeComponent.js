@@ -41,55 +41,58 @@ var HomeComponent = new (function () {
        mThis.setupSlider();
 
     }
-    this.renderGraveMap = () => {
+	mThis.renderGraveMap = (data = {}) => {
+		const grave = data.graves || { small: 0, medium: 0, large: 0 };
+		const member = data.members || { total: 0, active: 0, inactive: 0 };
 
-    let html = '';
-	html = [`
-		<div class="box-map">
-			<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg" style="width:100%; height: 380px; object-fit: cover;">
-		</div>
+		const html = `
+			<div class="box-map">
+				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg" style="width:100%; height: 380px; object-fit: cover;">
+			</div>
 
-		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 0; background-color: #fefefe;">
-			<h5 style="text-align: center; color:#fff; background-color: #4b442b; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
-				Grave Yard Map
-			</h5>
-			<div style="padding: 10px; display: flex; justify-content: space-around; font-size: 14px;">
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave S</div>
-					<div style="font-size: 18px;">45</div>
-				</div>
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave M</div>
-					<div style="font-size: 18px;">30</div>
-				</div>
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave L</div>
-					<div style="font-size: 18px;">18</div>
+			<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 0; background-color: #fefefe;">
+				<h5 style="text-align: center; color:#fff; background-color: #4b442b; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
+					Grave Yard Map
+				</h5>
+				<div style="padding: 10px; display: flex; justify-content: space-around; font-size: 14px;">
+					<div style="text-align: center;">
+						<div style="font-weight: bold;">Grave S</div>
+						<div style="font-size: 18px;">${grave.small}</div>
+					</div>
+					<div style="text-align: center;">
+						<div style="font-weight: bold;">Grave M</div>
+						<div style="font-size: 18px;">${grave.medium}</div>
+					</div>
+					<div style="text-align: center;">
+						<div style="font-weight: bold;">Grave L</div>
+						<div style="font-size: 18px;">${grave.large}</div>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 6px; background-color: #fefefe;">
-			<div class="d-flex w-100 flex-column justify-content-between h-100" style="background-color: #4b442b;">
-				<div class="d-flex align-items-center p-2">
-					<div class="bg--icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff;">
-						<img class="img--size" src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
-					</div>
-					<div class="ms-3 flex-fill text-center">
-						<span class="fw-semibold fs-5 text-white px-3 py-1 border border-white shadow bg-yp-custom rounded-2 d-inline-block">
-							10
-						</span>
-						<div class="text-white mt-3 fw-semibold">
-							Member Count
+			<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 6px; background-color: #fefefe;">
+				<div class="d-flex w-100 flex-column justify-content-between h-100" style="background-color: #4b442b;">
+					<div class="d-flex align-items-center p-2">
+						<div class="bg--icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff;">
+							<img class="img--size" src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+						</div>
+						<div class="ms-3 flex-fill text-center">
+							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-white shadow bg-yp-custom rounded-2 d-inline-block">
+								${member.total}
+							</span>
+							<div class="text-white mt-3 fw-semibold">Member Count</div>
+							<div class="text-white mt-1" style="font-size: 13px;">
+								Active: ${member.active} | Inactive: ${member.inactive}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	`].join('');
+		`;
 
-	this.boxGraveMap.innerHTML = html;
-};
+		mThis.boxGraveMap.innerHTML = html;
+	};
+
 
     mThis.setupSlider = () => {
 		const slideImages = mThis.slideContainer.querySelectorAll('.slides img');
@@ -132,23 +135,27 @@ var HomeComponent = new (function () {
 	};
 
    
-mThis.loadCards = (onFinish) => {
-    mThis.renderSlide();
-    mThis.renderGraveMap();
-    if (typeof onFinish === "function") onFinish();
-};
-
-mThis.prepareFormOptions = (data, onFinish) => {
-    mThis.loadCards(onFinish);
-};
-    
- 
-mThis.show = function () {
-    main_view.setContentView(mThis.self, mThis.title_prop);
-    mThis.prepareFormOptions(null, () => {});
-};
-    return mThis;
-})();
+	mThis.loadDashBoardData = (filter,onFinish) => {
+		vsapi.call(`${main_view.base_url}/ypg/dashboard/data`, {agent:null,loader: false,useCache:true,cacheTTL:3000,cluster:main_view.apiCluster}).then(res => {
+		const data = res.status_code === 200 ? (res.data) : {};
+		console.log(4444,data);
+		
+		//const data = res.status_code === 200 ? res.data : {};
+		if(typeof onFinish === 'function')onFinish(data);
+		});
+		// mThis.renderSlide();
+		// mThis.renderGraveMap($data);
+		if (typeof onFinish === "function") onFinish();
+	};
+	mThis.show = function () {
+		main_view.setContentView(mThis.self, mThis.title_prop);
+		mThis.loadDashBoardData(mThis.db_filter, (d) => {
+			mThis.renderSlide();
+		mThis.renderGraveMap(d);
+		});
+	};
+		return mThis;
+	})();
 
 
 
