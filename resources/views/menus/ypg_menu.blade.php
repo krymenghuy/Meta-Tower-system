@@ -368,46 +368,43 @@ function v_display($mod_id, $module_ids = null)
 </div>
 
 <script>
-(() => {
-    const menuPanel = document.querySelector('#kt_aside_menu_wrapper');
-    const __dx = menuPanel.querySelector('#_dms_aside_menus');
-    const __brandArea = menuPanel.querySelector('#kt_aside_brand');
-    if (!__dx) return;
+        (() => {
+            const menuPanel = document.querySelector('#kt_aside_menu_wrapper');
+            const __dx = menuPanel.querySelector('#_dms_aside_menus');
+            const __brandArea = menuPanel.querySelector('#kt_aside_brand');
+            if (!__dx) return;
 
-    const OFFSET_TOP = __brandArea ? __brandArea.offsetHeight : 100;
+            const updateMenuHeight = () => {
+                const offsetTop = __brandArea.offsetHeight || 0;
+                const maxHeight = window.innerHeight - offsetTop;
+                __dx.style.maxHeight = maxHeight + 'px';
+                __dx.style.overflowY = 'hidden';
+            };
 
-    const updateMenuHeight = () => {
-        const maxHeight = window.innerHeight - OFFSET_TOP;
-        __dx.style.maxHeight = maxHeight + 'px';
-        __dx.style.overflowY = 'hidden';
-    };
+            window.vsapp = window.vsapp || {};
+            window.vsapp.menuTranslated = false;
 
-    window.vsapp = window.vsapp || {};
-    window.vsapp.menuTranslated = false;
+            const tryTranslateMenu = () => {
+                if (typeof LocaleManager === 'object' || typeof LocaleManager === 'function') {
+                    LocaleManager.translateZone(__dx, null, () => {});
+                    __dx.style.display = 'block';
+                    window.vsapp.menuTranslated = true;
+                }
+            };
 
-    const tryTranslateMenu = () => {
-        if (typeof LocaleManager === 'object' || typeof LocaleManager === 'function') {
-            LocaleManager.translateZone(__dx, null, () => {});
-            __dx.style.display = 'block';
-            window.vsapp.menuTranslated = true;
-        }
-    };
+            document.addEventListener('DOMContentLoaded', () => {
+                tryTranslateMenu();
+                setTimeout(updateMenuHeight, 0); // ensure layout is ready
+            });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!window.vsapp.menuTranslated) {
-            tryTranslateMenu();
-        }
-        updateMenuHeight();
-    });
+            window.addEventListener('resize', updateMenuHeight);
 
-    window.addEventListener('resize', updateMenuHeight);
-
-    __dx.addEventListener('mouseover', () => {
-        __dx.style.overflowY = 'auto';
-    });
-
-    __dx.addEventListener('mouseout', () => {
-        __dx.style.overflowY = 'hidden';
-    });
-})();
+            __dx.addEventListener('mouseover', () => {
+                __dx.style.overflowY = 'auto';
+            });
+            __dx.addEventListener('mouseout', () => {
+                __dx.style.overflowY = 'hidden';
+            });
+        })();
+ 
 </script>
