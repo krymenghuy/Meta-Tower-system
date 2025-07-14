@@ -91,7 +91,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 30);
 
-    ScriptManager::render('ypg-components', 1, 219);
+    ScriptManager::render('ypg-components', 1, 220);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
