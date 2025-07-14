@@ -91,7 +91,7 @@ var LocationComponent = (() =>{
 
             return;
         }
-        };
+     };
 
 
     mThis.displayCountries = function(){
@@ -598,7 +598,7 @@ var ZoneTabView =  ( () =>{
              p.city_id = city_id;
              mThis.tblDistricts_body.innerHTML = '';
 
-             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
+             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
                if(res.status_code===200){
                 const rows = res.data;
                 let i =0, c = null, html = '';
@@ -635,7 +635,7 @@ var ZoneTabView =  ( () =>{
                 if(!district_id) district_id = mThis.elFilter_district.value;
                 p.district_id = district_id;
                 mThis.tblCommunes_body.innerHTML = '';
-                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
+                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
                   if(res.status_code===200){
                         let rows = res.data;
 
@@ -675,7 +675,7 @@ var ZoneTabView =  ( () =>{
                 p.commune_id = commune_id;
                 mThis.tblVillages_body.innerHTML = '';
 
-                vsapi.call([mThis.base_url,'/api/location/villages'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
+                vsapi.call([mThis.base_url,'/api/location/villages'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
                   if(res.status_code===200){
                         let rows = res.data;
 
@@ -714,7 +714,7 @@ const CountryDialog = (() => {
 
     self.show = (op) => {
 
-        dialog = new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
             cssClass: "modal-lg",
             backdrop: "static",
             keyboard: true,
@@ -798,7 +798,7 @@ const CountryDialog = (() => {
 
                 me.deleteFlagPhoto = (country_id)=>{
                     const p = {"id":country_id};
-                    vsapi.call([main_view.base_url,'/api/location/country/delete-flag'].join(''),p,false,false).then(res =>{
+                    vsapi.call([main_view.base_url,'/api/location/country/delete-flag'].join(''),p,{loader:false}).then(res =>{
                         if(res.status_code == 200){
                           me.flagImageBox.setImage(null);
                           cv_interact.info('Flag photo was deleted!');
@@ -808,7 +808,7 @@ const CountryDialog = (() => {
 
                 me.saveFlagPhoto = (flag, country_id)=>{
                     const p = {"flag": flag, "id" : country_id};
-                    vsapi.call([main_view.base_url,'/api/location/country/save-flag'].join(''), p,false).then(res =>{
+                    vsapi.call([main_view.base_url,'/api/location/country/save-flag'].join(''), p,{loader:false}).then(res =>{
                         if(res.status_code == 200){
                           me.flagImageBox.setImage(res.data.image_url);
                           cv_interact.success('Flag photo was deleted!');
@@ -860,7 +860,7 @@ const CountryDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
                         p.flag = me.flagImageBox? me.flagImageBox.getImage(): '';
-                        vsapi.call([main_view.base_url, "/api/location/country/save"].join(""),p,btn,false,false).then((res) => {
+                        vsapi.call([main_view.base_url, "/api/location/country/save"].join(""),p,{agent:btn,loader:false}).then((res) => {
                             if (res.status_code == 200) {
                                 me.modal.hide(true, p);
                             } else cv_interact.error(res.error_message);
@@ -883,8 +883,7 @@ const ZoneDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-
-        dialog = new GeneralDialog({
+        dialog = dialog || new GeneralDialog({
             cssClass: "modal-md modal-content-vs-dialog",
             backdrop: "static",
             keyboard: true,
@@ -959,7 +958,7 @@ const ZoneDialog = (() => {
                             p.commune_id = me.dataOptions.commune_id;
                         }
 
-                        vsapi.call([main_view.base_url, `/api/location/${op.zone_type}/save`].join(""),p,btn,false,false).then((res) => {
+                        vsapi.call([main_view.base_url, `/api/location/${op.zone_type}/save`].join(""),p,{loader:false,agent:btn}).then((res) => {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     me.dataOptions.onClose();
