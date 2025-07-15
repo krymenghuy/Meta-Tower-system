@@ -1101,7 +1101,7 @@ this.ModulePanel = new function(){
                         if(res.status_code ==200){
                            return;
                         }else{
-                            modulesList.setCheck(checkBox,0);
+                            mThis.modulesList.setCheck(checkBox,0);
                             cv_interact.warning(res.error_message);
                         }
                     });

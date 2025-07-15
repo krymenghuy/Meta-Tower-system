@@ -171,7 +171,7 @@ div.role-card.selected > div.card-content {
                           <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Modules"></span></a> 
                         </div>
                       </div>
-                      <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div> 
+                      <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div> 
                   </div>
                </div>
            </div>
@@ -185,7 +185,7 @@ div.role-card.selected > div.card-content {
                                 <div><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
                                 <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print"></span></a> 
                             </div>
-                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div>
+                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div>
                         </div>
                    </form>
                </div>

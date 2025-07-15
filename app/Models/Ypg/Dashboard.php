@@ -16,11 +16,9 @@ class Dashboard
     }
     public function getData($arr,$ss=null){
         $ss = $ss ?? $this->userInfo;
-        $cards = self::getDashboardCards($arr,$ss);
         return (object)[
-            'doughnutChart'=>self::countMember($ss),
-            'memberTasks'=>self::getMemberTasks($ss),
-            'cards'=>$cards,
+            'members'=>self::countMember($ss),
+            'graves'=>self::countGraveBySize($ss),
 
         ];
     }
@@ -66,52 +64,63 @@ class Dashboard
         ];
     }
 
-    static function countMember($ss) {
+   public static function countMember($ss) {
+    $active = 0;
+    $inactive = 0;
 
-        $rows = DB::table('members as m')
-            ->join('member_statuses as s', 'm.status_id', '=', 's.id')
-            ->selectRaw('s.name as status, COUNT(m.id) as count')
-            ->groupBy('s.name')
-            ->get();
+    $rows = DB::table('members as m')
+        ->join('member_statuses as s', 's.id', '=', 'm.status_id')
+        ->select('s.name as status', DB::raw('COUNT(*) as count'))
+        ->where('m.branch_id', $ss->branch_id)
+        ->groupBy('s.name')
+        ->get();
 
-        $labels = [];
-        $values = [];
-        $colors = [];
-        $base_colors = [ '#e1411d','#2b3991'];
-        $active = 0;
-        $inactive = 0;
-        $total = 0;
-
-        foreach ($rows as $index => $row) {
-            $labels[] = $row->status;
-            $values[] = $row->count;
-            $colors[] = $base_colors[$index % count($base_colors)];
-
-            switch ($row->status) {
-                case 'Active':
-                    $active += $row->count;
-                    break;
-                case 'Inactive':
-                    $inactive += $row->count;
-                    break;
-            }
-
-            $total = $active + $inactive;
-
+    foreach ($rows as $row) {
+        switch ($row->status) {
+            case 'Active':
+                $active += $row->count;
+                break;
+            case 'Inactive':
+                $inactive += $row->count;
+                break;
         }
-
-        return (object)[
-            'title' => 'Member : ' . $total.'',
-            'labels' => $labels,
-            'values' => $values,
-            'colors' => $colors,
-            'total' => $total,
-            'active' => $active,
-            'inactive' => $inactive
-        ];
-
-
     }
+
+    $total = $active + $inactive;
+
+    return [
+        'title' => 'Total Member',
+        'total' => $total,
+        'active' => $active,
+        'inactive' => $inactive
+    ];
+}
+public static function countGraveBySize($ss) {
+    $sizes = ['S', 'M', 'L'];
+    $results = DB::table('grave_slots')
+        ->select('size', DB::raw('COUNT(*) as count'))
+        ->where('branch_id', $ss->branch_id)
+        ->where('status_id', 1) // 1 = used
+        ->whereIn('size', $sizes)
+        ->groupBy('size')
+        ->get();
+
+    $data = ['S' => 0, 'M' => 0, 'L' => 0];
+    foreach ($results as $row) {
+        $data[$row->size] = $row->count;
+    }
+
+    $total = array_sum($data);
+
+    return [
+        'title' => 'Graves Used: ' . $total,
+        'total' => $total,
+        'small' => $data['S'],
+        'medium' => $data['M'],
+        'large' => $data['L'],
+    ];
+}
+
 
     static function getMemberTasks($ss)
     {
