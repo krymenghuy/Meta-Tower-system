@@ -458,60 +458,69 @@ const MemberDialog = (() => {
                         `<form>
                             <div class="row justify-content-center">
                                 <div class="col-3">
-                                    <div class="data-input border border-secondary rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
+                                    <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
                                     <div name="div_member_photo" class="data-input h-100 w-100" data-field="photo"></div>
                                     </div>
-                                    <label class="mt-2 text-muted small d-block">Upload Profile Photo</label>
+                                    <label class="mt-2 text-muted small d-block text-center">Profile Photo</label>
                                 </div>
                                 </div>
 
-
-                            <div class="material-input">
-                                <input type="text" name="name" required class="data-input" data-field="name" placeholder=" " />
-                                <label>Member Name</label>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label>Member Name</label>
+                                </div>
                             </div>
-                            <div class="material-input">
-                                <select required  placeholder=" " class="data-input" data-field="sex">
-                                    <option value="">Select Gender</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                </select>
-                                <label class="d-none">Gender</label>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select required  placeholder=" " class="data-input form-control" data-field="sex">
+                                        <option value="">Select Gender</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                    <label class="d-none">Gender</label>
+                                </div>
                             </div>
-                            <div class="material-input">
-                                <select   name="nationality_id" required placeholder=" " class="data-input" data-field="nationality_id">
-                                <option value="">Select Expiration</option>
-                                </select>
-                                <label class="d-none">Nationality</label>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select   name="nationality_id" required placeholder=" " class="data-input form-control" data-field="nationality_id">
+                                    <option value="">Select Expiration</option>
+                                    </select>
+                                    <label class="d-none">Nationality</label>
+                                </div>
                             </div>
-
-
-                            <div class="material-input">
-                                <input type="number" name="phone_number" required class="data-input" data-field="phone_number" placeholder=" " />
-                                <label>Phone Number</label>
+                            <div class="col-12">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label>Phone Number</label>
+                                </div>
                             </div>
-
-                            <div class="material-input">
-                                <select name="is_expired" class="data-input" data-field="is_expired" required placeholder=" ">
-                                    <option value="0">Permanent</option>
-                                    <option value="1">Will Expire</option>
-                                </select>
-                                <label class="d-none">Expiration</label>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select name="is_expired" class="data-input form-control" data-field="is_expired" required placeholder=" ">
+                                        <option value="0">Permanent</option>
+                                        <option value="1">Will Expire</option>
+                                    </select>
+                                    <label class="d-none">Expiration</label>
+                                </div>
                             </div>
-
-                            <div class="material-input expiry-wrapper" style="display: none;">
-                                <input name="expiration_date" type="vsdate" class="data-input" data-field="expiration_date" placeholder=" " />
-                                <label>Expiration Date</label>
+                            <div class="col-12">
+                                <div class="material-input outlined expiry-wrapper" style="display: none;">
+                                    <input name="expiration_date" type="vsdate" class="data-input form-control" data-field="expiration_date" placeholder=" " />
+                                    <label>Expiration Date</label>
+                                </div>
                             </div>
-
-                            <div class="d-none material-input">
-                                <input name="status_id" class="data-input" data-field="status_id" placeholder=" " />
-                                <label>Status ID</label>
-                            </div>
-
-                            <div class="material-input">
-                                <textarea class="data-input" data-field="address" placeholder=" "></textarea>
-                                <label>Address</label>
+                            <div class="col-12">
+                                <div class="d-none material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div>  
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <label>Address</label>
+                                </div>
                             </div>
                     </form>`
                     ].join("");
@@ -522,25 +531,26 @@ const MemberDialog = (() => {
                     DateTimePicker.init(me.controls.expiration_date);
                     const footer = me.divModal.querySelector('.modal-footer');
                     const header = me.divModal.querySelector('.modal-header');
+
                     const headerTitle = header.querySelector('.modal-title');
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
                     header.classList.add('bg-yp-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
-                    header.parentElement.style = 'border-radius: 25px !important;';
+                    header.parentElement.style = 'border-radius: 20px !important;';
 
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                    const logo = document.createElement('img');
-                    logo.src = '/assets/images/yavpheng/logo_yp.jpg';
-                    logo.alt = 'Logo';
-                    logo.classList.add('img-logo', 'mb-2');
-                    logo.style.height = '80px';
+                    // const logo = document.createElement('img');
+                    // logo.src = '/assets/images/yavpheng/logo_yp.jpg';
+                    // logo.alt = 'Logo';
+                    // logo.classList.add('img-logo', 'mb-2');
+                    // logo.style.height = '80px';
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    headerWrapper.appendChild(logo);
+                    // headerWrapper.appendChild(logo);
                     headerWrapper.appendChild(headerTitle);
 
                     header.innerHTML = '';
@@ -653,8 +663,8 @@ const MemberDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "ADD YAV PHENG MEMBER",
-                    modifyTitle: "EDIT YAV PHENG MEMBER",
+                    createTitle: "Add Yeav Pheng Member",
+                    modifyTitle: "Edit Yeav Pheng Member",
                     targetProp: "member_details",
                     api: {
                         endpoint: [main_view.base_url, "/ypg/member/form-options",].join(""),

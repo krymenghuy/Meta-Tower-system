@@ -761,26 +761,55 @@ const RoleTabView = new function(){
         that.AppDialog = that.AppDialog || new GeneralDialog({  
          createContent:()=>{
            return [
-             `<div class="form-group col-md-12">
-                <label class="form-label" vslang="titles.App Name">App Name</label>
-                <div><input class="form-control data-input"  name="name" data-field="name" /></div>
+             `<div class="col-md-12">
+                <div class="material-input outlined">
+                    <input type="text" class="form-control data-input"  name="name" data-field="name" placeholder=" " />
+                    <label>App Name</label>
+                </div>
                 </div>`,
-              `<div class="form-group col-md-12">
-                <label class="form-label" vslang="titles.Is Mobile App">Is Mobile App</label>
-                <div><select class="form-control data-input" name="is_mobile_app" data-field="is_mobile_app">
-                </select></div>
+              `<div class="col-md-12">
+                <div class="material-input outlined">
+                <div><select class="form-control data-input" name="is_mobile_app" data-field="is_mobile_app"></select></div>
+                <label>Is Mobile App</label>
+                </div>
                </div>`,
 
-               `<div class="form-group col-md-12">
-               <label class="form-label" vslang="titles.Home Route">Home Route</label>
-               <div><input class="form-control data-input" name="home_route" data-field="home_route" /></div>
-              </div>`,
-             `<div class="form-group col-md-12">
-              <label class="form-label" vslang="titles.User Class">User Class</label>
-              <div><select class="data-input" name="user_class" data-field="user_class"></select></div>
+               `<div class="col-md-12">
+                    <div class="material-input outlined">
+                    <input class="form-control data-input" name="home_route" data-field="home_route" placeholder=" " />
+                    <label>Home Route</label>
+                    </div>
+                </div>`,
+             `<div class="col-md-12">
+                    <div class="material-input outlined">
+                <div><select class="data-input" name="user_class" data-field="user_class"></select></div>
+                <label>User Class</label>
+                </div>
              </div>`,
             ].join('');
          },
+          contentCreated:(me)=>{
+                    const footer = me.divModal.querySelector('.modal-footer');
+                    const header = me.divModal.querySelector('.modal-header');
+                    const headerTitle = header.querySelector('.modal-title');
+                    const btnClose = header.querySelector('button');
+
+                    // btnClose.classList.add('d-none');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important;';
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+
+                
+
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(headerTitle);
+
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+        
+            },
          showCancelButton:true,
          configSelect:[
            {
@@ -793,13 +822,14 @@ const RoleTabView = new function(){
          buttons:[
             {
               label:'<span vslang="buttons.Cancel"></span>',
+              cssClass: 'btn btn-sm btn-warning text-white',
               click:(me,btn)=>{
                  me.hide(false);
               }
             },
             {
                 label:"<span vslang='buttons.Save'>Save</span",
-                   cssClass:'btn btn-primary',
+                   cssClass:'btn btn-sm btn-yp-custom',
                 click:(me, btn,divModal)=>{
                      const p = me.getData();
                      
@@ -2443,6 +2473,26 @@ const RoleDialog = (()=>{
              required:true
           }
         ],
+        contentCreated:(me)=>{
+                const footer = me.divModal.querySelector('.modal-footer');
+                const header = me.divModal.querySelector('.modal-header');
+                const headerTitle = header.querySelector('.modal-title');
+                const btnClose = header.querySelector('button');
+
+                btnClose.classList.add('d-none');
+                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.parentElement.style = 'border-radius: 25px !important';
+                header.parentElement.classList.add('overflow-hidden');
+
+                const headerWrapper = document.createElement('div');
+                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                headerWrapper.appendChild(headerTitle);
+
+                header.innerHTML = '';
+                header.appendChild(headerWrapper);
+    
+            },
         configSelect:[
             {
                 name:"group_id",
@@ -2460,12 +2510,12 @@ const RoleDialog = (()=>{
         buttons:[
           {
              label:"Cancel",
-             cssClass:"btn btn-secondary",
+             cssClass:"btn btn-sm text-white btn-warning",
              dismissModal:true
           },
           {
              label:"Save",
-             cssClass:"btn btn-primary",
+             cssClass:"btn btn-sm btn-yp-custom",
              click:(modal,btn,divModal)=>{
                  let p = modal.getData();
                  //let p = {id:mThis.options.id, group_id:mThis.elRoleGroup.value, name: mThis.elRoleName.value};
@@ -2493,6 +2543,13 @@ const RoleDialog = (()=>{
             //     console.log(res);
             // }
           }
+        },
+    onPrepareForm: (me, data) => {
+            // LocaleManager.translateZone(me.divModal);
+            const header = me.divModal.querySelector('.modal-header');
+
+            const btnClose = header.querySelector('button');
+            if(btnClose) btnClose.classList.add('d-none');
         },
         // onClose:(canceled)=>{} 
      });
