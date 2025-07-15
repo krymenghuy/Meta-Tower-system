@@ -48,17 +48,37 @@ const SetPasswordDialog = (()=>{
                }
             });
         },
+    contentCreated:(me)=>{
+        const footer = me.divModal.querySelector('.modal-footer');
+        const header = me.divModal.querySelector('.modal-header');
+        const headerTitle = header.querySelector('.modal-title');
+        const btnClose = header.querySelector('button');
+
+        btnClose.classList.add('d-none');
+        header.classList.add('bg-yp-custom', 'modal-header-custom');
+        header.parentElement.style = 'border-radius: 25px !important;';
+        header.parentElement.classList.add('overflow-hidden');
+
+        const headerWrapper = document.createElement('div');
+        headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+        headerTitle.classList.add('text-white', 'text-center', 'w-100');
+        headerWrapper.appendChild(headerTitle);
+
+        header.innerHTML = '';
+        header.appendChild(headerWrapper);
+    
+    },
         buttons:[
             {
                 label:"<span>Cancel</span>",
-                cssClass:"btn btn-warning",
+                cssClass:"btn btn-sm btn-warning text-white",
                 click:(me,btn)=>{
                     me.hide(false);
                 }
             },
             {
                 label:"<span>Change Now</span>",
-                cssClass:"btn btn-primary",
+                cssClass:"btn btn-sm btn-yp-custom",
                 click:(me,btn)=>{
                     let p = me.getData();
                     p.id = me.dataOptions.user_id || me.dataOptions.id;

@@ -425,63 +425,72 @@ const RegisterGraveDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
                     return `
-                        <div class="container-fluid">
-                            <div class="row">
-                            
-                               <div class="col-md-4 d-flex flex-column justify-content-center align-items-center mb-3">
-                                <div class="grave-profile-container border border-secondary rounded-3 overflow-hidden" style="width: 200px; height: auto;">
-                                    <div name="div_grave_photo" class="w-100" style="height: 200px;"></div>
-                                    <label class="mt-2 text-muted small d-block text-center w-100">Upload Grave Photo</label>
+                        <div class="row p-2">
+                            <div class="col-md-4 d-flex flex-column justify-content-center align-items-center mb-3">
+                                <div class="border border-2 border-ypg-custom rounded-3 overflow-hidden d-flex flex-column align-items-center justify-content-center"
+                                    style="width: 140px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
+                                    <div name="div_grave_photo"
+                                        class="w-100 h-100"
+                                        style="background-size: cover; background-position: center;">
+                                    </div>
+                                    <label class="mt-2 text-muted small d-block text-center">Grave Photo</label>
                                 </div>
-                                 </div>
-                                <div class="col-md-8">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="material-input">
-                                                <input type="text" name="slot_number" required class="data-input" data-field="slot_number" placeholder=" " />
-                                                <label vslang="titles.Grave Slot">Grave Slot</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="material-input">
-                                                <input type="text" name="Deceased_name" required class="data-input" data-field="deceased_name" placeholder=" " />
-                                                <label vslang="titles.Deceased Name">Deceased Name</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="material-input">
-                                                <select name="size" required class="data-input" data-field="size" placeholder=" ">
-                                                    <option value="">-- Select Size --</option>
-                                                    <option value="S">S</option>
-                                                    <option value="M">M</option>
-                                                    <option value="L">L</option>
-                                                </select>
-                                                <label vslang="titles.Size" class="d-none">Size</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="material-input">
-                                                <select name="recommender_id" class="data-input" data-field="recommender_id" placeholder=" "></select>
-                                                <label vslang="titles.Recommender" class="d-none">Recommender</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="material-input">
-                                                <textarea name="location_note" rows="3" class="data-input" data-field="location_note" placeholder=" "></textarea>
-                                                <label vslang="titles.Remarks">Remarks</label>
-                                            </div>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="material-input outlined">
+                                            <input type="text" name="slot_number" required class="data-input form-control" data-field="slot_number" placeholder=" " />
+                                            <label vslang="titles.Grave Slot">Grave Slot</label>
                                         </div>
                                     </div>
+
+                                    <div class="col-12">
+                                        <div class="material-input outlined">
+                                            <input type="text" name="deceased_name" required class="data-input form-control" data-field="deceased_name" placeholder=" " />
+                                            <label vslang="titles.Deceased Name">Deceased Name</label>
+                                        </div>
+                                    </div>
+                                    
+
+                                    
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="material-input outlined">
+                                    <select name="size" required class="data-input form-select" data-field="size">
+                                        <option value="">-- Select Size --</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                    </select>
+                                    <label vslang="titles.Size" class="d-none">Size</label>
+                                </div>
+                            </div>
+                                    
+
+                            <div class="col-8">
+                                <div class="material-input outlined">
+                                    <select name="recommender_id" class="data-input form-select" data-field="recommender_id"></select>
+                                    <label vslang="titles.Recommender" class="d-none">Recommender</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea name="location_note" class="data-input form-control" data-field="location_note" placeholder=" "></textarea>
+                                    <label vslang="titles.Remarks">Remarks</label>
                                 </div>
                             </div>
                         </div>
                     `;
                 },
+
                 contentCreated: (me) => {
                     const div_grave_photo = me.controls.div_grave_photo;
 
@@ -541,19 +550,20 @@ const RegisterGraveDialog = (() => {
 
                     btnClose.classList.add('d-none'); 
                     header.classList.add('bg-yp-custom', 'modal-header-custom'); 
-                    header.parentElement.style = 'border-radius: 25px !important;'; 
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important';
 
                     const headerWrapper = document.createElement('div');
-                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                    headerWrapper.classList.add('d-flex', 'align-items-center', 'w-100');
 
-                    const logo = document.createElement('img');
-                    logo.src = '/assets/images/yavpheng/logo_yp.jpg'; 
-                    logo.alt = 'Logo';
-                    logo.classList.add('img-logo', 'mb-2');
-                    logo.style.height = '80px';
+                    // const logo = document.createElement('img');
+                    // logo.src = '/assets/images/yavpheng/logo_yp.jpg'; 
+                    // logo.alt = 'Logo';
+                    // logo.classList.add('img-logo', 'mb-2');
+                    // logo.style.height = '80px';
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100'); 
-                    headerWrapper.appendChild(logo);
+                    // headerWrapper.appendChild(logo);
                     headerWrapper.appendChild(headerTitle);
 
                     header.innerHTML = ''; 
@@ -582,7 +592,10 @@ const RegisterGraveDialog = (() => {
                 },
                 onPrepareForm: (me, data) => {
                    // LocaleManager.translateZone(me.divModal);
-                   return;
+                    const header = me.divModal.querySelector('.modal-header');
+
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
                 },
                 extendMethod: {
                     setData: (me, data) => {
