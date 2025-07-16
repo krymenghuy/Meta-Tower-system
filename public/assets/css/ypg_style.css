@@ -3,6 +3,8 @@
     margin: 0;
     box-sizing: border-box;
     -webkit-user-drag: none;
+    /* font-family: "Source Sans 3", sans-serif; */
+
    
 }
   .disabled {
@@ -733,7 +735,7 @@ g
 
 }
 .table > thead > tr > th, td {
-    /* text-align: center; */
+    text-align: center;
     font-size: 1rem;
     /* color: #0e75d9; */
     white-space: nowrap;

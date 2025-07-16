@@ -195,7 +195,7 @@
                 </form>
 
                 <div class="copyright">
-                    <p>China Yav Pheng Association</p>
+                    <p>China Yeav Pheng Association</p>
                     <p>&copy; 2021</p>
                 </div>
             </div>

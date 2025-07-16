@@ -6,7 +6,7 @@
 <head>
     <base href="../">
     <meta charset="utf-8" />
-    <title>Yav Pheng Association</title>
+    <title>Yeav Pheng Association</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -74,14 +74,19 @@
             /* font-family: Arial, Helvetica, serif; */
             /* font-family: Verdana, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
-            font-family: 'Battambang';
+            font-family: 'Khmer OS Battambang';
+            /* font-family: "Fasthand", cursive; */
         }
 
         .font-en {
             /* font-family: Verdana, sans-serif;
             font-family: 'Battambang'; */
-            font-family: 'Segoe UI', sans-serif;
-            /* font-family: Arial, sans-serif; */
+             /* font-family: "Source Sans 3", sans-serif; */
+             /* font-family: "Open Sans", sans-serif; */
+             /* font-family: "Roboto", sans-serif; */
+
+            /* font-family: 'Segoe UI', sans-serif; */
+            font-family: Arial, sans-serif;
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
 
@@ -251,7 +256,7 @@
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog m-2"></i>
-                                                        About Yav Pheng
+                                                        About Yeav Pheng
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>

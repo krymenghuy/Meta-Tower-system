@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="icon" type="image/png" href="{{'assets/images/yavpheng/CYPA_logo.png'}}"/>
   <?php StyleManager::render('login-styles',1); ?>
-  <title>Yav Pheng Association</title>
+  <title>Yeav Pheng Association</title>
   <script>
     function checkDevice(){
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -133,7 +133,7 @@
         <button type="submit">Log in</button>
         
       </form>
-      <p>China Yav Pheng Association</p>
+      <p>China Yeav Pheng Association</p>
       <p>Copyright &copy; 2021</p>
     </div>
   </div>

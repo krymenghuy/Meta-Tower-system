@@ -65,7 +65,7 @@
                     </div>
                     
                     <div class="vs-d-flex-copyright">
-                        <p>China Yav Pheng Association</p>
+                        <p>China Yeav Pheng Association</p>
                         <p>Copyright &copy; 2021</p>
                     </div>
                 </div>
