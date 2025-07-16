@@ -382,8 +382,9 @@ const PreViewGraveDialog = (() => {
     self.show = (op) => {
         const imageUrl = op?.image_url || '';
         const dialog = new GeneralDialog({
-            cssClass: "modal-lg modal-content-vs-dialog",
+            cssClass: "modal-md modal-content-vs-dialog",
             keyboard: true,
+            title:"Grave Image",
             createContent: () => {
                 return `
                     <div class="text-center">
@@ -401,12 +402,10 @@ const PreViewGraveDialog = (() => {
                 footer.classList.add('d-none');
                 headerTitle.classList.add('justify-content-center', 'text-white', 'w-100', 'd-flex');
                 header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style.borderRadius = '25px';
+                header.parentElement.style.borderRadius = '20px';
                 header.classList.add('bg-yp-custom', 'modal-header-custom');
             },
             prepareFormOptions: {
-                createTitle: "Preview Grave Photo",
-                modifyTitle: "Preview Grave Photo",
             },
             onPrepareForm: (me, data) => {},
             buttons: [],
@@ -580,8 +579,8 @@ const RegisterGraveDialog = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "Add Grave List",
-                    modifyTitle: "Edit Grave",
+                    createTitle: "Add Grave Slot",
+                    modifyTitle: "Edit Grave Slot",
                     targetProp: "grave_slot",
                     api: {
                         endpoint: [main_view.base_url, "/ypg/grave-slot/form-options"].join(""),

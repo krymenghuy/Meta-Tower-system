@@ -56,8 +56,8 @@ const SetPasswordDialog = (()=>{
 
         btnClose.classList.add('d-none');
         header.classList.add('bg-yp-custom', 'modal-header-custom');
-        header.parentElement.style = 'border-radius: 25px !important;';
         header.parentElement.classList.add('overflow-hidden');
+        header.parentElement.style = 'border-radius: 20px !important';
 
         const headerWrapper = document.createElement('div');
         headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');

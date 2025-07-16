@@ -501,13 +501,13 @@ const MemberDialog = (() => {
                                         <option value="0">Permanent</option>
                                         <option value="1">Will Expire</option>
                                     </select>
-                                    <label class="d-none">Expiration</label>
+                                    <label class="d-none" >Expiration</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined expiry-wrapper" style="display: none;">
                                     <input name="expiration_date" type="vsdate" class="data-input form-control" data-field="expiration_date" placeholder=" " />
-                                    <label>Expiration Date</label>
+                                    <label class="d-none">Expiration Date</label>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -735,34 +735,48 @@ const PreViewMemberDialog = (() => {
         const imageUrl = op?.image_url || '';
 
         const dialog = new GeneralDialog({
-            cssClass: "modal-lg modal-content-vs-dialog",
+            cssClass: "modal-md modal-content-vs-dialog",
             backdrop: false,
             keyboard: true,
-            createContent: () => {
-                return `
-                    <div class="text-center">
-                        <img src="${imageUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 10px;" />
-                    </div>
-                `;
-            },
+            title: "Member Photo",
+                createContent: () => {
+                    return `
+                        <div class="text-center">
+                            <img 
+                                src="${imageUrl}" 
+                                alt="Preview" 
+                                style="
+                                    width: 100%;
+                                    max-width: 550px;
+                                    height: auto;
+                                    max-height: 400px;
+                                    border-radius: 10px;
+                                    object-fit: cover;
+                                " 
+                            />
+                        </div>
+                    `;
+                },
+
+
             contentCreated: (me) => {
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
-                // const Title = me.divModal.querySelector('.modal-header .modal-title');
                 const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
                 const btnClose = me.divModal.querySelector('.modal-header button');
+
+                // បង្ហាញ "View Profile" នៅក្នុង modal-title
+                headerTitle.textContent = "View Profile";
+
                 btnClose.classList.add('text-white');
                 footer.classList.add('d-none');
                 headerTitle.classList.add('justify-content-center', 'text-white', 'w-100', 'd-flex');
                 header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 25px !important;';
+                header.parentElement.style = 'border-radius: 20px !important;';
                 header.classList.add('bg-yp-custom', 'modal-header-custom');
             },
-            prepareFormOptions: {
-                createTitle: "Preview Member Profile",
-                modifyTitle: "Preview Member Profile",
-            },
-            onPrepareForm: (me, data) => { },
+            prepareFormOptions: {},
+            onPrepareForm: (me, data) => {},
             buttons: [],
         });
 
@@ -771,3 +785,4 @@ const PreViewMemberDialog = (() => {
 
     return self;
 })();
+

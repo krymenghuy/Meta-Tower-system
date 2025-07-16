@@ -1,4 +1,4 @@
-<div id="_main_home_component" style="display: none;">
+<div id="_main_home_component" class="mobile-padding p-3" style="display: none;">
   <div class="slide-map-wrapper my-3">
     <div class="slide-container" id="slideContainer">
       <!-- <div class="slides">

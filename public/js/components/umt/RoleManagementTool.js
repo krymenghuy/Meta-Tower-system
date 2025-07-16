@@ -769,8 +769,8 @@ const RoleTabView = new function(){
                 </div>`,
               `<div class="col-md-12">
                 <div class="material-input outlined">
-                <div><select class="form-control data-input" name="is_mobile_app" data-field="is_mobile_app"></select></div>
-                <label>Is Mobile App</label>
+                <select class="data-input" name="is_mobile_app" data-field="is_mobile_app"></select>
+                <label class="d-none">Is Mobile App</label>
                 </div>
                </div>`,
 
@@ -782,8 +782,8 @@ const RoleTabView = new function(){
                 </div>`,
              `<div class="col-md-12">
                     <div class="material-input outlined">
-                <div><select class="data-input" name="user_class" data-field="user_class"></select></div>
-                <label>User Class</label>
+                <select class="data-input" name="user_class" data-field="user_class"></select>
+                <label class="d-none">User Class</label>
                 </div>
              </div>`,
             ].join('');
@@ -1208,12 +1208,16 @@ this.ModulePanel = new function(){
               createContent:()=>{
                 return [
                   `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Module Name">Application</label>`,
+                  `<label class="form-label" vslang="titles.Application">Application</label>`,
+                  `<div class="material-input outlined">`,
                     `<div><select name="app" class="form-control data-input" data-field="app_id"></select></div>`,
                   `</div>`,
-                 `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Module Name">Module Name</label>`,
-                    `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
+                  `</div>`,
+                 `<div class="col-md-12">`,
+                 `<div class="material-input outlined">`,
+                    `<input type="text" name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
+                    `<label vslang="titles.Module Name">Module Name</label>`,
+                 `</div>`,
                  `</div>`,
                  `<div class="form-group col-md-12">`,
                    `<label class="form-label" vslang="titles.Visibility">Visibility</label>`,
@@ -1221,17 +1225,37 @@ this.ModulePanel = new function(){
                  `</div>`,
                ].join('');
               },
+               contentCreated:(me)=>{
+                    const footer = me.divModal.querySelector('.modal-footer');
+                    const header = me.divModal.querySelector('.modal-header');
+                    const headerTitle = header.querySelector('.modal-title');
+                    const btnClose = header.querySelector('button');
+
+                    btnClose.classList.add('d-none');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important;';
+
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(headerTitle);
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+  
+            },
               //showCancelButton:true,
               buttons:[
                 {
-                  label:"Cancel",
+                  label:"<span>Cancel</span>",
+                  cssClass:"btn btn-sm text-white btn-warning",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                    {
                      label:"<span>Save</span>",
-                     cssClass:'btn btn-primary',
+                     cssClass:'btn btn-sm btn-yp-custom',
                      click:(me,dataOptions, divModal)=>{
                          let p = me.getData();
                          vsapi.call(`${main_view.base_url}/api/module/save`,p,false,false,false).then(res =>{
@@ -1512,13 +1536,15 @@ this.PermissionPanel = new function(){
            },
            buttons:[
               {
-                  label:"Cancel",
+                  label:"<span>Cancel</span>",
+                  cssClass:"btn btn-sm text-white btn-warning",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                 {
                   label:"<span>Save</span>",
+                  cssClass:"btn btn-sm btn-yp-custom",
                   click:(me,btn, divModal)=>{
                       const p = me.getData();
                       vsapi.call(`${main_view.base_url}/api/permission/save`,p,btn, false,false).then(res =>{
@@ -1610,6 +1636,23 @@ this.PermissionPanel = new function(){
                     me,actions.value = me.org_actions;
                  } 
               };
+                const header = me.divModal.querySelector('.modal-header');
+                const headerTitle = header.querySelector('.modal-title');
+
+                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style = 'border-radius: 20px !important;';
+
+                const headerWrapper = document.createElement('div');
+                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+
+    
+
+                headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                headerWrapper.appendChild(headerTitle);
+
+                header.innerHTML = '';
+                header.appendChild(headerWrapper);
            },
            onPrepareForm: async (me) => {
              //me.controls.force_id_field.style.display= me.dataOptions.id > 0 ? 'none':'block';
@@ -2156,7 +2199,7 @@ this.ReportPanel = new function(){
                     const user_name = tr.dataset.fullname;
                     const login_name = tr.dataset.login;
                     //let islocked = tr.dataset.islocked;
-                    const action = lnk.dataset.action; //islocked ==1? 'unlock': 'lock';
+                    let action = lnk.dataset.action; //islocked ==1? 'unlock': 'lock';
                     const op = {
                         user_id: user_id,
                         user_name: user_name,
@@ -2453,26 +2496,50 @@ const RoleDialog = (()=>{
   self.show = (op)=>{
     dialog = dialog || new GeneralDialog({
         cssClass:"vs-modal-dialog",
-        fields:[
-          {
-             name:"group_id",
-             label:"Role Group",
-             inputType:"select",
-             required:true
-          },
-          {
-            name:"user_class",
-            label:"User Class",
-            inputType:"select",
-            required:true
-          },
-          {
-             name:"name",
-             label:"Role Name",
-             inputType:"text",
-             required:true
-          }
-        ],
+        // fields:[
+        //   {
+        //      name:"group_id",
+        //      label:"Role Group",
+        //      inputType:"select",
+        //      required:true
+        //   },
+        //   {
+        //     name:"user_class",
+        //     label:"User Class",
+        //     inputType:"select",
+        //     required:true
+        //   },
+        //   {
+        //      name:"name",
+        //      label:"Role Name",
+        //      inputType:"text",
+        //      required:true
+        //   }
+        // ],
+        createContent:() =>{
+            return [`<div class="row">
+                        <div class="col-12">
+                              <label style="color:#0f6694;" class="">Role Group</label>
+                              <div class="material-input filed">
+                                 <select name="group_id" class="data-input form-control" data-field="group_id"></select>
+                                 <label class="d-none">Role Group</label>
+                              </div>
+                           </div>
+                           <div class="col-12">
+                            <label style="color:#0f6694;" class="">User Class</label>
+                              <div class="material-input outlined">
+                                 <select name="user_class" class="modal-select2 data-input form-control" data-field="user_class"></select>
+                                 <label class="d-none">User Class</label>
+                              </div>
+                           </div>
+                           <div class="col-12">
+                              <div class="material-input outlined">
+                                 <input name="name" class="form-control data-input" data-field="name" placeholder=" " />
+                                 <label>Role Name</label>
+                              </div>
+                           </div>                     
+                    </div>`].join('');
+        },
         contentCreated:(me)=>{
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
@@ -2481,7 +2548,7 @@ const RoleDialog = (()=>{
 
                 btnClose.classList.add('d-none');
                 header.classList.add('bg-yp-custom', 'modal-header-custom');
-                header.parentElement.style = 'border-radius: 25px !important';
+                header.parentElement.style = 'border-radius: 20px !important';
                 header.parentElement.classList.add('overflow-hidden');
 
                 const headerWrapper = document.createElement('div');
