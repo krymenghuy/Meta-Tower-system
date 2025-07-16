@@ -20,19 +20,19 @@ const CreateLoginDialog = (()=>{
                            <div class="col-6">
                               <div class="material-input outlined">
                                  <select name="role_id" class="data-input form-control" data-field="role_id"></select>
-                                 <label>Role Name</label>
+                                 <label class="d-none">Role Name</label>
                               </div>
                            </div>
                            <div class="col-6">
                               <div class="material-input outlined">
                                  <select name="branch_id" class="data-input form-control" data-field="branch_id"></select>
-                                 <label>Branch Name</label>
+                                 <label class="d-none">Branch Name</label>
                               </div>
                            </div>
                            <div class="col-6">
                               <div class="material-input outlined">
                                  <select name="user_class" class="modal-select2 data-input form-control" data-field="user_class"></select>
-                                 <label>User Class</label>
+                                 <label class="d-none">User Class</label>
                               </div>
                            </div>
                            <div class="col-6">

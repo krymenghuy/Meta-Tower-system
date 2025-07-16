@@ -1915,13 +1915,15 @@ tr {
 .material-input.filled {
   position: relative;
   margin-bottom: 24px;
-  background-color: #f5f5f5;
+  background-color: transparent;
   border-radius: 4px 4px 0 0;
   height: 56px;
   transition: background-color 300ms, border-bottom 300ms;
   border-bottom: 1px solid #ccc;
   display: flex;
-  align-items: center;
+  background: transparent;
+
+  align-items: flex-end;
   padding: 0 12px;
 }
 
@@ -1930,11 +1932,13 @@ tr {
 }
 
 .material-input.filled:focus-within {
-  background-color: #e0e0e0;
+  background-color: #ffffff;
   border-bottom: 2px solid #0f6694;
 }
 
-.material-input.filled input {
+.material-input.filled input,
+.material-input.filled select,
+.material-input.filled textarea {
   border: none;
   background: transparent;
   outline: none;
@@ -1943,6 +1947,9 @@ tr {
   flex: 1;
   padding-top: 20px;
   padding-bottom: 6px;
+  height: 100%;
+  width: 100%;
+  appearance: none;
 }
 
 .material-input.filled label {
@@ -1954,16 +1961,22 @@ tr {
   color: #777;
   pointer-events: none;
   transition: all 0.2s ease;
-  background-color: #f5f5f5;
+  background-color: white;
   padding: 0 4px;
 }
 
+/* Move label up on focus or if not placeholder */
 .material-input.filled input:focus ~ label,
-.material-input.filled input:not(:placeholder-shown) ~ label {
+.material-input.filled input:not(:placeholder-shown) ~ label,
+.material-input.filled textarea:focus ~ label,
+.material-input.filled textarea:not(:placeholder-shown) ~ label,
+.material-input.filled select:focus ~ label,
+.material-input.filled select:valid ~ label {
   top: 6px;
   font-size: 12px;
   color: #0f6694;
 }
+
 
 
 .material-input.outlined {
@@ -1972,8 +1985,8 @@ tr {
 }
 
 .material-input.outlined input,
-.material-input select,
-.material-input textarea {
+.material-input.outlined select,
+.material-input.outlined textarea {
   width: 100%;
   padding: 20px 12px 6px 12px;
   font-size: 14px;
@@ -1986,8 +1999,8 @@ tr {
 }
 
 .material-input.outlined input:focus,
-.material-input select:focus,
-.material-input textarea:focus {
+.material-input.outlined select:focus,
+.material-input.outlined textarea:focus {
   border-color: #0f6694;
 }
 
@@ -2010,6 +2023,11 @@ tr {
 .material-input select:not(:placeholder-shown) ~ label,
 .material-input textarea:focus ~ label,
 .material-input textarea:not(:placeholder-shown) ~ label  {
+  top: 0px;
+  font-size: 12px;
+  color: #0f6694;
+}
+.material-input.outlined select:valid ~ label {
   top: 0px;
   font-size: 12px;
   color: #0f6694;
