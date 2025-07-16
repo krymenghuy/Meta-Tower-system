@@ -74,14 +74,19 @@
             /* font-family: Arial, Helvetica, serif; */
             /* font-family: Verdana, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
-            font-family: 'Battambang';
+            font-family: 'Khmer OS Battambang';
+            /* font-family: "Fasthand", cursive; */
         }
 
         .font-en {
             /* font-family: Verdana, sans-serif;
             font-family: 'Battambang'; */
-            font-family: 'Segoe UI', sans-serif;
-            /* font-family: Arial, sans-serif; */
+             /* font-family: "Source Sans 3", sans-serif; */
+             /* font-family: "Open Sans", sans-serif; */
+             /* font-family: "Roboto", sans-serif; */
+
+            /* font-family: 'Segoe UI', sans-serif; */
+            font-family: Arial, sans-serif;
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
 
