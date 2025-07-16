@@ -13,7 +13,7 @@
         <div class="d-flex align-items-center justify-content-end gap-2 w-50 ">
             <button type="button" class="btn_add" id="_btnRegisterGrave">
                 <i class="fa fa-street-view mr-2"></i>
-                <span>Add Grave list</span>
+                <span>Add Grave List</span>
             </button>
         </div>
     </div>

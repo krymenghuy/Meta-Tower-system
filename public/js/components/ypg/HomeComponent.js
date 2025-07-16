@@ -2,7 +2,7 @@
 
 var HomeComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Welcome To Yav Pheng Association";
+    mThis.title_prop = "Welcome To Yeav Pheng Association";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_home_component");
     mThis.slideContainer = mThis.self.querySelector('#slideContainer');

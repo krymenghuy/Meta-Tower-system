@@ -410,7 +410,7 @@ table.header-uppercase>thead>tr>th {
 }
 
 .kt-menu__link-text {
-  font-weight: bold;  
+  font-weight: bold !important;  
   font-size: 14.5px !important;
   color: #000000;
   white-space: nowrap;
