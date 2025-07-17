@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 22);
+    StyleManager::render('ypg-style', 1, 23);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -96,7 +96,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 30);
 
-    ScriptManager::render('ypg-components', 1, 221);
+    ScriptManager::render('ypg-components', 1, 222);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -150,7 +150,7 @@
                                     </div>
                                 </div>
                                 <div id="_main_top_right_menus"
-                                    class="d-flex flex-row gap-2 w-50 flex-wrap px-5 justify-content-end align-items-center">
+                                    class="d-flex flex-row gap-2 w-50 flex-wrap px-3 justify-content-end align-items-center">
                                     <div class="dropdown shadow-lg rounded-2 choose--language">
                                         <button id="_main_btn_lang" class="btn-dropdown align--language"
                                             data-menu="lang">

@@ -768,6 +768,7 @@ const RoleTabView = new function(){
                 </div>
                 </div>`,
               `<div class="col-md-12">
+              <label style="color:#0f6694; font-size:11px;" vslang="titles.Is Mobile App">Is Mobile App</label>
                 <div class="material-input outlined">
                 <select class="data-input" name="is_mobile_app" data-field="is_mobile_app"></select>
                 <label class="d-none">Is Mobile App</label>
@@ -781,7 +782,8 @@ const RoleTabView = new function(){
                     </div>
                 </div>`,
              `<div class="col-md-12">
-                    <div class="material-input outlined">
+                <label style="color:#0f6694; font-size:11px;" vslang="titles.User Class">User Class</label>
+                <div class="material-input outlined">
                 <select class="data-input" name="user_class" data-field="user_class"></select>
                 <label class="d-none">User Class</label>
                 </div>
@@ -1207,8 +1209,8 @@ this.ModulePanel = new function(){
               cssClass:"",
               createContent:()=>{
                 return [
-                  `<div class="form-group col-md-12">`,
-                  `<label class="form-label" vslang="titles.Application">Application</label>`,
+                  `<div class="col-md-12">`,
+                  `<label style="color:#0f6694; font-size:11px;" vslang="titles.Role Group">Role Group</label>`,
                   `<div class="material-input outlined">`,
                     `<div><select name="app" class="form-control data-input" data-field="app_id"></select></div>`,
                   `</div>`,
@@ -1219,8 +1221,8 @@ this.ModulePanel = new function(){
                     `<label vslang="titles.Module Name">Module Name</label>`,
                  `</div>`,
                  `</div>`,
-                 `<div class="form-group col-md-12">`,
-                   `<label class="form-label" vslang="titles.Visibility">Visibility</label>`,
+                 `<div class="col-md-12">`,
+                   `<label style="color:#0f6694; font-size:11px;" vslang="titles.Visibility">Visibility</label>`,
                    `<div><select name="visibility"  class="data-input" data-field="hidden"></select></div>`,
                  `</div>`,
                ].join('');
@@ -1497,29 +1499,39 @@ this.PermissionPanel = new function(){
            createContent:()=>{
              return [
               `
-              <div name="force_id_field" class="form-group col-md-12">`,
-                `<label class="form-label" vslang="titles.Permission Number">Permission Number</label>`,
-                `<div><input name ="force_permission_id" class="data-input form-control" data-field="force_permission_id" /></div>`,
+              <div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                `<input name ="force_permission_id" class="data-input form-control" data-field="force_permission_id" placeholder=" " />`,
+                `<label vslang="titles.Permission Number">Permission Number</label>`,
               `</div>`,
-             `<div class="form-group col-md-12">`,
-                `<label class="form-label" vslang="titles.Application">Application</label>`,
+              `</div>`,
+             `<div class="col-md-12">`,
+             `<div class="material-input outlined">`,
                 `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
               `</div>`,
-              `<div class="form-group col-md-12">`,
-              `<label class="form-label" vslang="titles.Module">Module</label>`,
+              `</div>`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
               `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
             `</div>`,
-              `<div class="form-group col-md-12">`,
-                 `<label class="form-label" vslang="titles.Permission Name">Permission Name</label>`,
-                 `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
+            `</div>`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                `<input name ="name" class="data-input form-control" data-field="name" placeholder=" " />`,
+                `<label vslang="titles.Permission Name">Permission Name</label>`,
+              `</div>`,
               `</div>`,
             `<div class="form-group col-md-12">`,
-              `<label class="form-label" vslang="titles.Category">Category</label>`,
+            `<div class="material-input outlined">`,
               `<div><select name="category" class="form-control data-input" data-field="category"></select></div>`,
            `</div>`,
+           `</div>`,
            `<div class="form-group col-md-12">`,
-             `<label class="form-label" vslang="titles.Actions">Actions</label>`,
-             `<div><input name="actions" class="form-control data-input" data-field="actions" /> </div>`,
+             `<div class="material-input outlined">`,
+                `<input name ="actions" class="data-input form-control" data-field="actions" placeholder=" " />`,
+                `<label vslang="titles.Actions">Actions</label>`,
+              `</div>`,
+         
           `</div>`,
             ].join('');
            },
@@ -1804,77 +1816,112 @@ this.ReportPanel = new function(){
  
     this.createOrUpdateReport = (op)=>{
         that.ReportDialog = that.ReportDialog || new GeneralDialog({
-           cssClass:"modal-lg",
+           cssClass:"modal-md",
            createContent:()=>{
              return [
              '<div class="row">',
-              `<div class="form-group col-md-6">`,
-                `<label class="form-label" vslang="titles.Application">Application</label>`,
+              `<div class="col-md-6">`,
+              `<label style="color:#0f6694; font-size:11px;" vslang="titles.Application">Application</label>`,
+              `<div class="material-input outlined">`,
                 `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
               `</div>`,
-              `<div class="form-group col-md-6">`,
-              `<label class="form-label" vslang="titles.Module">Module</label>`,
+              `</div>`,
+              `<div class="col-md-6">`,
+              `<label style="color:#0f6694; font-size:11px;" vslang="titles.Module">Module</label>`,
+
+              `<div class="material-input outlined">`,
               `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
             `</div>`,
-              `<div class="form-group col-md-6">`,
-                 `<label class="form-label" vslang="titles.Report Name">Report Name</label>`,
-                 `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
+            `</div>`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                 `<input name="name" class="form-control data-input" data-field="name" placeholder=" " />`,
+                 `<label vslang="titles.Report Name">Report Name</label>`,
+              `</div>`,
               `</div>`,
 
-              `<div class="form-group col-md-6">`,
-                `<label class="form-label" vslang="titles.Report Code">Report Code</label>`,
-                 `<div><input name="code" class="form-control data-input" data-field="code"/></div>`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                 `<input name="code" class="form-control data-input" data-field="code" placeholder= " " />`,
+                 `<label vslang="titles.Report Code">Report Code</label>`,
+             `</div>`,
              `</div>`,
 
-              `<div class="form-group col-md-12">`,
-                `<label class="form-label" vslang="titles.Params">Report Filters</label>`,
-                `<div><input name="params" class="form-control data-input" data-field="params"/></div>`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                `<input name="params" class="form-control data-input" data-field="params" placeholder= " " />`,
+                `<label vslang="titles.Params">Report Filters</label>`,
+             `</div>`,
              `</div>`,
 
-              `<div class="form-group col-md-12">`,
+              `<div class="col-md-12">`,
+              `<div class="material-input outlined">`,
+                `<input name="export_group" class="form-control data-input" data-field="report_group" placeholder= " " />`,
                 `<label class="form-label" vslang="titles.Report Group">Report Group</label>`,
-                `<div><input name="export_group" class="form-control data-input" data-field="report_group"/></div>`,
+             `</div>`,
              `</div>`,
     
-             `<div class="form-group col-md-6 d-none">`,
-             `<label class="form-label" vslang="titles.Export to PDF">Export to PDF</label>`,
-             `<div><input type="number" name="export_pdf" class="form-control data-input" data-field="export_pdf"/></div>`,
-          `</div>`,
-          `<div class="form-group col-md-6 d-none">`,
-          `<label class="form-label" vslang="titles.Export to Excel">Export to Excel</label>`,
-          `<div><input type="number" name="export_excel" class="form-control data-input" data-field="export_excel"/></div>`,
+             `<div class="col-md-6 d-none">`,
+                `<div class="material-input outlined">`,
+                `<input type="number" name="export_pdf" class="form-control data-input" data-field="export_pdf" placeholder= " " />`,
+                `<label vslang="titles.Export to PDF">Export to PDF</label>`,
+                `</div>`,
+            `</div>`,
+          `<div class="col-md-6 d-none">`,
+          `<div class="material-input outlined">`,
+          `<input type="number" name="export_excel" class="form-control data-input" data-field="export_excel" placeholder= " "/>`,
+          `<label vslang="titles.Export to Excel">Export to Excel</label>`,
+       `</div>`,
        `</div>`,
 
-    `<div class="form-group col-md-6 d-none">`,
-       `<label class="form-label" vslang="titles.Export to CSV">Export To CSV</label>`,
-       `<div><input type="number" name="export_csv" class="form-control data-input" data-field="export_csv"/></div>`,
+    `<div class="col-md-6 d-none">`,
+        `<div class="material-input outlined">`,
+        `<input type="number" name="export_csv" class="form-control data-input" data-field="export_csv"/>`,
+        `<label vslang="titles.Export to CSV">Export To CSV</label>`,
+        `</div>`,
      `</div>`,
-     `<div class="form-group col-md-12">`,
-        `<label class="form-label" vslang="titles.Actions">Actions</label>`,
-        `<div><input type="text" name="actions" class="form-control data-input" data-field="actions"/></div>`,
+     `<div class="col-md-12">`,
+     `<div class="material-input outlined">`,
+        `<input type="text" name="actions" class="form-control data-input" data-field="actions" placeholder= " " />`,
+        `<label vslang="titles.Actions">Actions</label>`,
      `</div>`,
-        `<div class="form-group col-md-6">`,
+     `</div>`,
+        `<div class="col-md-12">`,
+        `<div class="material-input outlined">`,
+            `<input type="number" name="display_order" class="form-control data-input" data-field="display_order" placeholder=" " />`,
             `<label class="form-label" vslang="titles.Display Order">Display Order</label>`,
-            `<div><input type="number" name="display_order" class="form-control data-input" data-field="display_order"/></div>`,
+        `</div>`,
         `</div>`,
     '</div>'     
    ].join('');
     
     },
-    // contentCreated:(me)=>{
-
-    // },
+      contentCreated:(me)=>{
+                    const header = me.divModal.querySelector('.modal-header');
+                    const headerTitle = header.querySelector('.modal-title');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important;';
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(headerTitle);
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+  
+            },
            showCancelButton:true,
            buttons:[
               {
-                  label:"Cancel",
+                  label:"<span>Cancel</span>",
+                  cssClass:"btn btn-sm text-white btn-warning",
                   click:(me,btn)=>{
                      me.hide(false);
                   }
                 },
                 {
                   label:"<span>Save</span>",
-                  cssClass:"btn btn-primary",
+                  cssClass:"btn btn-sm btn-yp-custom",
                   click:(me,btn,divModal)=>{
                       let p = me.getData();
                       //report_id is primary key of table "reports", while "id" is, in fact, the permission's ID 

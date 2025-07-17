@@ -9,7 +9,7 @@ const SetPasswordDialog = (()=>{
         cssClass:null,
         createContent:(me)=>{
             return [`<div class="form-group">
-                    <label for="password" class="form-label  " vslang="titles.New Password">New Password</label>
+                    <label style="color:#0f6694; font-size:11px;" vslang="titles.New Password">New Password</label>
                     <div class="input-group flex-nowrap">
                         <input name="password" type="password" class="form-control data-input" data-field="password" autocomplete="off">
                         <div class="input-group-text" role="button">
@@ -18,7 +18,7 @@ const SetPasswordDialog = (()=>{
                     </div>
                 </div>`,
             `<div class="form-group">
-            <label for="confirm_password" class="form-label  " vslang="titles.Confirm New Password">Confirm New Password</label>
+            <label style="color:#0f6694; font-size:11px;" vslang="titles.Confirm New Password">Confirm New Password</label>
             <div class="input-group flex-nowrap">
                 <input name="confirm_password" type="password" class="form-control data-input" data-field="confirm_password" autocomplete="off">
                 <div class="input-group-text" role="button">
