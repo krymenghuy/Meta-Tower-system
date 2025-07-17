@@ -1,101 +1,161 @@
 "use strict";
 
 var HomeComponent = new (function () {
-    const mThis = this;
-    mThis.title_prop = "Welcome To Yeav Pheng Association";
-    mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_home_component");
-    mThis.slideContainer = mThis.self.querySelector('#slideContainer');
-    mThis.boxGraveMap = mThis.self.querySelector('#boxGraveMap');
-   this.init = () => {
-        if(mThis.initAlready) return;
-        
-        mThis.initAlready = true;
-    }
-    this.renderSlide = () => {
-    let html = '';
-    html = [`
-        <div class="slides">
-        <img src="${main_view.asset_url}/images/yavpheng/History001.jpg" class="active">
-        <img src="${main_view.asset_url}/images/yavpheng/History002.jpg">
-        <img src="${main_view.asset_url}/images/yavpheng/History003.jpg">
-        <img src="${main_view.asset_url}/images/yavpheng/History004.jpg">
-        <img src="${main_view.asset_url}/images/yavpheng/History005.jpg">
-        <img src="${main_view.asset_url}/images/yavpheng/History006.jpg">
+	const mThis = this;
+	mThis.title_prop = "Welcome To Yeav Pheng Association";
+	mThis.base_url = main_view.base_url;
+	mThis.self = main_view.VSAppContent.querySelector("#_main_home_component");
 
-      </div>
+	mThis.init = () => {
+		if (mThis.initAlready) return;
+		mThis.initAlready = true;
+	};
 
-      <div class="buttons">
-        <span class="next">&#10095;</span>
-        <span class="prev">&#10094;</span>
-      </div>
-
-      <div class="dotsContainer">
-            ${[...Array(6)].map((_, i) =>
-                `<div class="dot${i === 0 ? ' active' : ''}" attr="${i}"></div>`
-            ).join('')}
-        </div>
-
-        `].join('');
-        mThis.slideContainer.innerHTML = html;
-       mThis.setupSlider();
-
-    }
-	mThis.renderGraveMap = (data = {}) => {
-		const grave = data.graves || { small: 0, medium: 0, large: 0 };
-		const member = data.members || { total: 0, active: 0, inactive: 0 };
-
-		const html = `
-			<div class="box-map">
-				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg" style="width:100%; height: 380px; object-fit: cover;">
-			</div>
-
-			<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 0; background-color: #fefefe;">
-				<h5 style="text-align: center; color:#fff; background-color: #4b442b; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
-					Grave Yard Map
-				</h5>
-				<div style="padding: 10px; display: flex; justify-content: space-around; font-size: 14px;">
-					<div style="text-align: center;">
-						<div style="font-weight: bold;">Grave S</div>
-						<div style="font-size: 18px;">${grave.small}</div>
-					</div>
-					<div style="text-align: center;">
-						<div style="font-weight: bold;">Grave M</div>
-						<div style="font-size: 18px;">${grave.medium}</div>
-					</div>
-					<div style="text-align: center;">
-						<div style="font-weight: bold;">Grave L</div>
-						<div style="font-size: 18px;">${grave.large}</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 6px; background-color: #fefefe;">
-				<div class="d-flex w-100 flex-column justify-content-between h-100" style="background-color: #4b442b;">
-					<div class="d-flex align-items-center p-2">
-						<div class="bg--icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff;">
-							<img class="img--size" src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+mThis.renderDashboard = (d) => {
+	const div = mThis.self;
+	const html = `
+		<div class="row gy-3 mt-3">
+			<div class="col-sm-3">
+				<div class="count-card p-2 rounded-3 shadow">
+					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
+						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
+							<img src="${main_view.asset_url}/images/default/default-user.png" alt="Icon" style="width: 100%; height: auto;">
 						</div>
-						<div class="ms-3 flex-fill text-center">
-							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-white shadow bg-yp-custom rounded-2 d-inline-block">
-								${member.total}
+						<div class="flex-fill text-center">
+							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+								${d.members?.total ?? 0}
 							</span>
-							<div class="text-white mt-3 fw-semibold">Member Count</div>
+							<div class="text-white mt-2 fw-semibold">Member Count</div>
 							<div class="text-white mt-1" style="font-size: 13px;">
-								Active: ${member.active} | Inactive: ${member.inactive}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		`;
+		<div class="col-sm-3">
+				<div class="count-card p-2 rounded-3 shadow">
+					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
+						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
+							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+						</div>
+						<div class="flex-fill text-center">
+							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+								${d.graves?.small ?? 0}
+							</span>
+							<div class="text-white mt-2 fw-semibold">Grave Size S</div>
+							<div class="text-white mt-1" style="font-size: 13px;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
+			<div class="col-sm-3">
+				<div class="count-card p-2 rounded-3 shadow">
+					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
+						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
+							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+						</div>
+						<div class="flex-fill text-center">
+							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+								${d.graves?.medium ?? 0}
+							</span>
+							<div class="text-white mt-2 fw-semibold">Grave Size M</div>
+							<div class="text-white mt-1" style="font-size: 13px;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-3">
+				<div class="count-card p-2 rounded-3 shadow">
+					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
+						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
+							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+						</div>
+						<div class="flex-fill text-center">
+							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+								${d.graves?.large ?? 0}
+							</span>
+							<div class="text-white mt-2 fw-semibold">Grave Size L</div>
+							<div class="text-white mt-1" style="font-size: 13px;">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+		</div>
+		<div class="row gy-3 mt-3">
+			<div class="col-sm-12 col-lg-6">
+				<div class="slide-container" id="slideContainer"></div>
+			</div>
+			<div class="col-sm-12 col-lg-6">
+				<div class="grave-map-container" id="boxGraveMap"></div>
+			</div>
+		</div>
+	`;
+
+	div.innerHTML = html;
+
+	mThis.slideContainer = div.querySelector('#slideContainer');
+	mThis.boxGraveMap = div.querySelector('#boxGraveMap');
+
+	mThis.renderSlide();
+	mThis.renderGraveMap(d);
+
+	Object.assign(div.style, {
+		height: (window.innerHeight - 90) + "px",
+		overflow: 'auto'
+	});
+
+	window.onresize = () => {
+		Object.assign(div.style, {
+			height: (window.innerHeight - 90) + "px",
+			overflow: 'auto'
+		});
+	};
+};
+
+
+	mThis.renderSlide = () => {
+		const html = `
+			<div class="slides">
+				${[1,2,3,4,5,6].map((n, i) => 
+					`<img src="${main_view.asset_url}/images/yavpheng/History00${n}.jpg" class="${i === 0 ? 'active' : ''}">`
+				).join('')}
+			</div>
+			<div class="buttons">
+				<span class="next">&#10095;</span>
+				<span class="prev">&#10094;</span>
+			</div>
+			<div class="dotsContainer">
+				${[...Array(6)].map((_, i) =>
+					`<div class="dot${i === 0 ? ' active' : ''}" attr="${i}"></div>`
+				).join('')}
+			</div>
+		`;
+		mThis.slideContainer.innerHTML = html;
+		mThis.setupSlider();
+	};
+
+	mThis.renderGraveMap = (data = {}) => {
+		const grave = data.graves || { small: 0, medium: 0, large: 0 };
+		const member = data.members || { total: 0, active: 0, inactive: 0 };
+
+		let html = `
+			<div class="box-map">
+				<h5 class="text-center text-white mb-3">Grave Slot Map</h5>
+				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
+			</div>
+		`;
 		mThis.boxGraveMap.innerHTML = html;
 	};
 
-
-    mThis.setupSlider = () => {
-		const slideImages = mThis.slideContainer.querySelectorAll('.slides img');
+	mThis.setupSlider = () => {
+		const slides = mThis.slideContainer.querySelectorAll('.slides img');
 		const next = mThis.slideContainer.querySelector('.next');
 		const prev = mThis.slideContainer.querySelector('.prev');
 		const dots = mThis.slideContainer.querySelectorAll('.dot');
@@ -108,55 +168,46 @@ var HomeComponent = new (function () {
 		prev.addEventListener('click', slidePrev);
 		container.addEventListener('mouseover', () => clearInterval(autoPlay));
 		container.addEventListener('mouseout', () => autoPlay = setInterval(slideNext, 3000));
-
-		dots.forEach(dot =>
-			dot.addEventListener('click', () => gotoSlide(+dot.getAttribute('attr')))
-		);
+		dots.forEach(dot => dot.addEventListener('click', () => gotoSlide(+dot.getAttribute('attr'))));
 
 		function slideNext() {
-			changeSlide((counter + 1) % slideImages.length);
+			changeSlide((counter + 1) % slides.length);
 		}
-
 		function slidePrev() {
-			changeSlide((counter - 1 + slideImages.length) % slideImages.length);
+			changeSlide((counter - 1 + slides.length) % slides.length);
 		}
-
 		function gotoSlide(index) {
 			if (index !== counter) changeSlide(index);
 		}
-
 		function changeSlide(index) {
-			slideImages[counter].classList.remove('active');
+			slides[counter].classList.remove('active');
 			dots[counter].classList.remove('active');
 			counter = index;
-			slideImages[counter].classList.add('active');
+			slides[counter].classList.add('active');
 			dots[counter].classList.add('active');
 		}
 	};
 
-   
-	mThis.loadDashBoardData = (filter,onFinish) => {
-		vsapi.call(`${main_view.base_url}/ypg/dashboard/data`, {agent:null,loader: false,useCache:true,cacheTTL:3000,cluster:main_view.apiCluster}).then(res => {
-		const data = res.status_code === 200 ? (res.data) : {};
-		console.log(4444,data);
-		
-		//const data = res.status_code === 200 ? res.data : {};
-		if(typeof onFinish === 'function')onFinish(data);
+	mThis.loadDashBoardData = (filter, onFinish) => {
+		vsapi.call(`${main_view.base_url}/ypg/dashboard/data`, {
+			agent: null,
+			loader: false,
+			useCache: true,
+			cacheTTL: 3000,
+			cluster: main_view.apiCluster
+		}).then(res => {
+			const data = res.status_code === 200 ? res.data : {};
+			console.log("Dashboard Data", data);
+			if (typeof onFinish === 'function') onFinish(data);
 		});
-		// mThis.renderSlide();
-		// mThis.renderGraveMap($data);
-		if (typeof onFinish === "function") onFinish();
 	};
+
 	mThis.show = function () {
 		main_view.setContentView(mThis.self, mThis.title_prop);
-		mThis.loadDashBoardData(mThis.db_filter, (d) => {
-			mThis.renderSlide();
-		mThis.renderGraveMap(d);
+		mThis.loadDashBoardData(null, (d) => {
+			mThis.renderDashboard(d);
 		});
 	};
-		return mThis;
-	})();
 
-
-
-
+	return mThis;
+})();
