@@ -1,102 +1,92 @@
-<div id="_main_home_component" class="mobile-padding p-3" style="display: none;">
-  <div class="slide-map-wrapper my-3">
-    <div class="slide-container" id="slideContainer">
-      <!-- <div class="slides">
-        <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">
-        <img src="{{ asset('assets/images/yavpheng/History002.jpg') }}">
-        <img src="{{ asset('assets/images/yavpheng/History003.jpg') }}">
-        <img src="{{ asset('assets/images/yavpheng/History004.jpg') }}">
-        <img src="{{ asset('assets/images/yavpheng/History005.jpg') }}">
-        <img src="{{ asset('assets/images/yavpheng/History006.jpg') }}">
+<div id="_main_home_component" class="mobile-padding p-3" style="display: none">
+    <!-- <div class="row my-3 g-3">
+      <div class="col-lg-8">
+        <div class="slide-container" id="slideContainer">
+          <div class="slides">
+            <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">
+            <img src="{{ asset('assets/images/yavpheng/History002.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History003.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History004.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History005.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History006.jpg') }}">
+          </div>
+
+          <div class="buttons">
+            <span class="next">&#10095;</span>
+            <span class="prev">&#10094;</span>
+          </div>
+
+          <div class="dotsContainer">
+            <div class="dot active" attr="0" onclick="switchImage(this)"></div>
+            <div class="dot" attr="1" onclick="switchImage(this)"></div>
+            <div class="dot" attr="2" onclick="switchImage(this)"></div>
+            <div class="dot" attr="3" onclick="switchImage(this)"></div>
+            <div class="dot" attr="4" onclick="switchImage(this)"></div>
+            <div class="dot" attr="5" onclick="switchImage(this)"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="buttons">
-        <span class="next">&#10095;</span>
-        <span class="prev">&#10094;</span>
+      <div class="col-lg-4 d-flex flex-column gap-3">
+        <div class="box-map">
+          <img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" alt="Graveyard Map">
+        </div>
+
+        <div class="count-card">
+          <h5 class="text-center text-white bg-dark p-2 m-0 border-bottom">
+            Grave Yard Map
+          </h5>
+          <div class="d-flex justify-content-around text-center p-2">
+            <div>
+              <div class="fw-bold">Grave S</div>
+              <div class="fs-5">45</div>
+            </div>
+            <div>
+              <div class="fw-bold">Grave M</div>
+              <div class="fs-5">30</div>
+            </div>
+            <div>
+              <div class="fw-bold">Grave L</div>
+              <div class="fs-5">18</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="count-card p-2">
+          <div class="bg-dark text-white d-flex align-items-center p-2 rounded">
+            <div class="bg-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+              <img src="/assets/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+            </div>
+            <div class="flex-fill text-center">
+              <span class="fw-semibold fs-5 text-white px-3 py-1 bg-secondary rounded-2 d-inline-block">
+                10
+              </span>
+              <div class="text-white mt-2 fw-semibold">Member Count</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="dotsContainer">
-        <div class="dot active" attr='0' onclick="switchImage(this)"></div>
-        <div class="dot" attr='1' onclick="switchImage(this)"></div>
-        <div class="dot" attr='2' onclick="switchImage(this)"></div>
-        <div class="dot" attr='3' onclick="switchImage(this)"></div>
-        <div class="dot" attr='4' onclick="switchImage(this)"></div>
-        <div class="dot" attr='5' onclick="switchImage(this)"></div>
-      </div> -->
-    </div>
-   <div class="d-flex box-hleft" id="boxGraveMap" style="flex-direction: column; gap: 10px;">
-		<!-- <div class="box-map">
-			<img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" style="width:100%; height: 380px; object-fit: cover;">
-		</div>
-		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 0; background-color: #fefefe;">
-			<h5 style="text-align: center; color:#fff; background-color: #4b442b; padding: 10px; margin: 0; border-bottom: 1px solid #ddd;">
-				Grave Yard Map
-			</h5>
-			<div style="padding: 10px; display: flex; justify-content: space-around; font-size: 14px;">
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave S</div>
-					<div style="font-size: 18px;">45</div>
-				</div>
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave M</div>
-					<div style="font-size: 18px;">30</div>
-				</div>
-				<div style="text-align: center;">
-					<div style="font-weight: bold;">Grave L</div>
-					<div style="font-size: 18px;">18</div>
-				</div>
-			</div>
-		</div>
-		<div class="count-card" style="border: 3px solid #ede6d6; box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2); padding: 6px; background-color: #fefefe;">
-			<div class="d-flex w-100 flex-column justify-content-between h-100" style="background-color: #4b442b;">
-			<div class="d-flex align-items-center p-2">
-				<div class="bg--icon d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff;">
-					<img class="img--size" src="\assets\images\yavpheng\CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
-				</div>
-				<div class="ms-3 flex-fill text-center">
-					<span class="fw-semibold fs-5 text-white px-3 py-1 border border-white shadow bg-yp-custom rounded-2 d-inline-block">
-						10
-					</span>
-					<div class="text-white mt-3 fw-semibold">
-						Member Count
-					</div>
-				</div>
-			</div>
-		</div>
-
-		</div> -->
-	</div>
-
-
-
-
-  </div>
-
+    </div> -->
 </div>
+<style>
 
-  <style>
-#_main_home_component {
-        display: flex;
-        flex-direction: column;
-        height: 630px;
-        /* background-color: #fff; */
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
 
 .slide-map-wrapper {
 	display: flex;
 	gap: 20px;
 	justify-content: center;
 	align-items: flex-start;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
 }
 
 .slide-container {
 	position: relative;
-	width: 800px;
-	height: 620px;
+	width: 100%;
+	max-width: 1000px;
+	height: auto;
+	padding-bottom:40px;
+	aspect-ratio: 4 / 3;
 	border: 3px solid #ede6d6;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
@@ -105,7 +95,7 @@
 .slides {
 	position: relative;
 	width: 100%;
-	height: calc(100% - 40px);
+	height: 100%;
 	overflow: hidden;
 }
 
@@ -114,7 +104,7 @@
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit: cover; */
 	opacity: 0;
 	transition: opacity 0.5s ease;
 }
@@ -123,30 +113,32 @@
 	opacity: 1;
 	z-index: 1;
 }
-
-.box-hleft {
-	width: 400px;
+.grave-map-container {
+	width: 100%;
+	max-width: 1000px;
 	height: auto;
-}
-
-.box-map {
-	width: 400px;
-	height: auto;
+	padding-bottom:40px;
+	aspect-ratio: 4 / 3;
 	border: 3px solid #ede6d6;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
-	overflow: hidden;
-	padding: 0;
+	background: linear-gradient(rgb(39 68 74), rgb(255 255 255));
+}
+.box-map {
+	width: 100%;
+	height: 100%;
+	padding: 15px;
+	box-sizing: border-box;
 }
 
 .box-map img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	border-radius: 6px;
+	display: block;
 }
 
 
-/* Arrow buttons */
 .buttons span {
 	position: absolute;
 	top: 50%;
@@ -179,7 +171,7 @@ span.prev:hover {
 
 .dotsContainer {
 	position: absolute;
-	bottom: 5px;
+	bottom: 2px;
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 2;
@@ -200,6 +192,22 @@ span.prev:hover {
 	background-color: #555;
 }
 
-  </style>
+@media (max-width: 768px) {
+	.slide-container,
+	.box-map {
+		max-width: 100%;
+		aspect-ratio: 4 / 3;
+	}
 
+	.buttons span {
+		font-size: 20px;
+		padding: 10px;
+	}
 
+	.dotsContainer .dot {
+		width: 12px;
+		height: 12px;
+		border-width: 2px;
+	}
+}
+</style>

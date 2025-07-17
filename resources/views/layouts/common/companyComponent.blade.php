@@ -28,43 +28,61 @@
             </div>
             <div class="col-lg-9">
                 <div class="row">
-                    <div class="form-group col-lg-12">
-                        <label for="name_kh" class="control-label text-text" vslang="titles.Association Name (khmer)">Association Name (Khmer)</label>
-                        <input type="text" class="form-control data-input" data-field="name_kh">
+                    <div class="col-lg-12">
+                        <div class="material-input outlined">
+                            <input type="text" class="form-control data-input" data-field="name_kh">
+                            <label vslang="titles.Association Name (khmer)">Association Name (Khmer)</label>
+                        </div>
+                        
+                        
                     </div>
-                    <div class="form-group col-lg-12">
-                        <label for="name" class="control-label " vslang="titles.Association Name (English)">Association Name (English)</label>
-                        <input type="text" class="form-control data-input" data-field="name">
+                    <div class="col-lg-12">
+                        <div class="material-input outlined">
+                            <input type="text" class="form-control data-input" data-field="name">
+                            <label vslang="titles.Association Name (English)">Association Name (English)</label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row mt-3">
-            <div class="form-group col-lg-12">
-                <label for="address_kh" class="control-label">Address (Khmer)</label>
-                <textarea type="text" class="form-control data-input" data-field="address_kh"></textarea>
+            <div class="col-lg-12">
+                <div class="material-input outlined">
+                    <textarea type="text" class="form-control data-input" data-field="address_kh"></textarea>
+                    <label vslang="titles.Address (Khmer)">Address (Khmer)</label>
+                </div>
             </div>
-            <div class="form-group col-lg-12">
-                <label for="address" class="control-label">Address (Latin)</label>
-                <textarea type="text" class="form-control data-input" data-field="address"></textarea>
+            <div class="col-lg-12">
+                <div class="material-input outlined">
+                    <textarea type="text" class="form-control data-input" data-field="address"></textarea>
+                    <label vslang="titles.Address (Latin)">Address (Latin)</label>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-3">
-                <label for="email" class="control-label">Email</label>
-                <input type="text" class="form-control data-input" data-field="email">
+                 <div class="material-input outlined">
+                    <input type="text" class="form-control data-input" data-field="email">
+                    <label vslang="titles.Email">Email</label>
+                </div>
             </div>
             <div class="col-lg-3">
-                <label for="phone_number" class="control-label">Phone Number</label>
-                <input type="text" class="form-control data-input" data-field="phone_number">
+                 <div class="material-input outlined">
+                    <input type="text" class="form-control data-input" data-field="phone_number">
+                    <label vslang="titles.Email">Phone Number</label>
+                </div>
             </div>
             <div class="col-lg-3">
-                <label for="first_cp_name" class="control-label">Contact Pereson Name</label>
-                <input type="text" class="form-control data-input" data-field="first_cp_name">
+                <div class="material-input outlined">
+                    <input type="text" class="form-control data-input" data-field="first_cp_name">
+                    <label vslang="titles.Contact Person Name">Contact Person Name</label>
+                </div>
             </div>
             <div class="col-lg-3">
-                <label for="first_cp_phone" class="control-label">contact person Phone</label>
-                <input type="text" class="form-control data-input" data-field="first_cp_phone">
+                <div class="material-input outlined">
+                    <input type="text" class="form-control data-input" data-field="first_cp_phone">
+                    <label vslang="titles.Contact Person Phone">Contact Person Phone</label>
+                </div>
             </div>
         </div>
         <div class="d-flex align-items-center mt-2">
