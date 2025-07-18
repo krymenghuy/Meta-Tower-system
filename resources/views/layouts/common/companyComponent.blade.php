@@ -14,7 +14,7 @@
                     <div class="w-100 d-flex justify-content-center border rounded-4" style="height:160px;overflow:hidden">
                         <img id="com_imgLogo" class="data-input thumnail" style="max-height:160px" class="data-input" data-field="logo" alt="Logo" />
                     </div>
-                    <div class="d-flex flex-row gap-2 mt-1">
+                    <div class="d-flex flex-row gap-3 mt-3">
                         <button id="com_btnChooseLogo" class="btn btn-sm btn-outline-primary-custom">
                             <i class="fa fa-image fs-5"></i>
                             <span>Choose</span>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-9 mt-4">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="material-input outlined">
@@ -60,25 +60,25 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg-6">
                  <div class="material-input outlined">
                     <input type="text" class="form-control data-input" data-field="email">
                     <label vslang="titles.Email">Email</label>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-6">
                  <div class="material-input outlined">
                     <input type="text" class="form-control data-input" data-field="phone_number">
-                    <label vslang="titles.Email">Phone Number</label>
+                    <label vslang="titles.Phone Number">Phone Number</label>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-6">
                 <div class="material-input outlined">
                     <input type="text" class="form-control data-input" data-field="first_cp_name">
                     <label vslang="titles.Contact Person Name">Contact Person Name</label>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-6">
                 <div class="material-input outlined">
                     <input type="text" class="form-control data-input" data-field="first_cp_phone">
                     <label vslang="titles.Contact Person Phone">Contact Person Phone</label>
@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="d-flex align-items-center mt-2">
-            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-sm btn-primary-custom">
+            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-sm btn-yp-custom">
                 <i class="la la-save fs-5"></i>
                 <span>Save Changes</span>
             </button>
