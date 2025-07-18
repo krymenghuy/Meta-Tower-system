@@ -102,22 +102,17 @@ var GraveInfoComponent = new (function () {
 //     ];
 
 mThis.cols = [
-    {
-        title: "",
-        className: "align-middle text-capitalize",
-    },
+    
     {
         title: "Numero",
         className: "align-middle",
-        width: "60px",
         data: (data, index) => {
-            return `<p class="p-0 mb-0 text-center">${index + 1}</p>`;
+            return `<p class="p-0 mb-0 text-center"><small>${index + 1}</small></p>`;
         }
     },
     {
         title: "Photo",
         className: "align-middle",
-        width: "60px",
         data: (data) => `
             <img
                 class="btn-view-grave-photo"
@@ -131,19 +126,16 @@ mThis.cols = [
     {
         title: "Grave Slot",
         className: "align-middle text-capitalize",
-        width: "100px",
-        data: (data) => `<span class="text-yp-custom">${data.slot_number ?? 'null'}</span>`,
+        data: (data) => `<span class="text-yp-custom"><small>${data.slot_number ?? 'null'}</small></span>`,
     },
     {
         title: "Deceased Name",
         className: "align-middle text-capitalize",
-        width: "150px",
-        data: (data) => `<span class="text-yp-custom">${data.deceased_name ?? ''}</span>`,
+        data: (data) => `<span class="text-yp-custom"><small>${data.deceased_name ?? ''}</small></span>`,
     },
     {
         title: "Size",
         className: "align-middle text-capitalize",
-        width: "80px",
         data: (data) => `
             <span class="badge bg-light text-warning border border-warning fw-bold d-block text-center py-1 w-50px;">
                 ${data.size ?? ''}
@@ -152,28 +144,24 @@ mThis.cols = [
     },
     {
         title: "Recommender",
-        className: "align-middle text-capitalize ",
-        width: "150px",
-        data: (data) => `<span class="text-yp-custom ">${data.recommender ?? ''}</span>`,
+        className: "align-middle text-center text-capitalize ",
+        data: (data) => `<small class="text-yp-custom ">${data.recommender ?? ''}</small>`,
     },
     {
         title: "Remarks",
         className: "align-middle text-capitalize",
-        width: "200px",
-        data: (data) => `<span class="text-yp-custom">${data.location_note ?? 'N/A'}</span>`,
+        data: (data) => `<span class="text-yp-custom"><small>${data.location_note ?? 'N/A'}</small></span>`,
     },
     {
         title: "Last Updated",
         className: "align-middle text-capitalize",
-        width: "160px",
         data: (data) => `
-        <p class="p-0 mb-0 text-yp-custom">${data.update_user}</p>
+        <p class="p-0 mb-0 text-yp-custom"><small>${data.update_user}</small></p>
         <small class="text-muted">${data.updated_at ?? ''}</small>`,
     },
     {
         title: "Status",
         className: "align-middle",
-        width: "100px",
         data: (data) => {
             let status = data.status ?? '';
             let statusClass = '';
@@ -185,12 +173,11 @@ mThis.cols = [
                     statusClass = 'text-success px-2 py-1 d-inline-block';
                     break;
             }
-            return `<span class="${statusClass}">${status}</span>`;
+            return `<span class="${statusClass}"><small>${status}</small></span>`;
         },
     },
     {
         className: 'col_action align-middle',
-        width: "80px",
         data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">

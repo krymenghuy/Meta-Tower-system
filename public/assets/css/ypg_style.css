@@ -734,8 +734,8 @@ g
     color: #27444a;
 
 }
-.table > thead > tr > th, td {
-    text-align: center;
+.table > thead > tr > td {
+    /* text-align: center; */
     font-size: 1rem;
     /* color: #0e75d9; */
     white-space: nowrap;

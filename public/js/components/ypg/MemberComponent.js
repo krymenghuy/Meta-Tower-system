@@ -24,21 +24,21 @@ var MemberComponent =   ( () => {
         {
             title: "Member ID",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom">${data.code ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
         },
         {
             title: "Name",
             className: "align-middle  text-capitalize ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;">${data.name ?? ''}</span>
+                return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;"><small>${data.name ?? ''}</small></span>
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
         {
             title: "Nationality",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.nationality ?? ''}</span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.nationality ?? ''}</small></span>`,
         },
         {
             title: "Contact Info",
@@ -62,14 +62,14 @@ var MemberComponent =   ( () => {
                         target="_blank"
                         title="Open in Telegram"
                         aria-label="Telegram">
-                            <i class="fa-brands fa-telegram me-1" style="font-size:1rem; color:#229ED9;"></i>
+                            <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
                             <small class="text-nowrap">${displayText}</small>
                         </a>`;
                 }
 
                 return `
                     <div class="d-flex flex-column">
-                        <div><i class="fa-solid fa-phone me-1 text-success" style="font-size:1rem;"></i><span class="text-nowrap text-yp-custom">${phone}</span></div>
+                        <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
                         <div>${telegramHTML}</div>
                     </div>`;
             }
@@ -84,7 +84,7 @@ var MemberComponent =   ( () => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:150px;">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
+                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
                     </div>
                 `;
             }
@@ -99,11 +99,11 @@ var MemberComponent =   ( () => {
 
 
                 if (isExpired === 0) {
-                    return `<span class="text-yp-custom">Permanent</span>`;
+                    return `<small class="text-yp-custom">Permanent</small>`;
                 }
 
                 if (!dateStr) {
-                    return `<span class="text-muted">N/A</span>`;
+                    return `<small class="text-muted">N/A</small>`;
                 }
 
                 const today = new Date().setHours(0, 0, 0, 0);
@@ -112,7 +112,7 @@ var MemberComponent =   ( () => {
                 if (expirationDate < today) {
                     return `
                 <span class="text-nowrap text-yp-custom">
-                    <i class="fas fa-exclamation-circle me-1 text-danger"></i>${dateStr}
+                    <small>${dateStr}</small>
                     <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p>
                 </span>
             `;
@@ -121,13 +121,13 @@ var MemberComponent =   ( () => {
                 if (expirationDate === today) {
                     return `
                 <span class="text-warning">
-                    <i class="fas fa-exclamation-triangle me-1"></i>${dateStr}
+                    <small>${dateStr}</small>
                     <small class="text-warning">(Expires Today)</small>
                 </span>
             `;
                 }
 
-                return `<span class="text-yp-custom">${dateStr}</span>`;
+                return `<small class="text-yp-custom">${dateStr}</small>`;
             }
         },
 
@@ -144,7 +144,7 @@ var MemberComponent =   ( () => {
                     cls = 'text-success px-2 py-1 d-inline-block';
                 }
 
-                return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
+                return `<span class="${cls} text-capitalize"><small>${data.status ?? ''}</small></span>`;
             },
         },
         //    {
@@ -169,8 +169,8 @@ var MemberComponent =   ( () => {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ?? ''}</span>
-                    <small class="text-left text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-center text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <small class="text-center text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
