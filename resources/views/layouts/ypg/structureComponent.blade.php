@@ -1,53 +1,34 @@
 <style>
-/* .structure-container {
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */
-    #_main_structure_component {
-  padding: 25px 10px;
-}
- .structure-container {
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(rgb(39 68 74), rgb(228 228 228)),
-              url('{{ asset('assets/images/yavpheng/bg_structure.jpg') }}');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
+  .structure-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgb(39, 68, 74), rgb(228, 228, 228));
+    padding: 30px 15px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
 
+  .box-structure {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
 
-.structure-frame {
-  position: relative;
-  width: 460px;
-  border: 1px solid #ddd;
-  background-color:#27444a;
-}
+  }
 
-.structure-front-image {
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.img-structure {
-  max-width: 100%;
-  height: 635px;
-}
-
+  .box-structure img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 </style>
 
-<div id="_main_structure_component" style="display:none;">
-    <div class="structure-container" id="structureContainer">
-    <!-- <div class="structure-frame">
-      <div class="structure-front-image">
-        <img class="img-structure" src="{{ asset('assets/images/yavpheng/Structure_ypg.jpg') }}"/>
-      </div>
-    </div> -->
-  </div>
+<div id="_main_structure_component">
+    <!-- <div class="structure-container" id="structureContainer"> -->
+      <!-- <div class="box-structure">
+        <img src="{{ asset('assets/images/yavpheng/Structure_ypg.jpg') }}" alt="Structure Image" />
+      </div> -->
+    <!-- </div> -->
 </div>

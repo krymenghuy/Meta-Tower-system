@@ -42,7 +42,7 @@ mThis.renderDashboard = (d) => {
 							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
 								${d.graves?.small ?? 0}
 							</span>
-							<div class="text-white mt-2 fw-semibold">Grave Size S</div>
+							<div class="text-white mt-2 fw-semibold">Grave S</div>
 							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
 						</div>
@@ -60,7 +60,7 @@ mThis.renderDashboard = (d) => {
 							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
 								${d.graves?.medium ?? 0}
 							</span>
-							<div class="text-white mt-2 fw-semibold">Grave Size M</div>
+							<div class="text-white mt-2 fw-semibold">Grave M</div>
 							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
 						</div>
@@ -78,7 +78,7 @@ mThis.renderDashboard = (d) => {
 							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
 								${d.graves?.large ?? 0}
 							</span>
-							<div class="text-white mt-2 fw-semibold">Grave Size L</div>
+							<div class="text-white mt-2 fw-semibold">Grave L</div>
 							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
 						</div>
@@ -122,10 +122,15 @@ mThis.renderDashboard = (d) => {
 
 	mThis.renderSlide = () => {
 		const html = `
+
+			<div class="box-slides">
+				<h5 class="text-center text-white mb-3">Yeav Pheng History</h5>
+
 			<div class="slides">
 				${[1,2,3,4,5,6].map((n, i) => 
 					`<img src="${main_view.asset_url}/images/yavpheng/History00${n}.jpg" class="${i === 0 ? 'active' : ''}">`
 				).join('')}
+			</div>
 			</div>
 			<div class="buttons">
 				<span class="next">&#10095;</span>
@@ -147,7 +152,7 @@ mThis.renderDashboard = (d) => {
 
 		let html = `
 			<div class="box-map">
-				<h5 class="text-center text-white mb-3">Grave Slot Map</h5>
+				<h5 class="text-center text-yp-custom mb-3">Grave Slot Map</h5>
 				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
 			</div>
 		`;

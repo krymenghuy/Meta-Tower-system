@@ -126,7 +126,6 @@ var CompanyComponent = (function(){
 
     mThis.setData = function(com) {
         let i = 0, c;
-        console.log(123, com);
 
         do {
             c = mThis.fields[i];
