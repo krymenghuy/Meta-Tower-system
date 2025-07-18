@@ -84,12 +84,20 @@
 	position: relative;
 	width: 100%;
 	max-width: 1000px;
-	height: auto;
-	padding-bottom:40px;
+	height: 100%;
+	padding-bottom:10px;
 	aspect-ratio: 4 / 3;
 	border: 3px solid #ede6d6;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
+	background: linear-gradient(rgb(39 68 74), rgb(255 255 255));
+
+}
+.box-slides {
+	width: 100%;
+	height: 100%;
+	padding: 15px;
+	box-sizing: border-box;
 }
 
 .slides {
@@ -103,7 +111,7 @@
 	position: absolute;
 	inset: 0;
 	width: 100%;
-	height: 100%;
+	height: auto;
 	/* object-fit: cover; */
 	opacity: 0;
 	transition: opacity 0.5s ease;
@@ -117,24 +125,24 @@
 	width: 100%;
 	max-width: 1000px;
 	height: auto;
-	padding-bottom:40px;
+	padding-bottom:10px;
 	aspect-ratio: 4 / 3;
 	border: 3px solid #ede6d6;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
-	background: linear-gradient(rgb(39 68 74), rgb(255 255 255));
+	background-color: #fff;
 }
 .box-map {
 	width: 100%;
-	height: 100%;
+	height: auto;
 	padding: 15px;
 	box-sizing: border-box;
 }
 
 .box-map img {
 	width: 100%;
-	height: 100%;
-	border-radius: 6px;
+	height: auto;
+	border-radius: 2px;
 	display: block;
 }
 
@@ -171,7 +179,7 @@ span.prev:hover {
 
 .dotsContainer {
 	position: absolute;
-	bottom: 2px;
+	bottom: 40px;
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 2;

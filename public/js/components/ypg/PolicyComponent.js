@@ -7,35 +7,37 @@ var PolicyComponent = new (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        const imageBox = mThis.self.querySelector("#imageStructureBox");
-        imageBox.innerHTML = '';
-
-        const scrollContainer = document.createElement('div');
-        scrollContainer.className = 'policy-scroll-container';
-
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'policy-img-wrapper';
-
-        const imgChinese = document.createElement('img');
-        imgChinese.src = '/assets/images/yavpheng/policy_chinese.jpg';
-        imgChinese.className = 'policy-img policy-img-left';
-        imgContainer.appendChild(imgChinese);
-
-        const imgKhmer = document.createElement('img');
-        imgKhmer.src = '/assets/images/yavpheng/policy_khmer.jpg';
-        imgKhmer.className = 'policy-img';
-        imgContainer.appendChild(imgKhmer);
-
-        scrollContainer.appendChild(imgContainer);
-        imageBox.appendChild(scrollContainer);
-
         mThis.initAlready = true;
+    };
+
+    mThis.renderPolicy = () => {
+        const div = mThis.self;
+        const html = `
+            <div class="policy-container">
+                <div class="box-policy">
+                    <img src="${main_view.asset_url}/images/yavpheng/policy_khmer.jpg" class="policy-img" alt="Policy Khmer" />
+                    <img src="${main_view.asset_url}/images/yavpheng/policy_chinese.jpg" class="policy-img" alt="Policy Chinese" />
+                </div>
+            </div>
+        `;
+        div.innerHTML = html;
+
+        Object.assign(div.style, {
+            height: (window.innerHeight - 70) + "px",
+            overflow: 'auto'
+        });
+
+        window.onresize = () => {
+            Object.assign(div.style, {
+                height: (window.innerHeight - 70) + "px",
+                overflow: 'auto'
+            });
+        };
     };
 
     mThis.show = () => {
         mThis.init();
-        mThis.self.style.display = 'flex';
+        mThis.renderPolicy();
         main_view.setContentView(mThis.self, mThis.title_prop);
     };
 
