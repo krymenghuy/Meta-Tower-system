@@ -10,29 +10,29 @@ use Illuminate\Http\Request;
 
 class GraveSlotController extends Controller
 {
-    public function save(Request $req)
+    public function saveGrave(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $id = $req->slot_id ?? $req->id;
-        $slot = new GraveSlot($id, $ss);
-        $res = $slot->save($req->all());
+        $grave = new GraveSlot($id, $ss);
+        $res = $grave->saveGrave($req->all());
         return JDV::raw($res);
     }
 
-    public function getList(Request $req)
+    public function getListGrave(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $grave = new GraveSlot();
-        return JDV::result($grave->getList($req->all(), $ss));
+        return JDV::result($grave->getGraveList($req->all(), $ss));
     }
 
-   public function getDetails(Request $req)
+   public function getGraveDetails(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -41,8 +41,8 @@ class GraveSlotController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        $slot = new GraveSlot();
-        return JDV::result($slot->getDetails($req->id, $ss));
+        $grave = new GraveSlot();
+        return JDV::result($grave->getGraveDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -51,30 +51,30 @@ class GraveSlotController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $slot = new GraveSlot();
-        return JDV::result($slot->getFormOptions($req->id, $ss));
+        $grave = new GraveSlot();
+        return JDV::result($grave->getFormOptions($req->id, $ss));
     }
 
-    public function delete(Request $req)
+    public function deleteGrave(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-        $slot = new GraveSlot();
-        $res = $slot->delete($id);
+        $grave = new GraveSlot();
+        $res = $grave->deleteGrave($id);
         return JDV::raw($res);
     }
 
-    public function updateStatus(Request $req){
+    public function updateGraveStatus(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-        $slot = new GraveSlot();
-        $res = $slot->updateStatus($req->status_id, $id,$ss);
+        $grave = new GraveSlot();
+        $res = $grave->updateGraveStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
     }
     function savePhoto(Request $req){

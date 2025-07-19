@@ -195,9 +195,18 @@ var MemberComponent =   ( () => {
         mThis.MemberListView = new ListView('_member_list', {
             fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
             perPage: 10,
+            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+               rowCreated:(data,index,tr)=>{
+                
+              
+              tr.dataset.statusid = data.status_id;
+              tr.classList.add('member');
+              tr.setAttribute('id',['member_id',data.id].join('')); 
+
+            }, 
             listContainerClass: null
         });
 
@@ -216,13 +225,13 @@ var MemberComponent =   ( () => {
         };
 
 
-        const pr_tbl = mThis.MemberListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 220) + 'px';
+        mThis.pr_tbl = mThis.MemberListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 220) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
         mThis.tblMembers = mThis.MemberListView.getTable();
         mThis.initDropdownMenus(mThis.tblMembers);
@@ -334,7 +343,7 @@ var MemberComponent =   ( () => {
     const tr = lnk.closest('tr');
     console.log(1234,tr);
     
-    const status_id = VSUtil.properCase(tr?.dataset.status_id || "");
+    const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
     const inputOptions = {
         title: 'Change Status',
         dataLabel: "Member status",
@@ -348,7 +357,6 @@ var MemberComponent =   ( () => {
         ],
         defaultValue: status_id 
     };
-        console.log("default:", status_id);
 
     InputBox2.show(inputOptions, (selected) => {
         if (!selected) return;
@@ -481,7 +489,7 @@ const MemberDialog = (() => {
                             </div>
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder="091-234-567" />
                                     <label>Phone Number</label>
                                 </div>
                             </div>

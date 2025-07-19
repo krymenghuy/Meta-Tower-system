@@ -19,7 +19,7 @@ class GraveSlot
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr, $id = null)
+    public function saveGrave($arr, $id = null)
     {
         $id = $id ?? $this->id;
         $ss = $this->userInfo;
@@ -64,7 +64,7 @@ class GraveSlot
         return DV::error('Error saving grave slot');
     }
 
-    public function getList($arr, $ss = null)
+    public function getGraveList($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -115,7 +115,7 @@ class GraveSlot
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function getDetails($id, $ss = null)
+    public function getGraveDetails($id, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -138,7 +138,7 @@ class GraveSlot
     public function getFormOptions($id,$ss)
     {
         $subs_id = $ss->subs_id;
-        $grave_slot = self::getDetails($id) ?? null;
+        $grave_slot = self::getGraveDetails($id) ?? null;
 
         return (object) [
             'grave_slot' => $grave_slot,
@@ -147,29 +147,17 @@ class GraveSlot
         ];
     }
 
-    public function delete($id)
+    public function deleteGrave($id)
     {
         $id = $id ?? $this->id;
-        if (empty($id)) {
-            return DV::error('Invalid ID');
-        }
-        $res = DB::table('grave_slots')->where('id', $id)->delete();
-        if ($res) {
-            return DV::depends(1, ['id' => $id]);
-        }
-        return DV::error('Error deleting grave slot');
+        $delete = DB::table('grave_slots')->where('id', $id)->delete();
+        return DV::depends($delete,['action','deleted']);
     }
 
-    function updateStatus($status_id, $id = null, $ss = null)
+    function updateGraveStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
-
-        $currentStatus = DB::table('grave_slots')->where('id', $id)->value('status_id');
-
-        if ($currentStatus == $status_id) {
-            return DV::error('It is the same current status');
-        }
-
+        $id = $id ?$id : $this->id;
         $x = DB::table('grave_slots')->where('id', $id)->update([
             'status_id'   => $status_id,
             'update_user' => $ss->full_name,
