@@ -489,7 +489,7 @@ const MemberDialog = (() => {
                             </div>
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder="091-234-567" />
+                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
                                     <label>Phone Number</label>
                                 </div>
                             </div>
