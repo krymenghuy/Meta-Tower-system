@@ -144,7 +144,7 @@ var MemberComponent =   ( () => {
                     cls = 'text-success px-2 py-1 d-inline-block';
                 }
 
-                return `<span class="${cls} text-capitalize"><small>${data.status ?? ''}</small></span>`;
+                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
         //    {
@@ -330,54 +330,44 @@ var MemberComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk) => {
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
-        let tr = lnk.closest('tr');
+   mThis.changeStatus = (id, lnk) => {
+    const tr = lnk.closest('tr');
+    console.log(1234,tr);
+    
+    const status_id = VSUtil.properCase(tr?.dataset.status_id || "");
+    const inputOptions = {
+        title: 'Change Status',
+        dataLabel: "Member status",
+        valueMember: "status_id",
+        textMember: "name",
+        confirmButtonText: "Save",
+        blankErrorMessage: "Status is not correct!",
+        data: [
+            { status_id: "1", name: "Active" },
+            { status_id: "2", name: "Inactive" }
+        ],
+        defaultValue: status_id 
+    };
+        console.log("default:", status_id);
 
-        let status_id = VSUtil.properCase(tr ? tr.dataset.status_id : "");
+    InputBox2.show(inputOptions, (selected) => {
+        if (!selected) return;
+        if (!AuthManager.allowed(321)) return;
 
-        let inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Member status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [{
-                status_id: "1",
-                name: "Active"
-            },
-            {
-                status_id: "2",
-                name: "Inactive"
-            }],
-            defaultValue: status_id
-        };
+        const payload = { id, status_id: selected.value };
 
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value
-                };
-                if (!AuthManager.allowed(321)) return;
-                vsapi.call(`${mThis.base_url}/ypg/member/update-status`, p).then(res => {
-                    if (res.status_code === 200) {
-                        // mThis.elFilter_leave_request_status.value = d.value;
-                        InputBox2.close();
-                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
-                        cv_interact.success('The leave request status has been updated');
-                        // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.MemberListView.showPage(mThis.getFilterData());
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
+        vsapi.call(`${mThis.base_url}/ypg/member/update-status`, payload).then(res => {
+            if (res.status_code === 200) {
+                InputBox2.close();
+                cv_interact.success('The member status has been updated');
+                mThis.MemberListView.showPage(mThis.getFilterData());
+            } else {
+                cv_interact.error(res.error_message || 'Unable to update status');
             }
         });
-    }
+    });
+};
+
 
     mThis.editMember = (id, menuLink) => {
 

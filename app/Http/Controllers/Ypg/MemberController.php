@@ -9,7 +9,7 @@ use XAuthService;
 use Illuminate\Http\Request;
 class MemberController extends Controller
 {
-    public function save(Request $req)
+    public function saveMember(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -17,21 +17,21 @@ class MemberController extends Controller
         }
         $id = $req->member_id ?? $req->id;
         $member = new Member($id, $ss);
-        $res = $member->save($req->all(),$id);
+        $res = $member->saveMember($req->all(),$id);
         return JDV::raw($res);
     }
 
-    public function getList(Request $req)
+    public function getListMember(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $member = new Member();
-        return JDV::result($member->getList($req->all(), $ss));
+        return JDV::result($member->getListMember($req->all(), $ss));
     }
 
-    public function getDetails(Request $req)
+    public function memberDetails(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -41,7 +41,7 @@ class MemberController extends Controller
             return JDV::error('Invalid ID');
         }
         $member = new Member();
-        return JDV::result($member->getDetails($req->id, $ss));
+        return JDV::result($member->memberDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -54,7 +54,7 @@ class MemberController extends Controller
         return JDV::result($member->getFormOptions($req->id, $ss));
     }
 
-    public function delete(Request $req)
+    public function deleteMember(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -62,18 +62,18 @@ class MemberController extends Controller
         }
         $id = $req->id ?? null;
         $member = new Member();
-        $res = $member->delete($id);
+        $res = $member->deleteMember($id);
         return JDV::raw($res);
     }
 
-    public function updateStatus(Request $req){
+    public function updateMemberStatus(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
         $member = new Member();
-        $res = $member->updateStatus($req->status_id, $id,$ss);
+        $res = $member->updateMemberStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
     }
 

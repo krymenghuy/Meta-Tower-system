@@ -30,7 +30,7 @@ class Member
         return null;
     }
 
-public function save($arr = [], $id = null)
+public function saveMember($arr = [], $id = null)
 {
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
@@ -111,7 +111,7 @@ public function save($arr = [], $id = null)
 
 
 
-    public function getList($arr, $ss = null)
+    public function getListMember($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -219,7 +219,7 @@ public function save($arr = [], $id = null)
     {
         return url('') . '/assets/images/default/default-staff.png';
     }
-    public function getDetails($id, $ss = null)
+    public function memberDetails($id, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -241,7 +241,7 @@ public function save($arr = [], $id = null)
     public function getFormOptions($id,$ss)
     {
         $subs_id = $ss->subs_id;
-        $member_details = self::getDetails($id) ?? null;
+        $member_details = self::memberDetails($id) ?? null;
 
         return (object) [
             'member_details' => $member_details,
@@ -252,7 +252,7 @@ public function save($arr = [], $id = null)
 
     }
 
-    public function delete($id)
+    public function deleteMember($id)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('members')->where('id', $id)->delete();
@@ -262,7 +262,7 @@ public function save($arr = [], $id = null)
         return DV::error('Error deleting member');
     }
 
-    function updateStatus($status_id, $id = null, $ss = null)
+    function updateMemberStatus($status_id, $id = null, $ss = null)
     {
 
         $ss = $ss ? $ss : $this->userInfo;

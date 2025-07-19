@@ -70,15 +70,15 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->group(function () {
-    Route::post('/save', [MemberController::class, 'save']);
+    Route::post('/save', [MemberController::class, 'saveMember']);
     Route::post('/profile/photo',[MemberController::class,'getProfilePhoto']);
     Route::post('/profile/photo/delete',[MemberController::class,'deleteProfilePhoto']);
     Route::post('/profile/photo/save',[MemberController::class,'saveProfilePhoto']);
-    Route::post('/list-paginate', [MemberController::class, 'getList']);
-    Route::post('/details', [MemberController::class, 'getDetails']);
+    Route::post('/list-paginate', [MemberController::class, 'getListMember']);
+    Route::post('/details', [MemberController::class, 'memberDetails']);
     Route::post('/form-options', [MemberController::class, 'getFormOptions']);
-    Route::post('/delete', [MemberController::class, 'delete']);
-    Route::post('/update-status', [MemberController::class, 'updateStatus']);
+    Route::post('/delete', [MemberController::class, 'deleteMember']);
+    Route::post('/update-status', [MemberController::class, 'updateMemberStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('task-type')->group(function () {

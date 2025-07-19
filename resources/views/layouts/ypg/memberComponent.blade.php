@@ -4,12 +4,12 @@
                 <div class="d-flex w-50">
                     <input type="text" class="form-control rounded-2 filter-field" id="_search_member" placeholder="Search Member">
                 </div>
-                <div class="d-flex">
+                <div class="d-flex w-50">
                     <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
                 </div>
             
             </div>
-            <div class="d-flex justify-content-end w-50">
+            <div class="d-flex justify-content-end">
                 <button type="button" class="btn_add" id="_btnAddMember">
                     <i class="fa fa-street-view mr-2"></i>
                     <span  vslang="buttons.Add Member"></span>
