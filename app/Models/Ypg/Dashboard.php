@@ -100,7 +100,7 @@ public static function countGraveBySize($ss) {
     $results = DB::table('grave_slots')
         ->select('size', DB::raw('COUNT(*) as count'))
         ->where('branch_id', $ss->branch_id)
-        ->where('status_id', 1) // 1 = used
+        // ->where('status_id', 1) 
         ->whereIn('size', $sizes)
         ->groupBy('size')
         ->get();
