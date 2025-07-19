@@ -88,7 +88,7 @@ return [
                 '/assets/js/ImageBox.js',
                 '/assets/js/ImageHelper.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/ListView.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
                 //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',
                 '/assets/js/InputBoxes.bs5.js',
                 //'/assets/js/xlsx/xlsx.full.min.js',

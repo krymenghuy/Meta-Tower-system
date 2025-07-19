@@ -33,7 +33,9 @@ class StyleProvider
                     'assets/css/vs_loader.css',
                     //'assets/css/jquery.datepicker2.css',
                     'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
-                    'assets/css/vs-pagination.css',
+                    //'assets/css/vs-pagination.css',
+                    'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
+                     'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                     'assets/css/sweetalert2.min.css',
                     'assets/plugins/chart.js/Chart.css',
                     'assets/css/ypg_style.css', /** Must be placed below all.min.css **/
