@@ -85,8 +85,11 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/ypg/main.js',
                 '/assets/js/SearchWidget.js',
-                '/assets/js/ImageBox.js',
-                '/assets/js/ImageHelper.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
+                //'/assets/js/ImageHelper.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
+               //'/assets/js/ImageBox.js',
+              
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
                 //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',

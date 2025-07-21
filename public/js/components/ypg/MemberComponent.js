@@ -257,11 +257,19 @@ var MemberComponent =   ( () => {
         mThis.tblMembers.addEventListener("click", function (e) {
             let btn = e.target.closest(".btn-view-member-photo");
             if (btn) {
-                let op = {
-                    id: btn.dataset.member_id,
-                    image_url: btn.src
-                };
-                PreViewMemberDialog.show(op);
+                ImageBox.viewPhoto({
+                    image_url:btn.src,
+                    photoViewSize: "lg", //lg or xl
+                    //freeZoom:false,
+                    features:['zoom','rotate','brightness','contrast']
+                });
+
+                // let op = {
+                //     id: btn.dataset.member_id,
+                //     image_url: btn.src
+                // };
+                // PreViewMemberDialog.show(op);
+                return;
             }
         })
 
