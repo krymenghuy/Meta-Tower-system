@@ -411,7 +411,7 @@ const RegisterGraveDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -483,6 +483,7 @@ const RegisterGraveDialog = (() => {
                     me.graveImageBox = new ImageBox(div_grave_photo, {
                         defaultPhotoName: 'default-skill',
                         containerClass: 'w-100',
+                        showPhotoView:false,
                         imgClass: ["w-100", "h-100", "object-fit-cover", "rounded-3"],
                         dataset: { "field": "photo" },
                         beforeDeleteImage: async () => {
