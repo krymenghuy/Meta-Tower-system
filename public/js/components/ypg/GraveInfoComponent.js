@@ -243,12 +243,18 @@ mThis.cols = [
         mThis.tblGrave.addEventListener("click", function (e) {
             let btn = e.target.closest(".btn-view-grave-photo");
             if (btn) {
-                let op = {
-                    id: btn.dataset.id,
-                    member_id: btn.dataset.member_id,
-                    image_url: btn.src,
-                };
-                PreViewGraveDialog.show(op);
+//                 let op = {
+//                     id: btn.dataset.id,
+//                     member_id: btn.dataset.member_id,
+//                     image_url: btn.src,
+//                 };
+//                 PreViewGraveDialog.show(op);
+                ImageBox.viewPhoto({
+                    image_url:btn.src,
+                    photoViewSize: "lg", //lg or xl
+                    //freeZoom:false,
+                    features:['zoom','rotate','brightness','contrast']
+                }); 
             }
         });
 

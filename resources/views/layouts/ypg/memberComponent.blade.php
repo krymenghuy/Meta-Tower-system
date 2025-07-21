@@ -4,7 +4,7 @@
                 <div class="d-flex w-50">
                     <input type="text" class="form-control rounded-2 filter-field" id="_search_member" placeholder="Search Member">
                 </div>
-                <div class="d-flex w-50">
+                <div class="d-flex">
                     <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
                 </div>
             
