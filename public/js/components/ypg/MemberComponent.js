@@ -258,10 +258,16 @@ var MemberComponent =   ( () => {
             let btn = e.target.closest(".btn-view-member-photo");
             if (btn) {
                 ImageBox.viewPhoto({
-                    image_url:btn.src,
-                    photoViewSize: "lg", //lg or xl
+                    imageUrl:btn.src,
+                    features:['zoom','rotate','brightness','contrast'],
+                    imageClass:'',
+                    dialogClass:'',
+                    dialogSize:'lg',
+                    freeZoom:true,
+                    //imageClass:"",
+                    //photoViewSize: "lg", //lg or xl
                     //freeZoom:false,
-                    features:['zoom','rotate','brightness','contrast']
+                   
                 });
 
                 // let op = {

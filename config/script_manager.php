@@ -29,6 +29,7 @@ return [
         '^cv_interact$',
         '^InputBox1$',
         '^InputBox2$',
+        '^ImageHelper$',
         '^ImageBox$',
         '^KTApp$','^KTUtil$','^KTLayout$',
         '^OptionEditor$',
