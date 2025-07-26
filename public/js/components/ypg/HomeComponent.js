@@ -41,7 +41,7 @@ mThis.renderDashboard = (d) => {
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<div class="text-muted" style="font-size: 14px;">
-								Member Count
+								Grave Count
 							</div>
 							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.small ?? 0}
@@ -62,7 +62,7 @@ mThis.renderDashboard = (d) => {
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<div class="text-muted" style="font-size: 14px;">
-								Member Count
+								Grave Count
 							</div>
 							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.medium ?? 0}
@@ -83,7 +83,7 @@ mThis.renderDashboard = (d) => {
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<div class="text-muted" style="font-size: 14px;">
-								Member Count
+								Grave Count
 							</div>
 							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.large ?? 0}
