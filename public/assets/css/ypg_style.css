@@ -2051,3 +2051,11 @@ tr {
       color: #0f6694;
       cursor: pointer;
     }
+    .photo-viewer-img {
+    object-fit: contain;
+    max-height: 80vh;
+    max-width: 100%;
+    transition: transform 0.2s ease;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    filter: brightness(1) contrast(1);
+}
