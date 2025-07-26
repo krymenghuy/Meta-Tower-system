@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 29);
+    StyleManager::render('ypg-style', 1, 30);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -96,7 +96,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 31);
 
-    ScriptManager::render('ypg-components', 1, 229);
+    ScriptManager::render('ypg-components', 1, 230);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -239,7 +239,7 @@
                                     <div class="dropdown shadow-lg rounded-2 user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <img class="mr-2" src="<?php echo $user->image_url; ?>" style="height:25px" />
+                                            <img class="mr-1" src="<?php echo $user->image_url; ?>" style="height:25px" />
                                                 <span style="color:#fff;">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();

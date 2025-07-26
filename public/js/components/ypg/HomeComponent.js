@@ -16,77 +16,89 @@ mThis.renderDashboard = (d) => {
 	const html = `
 		<div class="row gy-3 mt-3">
 			<div class="col-sm-3">
-				<div class="count-card p-2 rounded-3 shadow">
-					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
-						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
-							<img src="${main_view.asset_url}/images/default/default-user.png" alt="Icon" style="width: 100%; height: auto;">
-						</div>
-						<div class="flex-fill text-center">
-							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-muted" style="font-size: 14px;">
+								Member Count
+							</div>
+							<div class="fs-1 fw-bold text-dark">
 								${d.members?.total ?? 0}
-							</span>
-							<div class="text-white mt-2 fw-semibold">Member Count</div>
-							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
+							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								Increased from last month
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>MC</span>
 						</div>
 					</div>
 				</div>
 			</div>
-		<div class="col-sm-3">
-				<div class="count-card p-2 rounded-3 shadow">
-					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
-						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
-							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
-						</div>
-						<div class="flex-fill text-center">
-							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+			<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-muted" style="font-size: 14px;">
+								Member Count
+							</div>
+							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.small ?? 0}
-							</span>
-							<div class="text-white mt-2 fw-semibold">Grave S</div>
-							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
+							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								Increased from last month
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>S</span>
 						</div>
 					</div>
 				</div>
 			</div>
-
 			<div class="col-sm-3">
-				<div class="count-card p-2 rounded-3 shadow">
-					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
-						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
-							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
-						</div>
-						<div class="flex-fill text-center">
-							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-muted" style="font-size: 14px;">
+								Member Count
+							</div>
+							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.medium ?? 0}
-							</span>
-							<div class="text-white mt-2 fw-semibold">Grave M</div>
-							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
+							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								Increased from last month
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>M</span>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="col-sm-3">
-				<div class="count-card p-2 rounded-3 shadow">
-					<div class="d-flex align-items-center bg-yp-custom text-white p-2 rounded">
-						<div class="d-flex align-items-center justify-content-center bg-white rounded-2 me-3" style="width: 48px; height: 48px;">
-							<img src="${main_view.asset_url}/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
-						</div>
-						<div class="flex-fill text-center">
-							<span class="fw-semibold fs-5 text-white px-3 py-1 border border-warning shadow bg-yp-custom rounded-2 d-inline-block">
+				<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-muted" style="font-size: 14px;">
+								Member Count
+							</div>
+							<div class="fs-1 fw-bold text-dark">
 								${d.graves?.large ?? 0}
-							</span>
-							<div class="text-white mt-2 fw-semibold">Grave L</div>
-							<div class="text-white mt-1" style="font-size: 13px;">
 							</div>
+							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								Increased from last month
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>L</span>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			
 		</div>
 		<div class="row gy-3 mt-3">
 			<div class="col-sm-12 col-lg-6">
@@ -124,7 +136,7 @@ mThis.renderDashboard = (d) => {
 		const html = `
 
 			<div class="box-slides">
-				<h5 class="text-center text-white mb-3">Yeav Pheng History</h5>
+				<h6 class="text-left text-white mb-3">Yeav Pheng History</h6>
 
 			<div class="slides">
 				${[1,2,3,4,5,6].map((n, i) => 
@@ -152,7 +164,7 @@ mThis.renderDashboard = (d) => {
 
 		let html = `
 			<div class="box-map">
-				<h5 class="text-center text-yp-custom mb-3">Grave Slot Map</h5>
+				<h6 class="text-lft text-yp-custom mb-3">Grave Slot Map</h6>
 				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
 			</div>
 		`;
