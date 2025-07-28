@@ -27,7 +27,7 @@ mThis.renderDashboard = (d) => {
 							</div>
 							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
-								Increased from last month
+								As of today
 							</div>
 						</div>
 						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
@@ -48,7 +48,7 @@ mThis.renderDashboard = (d) => {
 							</div>
 							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
-								Increased from last month
+								As of today
 							</div>
 						</div>
 						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
@@ -69,7 +69,7 @@ mThis.renderDashboard = (d) => {
 							</div>
 							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
-								Increased from last month
+								As of today
 							</div>
 						</div>
 						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
@@ -90,7 +90,7 @@ mThis.renderDashboard = (d) => {
 							</div>
 							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
-								Increased from last month
+								As of today
 							</div>
 						</div>
 						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
@@ -136,7 +136,7 @@ mThis.renderDashboard = (d) => {
 		const html = `
 
 			<div class="box-slides">
-				<h6 class="text-left text-white mb-3">Yeav Pheng History</h6>
+				<h6 class="text-left text-yp-custom">Yeav Pheng History</h6>
 
 			<div class="slides">
 				${[1,2,3,4,5,6].map((n, i) => 
@@ -164,7 +164,7 @@ mThis.renderDashboard = (d) => {
 
 		let html = `
 			<div class="box-map">
-				<h6 class="text-left text-white mb-3">Grave Slot Map</h6>
+				<h6 class="text-left text-white">Grave Slot Map</h6>
 				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
 			</div>
 		`;
