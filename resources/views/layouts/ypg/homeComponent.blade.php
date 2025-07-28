@@ -91,7 +91,8 @@
 	border-radius:12px;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
-	background: linear-gradient(rgb(39 68 74), rgb(255 255 255));
+	background-color: #ffffff47;
+
 
 }
 .box-slides {
@@ -134,7 +135,7 @@
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
 	/* background-color: #fff; */
-	background: linear-gradient(rgb(39 68 74), rgb(255 255 255));
+	background-color: #ffffff47;
 }
 .box-map {
 	width: 100%;

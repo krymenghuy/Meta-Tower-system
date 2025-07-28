@@ -136,7 +136,7 @@ mThis.renderDashboard = (d) => {
 		const html = `
 
 			<div class="box-slides">
-				<h6 class="text-left text-white mb-3">Yeav Pheng History</h6>
+				<h6 class="text-left text-yp-custom mb-3">Yeav Pheng History</h6>
 
 			<div class="slides">
 				${[1,2,3,4,5,6].map((n, i) => 
@@ -164,7 +164,7 @@ mThis.renderDashboard = (d) => {
 
 		let html = `
 			<div class="box-map">
-				<h6 class="text-left text-white mb-3">Grave Slot Map</h6>
+				<h6 class="text-left text-yp-custom mb-3">Grave Slot Map</h6>
 				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
 			</div>
 		`;
