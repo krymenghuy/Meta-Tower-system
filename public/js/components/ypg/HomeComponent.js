@@ -19,13 +19,13 @@ mThis.renderDashboard = (d) => {
 				<div class="p-4 rounded-4 shadow bg-white">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
-							<div class="text-muted" style="font-size: 14px;">
+							<div class="text-yp-custom" style="font-size: 14px;">
 								Member Count
 							</div>
-							<div class="fs-1 fw-bold text-dark">
+							<div class="fs-1 fw-bold text-yp-custom">
 								${d.members?.total ?? 0}
 							</div>
-							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
 								Increased from last month
 							</div>
@@ -40,13 +40,13 @@ mThis.renderDashboard = (d) => {
 				<div class="p-4 rounded-4 shadow bg-white">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
-							<div class="text-muted" style="font-size: 14px;">
-								Grave Count
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Small 
 							</div>
-							<div class="fs-1 fw-bold text-dark">
+							<div class="fs-1 fw-bold text-yp-custom">
 								${d.graves?.small ?? 0}
 							</div>
-							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
 								Increased from last month
 							</div>
@@ -61,13 +61,13 @@ mThis.renderDashboard = (d) => {
 				<div class="p-4 rounded-4 shadow bg-white">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
-							<div class="text-muted" style="font-size: 14px;">
-								Grave Count
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Medium 
 							</div>
-							<div class="fs-1 fw-bold text-dark">
+							<div class="fs-1 fw-bold text-yp-custom">
 								${d.graves?.medium ?? 0}
 							</div>
-							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
 								Increased from last month
 							</div>
@@ -82,13 +82,13 @@ mThis.renderDashboard = (d) => {
 				<div class="p-4 rounded-4 shadow bg-white">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
-							<div class="text-muted" style="font-size: 14px;">
-								Grave Count
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Large 
 							</div>
-							<div class="fs-1 fw-bold text-dark">
+							<div class="fs-1 fw-bold text-yp-custom">
 								${d.graves?.large ?? 0}
 							</div>
-							<div class="text-success d-flex align-items-center mt-1" style="font-size: 13px;">
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
 								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
 								Increased from last month
 							</div>
@@ -164,7 +164,7 @@ mThis.renderDashboard = (d) => {
 
 		let html = `
 			<div class="box-map">
-				<h6 class="text-lft text-yp-custom mb-3">Grave Slot Map</h6>
+				<h6 class="text-left text-white mb-3">Grave Slot Map</h6>
 				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
 			</div>
 		`;
