@@ -91,7 +91,7 @@
 	border-radius:12px;
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
-	background-color: #ffffff47;
+	background-color: #ffffff;
 
 
 }
@@ -126,7 +126,7 @@
 }
 .grave-map-container {
 	width: 100%;
-	max-width: 1000px;
+	max-width: 600px;
 	height: auto;
 	padding-bottom:10px;
 	aspect-ratio: 4 / 3;
@@ -135,7 +135,7 @@
 	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
 	flex-shrink: 0;
 	/* background-color: #fff; */
-	background-color: #ffffff47;
+	background-color: #4a4724;
 }
 .box-map {
 	width: 100%;
