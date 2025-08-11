@@ -470,7 +470,7 @@ const MemberDialog = (() => {
                         `<form>
                             <div class="row justify-content-center">
                                 <div class="col-3">
-                                    <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
+                                    <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:120px; height:120px;">
                                     <div name="div_member_photo" class="data-input h-100 w-100" data-field="photo"></div>
                                     </div>
                                     <label class="mt-2 text-muted small d-block text-center">Profile Photo</label>

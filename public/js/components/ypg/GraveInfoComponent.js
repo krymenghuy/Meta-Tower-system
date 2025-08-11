@@ -424,13 +424,10 @@ const RegisterGraveDialog = (() => {
                     return `
                         <div class="row p-2">
                             <div class="col-md-4 d-flex flex-column justify-content-center align-items-center mb-3">
-                                <div class="border border-2 border-ypg-custom rounded-3 overflow-hidden d-flex flex-column align-items-center justify-content-center"
-                                    style="width: 140px; height: 130px; cursor: pointer; background-color: #f8f8f8;">
-                                    <div name="div_grave_photo"
-                                        class="w-100 h-100"
-                                        style="background-size: cover; background-position: center;">
+                                <div class="border border-ypg-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
+                                    style="width: 200px; height: 130px;">
+                                    <div name="div_grave_photo" class="w-100 h-100">
                                     </div>
-                                    <label class="mt-2 text-muted small d-block text-center">Grave Photo</label>
                                 </div>
                             </div>
 
