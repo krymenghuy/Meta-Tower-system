@@ -94,9 +94,9 @@
     <?php
     ScriptManager::render('priority-one', 1, 9);
     ScriptManager::render('primary', 1, 13);
-    ScriptManager::render('primary-defer', 1, 35);
+    ScriptManager::render('primary-defer', 1, 37);
 
-    ScriptManager::render('ypg-components', 1, 237);
+    ScriptManager::render('ypg-components', 1, 238);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
