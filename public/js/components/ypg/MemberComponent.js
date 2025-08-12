@@ -323,10 +323,10 @@ var MemberComponent =   ( () => {
                     name: "delete_member"
                 },
             ],
-            adjustPosition: {
-                top: -200,
-                left: -300
-            },
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
