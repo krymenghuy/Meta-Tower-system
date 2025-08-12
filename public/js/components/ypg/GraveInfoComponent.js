@@ -292,10 +292,10 @@ mThis.cols = [
                     name: "delete_grave"
                 },
             ],
-            adjustPosition: {
-                top: -200,
-                left: -300
-            },
+//             adjustPosition: {
+//                 top: 0,
+//                 left: 0
+//             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case 'edit_grave': {
