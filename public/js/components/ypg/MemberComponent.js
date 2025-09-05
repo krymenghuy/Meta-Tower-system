@@ -2,7 +2,7 @@
 
 var MemberComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Member Management";
+    mThis.title_prop = "Tenant Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_member_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
