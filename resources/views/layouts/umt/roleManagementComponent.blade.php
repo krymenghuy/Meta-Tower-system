@@ -3,24 +3,12 @@
   /* .tr-disallowed td.prn-name {
     color: #000;
   } */
-  .card:hover{
+  .card-content:hover{
     cursor: pointer;
-    border:1px solid #ffb822 !important;
+    border: 2px solid #194075 !important;
     
   }
-  
-  .role-name-title{
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        width:50px;
-        height:40px;
-        border-radius:10px;
-        background-color: #ffb822 ;
-        color:white;
-        font-size: 20px;
-        
-  }
+
 .role-card{
   padding: 10px;
 } 
@@ -69,7 +57,7 @@
     background-color: #f5f5f5; /* Change to your preferred hover background color */
 }
 div.role-card.selected > div.card-content {
-   border:2px solid green !important;
+   border:2px solid #194075 !important;
 }
 
 .user-table td{
@@ -94,25 +82,25 @@ div.role-card.selected > div.card-content {
         <div class="d-flex flex-row justify-content-between align-items-center p-1">
             <div class="d-flex flex-row justify-content-between align-items-center" style="min-width:40%">
                  <div>
-                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-yp-custom shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
+                    <a data-state="1" href="javascript:void(0)" style="padding: 5px 5px 2px 5px;" class="bg-primary-custom shadow-lg rounded-3" id="um_lnk_toggle_list"></a>
                  </div> 
                  <div class="" id="um_search_widget"></div>
             </div>
             <div class="d-flex flex-row justify-content-between w-100">
                 <div class="d-flex flex-row justify-content-start align-items-center p-2">
                     <!-- <span style="border:1.5px dotted blue;border-radius:40%;padding:5px;margin-top:-10px;min-width:30px" class="text-center">15</span> -->
-                    <div class="d-flex flex-row justify-content-center text-yp-custom align-items-start gap-2"><span class=""></span> <h5 id="um_selected_role"></h5></div>  
+                    <div class="d-flex flex-row justify-content-center align-items-start gap-2 text-primary-custom"><span class=""></span> <h5 id="um_selected_role"></h5></div>  
                 </div>
                <div class="d-flex flex-row gap-2">
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_lnkNewRole" class="shadow-lg bg-yp-custom rounded-2 p-2">
-                             <span class=" text-nowrap text-white" vslang="buttons.Add Role"></span>
+                          <a href="javascript:void(0)" id="_lnkNewRole" class="btnAddNewEdv w-100">
+                             <span class=" text-nowrap text-white" vslang="buttons.Add Role">Add Role</span>
                           </a>
                       </div>
                     
                       <div class="d-flex align-items-center">
-                          <a href="javascript:void(0)" id="_um_btn_pdf" class="shadow-lg bg-warning rounded-2 p-2">
-                              <i class="fa fa-print text-white"></i> <span class=" text-white" vslang="buttons.Print"></span>
+                          <a href="javascript:void(0)" id="_um_btn_pdf" class="btn-print">
+                              <i class="fa fa-print text-white me-2"></i> <span class="text-white" vslang="buttons.Print">Print</span>
                           </a>
                       </div>
                </div>
@@ -134,18 +122,16 @@ div.role-card.selected > div.card-content {
         <div class="w-100 p-1 mt-2 vs-tab-body">
            <div id="view_users" data-view="view_users" class="tab-page w-100" style="display:none">
                <div class="h-100 d-flex flex-column flex-wrap pl-3 pr-3">
-                  <div class="d-flex flex-row gap-2">
-                     <div>
-                        <form action="">
-                        <input type="text" class="form-control form-control-sm rounded-2 border border-secondary" id="_um_role_search_user" placeholder="Search user">
-                        </form>
+                  <div class="d-flex flex-row gap-3">
+                     <div class="pt-2">
+                        <input type="text" class="form-control" id="_um_role_search_user" placeholder="Search user">
                      </div>
-                      <div class="d-flex pt-2 gap-2">
-                        <a href="javascript:void(0)" id="_um_role_add_member" class=""><span class=" pr-2 pl-2 p-1 bg-primary d-none text-white border border-primary rounded-2" vslang="buttons.Add Member"></span></a>
-                        <a href="javascript:void(0)" id="_um_role_create_user" class=""><span class=" pr-2 pl-2 p-1 bg-yp-custom text-white border border-white rounded-2" vslang="buttons.New Account"></span></a>
+                      <div class="d-flex pt-2 gap-3">
+                        <a href="javascript:void(0)" id="_um_role_add_member" class=""><span class="btnAddNewEdv d-none" vslang="buttons.Add Member">Add Member</span></a>
+                        <a href="javascript:void(0)" id="_um_role_create_user" class=""><span class="btnAddNewEdv" vslang="buttons.New User">New User</span></a>
                       </div>
-                      <div class=" pt-2 gap-2">
-                        <a href="javascript:void(0)" id="_um_role_print_user" class="pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-2"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Users"></span></a>
+                      <div class="pt-2 gap-3">
+                        <a href="javascript:void(0)" id="_um_role_print_user" class="btn-print"> <i class="fa fa-print text-white me-2"> </i><span class="text-white" vslang="buttons.Print Users">Print Users</span></a>
                       </div>
                   </div>
                   <div class="mt-2">
@@ -171,7 +157,7 @@ div.role-card.selected > div.card-content {
                           <a href="javascript:void(0)" id="_um_role_print_module" class="w-25 pr-2 pl-2 p-1 bg-warning text-white border border-warning rounded-4"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print Modules"></span></a> 
                         </div>
                       </div>
-                      <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div> 
+                      <div id="_um_role_mod_list" class="w-50 mt-2 p-3 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div> 
                   </div>
                </div>
            </div>
@@ -185,7 +171,7 @@ div.role-card.selected > div.card-content {
                                 <div><input id="prn_search" class="form-control" placeholder="Search by code or name" autocomplete="off"></div>
                                 <a href="javascript:void(0)" id="_um_role_print_permission" class=" pr-2 pl-2 p-2 bg-warning text-white border border-warning rounded-4 text-nowrap"> <i class="fa fa-print text-white pe-2"> </i><span class=" " vslang="buttons.Print"></span></a> 
                             </div>
-                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:30vh;overflow-y:auto;"></div>
+                            <div id="_um_role_prn_list" class="p-3 w-50 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div>
                         </div>
                    </form>
                </div>
@@ -202,7 +188,7 @@ div.role-card.selected > div.card-content {
                       </div>
                   </form>
 
-                    <div id="_um_role_report_list" class="w-50 p-3 m-1 border border-secondary" style="max-height:50vh;overflow-y:auto;"></div>
+                    <div id="_um_role_report_list" class="w-50 p-3 m-1 border border-secondary" style="max-height:34vh;overflow-y:auto;"></div>
                  </div>
                </div>
            </div>

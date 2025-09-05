@@ -15,6 +15,9 @@ use Illuminate\Support\Carbon; //for testing only
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+
+use function Ramsey\Uuid\v1;
+
 //use App\Models\UM;
 
 // Route::get('/getlogin', function(){
@@ -182,6 +185,28 @@ Route::get('prm/{componentName?}', function ($componentName = null) {
     return view('prm', $data);
 });
  
+Route::get('tenant/{componentName?}', function ($componentName = null) {
+    if (!XAuthService::user()) {
+        // return redirect('/')
+        $base_url = url('/');
+        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        return;
+    };
+    $data = ['defaultComponent' => 'HomeComponent'];
+    return view('tenant', $data);
+});
+
+Route::get('umt/{componentName?}', function ($componentName = null) {
+    if (!XAuthService::user()) {
+        // return redirect('/')
+        $base_url = url('/');
+        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+        return;
+    };
+    $data = ['defaultComponent' => 'RoleManagementComponent'];
+    return view('umt', $data);
+});
+
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //Clear Cache facade value:
