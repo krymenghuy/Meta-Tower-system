@@ -6,7 +6,7 @@
 <head>
     <base href="../">
     <meta charset="utf-8" />
-    <title>Meta Estate</title>
+    <title>Meta Client</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -14,7 +14,7 @@
     <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
     <meta name="sess_user_id" content="{{ sess_user_id() }}" />
     <meta name="base_url" content="{{ url('/') }}" />
-    <meta name="main_route" content="prm" />
+    <meta name="main_route" content="tenant" />
     <meta name="app_id" content="{{ sess_app_id('ypg') }}" />
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
@@ -96,7 +96,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
 
-    ScriptManager::render('prm-components', 1, 238);
+    ScriptManager::render('tenant-components', 1, 238);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
@@ -134,7 +134,7 @@
         <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
             <div class="kt-aside kt-aside--fixed kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
                 id="kt_aside">
-                @include('menus.prm_menu')
+                @include('menus.tenant_menu')
             </div>
             <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
@@ -256,7 +256,7 @@
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog m-2"></i>
-                                                        About Meta Estate
+                                                        About Meta Client
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>
