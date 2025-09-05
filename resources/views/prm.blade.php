@@ -6,7 +6,7 @@
 <head>
     <base href="../">
     <meta charset="utf-8" />
-    <title>Yeav Pheng Association</title>
+    <title>Meta Estate</title>
     <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -14,7 +14,7 @@
     <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
     <meta name="sess_user_id" content="{{ sess_user_id() }}" />
     <meta name="base_url" content="{{ url('/') }}" />
-    <meta name="main_route" content="ypg" />
+    <meta name="main_route" content="prm" />
     <meta name="app_id" content="{{ sess_app_id('ypg') }}" />
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('ypg-style', 1, 37);
+    StyleManager::render('prm-style', 1, 37);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -134,7 +134,7 @@
         <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
             <div class="kt-aside kt-aside--fixed kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
                 id="kt_aside">
-                @include('menus.ypg_menu')
+                @include('menus.prm_menu')
             </div>
             <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
@@ -185,7 +185,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="dropdown  shadow-lg rounded-2 nav--notification d-none">
+                                    <div class="dropdown  shadow-lg rounded-2 nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
                                             <i class="fa-solid fa-bell tool-tip fs-5" style="color:#fff;"></i>
@@ -201,7 +201,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-2 bg-white app--list d-none">
+                                    <div class="dropdown shadow-lg rounded-2 bg-white app--list">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
                                         <i class="fa-solid fa-table tool-tip fs-5" style="color:#fff;"></i>
                                             <span></span>
@@ -256,7 +256,7 @@
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog m-2"></i>
-                                                        About Yeav Pheng
+                                                        About Meta Estate
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>

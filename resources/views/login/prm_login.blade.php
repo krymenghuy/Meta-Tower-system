@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="icon" type="image/png" href="{{'assets/images/yavpheng/CYPA_logo.png'}}"/>
   <?php StyleManager::render('login-styles',1); ?>
-  <title>Yeav Pheng Association</title>
+  <title>Meta Estate</title>
   <script>
     function checkDevice(){
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -122,7 +122,7 @@
 
     <div class="vs-login-card">
       <img src="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" alt="Logo"/>
-      <h4>Sign in to your account</h4>
+      <h4>Sign in to MetaEstate</h4>
       <form action="{{ url('/processLogin') }}" method="POST">
         {{ csrf_field() }}
         <span class="error_text">
@@ -133,8 +133,8 @@
         <button type="submit">Log in</button>
         
       </form>
-      <p>China Yeav Pheng Association</p>
-      <p>Copyright &copy; 2021</p>
+      <p>Meta Estate Project</p>
+      <p>Copyright &copy; 2025</p>
     </div>
   </div>
 </body>

@@ -5,8 +5,8 @@ namespace App\StyleManagement;
 class StyleProvider
 {
     protected static $bundles = [
-            'ypg-style'=>[
-                'output_file'=>'/dist/css/lc_hr_style.css?v=18',
+            'prm-style'=>[
+                'output_file'=>'/dist/css/prm_style.css?v=18',
                 'files' => [
                     'assets/css/vsstyle.css',/** Must be set before bootstrap**/
                     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css',
@@ -28,8 +28,8 @@ class StyleProvider
                     // 'assets/dist/css/adminlte.min.css',
                     'assets/css/choices.min.css',
                     'assets/css/choices.custom.css',
-                    'assets/css/vsa_dropdown_button.css',
-                    'assets/css/vs-dropdown-menu.css',
+                    //'assets/css/vsa_dropdown_button.css',
+                    //'assets/css/vs-dropdown-menu.css',
                     'assets/css/vs_loader.css',
                     //'assets/css/jquery.datepicker2.css',
                     'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',

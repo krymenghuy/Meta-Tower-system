@@ -122,16 +122,13 @@ Route::get('test-count', function () {
 // });
 
 Route::get('/', function () {
-    return view('login.ypg_login');
+    return view('login.prm_login');
 });
 
 Route::get('logout', function () {
-    return view('login.ypg_login');
+    return view('login.prm_login');
 });
-
-Route::get('register', function () {
-    return view('register.ypg_register');
-});
+ 
 
 // Also ensure you have a login route for the "Already have an account?" link
 Route::get('/login', function () {
@@ -174,7 +171,7 @@ Route::get('landingpoint', function () {
 });
 
 
-Route::get('ypg/{componentName?}', function ($componentName = null) {
+Route::get('prm/{componentName?}', function ($componentName = null) {
     if (!XAuthService::user()) {
         // return redirect('/')
         $base_url = url('/');
@@ -182,71 +179,9 @@ Route::get('ypg/{componentName?}', function ($componentName = null) {
         return;
     };
     $data = ['defaultComponent' => 'HomeComponent'];
-    return view('ypg', $data);
+    return view('prm', $data);
 });
-
-// Route::get('umt/{componentName?}', function ($componentName = null) {
-//     if (!XAuthService::user()) {
-//         // return redirect('/')
-//         $base_url = url('/');
-//         echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-//         return;
-//     };
-//     $componentName = $componentName ?? 'RoleManagementComponent';
-//     $data = ['defaultComponent' => $componentName];
-//     return view('umt', $data);
-// });
-
-// Route::get('acc/{componentName?}',function($componentName= null){
-//     if(!XAuthService::user()){
-//        // return redirect('/')
-//        $base_url =url('/');
-//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-//        return;
-//     };
-//     $data = ['defaultComponent' => $componentName];
-//     return view('acc',$data);
-// });
-
-// Route::get('/mac-login',function(){
-//     return view('login.mac_login',[]);
-// });
-
-// Route::get('mac/{componentName?}',function($componentName= null){
-//     $user = XAuthService::user();
-//     $data = ['defaultComponent' => $componentName];
-//     if(!$user){
-//        // return redirect('/')
-//        $base_url =url('/mac-login');
-//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-//        return;
-//     } else if($user->user_class !=='merchant' || !$user->official_id){
-//         $result = XAuthService::getLinkedUser($user->id, ($user->subs_id ?? null));
-//         if ($result->error){
-//             echo '<p>'.$result->error."</p><a href='/mac' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-//             return;
-//         }
-//         $linked_user = $result->user;
-//         if($linked_user && $linked_user->user_class ==='merchant'){
-//             XAuthService::login($linked_user);
-//             return view('mac',$data);
-//         }
-//         return view('login.mac_login',[]);
-//     }
-//     return view('mac',$data);
-// });
-
-// Route::get('gmt/{componentName?}',function($componentName= null){
-//     if(!XAuthService::user()){
-//        // return redirect('/')
-//        $base_url =url('/');
-//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-//        return;
-//     };
-//     $data = ['defaultComponent' => $componentName];
-//     return view('gmt',$data);
-// });
-
+ 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //Clear Cache facade value:

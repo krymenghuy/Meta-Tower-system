@@ -41,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('ypg')
                 //->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/ypg_api.php'));
+                ->group(base_path('routes/prm_api.php'));
 
             // Route::prefix('mobile')
             // ->middleware('api')
