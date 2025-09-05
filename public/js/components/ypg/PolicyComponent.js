@@ -2,7 +2,7 @@
 
 var PolicyComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Association Policy";
+    mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_policy_component");
 
     mThis.init = () => {

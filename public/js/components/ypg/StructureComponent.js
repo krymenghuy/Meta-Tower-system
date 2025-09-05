@@ -2,7 +2,7 @@
 
 var StructureComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Association Structure";
+    mThis.title_prop = "Space Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_structure_component");
     mThis.init = () => {
         if (mThis.initAlready) return;

@@ -1,7 +1,7 @@
 "use strict";
 var GraveInfoComponent = new (function () {
     const mThis = this;
-    this.title_prop = "Grave List";
+    this.title_prop = "Building & Floor Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_grave_info_component");
     mThis.RegisterGrave = mThis.self.querySelector("#_btnRegisterGrave");
