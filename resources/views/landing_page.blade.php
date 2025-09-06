@@ -5,9 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- <link rel="icon" type="image/png" href="background-image.png" /> -->
-  <link type="images/png" sizes="32x32" rel="icon" href="{{ asset('assets/images/logo/lc_logo.svg') }}"/>
+  <link type="images/png" sizes="32x32" rel="icon" href="{{ asset('assets/images/meta/Meta_logo.png') }}"/>
 
-  <title>LANDING PAGE</title>
+  <title>Meta Estate - LANDING</title>
   <script>
     function checkDevice() {
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -22,58 +22,104 @@
       //return true;
     }
   </script>
-  <?php StyleManager::render('landing-styles', 1); ?>
+  <?php StyleManager::render('prm-landing-styles', 1); ?>
 
 
 
 </head>
 
 <body id="body" onload="checkDevice()">
-  <div class="box-center  d-flex justify-content-center align-items-center">
-      <div class="container p-1  rounded-3">
-        <div class="logo_">
-          <div class="logo_">
-            <img src="assets/images/meta/Meta_logo.png" alt="MetaEstate Logo" style="height:120px; object-fit:contain; display:block; margin:0 auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
-          </div>
+  <?php
+    $user = XAuthService::user();
+    if (!$user) return;
 
-        </div>
-        <div class="row m-3">
+    $apps = $user->apps->filter(fn($a) => !$a->is_mobile_app)->values(); // remove mobile apps
+    $total = $apps->count();
+  ?>
+  <div class="background-layer"></div>
+<div class="app-landing">
+  <div class="app-wrapper" id="app-wrapper">
+    <div class="app-logo">
+      <img src="assets/images/meta/Meta_logo.png" alt="Meta Tower Logo">
+    </div>
 
-           <?php
-             $user = XAuthService::user();
-             if(!$user) return ; //todo: redirect to login page
-             $apps = $user->apps;
-             foreach($apps as $app){
-              if(!$app->is_mobile_app){
-                echo '<div class="col-sm-12 mt-3">
-                          <div class="card  p-1 border shadow rounded-4" style="background-color:";>
-                            <div class="d-flex flex-row">
-                              <img src="'.url('/assets/images/meta/'. ($app->icon_file_name?? 'app_meta.png') ) . '"width="80"/>
-                              <div class="d-flex  flex-column ml-2">
-                                <a href="'.$app->home_route.'" class="link text-primary-custom" style="text-decoration:none"> <h4 class=" p-1 ms-2 text-primary-custom link-view-app">'.$app->app_name.'</h4></a>
-                                <span class="ratings ms-2 p-1"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                                    class="fa fa-star"></i></span>
+    <div class="app-list" >
+      <?php
+      if ($total <= 3) {
+          foreach ($apps as $app) {
+              echo '<div class="app-col full">
+                      <div class="app-card">
+                          <a href="' . $app->home_route . '" class="app-link">
+                              <div class="app-info">
+                                  <img src="' . url('/assets/images/meta/' . ($app->icon_file_name ?? 'Meta_logo.png')) . '" class="app-icon" />
+                                  <div class="app-meta">
+                                      <h4 class="app-name">' . $app->app_name . '</h4>
+                                      <span class="app-rating">
+                                          <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                          <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                      </span>
+                                  </div>
                               </div>
-                            </div>
-                              <div class="d-flex justify-content-between install mt-1">
-                                <span class="text-primary-custom link-view-app">&nbsp;</span>
-                                <h6 style="font-size:15px;" class="text-muted text-capitalize mx-4">Version : <span class="text-muted">1.5.1</span></h6>
+                          </a>
+                          <div class="app-version">
+                              <h6>Version : <span>1.5.1</span></h6>
+                          </div>
+                      </div>
+                    </div>';
+          }
+      } else {
+          $index = 0;
+          foreach ($apps as $app) {
+              if ($index % 2 == 0) echo '<div class="row">';
+              echo '<div class="app-col half">
+                      <div class="app-card">
+                          <a href="' . $app->home_route . '" class="app-link">
+                              <div class="app-info">
+                                  <img src="' . url('/assets/images/logo/' . ($app->icon_file_name ?? 'M-iis-logo.png')) . '" class="app-icon" />
+                                  <div class="app-meta">
+                                      <h4 class="app-name">' . $app->app_name . '</h4>
+                                      <span class="app-rating">
+                                          <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                          <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                      </span>
+                                  </div>
                               </div>
-                            </div>
-                     </div>';
-              }
-              
-             }  
-           ?>
-            
-        </div>
-        <div class="vs-d-flex-copyright">
-            <span class="fs-6">Advanced Business Solutions</span>
-            <span class="fs-6">Powered by Vectorasoft</span>
-        </div>
+                          </a>
+                          <div class="app-version red">
+                              <h6>Version : <span>1.5.1</span></h6>
+                          </div>
+                      </div>
+                    </div>';
+              $index++;
+              if ($index % 2 == 0) echo '</div>';
+          }
+          if ($index % 2 != 0) echo '</div>';
+      }
+      ?>
+    </div>
 
-      </div>
+    <div class="app-footer">
+      <span>Advanced Business Solutions</span>
+      <span>Powered by Vectorasoft</span>
+    </div>
   </div>
+</div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const box = document.getElementById("app-wrapper");
+    const appCount = <?php echo $total; ?>;
+    if (appCount <= 3) {
+      box.style.width = "30%";
+    } else {
+      box.style.width = "60%";
+    }
+  });
+</script>
+
+
+
 
 </body>
 

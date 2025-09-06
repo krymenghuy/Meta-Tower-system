@@ -1,0 +1,161 @@
+
+
+   body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  height: 100vh;
+  overflow: hidden; /* Hide scrollbars */
+}
+
+.background-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://engineering.fb.com/wp-content/uploads/2019/01/singapore.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  filter: blur(4px);
+  z-index: -1;
+}
+
+
+.app-landing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.app-wrapper {
+  background-image: linear-gradient(300deg, rgb(16 26 74) 0%, rgb(246 214 115) 100%);
+  width: 100%;
+  max-width: 720px;
+  height: 72vh;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.app-logo {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-logo img {
+  height: 100%;
+  object-fit: contain;
+}
+
+.app-list {
+  padding: 10px 0;
+}
+
+.app-col.full {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+
+}
+
+.app-col.half {
+  width: 50%;
+  float: left;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.app-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.app-card:hover {
+  transform: scale(1.05);
+}
+
+.app-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-info {
+  display: flex;
+  align-items: center;
+}
+
+.app-icon {
+  width: 70px;
+  padding: 12px;
+  object-fit: contain;
+}
+
+.app-meta {
+  margin-left: 10px;
+}
+
+.app-name {
+  color: rgb(26 22 71);
+  margin: 0;
+}
+
+.app-rating i {
+  color: #fec620;
+}
+
+.app-version {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 14px;
+  margin-top: 8px;
+  color: rgb(26 22 71);
+}
+
+.app-version.red {
+  color: rgb(231, 6, 27);
+}
+
+.app-version span {
+  color: #666;
+}
+
+.app-footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.app-footer span {
+  display: block;
+  padding: 4px 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .app-wrapper {
+    max-width: 95%;
+    height: auto;
+    max-height: 90vh;
+  }
+
+  .app-col.half {
+    width: 100%;
+  }
+}
