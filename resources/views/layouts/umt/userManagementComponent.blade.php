@@ -33,7 +33,7 @@
     <div class="py-2" id="container_pagination_um"></div>
 </div>
 
-<div class="modal fade" id="dlg_um_" tabindex="-1" aria-labelledby="dlg_um_title" aria-hidden="true">
+<!-- <div class="modal fade" id="dlg_um_" tabindex="-1" aria-labelledby="dlg_um_title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -51,4 +51,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->

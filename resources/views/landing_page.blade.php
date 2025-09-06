@@ -32,7 +32,10 @@
   <div class="box-center  d-flex justify-content-center align-items-center">
       <div class="container p-1  rounded-3">
         <div class="logo_">
-          <img src="assets/images/logo/lc_logo.svg">
+          <div class="logo_">
+            <img src="assets/images/meta/Meta_logo.png" alt="MetaEstate Logo" style="height:120px; object-fit:contain; display:block; margin:0 auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">
+          </div>
+
         </div>
         <div class="row m-3">
 
@@ -45,7 +48,7 @@
                 echo '<div class="col-sm-12 mt-3">
                           <div class="card  p-1 border shadow rounded-4" style="background-color:";>
                             <div class="d-flex flex-row">
-                              <img src="'.url('/assets/images/bhr/'. ($app->icon_file_name?? 'book1.png') ) . '"width="70"/>
+                              <img src="'.url('/assets/images/meta/'. ($app->icon_file_name?? 'app_meta.png') ) . '"width="80"/>
                               <div class="d-flex  flex-column ml-2">
                                 <a href="'.$app->home_route.'" class="link text-primary-custom" style="text-decoration:none"> <h4 class=" p-1 ms-2 text-primary-custom link-view-app">'.$app->app_name.'</h4></a>
                                 <span class="ratings ms-2 p-1"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
