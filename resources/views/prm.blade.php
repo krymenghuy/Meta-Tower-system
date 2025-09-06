@@ -201,7 +201,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-2 bg-white app--list">
+                                    <div class="dropdown shadow-lg rounded-2 app--list">
                                         <button class="btn-dropdown main-menu-button" data-menu="app">
                                         <i class="fa-solid fa-table tool-tip fs-5" style="color:#fff;"></i>
                                             <span></span>
@@ -286,7 +286,7 @@
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
 
-                            @include('layouts.prm.memberComponent')
+                            @include('layouts.prm.tenantComponent')
                             @include('layouts.prm.taskTypeComponent')
                             @include('layouts.prm.taskAssignComponent')
                             @include('layouts.prm.graveInfoComponent')

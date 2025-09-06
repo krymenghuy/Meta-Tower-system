@@ -1,5 +1,5 @@
 "use strict";
-var MemberComponent =   ( () => {
+var TenantComponent =   ( () => {
     const mThis = {};
     mThis.title_prop = "Tenant Management";
     mThis.base_url = main_view.base_url;
