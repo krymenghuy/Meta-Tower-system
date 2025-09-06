@@ -292,7 +292,6 @@
                             @include('layouts.prm.graveInfoComponent')
                             @include('layouts.prm.registerDeceasedComponent')
 
-                            @include('layouts.prm.dashboardComponent')
                             @include('layouts.prm.policyComponent')
                             @include('layouts.prm.structureComponent')
                         </div>
