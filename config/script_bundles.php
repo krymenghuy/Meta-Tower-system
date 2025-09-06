@@ -158,7 +158,7 @@ return [
                 'js/components/umt/FindUserDialog.js',
                 //'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
-                'js/components/prm/MemberComponent.js',
+                'js/components/prm/TenantComponent.js',
                 'js/components/prm/TaskTypeComponent.js',
                 'js/components/prm/TaskAssignComponent.js',
                 'js/components/prm/GraveInfoComponent.js',
