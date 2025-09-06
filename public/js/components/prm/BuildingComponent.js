@@ -1,5 +1,5 @@
 "use strict";
-var GraveInfoComponent = new (function () {
+var BuildingComponent = new (function () {
     const mThis = this;
     this.title_prop = "Building & Floor Management";
     mThis.base_url = main_view.base_url;

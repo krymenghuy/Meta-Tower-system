@@ -234,7 +234,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="GraveInfoComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="BuildingComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
                                 </span>
