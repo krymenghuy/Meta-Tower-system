@@ -1,384 +1,230 @@
 "use strict";
 
-var DashboardComponent =  (function () {
-    const mThis = {};
-    mThis.title_prop = "WELCOME YAV PHENG ASSOCIATION";
-    mThis.base_url = main_view.base_url;
+var HomeComponent = new (function () {
+	const mThis = this;
+	mThis.title_prop = "Dashboard";
+	mThis.base_url = main_view.base_url;
+	mThis.self = main_view.VSAppContent.querySelector("#_main_dashboard_component");
 
-    mThis.self = main_view.VSAppContent.querySelector("#_main_dashboardComponent");
-    mThis.divTitle = document.querySelector('#screen_title_wrapper');
-    // mThis.self = mThis.jm[0];
+	mThis.init = () => {
+		if (mThis.initAlready) return;
+		mThis.initAlready = true;
+	};
 
-    // *** When DashboardComponent is showing, create Dashboard Filter button near page title
-    mThis.onShow = (options) => {
-        if (!AuthManager.allowed(254,true)) return;
-        mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
-        if (mThis.divTitle){
-            let btn = mThis.divTitle.querySelector(".btn-db-fitler");
-            if (btn) return;
-            mThis.divTitle.insertAdjacentHTML(
-                "beforeend",
-                '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>'
-            );
-            btn = mThis.divTitle.querySelector(".btn-db-fitler");
-        }
-       
-    };
+mThis.renderDashboard = (d) => {
+	const div = mThis.self;
+	const html = `
+		<div class="row gy-3 mt-3">
+			<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Member Count
+							</div>
+							<div class="fs-1 fw-bold text-yp-custom">
+								${d.members?.total ?? 0}
+							</div>
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								As of today
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>MC</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Small 
+							</div>
+							<div class="fs-1 fw-bold text-yp-custom">
+								${d.graves?.small ?? 0}
+							</div>
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								As of today
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>S</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Medium 
+							</div>
+							<div class="fs-1 fw-bold text-yp-custom">
+								${d.graves?.medium ?? 0}
+							</div>
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								As of today
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>M</span>
+						</div>
+					</div>
+				</div>
+			</div>
+				<div class="col-sm-3">
+				<div class="p-4 rounded-4 shadow bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="text-yp-custom" style="font-size: 14px;">
+								Grave Large 
+							</div>
+							<div class="fs-1 fw-bold text-yp-custom">
+								${d.graves?.large ?? 0}
+							</div>
+							<div class="text-muted d-flex align-items-center mt-1" style="font-size: 13px;">
+								<i class="bi bi-arrow-up-right-circle-fill me-1"></i>
+								As of today
+							</div>
+						</div>
+						<div class="bg-yp-custom fw-bold text-white px-3 py-2 rounded-2 shadow" style="font-size: 16px;">
+							<span>L</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row gy-3 mt-3">
+			<div class="col-sm-12 col-lg-6">
+				<div class="slide-container" id="slideContainer"></div>
+			</div>
+			<div class="col-sm-12 col-lg-6">
+				<div class="grave-map-container" id="boxGraveMap"></div>
+			</div>
+		</div>
+	`;
 
-    mThis.init = () => {
-        if (mThis.initAlready) return;
-        if(AuthManager.allowed(254,true)){
-            mThis.dbChartAll = mThis.self.querySelector("#dbChart_all_top");
-            mThis.dbCards = mThis.self.querySelector("#db_cards");
-            mThis.db_card_bottom = mThis.self.querySelector("#_db_card_bottom");
-            mThis.dashboard_Bottom_left = mThis.self.querySelector("#_dashboard_bottom_left");
-            mThis.dbCardOnLeave = mThis.self.querySelector("#_db_card_onLeave");
-        }
-        mThis.initAlready = true;
-    };
+	div.innerHTML = html;
 
+	mThis.slideContainer = div.querySelector('#slideContainer');
+	mThis.boxGraveMap = div.querySelector('#boxGraveMap');
 
-    mThis.renderDBChartAllTop = (data) => {
-        data = data ? data : {};
-       let html = [
-            `<div class="chart-row  py-5">`,
-                `<div class="col-md-3">`,
-                    `<div class="chart-container dashboard_chart">`,
-                        `<span class="fw-semibold fs-5 text-primary-custom text-capitalize">`,
-                            data.doughnutChart.title,
-                        `</span>`,
-                        `<canvas id="doughnutChart"></canvas>`,
-                    `</div>`,
-                `</div>`,
+	mThis.renderSlide();
+	mThis.renderGraveMap(d);
 
-                `<div class="col-md-3">`,
-                    `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
+	Object.assign(div.style, {
+		height: (window.innerHeight - 90) + "px",
+		overflow: 'auto'
+	});
 
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/team.svg" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow rounded-2" style="background-color:#27b7ff;">${data.cards.member_never_expired ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Member Never Expires</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/deadline.png" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.member_near_expiry ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Members Nearing Expiration</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/expired.png" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.member_expired_date ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Member Has Expired</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                    `</div>`,
-                `</div>`,
-
-                `<div class="col-md-3">`,
-                    `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
-
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/grave.png" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow rounded-2" style="background-color:#27b7ff;">${data.cards.grave_slot_avialable ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Grave Available</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/grave.png" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white px-2 border border-white shadow bg-warning rounded-2">${data.cards.grave_slot_reversed ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Grave Reserve</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                        `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">`,
-                            `<div class="d-flex align-items-center p-2 mb-1">`,
-                                `<div class="bg--icon">`,
-                                    `<img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/grave.png" alt="Icon">`,
-                                `</div>`,
-                                `<div class="ms-3 text-center flex-fill">`,
-                                    `<span class="fw-semibold fs-5 text-white border border-white bg-danger rounded-2 px-2 shadow">${data.cards.grave_slot_used ?? 0}</span>`,
-                                    `<div class="text-primary mt-1">Grave Used</div>`,
-                                `</div>`,
-                            `</div>`,
-                            `<hr style="border:1px solid #fff; margin:0;">`,
-                        `</div>`,
-
-                    `</div>`,
-                `</div>`,
-
-                 `<div class="col-md-3">`,
-                    `<div class="chart-container dashboard_chart">`,
-                        `<span class="fw-semibold fs-5 text-primary-custom text-capitalize">`,
-                            data.memberTasks.title,
-                        `</span>`,
-                        `<canvas id="memberTasks"></canvas>`,
-                    `</div>`,
-                `</div>`,
-
-            `</div>`
-        ].join("");
-
-        mThis.dbChartAll.innerHTML = html;
-        mThis.renderChartMember(data.doughnutChart);
-        mThis.renderChartMemberAssign(data.memberTasks);
-    };
-
-    mThis.renderChartMember = (data) => {
-        data = data ? data : {};
-
-        const ctx = document.getElementById("doughnutChart").getContext("2d");
-
-        new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        data: data.values,
-                        backgroundColor: data.colors,
-                        borderColor: ["#fff", "#fff", "#fff"],
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
-
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                const label = tooltipItem.label || "";
-                                const value = tooltipItem.raw;
-                                return `${label} : ${value} នាក់`;
-                            },
-                        },
-                    },
-                    datalabels: {
-                        color: "#000",
-                        font: {
-                            size: 12,
-                            weight: "bold",
-                        },
-                        formatter: function (value, context) {
-                            return `${
-                                context.chart.data.labels[context.dataIndex]
-                            }\n${value} នាក់`;
-                        },
-                    },
-                },
-            },
-        });
-    };
-
-    mThis.renderChartMemberAssign = (data) => {
-        data = data ? data : {};
-
-        const ctx = document.getElementById("memberTasks").getContext("2d");
-
-        new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        data: data.values,
-                        backgroundColor: data.colors,
-                        borderColor: ["#fff", "#fff", "#fff"],
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: "top",
-                    },
-
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                const label = tooltipItem.label || "";
-                                const value = tooltipItem.raw;
-                                return `${label} : ${value} នាក់`;
-                            },
-                        },
-                    },
-                    datalabels: {
-                        color: "#000",
-                        font: {
-                            size: 12,
-                            weight: "bold",
-                        },
-                        formatter: function (value, context) {
-                            return `${
-                                context.chart.data.labels[context.dataIndex]
-                            }\n${value} នាក់`;
-                        },
-                    },
-                },
-            },
-        });
-    };
+	window.onresize = () => {
+		Object.assign(div.style, {
+			height: (window.innerHeight - 90) + "px",
+			overflow: 'auto'
+		});
+	};
+};
 
 
-    mThis.renderDBCards = (data) => {
-        let html = [
-        `<div class="col-md-3">
-            <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">
-                <div class="d-flex align-items-center p-2 mb-1">
-                    <div class="bg--icon">
-                        <img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/task.png" alt="Icon">
-                    </div>
-                    <div class="ms-3 text-center flex-fill">
-                        <span class="fw-semibold fs-5 text-white border border-white bg-info rounded-2 px-2 shadow">${data?.cards?.task_type ?? 0}</span>
-                        <div class="text-primary mt-1">Task Type</div>
-                    </div>
-                </div>
-                <hr style="border:1px solid #fff; margin:0;">
-            </div>
-        </div>`,
+	mThis.renderSlide = () => {
+		const html = `
 
-        `<div class="col-md-3">
-            <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">
-                <div class="d-flex align-items-center p-2 mb-1">
-                    <div class="bg--icon">
-                        <img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/task_assign.png" alt="Icon">
-                    </div>
-                    <div class="ms-3 text-center flex-fill">
-                        <span class="fw-semibold fs-5 text-white border border-white bg-info rounded-2 px-2 shadow">${data?.cards?.task_assign ?? 0}</span>
-                        <div class="text-primary mt-1">Task Assign</div>
-                    </div>
-                </div>
-                <hr style="border:1px solid #fff; margin:0;">
-            </div>
-        </div>`,
+			<div class="box-slides">
+				<h6 class="text-left text-yp-custom">Yeav Pheng History</h6>
 
-        `<div class="col-md-3">
-            <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
-                <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100" style="background-color: #ededed;">
-                    <div class="d-flex align-items-center p-2 mb-1">
-                        <div class="bg--icon">
-                            <img class="img--size" src="${main_view.base_url}/assets/images/yavpheng/deceased.png" alt="Icon">
-                        </div>
-                        <div class="ms-3 text-center flex-fill">
-                            <span class="fw-semibold fs-5 text-white border border-white bg-info rounded-2 px-2 shadow">${data?.cards?.deceased ?? 0}</span>
-                            <div class="text-primary mt-1">Register Deceased</div>
-                        </div>
-                    </div>
-                    <hr style="border:1px solid #fff; margin:0;">
-                </div>
-            </div>
-        </div>`
-    ].join('');
+			<div class="slides">
+				${[1,2,3,4,5,6].map((n, i) => 
+					`<img src="${main_view.asset_url}/images/yavpheng/History00${n}.jpg" class="${i === 0 ? 'active' : ''}">`
+				).join('')}
+			</div>
+			</div>
+			<div class="buttons">
+				<span class="next">&#10095;</span>
+				<span class="prev">&#10094;</span>
+			</div>
+			<div class="dotsContainer">
+				${[...Array(6)].map((_, i) =>
+					`<div class="dot${i === 0 ? ' active' : ''}" attr="${i}"></div>`
+				).join('')}
+			</div>
+		`;
+		mThis.slideContainer.innerHTML = html;
+		mThis.setupSlider();
+	};
 
-        mThis.dbCards.innerHTML = html;
-    };
+	mThis.renderGraveMap = (data = {}) => {
+		const grave = data.graves || { small: 0, medium: 0, large: 0 };
+		const member = data.members || { total: 0, active: 0, inactive: 0 };
 
-    mThis.loadCards = (onFinish) => {
-        const p = {};
+		let html = `
+			<div class="box-map">
+				<h6 class="text-left text-white">Grave Slot Map</h6>
+				<img src="${main_view.asset_url}/images/yavpheng/GraveYard_map.jpg">
+			</div>
+		`;
+		mThis.boxGraveMap.innerHTML = html;
+	};
 
-        vsapi.call(`${main_view.base_url}/ypg/dashboard/data`,p,null,false,false).then((res) => {
-            const data = res.status_code === 200 ? res.data : {};
-            mThis.renderDBChartAllTop(data);
-            mThis.renderDBCards(data);
-            // mThis.renderDBCardBottom(data);
+	mThis.setupSlider = () => {
+		const slides = mThis.slideContainer.querySelectorAll('.slides img');
+		const next = mThis.slideContainer.querySelector('.next');
+		const prev = mThis.slideContainer.querySelector('.prev');
+		const dots = mThis.slideContainer.querySelectorAll('.dot');
+		const container = mThis.slideContainer;
 
-            onFinish();
-        });
-    };
-    mThis.prepareFormOptions = (data, onFinish) => {
-        mThis.loadCards(onFinish);
-    };
+		let counter = 0;
+		let autoPlay = setInterval(slideNext, 3000);
 
-    mThis.setDashboardScroll = () => {
-        const parent = mThis.self;
-        parent.style.height = window.innerHeight - 70 + "px";
-        parent.classList.add("overflow-y-auto");
-        parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            parent.style.height = window.innerHeight - 70 + "px";
-        };
-    };
+		next.addEventListener('click', slideNext);
+		prev.addEventListener('click', slidePrev);
+		container.addEventListener('mouseover', () => clearInterval(autoPlay));
+		container.addEventListener('mouseout', () => autoPlay = setInterval(slideNext, 3000));
+		dots.forEach(dot => dot.addEventListener('click', () => gotoSlide(+dot.getAttribute('attr'))));
 
-    mThis.show = (options) => {
-        if (!AuthManager.allowed(254,true)){
-            mThis.self.innerHTML = renderUserHome();
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            return;
-        }
+		function slideNext() {
+			changeSlide((counter + 1) % slides.length);
+		}
+		function slidePrev() {
+			changeSlide((counter - 1 + slides.length) % slides.length);
+		}
+		function gotoSlide(index) {
+			if (index !== counter) changeSlide(index);
+		}
+		function changeSlide(index) {
+			slides[counter].classList.remove('active');
+			dots[counter].classList.remove('active');
+			counter = index;
+			slides[counter].classList.add('active');
+			dots[counter].classList.add('active');
+		}
+	};
 
-        mThis.setDashboardScroll();
-        mThis.init();
-        options = options || {};
-        mThis.prepareFormOptions(null, (d) => {
-            main_view.setContentView(mThis.self, mThis.title_prop);
+	mThis.loadDashBoardData = (filter, onFinish) => {
+		vsapi.call(`${main_view.base_url}/ypg/dashboard/data`, {
+			agent: null,
+			loader: false,
+			useCache: true,
+			cacheTTL: 3000,
+			cluster: main_view.apiCluster
+		}).then(res => {
+			const data = res.status_code === 200 ? res.data : {};
+			console.log("Dashboard Data", data);
+			if (typeof onFinish === 'function') onFinish(data);
+		});
+	};
 
-        });
-    };
+	mThis.show = function () {
+		main_view.setContentView(mThis.self, mThis.title_prop);
+		mThis.loadDashBoardData(null, (d) => {
+			mThis.renderDashboard(d);
+		});
+	};
 
-    const renderUserHome = ()=>{
-        return [
-            `<div class="user_home_page">
-                <img src="../../../assets/images/default/default-dashboard.jpg" >
-            </div>
-            <style>
-                .user_home_page img{
-                    height: 88.6vh;
-                    width: 99.2%;
-                    margin:5px;
-                    background-size: cover;
-                    display:flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-            </style>`,
-        ].join("");
-
-     };
-    return mThis;
+	return mThis;
 })();
-

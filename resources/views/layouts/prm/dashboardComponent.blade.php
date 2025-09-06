@@ -1,178 +1,226 @@
-<div id="_main_dashboardComponent" style="display:none;">
-    <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
-    </div>
-    <div class="db_cards">
-        <div class="row px-3" style="" id="db_cards">
+<div id="_main_dashboard_component" class="mobile-padding p-3" style="display: none">
+    <!-- <div class="row my-3 g-3">
+      <div class="col-lg-8">
+        <div class="slide-container" id="slideContainer">
+          <div class="slides">
+            <img src="{{ asset('assets/images/yavpheng/History001.jpg') }}" class="active">
+            <img src="{{ asset('assets/images/yavpheng/History002.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History003.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History004.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History005.jpg') }}">
+            <img src="{{ asset('assets/images/yavpheng/History006.jpg') }}">
+          </div>
 
+          <div class="buttons">
+            <span class="next">&#10095;</span>
+            <span class="prev">&#10094;</span>
+          </div>
+
+          <div class="dotsContainer">
+            <div class="dot active" attr="0" onclick="switchImage(this)"></div>
+            <div class="dot" attr="1" onclick="switchImage(this)"></div>
+            <div class="dot" attr="2" onclick="switchImage(this)"></div>
+            <div class="dot" attr="3" onclick="switchImage(this)"></div>
+            <div class="dot" attr="4" onclick="switchImage(this)"></div>
+            <div class="dot" attr="5" onclick="switchImage(this)"></div>
+          </div>
         </div>
-    </div>
-    <div class="db_card_bottom" id="_db_card_bottom">
+      </div>
 
+      <div class="col-lg-4 d-flex flex-column gap-3">
+        <div class="box-map">
+          <img src="{{ asset('assets/images/yavpheng/GraveYard_map.jpg') }}" alt="Graveyard Map">
+        </div>
 
-    </div>
+        <div class="count-card">
+          <h5 class="text-center text-white bg-dark p-2 m-0 border-bottom">
+            Grave Yard Map
+          </h5>
+          <div class="d-flex justify-content-around text-center p-2">
+            <div>
+              <div class="fw-bold">Grave S</div>
+              <div class="fs-5">45</div>
+            </div>
+            <div>
+              <div class="fw-bold">Grave M</div>
+              <div class="fs-5">30</div>
+            </div>
+            <div>
+              <div class="fw-bold">Grave L</div>
+              <div class="fs-5">18</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="count-card p-2">
+          <div class="bg-dark text-white d-flex align-items-center p-2 rounded">
+            <div class="bg-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+              <img src="/assets/images/yavpheng/CYPA_logo.png" alt="Icon" style="width: 100%; height: auto;">
+            </div>
+            <div class="flex-fill text-center">
+              <span class="fw-semibold fs-5 text-white px-3 py-1 bg-secondary rounded-2 d-inline-block">
+                10
+              </span>
+              <div class="text-white mt-2 fw-semibold">Member Count</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> -->
 </div>
 <style>
-    pre {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    code {
-        height: calc(100% - 45px);
-        margin-top: -20px;
-    }
-
-    .github {
-        position: absolute;
-        text-align: center;
-        left: 0;
-        right: 0;
-        top: 5px;
-        margin: auto;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-    }
-
-    .github a {
-        text-decoration: none;
-    }
-
-    .github a:hover {
-        border-bottom: 1px solid salmon;
-    }
-
-    [data-pie-index="0"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #a2caff;
-    }
-
-    [data-pie-index="1"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #f2e784;
-    }
-
-    [data-pie-index="2"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #a2caff;
-    }
-
-    [data-pie-index="3"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #f50057;
-    }
-
-    [data-pie-index="17"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #f50057;
-    }
 
 
-    .pie {
-        width: 100px !important;
-        height: 100px !important;
-    }
+.slide-map-wrapper {
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
 
-    .pie svg {
-        width: 100px;
-        height: 100px;
-    }
+.slide-container {
+	position: relative;
+	width: 100%;
+	max-width: 1000px;
+	height: 100%;
+	padding-bottom:10px;
+	aspect-ratio: 4 / 3;
+	/* border: 3px solid #ede6d6; */
+	border-radius:12px;
+	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
+	background-color: #ffffff;
 
-    .chart-row {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        min-height: 340px;
-        align-items: stretch;
-        /* Ensures all children are the same height */
-    }
 
-    .card-row {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        min-height: 200px;
-        align-items: stretch;
-        /* Ensures all children are the same height */
-    }
+}
+.box-slides {
+	width: 100%;
+	height: 100%;
+	padding: 15px;
+	box-sizing: border-box;
+}
 
-    .chart-container {
-        flex: 1;
-        /* All DIVs get equal width */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-        border: 1px solid #ddd;
-        /* Optional styling */
-        background: #f9f9f9;
-        /* Optional styling */
-        height: 100%;
-        /* Prevents overflow */
-    }
+.slides {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
 
-    .card-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #dce5e5;
-        padding: 10px;
-        border-radius: 8px;
-        height: 100%;
-        /* Prevents overflow */
+.slides img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: auto;
+	border-radius:6px;
+	/* object-fit: cover; */
+	opacity: 0;
+	transition: opacity 0.5s ease;
+}
 
-    }
+.slides img.active {
+	opacity: 1;
+	z-index: 1;
+}
+.grave-map-container {
+	width: 100%;
+	max-width: 600px;
+	height: auto;
+	padding-bottom:10px;
+	aspect-ratio: 4 / 3;
+	/* border: 3px solid #ede6d6; */
+	border-radius: 12px;
+	box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
+	/* background-color: #fff; */
+	background-color: #4a4724;
+}
+.box-map {
+	width: 100%;
+	height: auto;
+	padding: 15px;
+	box-sizing: border-box;
+}
 
-    .dashboard_chart {
+.box-map img {
+	width: 100%;
+	height: auto;
+	border-radius: 6px;
+	display: block;
+}
 
-        box-shadow: 0px 0px 5px rgba(66, 66, 66, 0.255);
-        align-items: center;
-        background-color: #c6c6c62e;
-    }
 
-    canvas {
-        max-width: 100%;
-        height: auto;
-        /* Maintains aspect ratio */
-    }
+.buttons span {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 14px;
+	color: #eee;
+	font-size: 24px;
+	font-weight: bold;
+	transition: 0.5s;
+	border-radius: 3px;
+	user-select: none;
+	cursor: pointer;
+	z-index: 2;
+}
 
-    #_main_dashboardComponent {
-        display: flex;
-        flex-direction: column;
-        height: 630px;
-        /* background-color: #fff; */
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
+span.next {
+	right: 20px;
+}
 
-    .dashboard_center {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        padding: 20px 0px;
-        gap: 1rem;
-    }
+span.prev {
+	left: 20px;
+}
 
-    /* Icon size control */
-    .img--size {
-        width: 60px;
-        height: 50px;
-    }
+span.next:hover,
+span.prev:hover {
+	background-color: #ede6d6;
+	opacity: 0.8;
+	color: #222;
+}
 
-    /* Card body adjustments */
-    .card-body {
-        padding: 1rem;
-    }
-    .custom-padding {
-        padding-left: 80px;
-    }
+.dotsContainer {
+	position: absolute;
+	bottom: 40px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 2;
+}
+
+.dotsContainer .dot {
+	width: 15px;
+	height: 15px;
+	margin: 0 3px;
+	border: 3px solid #bbb;
+	border-radius: 50%;
+	display: inline-block;
+	cursor: pointer;
+	transition: background-color 0.6s ease;
+}
+
+.dotsContainer .active {
+	background-color: #555;
+}
+
+@media (max-width: 768px) {
+	.slide-container,
+	.box-map {
+		max-width: 100%;
+		aspect-ratio: 4 / 3;
+	}
+
+	.buttons span {
+		font-size: 20px;
+		padding: 10px;
+	}
+
+	.dotsContainer .dot {
+		width: 12px;
+		height: 12px;
+		border-width: 2px;
+	}
+}
 </style>
