@@ -167,7 +167,7 @@ li.kt-menu__section {
 }
 
 .menu-selected {
-    background-color: #f5f5f5 !important;
+    background-color: #1A1647 !important;
     color: #8dc63f !important;
 }
 .menu-selected .kt-menu__link-text:hover{
@@ -175,7 +175,7 @@ li.kt-menu__section {
 }
 
 a.menu-selected .kt-menu__link-text {
-    color: #cab54a;
+    color: #fff;
 }
 
 .menu-selected .icons {
@@ -194,8 +194,8 @@ a.menu-selected .kt-menu__link-text {
     /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
         brightness(90%) contrast(91%); */
     filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
-        brightness(100%) contrast(100%);
+    /* filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+        brightness(100%) contrast(100%); */
 }
 
 .kt-menu__link-icon img {
@@ -203,7 +203,7 @@ a.menu-selected .kt-menu__link-text {
     height: 22px;
     object-fit: contain;
     margin-right: 5px;
-    color: #8dc63f !important;
+    color: #1A1647!important;
 }
 
 .kt-header-menu-wrapper {
@@ -236,14 +236,14 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .choose--language {
-    background-color: #27444a;
+    background-color: #1A1647;
     padding: 10px;
     border-radius: 20px;
     margin-left: 15px;
 }
 
 .nav--notification {
-    background-color: #27444a;
+    background-color: #1A1647;
     padding: 10px;
     /* border-radius: 50%; */
     width: 40px;
@@ -258,7 +258,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .app--list {
-    background-color: #27444a;
+    background-color: #1A1647;
     padding: 10px;
     /* border-radius: 20px; */
     width: 40px;
@@ -266,7 +266,7 @@ a.menu-selected .kt-menu__link-text {
     margin-left: 15px;
 }
 .user--info {
-    background-color: #27444a;
+    background-color: #1A1647;
     
     padding: 10px;
     margin-left: 15px;
@@ -343,7 +343,7 @@ a.menu-selected .kt-menu__link-text {
 .main-user-menus .dropdown-item {
     /* padding: 10px; */
 }
-g
+
 .main-user-menus .user-menu-item .dropdown-item i {
     width: 30px;
     font-size: 15px;
@@ -419,7 +419,7 @@ g
     /* border-radius: 8px; */
 }
 .show--title .screen-title{
-    color:#27444a;
+    color:#1A1647;
     font-size: 1.5em ;
     font-weight: bold;
 }
