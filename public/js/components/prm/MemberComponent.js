@@ -1,5 +1,4 @@
 "use strict";
-
 var MemberComponent =   ( () => {
     const mThis = {};
     mThis.title_prop = "Tenant Management";
