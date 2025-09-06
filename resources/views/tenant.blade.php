@@ -289,7 +289,7 @@
                             @include('layouts.prm.tenantComponent')
                             @include('layouts.prm.taskTypeComponent')
                             @include('layouts.prm.taskAssignComponent')
-                            @include('layouts.prm.graveInfoComponent')
+                            @include('layouts.prm.buildingComponent')
                             @include('layouts.prm.registerDeceasedComponent')
 
                             @include('layouts.prm.dashboardComponent')
