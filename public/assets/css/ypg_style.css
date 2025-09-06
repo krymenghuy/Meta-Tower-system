@@ -229,7 +229,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .btn-dropdown {
-    margin-right: 4px;
+    margin-right: 7px;
     padding: 0px;
     border: none;
     background: none;
@@ -237,17 +237,20 @@ a.menu-selected .kt-menu__link-text {
 
 .choose--language {
     background-color: #1A1647;
-    padding: 10px;
-    border-radius: 20px;
+    padding: 8px 15px;
+    border-radius: 6px;
     margin-left: 15px;
 }
 
 .nav--notification {
     background-color: #1A1647;
-    padding: 10px;
-    /* border-radius: 50%; */
-    width: 40px;
+    width: 45px;
     height: 40px;
+    padding: 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-left: 15px;
 }
 
@@ -260,15 +263,18 @@ a.menu-selected .kt-menu__link-text {
 .app--list {
     background-color: #1A1647;
     padding: 10px;
-    /* border-radius: 20px; */
-    width: 40px;
+    width: 45px;
     height: 40px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-left: 15px;
 }
 .user--info {
     background-color: #1A1647;
-    
-    padding: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
     margin-left: 15px;
 }
 
