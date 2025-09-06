@@ -1,4 +1,4 @@
-<div id="_main_dashboard_component" class="mobile-padding p-3" style="display: none">
+<div id="_main_home_component" class="mobile-padding p-3" style="display: none">
     <!-- <div class="row my-3 g-3">
       <div class="col-lg-8">
         <div class="slide-container" id="slideContainer">
