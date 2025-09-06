@@ -286,7 +286,7 @@
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
 
-                            @include('layouts.prm.memberComponent')
+                            @include('layouts.prm.tenantComponent')
                             @include('layouts.prm.taskTypeComponent')
                             @include('layouts.prm.taskAssignComponent')
                             @include('layouts.prm.graveInfoComponent')
