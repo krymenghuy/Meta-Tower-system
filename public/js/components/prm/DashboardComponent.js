@@ -1,6 +1,6 @@
 "use strict";
 
-var HomeComponent = new (function () {
+var DashboardComponent = new (function () {
 	const mThis = this;
 	mThis.title_prop = "Dashboard";
 	mThis.base_url = main_view.base_url;

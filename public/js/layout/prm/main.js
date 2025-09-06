@@ -113,7 +113,7 @@ mThis.init_vsapi = async () => {
        mThis.side_menus = document.querySelector('#_dms_aside_menus');
        
       //Sanitizer.setDebugMode(false);     
-      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"HomeComponent",mThis.side_menus,true);
+      VSRoute.init(mThis.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent",mThis.side_menus,true);
 
      //END:: process side menus click using VSRoute
 

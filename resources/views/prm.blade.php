@@ -278,7 +278,7 @@
                 <div id="_p2" class="h-100 mt-1" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
-                            @include('layouts.prm.homeComponent')
+                            @include('layouts.prm.dashboardComponent')
                             @include('layouts.prm.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
                             @include('layouts.common.locationComponent')
@@ -292,7 +292,7 @@
                             @include('layouts.prm.graveInfoComponent')
                             @include('layouts.prm.registerDeceasedComponent')
 
-                            @include('layouts.prm.homeComponent')
+                            @include('layouts.prm.dashboardComponent')
                             @include('layouts.prm.policyComponent')
                             @include('layouts.prm.structureComponent')
                         </div>
