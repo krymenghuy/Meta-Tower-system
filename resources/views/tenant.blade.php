@@ -15,7 +15,7 @@
     <meta name="sess_user_id" content="{{ sess_user_id() }}" />
     <meta name="base_url" content="{{ url('/') }}" />
     <meta name="main_route" content="tenant" />
-    <meta name="app_id" content="{{ sess_app_id('ypg') }}" />
+    <meta name="app_id" content="{{ sess_app_id('prm') }}" />
     <meta name="subs_id" content="{{ sess_subs_id() }}" />
     <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
     <meta name="asset_url" content="{{ asset('assets') }}" />
@@ -278,23 +278,23 @@
                 <div id="_p2" class="h-100 mt-1" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
-                            @include('layouts.ypg.dashboardComponent')
-                            @include('layouts.ypg.reportCenterComponent')
+                            @include('layouts.prm.dashboardComponent')
+                            @include('layouts.prm.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
                             @include('layouts.common.locationComponent')
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
 
-                            @include('layouts.ypg.memberComponent')
-                            @include('layouts.ypg.taskTypeComponent')
-                            @include('layouts.ypg.taskAssignComponent')
-                            @include('layouts.ypg.graveInfoComponent')
-                            @include('layouts.ypg.registerDeceasedComponent')
+                            @include('layouts.prm.memberComponent')
+                            @include('layouts.prm.taskTypeComponent')
+                            @include('layouts.prm.taskAssignComponent')
+                            @include('layouts.prm.graveInfoComponent')
+                            @include('layouts.prm.registerDeceasedComponent')
 
-                            @include('layouts.ypg.homeComponent')
-                            @include('layouts.ypg.policyComponent')
-                            @include('layouts.ypg.structureComponent')
+                            @include('layouts.prm.homeComponent')
+                            @include('layouts.prm.policyComponent')
+                            @include('layouts.prm.structureComponent')
                         </div>
                     </div>
                 </div>

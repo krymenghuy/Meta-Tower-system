@@ -11,7 +11,6 @@
   <script>
     function checkDevice() {
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
-        //alert("Sorry, this system is not available on mobile devices.");
         document.body.innerHTML = `<h2 style="display:block;text-align:center;padding:15px;">Sorry, this system is not available on mobile devices</h2>`;
         if (typeof window.stop === 'function') {
           window.stop();
@@ -19,7 +18,6 @@
           document.execCommand('Stop', false);
         }
       }
-      //return true;
     }
   </script>
   <?php StyleManager::render('prm-landing-styles', 1); ?>
@@ -33,7 +31,7 @@
     $user = XAuthService::user();
     if (!$user) return;
 
-    $apps = $user->apps->filter(fn($a) => !$a->is_mobile_app)->values(); // remove mobile apps
+    $apps = $user->apps->filter(fn($a) => !$a->is_mobile_app)->values();
     $total = $apps->count();
   ?>
   <div class="background-layer"></div>
