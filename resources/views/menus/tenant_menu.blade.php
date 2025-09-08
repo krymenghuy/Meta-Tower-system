@@ -22,7 +22,7 @@
 
     .menu-selected {
         box-shadow: 1px 1px 1px #000 !important;
-        border-radius: 25px 0 0 25px;
+        /* border-radius: 25px 0 0 25px; */
         color: #000;
     }
 
@@ -34,14 +34,14 @@
     }
     
     #kt_aside_brand{
-      background-color: #27444a;
+      background-color: #ffffff;
     }
 
     #_dms_aside_menus, #kt_aside_menu {
-         background-color: #27444a;
+         background-color: #ffffff;
     }  
     .kt-menu__link-text {
-        color: #fff;
+        color: #1a1647;
     }
 
     .kt-menu__section {
@@ -56,7 +56,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #27444a;
+        background-color: #ffffff;
     }
  
     /* #_dms_aside_menus::-webkit-scrollbar {
@@ -111,7 +111,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/yavpheng/logo_yp.jpg') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/meta/Meta_logo.png') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">
