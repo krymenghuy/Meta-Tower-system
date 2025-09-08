@@ -31,17 +31,18 @@
         height: 22px;
         object-fit: contain;
         margin-right: 5px;
+        color: #fff;
     }
     
     #kt_aside_brand{
-      background-color: #F6D673;
+      background-color: #1A1647;
     }
 
     #_dms_aside_menus, #kt_aside_menu {
-         background-color: #F6D673;
+         background-color: #1a1647;
     }  
     .kt-menu__link-text {
-        color: #1A1647;
+        color: #ffffff;
     }
 
     .kt-menu__section {
@@ -56,7 +57,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #F6D673;
+        background-color: #1a1647;
     }
  
     /* #_dms_aside_menus::-webkit-scrollbar {
@@ -111,7 +112,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/logo/meta.png') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/logo/meta.jpg') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">
@@ -236,9 +237,9 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                             <a href="BuildingComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/tomb.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/building.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Buildings & Floors"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                             </a>
                         </li>
                         <!-- <li class="kt-menu__section" <?php v_display(-1); ?>>
@@ -261,7 +262,7 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                             <a href="SpaceComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/structure.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/space.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Spaces"></span>
                             </a>
@@ -269,7 +270,7 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                             <a href="ContractComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/contract.png') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Contracts"></span>
                             </a>
@@ -278,15 +279,23 @@ function v_display($mod_id, $module_ids = null)
                           <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                             <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/receipt.png') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Invoices & Billing"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Invoices"></span>
                             </a>
                         </li>
-                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
+                            <a href="BillingComponent" modid="270" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/bill.png') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Billing"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                             <a href="PaymentComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/payment.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Payments"></span>
                             </a>
@@ -294,7 +303,7 @@ function v_display($mod_id, $module_ids = null)
                           <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                             <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
                             </a>
@@ -302,13 +311,13 @@ function v_display($mod_id, $module_ids = null)
                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                             <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/access.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Access Control"></span>
                             </a>
                         </li>
                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                                 </span>
@@ -316,9 +325,9 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="SettingComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/setting.png') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Setting"></span>
                             </a>

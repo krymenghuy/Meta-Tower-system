@@ -23,14 +23,15 @@
     .menu-selected {
         box-shadow: 1px 1px 1px #000 !important;
         /* border-radius: 25px 0 0 25px; */
-        color: #000;
+        color: #1a1647;
     }
 
     .kt-menu__link-icon img {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         object-fit: contain;
         margin-right: 5px;
+        color: #fff;
     }
     
     #kt_aside_brand{
@@ -111,7 +112,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/meta/Meta_logo.png') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/logo/meta.jpg') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">

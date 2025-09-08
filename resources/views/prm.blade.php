@@ -279,7 +279,6 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
-                            @include('layouts.prm.reportCenterComponent')
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
@@ -292,6 +291,11 @@
                             @include('layouts.prm.serviceComponent')
                             @include('layouts.prm.invoiceComponent')
                             @include('layouts.prm.accessControlComponent')
+                            @include('layouts.prm.settingComponent')
+                            @include('layouts.prm.reportComponent')
+                            @include('layouts.prm.billingComponent')
+
+
                            
 
 
