@@ -22,7 +22,7 @@
 
     .menu-selected {
         box-shadow: 1px 1px 1px #000 !important;
-        border-radius: 25px 0 0 25px;
+        /* border-radius: 25px 0 0 25px; */
         color: #000;
     }
 
@@ -35,14 +35,14 @@
     }
     
     #kt_aside_brand{
-      background-color: #1A1647;
+      background-color: #ffffff;
     }
 
     #_dms_aside_menus, #kt_aside_menu {
-         background-color: #1a1647;
+         background-color: #ffffff;
     }  
     .kt-menu__link-text {
-        color: #ffffff;
+        color: #1a1647;
     }
 
     .kt-menu__section {
@@ -57,7 +57,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #1a1647;
+        background-color: #ffffff;
     }
  
     /* #_dms_aside_menus::-webkit-scrollbar {
@@ -172,10 +172,10 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                             </a>
                         </li>
-                        <!-- <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
-                            <h4 class="kt-menu__section-text " vslang="menus.Member & Task Management"></h4>
+                        <li class="kt-menu__section mb-2">
+                            <h4 class="kt-menu__section-text " vslang="menus.tenant_management">Tenant Managements</h4>
                             <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                        </li> -->
+                        </li>
 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(239); ?>>
                             <a href="TenantComponent" modid="239" class="menu-item kt-menu__link">
