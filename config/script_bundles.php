@@ -113,12 +113,14 @@ return [
                 //'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
                 'js/components/prm/TenantComponent.js',
-                'js/components/prm/TaskTypeComponent.js',
-                'js/components/prm/TaskAssignComponent.js',
                 'js/components/prm/BuildingComponent.js',
-                'js/components/prm/RegisterDeceasedComponent.js',
-                'js/components/prm/PolicyComponent.js',
-                'js/components/prm/StructureComponent.js',
+                'js/components/prm/ContractComponent.js',
+                'js/components/prm/SpaceComponent.js',
+                'js/components/prm/PaymentComponent.js',
+                'js/components/prm/ServiceComponent.js',
+                'js/components/prm/InvoiceComponent.js',
+                'js/components/prm/AccessControlComponent.js',
+
             ]
         ],
 
@@ -159,12 +161,17 @@ return [
                 //'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementTool.js',
                 'js/components/prm/TenantComponent.js',
-                'js/components/prm/TaskTypeComponent.js',
-                'js/components/prm/TaskAssignComponent.js',
                 'js/components/prm/BuildingComponent.js',
-                'js/components/prm/RegisterDeceasedComponent.js',
-                'js/components/prm/PolicyComponent.js',
-                'js/components/prm/StructureComponent.js',
+                'js/components/prm/ContractComponent.js',
+                'js/components/prm/SpaceComponent.js',
+                'js/components/prm/PaymentComponent.js',
+                'js/components/prm/ServiceComponent.js',
+                'js/components/prm/InvoiceComponent.js',
+                'js/components/prm/AccessControlComponent.js',
+
+
+
+
             ]
         ],
                 'umt-primary-defer' => [

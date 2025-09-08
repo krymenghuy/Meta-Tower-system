@@ -1,8 +1,8 @@
 "use strict";
 
-var RegisterDeceasedComponent = new (function () {
+var InvoiceComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = " Register Deceased";
+    mThis.title_prop = " Invoice Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_register_deceased_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnRegisterDeceased");

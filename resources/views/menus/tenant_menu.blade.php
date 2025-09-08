@@ -259,7 +259,7 @@ function v_display($mod_id, $module_ids = null)
                             <i class="kt-menu__section-icon flaticon-more-v2"></i>
                         </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="StructureComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="SpaceComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/structure.svg') }}" />
                                 </span>
@@ -267,7 +267,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="PolicyComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="ContractComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
                                 </span>
