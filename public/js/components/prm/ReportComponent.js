@@ -1,9 +1,9 @@
 "use strict";
-var AccessControlComponent =   ( () => {
+var ReportComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Access Control Management";
+    mThis.title_prop = "Report & Export";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_access_component");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_report_component");
 
 
     mThis.init = () => {

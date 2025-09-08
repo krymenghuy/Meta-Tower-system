@@ -509,13 +509,14 @@ table.header-uppercase>thead>tr>th {
 
 
 .img-logo {
-  max-width: 170px;
+  max-width: 130px;
 }
 
 .kt-aside__brand .kt-aside__brand-logo {
   display: flex;
   justify-content: center;
   width: 100%;
+  padding-top: 15px;
 }
 
 @media screen and (max-width: 1024px) {

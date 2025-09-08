@@ -120,6 +120,10 @@ return [
                 'js/components/prm/ServiceComponent.js',
                 'js/components/prm/InvoiceComponent.js',
                 'js/components/prm/AccessControlComponent.js',
+                'js/components/prm/SettingComponent.js',
+                'js/components/prm/ReportComponent.js',
+                'js/components/prm/BillingComponent.js',
+
 
             ]
         ],
@@ -168,6 +172,13 @@ return [
                 'js/components/prm/ServiceComponent.js',
                 'js/components/prm/InvoiceComponent.js',
                 'js/components/prm/AccessControlComponent.js',
+                'js/components/prm/SettingComponent.js',
+                'js/components/prm/ReportComponent.js',
+                'js/components/prm/BillingComponent.js',
+
+
+
+
 
 
 
