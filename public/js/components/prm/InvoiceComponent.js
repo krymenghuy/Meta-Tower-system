@@ -2,7 +2,7 @@
 
 var InvoiceComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = " Invoice Management";
+    mThis.title_prop = " Invoice & Billing Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_register_deceased_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnRegisterDeceased");
