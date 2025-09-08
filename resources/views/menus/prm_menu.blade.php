@@ -259,7 +259,7 @@ function v_display($mod_id, $module_ids = null)
                             <i class="kt-menu__section-icon flaticon-more-v2"></i>
                         </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="StructureComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="SpaceComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/structure.svg') }}" />
                                 </span>
@@ -267,7 +267,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
-                            <a href="PolicyComponent" modid="244" class="menu-item kt-menu__link">
+                            <a href="ContractComponent" modid="244" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/policy.svg') }}" />
                                 </span>
@@ -276,7 +276,7 @@ function v_display($mod_id, $module_ids = null)
                         </li>
                       
                           <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                                 </span>
@@ -284,7 +284,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                           <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="PaymentComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                                 </span>
@@ -292,7 +292,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                           <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                                 </span>
@@ -300,7 +300,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
-                            <a href="CompanyComponent" modid="270" class="menu-item kt-menu__link">
+                            <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                                 </span>
