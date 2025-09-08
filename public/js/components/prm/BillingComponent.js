@@ -1,9 +1,9 @@
 "use strict";
-var AccessControlComponent =   ( () => {
+var BillingComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Access Control Management";
+    mThis.title_prop = "Billing Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_access_component");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_billing_component");
 
 
     mThis.init = () => {

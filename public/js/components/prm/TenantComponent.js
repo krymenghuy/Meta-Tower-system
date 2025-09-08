@@ -13,21 +13,12 @@ var TenantComponent =   ( () => {
 
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle ",
         },
-        {
-            title: "photo",
-            className: "align-middle",
-            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
-        },
-        {
-            title: "Member ID",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
-        },
+      
         {
             title: "Name",
-            className: "align-middle  text-capitalize ",
+            className: "align-middle   ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;"><small>${data.name ?? ''}</small></span>
@@ -36,7 +27,7 @@ var TenantComponent =   ( () => {
         },
         {
             title: "Nationality",
-            className: "align-middle text-capitalize",
+            className: "align-middle ",
             data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.nationality ?? ''}</small></span>`,
         },
         {
@@ -78,8 +69,8 @@ var TenantComponent =   ( () => {
 
 
         {
-            title: "Address",
-            className: "align-middle text-capitalize",
+            title: "Business Type",
+            className: "align-middle ",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:150px;">
@@ -90,43 +81,18 @@ var TenantComponent =   ( () => {
         },
 
         {
-            title: "Expiration",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                const isExpired = parseInt(data.is_expired ?? 0);
-                const dateStr = data.expiration_date ?? '';
-
-
-                if (isExpired === 0) {
-                    return `<small class="text-yp-custom">Permanent</small>`;
-                }
-
-                if (!dateStr) {
-                    return `<small class="text-muted">N/A</small>`;
-                }
-
-                const today = new Date().setHours(0, 0, 0, 0);
-                const expirationDate = new Date(dateStr).setHours(0, 0, 0, 0);
-
-                if (expirationDate < today) {
-                    return `
-                <span class="text-nowrap text-yp-custom">
-                    <small>${dateStr}</small>
-                    <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p>
-                </span>
-            `;
-                }
-
-                if (expirationDate === today) {
-                    return `
-                <span class="text-warning">
-                    <small>${dateStr}</small>
-                    <small class="text-warning">(Expires Today)</small>
-                </span>
-            `;
-                }
-
-                return `<small class="text-yp-custom">${dateStr}</small>`;
+            title: "Company Name",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.deceased_name ?? ''}</small></span>`,
+        },
+        {
+            title: "Leased Date",
+            className: 'align-middle',
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                  
+                    <small class="text-center text-muted">${data.updated_at ?? ''}</small>
+                </div>`;
             }
         },
 
