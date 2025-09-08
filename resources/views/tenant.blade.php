@@ -79,16 +79,20 @@
         }
 
         .font-en {
-            /* font-family: Verdana, sans-serif;
-            font-family: 'Battambang'; */
+            /* font-family: Verdana, sans-serif; */
+
+            /* font-family: 'Battambang'; */
              /* font-family: "Source Sans 3", sans-serif; */
-             /* font-family: "Open Sans", sans-serif; */
+             font-family: "Open Sans", sans-serif;
              /* font-family: "Roboto", sans-serif; */
 
             /* font-family: 'Segoe UI', sans-serif; */
-            font-family: Arial, sans-serif;
+            /* font-family: Arial, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
+        .svg-white {
+    filter: brightness(0) invert(1);
+}
 
     </style>
     <?php
@@ -139,7 +143,7 @@
             <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
-                    <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
+                    <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
                         <div class="d-flex" style="background-color:#ffffff;">
                             <div id="_main_top_right_menus" class="mainview-top-right">
                                 <div class="show--title mx-4 d-flex flex-grow-1">
@@ -315,22 +319,10 @@
                 <div id="_p2" class="h-100 mt-1" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
-                            @include('layouts.prm.dashboardComponent')
-                            @include('layouts.common.companyComponent')
-                            @include('layouts.umt.branchManagementComponent')
-                            @include('layouts.umt.roleManagementComponent')
+                            @include('layouts.tenant.dashboardComponent')
+                           
 
-                            @include('layouts.prm.tenantComponent')
-                            @include('layouts.prm.buildingComponent')
-                            @include('layouts.prm.paymentComponent')
-                            @include('layouts.prm.contractComponent')
-                            @include('layouts.prm.spaceComponent')
-                            @include('layouts.prm.serviceComponent')
-                            @include('layouts.prm.invoiceComponent')
-                            @include('layouts.prm.accessControlComponent')
-                            @include('layouts.prm.settingComponent')
-                            @include('layouts.prm.billingComponent')
-                            @include('layouts.prm.reportComponent')
+                            
 
                             
                         </div>

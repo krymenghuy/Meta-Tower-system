@@ -150,36 +150,8 @@ return [
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
-                '/js/components/prm/DashboardComponent.js',
-                // '/js/components/prm/HomeComponent.js',
-                '/js/components/prm/RenderTableReportComponent.js',
-                '/js/components/prm/ReportCenterComponent.js',
-                'js/components/common/LocationComponent.js',
-                'js/components/common/CompanyComponent.js',
-                'js/components/umt/ChangeRoleDialog.js',
-                'js/components/umt/ChangeLoginNameDialog.js',
-                'js/components/umt/SetPasswordDialog.js',
-                'js/components/umt/CreateBranchDialog.js',
-                'js/components/umt/CreateLoginDialog.js',
-                'js/components/umt/FindUserDialog.js',
-                //'js/components/umt/BranchManagementComponent.js',
-                'js/components/umt/RoleManagementTool.js',
-                'js/components/prm/TenantComponent.js',
-                'js/components/prm/BuildingComponent.js',
-                'js/components/prm/ContractComponent.js',
-                'js/components/prm/SpaceComponent.js',
-                'js/components/prm/PaymentComponent.js',
-                'js/components/prm/ServiceComponent.js',
-                'js/components/prm/InvoiceComponent.js',
-                'js/components/prm/AccessControlComponent.js',
-                'js/components/prm/SettingComponent.js',
-                'js/components/prm/ReportComponent.js',
-                'js/components/prm/BillingComponent.js',
-
-
-
-
-
+                '/js/components/tenant/DashboardComponent.js',
+                
 
 
 

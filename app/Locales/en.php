@@ -16,8 +16,13 @@
                 'Please enter the details of each item'=>'Please enter the details of each item' 
             ],
             'titles'=>[
-                'Active Customers'=>'Active Customers',
-                'Total Customers'=>'Total Customers',
-                'Active Sales Agent'=>'Active Sales Agents'
-            ]
+                'dashboard' => 'Dashboard - Meta Tower'
+            ],
+             'menus'=>[
+
+                   'dashboard' => 'Dashboard',
+                   'tenant_management' => 'Tenant & Management',
+                   'logout'=> 'Log Out',
+
+             ],
     ];
