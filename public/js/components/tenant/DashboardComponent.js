@@ -20,12 +20,12 @@ var DashboardComponent = new (function () {
 						<div class="card-body">
 							<div class="d-flex justify-content-between align-items-start">
 								<div>
-									<h4 class="text-primary-custom mb-3">Total Zones</h4>
+									<h5 class="text-primary-custom mb-3">Total Zones</h5>
 									<h2 class="fw-bold text-dark mb-3">120</h2>
 									<small class="text-success">+1 from last month</small>
 								</div>
 								<div class="text-primary">
-									<img class="img--size" src="${mThis.base_url}/images/icons/home_zone.svg" alt=""/>
+									<img class="img--size" src="${main_view.asset_url}/images/icons/home_zone.svg" alt=""/>
 								</div>
 							</div>
 						</div>
@@ -37,12 +37,12 @@ var DashboardComponent = new (function () {
 						<div class="card-body">
 							<div class="d-flex justify-content-between align-items-start">
 								<div>
-									<h4 class="text-primary-custom mb-3">Active Zones</h4>
+									<h5 class="text-primary-custom mb-3">Active Zones</h5>
 									<h2 class="fw-bold text-dark mb-3">90</h2>
 									<small class="bg-success rounded-4 px-2 py-1 text-white">Operational</small>
 								</div>
 								<div class="text-primary">
-									<img class="img--size" src="${mThis.base_url}assets/images/icons/active_zone.svg" alt=""/>
+									<img class="img--size" src="${main_view.asset_url}/images/icons/active_zone.svg" alt=""/>
 								</div>
 							</div>
 						</div>
@@ -54,12 +54,12 @@ var DashboardComponent = new (function () {
 						<div class="card-body">
 							<div class="d-flex justify-content-between align-items-start">
 								<div>
-									<h4 class="text-primary-custom mb-3">Security Level</h4>
+									<h5 class="text-primary-custom mb-3">Security Level</h5>
 									<h2 class="fw-bold text-dark mb-3">Normal</h2>
 									<small class="d-none text-success">+1 from last month</small>
 								</div>
 								<div class="text-primary">
-									<img class="img--size" src="${mThis.base_url}assets/images/icons/security.svg" alt=""/>
+									<img class="img--size" src="${main_view.asset_url}/images/icons/security.svg" alt=""/>
 								</div>
 							</div>
 						</div>
@@ -71,12 +71,12 @@ var DashboardComponent = new (function () {
 						<div class="card-body">
 							<div class="d-flex justify-content-between align-items-start">
 								<div>
-									<h4 class="text-primary-custom mb-3">Electricity Usage</h4>
+									<h5 class="text-primary-custom mb-3">Electricity Usage</h5>
 									<h2 class="fw-bold text-danger mb-3">282.3 kW</h2>
 									<small class="text-success">+5.2% from last hour</small>
 								</div>
 								<div class="text-primary">
-									<img class="img--size" src="${mThis.base_url}assets/images/icons/electricity.svg" alt=""/>
+									<img class="img--size" src="${main_view.asset_url}/images/icons/electricity.svg" alt=""/>
 								</div>
 							</div>
 						</div>
@@ -131,7 +131,6 @@ var DashboardComponent = new (function () {
 
 		div.innerHTML = html;
 
-		// set scroll + resize
 		Object.assign(div.style, {
 			height: (window.innerHeight - 90) + "px",
 			overflow: "auto"
@@ -143,7 +142,6 @@ var DashboardComponent = new (function () {
 			});
 		};
 
-		// init charts after HTML rendered
 		mThis.initCharts();
 	};
 
@@ -163,7 +161,6 @@ var DashboardComponent = new (function () {
 			options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
 		});
 
-		// Occupancy Bar Chart
 		new Chart(document.getElementById("chartOccupancy"), {
 			type: 'bar',
 			data: {
