@@ -1,6 +1,6 @@
 "use strict";
 
-var PolicyComponent = new (function () {
+var ContractComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_policy_component");

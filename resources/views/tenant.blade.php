@@ -287,13 +287,11 @@
                             @include('layouts.umt.roleManagementComponent')
 
                             @include('layouts.prm.tenantComponent')
-                            @include('layouts.prm.taskTypeComponent')
-                            @include('layouts.prm.taskAssignComponent')
                             @include('layouts.prm.buildingComponent')
-                            @include('layouts.prm.registerDeceasedComponent')
+                            @include('layouts.prm.paymentComponent')
 
-                            @include('layouts.prm.policyComponent')
-                            @include('layouts.prm.structureComponent')
+                            @include('layouts.prm.contractComponent')
+                            @include('layouts.prm.spaceComponent')
                         </div>
                     </div>
                 </div>
