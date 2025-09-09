@@ -15,6 +15,7 @@ use App\Http\Controllers\Ypg\TaskTypeController;
 use App\Http\Controllers\Ypg\TaskAssignController;
 use App\Http\Controllers\Ypg\DeceasedRegistrationController;
 use App\Http\Controllers\Ypg\GraveSlotController;
+use App\Http\Controllers\tenant\AccountStaffController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -108,6 +109,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('deceased-regi
     Route::post('/delete', [DeceasedRegistrationController::class, 'delete']);
 });
 
-
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff')->group(function () {
+    Route::post('/save', [AccountStaffController::class, 'saveAccountStaff']);
+    Route::post('/list-paginate', [AccountStaffController::class, 'getListAccountStaff']);
+    Route::post('/details', [AccountStaffController::class, 'accountStaffDetails']);
+    Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
+    Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
+});
    
 

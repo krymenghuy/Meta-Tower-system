@@ -38,7 +38,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
 
-            Route::prefix('ypg')
+            Route::prefix('prm')
                 //->middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/prm_api.php'));

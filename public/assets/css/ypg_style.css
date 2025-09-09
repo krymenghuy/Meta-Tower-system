@@ -14,8 +14,8 @@
 
 .btn_add {
     padding: 10px 20px;
-    color: #27444a;
-    background-color: #fff;
+    color: #ffffff;
+    background-color: #1a1647;
     border-radius: 6px;
     margin-top: 3px;
     cursor: pointer;
@@ -23,7 +23,17 @@
     text-decoration: none;
 
 }
-
+.form-control {
+    width: 100%;
+    height: calc(1.15em + 1.3rem + 2px);
+    padding: 0.65rem 1rem;
+    color: #554150 !important;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #554150;
+    border-radius: 6px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
 /* .listview-container{
     border-radius: 15px;
     border: 1px solid #dee2e6 !important;
@@ -174,22 +184,24 @@ li.kt-menu__section {
 }
 
 a.menu-selected .kt-menu__link-text {
-    color: #ffffff;
+    color: #cab54a;
 }
 
 .menu-selected .icons {
-    filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
-        hue-rotate(201deg) brightness(122%) contrast(100%);
+    /* filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
+        hue-rotate(201deg) brightness(122%) contrast(100%); */
     /* color: #8DC63F !important; */
     /* filter:hue-rotate(127deg); */
-    /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
-        hue-rotate(332deg) brightness(87%) contrast(79%); */
+    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
+        hue-rotate(332deg) brightness(87%) contrast(79%);
 
     /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
         hue-rotate(24deg) brightness(87%) contrast(79%); */
 }
 
 .icons {
+    filter: invert(13%) sepia(20%) saturate(2200%) hue-rotate(212deg) brightness(92%) contrast(95%);
+
     /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
         brightness(90%) contrast(91%); */
     /* filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
