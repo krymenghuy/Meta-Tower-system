@@ -151,6 +151,8 @@ return [
                 '/js/components/common/FindPersonDialog.js',
                 '/js/components/common/pusher_client.js',
                 '/js/components/tenant/DashboardComponent.js',
+                '/js/components/tenant/AccountStaffComponent.js',
+                '/js/components/tenant/ZoneManagementComponent.js',
                 
 
 

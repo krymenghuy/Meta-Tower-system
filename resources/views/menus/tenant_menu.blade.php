@@ -35,11 +35,11 @@
     }
     
     #kt_aside_brand{
-      background-color: #ffffff;
+      background-color: #e7e7e7;
     }
 
     #_dms_aside_menus, #kt_aside_menu {
-         background-color: #ffffff;
+         background-color: #e7e7e7;
     }  
     .kt-menu__link-text {
         color: #1a1647;
@@ -57,7 +57,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #ffffff;
+        background-color: #e7e7e7;
     }
  
     /* #_dms_aside_menus::-webkit-scrollbar {
@@ -112,7 +112,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/logo/meta.jpg') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/meta/Meta_logo.png') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">
@@ -156,7 +156,7 @@ function v_display($mod_id, $module_ids = null)
          <div class="" id ="_dms_aside_menus" style="display:none;">
                 <ul class="kt-menu__nav">
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(101); ?>>
-                            <a href="DashboardComponent" modid="238" class="menu-item kt-menu__link">
+                            <a href="DashboardComponent" modid="101" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                                 </span>
@@ -167,6 +167,22 @@ function v_display($mod_id, $module_ids = null)
                             <h4 class="kt-menu__section-text " vslang="menus.tenant_management">Tenant Managements</h4>
                             <i class="kt-menu__section-icon flaticon-more-v2"></i>
                         </li>
+                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
+                            <a href="AccountStaffComponent" modid="201" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/account.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Account & Staff">Account & Staff</span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
+                            <a href="ZoneManagementComponent" modid="202" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Zone & Floor">Zone & Floor</span>
+                            </a>
+                        </li>
                          <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                             <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                                 <span class="kt-menu__link-icon">
@@ -175,6 +191,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text " vslang="menus.logout"></span>
                             </a>
                         </li>
+                        
                 </ul>
          </div>
     </div>

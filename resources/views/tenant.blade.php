@@ -144,7 +144,7 @@
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex" style="background-color:#ffffff;">
+                        <div class="d-flex" style="background-color:#e7e7e7;">
                             <div id="_main_top_right_menus" class="mainview-top-right">
                                 <div class="show--title mx-4 d-flex flex-grow-1">
                                   <div class="screen-info" id="kt_header_menu_wrapper">
@@ -320,6 +320,7 @@
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.tenant.dashboardComponent')
+                            @include('layouts.tenant.accountStaffComponent')
                            
 
                             
