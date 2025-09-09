@@ -15,12 +15,7 @@ var AccountStaffComponent =   ( () => {
             className: "align-middle text-capitalize",
         },
         {
-            title: "photo",
-            className: "align-middle",
-            data:(data) => `<img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/yavpheng/member_default.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
-        },
-        {
-            title: "Member ID",
+            title: "Staff ID",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
         },
@@ -34,9 +29,9 @@ var AccountStaffComponent =   ( () => {
             }
         },
         {
-            title: "Nationality",
+            title: "Position",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.nationality ?? ''}</small></span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.role ?? ''}</small></span>`,
         },
         {
             title: "Contact Info",
@@ -77,57 +72,29 @@ var AccountStaffComponent =   ( () => {
 
 
         {
-            title: "Address",
+            title: "Zone",
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:150px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
+                    </div>
+                `;
+            }
+        },
+           {
+            title: "Floor",
+            className: "align-middle text-capitalize",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:150px;">
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
                     </div>
                 `;
             }
         },
 
-        {
-            title: "Expiration",
-            className: "align-middle text-capitalize",
-            data: (data) => {
-                const isExpired = parseInt(data.is_expired ?? 0);
-                const dateStr = data.expiration_date ?? '';
-
-
-                if (isExpired === 0) {
-                    return `<small class="text-yp-custom">Permanent</small>`;
-                }
-
-                if (!dateStr) {
-                    return `<small class="text-muted">N/A</small>`;
-                }
-
-                const today = new Date().setHours(0, 0, 0, 0);
-                const expirationDate = new Date(dateStr).setHours(0, 0, 0, 0);
-
-                if (expirationDate < today) {
-                    return `
-                <span class="text-nowrap text-yp-custom">
-                    <small>${dateStr}</small>
-                    <p class="p-0 mb-0"><small class="text-danger">(Expired Date)</small></p>
-                </span>
-            `;
-                }
-
-                if (expirationDate === today) {
-                    return `
-                <span class="text-warning">
-                    <small>${dateStr}</small>
-                    <small class="text-warning">(Expires Today)</small>
-                </span>
-            `;
-                }
-
-                return `<small class="text-yp-custom">${dateStr}</small>`;
-            }
-        },
+        
 
         {
             title: "Status",
@@ -190,8 +157,8 @@ var AccountStaffComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.MemberListView = new ListView('_staffAccount_info_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+        mThis.AccStaffListView = new ListView('_staffAccount_info_list', {
+            fetchApi: `${main_view.base_url}/prm/account-staff/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -215,7 +182,7 @@ var AccountStaffComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.MemberListView.showPage(mThis.getFilterData());
+                    mThis.AccStaffListView.showPage(mThis.getFilterData());
                 }
             };
             if (!AuthManager.allowed(240)) return;
@@ -223,7 +190,7 @@ var AccountStaffComponent =   ( () => {
         };
 
 
-        mThis.pr_tbl = mThis.MemberListView.getListContainer();
+        mThis.pr_tbl = mThis.AccStaffListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -231,7 +198,7 @@ var AccountStaffComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblMembers = mThis.MemberListView.getTable();
+        mThis.tblMembers = mThis.AccStaffListView.getTable();
 
 
 
@@ -240,7 +207,7 @@ var AccountStaffComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.MemberListView.showPage(mThis.getFilterData());
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -248,7 +215,7 @@ var AccountStaffComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.MemberListView.showPage(mThis.getFilterData());
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -276,7 +243,7 @@ var AccountStaffComponent =   ( () => {
         mThis.init();
         mThis.options = options;
             main_view.setContentView(mThis.self, mThis.title_prop);
-
+            mThis.AccStaffListView.showPage();
     };
     return mThis;
 })();

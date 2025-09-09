@@ -1994,7 +1994,7 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #9aabff;
+  border-color: #1a1647;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(88, 103, 221, 0.25);
 }

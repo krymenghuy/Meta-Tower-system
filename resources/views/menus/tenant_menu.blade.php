@@ -1,8 +1,8 @@
 <style>
     li.kt-menu__section {
         margin: 8px 0 !important;
-        background: #F6D673 !important;
-        border: 1px solid #F6D673 !important;
+        background: #cbb858 !important;
+        border: 1px solid #cbb858 !important;
         opacity: 0.9;
         padding: 10px;
     }
@@ -35,18 +35,18 @@
     }
     
     #kt_aside_brand{
-      background-color: #e7e7e7;
+      background-color: #D6D6D6;
     }
 
     #_dms_aside_menus, #kt_aside_menu {
-         background-color: #e7e7e7;
+         background-color: #D6D6D6;
     }  
     .kt-menu__link-text {
         color: #1a1647;
     }
 
     .kt-menu__section {
-        color: #0e0e0e;
+        color: #ffffff;
         padding: 10px;
         margin-bottom: 15px;
     }
@@ -57,7 +57,7 @@
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
-        background-color: #e7e7e7;
+        background-color: #D6D6D6;
     }
  
     /* #_dms_aside_menus::-webkit-scrollbar {
@@ -170,7 +170,7 @@ function v_display($mod_id, $module_ids = null)
                          <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                             <a href="AccountStaffComponent" modid="201" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/account.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Account & Staff">Account & Staff</span>
                             </a>
@@ -178,7 +178,7 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                             <a href="ZoneManagementComponent" modid="202" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/zone_floor.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Zone & Floor">Zone & Floor</span>
                             </a>
@@ -186,7 +186,7 @@ function v_display($mod_id, $module_ids = null)
                          <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                             <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons" src="{{ asset('assets/images/icons/log_out.png') }}" />
+                                    <img class="icons" src="{{ asset('assets/images/bhr/logout.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text " vslang="menus.logout"></span>
                             </a>
