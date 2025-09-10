@@ -506,11 +506,11 @@ const BuildingDialog = (() => {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Member has been updated successfully"
+                                            "Building has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New member has been added successfully"
+                                            "New building has been added successfully"
                                         );
                                     }
                                 } else {
