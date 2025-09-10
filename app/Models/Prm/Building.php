@@ -12,27 +12,50 @@ class Building //extends Model
 {
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'building';
+    protected static $img_dir = 'buildings';
     public function __construct($id = null, $userInfo = null){
         $this->id = $id;
         $this->userInfo = $userInfo;
 
     }
 
-    public function saveBuilding($arr = [],$id=null){
+  public function saveBuilding($arr=[], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-150',
-            'floors' => '0|number'
+            'name' => '1|string|0-255',
+            'floors' => '1|number',
         ];
+        $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign], $ss->lang, false);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+        $inputs = $res->values;
+        $isCreate = !$id || $id == 0;
+        if ($isCreate) {
+            $existingBuilding = DB::table('buildings')
+                ->where('name', $inputs['name'])
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($existingBuilding) {
+                return DV::error('Update failed Another building with the same details already exists.');
+            }
+        }
+        $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
+
+        if ($id > 0) {
+            return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
+        }
+        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
-    public function getListBuilding($arr, $ss = null)
+     public function getListBuilding($arr, $ss = null)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -40,59 +63,35 @@ class Building //extends Model
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
-        $status_id = $d->status_id ?? null;
-
-
         $str_search = '1=1';
-        $str_moreWhere = '1=1';
+
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(buil.name LIKE '%" . $search_value . "%' OR buil.code LIKE '%" . $search_value . "%')";
+             $str_search = DBX::whereLowerCase('b.name',"%$search_value%",'like');
         }
-        if($status_id){
-            $str_moreWhere .= ' AND buil.status_id =\'' . $status_id . '\'';
-        }
-        $updated_at = DBX::formatTime("buil.updated_at", 'updated_at');
-        $telegram_link = "CONCAT('https://t.me/+', REPLACE(REPLACE(REPLACE(buil.phone_number, '+', ''), ' ', ''), '-', '')) AS telegram_link";
-        $query = DB::table('building as buil')
-            ->join('building_statuses as ss', 'ss.id', '=', 'buil.status_id')
-            ->whereRaw($str_search)
-            ->whereRaw($str_moreWhere)
-            ->selectRaw("
-                buil.id,
-                buil.code,
-                buil.update_user,
-                $updated_at,
-                buil.name,
-                buil.sex,
-                buil.role,
-                buil.floors,
-                buil.zones,
-                buil.phone_number,
-                buil.status_id,
-                ss.name as status,
-                $telegram_link
-            ")
-            ->orderBy('buil.id', 'DESC');
+     
+        $updated_at = DBX::formatTime('b.updated_at','updated_at');
+        $query = DB::table('buildings as b')
+            // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
+             ->whereRaw($str_search)
+            ->selectRaw('b.id, b.name, b.floors, '.$updated_at.', b.update_user')
+            ->orderBy('b.id', 'asc');
 
         $clone_query = clone $query;
-        $count = $clone_query->count('buil.id');
+        $count = $clone_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-     
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function buildingDetails($id, $ss=null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-
-        $row = DB::table('building as buil')
-            ->join('building_statuses as ss','ss.id','=','buil.status_id')
-            ->where('ss.id',$id)
-            ->selectRaw('buil.id,buil.name,buil.sex,buil.role,buil.phone_number,buil.floors,buil.zones,buil.status_id,ss.name as status')->first();
-            return $row;
-
+ public static function buildingDetails($id)
+    {
+        $row = DB::table('buildings as b')
+            ->where('b.id', $id)
+            ->selectRaw('b.id, b.name, b.floors')
+            ->first();
+ 
+        return $row;
     }
 
     public function getFormOptions($id,$ss){

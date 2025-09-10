@@ -230,16 +230,16 @@ var AccountStaffComponent =   ( () => {
                     name: "change_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Edit Staff"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_member"
+                    name: "edit_staff"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Staff"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_member"
+                    name: "delete_staff"
                 },
             ],
             // adjustPosition: {
@@ -254,12 +254,12 @@ var AccountStaffComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_member': {
-                        mThis.editMember(id, menuLink);
+                    case 'edit_staff': {
+                        mThis.editStaff(id, menuLink);
                         break;
                     }
-                    case 'delete_member': {
-                        mThis.deleteMember(id, menuLink);
+                    case 'delete_staff': {
+                        mThis.deleteStaff(id, menuLink);
                         break;
                     }
 
@@ -308,6 +308,42 @@ var AccountStaffComponent =   ( () => {
         });
 
     };
+    mThis.editStaff = (id, menulink) =>{
+        let op = {
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
+            }
+        };
+        AccStaffDialog.show(op);
+    }
+     mThis.deleteStaff = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
+            }
+        };
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Staff?', {
+            title: 'Delete Staff',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/account-staff/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.AccStaffListView.showPage();
+                    }
+                })
+            }
+            else {
+                cv_interact.error(res.error_message);
+            }
+        });
+    }
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/account-staff/form-options`, null, null, null)
@@ -478,7 +514,8 @@ const AccStaffDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    //LocaleManager.translateZone(me.divModal); //Translation is automatic!
+                    LocaleManager.translateZone(me.divModal); 
+                    console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');

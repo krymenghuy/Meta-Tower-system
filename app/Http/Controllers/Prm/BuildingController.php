@@ -3,29 +3,47 @@
 namespace App\Http\Controllers\Prm;
 
 use App\Http\Controllers\Controller;
+use App\Models\Prm\Building;
+use JDV;
+use XAuthService;
 use Illuminate\Http\Request;
 
 class BuildingController extends Controller
 {
+    protected $buildings;
+    public function __construct(){
+        $this->buildings = new Building();
+    }
+
      public function saveBuilding(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-         $id = $req->building_id ?? $req->id;
-        $building = new Building($id,$ss);
-        $res = $building->saveBuilding($req->all(),$id);
-        return JDV::raw($res);
+        $id = $req->building_id ?? $req->id;
+        $building = new Building();
+        $save = $building->saveBuilding($req->all(),$id,$ss);
+        return JDV::raw($save);
 
     }
 
-    public function getListAccountStaff(Request $req){
+    public function getListBuilding(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        $acc_staff = new AccountStaff();
-        return JDV::result($acc_staff->getListAccountStaff($req->all(),$ss));
+        return JDV::result($this->buildings->getListBuilding($req->all(),$ss));
+    }
+
+    public function buildingDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->buildings->buildingDetails($req->id));
     }
     
 }
