@@ -30,7 +30,7 @@
     color: #554150 !important;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid #554150;
+    /* border: 1px solid #221e4d; */
     border-radius: 6px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -63,7 +63,7 @@
     color: #38373a;
 }
 .bg-yp-custom {
-    background-color: #27444a;
+    background-color: #1A1647;
     border-top-left-radius : 15px;
     border-top-right-radius : 15px;
 
@@ -1995,7 +1995,7 @@ tr {
 .material-input.filled select:valid ~ label {
   top: 6px;
   font-size: 12px;
-  color: #0f6694;
+  color: #1a1647;
 }
 
 
@@ -2022,7 +2022,7 @@ tr {
 .material-input.outlined input:focus,
 .material-input.outlined select:focus,
 .material-input.outlined textarea:focus {
-  border-color: #0f6694;
+  border-color: #27444a;
 }
 
 .material-input.outlined label {
@@ -2046,12 +2046,12 @@ tr {
 .material-input textarea:not(:placeholder-shown) ~ label  {
   top: 0px;
   font-size: 12px;
-  color: #0f6694;
+  color: #27444a;
 }
 .material-input.outlined select:valid ~ label {
   top: 0px;
   font-size: 12px;
-  color: #0f6694;
+  color: #27444a;
 }
 
   

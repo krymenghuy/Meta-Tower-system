@@ -115,6 +115,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff
     Route::post('/details', [AccountStaffController::class, 'accountStaffDetails']);
     Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
     Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
+    Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
 });
    
 
