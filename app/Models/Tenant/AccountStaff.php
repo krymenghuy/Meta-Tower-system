@@ -60,7 +60,7 @@ class AccountStaff //extends Model
     {
         $str_id = "1=1";
         if (!$phone_number) return 'Phone number cannot be empty';
-        if ($id > 0) $str_id = "m.id <> $id";
+        if ($id > 0) $str_id = "acc.id <> $id";
         $x = DB::table('account_staff as acc')->where('acc.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
         if ($x) return 'phone number"' . $phone_number . '" has been used by another member';
         return null;
@@ -125,14 +125,14 @@ class AccountStaff //extends Model
 
         $row = DB::table('account_staff as acc')
             ->join('staff_statuses as ss','ss.id','=','acc.status_id')
-            ->where('ss.id',$id)
+            ->where('acc.id',$id)
             ->selectRaw('acc.id,acc.name,acc.sex,acc.role,acc.phone_number,acc.floors,acc.zones,acc.status_id,ss.name as status')->first();
             return $row;
 
     }
 
     public function getFormOptions($id,$ss){
-        $acc_staff_details = self::accountStaffDetails($id) ?? null;
+        $acc_staff_details = $id ? self::accountStaffDetails($id) : null;
         return (object)[
             'acc_staff_details' => $acc_staff_details,
             'statuses' => GeneralSettings::options_acc_staff_status($ss),
