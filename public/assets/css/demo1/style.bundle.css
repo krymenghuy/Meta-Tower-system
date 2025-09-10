@@ -1994,7 +1994,7 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #1a1647;
+  border-color: #e2e5ec;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(88, 103, 221, 0.25);
 }
@@ -6026,7 +6026,7 @@ a.close.disabled {
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #27444a;
+  border: 1px solid #1a1647;
   border-radius: 0.3rem;
   outline: 0;
 }

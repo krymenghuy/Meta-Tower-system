@@ -318,7 +318,7 @@ var TenantComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-   mThis.changeStatus = (id, lnk) => {
+    mThis.changeStatus = (id, lnk) => {
     const tr = lnk.closest('tr');
     console.log(1234,tr);
     
@@ -353,9 +353,7 @@ var TenantComponent =   ( () => {
             }
         });
     });
-};
-
-
+    };
     mThis.editMember = (id, menuLink) => {
 
         let op = {
@@ -368,7 +366,6 @@ var TenantComponent =   ( () => {
         if (!AuthManager.allowed(241)) return;
         MemberDialog.show(op);
     }
-
     mThis.deleteMember = (id, menuLink) => {
         let op = {
             id: id,
@@ -395,7 +392,6 @@ var TenantComponent =   ( () => {
             }
         });
     }
-
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)

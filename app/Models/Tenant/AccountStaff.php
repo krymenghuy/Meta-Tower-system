@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Ypg\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -117,4 +118,51 @@ class AccountStaff //extends Model
      
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+    public function accountStaffDetails($id, $ss=null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+
+        $row = DB::table('account_staff as acc')
+            ->join('staff_statuses as ss','ss.id','=','acc.status_id')
+            ->where('ss.id',$id)
+            ->selectRaw('acc.id,acc.name,acc.sex,acc.role,acc.phone_number,acc.floors,acc.zones,acc.status_id,ss.name as status')->first();
+            return $row;
+
+    }
+
+    public function getFormOptions($id,$ss){
+        $acc_staff_details = self::accountStaffDetails($id) ?? null;
+        return (object)[
+            'acc_staff_details' => $acc_staff_details,
+            'statuses' => GeneralSettings::options_acc_staff_status($ss),
+        ];
+    }
+
+    public function deleteAccountStaff($id){
+        $id = $id ?? $this->id;
+        $deleted = DB::table('account_staff')->where('id',$id)->delete();
+        if($deleted){
+            return DV::depends(1,['id'=>$id]);
+        }return Dv::error('Error delete staff account...!');
+    }
+
+    public function updateAccountStaffStatus($status_id,$id = null, $ss = null){
+        $id = $id ?? $this->id;
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $status = DB::table('account_staff')->where('id',$id)->value('status_id');
+        if($status == $status_id){
+            return DV::error('It is the same current status');
+        }
+        $update = DB::table('account_staff')->where('id',$id)->update([
+            'status_id' =>$status_id,
+            'update_user' => $ss->full_name,
+            'updated_at' =>getNowTime(),
+            'update_uid' =>$ss->user_id
+        ]);
+        return DV::depends($update,['Account Staff','updated']);
+    }
+
+
 }

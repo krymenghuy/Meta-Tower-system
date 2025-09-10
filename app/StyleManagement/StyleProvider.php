@@ -28,6 +28,7 @@ class StyleProvider
                     // 'assets/dist/css/adminlte.min.css',
                     'assets/css/choices.min.css',
                     'assets/css/choices.custom.css',
+                    'assets/css/dialog_style.css',
                     //'assets/css/vsa_dropdown_button.css',
                     //'assets/css/vs-dropdown-menu.css',
                     'assets/css/vs_loader.css',

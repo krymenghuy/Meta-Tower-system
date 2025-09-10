@@ -7,6 +7,7 @@ var AccountStaffComponent =   ( () => {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddAccountStaff");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_accountStaff");
     mThis.elSearch = mThis.self.querySelector("#_search_accountStaff_info");
+    mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [
 
@@ -24,14 +25,15 @@ var AccountStaffComponent =   ( () => {
             className: "align-middle  text-capitalize ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;"><small>${data.name ?? ''}</small></span>
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
+
         {
             title: "Position",
             className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.role ?? ''}</small></span>`,
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
         },
         {
             title: "Contact Info",
@@ -67,16 +69,12 @@ var AccountStaffComponent =   ( () => {
                     </div>`;
             }
         },
-
-
-
-
         {
             title: "Zone",
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
+                    <div class="text-yp-custom" style="width:50px;">
                         <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
                     </div>
                 `;
@@ -87,15 +85,12 @@ var AccountStaffComponent =   ( () => {
             className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
+                    <div class="text-yp-custom" style="width:50px;">
                         <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
                     </div>
                 `;
             }
         },
-
-        
-
         {
             title: "Status",
             className: "align-middle",
@@ -112,30 +107,13 @@ var AccountStaffComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        //    {
-        //         title: "Status",
-        //         className: "align-middle",
-        //         data: (data) => {
-        //             const status = (data.status ?? '').toLowerCase();
-        //             let cls = 'text-info';
-
-        //             if (status === 'inactive') {
-        //                 cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
-        //             } else if (status === 'active') {
-        //                 cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
-        //             }
-
-        //             return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
-        //         },
-        //     },
-
         {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-center text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-center text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
@@ -168,8 +146,8 @@ var AccountStaffComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('member');
-              tr.setAttribute('id',['member_id',data.id].join('')); 
+              tr.classList.add('staff');
+              tr.setAttribute('id',['staff_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -177,7 +155,6 @@ var AccountStaffComponent =   ( () => {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
             const op = {
                 id: null,
                 btn: e.target,
@@ -186,7 +163,7 @@ var AccountStaffComponent =   ( () => {
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            MemberDialog.show(op);
+            AccStaffDialog.show(op);
         };
 
 
@@ -198,7 +175,8 @@ var AccountStaffComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblMembers = mThis.AccStaffListView.getTable();
+        mThis.tblAccStaff = mThis.AccStaffListView.getTable();
+        mThis.initDropdownMenus(mThis.tblAccStaff);
 
 
 
@@ -237,13 +215,119 @@ var AccountStaffComponent =   ( () => {
         return p;
     };
 
+    mThis.initDropdownMenus = (table) => {
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+                {
+                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "change_status"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_member"
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_member"
+                },
+            ],
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+
+                    case 'change_status': {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
+                    case 'edit_member': {
+                        mThis.editMember(id, menuLink);
+                        break;
+                    }
+                    case 'delete_member': {
+                        mThis.deleteMember(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
+
+
+    mThis.changeStatus = (id, lnk) =>{
+        const tr = lnk.closest('tr');
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        console.log(123,status_id);
+        
+        const inputOptions = {
+            title: 'Change Status',
+            dataLabel: "Account Staff Status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data:[
+                {status_id:"1",name:"Active"},
+                {status_id:"2",name:"Inactive"}
+            ],
+            defaultValue: status_id
+        };
+        InputBox2.show(inputOptions,(selected)=>{
+            if(!selected) return;
+            if(!AuthManager.allowed(321)) return;
+            const status = {id,status_id:selected.value};
+            vsapi.call(`${mThis.base_url}/prm/account-staff/update-status`,status).then(res=>{
+                if(res.status_code ===200){
+                    InputBox2.close();
+                    cv_interact.success('The Account Staff Status has been updated');
+                    mThis.AccStaffListView.showPage(mThis.getFilterData());
+
+                }else{
+                    cv_interact.error(res.error_message || 'Unable to update status');
+                }
+            });
+        });
+
+    };
+    mThis.prepareFormOptions = (onFinish) => {
+
+        vsapi.call(`${main_view.base_url}/prm/account-staff/form-options`, null, null, null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'staff_status', true, 'All Statuses', null);
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
+
   
 
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
+        mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.AccStaffListView.showPage();
+            mThis.AccStaffListView.showPage(mThis.getFilterData());
+        });
+
     };
     return mThis;
 })();
@@ -251,3 +335,192 @@ var AccountStaffComponent =   ( () => {
 
 
 
+const AccStaffDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md",
+                backdrop: "static",
+                keyboard: true,
+               createContent: () => {
+                    return [
+                        `<div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label>Staff Name</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select required class="data-input form-control" data-field="sex">
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                    <label class="d-none">Gender</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select name="role" required class="data-input form-control" data-field="role">
+                                        <option value="" disabled selected>Select Role</option>
+                                        <option value="Staff">Staff</option>
+                                        <option value="IT">IT</option>
+                                        <option value="HR">HR</option>
+                                        <option value="Manager">Manager</option>
+                                    </select>
+                                    <label class="d-none">Zones</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">    
+                                <div class="material-input outlined">
+                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label>Phone Number</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select name="zones" required class="data-input form-control" data-field="zones">
+                                        <option value="" disabled selected>Select Zone</option>
+                                        <option value="1">Zone A</option>
+                                        <option value="2">Zone B</option>
+                                        <option value="3">Zone C</option>
+                                    </select>
+                                    <label class="d-none">Zones</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select name="floors" required class="data-input form-control" data-field="floors">
+                                        <option value="" disabled selected>Select Floor</option>
+                                        <option value="1">1st Floor</option>
+                                        <option value="2">2nd Floor</option>
+                                        <option value="3">3rd Floor</option>
+                                    </select>
+                                    <label class="d-none">Floors</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 d-none">
+                                <div class="material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div>  
+                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <label>Address</label>
+                                </div>
+                            </div>
+                        </div>`
+                    ].join("");
+                },
+
+
+                contentCreated: (me) => {
+                    const footer = me.divModal.querySelector('.modal-footer');
+                    const header = me.divModal.querySelector('.modal-header');
+
+                    const headerTitle = header.querySelector('.modal-title');
+                    const btnClose = header.querySelector('button');
+
+                    btnClose.classList.add('d-none');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important;';
+
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+
+                
+
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(headerTitle);
+
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+
+                 
+
+
+                },
+                // configSelect: [
+                //     {
+                //         name: "nationality_id",
+                //         data: "nationality",
+                //         textField: "nationality",
+                //         valueField: "id",
+                //     },
+
+                // ],
+                prepareFormOptions: {
+                    createTitle: "Create Account Staff",
+                    modifyTitle: "Edit Account Staff",
+                    targetProp: "acc_staff_details",
+                    api: {
+                        endpoint: [main_view.base_url, "/prm/account-staff/form-options",].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    //LocaleManager.translateZone(me.divModal); //Translation is automatic!
+                    const header = me.divModal.querySelector('.modal-header');
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
+                },
+
+             
+                buttons: [
+                    {
+                        label: '<span>Cancel</span>',
+                        cssClass: 'btn-vs-cancel',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span>Submit</span>',
+                        cssClass: 'btn-vs-save',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            vsapi.call([main_view.base_url, "/prm/account-staff/save",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Member has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New member has been added successfully"
+                                        );
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
+
+    return self;
+})();
