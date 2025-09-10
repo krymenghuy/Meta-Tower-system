@@ -89,6 +89,8 @@
             font-family: Arial, sans-serif;
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
         }
+        .svg-white {
+    filter: brightness(0) invert(1);
 
     </style>
     <?php
@@ -145,8 +147,16 @@
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
                                     <div id="screen_title_wrapper" style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
                                         <div>
-                                            <span class="screen-title mb-0 " vslang="titles.dashboard" id="screen_title"></span>
+                                            <span class="screen-title mb-0 text-white text-nowrap" vslang="titles.dashboard" id="screen_title"></span>
                                        </div>
+                                       <div class="d-flex align-item-center justify-content-end w-100">
+                                            <div class="rounded-circle">
+                                                <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1">
+                                                    <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
+                                                     <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" />
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="_main_top_right_menus"

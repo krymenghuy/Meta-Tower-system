@@ -1,7 +1,7 @@
 "use strict";
 var ZoneManagementComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Zoon & Floor";
+    mThis.title_prop = "Zone & Floor";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_accountStaff_component");
 
