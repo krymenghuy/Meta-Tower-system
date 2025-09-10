@@ -94,20 +94,21 @@ class Building //extends Model
         return $row;
     }
 
-    public function getFormOptions($id,$ss){
+    public function getFormOptions($id){
         $building_details = self::buildingDetails($id) ?? null;
         return (object)[
             'building_details' => $building_details,
-            'statuses' => GeneralSettings::options_building_status($ss),
         ];
     }
 
-    public function deleteBuilding($id){
+     public function deleteBuilding($id = null)
+    {
         $id = $id ?? $this->id;
-        $deleted = DB::table('building')->where('id',$id)->delete();
-        if($deleted){
-            return DV::depends(1,['id'=>$id]);
-        }return Dv::error('Error delete buiding...!');
+        $deleted = DB::table('buildings')->where('id', $id)->delete();
+
+        return $deleted
+            ? DV::depends(['action' => 'deleted'], 'Delete successful')
+            : DV::error('Delete failed.');
     }
 
     public function updatebuildingStatus($status_id,$id = null, $ss = null){
@@ -126,6 +127,7 @@ class Building //extends Model
         ]);
         return DV::depends($update,['Building','updated']);
     }
+    
 
 
 }
