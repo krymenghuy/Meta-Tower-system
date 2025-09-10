@@ -16,6 +16,10 @@ use App\Http\Controllers\Ypg\TaskAssignController;
 use App\Http\Controllers\Ypg\DeceasedRegistrationController;
 use App\Http\Controllers\Ypg\GraveSlotController;
 use App\Http\Controllers\tenant\AccountStaffController;
+use App\Http\Controllers\Prm\BuildingController;
+
+
+
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -116,6 +120,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff
     Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
     Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
     Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
+});
+   
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->group(function () {
+    Route::post('/save', [BuildingController::class, 'saveBuilding']);
+    Route::post('/list-paginate', [BuildingController::class, 'getListBuilding']);
+    Route::post('/details', [BuildingController::class, 'buildingDetails']);
+    Route::post('/form-options', [BuildingController::class, 'getFormOptions']);
+    Route::post('/delete', [BuildingController::class, 'deleteBuilding']);
+    Route::post('/update-status', [BuildingController::class, 'updateBuildingStatus']);
 });
    
 

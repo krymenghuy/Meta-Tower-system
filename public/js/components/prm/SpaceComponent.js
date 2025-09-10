@@ -3,39 +3,26 @@
 var SpaceComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Space Management";
-    mThis.self = main_view.VSAppContent.querySelector("#_main_structure_component");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
+    mThis.RegisterGrave = mThis.self.querySelector("#_btnSpace");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elSearch = mThis.self.querySelector("#_search_grave_info");
     mThis.init = () => {
         if (mThis.initAlready) return;
+
         mThis.initAlready = true;
     };
-    this.renderStructure = ()=>{
-	const div = mThis.self;
-        let html = '';
-        html = [`
-            <div class="structure-container">
-            <div class="box-structure">
-                <img src="${main_view.asset_url}/images/yavpheng/Structure_ypg.jpg"/>
-            </div>
-            `].join('');
-            div.innerHTML = html;
-            Object.assign(div.style, {
-                height: (window.innerHeight - 70) + "px",
-                overflow: 'auto'
-            });
 
-            window.onresize = () => {
-                Object.assign(div.style, {
-                    height: (window.innerHeight - 70) + "px",
-                    overflow: 'auto'
-                });
-            };
-    }
+ 
 
-    mThis.show = () => {
+  
+
+    mThis.show = (options) => {
         mThis.init();
-        mThis.renderStructure();
-        main_view.setContentView(mThis.self, mThis.title_prop);
-    };
+        mThis.options = options;
+            main_view.setContentView(mThis.self, mThis.title_prop);
 
+    };
     return mThis;
 })();
