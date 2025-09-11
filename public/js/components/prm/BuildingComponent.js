@@ -8,7 +8,7 @@ var BuildingComponent = new (function () {
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    // mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elSearch = mThis.self.querySelector("#_search_building");
 
      mThis.cols = [
@@ -205,7 +205,7 @@ var BuildingComponent = new (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
+            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -315,7 +315,7 @@ var BuildingComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'building_status', true, 'All Statuses', null);
+                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'building_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
