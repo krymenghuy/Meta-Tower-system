@@ -16,122 +16,38 @@ var TenantComponent =   ( () => {
             className: "align-middle",
         },
         {
-            title: "Staff ID",
+            title: "Tenant ID",
             className: "align-middle",
-            data: (data) => `<span class="text-yp-custom">${data.code ?? 'N/A'}</span>`,
+           data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
         },
         {
             title: "Name",
             className: "align-middle",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
+                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
             }
         },
         {
-            title: "Position",
-            className: "align-middle",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        },
-        {
-            title: "Contact Info",
+            title: "Legal Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.legal_name ?? ''}</small></span>`;
+                return `<span class="text-yp-custom">${data.legal_name ?? ''}</span>`;
             }
         },
-
-        // {
-        //     title: "Position",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        // },
         {
             title: "contact Info",
             className: "align-middle",
             data: (data, index, tr) =>
-                `<span class="d-block text-" style="font-size:12px;" ><i class="fa-solid text-success px-1 fa-envelope" style="font-size:11px;"></i> ${data.email ?? ""}</span>
-                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone" style="font-size:11px;"></i> ${data.phone_number ?? ""}</span>`,
+                `<span class="d-block text-primary" style="font-size:12px;"><i class="fa-solid text-success px-1 fa-envelope"></i> ${data.email ?? ""}</span>
+                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
         },
-        // {
-        //     title: "contact info",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const phone = data.phone_number || 'N/A';
-
-        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
-        //             const url = data.telegram_link.trim();
-        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-
-        //             const deepLink = displayText.startsWith('+')
-        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-        //                 : `tg://resolve?domain=${displayText}`;
-
-        //             telegramHTML = `
-        //                 <a href="${url}"
-        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
-        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
-        //                 target="_blank"
-        //                 title="Open in Telegram"
-        //                 aria-label="Telegram">
-        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-        //                     <small class="text-nowrap">${displayText}</small>
-        //                 </a>`;
-        //         }
-
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-        //                 <div>${telegramHTML}</div>
-        //             </div>`;
-        //     }
-        // },
-        // {
-        //     title: "Zone",
-        //     className: "align-middle text-capitalize",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-yp-custom" style="width:50px;">
-        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
-        //             </div>
-        //         `;
-        //     }
-        // },
-        //    {
-        //     title: "Floor",
-        //     className: "align-middle text-capitalize",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-yp-custom" style="width:50px;">
-        //                 <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
-        //             </div>
-        //         `;
-        //     }
-        // },
-        // {
-        //     title: "Status",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const status = (data.status ?? '').toLowerCase();
-        //         let cls = 'text-info';
-
-        //         if (status === 'inactive') {
-        //             cls = 'text-danger px-2 py-1 d-inline-block';
-        //         } else if (status === 'active') {
-        //             cls = 'text-success px-2 py-1 d-inline-block';
-        //         }
-
-        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-        //     },
-        // },
-         {
+        {
             title: "Address",
             className: "align-middle ",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:150px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
                     </div>
                 `;
             }
@@ -151,7 +67,7 @@ var TenantComponent =   ( () => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
+                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
                            <span><i class="fa fa-pencil"></i></span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>

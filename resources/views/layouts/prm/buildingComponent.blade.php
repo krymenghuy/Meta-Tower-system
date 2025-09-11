@@ -16,5 +16,5 @@
             </button>
         </div>
     </div>
-    <div id="_building_list" class="mt-3"></div>
+    <div id="_building_list" class="table-responsive  mt-3 p-3 rounded-2 bg-white table-response-hover"></div>
 </div>

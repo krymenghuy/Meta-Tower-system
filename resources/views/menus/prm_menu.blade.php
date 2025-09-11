@@ -54,9 +54,7 @@
         background-color: #ffffff;
     } */
  
-    /* #_dms_aside_menus::-webkit-scrollbar {
-        display: none;
-    } */
+  
 
     /* .company {
         display: flex;

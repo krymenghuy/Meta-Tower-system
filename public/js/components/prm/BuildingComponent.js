@@ -14,106 +14,38 @@ var BuildingComponent = ( () => {
 
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
         },
         {
             title: "Building ID",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+            className: "align-middle",
+            data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
         },
         {
             title: "Building Name",
-            className: "align-middle  ",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;">${data.name ?? ''}</span>`;
             }
         },
-
-        
-        // {
-        //     title: "Contact Info",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const phone = data.phone_number || 'N/A';
-
-        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
-        //             const url = data.telegram_link.trim();
-        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-
-        //             const deepLink = displayText.startsWith('+')
-        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-        //                 : `tg://resolve?domain=${displayText}`;
-
-        //             telegramHTML = `
-        //                 <a href="${url}"
-        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
-        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
-        //                 target="_blank"
-        //                 title="Open in Telegram"
-        //                 aria-label="Telegram">
-        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-        //                     <small class="text-nowrap">${displayText}</small>
-        //                 </a>`;
-        //         }
-
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-        //                 <div>${telegramHTML}</div>
-        //             </div>`;
-        //     }
-        // },
-        // {
-        //     title: "Zone",
-        //     className: "align-middle text-capitalize",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-yp-custom" style="width:50px;">
-        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
-        //             </div>
-        //         `;
-        //     }
-        // },
-           {
+        {
             title: "Floors",
-            className: "align-middle ",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</span>
                     </div>
                 `;
             }
         },
-        // {
-        //     title: "Total Room",
-        //     className: "align-middle ",
-        //     data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        // },
-        // {
-        //     title: "Status",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const status = (data.status ?? '').toLowerCase();
-        //         let cls = 'text-info';
-
-        //         if (status === 'inactive') {
-        //             cls = 'text-danger px-2 py-1 d-inline-block';
-        //         } else if (status === 'active') {
-        //             cls = 'text-success px-2 py-1 d-inline-block';
-        //         }
-
-        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-        //     },
-        // },
         {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -122,7 +54,7 @@ var BuildingComponent = ( () => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
+                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
                            <span><i class="fa fa-pencil"></i></span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>

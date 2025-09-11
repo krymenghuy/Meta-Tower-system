@@ -16,5 +16,5 @@
             </button>
         </div>
     </div>
-    <div id="_tenant_list" class="mt-3 p-3 rounded-2"></div>
+    <div id="_tenant_list" class="table-responsive-hover border mt-3 p-3 bg-white rounded-2"></div>
 </div>

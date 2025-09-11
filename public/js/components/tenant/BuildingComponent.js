@@ -8,187 +8,94 @@ var BuildingComponent = new (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_grave_info");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elSearch = mThis.self.querySelector("#_search_grave_info");
-
-//     mThis.cols = [
-//         {
-//             title: "",
-//             className: "align-middle text-capitalize",
-//         },
-//         {
-//             title: "Numero",
-//             className: "align-middle",
-//             data: (data, index) => {
-//                 return `<p class="p-0 mb-0 text-center">${index + 1}</p>`;
-//             }
-//         },
-//         {
-//             title: "Photo",
-//             className: "align-middle",
-//             data: (data) => `
-//                 <img
-//                     class="btn-view-grave-photo"
-//                     src="${data.image_url}"
-//                     data-id="${data.id}"
-//                     data-member_id="${data.recommender_id}"
-//                     style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px; cursor: pointer; object-fit: cover;"
-//                 />
-//             `,
-//         },
-//         {
-//             title: "Grave Slot",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `<span class="text-yp-custom">${data.slot_number ?? 'null'}</span>`,
-//         },
-//         {
-//             title: "Deceased Name",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `<span class="text-yp-custom">${data.deceased_name ?? ''}</span>`,
-//         },
-//         {
-//             title: "Size",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `
-//                 <span class="badge bg-light text-warning border border-warning fw-bold d-block text-center py-1 w-50px;">
-//                     ${data.size ?? ''}
-//                 </span>
-//             `,
-//         },
-//         {
-//             title: "Recommender",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `<span class="text-yp-custom">${data.recommender ?? ''}</span>`,
-//         },
-//         {
-//             title: "Remarks",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `<span class="text-yp-custom">${data.location_note ?? 'N/A'}</span>`,
-//         },
-//         {
-//             title: "Last Updated ",
-//             className: "align-middle text-capitalize",
-//             data: (data) => `
-//             <p class="p-0 mb-0 text-yp-custom">${data.update_user}</p>
-//             <small class="text-muted">${data.updated_at ?? ''}</small>`,
-//         },
-//         {
-//             title: "Status",
-//             className: "align-middle",
-//             data: (data) => {
-//                 let status = data.status ?? '';
-//                 let statusClass = '';
-//                 switch (status) {
-//                     case 'Used':
-//                         statusClass = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
-//                         break;
-//                     case 'Available':
-//                         statusClass = 'text-success border border-success rounded px-2 py-1 d-inline-block';
-//                         break;
-//                 }
-//                 return `<span class="${statusClass}">${status}</span>`;
-//             },
-//         },
-//         {
-//             className: 'col_action align-middle',
-//             data: (data) => `
-//                 <div class="d-flex justify-content-center align-items-end">
-//                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-//                        <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
-//                             <span vslang="buttons.Actions">Action</span>
-//                             <i class="fa-solid fa-caret-down"></i>
-//                        </button>
-//                     </a>
-//                 </div>`
-//         },
-//     ];
-
-mThis.cols = [
-    
-    {
-        title: "Numero",
-        className: "align-middle",
-        data: (data, index) => {
-            return `<p class="p-0 mb-0 text-center"><small>${index + 1}</small></p>`;
-        }
-    },
-    {
-        title: "Photo",
-        className: "align-middle",
-        data: (data) => `
-            <img
-                class="btn-view-grave-photo"
-                src="${data.image_url}"
-                data-id="${data.id}"
-                data-member_id="${data.recommender_id}"
-                style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px;  align-items: center; cursor: pointer; object-fit: cover;"
-            />
-        `,
-    },
-    {
-        title: "Grave Slot",
-        className: "align-middle text-capitalize",
-        data: (data) => `<span class="text-yp-custom"><small>${data.slot_number ?? 'null'}</small></span>`,
-    },
-    {
-        title: "Deceased Name",
-        className: "align-middle text-capitalize",
-        data: (data) => `<span class="text-yp-custom"><small>${data.deceased_name ?? ''}</small></span>`,
-    },
-    {
-        title: "Size",
-        className: "align-middle text-capitalize",
-        data: (data) => `
-            <span class="badge bg-light text-warning border border-warning fw-bold d-block text-center py-1 w-50px;">
-                ${data.size ?? ''}
-            </span>
-        `,
-    },
-    {
-        title: "Recommender",
-        className: "align-middle text-center text-capitalize ",
-        data: (data) => `<small class="text-yp-custom ">${data.recommender ?? ''}</small>`,
-    },
-    {
-        title: "Remarks",
-        className: "align-middle text-capitalize",
-        data: (data) => `<span class="text-yp-custom"><small>${data.location_note ?? 'N/A'}</small></span>`,
-    },
-    {
-        title: "Last Updated",
-        className: "align-middle text-capitalize",
-        data: (data) => `
-        <p class="p-0 mb-0 text-yp-custom"><small>${data.update_user}</small></p>
-        <small class="text-muted">${data.updated_at ?? ''}</small>`,
-    },
-    {
-        title: "Status",
-        className: "align-middle",
-        data: (data) => {
-            let status = data.status ?? '';
-            let statusClass = '';
-            switch (status) {
-                case 'Used':
-                    statusClass = 'text-danger px-2 py-1 d-inline-block';
-                    break;
-                case 'Available':
-                    statusClass = 'text-success px-2 py-1 d-inline-block';
-                    break;
+    mThis.cols = [
+        
+        {
+            title: "Numero",
+            className: "align-middle",
+            data: (data, index) => {
+                return `<p class="p-0 mb-0 text-center"><small>${index + 1}</small></p>`;
             }
-            return `<span class="${statusClass}"><small>${status}</small></span>`;
         },
-    },
-    {
-        className: 'col_action align-middle',
-        data: (data) => `
-            <div class="d-flex justify-content-center align-items-end">
-                <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                   <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
-                        <span><i class="fa fa-pencil"></i></span>
-                        <i class="fa-solid fa-caret-down"></i>
-                   </button>
-                </a>
-            </div>`
-    },
-];
+        {
+            title: "Photo",
+            className: "align-middle",
+            data: (data) => `
+                <img
+                    class="btn-view-grave-photo"
+                    src="${data.image_url}"
+                    data-id="${data.id}"
+                    data-member_id="${data.recommender_id}"
+                    style="width: 40px; height: 40px; border-radius: 10%; margin-right: 10px;  align-items: center; cursor: pointer; object-fit: cover;"
+                />
+            `,
+        },
+        {
+            title: "Grave Slot",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom"><small>${data.slot_number ?? 'null'}</small></span>`,
+        },
+        {
+            title: "Deceased Name",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom"><small>${data.deceased_name ?? ''}</small></span>`,
+        },
+        {
+            title: "Size",
+            className: "align-middle text-capitalize",
+            data: (data) => `
+                <span class="badge bg-light text-warning border border-warning fw-bold d-block text-center py-1 w-50px;">
+                    ${data.size ?? ''}
+                </span>
+            `,
+        },
+        {
+            title: "Recommender",
+            className: "align-middle text-center text-capitalize ",
+            data: (data) => `<small class="text-yp-custom ">${data.recommender ?? ''}</small>`,
+        },
+        {
+            title: "Remarks",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom"><small>${data.location_note ?? 'N/A'}</small></span>`,
+        },
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize",
+            data: (data) => `
+            <p class="p-0 mb-0 text-yp-custom"><small>${data.update_user}</small></p>
+            <small class="text-muted">${data.updated_at ?? ''}</small>`,
+        },
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data) => {
+                let status = data.status ?? '';
+                let statusClass = '';
+                switch (status) {
+                    case 'Used':
+                        statusClass = 'text-danger px-2 py-1 d-inline-block';
+                        break;
+                    case 'Available':
+                        statusClass = 'text-success px-2 py-1 d-inline-block';
+                        break;
+                }
+                return `<span class="${statusClass}"><small>${status}</small></span>`;
+            },
+        },
+        {
+            className: 'col_action align-middle',
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn-grave-action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-sm btn-outline-yp-custom rounded-3 text-nowrap">
+                            <span><i class="fa fa-pencil"></i></span>
+                            <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    </a>
+                </div>`
+        },
+    ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
