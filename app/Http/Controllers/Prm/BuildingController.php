@@ -65,5 +65,6 @@ class BuildingController extends Controller
         $res = $this->buildings->deleteBuilding($req->id);
         return JDV::raw($res);
     }
+ 
     
 }

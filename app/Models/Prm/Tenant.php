@@ -35,8 +35,65 @@ class Tenant
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         if(!$id) {
-            $exist
+            $exist = DB::table('tenants')->where('phone_number',$inputs['phone_number'])
+                ->where('name',$inputs['name'])
+                ->exists();
+                if($exist){
+                    return DV::error('Create failed: This Tenant already exists');
+                }
         }
+        $id = DBX::saveData($ss,'tenants',['id'=>$id],$inputs,[],1);
+        if($id > 0){
+            return DV::depends(1,['tenants'=>$inputs,'id'=>$id]);
+        }
+        return DV::error('Error saving tenant...!');
+    }
 
+    public function getListPaginate($arr, $ss = null){
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+        $search_value = isset($arr['search_value']) ? $arr['search_value'] : null;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if(!is_numeric($current_page)){
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $search_value = $d->search_value ?? null;
+        $str_search = "1=1";
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%')";
+        }
+        $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
+        $query = DB::table('tenants as t')
+            ->whereRaw($str_search)
+            ->selectRaw("t.id,t.name,t.legal_name,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+        $clone_query = clone $query;
+        $count = $clone_query->count('t.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
+
+    }
+
+    public static function getDetails($id){
+        return DB::table('tenants as t')
+            ->where('t.id',$id)
+            ->selectRaw('t.id,t.name,t.legal_name,t.phone_number,t.email,t.address')
+            ->first();
+    }
+
+    public static function getFormOptions($id){
+        $details = $id ? self::getDetails($id) : null;
+        return (object) [
+            'tenants' => $details,
+        ];
+    }
+    
+    public function delete($id = null){
+        $id = $id ?? $this->id;
+        $deleted = DB::table('tenants')->where('id',$id)->delete();
+        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
 }

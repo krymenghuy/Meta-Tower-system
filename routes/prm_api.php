@@ -15,9 +15,14 @@ use App\Http\Controllers\Ypg\TaskTypeController;
 use App\Http\Controllers\Ypg\TaskAssignController;
 use App\Http\Controllers\Ypg\DeceasedRegistrationController;
 use App\Http\Controllers\Ypg\GraveSlotController;
-use App\Http\Controllers\tenant\AccountStaffController;
+
+
+use App\Http\Controllers\Prm\TenantController;
 use App\Http\Controllers\Prm\BuildingController;
 
+
+
+use App\Http\Controllers\tenant\AccountStaffController;
 
 
 
@@ -62,6 +67,15 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('/grave-ownership' , [ReportController::class, 'getGraveOwnership']);
     Route::post('/unused-grave-slot', [ReportController::class, 'getUnusedGraveSlot']);
     Route::post('/deceased-registration', [ReportController::class, 'getDeceasedRegistration']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->group(function () {
+    Route::post('/create', [TenantController::class, 'createTenant']);
+    Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
+    Route::post('/details', [TenantController::class, 'getDetails']);
+    Route::post('/form-options', [TenantController::class, 'getFormOptions']);
+    Route::post('/delete', [TenantController::class, 'delete']);
+    Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->group(function () {
