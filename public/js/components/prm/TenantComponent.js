@@ -1,13 +1,13 @@
 "use strict";
 var TenantComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Account & Staff";
+    mThis.title_prop = "Tenant Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_accountStaff_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddAccountStaff");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_accountStaff");
-    mThis.elSearch = mThis.self.querySelector("#_search_accountStaff_info");
-    mThis.elFilter_status = mThis.self.querySelector("#el_status");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
+    mThis.elSearch = mThis.self.querySelector("#_search_tenant");
+    // mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [
 
@@ -25,11 +25,9 @@ var TenantComponent =   ( () => {
             className: "align-middle",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
             }
         },
-
         {
             title: "Position",
             className: "align-middle",
@@ -39,73 +37,104 @@ var TenantComponent =   ( () => {
             title: "Contact Info",
             className: "align-middle",
             data: (data) => {
-                const phone = data.phone_number || 'N/A';
-
-                let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-                if (data.telegram_link && data.telegram_link.trim() !== '') {
-                    const url = data.telegram_link.trim();
-                    const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-
-                    const deepLink = displayText.startsWith('+')
-                        ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-                        : `tg://resolve?domain=${displayText}`;
-
-                    telegramHTML = `
-                        <a href="${url}"
-                        onclick="event.preventDefault(); window.location='${deepLink}';"
-                        class="text-decoration-none d-inline-flex align-items-center mt-1"
-                        target="_blank"
-                        title="Open in Telegram"
-                        aria-label="Telegram">
-                            <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-                            <small class="text-nowrap">${displayText}</small>
-                        </a>`;
-                }
-
-                return `
-                    <div class="d-flex flex-column">
-                        <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-                        <div>${telegramHTML}</div>
-                    </div>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.legal_name ?? ''}</small></span>`;
             }
         },
+
+        // {
+        //     title: "Position",
+        //     className: "align-middle text-capitalize",
+        //     data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
+        // },
         {
-            title: "Zone",
+            title: "contact Info",
             className: "align-middle",
+            data: (data, index, tr) =>
+                `<span class="d-block text-" style="font-size:12px;" ><i class="fa-solid text-success px-1 fa-envelope" style="font-size:11px;"></i> ${data.email ?? ""}</span>
+                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone" style="font-size:11px;"></i> ${data.phone_number ?? ""}</span>`,
+        },
+        // {
+        //     title: "contact info",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const phone = data.phone_number || 'N/A';
+
+        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
+        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
+        //             const url = data.telegram_link.trim();
+        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
+
+        //             const deepLink = displayText.startsWith('+')
+        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
+        //                 : `tg://resolve?domain=${displayText}`;
+
+        //             telegramHTML = `
+        //                 <a href="${url}"
+        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
+        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
+        //                 target="_blank"
+        //                 title="Open in Telegram"
+        //                 aria-label="Telegram">
+        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
+        //                     <small class="text-nowrap">${displayText}</small>
+        //                 </a>`;
+        //         }
+
+        //         return `
+        //             <div class="d-flex flex-column">
+        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
+        //                 <div>${telegramHTML}</div>
+        //             </div>`;
+        //     }
+        // },
+        // {
+        //     title: "Zone",
+        //     className: "align-middle text-capitalize",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <div class="text-yp-custom" style="width:50px;">
+        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
+        //             </div>
+        //         `;
+        //     }
+        // },
+        //    {
+        //     title: "Floor",
+        //     className: "align-middle text-capitalize",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <div class="text-yp-custom" style="width:50px;">
+        //                 <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
+        //             </div>
+        //         `;
+        //     }
+        // },
+        // {
+        //     title: "Status",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const status = (data.status ?? '').toLowerCase();
+        //         let cls = 'text-info';
+
+        //         if (status === 'inactive') {
+        //             cls = 'text-danger px-2 py-1 d-inline-block';
+        //         } else if (status === 'active') {
+        //             cls = 'text-success px-2 py-1 d-inline-block';
+        //         }
+
+        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+        //     },
+        // },
+         {
+            title: "Address",
+            className: "align-middle ",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
+                    <div class="text-yp-custom" style="width:150px;">
+                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
                     </div>
                 `;
             }
-        },
-           {
-            title: "Floor",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
-                    </div>
-                `;
-            }
-        },
-        {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
-
-                if (status === 'inactive') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'active') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
-                }
-
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
         },
         {
             title: "Updated By",
@@ -135,8 +164,8 @@ var TenantComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.AccStaffListView = new ListView('_staffAccount_info_list', {
-            fetchApi: `${main_view.base_url}/prm/account-staff/list-paginate`,
+        mThis.TenantListView = new ListView('_tenant_list', {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -146,8 +175,8 @@ var TenantComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('staff');
-              tr.setAttribute('id',['staff_id',data.id].join('')); 
+              tr.classList.add('tenant');
+              tr.setAttribute('id',['tenant_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -159,15 +188,15 @@ var TenantComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.AccStaffListView.showPage(mThis.getFilterData());
+                    mThis.TenantListView.showPage(mThis.getFilterData());
                 }
             };
-            if (!AuthManager.allowed(240)) return;
-            AccStaffDialog.show(op);
+            // if (!AuthManager.allowed(240)) return;
+            CreateTenantDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.AccStaffListView.getListContainer();
+        mThis.pr_tbl = mThis.TenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -175,8 +204,8 @@ var TenantComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblAccStaff = mThis.AccStaffListView.getTable();
-        mThis.initDropdownMenus(mThis.tblAccStaff);
+        mThis.tblTenant = mThis.TenantListView.getTable();
+        mThis.initDropdownMenus(mThis.tblTenant);
 
 
 
@@ -185,7 +214,7 @@ var TenantComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -193,7 +222,7 @@ var TenantComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -203,7 +232,7 @@ var TenantComponent =   ( () => {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
+            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -230,16 +259,16 @@ var TenantComponent =   ( () => {
                     name: "change_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Edit Staff"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_staff"
+                    name: "edit_tenant"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Staff"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_staff"
+                    name: "delete_tenant"
                 },
             ],
             // adjustPosition: {
@@ -254,12 +283,12 @@ var TenantComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_staff': {
-                        mThis.editStaff(id, menuLink);
+                    case 'edit_tenant': {
+                        mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'delete_staff': {
-                        mThis.deleteStaff(id, menuLink);
+                    case 'delete_tenant': {
+                        mThis.deleteTenant(id, menuLink);
                         break;
                     }
 
@@ -272,16 +301,54 @@ var TenantComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
+    mThis.editTenant = (id, menulink) =>{
+        let op = {
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.TenantListView.showPage(mThis.getFilterData());
+            }
+        };
+        console.log(1123,op);
+        
+        CreateTenantDialog.show(op);
+    }
+     mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.TenantListView.showPage(mThis.getFilterData());
+            }
+        };
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Tenant??', {
+            title: 'Delete Tenant',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.TenantListView.showPage();
+                    }
+                })
+            }
+            else {
+                cv_interact.error(res.error_message);
+            }
+        });
+    }
 
-    mThis.changeStatus = (id, lnk) =>{
+      mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         console.log(123,status_id);
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "Account Staff Status",
-            valueMember: "status_id",
+            dataLabel: "tenant Status",
+            valueMember: "tenant_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
@@ -295,11 +362,11 @@ var TenantComponent =   ( () => {
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
             const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/account-staff/update-status`,status).then(res=>{
+            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('The Account Staff Status has been updated');
-                    mThis.AccStaffListView.showPage(mThis.getFilterData());
+                    cv_interact.success('Tenant Status has been updated');
+                    mThis.TenantListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -308,70 +375,29 @@ var TenantComponent =   ( () => {
         });
 
     };
-    mThis.editStaff = (id, menulink) =>{
-        let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
-            }
-        };
-        AccStaffDialog.show(op);
-    }
-     mThis.deleteStaff = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
-            }
-        };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Staff?', {
-            title: 'Delete Staff',
-            context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/account-staff/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.AccStaffListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
-    }
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/account-staff/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'staff_status', true, 'All Statuses', null);
+                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-
-  
 
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.AccStaffListView.showPage(mThis.getFilterData());
+            mThis.TenantListView.showPage(mThis.getFilterData());
         });
 
     };
     return mThis;
 })();
 
-
-
-
-const AccStaffDialog = (() => {
+const CreateTenantDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -388,31 +414,16 @@ const AccStaffDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Staff Name</label>
+                                    <label>Full Name</label>
                                 </div>
                             </div>
                             
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select required class="data-input form-control" data-field="sex">
-                                        <option value="" disabled selected>Select Gender</option>
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                    </select>
-                                    <label class="d-none">Gender</label>
-                                </div>
-                            </div>
                             
-                            <div class="col-12">
+
+                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select name="role" required class="data-input form-control" data-field="role">
-                                        <option value="" disabled selected>Select Role</option>
-                                        <option value="Staff">Staff</option>
-                                        <option value="IT">IT</option>
-                                        <option value="HR">HR</option>
-                                        <option value="Manager">Manager</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
+                                    <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
+                                    <label>Legal Name</label>
                                 </div>
                             </div>
                             
@@ -422,37 +433,14 @@ const AccStaffDialog = (() => {
                                     <label>Phone Number</label>
                                 </div>
                             </div>
-                            
-                            <div class="col-12">
+
+                            <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <select name="zones" required class="data-input form-control" data-field="zones">
-                                        <option value="" disabled selected>Select Zone</option>
-                                        <option value="1">Zone A</option>
-                                        <option value="2">Zone B</option>
-                                        <option value="3">Zone C</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
+                                    <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label>Email</label>
                                 </div>
                             </div>
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="floors" required class="data-input form-control" data-field="floors">
-                                        <option value="" disabled selected>Select Floor</option>
-                                        <option value="1">1st Floor</option>
-                                        <option value="2">2nd Floor</option>
-                                        <option value="3">3rd Floor</option>
-                                    </select>
-                                    <label class="d-none">Floors</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12 d-none">
-                                <div class="material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div>  
+                             
                             
                             <div class="col-12">
                                 <div class="material-input outlined">
@@ -502,11 +490,11 @@ const AccStaffDialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create Account Staff",
-                    modifyTitle: "Edit Account Staff",
-                    targetProp: "acc_staff_details",
+                    createTitle: "Create New Tenant",
+                    modifyTitle: "Modify Tenant ",
+                    targetProp: "tenants",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/account-staff/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/tenant/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -514,8 +502,8 @@ const AccStaffDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal); 
-                    console.log(12,data);
+                    // LocaleManager.translateZone(me.divModal); 
+                    // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
@@ -536,16 +524,16 @@ const AccStaffDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/account-staff/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Member has been updated successfully"
+                                            "Tenant has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New member has been added successfully"
+                                            "New tenant has been added successfully"
                                         );
                                     }
                                 } else {
