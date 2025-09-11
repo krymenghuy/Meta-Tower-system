@@ -13,16 +13,16 @@ var TenantComponent =   ( () => {
 
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
         },
         {
             title: "Staff ID",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+            className: "align-middle",
+            data: (data) => `<span class="text-yp-custom">${data.code ?? 'N/A'}</span>`,
         },
         {
             title: "Name",
-            className: "align-middle  text-capitalize ",
+            className: "align-middle",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
@@ -32,7 +32,7 @@ var TenantComponent =   ( () => {
 
         {
             title: "Position",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
         },
         {
@@ -71,7 +71,7 @@ var TenantComponent =   ( () => {
         },
         {
             title: "Zone",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
@@ -82,7 +82,7 @@ var TenantComponent =   ( () => {
         },
            {
             title: "Floor",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
