@@ -145,5 +145,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->g
     Route::post('/delete', [BuildingController::class, 'deleteBuilding']);
     Route::post('/update-status', [BuildingController::class, 'updateBuildingStatus']);
 });
+
+
    
 

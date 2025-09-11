@@ -25,9 +25,7 @@ var BuildingComponent = ( () => {
             title: "Building Name",
             className: "align-middle  ",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
             }
         },
 
