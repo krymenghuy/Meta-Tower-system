@@ -1,34 +1,39 @@
 "use strict";
 var TenantComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Tenant Management";
+    mThis.title_prop = "Account & Staff";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_member_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddMember");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_member");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elSearch = mThis.self.querySelector("#_search_member");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_accountStaff_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddAccountStaff");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_accountStaff");
+    mThis.elSearch = mThis.self.querySelector("#_search_accountStaff_info");
+    mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [
 
         {
             title: "",
-            className: "align-middle ",
+            className: "align-middle text-capitalize",
         },
-      
+        {
+            title: "Staff ID",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+        },
         {
             title: "Name",
-            className: "align-middle   ",
+            className: "align-middle  text-capitalize ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class=" d-block text-yp-custom  text-break" style="width:128px; word-break:break-word;"><small>${data.name ?? ''}</small></span>
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
+
         {
-            title: "Nationality",
-            className: "align-middle ",
-            data: (data) => `<span class="text-nowrap text-yp-custom"><small>${data.nationality ?? ''}</small></span>`,
+            title: "Position",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
         },
         {
             title: "Contact Info",
@@ -64,38 +69,28 @@ var TenantComponent =   ( () => {
                     </div>`;
             }
         },
-
-
-
-
         {
-            title: "Business Type",
-            className: "align-middle ",
+            title: "Zone",
+            className: "align-middle text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+                    <div class="text-yp-custom" style="width:50px;">
+                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
                     </div>
                 `;
             }
         },
-
-        {
-            title: "Company Name",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.deceased_name ?? ''}</small></span>`,
-        },
-        {
-            title: "Leased Date",
-            className: 'align-middle',
+           {
+            title: "Floor",
+            className: "align-middle text-capitalize",
             data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                  
-                    <small class="text-center text-muted">${data.updated_at ?? ''}</small>
-                </div>`;
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
+                    </div>
+                `;
             }
         },
-
         {
             title: "Status",
             className: "align-middle",
@@ -112,30 +107,13 @@ var TenantComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        //    {
-        //         title: "Status",
-        //         className: "align-middle",
-        //         data: (data) => {
-        //             const status = (data.status ?? '').toLowerCase();
-        //             let cls = 'text-info';
-
-        //             if (status === 'inactive') {
-        //                 cls = 'text-danger border border-danger rounded px-2 py-1 d-inline-block';
-        //             } else if (status === 'active') {
-        //                 cls = 'text-success border border-success rounded px-2 py-1 d-inline-block';
-        //             }
-
-        //             return `<span class="${cls} text-capitalize">${data.status ?? ''}</span>`;
-        //         },
-        //     },
-
         {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-center text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-center text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
@@ -157,8 +135,8 @@ var TenantComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.MemberListView = new ListView('_member_list', {
-            fetchApi: `${main_view.base_url}/ypg/member/list-paginate`,
+        mThis.AccStaffListView = new ListView('_staffAccount_info_list', {
+            fetchApi: `${main_view.base_url}/prm/account-staff/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -168,8 +146,8 @@ var TenantComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('member');
-              tr.setAttribute('id',['member_id',data.id].join('')); 
+              tr.classList.add('staff');
+              tr.setAttribute('id',['staff_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -177,20 +155,19 @@ var TenantComponent =   ( () => {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
             const op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.MemberListView.showPage(mThis.getFilterData());
+                    mThis.AccStaffListView.showPage(mThis.getFilterData());
                 }
             };
             if (!AuthManager.allowed(240)) return;
-            MemberDialog.show(op);
+            AccStaffDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.MemberListView.getListContainer();
+        mThis.pr_tbl = mThis.AccStaffListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -198,8 +175,8 @@ var TenantComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblMembers = mThis.MemberListView.getTable();
-        mThis.initDropdownMenus(mThis.tblMembers);
+        mThis.tblAccStaff = mThis.AccStaffListView.getTable();
+        mThis.initDropdownMenus(mThis.tblAccStaff);
 
 
 
@@ -208,7 +185,7 @@ var TenantComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.MemberListView.showPage(mThis.getFilterData());
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -216,33 +193,10 @@ var TenantComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.MemberListView.showPage(mThis.getFilterData());
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }, 250);
         });
-        mThis.tblMembers.addEventListener("click", function (e) {
-            let btn = e.target.closest(".btn-view-member-photo");
-            if (btn) {
-                ImageBox.viewPhoto({
-                    imageUrl:btn.src,
-                    features:['zoom','rotate','brightness','contrast'],
-                    imageClass:'',
-                    dialogClass:'',
-                    dialogSize:'lg',
-                    freeZoom:true,
-                    //imageClass:"",
-                    //photoViewSize: "lg", //lg or xl
-                    //freeZoom:false,
-                   
-                });
-
-                // let op = {
-                //     id: btn.dataset.member_id,
-                //     image_url: btn.src
-                // };
-                // PreViewMemberDialog.show(op);
-                return;
-            }
-        })
+     
 
         mThis.initAlready = true;
     };
@@ -276,16 +230,16 @@ var TenantComponent =   ( () => {
                     name: "change_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Edit Staff"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_member"
+                    name: "edit_staff"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Staff"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_member"
+                    name: "delete_staff"
                 },
             ],
             // adjustPosition: {
@@ -300,12 +254,12 @@ var TenantComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_member': {
-                        mThis.editMember(id, menuLink);
+                    case 'edit_staff': {
+                        mThis.editStaff(id, menuLink);
                         break;
                     }
-                    case 'delete_member': {
-                        mThis.deleteMember(id, menuLink);
+                    case 'delete_staff': {
+                        mThis.deleteStaff(id, menuLink);
                         break;
                     }
 
@@ -318,72 +272,70 @@ var TenantComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.changeStatus = (id, lnk) => {
-    const tr = lnk.closest('tr');
-    console.log(1234,tr);
-    
-    const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-    const inputOptions = {
-        title: 'Change Status',
-        dataLabel: "Member status",
-        valueMember: "status_id",
-        textMember: "name",
-        confirmButtonText: "Save",
-        blankErrorMessage: "Status is not correct!",
-        data: [
-            { status_id: "1", name: "Active" },
-            { status_id: "2", name: "Inactive" }
-        ],
-        defaultValue: status_id 
-    };
 
-    InputBox2.show(inputOptions, (selected) => {
-        if (!selected) return;
-        if (!AuthManager.allowed(321)) return;
+    mThis.changeStatus = (id, lnk) =>{
+        const tr = lnk.closest('tr');
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        console.log(123,status_id);
+        
+        const inputOptions = {
+            title: 'Change Status',
+            dataLabel: "Account Staff Status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data:[
+                {status_id:"1",name:"Active"},
+                {status_id:"2",name:"Inactive"}
+            ],
+            defaultValue: status_id
+        };
+        InputBox2.show(inputOptions,(selected)=>{
+            if(!selected) return;
+            if(!AuthManager.allowed(321)) return;
+            const status = {id,status_id:selected.value};
+            vsapi.call(`${mThis.base_url}/prm/account-staff/update-status`,status).then(res=>{
+                if(res.status_code ===200){
+                    InputBox2.close();
+                    cv_interact.success('The Account Staff Status has been updated');
+                    mThis.AccStaffListView.showPage(mThis.getFilterData());
 
-        const payload = { id, status_id: selected.value };
-
-        vsapi.call(`${mThis.base_url}/ypg/member/update-status`, payload).then(res => {
-            if (res.status_code === 200) {
-                InputBox2.close();
-                cv_interact.success('The member status has been updated');
-                mThis.MemberListView.showPage(mThis.getFilterData());
-            } else {
-                cv_interact.error(res.error_message || 'Unable to update status');
-            }
+                }else{
+                    cv_interact.error(res.error_message || 'Unable to update status');
+                }
+            });
         });
-    });
-    };
-    mThis.editMember = (id, menuLink) => {
 
+    };
+    mThis.editStaff = (id, menulink) =>{
         let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.MemberListView.showPage(mThis.getFilterData());
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(241)) return;
-        MemberDialog.show(op);
+        AccStaffDialog.show(op);
     }
-    mThis.deleteMember = (id, menuLink) => {
+     mThis.deleteStaff = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.MemberListView.showPage(mThis.getFilterData());
+                mThis.AccStaffListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this member?', {
-            title: 'Delete Member',
+        cv_interact.confirm('Delete this Staff?', {
+            title: 'Delete Staff',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/ypg/member/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/account-staff/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.MemberListView.showPage();
+                        mThis.AccStaffListView.showPage();
                     }
                 })
             }
@@ -394,20 +346,22 @@ var TenantComponent =   ( () => {
     }
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/ypg/member/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/account-staff/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'member_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'staff_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
 
+  
+
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(() => {
+        mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.MemberListView.showPage(mThis.getFilterData());
+            mThis.AccStaffListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -415,7 +369,9 @@ var TenantComponent =   ( () => {
 })();
 
 
-const MemberDialog = (() => {
+
+
+const AccStaffDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -426,82 +382,90 @@ const MemberDialog = (() => {
                 cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
-                createContent: () => {
+               createContent: () => {
                     return [
-                        `<form>
-                            <div class="row justify-content-center">
-                                <div class="col-3">
-                                    <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:120px; height:120px;">
-                                    <div name="div_member_photo" class="data-input h-100 w-100" data-field="photo"></div>
-                                    </div>
-                                    <label class="mt-2 text-muted small d-block text-center">Profile Photo</label>
-                                </div>
-                                </div>
-
+                        `<div class="row justify-content-center">
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Member Name</label>
+                                    <label>Staff Name</label>
                                 </div>
                             </div>
+                            
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select required  placeholder=" " class="data-input form-control" data-field="sex">
-                                        <option value="">Select Gender</option>
+                                    <select required class="data-input form-control" data-field="sex">
+                                        <option value="" disabled selected>Select Gender</option>
                                         <option value="M">Male</option>
                                         <option value="F">Female</option>
                                     </select>
                                     <label class="d-none">Gender</label>
                                 </div>
                             </div>
+                            
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select   name="nationality_id" required placeholder=" " class="data-input form-control" data-field="nationality_id">
-                                    <option value="">Select Expiration</option>
+                                    <select name="role" required class="data-input form-control" data-field="role">
+                                        <option value="" disabled selected>Select Role</option>
+                                        <option value="Staff">Staff</option>
+                                        <option value="IT">IT</option>
+                                        <option value="HR">HR</option>
+                                        <option value="Manager">Manager</option>
                                     </select>
-                                    <label class="d-none">Nationality</label>
+                                    <label class="d-none">Zones</label>
                                 </div>
                             </div>
+                            
                             <div class="col-12">    
                                 <div class="material-input outlined">
                                     <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
                                     <label>Phone Number</label>
                                 </div>
                             </div>
+                            
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select name="is_expired" class="data-input form-control" data-field="is_expired" required placeholder=" ">
-                                        <option value="0">Permanent</option>
-                                        <option value="1">Will Expire</option>
+                                    <select name="zones" required class="data-input form-control" data-field="zones">
+                                        <option value="" disabled selected>Select Zone</option>
+                                        <option value="1">Zone A</option>
+                                        <option value="2">Zone B</option>
+                                        <option value="3">Zone C</option>
                                     </select>
-                                    <label class="d-none" >Expiration</label>
+                                    <label class="d-none">Zones</label>
                                 </div>
                             </div>
+                            
                             <div class="col-12">
-                                <div class="material-input outlined expiry-wrapper" style="display: none;">
-                                    <input name="expiration_date" type="vsdate" class="data-input form-control" data-field="expiration_date" placeholder=" " />
-                                    <label class="d-none">Expiration Date</label>
+                                <div class="material-input outlined">
+                                    <select name="floors" required class="data-input form-control" data-field="floors">
+                                        <option value="" disabled selected>Select Floor</option>
+                                        <option value="1">1st Floor</option>
+                                        <option value="2">2nd Floor</option>
+                                        <option value="3">3rd Floor</option>
+                                    </select>
+                                    <label class="d-none">Floors</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="d-none material-input outlined">
+                            
+                            <div class="col-12 d-none">
+                                <div class="material-input outlined">
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
                                 </div>
                             </div>  
+                            
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
                                     <label>Address</label>
                                 </div>
                             </div>
-                    </form>`
+                        </div>`
                     ].join("");
-
                 },
 
+
                 contentCreated: (me) => {
-                    DateTimePicker.init(me.controls.expiration_date);
                     const footer = me.divModal.querySelector('.modal-footer');
                     const header = me.divModal.querySelector('.modal-header');
 
@@ -516,131 +480,33 @@ const MemberDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                    // const logo = document.createElement('img');
-                    // logo.src = '/assets/images/yavpheng/logo_yp.jpg';
-                    // logo.alt = 'Logo';
-                    // logo.classList.add('img-logo', 'mb-2');
-                    // logo.style.height = '80px';
+                
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    // headerWrapper.appendChild(logo);
                     headerWrapper.appendChild(headerTitle);
 
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                    const div_member_photo = me.controls.div_member_photo;
-
-                    me.memberImageBox = new ImageBox(div_member_photo, {
-                        defaultPhotoName: "default-skill",
-                        containerClass: "member-profile-container",
-                        imgClass: "data-input",
-                        dataset: {
-                            "field": "photo",
-                        } /** please set field: photo so that we can use for both Edit and Create easily */,
-                        //dataset: { field: "image_url" },
-                        beforeDeleteImage: async () => {
-                            if (me.dataOptions.id > 0) {
-                                const yes = await cv_interact.confirm(
-                                    "Are you sure to delete this profile photo?",
-                                    { title: "Delete Photo", context: "delete" }
-                                );
-                                if (yes) {
-                                    //delete member's photo from backend
-                                    me.deleteProfilePhoto(me.dataOptions.id);
-                                    return true;
-                                } else return false;
-                            }else{
-                                 //Case of Create new member, just clear photo
-                                 me.memberImageBox.setImage(null);
-                            }
-                            return true;
-                        },
-                        //When user browse new photo and loads it in the IMG element
-                        onOpenImage: (img) => {
-                            if (me.dataOptions.id > 0) {
-                                //This is case of Editing Existing member information
-                                me.saveProfilePhoto(img, me.dataOptions.id);
-                            }
-                        },
-                        // onImageLoaded: (img)=>{
-                        //    if(me.dataOptions.id > 0){
-                        //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
-                        //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
-                        //             if(res.status_code == 200){
-                        //             cv_interact.info('Profile photo was deleted!');
-                        //             }else cv_interact.error(res.error_message);
-                        //         });
-                        //    }
-                        // }
-                    });
-
-                    me.deleteProfilePhoto = (id) => {
-                        const p = { id: id };
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/ypg/member/profile/photo/delete",
-                                ].join(""),
-                                p,
-                                false,
-                                false
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.memberImageBox.setImage(null);
-                                    cv_interact.info(
-                                        "Profile photo was deleted!"
-                                    );
-                                } else cv_interact.error(res.error_message);
-                            });
-                    };
-
-                    me.saveProfilePhoto = (photo, id) => {
-                        const p = { "photo": photo, "id": id };
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/ypg/member/profile/photo/save",
-                                ].join(""),
-                                p,
-                                false
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.memberImageBox.setImage(res.data.image_url);
-                                    cv_interact.success(
-                                        "Profile photo was saved!"
-                                    );
-                                } else cv_interact.error(res.error_message);
-                            });
-                    };
-                    me.controls.is_expired.onchange = (e) => {
-                        const expiryWrapper = me.controls.expiration_date.closest('.expiry-wrapper');
-                        if (expiryWrapper) {
-                            expiryWrapper.style.display = e.target.value == "1" ? "block" : "none";
-                        }
-                    };
+                 
 
 
                 },
-                configSelect: [
-                    {
-                        name: "nationality_id",
-                        data: "nationality",
-                        textField: "nationality",
-                        valueField: "id",
-                    },
+                // configSelect: [
+                //     {
+                //         name: "nationality_id",
+                //         data: "nationality",
+                //         textField: "nationality",
+                //         valueField: "id",
+                //     },
 
-                ],
+                // ],
                 prepareFormOptions: {
-                    createTitle: "Add Yeav Pheng Member",
-                    modifyTitle: "Edit Yeav Pheng Member",
-                    targetProp: "member_details",
+                    createTitle: "Create Account Staff",
+                    modifyTitle: "Edit Account Staff",
+                    targetProp: "acc_staff_details",
                     api: {
-                        endpoint: [main_view.base_url, "/ypg/member/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/account-staff/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -648,34 +514,29 @@ const MemberDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    //LocaleManager.translateZone(me.divModal); //Translation is automatic!
+                    LocaleManager.translateZone(me.divModal); 
+                    console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-                extendMethod: {
-                    setData: (me, data) => {
-                        me.memberImageBox.setImage(data.image_url);
-                    }
-                },
+             
                 buttons: [
                     {
-                        label: '<span class="text-white">Cancel</span>',
-                        cssClass: 'btn btn-sm btn-warning',
+                        label: '<span>Cancel</span>',
+                        cssClass: 'btn-vs-cancel',
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span class= "text-white">Submit</span>',
-                        cssClass: 'btn btn-sm btn-yp-custom',
+                        label: '<span>Submit</span>',
+                        cssClass: 'btn-vs-save',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            op.photo = me.memberImageBox ? me.memberImageBox.getImage() : '';
-
-                            vsapi.call([main_view.base_url, "/ypg/member/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/account-staff/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
@@ -700,62 +561,3 @@ const MemberDialog = (() => {
 
     return self;
 })();
-
-const PreViewMemberDialog = (() => {
-    const self = {};
-
-    self.show = (op) => {
-        const imageUrl = op?.image_url || '';
-
-        const dialog = new GeneralDialog({
-            cssClass: "modal-md modal-content-vs-dialog",
-            backdrop: false,
-            keyboard: true,
-            title: "Member Photo",
-                createContent: () => {
-                    return `
-                        <div class="text-center">
-                            <img 
-                                src="${imageUrl}" 
-                                alt="Preview" 
-                                style="
-                                    width: 100%;
-                                    max-width: 550px;
-                                    height: auto;
-                                    max-height: 400px;
-                                    border-radius: 10px;
-                                    object-fit: cover;
-                                " 
-                            />
-                        </div>
-                    `;
-                },
-
-
-            contentCreated: (me) => {
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
-                const btnClose = me.divModal.querySelector('.modal-header button');
-
-                // បង្ហាញ "View Profile" នៅក្នុង modal-title
-                headerTitle.textContent = "View Profile";
-
-                btnClose.classList.add('text-white');
-                footer.classList.add('d-none');
-                headerTitle.classList.add('justify-content-center', 'text-white', 'w-100', 'd-flex');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
-                header.classList.add('bg-yp-custom', 'modal-header-custom');
-            },
-            prepareFormOptions: {},
-            onPrepareForm: (me, data) => {},
-            buttons: [],
-        });
-
-        dialog.show(op);
-    };
-
-    return self;
-})();
-
