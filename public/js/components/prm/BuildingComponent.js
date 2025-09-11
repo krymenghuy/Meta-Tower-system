@@ -1,14 +1,13 @@
 "use strict";
-
-var BuildingComponent = new (function () {
+var BuildingComponent = ( () => {
     const mThis = {};
-    this.title_prop = "Building & Floor Management";
+    mThis.title_prop = "Building & Floor Management";
 
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
 
      mThis.cols = [
@@ -166,7 +165,7 @@ var BuildingComponent = new (function () {
                 }
             };
             BuildingDialog.show(op);
-        }
+        };
 
 
         mThis.pr_tbl = mThis.BuildingListView.getListContainer();
@@ -357,14 +356,11 @@ var BuildingComponent = new (function () {
                 if (typeof onFinish === 'function') onFinish();
             })
     };
-
-  
-
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
-            main_view.setContentView(mThis.self, mThis.title_prop);
+            main_view.setContentView(mThis.self,mThis.title_prop);
             mThis.BuildingListView.showPage(mThis.getFilterData());
         });
 
@@ -503,5 +499,5 @@ const BuildingDialog = (() => {
     };
 
 
-    return mThis;
+    return self;
 })();
