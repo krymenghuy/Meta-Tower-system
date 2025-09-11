@@ -10,11 +10,11 @@
                 </div> -->
         </div>
         <div class="d-flex align-items-center justify-content-end w-50">
-            <button type="button" class="btn_add d-flex align-items-center gap-2" id="_btnAddTenant">
-                <i class="fa fa-user-plus"></i>
+            <button type="button" class="btnAddNewPrm" id="_btnAddTenant">
+                <i class="fa fa-user-plus me-2"></i>
                 <span vslang="buttons.Create Tenant"></span>
             </button>
         </div>
     </div>
-    <div id="_tenant_list" class="mt-3"></div>
+    <div id="_tenant_list" class="table-responsive-hover border mt-3 p-3 bg-white rounded-2"></div>
 </div>

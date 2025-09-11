@@ -1,52 +1,46 @@
 <style>
-    li.kt-menu__section {
+    /* li.kt-menu__section {
         margin: 8px 0 !important;
         background: #dce5e5 !important;
         border: 1px solid #dce5e5 !important;
         opacity: 0.9;
         padding: 10px;
-    }
+    } */
 
-    .admin_email {
+    /* .admin_email {
         display: flex;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         width: 60%;
-    }
+    } */
 
-    .kt-menu__section-text {
+    /* .kt-menu__section-text {
         font-weight: bold !important;
-    }
+    } */
 
-    .menu-selected {
+    /* .menu-selected {
         box-shadow: 1px 1px 1px #000 !important;
-        /* border-radius: 25px 0 0 25px; */
+        border-radius: 25px 0 0 25px;
         color: #000;
-    }
+    } */
 
-    .kt-menu__link-icon img {
+    /* .kt-menu__link-icon img {
         width: 22px;
         height: 22px;
         object-fit: contain;
         margin-right: 5px;
         color: #fff;
-    }
+    } */
     
-    #kt_aside_brand{
-      background-color: #ffffff;
-    }
+   
+    /* .kt-menu__link-text {
+        color: #ffffff;
+    } */
 
-    #_dms_aside_menus, #kt_aside_menu {
-         background-color: #ffffff;
-    }  
-    .kt-menu__link-text {
-        color: #1a1647;
-    }
-
-    .kt-menu__section {
-        color: #0e0e0e;
+    /* .kt-menu__section {
+        color: rgb(26 22 71 / var(--tw-text-opacity, 1));
         padding: 10px;
         margin-bottom: 15px;
     }
@@ -58,13 +52,11 @@
         align-items: center;
         gap: 0.5rem;
         background-color: #ffffff;
-    }
- 
-    /* #_dms_aside_menus::-webkit-scrollbar {
-        display: none;
     } */
+ 
+  
 
-    .company {
+    /* .company {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -72,9 +64,9 @@
         font-size: 14px;
         font-weight: bold;
         color: white;
-    }
+    } */
 
-    .admin_info {
+    /* .admin_info {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -88,12 +80,12 @@
         width: 100px;
         height: 100px;
         border-radius: 50%;
-    }
+    } */
 
-    .kt-menu__link-text[vslang]:hover {
+    /* .kt-menu__link-text[vslang]:hover {
         border-radius: 0 0 0 20px;
         color: #cab54a;
-    }
+    } */
 </style>
 
 <?php
@@ -112,7 +104,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/logo/meta.jpg') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/meta/Meta_logo.png') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">
