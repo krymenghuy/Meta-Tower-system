@@ -11,7 +11,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end w-50">
             <button type="button" class="btn_add d-flex align-items-center gap-2" id="_btnAddBuilding">
-                <i class="fa fa-user-plus"></i>
+                <i class="fa-regular fa-building fa-lg mr-2"></i>
                 <span vslang="buttons.Create Building"></span>
             </button>
         </div>

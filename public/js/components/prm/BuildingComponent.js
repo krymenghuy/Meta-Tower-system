@@ -281,7 +281,7 @@ var BuildingComponent = ( () => {
                 mThis.BuildingListView.showPage(mThis.getFilterData());
             }
         };
-        console.log(112);
+        
         
         BuildingDialog.show(op);
     }
