@@ -25,9 +25,7 @@ var BuildingComponent = ( () => {
             title: "Building Name",
             className: "align-middle  ",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
             }
         },
 
@@ -78,7 +76,7 @@ var BuildingComponent = ( () => {
         //     }
         // },
            {
-            title: "Floor",
+            title: "Floors",
             className: "align-middle ",
             data: (data, index, tr) => {
                 return `
@@ -88,27 +86,27 @@ var BuildingComponent = ( () => {
                 `;
             }
         },
-        {
-            title: "Total Room",
-            className: "align-middle ",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        },
-        {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
+        // {
+        //     title: "Total Room",
+        //     className: "align-middle ",
+        //     data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
+        // },
+        // {
+        //     title: "Status",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const status = (data.status ?? '').toLowerCase();
+        //         let cls = 'text-info';
 
-                if (status === 'inactive') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'active') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
-                }
+        //         if (status === 'inactive') {
+        //             cls = 'text-danger px-2 py-1 d-inline-block';
+        //         } else if (status === 'active') {
+        //             cls = 'text-success px-2 py-1 d-inline-block';
+        //         }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
-        },
+        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+        //     },
+        // },
         {
             title: "Updated By",
             className: 'align-middle',
@@ -281,7 +279,7 @@ var BuildingComponent = ( () => {
                 mThis.BuildingListView.showPage(mThis.getFilterData());
             }
         };
-        console.log(112);
+        
         
         BuildingDialog.show(op);
     }
@@ -443,7 +441,7 @@ const BuildingDialog = (() => {
                 // ],
                 prepareFormOptions: {
                     createTitle: "Create Building",
-                    modifyTitle: "Edit Building",
+                    modifyTitle: "Modify Building",
                     targetProp: "building_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
