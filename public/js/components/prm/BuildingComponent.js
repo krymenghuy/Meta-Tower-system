@@ -1,14 +1,14 @@
 "use strict";
 
 var BuildingComponent = new (function () {
-    const mThis = this;
+    const mThis = {};
     this.title_prop = "Building & Floor Management";
 
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
-    mThis.btnAddBuilding = mThis.self.querySelector("#_btnBuilding");
+    mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
-    // mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elSearch = mThis.self.querySelector("#_search_building");
 
      mThis.cols = [
@@ -18,13 +18,13 @@ var BuildingComponent = new (function () {
             className: "align-middle text-capitalize",
         },
         {
-            title: "Staff ID",
-            className: "align-middle text-capitalize",
+            title: "Building ID",
+            className: "align-middle ",
             data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
         },
         {
-            title: "Name",
-            className: "align-middle  text-capitalize ",
+            title: "Building Name",
+            className: "align-middle  ",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
@@ -32,59 +32,55 @@ var BuildingComponent = new (function () {
             }
         },
 
-        {
-            title: "Position",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        },
-        {
-            title: "Contact Info",
-            className: "align-middle",
-            data: (data) => {
-                const phone = data.phone_number || 'N/A';
+        
+        // {
+        //     title: "Contact Info",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const phone = data.phone_number || 'N/A';
 
-                let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-                if (data.telegram_link && data.telegram_link.trim() !== '') {
-                    const url = data.telegram_link.trim();
-                    const displayText = url.replace(/^https?:\/\/t\.me\//, '');
+        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
+        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
+        //             const url = data.telegram_link.trim();
+        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
 
-                    const deepLink = displayText.startsWith('+')
-                        ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-                        : `tg://resolve?domain=${displayText}`;
+        //             const deepLink = displayText.startsWith('+')
+        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
+        //                 : `tg://resolve?domain=${displayText}`;
 
-                    telegramHTML = `
-                        <a href="${url}"
-                        onclick="event.preventDefault(); window.location='${deepLink}';"
-                        class="text-decoration-none d-inline-flex align-items-center mt-1"
-                        target="_blank"
-                        title="Open in Telegram"
-                        aria-label="Telegram">
-                            <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-                            <small class="text-nowrap">${displayText}</small>
-                        </a>`;
-                }
+        //             telegramHTML = `
+        //                 <a href="${url}"
+        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
+        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
+        //                 target="_blank"
+        //                 title="Open in Telegram"
+        //                 aria-label="Telegram">
+        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
+        //                     <small class="text-nowrap">${displayText}</small>
+        //                 </a>`;
+        //         }
 
-                return `
-                    <div class="d-flex flex-column">
-                        <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-                        <div>${telegramHTML}</div>
-                    </div>`;
-            }
-        },
-        {
-            title: "Zone",
-            className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
-                    </div>
-                `;
-            }
-        },
+        //         return `
+        //             <div class="d-flex flex-column">
+        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
+        //                 <div>${telegramHTML}</div>
+        //             </div>`;
+        //     }
+        // },
+        // {
+        //     title: "Zone",
+        //     className: "align-middle text-capitalize",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <div class="text-yp-custom" style="width:50px;">
+        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
+        //             </div>
+        //         `;
+        //     }
+        // },
            {
             title: "Floor",
-            className: "align-middle text-capitalize",
+            className: "align-middle ",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
@@ -92,6 +88,11 @@ var BuildingComponent = new (function () {
                     </div>
                 `;
             }
+        },
+        {
+            title: "Total Room",
+            className: "align-middle ",
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
         },
         {
             title: "Status",
@@ -148,8 +149,8 @@ var BuildingComponent = new (function () {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('staff');
-              tr.setAttribute('id',['staff_id',data.id].join('')); 
+              tr.classList.add('building');
+              tr.setAttribute('id',['building_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -164,9 +165,8 @@ var BuildingComponent = new (function () {
                     mThis.BuildingListView.showPage(mThis.getFilterData());
                 }
             };
-            if (!AuthManager.allowed(240)) return;
             BuildingDialog.show(op);
-        };
+        }
 
 
         mThis.pr_tbl = mThis.BuildingListView.getListContainer();
@@ -235,13 +235,13 @@ var BuildingComponent = new (function () {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_member"
+                    name: "edit_building"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_member"
+                    name: "delete_building"
                 },
             ],
             // adjustPosition: {
@@ -256,12 +256,12 @@ var BuildingComponent = new (function () {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_member': {
-                        mThis.editMember(id, menuLink);
+                    case 'edit_building': {
+                        mThis.editBuilding(id, menuLink);
                         break;
                     }
-                    case 'delete_member': {
-                        mThis.deleteMember(id, menuLink);
+                    case 'delete_building': {
+                        mThis.deleteBuilding(id, menuLink);
                         break;
                     }
 
@@ -274,6 +274,44 @@ var BuildingComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
+     mThis.editBuilding = (id, menulink) =>{
+        let op = {
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.BuildingListView.showPage(mThis.getFilterData());
+            }
+        };
+        console.log(112);
+        
+        BuildingDialog.show(op);
+    }
+      mThis.deleteBuilding = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.BuildingListView.showPage(mThis.getFilterData());
+            }
+        };
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Building?', {
+            title: 'Delete Building',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.BuildingListView.showPage();
+                    }
+                })
+            }
+            else {
+                cv_interact.error(res.error_message);
+            }
+        });
+    }
 
     mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
@@ -288,8 +326,8 @@ var BuildingComponent = new (function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
+                {status_id:"1",name:"Available"},
+                {status_id:"2",name:"Unavailable"}
             ],
             defaultValue: status_id
         };
@@ -318,7 +356,7 @@ var BuildingComponent = new (function () {
                 // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'building_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
-    }
+    };
 
   
 
@@ -354,78 +392,18 @@ const BuildingDialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Staff Name</label>
+                                    <label>Building Name</label>
                                 </div>
                             </div>
-                            
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select required class="data-input form-control" data-field="sex">
-                                        <option value="" disabled selected>Select Gender</option>
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                    </select>
-                                    <label class="d-none">Gender</label>
+                                    <input type="text" name="floor" required class="data-input form-control" data-field="floors" placeholder=" " />
+                                    <label>Floor </label>
                                 </div>
                             </div>
                             
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="role" required class="data-input form-control" data-field="role">
-                                        <option value="" disabled selected>Select Role</option>
-                                        <option value="Staff">Staff</option>
-                                        <option value="IT">IT</option>
-                                        <option value="HR">HR</option>
-                                        <option value="Manager">Manager</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
-                                </div>
-                            </div>
                             
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="zones" required class="data-input form-control" data-field="zones">
-                                        <option value="" disabled selected>Select Zone</option>
-                                        <option value="1">Zone A</option>
-                                        <option value="2">Zone B</option>
-                                        <option value="3">Zone C</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="floors" required class="data-input form-control" data-field="floors">
-                                        <option value="" disabled selected>Select Floor</option>
-                                        <option value="1">1st Floor</option>
-                                        <option value="2">2nd Floor</option>
-                                        <option value="3">3rd Floor</option>
-                                    </select>
-                                    <label class="d-none">Floors</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12 d-none">
-                                <div class="material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div>  
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
+                           
                         </div>`
                     ].join("");
                 },
