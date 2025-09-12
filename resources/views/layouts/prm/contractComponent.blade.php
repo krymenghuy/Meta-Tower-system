@@ -1,4 +1,4 @@
-<div id="_main_contract_component" style="display: none;">
+<div id="_main_contract_component" class="m-3 pt-2" style="display: none;">
    <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-2" style="background-color:#ffffff;" id="_divFilter_contract">
         <div class="d-flex justify-content-start gap-3 w-50">
             <div class="d-flex justify-content-start w-50 position-relative">
@@ -10,7 +10,7 @@
                 </div> -->
         </div>
         <div class="d-flex align-items-center justify-content-end w-50">
-            <button type="button" class="btn_add d-flex align-items-center gap-2" id="_btnAddContract">
+            <button type="button" class="btnAddNewPrm" id="_btnAddContract">
                 <i class="fa-regular fa-building fa-lg mr-2"></i>
                 <span vslang="buttons.Create Contract"></span>
             </button>

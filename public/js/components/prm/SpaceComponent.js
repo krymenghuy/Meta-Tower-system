@@ -24,7 +24,7 @@ mThis.cols = [
         {
             title: " building ID",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+            data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
         },
         {
             title: " code",
@@ -32,11 +32,10 @@ mThis.cols = [
             data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
         },
         {
-            title: "Size (m2)",
+            title: "Size (m²)",
             className: "align-middle ",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.sqm_size ?? ''}</small></span>`;
             }
         },
         {
@@ -58,17 +57,7 @@ mThis.cols = [
             }
         },
        
-        //  {
-        //     title: "Address",
-        //     className: "align-middle ",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-yp-custom" style="width:150px;">
-        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
-        //             </div>
-        //         `;
-        //     }
-        // },
+        
         {
             title: "Updated By",
             className: 'align-middle',
@@ -79,6 +68,22 @@ mThis.cols = [
                 </div>`;
             }
         },
+        // {
+        //     title: "Status",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const status = (data.status ?? '').toLowerCase();
+        //         let cls = 'text-info';
+
+        //         if (status === 'inactive') {
+        //             cls = 'text-danger px-2 py-1 d-inline-block';
+        //         } else if (status === 'active') {
+        //             cls = 'text-success px-2 py-1 d-inline-block';
+        //         }
+
+        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+        //     },
+        // },
         {
             className: 'col_action align-middle',
             data: (data) => `
@@ -125,7 +130,7 @@ mThis.cols = [
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            TenantDialog.show(op);
+            Spacedialog.show(op);
         };
 
 
@@ -242,9 +247,8 @@ mThis.cols = [
                 mThis.TenantListView.showPage(mThis.getFilterData());
             }
         };
-        console.log(1123,op);
         
-        CreateTenantDialog.show(op);
+        CreateSpacedialog.show(op);
     }
      mThis.deleteTenant = (id, menuLink) => {
         let op = {
@@ -255,8 +259,8 @@ mThis.cols = [
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Tenant??', {
-            title: 'Delete Tenant',
+        cv_interact.confirm('Delete this Space??', {
+            title: 'Delete Space',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
@@ -330,7 +334,7 @@ mThis.cols = [
     return mThis;
 })();
 
-const TenantDialog = (() => {
+const Spacedialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -344,10 +348,17 @@ const TenantDialog = (() => {
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
+
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Full Name</label>
+                                    <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                    <label>Building ID</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="text" name="code" required class="data-input form-control" data-field="code" placeholder=" " />
+                                    <label>Code</label>
                                 </div>
                             </div>
                             
@@ -355,30 +366,22 @@ const TenantDialog = (() => {
 
                              <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                    <label>Legal Name</label>
+                                    <input type="number" name="size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label>Size (m²)</label>
                                 </div>
                             </div>
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label>Price</label>
                                 </div>
                             </div>
 
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email</label>
-                                </div>
-                            </div>
-                             
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
+                                    <input type="text" name="price_type" required class="data-input form-control" data-field="price_type" placeholder=" " />
+                                    <label>Price Type</label>
                                 </div>
                             </div>
                         </div>`
@@ -423,11 +426,11 @@ const TenantDialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create New Tenant",
-                    modifyTitle: "Modify Tenant ",
-                    targetProp: "tenants",
+                    createTitle: "Create New Space",
+                    modifyTitle: "Modify Space ",
+                    targetProp: "building_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/tenant/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },

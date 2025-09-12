@@ -10,112 +10,120 @@ var ContractComponent = new (function () {
     mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_contract");
 
-   
 
- mThis.cols = [
+
+    mThis.cols = [
 
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
         },
         {
-            title: "Building ID",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+            title: " ID",
+            className: "align-middle",
+            data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
         },
         {
-            title: "Building Name",
-            className: "align-middle  ",
+            title: " tenant ID",
+            className: "align-middle",
+            data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
+        },
+        {
+            title: "Business Type",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;">${data.business_type_id ?? ''}</span>`;
             }
         },
-
-        
-        // {
-        //     title: "Contact Info",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const phone = data.phone_number || 'N/A';
-
-        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
-        //             const url = data.telegram_link.trim();
-        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-
-        //             const deepLink = displayText.startsWith('+')
-        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-        //                 : `tg://resolve?domain=${displayText}`;
-
-        //             telegramHTML = `
-        //                 <a href="${url}"
-        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
-        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
-        //                 target="_blank"
-        //                 title="Open in Telegram"
-        //                 aria-label="Telegram">
-        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-        //                     <small class="text-nowrap">${displayText}</small>
-        //                 </a>`;
-        //         }
-
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-        //                 <div>${telegramHTML}</div>
-        //             </div>`;
-        //     }
-        // },
-        // {
-        //     title: "Zone",
-        //     className: "align-middle text-capitalize",
-        //     data: (data, index, tr) => {
-        //         return `
-        //             <div class="text-yp-custom" style="width:50px;">
-        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
-        //             </div>
-        //         `;
-        //     }
-        // },
-           {
-            title: "Floors",
-            className: "align-middle ",
+        {
+            title: "start date",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.start_date ?? 'N/A'}</span>
                     </div>
                 `;
             }
         },
-        // {
-        //     title: "Total Room",
-        //     className: "align-middle ",
-        //     data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
-        // },
-        // {
-        //     title: "Status",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const status = (data.status ?? '').toLowerCase();
-        //         let cls = 'text-info';
+        {
+            title: "end date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.end_date ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "space id",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.space_id ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
 
-        //         if (status === 'inactive') {
-        //             cls = 'text-danger px-2 py-1 d-inline-block';
-        //         } else if (status === 'active') {
-        //             cls = 'text-success px-2 py-1 d-inline-block';
-        //         }
-
-        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-        //     },
-        // },
+        {
+            title: "size (m²)",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.sqm_size ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "price ",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.price ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "price type",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return (
+                    (data.price_type.toLowerCase() !== "price"
+                        ? "$ "
+                        : "") +
+                    (data.total_price ? data.total_price : "") +
+                    (data.price_type.toLowerCase() === "price"
+                        ? "m²"
+                        : "")
+                );
+            },
+        },
+        {
+            title: "remark",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
         {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -124,7 +132,7 @@ var ContractComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
+                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
                            <span><i class="fa fa-pencil"></i></span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
@@ -137,21 +145,21 @@ var ContractComponent = new (function () {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.BuildingListView = new ListView('_building_list', {
+        mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
-                
-              
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('building');
-              tr.setAttribute('id',['building_id',data.id].join('')); 
+            rowCreated: (data, index, tr) => {
 
-            }, 
+
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('contract');
+                tr.setAttribute('id', ['contract_id', data.id].join(''));
+
+            },
             listContainerClass: null
         });
 
@@ -161,14 +169,14 @@ var ContractComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.BuildingListView.showPage(mThis.getFilterData());
+                    mThis.ContractListView.showPage(mThis.getFilterData());
                 }
             };
-            Contractdialog.show(op);
+            ContractDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.BuildingListView.getListContainer();
+        mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -176,7 +184,7 @@ var ContractComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblBuilding = mThis.BuildingListView.getTable();
+        mThis.tblBuilding = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuilding);
 
 
@@ -186,7 +194,7 @@ var ContractComponent = new (function () {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.BuildingListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -194,10 +202,10 @@ var ContractComponent = new (function () {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.BuildingListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -234,13 +242,13 @@ var ContractComponent = new (function () {
                     html: '<span class="ps-2 " vslang="titles.Modify"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_building"
+                    name: "edit_contact"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_building"
+                    name: "delete_contract"
                 },
             ],
             // adjustPosition: {
@@ -255,11 +263,11 @@ var ContractComponent = new (function () {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_building': {
+                    case 'edit_contract': {
                         mThis.editBuilding(id, menuLink);
                         break;
                     }
-                    case 'delete_building': {
+                    case 'delete_contract': {
                         mThis.deleteBuilding(id, menuLink);
                         break;
                     }
@@ -273,36 +281,37 @@ var ContractComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-     mThis.editBuilding = (id, menulink) =>{
+    mThis.editBuilding = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.BuildingListView.showPage(mThis.getFilterData());
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                ;
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
-        
-        
-        Contractdialog.show(op);
+
+
+        ContractDialog.show(op);
     }
-      mThis.deleteBuilding = (id, menuLink) => {
+    mThis.deleteBuilding = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.BuildingListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Building?', {
-            title: 'Delete Building',
+        cv_interact.confirm('Delete this ontract?', {
+            title: 'Delete Contract',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.BuildingListView.showPage();
+                        mThis.ContractListView.showPage();
                     }
                 })
             }
@@ -312,11 +321,11 @@ var ContractComponent = new (function () {
         });
     }
 
-    mThis.changeStatus = (id, lnk) =>{
+    mThis.changeStatus = (id, lnk) => {
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-        
+        console.log(123, status_id);
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Building Status",
@@ -324,23 +333,23 @@ var ContractComponent = new (function () {
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Available"},
-                {status_id:"2",name:"Unavailable"}
+            data: [
+                { status_id: "1", name: "Available" },
+                { status_id: "2", name: "Unavailable" }
             ],
             defaultValue: status_id
         };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/building/update-status`,status).then(res=>{
-                if(res.status_code ===200){
+        InputBox2.show(inputOptions, (selected) => {
+            if (!selected) return;
+            if (!AuthManager.allowed(321)) return;
+            const status = { id, status_id: selected.value };
+            vsapi.call(`${mThis.base_url}/prm/building/update-status`, status).then(res => {
+                if (res.status_code === 200) {
                     InputBox2.close();
-                    cv_interact.success('The Builing Status has been updated');
-                    mThis.BuildingListView.showPage(mThis.getFilterData());
+                    cv_interact.success('The Contract Status has been updated');
+                    mThis.ContractListView.showPage(mThis.getFilterData());
 
-                }else{
+                } else {
                     cv_interact.error(res.error_message || 'Unable to update status');
                 }
             });
@@ -359,9 +368,9 @@ var ContractComponent = new (function () {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
-            main_view.setContentView(mThis.self,mThis.title_prop);
-            mThis.BuildingListView.showPage(mThis.getFilterData());
+        mThis.prepareFormOptions(() => {
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ContractListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -382,19 +391,70 @@ const ContractDialog = (() => {
                 cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Building Name</label>
+                                    <input type="text" name="code" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
+                                    <label>Tenant ID</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="floor" required class="data-input form-control" data-field="floors" placeholder=" " />
-                                    <label>Floor </label>
+                                    <input type="text" name="business_type" required class="data-input form-control" data-field="business_type_id" placeholder=" " />
+                                    <label>Business Type</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="text" name="space_id" required class="data-input form-control" data-field="space_id" placeholder=" " />
+                                    <label>Space ID</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
+                                    <label>Start Date</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
+                                    <label>End Date</label>
+                                </div>
+                            </div>
+                             <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label>Size (m²)</label>
+                                </div>
+                            </div>
+                             <div class="col-12 ">
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label>Price</label>
+                                </div>
+                            </div>
+                           
+                            <div class="form-group col-6 ">
+                                    <label for="price_type" class="form-label " vslang="titles.Price Type"></label>
+                                    <select name="price_type" class="data-input" data-field="price_type" >
+                                        <option value="sqm">Square meter (m²)</option>
+                                        <option value="total">Total ($)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="price_type" class="form-label " vslang="titles.Total (m²)"></label>
+                                    <input name="price_type" type="number" class="form-control data-input" data-field="price_amount" />
+                                </div>
+                                
+                            </div>
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remarks</label>
                                 </div>
                             </div>
                             
@@ -420,7 +480,7 @@ const ContractDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -428,7 +488,7 @@ const ContractDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -442,7 +502,7 @@ const ContractDialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create Building",
+                    createTitle: "Create New Contract",
                     modifyTitle: "Modify Building",
                     targetProp: "building_details",
                     api: {
@@ -458,9 +518,33 @@ const ContractDialog = (() => {
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
+
+                    
                 },
 
-             
+
+                // onPrepareForm: (me, data) => {
+                //     LocaleManager.translateZone(me.divModal);
+                //     me.controls.price_type.onchange = function (e) {
+                //         e.preventDefault();
+                //         const value = me.controls.price_type.value;
+                //         const parent = me.controls.price_type.closest('.col-6');
+                //         if (!parent) return;
+
+                //         const container = parent.parentElement;
+                //         if (!container) return;
+
+                //         const labelElement = container.querySelector('label[vslang="titles.Total (m²)"]');
+                //         if (!labelElement) return;
+
+                //         labelElement.textContent = value === 'price'
+                //             ? LocaleManager.trans('Total (m²)', 'titles')
+                //             : LocaleManager.trans('Total ($)', 'titles');
+                //     };
+                //     me.controls.discount_type.dispatchEvent(new Event('change'));
+                // },
+
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
