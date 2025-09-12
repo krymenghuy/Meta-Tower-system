@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
     li.kt-menu__section {
         margin: 8px 0 !important;
         background: #cbb858 !important;
@@ -94,7 +94,7 @@
         border-radius: 0 0 0 20px;
         color: #cab54a;
     }
-</style>
+</style> -->
 
 <?php
 function v_display($mod_id, $module_ids = null)
@@ -112,7 +112,7 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
             <div class="kt-aside__brand-logo m-2">
-                <img src="{{ asset('assets/images/meta/Meta_logo.png') }}" alt="" class="img-logo rounded-2" />
+                <img src="{{ asset('assets/images/meta/Meta_logo1.png') }}" alt="" class="img-logo rounded-2" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler">

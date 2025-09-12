@@ -22,6 +22,12 @@
 
                    'dashboard' => 'Dashboard',
                    'tenant_management' => 'Tenant & Management',
+                   'payments' => 'Payments & Billings',
+                   'services' => 'Services & Access',
+
+
+                   'settings' => 'Settings',
+
                    'logout'=> 'Log Out',
 
              ],

@@ -276,7 +276,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #C0C3C2 #CBD6D2;
+  scrollbar-color: #bfa670 #1a1647;
 }
 
 *::-webkit-scrollbar {

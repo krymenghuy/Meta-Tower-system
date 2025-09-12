@@ -91,6 +91,7 @@
         }
         .svg-white {
     filter: brightness(0) invert(1);
+        }
 
     </style>
     <?php
@@ -142,115 +143,144 @@
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ffffff;">
-                            <div class="mainview-top-right">
-                                <div class="show--title mx-4 p-3 flex-grow-1 ">
-                                    <div id="screen_title_wrapper" style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
-                                        <div>
-                                            <span class="screen-title mb-0 text-white text-nowrap" vslang="titles.dashboard" id="screen_title"></span>
-                                       </div>
-                                       <div class="d-flex align-item-center justify-content-end w-100">
+                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#e7e7e7;">
+                           <div id="_main_top_right_menus" class="mainview-top-right">
+                                <div class="show--title mx-4 d-flex flex-grow-1">
+                                  <div class="screen-info" id="kt_header_menu_wrapper">
+                                            <span class="screen-title mb-0 text-nowrap" vslang="titles.dashboard" style="text-transform:uppercase;" id="screen_title"></span>
+                                        </div>
+                                        <div class="d-flex align-item-center justify-content-end w-100">
                                             <div class="rounded-circle">
                                                 <a href="javascript:void(0)" id="_db_filter_data" class="btn-filter-summery-db mt-1">
                                                     <!-- <i class="fa-solid fa-filter fs-5 text-white"></i> -->
-                                                     <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" />
+                                                     <!-- <img class="me-2 svg-white" style="height:20px;" src="{{ asset('assets/images/icons/filter-circle.svg') }}" /> -->
                                                 </a>
                                             </div>
                                         </div>
-                                    </div>
                                 </div>
-                                <div id="_main_top_right_menus"
-                                    class="d-flex flex-row gap-2 w-50 flex-wrap px-3 justify-content-end align-items-center">
-                                    <div class="dropdown shadow-lg rounded-2 choose--language">
-                                        <button id="_main_btn_lang" class="btn-dropdown align--language"
-                                            data-menu="lang">
-                                            <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}"
-                                                style="height:25px" />
-                                            <span id="_main_lang_name" style="color:#fff;">
-                                                <?php
-                                                echo Session::get('lang_name', 'Khmer');
-                                                ?>
-                                            </span>
-                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#fff;"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <span class="lang-menu-header"></span>
-                                            <div class="main-lang-menus">
-                                                <span class="lang-menu-item">
-                                                    <a class="dropdown-item lnk-lang" data-lang="km"
-                                                        data-name="ខ្មែរ" href="javascript:void(0)">
-                                                        <img class="menu-item-icon"
-                                                            src="{{ asset('assets/images/icons/khmer.png') }}" />
-                                                        ខ្មែរ
-                                                    </a>
+                                <div id="_main_top_right_menus" class="d-flex flex-row gap-2 w-50 flex-wrap px-3 justify-content-end align-items-center">
+                                    <div class="dropdown choose--language">
+                                            <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
+                                                <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
+                                                <span id="_main_lang_name" class="mx-2                        ">
+                                                    <?php
+                                                        echo Session::get('lang_name', 'Khmer');
+                                                    ?>
                                                 </span>
-                                                <span class="lang-menu-item">
-                                                    <a class="dropdown-item lnk-lang" data-lang="en"
-                                                        data-name="English" href="javascript:void(0)">
-                                                        <img class="menu-item-icon"
-                                                            src="{{ asset('assets/images/icons/english.png') }}" />
-                                                        English
-                                                    </a>
-                                                </span>
+                                                <i class="fa-solid fa-caret-down ps-2 fs-5"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <span class="lang-menu-header"></span>
+                                                <div class="main-lang-menus">
+                                                    <span class="lang-menu-item">
+                                                        <a class="dropdown-item lnk-lang" data-lang="km" data-name="ខ្មែរ" href="javascript:void(0)">
+                                                            <img class="menu-item-icon" src="{{ asset('assets/images/icons/khmer.png') }}" />
+                                                            ខ្មែរ
+                                                        </a>
+                                                    </span>
+                                                    <span class="lang-menu-item">
+                                                        <a class="dropdown-item lnk-lang" data-lang="en" data-name="English" href="javascript:void(0)">
+                                                            <img class="menu-item-icon" src="{{ asset('assets/images/icons/english.png') }}" />
+                                                            English
+                                                        </a>
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
                                     </div>
-                                    <div class="dropdown  shadow-lg rounded-2 nav--notification">
+                                    <div class="dropdown nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell tool-tip fs-5 ms-2" style="color:#fff;"></i>
+                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#080809;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
                                         <div
-                                            class="dropdown-menu dropdown-menu-right notification-dropdown position-absolute">
+                                            class="dropdown-menu dropdown-menu-right notification-dropdown">
                                             <div class="con--header">
-                                                <span class="d-block text-center text-white">Notification</span>
+                                                <span class="notif-header">Notification</span>
                                             </div>
                                             <div class="main-notif-panel"></div>
                                         </div>
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-2 app--list">
-                                        <button class="btn-dropdown main-menu-button" data-menu="app">
-                                        <i class="fa-solid fa-table tool-tip fs-5 ms-2" style="color:#fff;"></i>
-                                            <span></span>
-                                        </button>
-
-                                        <div class="dropdown-menu shadow-lg rounded-3 mt-3"
-                                            style="position:absolute;width:250px;left:-220px;top:35px">
-                                            <span class="app-menu-header"></span>
-                                            <div class="main-app-menus">
-                                                <?php
-                                                //$user = App\Services\Umt\XAuthService::user();
-                                                if (!$user) {
-                                                    return redirect('/');
-                                                }
-                                                $apps = $user->apps;
-                                                $cnt = 0;
-                                                foreach ($apps as $app) {
-                                                    if (!$app->is_mobile_app) {
-                                                        $expected_user_class = $app->user_class ?? '';
-                                                        $open_new_tab = $expected_user_class == $user->user_class ? '' : 'target="_blank"';
-                                                        $app_icon = empty($app->icon_file_name) ? '<i class="fa fa-cube m-2"></i>' : $app->icon_file_name;
-                                                        $app_name = $app->name ?? $app->app_name;
-                                                        echo ($cnt > 0 ? '<div class="dropdown-divider"></div>' : '') . '<span class="app-menu-item">' . '<a id="" class="dropdown-item" href="/' . $app->home_route . '" ' . $open_new_tab . '>' . $app_icon . ' ' . $app_name . '</a>' . '</span>';
-                                                        $cnt++;
-                                                    }
-                                                }
-
+                                    <div class="dropdown app--list">
+                                            <button class="btn-dropdown main-menu-button " data-menu="app">
+                                                 <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#080809;"></i>
+                                            </button>
+                                            <?php
+                                                $user = XAuthService::user();
+                                                if (!$user) return redirect('/');
+                                                $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
+                                                $count = $apps->count();
+                                                $width = $count <= 3 ? 300 : 310;
+                                                $cols  = $count <= 4 ? 'row-cols-2' : 'row-cols-2';
                                                 ?>
 
+                                        <div class="dropdown-menu shadow-lg bg-white p-3 rounded-2"
+                                            style="position:absolute; width:<?= $width ?>px; left:-150px; top:60px">
+                                            <hr class="my-1">
+
+                                            <div class="row main-app-menus text-center g-2 <?= $cols ?>">
+                                                <?php foreach ($apps as $app): ?>
+                                                    <?php
+                                                        $icon = empty($app->icon_file_name)
+                                                            ? '<i class="fa-solid fa-layer-group fs-1 text-primary-custom"></i>'
+                                                            : '<img src="'.$app->icon_file_name.'" width="120" height="120" alt="'.($app->name ?? $app->app_name).'">';
+                                                        $name  = $app->name ?? $app->app_name;
+                                                        $route = '/'.ltrim($app->home_route, '/');
+                                                    ?>
+                                                    <div class="col mb-3">
+                                                     <a href="<?= $route ?>"
+                                                        class="text-decoration-none text-primary-custom d-block app-link"
+                                                        data-app-key="<?= htmlspecialchars($name) ?>">
+                                                        <?= $icon ?>
+                                                        <div class="small mt-2 text-nowrap app-name-label"><?= $name ?></div>
+                                                    </a>
+
+                                                    </div>
+                                                <?php endforeach; ?>
                                             </div>
                                         </div>
 
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                            const appLinks = document.querySelectorAll('.app-link');
+                                            const storageKey = 'selected_app_name';
+
+                                            const selectedApp = localStorage.getItem(storageKey);
+                                            if (selectedApp) {
+                                                appLinks.forEach(link => {
+                                                    if (link.dataset.appKey === selectedApp) {
+                                                        link.classList.add('active');
+                                                    }
+                                                });
+                                            }
+
+                                            appLinks.forEach(link => {
+                                                link.addEventListener('click', function () {
+                                                    // Remove all active
+                                                    appLinks.forEach(l => l.classList.remove('active'));
+
+                                                    this.classList.add('active');
+                                                    localStorage.setItem(storageKey, this.dataset.appKey);
+                                                });
+                                            });
+                                        });
+                                        </script>
+<!--
+                                         <div class="dropdown-menu shadow-lg bg-white mr-3 rounded-2 mt-3" style="position:absolute;width:250px;left:-220px;top:45px">
+                                                <span class="app-menu-header ps-4 text-primary-custom">Edvance System</span>
+                                                <hr class="my-1">
+
+                                            </div> -->
+
                                     </div>
 
-                                    <div class="dropdown shadow-lg rounded-2 user--info">
+                                    <div class="dropdown user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <img class="mr-1" src="<?php echo $user->image_url; ?>" style="height:25px" />
-                                                <span style="color:#fff;">
+                                            <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
+                                                <span class="mx-2">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
@@ -258,15 +288,15 @@
                                                 </span>
                                         </button>
 
-                                        <div class="dropdown-menu dropdown-menu-left bg-white shadow-lg mt-3"
-                                            style="width:250px;position:absolute;left:-220px;top:35px;">
+                                        <div class="dropdown-menu dropdown-menu-left bg-white shadow-lg"
+                                            style="width:250px;position:absolute;left:-150px;top:60px;">
                                             <span class="user-menu-header"></span>
                                             <div class="main-user-menus">
                                                 <span class="user-menu-item">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog m-2"></i>
-                                                        About Meta Estate
+                                                        About Meta Client
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>
@@ -285,7 +315,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_p2" class="h-100 mt-1" id="kt_content">
+                <div id="_p2" class="h-100" id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
