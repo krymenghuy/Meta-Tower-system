@@ -42,8 +42,9 @@ mThis.cols = [
         {
             title: "Price",
             className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.legal_name ?? ''}</small></span>`;
+            data: (data, index, tr) => {
+                const cur_symbol = data.cur_symbol ?? '$', amount = data.amount ?? 0;
+                return [cur_symbol, amount].join(' ');
             }
         },
 
@@ -51,22 +52,23 @@ mThis.cols = [
         {
             title: "Price Type",
             className: "align-middle",
-            data: (data, index, tr) =>
-                `<span class="d-block text-" style="font-size:12px;" ><i class="fa-solid text-success px-1 fa-envelope" style="font-size:11px;"></i> ${data.email ?? ""}</span>
-                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone" style="font-size:11px;"></i> ${data.phone_number ?? ""}</span>`,
-        },
-       
-         {
-            title: "Address",
-            className: "align-middle ",
             data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
-                    </div>
-                `;
+                const cur_symbol = data.cur_symbol ?? '$', amount = data.amount ?? 0;
+                return [cur_symbol, amount].join(' ');
             }
         },
+       
+        //  {
+        //     title: "Address",
+        //     className: "align-middle ",
+        //     data: (data, index, tr) => {
+        //         return `
+        //             <div class="text-yp-custom" style="width:150px;">
+        //                 <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+        //             </div>
+        //         `;
+        //     }
+        // },
         {
             title: "Updated By",
             className: 'align-middle',
