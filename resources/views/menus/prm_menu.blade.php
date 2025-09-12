@@ -212,10 +212,6 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Payments"></span>
                         </a>
                     </li>
-                     <li class="kt-menu__section">
-                        <h4 class="kt-menu__section-text " vslang="menus.services"></h4>
-                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                    </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                         <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -240,10 +236,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Report & Export"></span>
                         </a>
                     </li>
-                    <li class="kt-menu__section">
-                        <h4 class="kt-menu__section-text " vslang="menus.setting">Setting Managements</h4>
-                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                    </li>
+                 
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
                         <a href="BuildingComponent" modid="244" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
