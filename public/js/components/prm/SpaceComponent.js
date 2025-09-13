@@ -17,25 +17,25 @@ mThis.cols = [
             className: "align-middle text-capitalize",
         },
         {
-            title: " ID",
+            title: "Building Name",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
+            data: (data,index) => `<span class="text-yp-custom">${data.building ?? 'Meta Tower'}</span>`,
         },
         {
-            title: " building ID",
+            title: "Code Space",
             className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
+            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'MT-2500001'}</small></span>`,
+        },
+            {
+            title: "Floors",
+            className: "align-middle ",
+            data: (data,index) => `<span class="text-yp-custom">${data.floor ?? 'First Floor'}</span>`,
         },
         {
-            title: " code",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
-        },
-        {
-            title: "Size (m²)",
+            title: "Size (sqm)",
             className: "align-middle ",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.sqm_size ?? ''}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.sqm_size ?? '50(sqm)'}</small></span>`;
             }
         },
         {
