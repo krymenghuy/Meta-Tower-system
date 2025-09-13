@@ -19,4 +19,3 @@
     <div id="_contract_list" class="mt-3"></div>
 </div>
 
-
