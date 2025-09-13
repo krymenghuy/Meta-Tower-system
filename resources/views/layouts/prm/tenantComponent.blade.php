@@ -10,7 +10,7 @@
             </div>
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btn btn--Options w-100 w-md-auto" id="_btnAddTenant">
+                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddTenant">
                     <i class="fa fa-user-plus me-2"></i>
                     <span vslang="buttons.Create Tenant">Create Tenant</span>
                 </button>
