@@ -1,5 +1,5 @@
-<div id="_main_space_component" class="m-3 pt-2" style="display:none;">
-   <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-2" style="background-color:#f5f5f5;" id="_divFilter_space" >
+<div id="_main_space_component" class="mobile-padding px-3" style="display:none;">
+   <div class="d-flex justify-content-between w-100 rounded-2 shadow p-3 mt-2" style="background-color:#ffffff;" id="_divFilter_space" >
         <div class="d-flex justify-content-start gap-3 w-50">
             <div class="d-flex w-50">
                 <input type="text" class="form-control rounded-2 filter-field" id="_search_space" placeholder="Search">

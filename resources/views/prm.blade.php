@@ -195,7 +195,7 @@
                                                 id="_main_notif_count">0</span>
                                         </button>
                                         <div
-                                            class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                            class="dropdown-menu dropdown-menu-right rounded-2 shadow-lg notification-dropdown">
                                             <div class="con--header">
                                                 <span class="notif-header">Notification</span>
                                             </div>
@@ -204,77 +204,66 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                            <button class="btn-dropdown main-menu-button " data-menu="app">
-                                                 <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#080809;"></i>
-                                            </button>
-                                            <?php
-                                                $user = XAuthService::user();
-                                                if (!$user) return redirect('/');
-                                                $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
-                                                $count = $apps->count();
-                                                $width = $count <= 3 ? 300 : 310;
-                                                $cols  = $count <= 4 ? 'row-cols-2' : 'row-cols-2';
-                                                ?>
+                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#080809;"></i> </button>
 
-                                        <div class="dropdown-menu shadow-lg bg-white p-3 rounded-2"
-                                            style="position:absolute; width:<?= $width ?>px; left:-150px; top:60px">
-                                            <hr class="my-1">
+                                        <?php
+                                            $user = XAuthService::user();
+                                            if (!$user) return redirect('/');
+                                            $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
+                                        ?>
 
-                                            <div class="row main-app-menus text-center g-2 <?= $cols ?>">
+                                        <div class="dropdown-menu dropdown-menu-end bg-white shadow-lg rounded-2"
+                                            style="min-width:320px; max-width:380px;left:-150px;top:60px;">
+                                            <div class="row row-cols-3 g-3 text-center">
                                                 <?php foreach ($apps as $app): ?>
                                                     <?php
                                                         $icon = empty($app->icon_file_name)
-                                                            ? '<i class="fa-solid fa-layer-group fs-1 text-primary-custom"></i>'
-                                                            : '<img src="'.$app->icon_file_name.'" width="120" height="120" alt="'.($app->name ?? $app->app_name).'">';
+                                                            ? '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto" style="width:56px; height:56px;">
+                                                                <i class="fa-solid fa-layer-group fs-3 text-primary-custom"></i>
+                                                            </div>'
+                                                            : '<div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto overflow-hidden" style="width:56px; height:56px;">
+                                                                <img src="'.$app->icon_file_name.'"  alt="'.($app->name ?? $app->app_name).'" style="width:100%; height:100%; object-fit:cover;">
+                                                            </div>';
                                                         $name  = $app->name ?? $app->app_name;
                                                         $route = '/'.ltrim($app->home_route, '/');
                                                     ?>
-                                                    <div class="col mb-3">
-                                                     <a href="<?= $route ?>"
-                                                        class="text-decoration-none text-primary-custom d-block app-link"
+                                                    <div class="col">
+                                                        <a href="<?= $route ?>" 
+                                                        class="app-link d-block text-decoration-none text-dark small" 
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
-                                                        <?= $icon ?>
-                                                        <div class="small mt-2 text-nowrap app-name-label"><?= $name ?></div>
-                                                    </a>
-
+                                                            <?= $icon ?>
+                                                            <div class="mt-2 text-truncate"><?= $name ?></div>
+                                                        </a>
                                                     </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function () {
-                                            const appLinks = document.querySelectorAll('.app-link');
-                                            const storageKey = 'selected_app_name';
+                                    <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const appLinks = document.querySelectorAll('.app-link');
+                                        const storageKey = 'selected_app_name';
 
-                                            const selectedApp = localStorage.getItem(storageKey);
-                                            if (selectedApp) {
-                                                appLinks.forEach(link => {
-                                                    if (link.dataset.appKey === selectedApp) {
-                                                        link.classList.add('active');
-                                                    }
-                                                });
-                                            }
-
+                                        const selectedApp = localStorage.getItem(storageKey);
+                                        if (selectedApp) {
                                             appLinks.forEach(link => {
-                                                link.addEventListener('click', function () {
-                                                    // Remove all active
-                                                    appLinks.forEach(l => l.classList.remove('active'));
+                                                if (link.dataset.appKey === selectedApp) {
+                                                    link.classList.add('active');
+                                                }
+                                            });
+                                        }
 
-                                                    this.classList.add('active');
-                                                    localStorage.setItem(storageKey, this.dataset.appKey);
-                                                });
+                                        appLinks.forEach(link => {
+                                            link.addEventListener('click', function () {
+                                                appLinks.forEach(l => l.classList.remove('active'));
+                                                this.classList.add('active');
+                                                localStorage.setItem(storageKey, this.dataset.appKey);
                                             });
                                         });
-                                        </script>
-<!--
-                                         <div class="dropdown-menu shadow-lg bg-white mr-3 rounded-2 mt-3" style="position:absolute;width:250px;left:-220px;top:45px">
-                                                <span class="app-menu-header ps-4 text-primary-custom">Edvance System</span>
-                                                <hr class="my-1">
+                                    });
+                                    </script>
 
-                                            </div> -->
-
-                                    </div>
 
                                     <div class="dropdown user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
@@ -288,7 +277,7 @@
                                                 </span>
                                         </button>
 
-                                        <div class="dropdown-menu dropdown-menu-left bg-white shadow-lg"
+                                        <div class="dropdown-menu dropdown-menu-left bg-white rounded-2 shadow-lg"
                                             style="width:250px;position:absolute;left:-150px;top:60px;">
                                             <span class="user-menu-header"></span>
                                             <div class="main-user-menus">
