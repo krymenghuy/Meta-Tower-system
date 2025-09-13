@@ -212,7 +212,7 @@
                                             $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
                                         ?>
 
-                                        <div class="dropdown-menu dropdown-menu-end bg-white shadow-lg rounded-2"
+                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2"
                                             style="min-width:320px; max-width:380px;left:-150px;top:60px;">
                                             <div class="row row-cols-3 g-3 text-center">
                                                 <?php foreach ($apps as $app): ?>

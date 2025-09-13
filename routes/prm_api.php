@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ypg\ReportController;
 use App\Http\Controllers\Ypg\GeneralSettingsController;
 
-use App\Http\Controllers\Ypg\MemberController;
 
 use App\Http\Controllers\Ypg\TaskTypeController;
 use App\Http\Controllers\Ypg\TaskAssignController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\Ypg\GraveSlotController;
 
 use App\Http\Controllers\Prm\TenantController;
 use App\Http\Controllers\Prm\BuildingController;
+use App\Http\Controllers\Prm\BuildingSpaceController;
 
 
 
@@ -78,16 +78,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->group(function () {
-    Route::post('/save', [MemberController::class, 'saveMember']);
-    Route::post('/profile/photo',[MemberController::class,'getProfilePhoto']);
-    Route::post('/profile/photo/delete',[MemberController::class,'deleteProfilePhoto']);
-    Route::post('/profile/photo/save',[MemberController::class,'saveProfilePhoto']);
-    Route::post('/list-paginate', [MemberController::class, 'getListMember']);
-    Route::post('/details', [MemberController::class, 'memberDetails']);
-    Route::post('/form-options', [MemberController::class, 'getFormOptions']);
-    Route::post('/delete', [MemberController::class, 'deleteMember']);
-    Route::post('/update-status', [MemberController::class, 'updateMemberStatus']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
+    Route::post('/save', [BuildingSpaceController::class, 'saveBuildingSpace']);
+    Route::post('/list-paginate', [BuildingSpaceController::class, 'getListBuildingSpace']);
+    Route::post('/details', [BuildingSpaceController::class, 'buildingSpaceDetails']);
+    Route::post('/form-options', [BuildingSpaceController::class, 'getFormOptions']);
+    Route::post('/delete', [BuildingSpaceController::class, 'deleteBuildingSpace']);
+    Route::post('/update-status', [BuildingSpaceController::class, 'updateBuildingSpaceStatus']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('grave-slot')->group(function () {
     Route::post('/save', [GraveSlotController::class, 'saveGrave']);
