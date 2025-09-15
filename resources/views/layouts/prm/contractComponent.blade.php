@@ -9,7 +9,7 @@
             </div>
         
         <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-            <button type="button" class="btn btn--Options w-100 w-md-auto" id="_btnAddContract">
+            <button type="button" class="btn btn--Options w-60 w-md-auto" id="_btnAddContract">
                 <i class="fa-regular fa-building fa-lg mr-2"></i>
                 <span vslang="buttons.Create Contract"></span>
             </button>

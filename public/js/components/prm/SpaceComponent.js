@@ -102,8 +102,8 @@ mThis.cols = [
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.TenantListView = new ListView('_space_list', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+        mThis.SpaceListView = new ListView('_space_list', {
+            fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -113,8 +113,8 @@ mThis.cols = [
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join('')); 
+              tr.classList.add('building-space');
+              tr.setAttribute('id',['building-space_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -126,7 +126,7 @@ mThis.cols = [
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.TenantListView.showPage(mThis.getFilterData());
+                    mThis.SpaceListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
@@ -134,7 +134,7 @@ mThis.cols = [
         };
 
 
-        mThis.pr_tbl = mThis.TenantListView.getListContainer();
+        mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -142,8 +142,8 @@ mThis.cols = [
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblTenant = mThis.TenantListView.getTable();
-        mThis.initDropdownMenus(mThis.tblTenant);
+        mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
+        mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
 
 
@@ -152,7 +152,7 @@ mThis.cols = [
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -160,7 +160,7 @@ mThis.cols = [
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.SpaceListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -200,13 +200,13 @@ mThis.cols = [
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_tenant"
+                    name: "edit_building-space"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_tenant"
+                    name: "delete_building-space"
                 },
             ],
             // adjustPosition: {
@@ -221,12 +221,12 @@ mThis.cols = [
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_tenant': {
-                        mThis.editTenant(id, menuLink);
+                    case 'edit_Buildingspace': {
+                        mThis.editBuildingspace(id, menuLink);
                         break;
                     }
-                    case 'delete_tenant': {
-                        mThis.deleteTenant(id, menuLink);
+                    case 'delete_Buildingspace': {
+                        mThis.deleteBuildingspace(id, menuLink);
                         break;
                     }
 
@@ -239,23 +239,23 @@ mThis.cols = [
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editTenant = (id, menulink) =>{
+    mThis.editBuildingspace = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
             onClose:()=>{;
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
         
         CreateSpacedialog.show(op);
     }
-     mThis.deleteTenant = (id, menuLink) => {
+     mThis.deleteBuildingspace = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -265,9 +265,9 @@ mThis.cols = [
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.TenantListView.showPage();
+                        mThis.SpaceListView.showPage();
                     }
                 })
             }
@@ -284,8 +284,8 @@ mThis.cols = [
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "tenant Status",
-            valueMember: "tenant_id",
+            dataLabel: "Space Status",
+            valueMember: "building-space_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
@@ -299,11 +299,11 @@ mThis.cols = [
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
             const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
+            vsapi.call(`${mThis.base_url}/prm/building-space/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Tenant Status has been updated');
-                    mThis.TenantListView.showPage(mThis.getFilterData());
+                    cv_interact.success('Building Space Status has been updated');
+                    mThis.SpaceListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -314,7 +314,7 @@ mThis.cols = [
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
@@ -327,7 +327,7 @@ mThis.cols = [
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.TenantListView.showPage(mThis.getFilterData());
+            mThis.SpaceListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -460,16 +460,16 @@ const Spacedialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Tenant has been updated successfully"
+                                            "Space has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New tenant has been added successfully"
+                                            "New space has been added successfully"
                                         );
                                     }
                                 } else {
