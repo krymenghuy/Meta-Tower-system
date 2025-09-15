@@ -392,77 +392,84 @@ const ContractDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="code" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
-                                    <label>Tenant ID</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="business_type" required class="data-input form-control" data-field="business_type_id" placeholder=" " />
-                                    <label>Business Type</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="space_id" required class="data-input form-control" data-field="space_id" placeholder=" " />
-                                    <label>Space ID</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
-                                    <label>Start Date</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
-                                    <label>End Date</label>
-                                </div>
-                            </div>
-                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
-                                </div>
-                            </div>
-                             <div class="col-12 ">
-                                <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Price</label>
-                                </div>
-                            </div>
-                           
-                            <div class="form-group col-6 ">
-                                    <label for="price_type" class="form-label " vslang="titles.Price Type"></label>
-                                    <select name="price_type" class="data-input" data-field="price_type" >
-                                        <option value="sqm">Square meter (m²)</option>
-                                        <option value="total">Total ($)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-6">
-                                    <label for="price_type" class="form-label " vslang="titles.Total (m²)"></label>
-                                    <input name="price_type" type="number" class="form-control data-input" data-field="price_amount" />
-                                </div>
-                                
-                            </div>
+    return [
+        `<div class="row justify-content-center">
+            <div class="col-12">
+                <div class="material-input outlined">
+                    <input type="text" name="code" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
+                    <label>Tenant ID</label>
+                </div>
+            </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Remarks</label>
-                                </div>
-                            </div>
-                            
-                            
-                           
-                        </div>`
-                    ].join("");
-                },
+            <div class="col-12">
+                <div class="material-input outlined">
+                    <input type="text" name="business_type" required class="data-input form-control" data-field="business_type_id" placeholder=" " />
+                    <label>Business Type</label>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="material-input outlined">
+                    <input type="text" name="space_id" required class="data-input form-control" data-field="space_id" placeholder=" " />
+                    <label>Space ID</label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
+                    <label>Start Date</label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
+                    <label>End Date</label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="number" name="sqm_size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                    <label>Size (m²)</label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                    <label>Price</label>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <label class="form-label">Price Type</label>
+                    <select name="price_type" class="data-input form-control" data-field="price_type">
+                        <option value="sqm">Square meter (m²)</option>
+                        <option value="total">Total ($)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input name="total_price" type="number" class="form-control data-input" data-field="total_price" placeholder=" " />
+                    <label>Total Price</label>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="material-input outlined">
+                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                    <label>Remarks</label>
+                </div>
+            </div>
+        </div>`
+    ].join("");
+},
+
 
 
                 contentCreated: (me) => {
