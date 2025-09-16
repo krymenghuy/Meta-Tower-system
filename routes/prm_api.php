@@ -19,7 +19,7 @@ use App\Http\Controllers\Ypg\GraveSlotController;
 use App\Http\Controllers\Prm\TenantController;
 use App\Http\Controllers\Prm\BuildingController;
 use App\Http\Controllers\Prm\BuildingSpaceController;
-
+use App\Http\Controllers\Prm\ContractController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -141,6 +141,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->g
     Route::post('/form-options', [BuildingController::class, 'getFormOptions']);
     Route::post('/delete', [BuildingController::class, 'deleteBuilding']);
     Route::post('/update-status', [BuildingController::class, 'updateBuildingStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
+    Route::post('/save', [ContractController::class, 'saveContract']);
+    Route::post('/list-paginate', [ContractController::class, 'getListContract']);
+    Route::post('/details', [ContractController::class, 'contractDetails']);
+    Route::post('/form-options', [ContractController::class, 'getFormOptions']);
+    Route::post('/delete', [ContractController::class, 'deleteContract']);
+    Route::post('/update-status', [ContractController::class, 'updateContractStatus']);
 });
 
 

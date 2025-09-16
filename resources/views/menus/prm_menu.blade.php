@@ -201,7 +201,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/bill.png') }}" />
                             </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Billing"></span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Expense"></span>
                         </a>
                     </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
