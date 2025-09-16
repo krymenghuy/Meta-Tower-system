@@ -260,7 +260,7 @@ var TenantComponent =   ( () => {
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "tenant Status",
+            dataLabel: "Tenant Status",
             valueMember: "tenant_id",
             textMember: "name",
             confirmButtonText: "Save",

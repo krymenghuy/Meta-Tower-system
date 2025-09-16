@@ -86,9 +86,9 @@ var InvoiceComponent =   ( () => {
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'text-info';
 
-                if (status === 'inactive') {
+                if (status === 'unpaid') {
                     cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'active') {
+                } else if (status === 'paid') {
                     cls = 'text-success px-2 py-1 d-inline-block';
                 }
 
@@ -219,13 +219,13 @@ var InvoiceComponent =   ( () => {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_tenant"
+                    name: "edit_invoice"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_tenant"
+                    name: "delete_invoice"
                 },
             ],
             // adjustPosition: {
@@ -240,11 +240,11 @@ var InvoiceComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_tenant': {
+                    case 'edit_invoice': {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'delete_tenant': {
+                    case 'delete_invoice': {
                         mThis.deleteTenant(id, menuLink);
                         break;
                     }
@@ -299,18 +299,18 @@ var InvoiceComponent =   ( () => {
       mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
+        // console.log(123,status_id);
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "tenant Status",
-            valueMember: "tenant_id",
+            dataLabel: "Invoice Status",
+            valueMember: "invoice_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
+                {status_id:"1",name:"Paid"},
+                {status_id:"2",name:"Unpaid"},
             ],
             defaultValue: status_id
         };
@@ -321,7 +321,7 @@ var InvoiceComponent =   ( () => {
             vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Tenant Status has been updated');
+                    cv_interact.success('Invoice Status has been updated');
                     mThis.TenantListView.showPage(mThis.getFilterData());
 
                 }else{
@@ -371,13 +371,13 @@ const Invoicedialog = (() => {
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label>Building ID</label>
+                                    <label> Consumer ID </label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="code" required class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label>Code</label>
+                                    <input type="text" name="code" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                    <label>Building ID</label>
                                 </div>
                             </div>
                             
@@ -385,22 +385,22 @@ const Invoicedialog = (() => {
 
                              <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="number" name="size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
+                                    <input type="text" name="description" required class="data-input form-control" data-field="service_type" placeholder=" " />
+                                    <label>Description</label>
                                 </div>
                             </div>
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Price</label>
+                                    <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                    <label>Due Amount</label>
                                 </div>
                             </div>
 
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="text" name="price_type" required class="data-input form-control" data-field="price_type" placeholder=" " />
-                                    <label>Price Type</label>
+                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
+                                    <label>Paid Amount</label>
                                 </div>
                             </div>
                         </div>`
@@ -445,7 +445,7 @@ const Invoicedialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create New Space",
+                    createTitle: "Generate Invoice",
                     modifyTitle: "Modify Space ",
                     targetProp: "building_details",
                     api: {

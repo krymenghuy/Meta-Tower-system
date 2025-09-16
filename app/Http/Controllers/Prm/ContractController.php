@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers\Prm;
+
+use App\Http\Controllers\Controller;
+use App\Models\Prm\Contract;
+use JDV;
+use Illuminate\Http\Request;
+
+class ContractController extends Controller
+{
+     protected $contracts;
+    public function __construct(){
+        $this->contracts = new Contract();
+    }
+
+    public function createContract(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->contract_id;
+        $contract = new Contract($id,$ss);
+        $res = $contract->createContract($req->all());
+        return JDV::raw($res);
+    }
+
+    public function getListPaginate(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->contracts->getListPaginate($req->all(),$ss));
+    }
+
+    public function contractDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->contracts->contractDetails($req->id));
+    }
+    public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->contracts->getFormOptions($req->id));
+    }
+
+    public function delete(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->contracts->delete($req->id);
+        return JDV::raw($res);
+    }
+
+}

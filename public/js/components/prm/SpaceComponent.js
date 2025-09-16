@@ -290,8 +290,8 @@ mThis.cols = [
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
+                {status_id:"1",name:"Alavailable"},
+                {status_id:"2",name:"Unavailable"}
             ],
             defaultValue: status_id
         };
