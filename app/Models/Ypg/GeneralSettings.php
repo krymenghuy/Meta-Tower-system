@@ -252,7 +252,8 @@ class GeneralSettings //extends Model
 
     static function options_member_status($ss){
         return DB::table('member_statuses')->selectRaw('id,name AS member_status')->get();
-    } static function options_acc_staff_status($ss){
+    } 
+    static function options_acc_staff_status($ss){
         return DB::table('staff_statuses')->selectRaw('id,name AS staff_status')->get();
     }
 
@@ -299,5 +300,13 @@ class GeneralSettings //extends Model
         }
         return $new_row;
     }
+
+     static function options_space_type($ss){
+        return DB::table('space_types')->selectRaw('id,name AS space_type')->get();
+    }
+     static function options_building($ss){
+        return  DB::table('buildings')->selectRaw('id,name AS building')->get();
+
+     }
 
 }

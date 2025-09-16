@@ -80,8 +80,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
     Route::post('/save', [BuildingSpaceController::class, 'saveBuildingSpace']);
-    Route::post('/list-paginate', [BuildingSpaceController::class, 'getListBuildingSpace']);
-    Route::post('/details', [BuildingSpaceController::class, 'buildingSpaceDetails']);
+    Route::post('/list-paginate', [BuildingSpaceController::class, 'getListPaginate']);
+    Route::post('/details', [BuildingSpaceController::class, 'getDetails']);
     Route::post('/form-options', [BuildingSpaceController::class, 'getFormOptions']);
     Route::post('/delete', [BuildingSpaceController::class, 'deleteBuildingSpace']);
     Route::post('/update-status', [BuildingSpaceController::class, 'updateBuildingSpaceStatus']);
