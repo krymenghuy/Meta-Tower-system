@@ -15,50 +15,55 @@ var BillingComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
-        {
-            title: "Payment No",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${'INV-100001' + index}</span>`,
+         {
+            title: "Trx. iD ",
+            className: "align-middle text-capitalize",
+             data: (data, index) => `<span class="text-yp-custom">${Trx100001 + index}</span>`,
         },
         {
-            title: "payee ",
+            title: "paid Date",
+            className: "align-middle ",
+             data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.date ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "payment method ",
             className: "align-middle ",
             data: (data) => `<span class="text-yp-custom"><small>${data.customer_id  ?? 'N/A'}</small></span>`,
         },
             {
-            title: "Rent",
+            title: "paid to ",
             className: "align-middle ",
             data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
         },
         {
-            title: "Description",
+            title: "From Account",
             className: "align-middle ",
             data: (data) => {
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
             }
         },
-
-        
         {
-            title: "Total ",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.due_amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
+            title: "amount($)",
+            className: "align-middle ",
+            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
         },
+
         {
-            title: "paid  ",
+            title: "Category",
             className: "align-middle",
             data: (data, index, tr) => {
                 const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
                 return [cur_symbol, amount].join(' ');
             }
         },
-       
-        
         {
-            title: " issue date",
+            title: "Description",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `
@@ -68,16 +73,7 @@ var BillingComponent =   ( () => {
             }
         },
 
-        {
-            title: " pmt date",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
+        
         
 
         {
@@ -366,45 +362,82 @@ const BillingDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
+                       const today = new Date();
+                        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                        const day = String(today.getDate()).padStart(2,'0');
+                        const month = months[today.getMonth()];
+                        const year = today.getFullYear();
+                        const formattedDate = `${day}-${month}-${year}`;
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label> Consumer ID </label>
+                        return [
+                            `<div class="row justify-content-center">
+                                <div class="col-12">
+                                    <div class="material-input outlined">
+                                       <input name="paid_date" type="text" class="form-control form-control-sm" value="${new Date().toLocaleDateString()}" readonly />
+                                        <label>Paid Date</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="code" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label>Building ID</label>
+                                 <div class="col-12">
+                                    <div class="material-input outlined">
+                                        <select name="from_account" placeholder=" " class="data-input form-control" data-field="from_account">
+                                            <option value="">Select Account</option>
+                                            <option value="1">Financial Account: 69,853 KHR</option>
+                                            <option value="2">Accounting officer: 51,941 usd</option>
+                                            <option value="3">Expense Account: 21222.69 KHR</option>
+                                           
+                                        </select>
+                                        <label class="d-none">Select Account</label>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
+                                 <div class="col-12">
+                                    <div class="material-input outlined">
+                                        <input type="number" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                        <label> Available Balance: 228168.88 KHR </label>
+                                       
+                                    
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="material-input outlined">
+                                        <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                        <label>Reciever Account Number </label>
+                                    </div>
+                                </div>
+                               
+                                <div class="col-12">    
+                                    <div class="material-input outlined">
+                                        <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                        <label>Amount</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">    
+                                    <div class="material-input outlined">
+                                        <input type="text" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                        <label>Category</label>
+                                    </div>
+                                </div>
 
-                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="description" required class="data-input form-control" data-field="service_type" placeholder=" " />
-                                    <label>Description</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                    <label>Due Amount</label>
-                                </div>
-                            </div>
+                               
 
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
-                                    <label>Paid Amount</label>
-                                </div>
-                            </div>
-                        </div>`
+                                <table class="table header-light-blue">
+                        <thead name="tuition_payment_thead">
+                            <tr>
+                                <th class="text-nowrap ">Description</th>
+                                <th class="text-nowrap">Amount</th>
+                                <th colspan="2" class="text text-nowrap">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody name="tuition_payment_tbody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="11">
+                                   
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                                
+                            </div>`
                     ].join("");
                 },
 
@@ -424,7 +457,7 @@ const BillingDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -432,6 +465,7 @@ const BillingDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
+                    
                  
 
 
@@ -446,7 +480,7 @@ const BillingDialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Generate Billing",
+                    createTitle: "New Expanse",
                     modifyTitle: "Modify Space ",
                     targetProp: "building_details",
                     api: {
@@ -502,6 +536,7 @@ const BillingDialog = (() => {
             });
         dialog.show(op);
     };
+     
 
     return self;
 })();

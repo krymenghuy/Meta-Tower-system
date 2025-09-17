@@ -2033,7 +2033,7 @@ tr {
 .material-input.filled textarea:focus ~ label,
 .material-input.filled textarea:not(:placeholder-shown) ~ label,
 .material-input.filled select:focus ~ label,
-.material-input.filled select:valid ~ label {
+.material-input.filled select:valid + label {
   top: 6px;
   font-size: 12px;
   color: #1a1647;
