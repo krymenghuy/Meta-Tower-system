@@ -285,7 +285,7 @@
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog m-2"></i>
-                                                        About Meta Client
+                                                        About Meta Estate
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>
