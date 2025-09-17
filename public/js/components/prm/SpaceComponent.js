@@ -267,7 +267,7 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -320,24 +320,30 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
                                     <option value="">Select Price Type</option>
-                                    <option value="sqm">(sqm)</option>
-                                    <option value="total">(Total)</option>
+                                    <option value="sqm">SQM</option>
+                                    <option value="total">Total</option>
                                     </select>
                                     <label class="d-none">Price Type</label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label>Size (m²)</label>
+                                </div>
+                            </div>
+                            <div class="col-12">    
+                                <div class="material-input outlined" style="display:none;">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label>Price/(m²)</label>
+                                </div>
+                            </div>
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Price</label>
+                                    <input type="number" name="total_price" class="data-input form-control" data-field="total_price" placeholder=" " />
+                                    <label>Total Price</label>
                                 </div>
                             </div>
 
@@ -369,19 +375,27 @@ const BuildingSpaceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
+             
+
                  
 
 
                 },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
+                configSelect: [
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    {
+                        name: "space_type_id",
+                        data: "space_types",
+                        textField: "space_type",
+                        valueField: "id",
+                    },
 
-                // ],
+                ],
                 prepareFormOptions: {
                     createTitle: "Create New Space",
                     modifyTitle: "Modify Space ",
@@ -417,6 +431,8 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            console.log(9090,op);
+                            
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);

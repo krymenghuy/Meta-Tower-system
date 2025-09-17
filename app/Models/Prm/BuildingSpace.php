@@ -20,7 +20,8 @@ class BuildingSpace
         $this->userInfo = $userInfo;
     }
 
-    public function saveBuildingSpace($arr = [], $id = null, $ss = null){
+   public function saveBuildingSpace($arr = [], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
@@ -32,6 +33,7 @@ class BuildingSpace
             'sqm_size'      => '0|number',
             'price'         => '0|number',
             'price_type'    => '0|string|default=sqm',
+            'total_price'   => '0|number'
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -39,10 +41,18 @@ class BuildingSpace
 
         $inputs = $res->values;
         $d = (object) $inputs;
+        if (!$d->floor_number) {
+            return DV::error('Floor can not be empty');
+        }
+        $building = DB::table('buildings')->select('floors')->where('id', $d->building_id)->first();
+        if ($building && $d->floor_number > $building->floors) {
+            return DV::error("Floor number cannot be greater than total floor ({$building->floors}) of this building.");
+        }
 
         $inputs['total_price'] = ($d->price_type === 'sqm')
             ? ($d->sqm_size * $d->price)
             : $d->price;
+
         $duplicateId = self::checkDuplicateSpaceId(
             $d->building_id,
             $d->floor_number,
@@ -69,6 +79,7 @@ class BuildingSpace
 
         return DV::error('Error saving Building Space ...!');
     }
+
 
     static function checkDuplicateSpaceId($building_id, $floor, $type, $space_id = null){
         $query = DB::table('building_spaces as bs')
@@ -133,7 +144,7 @@ class BuildingSpace
     public static function getDetails($id){
         return DB::table('building_spaces as bs')
             ->where('bs.id',$id)
-            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.space_type_id,bs.price,bs.sqm_size,bs.total_price')
+            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size,bs.total_price')
             ->first();
 
     }

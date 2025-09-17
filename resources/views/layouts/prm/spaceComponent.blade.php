@@ -8,7 +8,7 @@
                 </div>
            
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 col-md-6 col-lg-2 d-none">
                 <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
