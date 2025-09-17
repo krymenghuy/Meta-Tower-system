@@ -15,8 +15,13 @@ var BillingComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
+         {
+            title: "Trx. iD ",
+            className: "align-middle text-capitalize",
+             data: (data, index) => `<span class="text-yp-custom">${Trx100001 + index}</span>`,
+        },
         {
-            title: "pmt Date",
+            title: "paid Date",
             className: "align-middle ",
              data: (data, index, tr) => {
                 return `
@@ -49,15 +54,6 @@ var BillingComponent =   ( () => {
             data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
         },
 
-        
-        {
-            title: "Trx. iD ",
-            className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.due_amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
         {
             title: "Category",
             className: "align-middle",
@@ -375,65 +371,72 @@ const BillingDialog = (() => {
 
                         return [
                             `<div class="row justify-content-center">
-                                <div class="col-6">
+                                <div class="col-12">
                                     <div class="material-input outlined">
-                                        <input type="text" id="paid_date"  name="paid_date" required class="data-input form-control" data-field="paid_date" readonly value="${formattedDate}" />
+                                       <input name="paid_date" type="text" class="form-control form-control-sm" value="${new Date().toLocaleDateString()}" readonly />
                                         <label>Paid Date</label>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                 <div class="col-12">
                                     <div class="material-input outlined">
-                                        <input type="text" name="code" required class="data-input form-control" data-field="id" placeholder=" " />
-                                        <label>Trx.ID</label>
+                                        <select name="from_account" placeholder=" " class="data-input form-control" data-field="from_account">
+                                            <option value="">Select Account</option>
+                                            <option value="1">Financial Account: 69,853 KHR</option>
+                                            <option value="2">Accounting officer: 51,941 usd</option>
+                                            <option value="3">Expense Account: 21222.69 KHR</option>
+                                           
+                                        </select>
+                                        <label class="d-none">Select Account</label>
                                     </div>
                                 </div>
-
-
-                                <div class="col-6">
+                                 <div class="col-12">
+                                    <div class="material-input outlined">
+                                        <input type="number" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                        <label> Available Balance: 228168.88 KHR </label>
+                                       
+                                    
+                                    </div>
+                                </div>
+                                <div class="col-12">
                                     <div class="material-input outlined">
                                         <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                        <label>Paid to </label>
+                                        <label>Reciever Account Number </label>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="material-input outlined">
-                                        <select name="from_account" required class="data-input form-control" data-field="from_account">
-                                            <option value="1">Cash</option>
-                                            <option value="2">Bank</option>
-                                            <option value="3">Credit Card</option>
-                                            <option value="4">Debit Card</option>
-                                        </select>
-                                        <label>Select Account</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">    
+                               
+                                <div class="col-12">    
                                     <div class="material-input outlined">
                                         <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
                                         <label>Amount</label>
                                     </div>
                                 </div>
-                                
-
-                                <div class="col-6">
-                                    <div class="material-input outlined">
-                                        <input type="text" name="description" required class="data-input form-control" data-field="service_type" placeholder=" " />
-                                        <label>Description</label>
-                                    </div>
-                                </div>
-                                
                                 <div class="col-12">    
                                     <div class="material-input outlined">
-                                        <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                        <label>Due Amount</label>
+                                        <input type="text" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                        <label>Category</label>
                                     </div>
                                 </div>
 
-                                <div class="col-12">    
-                                    <div class="material-input outlined">
-                                        <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
-                                        <label>Paid Amount</label>
-                                    </div>
-                                </div>
+                               
+
+                                <table class="table header-light-blue">
+                        <thead name="tuition_payment_thead">
+                            <tr>
+                                <th class="text-nowrap ">Description</th>
+                                <th class="text-nowrap">Amount</th>
+                                <th colspan="2" class="text text-nowrap">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody name="tuition_payment_tbody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="11">
+                                   
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                                
                             </div>`
                     ].join("");
                 },
