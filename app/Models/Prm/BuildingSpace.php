@@ -59,7 +59,7 @@ class BuildingSpace
 
         if ($id && $created) {
             $floor = 'F' . $inputs['floor_number'];
-            $prefix = 'MT-' . $floor . '-';
+            $prefix = 'MT-' . $floor . '-R';
             setOfficialCode($branch_id, 'space_code_control', 'building_spaces', ['id' => $id], $prefix, 2, null);
         }
 
@@ -145,5 +145,10 @@ class BuildingSpace
             'buildings' =>GeneralSettings::options_building($ss),
             'space_types'=> GeneralSettings::options_space_type($ss)
         ];
+    }
+    public function delete($id = null){
+        $id = $id ?? $this->id;
+        $deleted = DB::table('building_spaces')->where('id',$id)->delete();
+        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
 }

@@ -5,105 +5,100 @@ var SpaceComponent = new (function () {
     mThis.title_prop = "Space Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elSearch = mThis.self.querySelector("#_search_space");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
+    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
+    mThis.elSearch = mThis.self.querySelector("#_search_space");
 
+    mThis.cols = [
 
-mThis.cols = [
-
-        {
-            title: "",
-            className: "align-middle text-capitalize",
-        },
-        {
-            title: "Building Name",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.building ?? 'Meta Tower'}</span>`,
-        },
-        {
-            title: "Code Space",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'MT-2500001'}</small></span>`,
-        },
             {
-            title: "Floors",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.floor ?? 'First Floor'}</span>`,
-        },
-        {
-            title: "Size (sqm)",
-            className: "align-middle ",
-            data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.sqm_size ?? '50(sqm)'}</small></span>`;
-            }
-        },
-        {
-            title: "Price",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
-
+                title: "",
+                className: "align-middle text-capitalize",
+            },
+            {
+                title: "Code",
+                className: "align-middle ",
+                data: (data) => `<span class="text-primary-custom">${data.code}</span>`,
+            },
+            {
+                title: "Building",
+                className: "align-middle",
+                data: (data,index) => `<span class="text-primary-custom">${data.building_name}</span>`,
+            },
         
-        {
-            title: "Price Type",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
-       
+            {
+                title: "Floors",
+                className: "align-middle",
+                data: (data) => {
+                    const floor = data.floor_number ?? '';
+                    let floorText = `${floor}th Floor`;
+
+                    return `<span class="text-primary-custom">${floorText}</span>`;
+                }
+            },
         
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
-                </div>`;
-            }
-        },
-        // {
-        //     title: "Status",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const status = (data.status ?? '').toLowerCase();
-        //         let cls = 'text-info';
+            {
+                title: "Size",
+                className: "align-middle",
+                data: (data) => {
+                    if (data.price_type === 'total') {
+                        return `<span class="text-primary-custom">Charge As</span>`;
+                    }
+                    return `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
+                }
+            },
+            {
+                title: "Price",
+                className: "align-middle",
+                data: (data) => {
+                    const cur_symbol = data.cur_symbol ?? '$';
 
-        //         if (status === 'inactive') {
-        //             cls = 'text-danger px-2 py-1 d-inline-block';
-        //         } else if (status === 'active') {
-        //             cls = 'text-success px-2 py-1 d-inline-block';
-        //         }
+                    if (data.price_type === 'total') {
+                        const total = data.total_price ? Number(data.total_price).toLocaleString() : '-';
+                        return `<span class="fw-semibold">${cur_symbol} ${total}</span>`;
+                    }
 
-        //         return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-        //     },
-        // },
-        {
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
-                       </button>
-                    </a>
-                </div>`
-        },
+                    const price = data.price ? Number(data.price).toLocaleString() : '-';
+                    return `<span class="text-primary-custom">${cur_symbol} ${price} / sqm</span>`;
+                }
+            },
+            {
+                title: "Total Price",
+                className: "align-middle",
+                data: (data, index, tr) => {
+                    const cur_symbol = data.cur_symbol ?? '$', amount = data.total_price ?? 0;
+                    return [cur_symbol, amount].join(' ');
+                }
+            },
+        
+            
+            {
+                title: "Updated By",
+                className: 'align-middle',
+                data: (data, index, tr) => {
+                    return `<div class="d-flex flex-column">
+                        <span class="text-capitalize text-start fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                        <small class="text-muted">${data.updated_at ?? ''}</small>
+                    </div>`;
+                }
+            },
+            {
+                className: 'col_action align-middle',
+                data: (data) => `
+                    <div class="d-flex justify-content-center align-items-end">
+                        <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                        </a>
+                    </div>`
+            },
 
     ];
-
     mThis.init = () => {
         if (mThis.initAlready) return;
 
         mThis.SpaceListView = new ListView('_space_list', {
-            fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -129,8 +124,7 @@ mThis.cols = [
                     mThis.SpaceListView.showPage(mThis.getFilterData());
                 }
             };
-            // if (!AuthManager.allowed(240)) return;
-            Spacedialog.show(op);
+            BuildingSpaceDialog.show(op);
         };
 
 
@@ -185,28 +179,21 @@ mThis.cols = [
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_space_action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_building-space"
+                    name: "edit_space"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_building-space"
+                    name: "delete_space"
                 },
             ],
             // adjustPosition: {
@@ -217,16 +204,13 @@ mThis.cols = [
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                  
+                    case 'edit_space': {
+                        mThis.editSpace(id, menuLink);
                         break;
                     }
-                    case 'edit_Buildingspace': {
-                        mThis.editBuildingspace(id, menuLink);
-                        break;
-                    }
-                    case 'delete_Buildingspace': {
-                        mThis.deleteBuildingspace(id, menuLink);
+                    case 'delete_space': {
+                        mThis.deleteSpace(id, menuLink);
                         break;
                     }
 
@@ -239,7 +223,7 @@ mThis.cols = [
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editBuildingspace = (id, menulink) =>{
+    mThis.editSpace = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
@@ -248,9 +232,9 @@ mThis.cols = [
             }
         };
         
-        CreateSpacedialog.show(op);
+        BuildingSpaceDialog.show(op);
     }
-     mThis.deleteBuildingspace = (id, menuLink) => {
+     mThis.deleteSpace = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -265,7 +249,7 @@ mThis.cols = [
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/building-space/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.SpaceListView.showPage();
                     }
@@ -277,47 +261,14 @@ mThis.cols = [
         });
     }
 
-      mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-        
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Space Status",
-            valueMember: "building-space_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Alavailable"},
-                {status_id:"2",name:"Unavailable"}
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/building-space/update-status`,status).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Building Space Status has been updated');
-                    mThis.SpaceListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
-    };
+   
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -334,7 +285,7 @@ mThis.cols = [
     return mThis;
 })();
 
-const Spacedialog = (() => {
+const BuildingSpaceDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -348,29 +299,41 @@ const Spacedialog = (() => {
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label>Building ID</label>
+                                    <select   name="building_id"  placeholder=" " class="data-input form-control" data-field="building_id">
+                                    </select>
+                                    <label class="d-none">Building</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="code" required class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label>Code</label>
+                                    <input type="number" name="floor_number" class="data-input form-control" data-field="floor_number" placeholder=" " />
+                                    <label>Floor Number</label>
                                 </div>
                             </div>
-                            
-                            
-
-                             <div class="col-12">
+                            <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="number" name="size" required class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id"></select>
+                                    <label class="d-none">Select Space Type</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
-                            
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                                    <option value="">Select Price Type</option>
+                                    <option value="sqm">(sqm)</option>
+                                    <option value="total">(Total)</option>
+                                    </select>
+                                    <label class="d-none">Price Type</label>
+                                </div>
+                            </div>
                             <div class="col-12">    
                                 <div class="material-input outlined">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
@@ -378,12 +341,6 @@ const Spacedialog = (() => {
                                 </div>
                             </div>
 
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="text" name="price_type" required class="data-input form-control" data-field="price_type" placeholder=" " />
-                                    <label>Price Type</label>
-                                </div>
-                            </div>
                         </div>`
                     ].join("");
                 },
@@ -428,9 +385,9 @@ const Spacedialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Create New Space",
                     modifyTitle: "Modify Space ",
-                    targetProp: "building_details",
+                    targetProp: "space_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },

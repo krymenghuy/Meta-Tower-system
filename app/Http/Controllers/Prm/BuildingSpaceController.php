@@ -54,5 +54,16 @@ class BuildingSpaceController extends Controller
         }
         return JDV::result($this->building_spaces->getFormOptions($req->id,$ss));
     }
+
+    public function delete(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::raw($this->building_spaces->delete($req->id));
+    }
     
 }

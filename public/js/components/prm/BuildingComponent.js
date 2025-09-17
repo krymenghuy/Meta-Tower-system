@@ -25,7 +25,7 @@ var BuildingComponent = ( () => {
             title: "Building Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;">${data.name ?? ''}</span>`;
+                return `<span class="text-primary-custom" style="width:75px;">${data.name ?? ''}</span>`;
             }
         },
         {
