@@ -19,7 +19,7 @@ class Contract
         $this->userInfo = $userInfo;
     }
 
-    public function createTenant($arr = [],$id = null, $ss = null){
+    public function createContract($arr = [],$id = null, $ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 

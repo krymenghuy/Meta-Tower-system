@@ -422,9 +422,11 @@ const BillingDialog = (() => {
                                 <table class="table header-light-blue">
                         <thead name="tuition_payment_thead">
                             <tr>
-                                <th class="text-nowrap ">Description</th>
+                                <th class="text-nowrap ">Category</th>
                                 <th class="text-nowrap">Amount</th>
-                                <th colspan="2" class="text text-nowrap">Total</th>
+                                <th class="text-nowrap ">From Account</th>
+                                <th class="text-nowrap">To Account</th>
+                                <th colspan="2" class="text text-nowrap">Remark</th>
                             </tr>
                         </thead>
                         <tbody name="tuition_payment_tbody"></tbody>
@@ -436,6 +438,7 @@ const BillingDialog = (() => {
                             </tr>
                         </tfoot>
                     </table>
+                    
                                 
                             </div>`
                     ].join("");
