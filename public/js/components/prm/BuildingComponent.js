@@ -1,7 +1,7 @@
 "use strict";
 var BuildingComponent = ( () => {
     const mThis = {};
-    mThis.title_prop = "Building & Floor Management";
+    mThis.title_prop = "Buildings";
 
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
@@ -22,7 +22,7 @@ var BuildingComponent = ( () => {
             data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
         },
         {
-            title: "Building Name",
+            title: "Building",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom" style="width:75px;">${data.name ?? ''}</span>`;

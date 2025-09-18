@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "76a4eb4187295e66984f985e03a6494d",
+    "content-hash": "a5d2e564407c0cbf145c2b6de45b50f3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1798,6 +1798,59 @@
             "time": "2020-10-04T12:17:51+00:00"
         },
         {
+            "name": "kwn/number-to-words",
+            "version": "2.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kwn/number-to-words.git",
+                "reference": "c4e0cea84574bc0077121ac6a2331c183d6d1cc0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kwn/number-to-words/zipball/c4e0cea84574bc0077121ac6a2331c183d6d1cc0",
+                "reference": "c4e0cea84574bc0077121ac6a2331c183d6d1cc0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6",
+                "squizlabs/php_codesniffer": "^3.7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NumberToWords\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Karol Wnuk",
+                    "email": "k.wnuk@ascetic.pl"
+                }
+            ],
+            "description": "Multi language standalone PHP number to words converter. Fully tested, open for extensions and new languages.",
+            "keywords": [
+                "currency",
+                "money",
+                "number",
+                "numbers",
+                "string",
+                "to",
+                "words"
+            ],
+            "support": {
+                "issues": "https://github.com/kwn/number-to-words/issues",
+                "source": "https://github.com/kwn/number-to-words/tree/2.12.0"
+            },
+            "time": "2025-07-01T20:49:04+00:00"
+        },
+        {
             "name": "laravel-notification-channels/fcm",
             "version": "2.7.0",
             "source": {
@@ -2155,79 +2208,6 @@
                 "source": "https://github.com/laravel/tinker/tree/v2.10.1"
             },
             "time": "2025-01-27T14:24:01+00:00"
-        },
-        {
-            "name": "laravelcollective/html",
-            "version": "v6.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LaravelCollective/html.git",
-                "reference": "64ddfdcaeeb8d332bd98bef442bef81e39c3910b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/64ddfdcaeeb8d332bd98bef442bef81e39c3910b",
-                "reference": "64ddfdcaeeb8d332bd98bef442bef81e39c3910b",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/routing": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/session": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "illuminate/view": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "php": ">=7.2.5"
-            },
-            "require-dev": {
-                "illuminate/database": "^6.0|^7.0|^8.0|^9.0|^10.0",
-                "mockery/mockery": "~1.0",
-                "phpunit/phpunit": "~8.5|^9.5.10"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "6.x-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Collective\\Html\\HtmlServiceProvider"
-                    ],
-                    "aliases": {
-                        "Form": "Collective\\Html\\FormFacade",
-                        "Html": "Collective\\Html\\HtmlFacade"
-                    }
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
-                "psr-4": {
-                    "Collective\\Html\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Adam Engebretson",
-                    "email": "adam@laravelcollective.com"
-                },
-                {
-                    "name": "Taylor Otwell",
-                    "email": "taylorotwell@gmail.com"
-                }
-            ],
-            "description": "HTML and Form Builders for the Laravel Framework",
-            "homepage": "https://laravelcollective.com",
-            "support": {
-                "issues": "https://github.com/LaravelCollective/html/issues",
-                "source": "https://github.com/LaravelCollective/html"
-            },
-            "abandoned": "spatie/laravel-html",
-            "time": "2023-04-25T02:46:11+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -7833,12 +7813,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "4c60ad72fc599c01b8a7691d3cd6aeb7610ba174"
+                "reference": "db94a910a4097d241436eed964642ca6282902ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/4c60ad72fc599c01b8a7691d3cd6aeb7610ba174",
-                "reference": "4c60ad72fc599c01b8a7691d3cd6aeb7610ba174",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/db94a910a4097d241436eed964642ca6282902ad",
+                "reference": "db94a910a4097d241436eed964642ca6282902ad",
                 "shasum": ""
             },
             "require": {
@@ -7868,7 +7848,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-09-08T04:36:58+00:00"
+            "time": "2025-09-10T10:05:48+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -10362,6 +10342,6 @@
     "platform": {
         "php": "^7.3|^8.2.4"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

@@ -26,7 +26,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%);
+    /* background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%); */
+    background-color: #1a1647;
     color: #fff;
     border: none;
     border-radius: 6px;

@@ -27,8 +27,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* background-color: #1a1647; */
-   background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%);
+    background-color: #1a1647;
+   /* background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%); */
     color: #ffffff;
     /* border-bottom: 3px solid #fff; */
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
@@ -1974,126 +1974,118 @@ tr {
 .w-15 {
     width: 15%;
 }
-.material-input.filled {
-  position: relative;
-  margin-bottom: 24px;
-  background-color: transparent;
-  border-radius: 4px 4px 0 0;
-  height: 56px;
-  transition: background-color 300ms, border-bottom 300ms;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  background: transparent;
+ /* =================== MATERIAL INPUT =================== */
+    .material-input {
+      position: relative;
+      margin-bottom: 1.5rem;
+      font-family: Arial, sans-serif;
+    }
 
-  align-items: flex-end;
-  padding: 0 12px;
-}
+    /* Filled style */
+    .material-input.filled {
+      display: flex;
+      align-items: flex-end;
+      padding: 0 12px;
+      height: 56px;
+      border-bottom: 1px solid #ccc;
+      border-radius: 4px 4px 0 0;
+      background: transparent;
+      transition: background-color 0.3s, border-bottom 0.3s;
+    }
 
-.material-input.filled:hover {
-  background-color: #ececec;
-}
+    .material-input.filled:hover {
+      background-color: #ececec;
+    }
 
-.material-input.filled:focus-within {
-  background-color: #ffffff;
-  border-bottom: 2px solid #0f6694;
-}
+    .material-input.filled:focus-within {
+      background-color: #fff;
+      border-bottom: 2px solid #1a1647;
+    }
 
-.material-input.filled input,
-.material-input.filled select,
-.material-input.filled textarea {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 16px;
-  color: #333;
-  flex: 1;
-  padding-top: 20px;
-  padding-bottom: 6px;
-  height: 100%;
-  width: 100%;
-  appearance: none;
-}
+    .material-input.filled input,
+    .material-input.filled select,
+    .material-input.filled textarea {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      color: #333;
+      padding-top: 20px;
+      padding-bottom: 6px;
+      height: 100%;
+      appearance: none;
+    }
 
-.material-input.filled label {
-  position: absolute;
-  top: 50%;
-  left: 16px;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #777;
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background-color: white;
-  padding: 0 4px;
-}
+    .material-input.filled label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: #777;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      background-color: #fff;
+      padding: 0 4px;
+    }
 
-/* Move label up on focus or if not placeholder */
-.material-input.filled input:focus ~ label,
-.material-input.filled input:not(:placeholder-shown) ~ label,
-.material-input.filled textarea:focus ~ label,
-.material-input.filled textarea:not(:placeholder-shown) ~ label,
-.material-input.filled select:focus ~ label,
-.material-input.filled select:valid + label {
-  top: 6px;
-  font-size: 12px;
-  color: #1a1647;
-}
+    .material-input.filled input:focus ~ label,
+    .material-input.filled input:not(:placeholder-shown) ~ label,
+    .material-input.filled textarea:focus ~ label,
+    .material-input.filled textarea:not(:placeholder-shown) ~ label,
+    .material-input.filled select:focus ~ label,
+    .material-input.filled select:valid ~ label {
+      top: 6px;
+      font-size: 12px;
+      color: #1a1647;
+    }
 
+    /* Outlined style */
+    .material-input.outlined input,
+    .material-input.outlined select,
+    .material-input.outlined textarea {
+      width: 100%;
+      padding: 18px 12px 6px 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      background-color: #fff;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
 
+    .material-input.outlined input:focus,
+    .material-input.outlined select:focus,
+    .material-input.outlined textarea:focus {
+      border-color: #1a1647;
+      box-shadow: 0 0 0 2px rgba(26, 22, 71, 0.1);
+    }
 
-.material-input.outlined {
-  position: relative;
-  margin-bottom: 24px;
-}
+    .material-input.outlined label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #777;
+      background-color: #fff;
+      padding: 0 4px;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
 
-.material-input.outlined input,
-.material-input.outlined select,
-.material-input.outlined textarea {
-  width: 100%;
-  /* padding: 20px 12px 6px 12px; */
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  color: #333;
-  outline: none;
-  transition: border-color 0.3s;
-  background-color: white;
-}
-
-.material-input.outlined input:focus,
-.material-input.outlined select:focus,
-.material-input.outlined textarea:focus {
-  border-color: #27444a;
-}
-
-.material-input.outlined label {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: #777;
-  background-color: white;
-  padding: 0 4px;
-  pointer-events: none;
-  transition: 0.2s ease all;
-}
-
-.material-input input:focus ~ label,
-.material-input input:not(:placeholder-shown) ~ label,
-.material-input select:focus ~ label,
-.material-input select:not(:placeholder-shown) ~ label,
-.material-input textarea:focus ~ label,
-.material-input textarea:not(:placeholder-shown) ~ label  {
-  top: 0px;
-  font-size: 12px;
-  color: #27444a;
-}
-.material-input.outlined select:valid ~ label {
-  top: 0px;
-  font-size: 12px;
-  color: #27444a;
-}
+    .material-input.outlined input:focus ~ label,
+    .material-input.outlined input:not(:placeholder-shown) ~ label,
+    .material-input.outlined select:focus ~ label,
+    .material-input.outlined select:valid ~ label,
+    .material-input.outlined textarea:focus ~ label,
+    .material-input.outlined textarea:not(:placeholder-shown) ~ label {
+      top: -6px;
+      font-size: 12px;
+      color: #1a1647;
+    }
 
   
 

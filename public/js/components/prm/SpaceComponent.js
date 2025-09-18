@@ -37,40 +37,29 @@ var SpaceComponent = new (function () {
                     return `<span class="text-primary-custom">${floorText}</span>`;
                 }
             },
-        
-            {
-                title: "Size",
-                className: "align-middle",
-                data: (data) => {
-                    if (data.price_type === 'total') {
-                        return `<span class="text-primary-custom">Charge As</span>`;
-                    }
-                    return `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
-                }
-            },
-            {
-                title: "Price",
-                className: "align-middle",
-                data: (data) => {
-                    const cur_symbol = data.cur_symbol ?? '$';
+        {
+            title: "Size",
+            className: "align-middle",
+            data: (data) => {
+                return data.price_type === 'total'
+                    ? `<span class="text-primary-custom">Whole Room</span>`
+                    : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
+            }
+        },
+        {
+            title: "Price",
+            className: "align-middle",
+            data: (data) => {
+                const cur_symbol = data.cur_symbol ?? '$';
+                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
 
-                    if (data.price_type === 'total') {
-                        const total = data.total_price ? Number(data.total_price).toLocaleString() : '-';
-                        return `<span class="fw-semibold">${cur_symbol} ${total}</span>`;
-                    }
+                return data.price_type === 'total'
+                    ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/ room</small></span>`
+                    : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/ sqm</small></span>`;
+            }
+        },
 
-                    const price = data.price ? Number(data.price).toLocaleString() : '-';
-                    return `<span class="text-primary-custom">${cur_symbol} ${price} / sqm</span>`;
-                }
-            },
-            {
-                title: "Total Price",
-                className: "align-middle",
-                data: (data, index, tr) => {
-                    const cur_symbol = data.cur_symbol ?? '$', amount = data.total_price ?? 0;
-                    return [cur_symbol, amount].join(' ');
-                }
-            },
+  
         
             
             {
@@ -267,7 +256,7 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -300,10 +289,10 @@ const BuildingSpaceDialog = (() => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
-                                    <select   name="building_id"  placeholder=" " class="data-input form-control" data-field="building_id">
+                                    <select name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
-                                    <label class="d-none">Building</label>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -313,33 +302,36 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
                                 <div class="material-input outlined">
-                                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id"></select>
-                                    <label class="d-none">Select Space Type</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
+                                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    </select>
+                                    
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                    <option value="">Select Price Type</option>
-                                    <option value="sqm">(sqm)</option>
-                                    <option value="total">(Total)</option>
+                                        <option value="">Select Price Type</option>
+                                        <option value="sqm">Per SQM</option>
+                                        <option value="total">Whole Room</option>
                                     </select>
                                     <label class="d-none">Price Type</label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <div class="material-input outlined sqm-wrapper" style="display:none;">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label>Size (m²)</label>
+                                </div>
+                            </div>
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
                                 </div>
                             </div>
+                         
 
                         </div>`
                     ].join("");
@@ -369,19 +361,33 @@ const BuildingSpaceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
+    
+                 me.controls.price_type.onchange = (e) => {
+                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                        if (!sqmWrapper) return;
+                        sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    };
+
+
                  
 
 
                 },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
+                configSelect: [
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    {
+                        name: "space_type_id",
+                        data: "space_types",
+                        textField: "space_type",
+                        valueField: "id",
+                    },
 
-                // ],
+                ],
                 prepareFormOptions: {
                     createTitle: "Create New Space",
                     modifyTitle: "Modify Space ",
@@ -417,6 +423,8 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            console.log(9090,op);
+                            
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);

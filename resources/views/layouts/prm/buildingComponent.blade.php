@@ -19,29 +19,3 @@
 
     <div id="_building_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
 </div>
-<style>
-.btn--Options {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    font-weight: 500;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.btn--Options:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 768px) {
-    .btn--Options {
-        width: 100%;
-    }
-}
-</style>

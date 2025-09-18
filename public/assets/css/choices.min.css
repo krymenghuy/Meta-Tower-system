@@ -69,7 +69,7 @@
     height: 0;
     width: 0;
     border-style: solid;
-    border-color: #2b3991 transparent transparent;
+    border-color: #cccccc transparent transparent;
     border-width: 5px;
     position: absolute;
     right: 11.5px;
@@ -78,7 +78,7 @@
     pointer-events: none;
 }
 .choices[data-type*="select-one"].is-open::after {
-    border-color: transparent transparent #2b3991;
+    border-color: transparent transparent #cccccc;
     margin-top: -7.5px;
 }
 .choices[data-type*="select-one"][dir="rtl"]::after {
