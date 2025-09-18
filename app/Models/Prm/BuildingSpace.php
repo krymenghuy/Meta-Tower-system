@@ -33,7 +33,6 @@ class BuildingSpace
             'sqm_size'      => '0|number',
             'price'         => '0|number',
             'price_type'    => '0|string|default=sqm',
-            'total_price'   => '0|number'
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -48,10 +47,6 @@ class BuildingSpace
         if ($building && $d->floor_number > $building->floors) {
             return DV::error("Floor number cannot be greater than total floor ({$building->floors}) of this building.");
         }
-
-        $inputs['total_price'] = ($d->price_type === 'sqm')
-            ? ($d->sqm_size * $d->price)
-            : $d->price;
 
         $duplicateId = self::checkDuplicateSpaceId(
             $d->building_id,
@@ -122,14 +117,14 @@ class BuildingSpace
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
         } 
         $updated_at = DBX::formatTime("bs.updated_at","updated_at");
-        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.total_price,bs.update_user,'.$updated_at.'';
+        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.update_user,'.$updated_at.'';
         $query = DB::table('building_spaces as bs')
             ->join('buildings as b','b.id','=','bs.building_id')
             ->join('space_types as st','st.id','=','bs.space_type_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols);
-        $query->orderByRaw('bs.id asc');
+        $query->orderByRaw('bs.id desc');
         $clone_query = clone $query; 
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -144,7 +139,7 @@ class BuildingSpace
     public static function getDetails($id){
         return DB::table('building_spaces as bs')
             ->where('bs.id',$id)
-            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size,bs.total_price')
+            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size')
             ->first();
 
     }
