@@ -7,62 +7,96 @@ var BuildingComponent = ( () => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
-    mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
 
-     mThis.cols = [
+ mThis.cols = [
+    {
+        title: "",
+        className: "align-middle",
+    },
+    {
+        title: "Building",
+        className: "align-middle",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-primary-custom fw-semibold d-inline-block" style="min-width:150px;">
+                    ${data.name ?? ''}
+                </span>
+                <small class="text-muted text-break" style="max-width:250px;">
+                    ${data.address ?? ''}
+                </small>
+            </div>
+        `,
+    },
+    {
+        title: "Total Area",
+        className: "align-middle",
+        data: (data) => {
+            let area = data.total_area ?? '';
+            return `<span class="text-yp-custom">${area}${area ? ' sqm' : ''}</span>`;
+        },
+    },
 
-        {
-            title: "",
-            className: "align-middle",
-        },
-        {
-            title: "Building ID",
-            className: "align-middle",
-            data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
-        },
-        {
-            title: "Building",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom" style="width:75px;">${data.name ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Floors",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</span>
+    {
+        title: "Total Floors",
+        className: "align-middle",
+        data: (data) => `
+            <span class="text-primary-custom">${data.total_floor ?? 'N/A'}</span>
+        `,
+    },
+   
+    {
+        title: "Total Space",
+        className: "align-middle",
+        data: (data) => `<span class="text-yp-custom">${data.total_space ?? ''}</span>`,
+    },
+    {
+        title: "Occupancy",
+        className: "align-middle",
+        data: (data) => {
+            let occ = data.occupancy ?? 75;
+            let space = data.total_space ?? 100;
+            let percent = space > 0 ? Math.round((occ / space) * 100) : 0;
+
+            return `
+                <div class="d-flex align-items-center gap-2">
+                    <div class="progress" style="width:120px; height:8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                            style="width: ${percent}%;" 
+                            aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
                     </div>
-                `;
-            }
-        },
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
-                </div>`;
-            }
-        },
-        {
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
-                       </button>
-                    </a>
-                </div>`
-        },
+                    <span class="fw-semibold text-dark">${percent}%</span>
+                </div>
+            `;
+        }
+    },
+    {
+        title: "Updated By",
+        className: "align-middle",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>
+        `,
+    },
+    {
+        className: "col_action align-middle",
+        data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <a href="javascript:void(0)" 
+                   class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" 
+                   data-id="${data.id}" 
+                   data-statusid="${data.status_id}">
+                   <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                </a>
+            </div>
+        `,
+    },
+];
 
-    ];
+
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -134,7 +168,6 @@ var BuildingComponent = ( () => {
 
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -154,20 +187,13 @@ var BuildingComponent = ( () => {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Edit Building"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_building"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Building"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_building"
@@ -180,11 +206,6 @@ var BuildingComponent = ( () => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case 'edit_building': {
                         mThis.editBuilding(id, menuLink);
                         break;
@@ -233,56 +254,21 @@ var BuildingComponent = ( () => {
                 vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.BuildingListView.showPage();
-                    }
+                    }else {
+                    cv_interact.error(res.error_message || 'Delete failed');
+                }
                 })
             }
-            else {
-                cv_interact.error(res.error_message);
-            }
+         
         });
     }
 
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-        
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Building Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Available"},
-                {status_id:"2",name:"Unavailable"}
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/building/update-status`,status).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('The Builing Status has been updated');
-                    mThis.BuildingListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
-    };
+ 
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'building_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     };
@@ -297,9 +283,6 @@ var BuildingComponent = ( () => {
     };
     return mThis;
 })();
-
-
-
 
 const BuildingDialog = (() => {
     const self = {};
@@ -323,8 +306,26 @@ const BuildingDialog = (() => {
                             </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="text" name="floor" required class="data-input form-control" data-field="floors" placeholder=" " />
-                                    <label>Floor </label>
+                                    <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
+                                    <label>Total Floor</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
+                                    <label>Total Area</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
+                                    <label>Total Space</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <label>Address</label>
                                 </div>
                             </div>
                             

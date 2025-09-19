@@ -227,6 +227,9 @@ function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field
     //return $prefix.$branch_id.formatNumber(1,$len);
 }
 
+ 
+
+
 //@param $name_orientation => 0="Khmer or Asia where faimily name appears first", 1="European or American"
 //process person's name and return object {'first_name','last_name'} depending on the specified @name_orientation.
 function getNameParts($name,$name_orienation=0){

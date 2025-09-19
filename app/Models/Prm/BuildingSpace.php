@@ -33,6 +33,7 @@ class BuildingSpace
             'sqm_size'      => '0|number',
             'price'         => '0|number',
             'price_type'    => '0|string|default=sqm',
+            'status_id' => '0|number|exists=space_statuses.id|default=3',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -43,8 +44,8 @@ class BuildingSpace
         if (!$d->floor_number) {
             return DV::error('Floor can not be empty');
         }
-        $building = DB::table('buildings')->select('floors')->where('id', $d->building_id)->first();
-        if ($building && $d->floor_number > $building->floors) {
+        $building = DB::table('buildings')->select('total_floor')->where('id', $d->building_id)->first();
+        if ($building && $d->floor_number > $building->total_floor) {
             return DV::error("Floor number cannot be greater than total floor ({$building->floors}) of this building.");
         }
 
@@ -62,17 +63,51 @@ class BuildingSpace
         $created = !$id;
         $id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
-        if ($id && $created) {
-            $floor = 'F' . $inputs['floor_number'];
-            $prefix = 'MT-' . $floor . '-R';
-            setOfficialCode($branch_id, 'space_code_control', 'building_spaces', ['id' => $id], $prefix, 2, null);
+       if ($id && $created) {
+            self::createBuildingSpaceCode(
+                $branch_id,
+                $inputs['building_id'],
+                (int)$inputs['floor_number'],
+                $id
+            );
         }
-
         if ($id > 0) {
             return DV::depends(1, ['building_spaces' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving Building Space ...!');
+    }
+   function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id){
+
+    $roomPrefix = $floor_number * 100;
+
+    $row = DB::table('space_code_control')
+        ->where('branch_id', $branch_id)
+        ->where('prefix', $floor_number)
+        ->first();
+
+    $next_num = $row ? $row->last_id + 1 : 1;
+    $roomCode = $roomPrefix + $next_num;
+
+    DB::table('building_spaces')
+        ->where('id', $space_id)
+        ->update(['code' => $roomCode]);
+
+    if ($row) {
+        DB::table('space_code_control')
+            ->where('branch_id', $branch_id)
+            ->where('prefix', $floor_number)
+            ->update(['last_id' => $next_num]);
+    } else {
+        DB::table('space_code_control')
+            ->insert([
+                'branch_id' => $branch_id,
+                'prefix'    => $floor_number,
+                'last_id'   => $next_num,
+            ]);
+    }
+
+    return $roomCode;
     }
 
 
@@ -96,6 +131,7 @@ class BuildingSpace
         $search_value = $d->search_value ?? null;
         $building_id = $d->building_id ?? null;
         $space_type_id = $d->space_type_id ?? null;
+        $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -115,12 +151,17 @@ class BuildingSpace
         }
         if($space_type_id){
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
+        }
+        if($status_id){
+            $str_moreWhere .= ' AND bs.status_id = ' . $status_id;
         } 
+
         $updated_at = DBX::formatTime("bs.updated_at","updated_at");
-        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.update_user,'.$updated_at.'';
+        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,ss.name as status,bs.update_user,'.$updated_at.'';
         $query = DB::table('building_spaces as bs')
             ->join('buildings as b','b.id','=','bs.building_id')
             ->join('space_types as st','st.id','=','bs.space_type_id')
+            ->join('space_statuses as ss','ss.id','=','bs.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols);
@@ -139,7 +180,7 @@ class BuildingSpace
     public static function getDetails($id){
         return DB::table('building_spaces as bs')
             ->where('bs.id',$id)
-            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size')
+            ->selectRaw('bs.id,bs.code,bs.building_id,bs.floor_number,bs.status_id,bs.space_type_id,bs.price_type,bs.price,bs.sqm_size')
             ->first();
 
     }

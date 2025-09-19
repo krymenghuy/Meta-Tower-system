@@ -140,7 +140,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->g
     Route::post('/details', [BuildingController::class, 'buildingDetails']);
     Route::post('/form-options', [BuildingController::class, 'getFormOptions']);
     Route::post('/delete', [BuildingController::class, 'deleteBuilding']);
-    Route::post('/update-status', [BuildingController::class, 'updateBuildingStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {

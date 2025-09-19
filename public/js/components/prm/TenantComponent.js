@@ -15,11 +15,11 @@ var TenantComponent =   ( () => {
             title: "",
             className: "align-middle",
         },
-        {
-            title: "Tenant ID",
-            className: "align-middle",
-           data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
-        },
+        // {
+        //     title: "Tenant ID",
+        //     className: "align-middle",
+        //    data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
+        // },
         {
             title: "Name",
             className: "align-middle",
