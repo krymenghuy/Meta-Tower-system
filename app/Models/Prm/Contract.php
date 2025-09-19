@@ -19,83 +19,90 @@ class Contract
         $this->userInfo = $userInfo;
     }
 
-    public function createContract($arr = [],$id = null, $ss = null){
+    public function createContract($arr = [],$id = null, $ss = null)
+     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'tenant' => '1|string|0-200|text=Tenant name must be provided',
-            'business_type' => '0|string|0-250',
-            'space_id' => '0|space|1-150',
-            'size' => '0|size|1-350',
-            'price' => '0|price|1-50',
+            'tenant' => '1|string|0-255',
+            'business_type' => '1|string|0-255',
         ];
-        $email_char = ['@','.','-','_'];
-        $address_char = ['@',',','.','#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=> $address_char],$ss->lang,0,null);
-        if($res->error) return DV::error($res->error);
+        $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['tenant' => $allowSign], $ss->lang, false);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
         $inputs = $res->values;
-        if(!$id) {
-            $exist = DB::table('contracts')->where('phone_number',$inputs['phone_number'])
-                ->where('name',$inputs['name'])
+        $isCreate = !$id || $id == 0;
+        if ($isCreate) {
+            $existingBuilding = DB::table('contracts')
+                ->where('tenant', $inputs['tenant'])
+                ->where('id', '!=', $id)
                 ->exists();
-                if($exist){
-                    return DV::error('Create failed: This contract already exists');
-                }
+
+            if ($existingBuilding) {
+                return DV::error('Update failed Another building with the same details already exists.');
+            }
         }
-        $id = DBX::saveData($ss,'contracts',['id'=>$id],$inputs,[],1);
-        if($id > 0){
-            return DV::depends(1,['contracts'=>$inputs,'id'=>$id]);
+        $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
+
+        if ($id > 0) {
+            return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
-        return DV::error('Error saving contract...!');
+        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
-    public function getListPaginate($arr, $ss = null){
+     public function getListContract($arr, $ss = null)
+    {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-        $search_value = isset($arr['search_value']) ? $arr['search_value'] : null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-        if(!is_numeric($current_page)){
+        if (!is_numeric($current_page)) {
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $search_value = $d->search_value ?? null;
-        $str_search = "1=1";
-        if($search_value){
+        $str_search = '1=1';
+
+        if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%')";
+             $str_search = DBX::whereLowerCase('c.name',"%$search_value%",'like');
         }
-        $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
-        $query = DB::table('contracts as t')
-            ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.legal_name,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+     
+        $updated_at = DBX::formatTime('c.updated_at','updated_at');
+        $query = DB::table('contracts as c')
+           
+             ->whereRaw($str_search)
+            ->selectRaw('c.id, c.tenant, c.business_type,  '.$updated_at.', c.update_user')
+            ->orderBy('c.id', 'asc');
+
         $clone_query = clone $query;
-        $count = $clone_query->count('t.id');
+        $count = $clone_query->count('c.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
-
+       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public static function getDetails($id){
-        return DB::table('contracts as t')
-            ->where('t.id',$id)
-            ->selectRaw('t.id,t.name,t.legal_name,t.phone_number,t.email,t.address')
+    public static function contractDetails($id)
+    {
+        $row = DB::table('contracts as c')
+            ->where('c.id', $id)
+            ->selectRaw('c.id, c.name, c.floors')
             ->first();
+ 
+        return $row;
     }
 
-    public static function getFormOptions($id){
-        $details = $id ? self::getDetails($id) : null;
-        return (object) [
-            'contracts' => $details,
+    public function getFormOptions($id){
+        $contract_details = self::contractDetails($id) ?? null;
+        return (object)[
+            'contract_details' => $contract_details,
         ];
     }
     
-    public function delete($id = null){
-        $id = $id ?? $this->id;
-        $deleted = DB::table('contracts')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
-    }
-    
+
+
 }
+        

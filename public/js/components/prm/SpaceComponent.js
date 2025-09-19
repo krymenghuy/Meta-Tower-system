@@ -314,7 +314,7 @@ const BuildingSpaceDialog = (() => {
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
                                         <option value="">Select Price Type</option>
-                                        <option value="sqm">Per SQM</option>
+                                        <option value="sqm">Per Sqaure Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
                                     <label class="d-none">Price Type</label>

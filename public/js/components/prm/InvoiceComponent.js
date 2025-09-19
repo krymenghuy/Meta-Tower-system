@@ -22,12 +22,12 @@ var InvoiceComponent =   ( () => {
         {
             title: "Consumer ",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.customer_id  ?? 'N/A'}</small></span>`,
+            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
         },
             {
-            title: "Building ID",
+            title: "Building ",
             className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
+            data: (data,index) => `<span class="text-yp-custom">${data.building_name}</span>`,
         },
         {
             title: "Description",
@@ -122,7 +122,7 @@ var InvoiceComponent =   ( () => {
         if (mThis.initAlready) return;
 
         mThis.TenantListView = new ListView('_invoice_list', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -133,7 +133,7 @@ var InvoiceComponent =   ( () => {
               
               tr.dataset.statusid = data.status_id;
               tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join('')); 
+              tr.setAttribute('id',['building_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -145,7 +145,7 @@ var InvoiceComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.TenantListView.showPage(mThis.getFilterData());
+                    mThis.buildingListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
@@ -284,7 +284,7 @@ var InvoiceComponent =   ( () => {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.TenantListView.showPage();
                     }
@@ -318,7 +318,7 @@ var InvoiceComponent =   ( () => {
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
             const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
+            vsapi.call(`${mThis.base_url}/prm/building/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
                     cv_interact.success('Invoice Status has been updated');
@@ -333,7 +333,7 @@ var InvoiceComponent =   ( () => {
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
@@ -368,16 +368,18 @@ const Invoicedialog = (() => {
                     return [
                         `<div class="row justify-content-center">
 
-                            <div class="col-12">
+                           <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Consumer</label>
                                 <div class="material-input outlined">
-                                    <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label> Consumer ID </label>
+                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
-                                    <input type="text" name="code" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                    <label>Building ID</label>
+                                    <select name="building_id" class="data-input form-control" data-field="building_id">
+                                    </select>
                                 </div>
                             </div>
                             
@@ -386,7 +388,7 @@ const Invoicedialog = (() => {
                              <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="description" required class="data-input form-control" data-field="service_type" placeholder=" " />
-                                    <label>Description</label>
+                                    <label>Item</label>
                                 </div>
                             </div>
                             
