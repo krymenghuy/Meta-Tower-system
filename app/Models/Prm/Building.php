@@ -28,15 +28,15 @@ class Building //extends Model
 
         $v_rule = [
             'name'       => '1|string|0-255',
-            'floors'     => '1|number',
+            'total_floor'=> '1|number',
             'address'    => '0|string|0-250',
             'total_area' => '0|number',
-            'space'      => '0|number',
+            'total_space'=> '0|number',
             'occupancy'  => '0|number',
         ];
 
-        $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign], $ss->lang, false);
+        $allowSign = ['$', '#', '@', '!', '.', '-',',', '_', '=', '?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign,'address'=> $allowSign], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -77,7 +77,7 @@ class Building //extends Model
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
              ->whereRaw($str_search)
-            ->selectRaw('b.id, b.name,b.address, b.floors, '.$updated_at.', b.update_user')
+            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space, '.$updated_at.', b.update_user')
             ->orderBy('b.id', 'asc');
 
         $clone_query = clone $query;
@@ -90,7 +90,7 @@ class Building //extends Model
     {
         $row = DB::table('buildings as b')
             ->where('b.id', $id)
-            ->selectRaw('b.id, b.name, b.floors')
+            ->selectRaw('b.id, b.name, b.total_floor, b.total_space, b.total_area,b.address')
             ->first();
  
         return $row;
@@ -106,6 +106,10 @@ class Building //extends Model
      public function deleteBuilding($id = null)
     {
         $id = $id ?? $this->id;
+        $check_space = DB::table('building_spaces')->where('building_id', $id)->exists();
+        if ($check_space) {
+            return DV::error('Cannot delete building because it has associated spaces.');
+        }
         $deleted = DB::table('buildings')->where('id', $id)->delete();
 
         return $deleted
@@ -113,22 +117,8 @@ class Building //extends Model
             : DV::error('Delete failed.');
     }
 
-    public function updatebuildingStatus($status_id,$id = null, $ss = null){
-        $id = $id ?? $this->id;
 
-        $ss = $ss ? $ss : $this->userInfo;
-        $status = DB::table('building')->where('id',$id)->value('status_id');
-        if($status == $status_id){
-            return DV::error('It is the same current status');
-        }
-        $update = DB::table('building')->where('id',$id)->update([
-            'status_id' =>$status_id,
-            'update_user' => $ss->full_name,
-            'updated_at' =>getNowTime(),
-            'update_uid' =>$ss->user_id
-        ]);
-        return DV::depends($update,['Building','updated']);
-    }
+
     
 
 
