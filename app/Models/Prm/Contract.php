@@ -24,11 +24,11 @@ class Contract
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|0-200|text=Tenant name must be provided',
-            'legal_name' => '0|string|0-250',
-            'phone_number' => '0|phone|0-23',
-            'email' => '0|email|1-50',
-            'address' => '0|string|0-350',
+            'tenant' => '1|string|0-200|text=Tenant name must be provided',
+            'business_type' => '0|string|0-250',
+            'space_id' => '0|space|1-150',
+            'size' => '0|size|1-350',
+            'price' => '0|price|1-50',
         ];
         $email_char = ['@','.','-','_'];
         $address_char = ['@',',','.','#'];
@@ -40,14 +40,14 @@ class Contract
                 ->where('name',$inputs['name'])
                 ->exists();
                 if($exist){
-                    return DV::error('Create failed: This Tenant already exists');
+                    return DV::error('Create failed: This contract already exists');
                 }
         }
         $id = DBX::saveData($ss,'contracts',['id'=>$id],$inputs,[],1);
         if($id > 0){
             return DV::depends(1,['contracts'=>$inputs,'id'=>$id]);
         }
-        return DV::error('Error saving tenant...!');
+        return DV::error('Error saving contract...!');
     }
 
     public function getListPaginate($arr, $ss = null){

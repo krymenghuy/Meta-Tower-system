@@ -24,7 +24,7 @@ var ContractComponent = new (function () {
             data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
         },
         {
-            title: " tenant ID",
+            title: " tenant",
             className: "align-middle",
             data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
         },
@@ -58,7 +58,7 @@ var ContractComponent = new (function () {
             }
         },
         {
-            title: "space id",
+            title: "space",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -70,8 +70,8 @@ var ContractComponent = new (function () {
         },
 
         {
-            title: "size (m²)",
-            className: "align-middle",
+            title: "SIZE (m²)",
+            className: "align-middle text capitalize ",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
@@ -397,7 +397,7 @@ const ContractDialog = (() => {
             <div class="col-12">
                 <div class="material-input outlined">
                     <input type="text" name="code" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
-                    <label>Tenant ID</label>
+                    <label>Tenant </label>
                 </div>
             </div>
 
@@ -411,7 +411,7 @@ const ContractDialog = (() => {
             <div class="col-12">
                 <div class="material-input outlined">
                     <input type="text" name="space_id" required class="data-input form-control" data-field="space_id" placeholder=" " />
-                    <label>Space ID</label>
+                    <label>Space </label>
                 </div>
             </div>
 
