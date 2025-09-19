@@ -63,9 +63,27 @@ class BuildingSpace
         $id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
         if ($id && $created) {
+            $buildingName = DB::table('buildings')
+                ->where('id', $inputs['building_id'])
+                ->value('name');
+
+            $prefixLetters = 'X';
+
+            if ($buildingName) {
+                $words = explode(' ', $buildingName);
+                $prefixLetters = '';
+                foreach ($words as $word) {
+                    if (!empty($word)) {
+                        $prefixLetters .= strtoupper(substr($word, 0, 1));
+                    }
+                }
+            }
+
             $floor = 'F' . $inputs['floor_number'];
-            $prefix = 'MT-' . $floor . '-R';
+            $prefix = $prefixLetters . '-' . $floor . '-R';
+
             setOfficialCode($branch_id, 'space_code_control', 'building_spaces', ['id' => $id], $prefix, 2, null);
+
         }
 
         if ($id > 0) {

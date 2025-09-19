@@ -19,40 +19,42 @@ class Building //extends Model
 
     }
 
-  public function saveBuilding($arr=[], $id = null, $ss = null)
+ 
+    public function saveBuilding($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-255',
-            'floors' => '1|number',
+            'name'       => '1|string|0-255',
+            'floors'     => '1|number',
+            'address'    => '0|string|0-250',
+            'total_area' => '0|number',
+            'space'      => '0|number',
+            'occupancy'  => '0|number',
         ];
+
         $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
         $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
+
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
-        if ($isCreate) {
-            $existingBuilding = DB::table('buildings')
-                ->where('name', $inputs['name'])
-                ->where('id', '!=', $id)
-                ->exists();
 
-            if ($existingBuilding) {
-                return DV::error('Update failed Another building with the same details already exists.');
-            }
-        }
+    
+
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
             return DV::depends(1, ['buildings' => $inputs, 'id' => $id]);
         }
+
         return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
+
      public function getListBuilding($arr, $ss = null)
     {
         $d = (object) $arr;
@@ -75,7 +77,7 @@ class Building //extends Model
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
              ->whereRaw($str_search)
-            ->selectRaw('b.id, b.name, b.floors, '.$updated_at.', b.update_user')
+            ->selectRaw('b.id, b.name,b.address, b.floors, '.$updated_at.', b.update_user')
             ->orderBy('b.id', 'asc');
 
         $clone_query = clone $query;

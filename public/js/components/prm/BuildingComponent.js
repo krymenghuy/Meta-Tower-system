@@ -10,59 +10,89 @@ var BuildingComponent = ( () => {
     mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
 
-     mThis.cols = [
+ mThis.cols = [
+    {
+        title: "",
+        className: "align-middle",
+    },
+    {
+        title: "Building",
+        className: "align-middle",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-primary-custom fw-semibold d-inline-block" style="min-width:150px;">
+                    ${data.name ?? ''}
+                </span>
+                <small class="text-muted text-break" style="max-width:250px;">
+                    ${data.address ?? ''}
+                </small>
+            </div>
+        `,
+    },
+    {
+        title: "Floors",
+        className: "align-middle",
+        data: (data) => `
+            <span class="text-primary-custom">${data.floors ?? 'N/A'}</span>
+        `,
+    },
+    {
+        title: "Total Area",
+        className: "align-middle",
+        data: (data) => `<span class="text-yp-custom">${data.total_area ?? ''}</span>`,
+    },
+    {
+        title: "Space",
+        className: "align-middle",
+        data: (data) => `<span class="text-yp-custom">${data.space ?? ''}</span>`,
+    },
+    {
+        title: "Occupancy",
+        className: "align-middle",
+        data: (data) => {
+            let occ = data.occupancy ?? 75;
+            let space = data.space ?? 100;
+            let percent = space > 0 ? Math.round((occ / space) * 100) : 0;
 
-        {
-            title: "",
-            className: "align-middle",
-        },
-        {
-            title: "Building ID",
-            className: "align-middle",
-            data: (data,index) => `<span class="text-yp-custom">${100001+index}</span>`,
-        },
-        {
-            title: "Building",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom" style="width:75px;">${data.name ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Floors",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</span>
+            return `
+                <div class="d-flex align-items-center gap-2">
+                    <div class="progress" style="width:120px; height:8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                            style="width: ${percent}%;" 
+                            aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
                     </div>
-                `;
-            }
-        },
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
-                </div>`;
-            }
-        },
-        {
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
-                       </button>
-                    </a>
-                </div>`
-        },
+                    <span class="fw-semibold text-dark">${percent}%</span>
+                </div>
+            `;
+        }
+    },
+    {
+        title: "Updated By",
+        className: "align-middle",
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>
+        `,
+    },
+    {
+        className: "col_action align-middle",
+        data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <a href="javascript:void(0)" 
+                   class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" 
+                   data-id="${data.id}" 
+                   data-statusid="${data.status_id}">
+                   <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                </a>
+            </div>
+        `,
+    },
+];
 
-    ];
+
 
     mThis.init = () => {
         if (mThis.initAlready) return;
