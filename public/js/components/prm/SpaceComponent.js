@@ -252,6 +252,7 @@ var SpaceComponent = new (function () {
     }
 
    
+
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)

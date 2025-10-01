@@ -2,104 +2,133 @@
 
 namespace App\Models\Prm;
 
+use App\Models\Ypg\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
-
-class Contract 
+class Contract
 {
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'contracts';
-    public function __construct($id = null, $userInfo = null){
+
+    public function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    public function createContract($arr = [],$id = null, $ss = null)
-     {
+    public function saveContract($arr = [], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'tenant' => '1|string|0-255',
-            'business_type' => '1|string|0-255',
+            'tenant_id'        => '1|number|exists=tenants.id',
+            'business_type_id' => '0|number|exists=business_types.id',
+            'space_id'         => '0|number|exists=building_spaces.id',
+            'sqm_size'         => '0|number',
+            'price'            => '0|number',
+            'price_type'       => '0|string|default=sqm',
+            'start_date'       => '0|date',
+            'end_date'         => '0|date',
+            'remarks'          => '0|string',
         ];
-        $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        $res = DBX::validateObject($arr, $v_rule, true, ['tenant' => $allowSign], $ss->lang, false);
-        if ($res->error) {
-            return DV::error($res->error);
-        }
-        $inputs = $res->values;
-        $isCreate = !$id || $id == 0;
-        if ($isCreate) {
-            $existingBuilding = DB::table('contracts')
-                ->where('tenant', $inputs['tenant'])
-                ->where('id', '!=', $id)
-                ->exists();
 
-            if ($existingBuilding) {
-                return DV::error('Update failed Another building with the same details already exists.');
-            }
-        }
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        if ($res->error) return DV::error($res->error);
+
+        // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
+        
+    
+        $inputs = $res->values;
+        
+        $isCreate = $id === null;
+        
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
+
         return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
-     public function getListContract($arr, $ss = null)
-    {
+   
+    public function getListPaginate($arr, $ss = null){
+
         $d = (object) $arr;
+        $search_value = $d->search_value ?? null;
+        $tenant_id = $d->tenant_id ?? null;
+        $space_id = $d->space_id ?? null;
+        $business_type_id = $d->business_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
-            $current_page = 1;
+            $current_page = 1;  
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-
-        if ($search_value) {
+        $str_moreWhere = '2=2';
+        if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-             $str_search = DBX::whereLowerCase('c.name',"%$search_value%",'like');
+            $str_search = "(t.name LIKE '%".$search_value."%')";
         }
-     
-        $updated_at = DBX::formatTime('c.updated_at','updated_at');
+        if($tenant_id){
+            $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
+        }
+        if($space_id){
+            $str_moreWhere .= ' AND c.space_id = ' . $space_id;
+        }
+        if($business_type_id){
+            $str_moreWhere .= ' AND c.business_type_id = ' . $business_type_id;
+        }
+        $start_date = DBX::formatDate("c.start_date", 'start_date' );
+        $end_date = DBX::formatDate("c.end_date", 'end_date' );
+        $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
-           
-             ->whereRaw($str_search)
-            ->selectRaw('c.id, c.tenant, c.business_type,  '.$updated_at.', c.update_user')
-            ->orderBy('c.id', 'asc');
-
+            ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw($selectCols)
+            ->orderByRaw('c.id desc');
         $clone_query = clone $query;
         $count = $clone_query->count('c.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $rows  = $query->skip($skip_rows)->take($per_page)->get();
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    
     public static function contractDetails($id)
-    {
-        $row = DB::table('contracts as c')
-            ->where('c.id', $id)
-            ->selectRaw('c.id, c.name, c.floors')
-            ->first();
- 
-        return $row;
-    }
+{
+    return DB::table('contracts as c')
+       ->where('c.id', $id)
+        ->selectRaw('c.id,c.tenant_id,c.space_id,c.business_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
+        ->first();
+}
 
-    public function getFormOptions($id){
-        $contract_details = self::contractDetails($id) ?? null;
-        return (object)[
+    public static function getFormOptions($id,$ss)
+    {
+        $contract_details = $id ? self::contractDetails($id) : null;
+        return (object) [
             'contract_details' => $contract_details,
+            'tenants'      => GeneralSettings::options_tenant($ss),
+            'space_types'      => GeneralSettings::options_space_type($ss),
+            'business_types'   => GeneralSettings::options_business_type($ss)
         ];
+    }
+    public static function deleteContract($id = null){
+        $id = $id ?? $this->id;
+        $deleted = DB::table('contracts')->where('id',$id)->delete();
+        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
     
 

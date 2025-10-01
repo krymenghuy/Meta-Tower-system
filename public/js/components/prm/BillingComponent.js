@@ -381,9 +381,9 @@ const BillingDialog = (() => {
                                     <div class="material-input outlined">
                                         <select name="from_account" placeholder=" " class="data-input form-control" data-field="from_account">
                                             <option value="">Select Account</option>
-                                            <option value="1">Financial Account:KHR 69,853 </option>
-                                            <option value="2">Accounting officer:usd 51,941 </option>
-                                            <option value="3">Expense Account:KHR 21222.69 </option>
+                                            <option value="1">Financial Account: KHR 69,853 </option>
+                                            <option value="2">Accounting officer: $ 51,941 </option>
+                                            <option value="3">Expense Account: KHR 21222.69 </option>
                                            
                                         </select>
                                         <label class="d-none">Select Account</label>

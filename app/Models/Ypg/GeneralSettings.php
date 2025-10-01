@@ -308,5 +308,13 @@ class GeneralSettings //extends Model
         return  DB::table('buildings')->selectRaw('id,name AS building')->get();
 
      }
+     static function options_tenant($ss){
+        return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
+
+     }
+
+     static function options_business_type($ss){
+        return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
+    }
 
 }

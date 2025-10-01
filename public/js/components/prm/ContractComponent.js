@@ -4,8 +4,10 @@ var ContractComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
-    mThis.base_url = main_view.base_url;
     mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
+    mThis.elTenant = mThis.self.querySelector('#tenant_id');
+    mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
+    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.divFilter = mThis.self.querySelector("#_divFilter_contract");
     mThis.elFilter_status = mThis.self.querySelector("#el_status");
     mThis.elSearch = mThis.self.querySelector("#_search_contract");
@@ -26,13 +28,20 @@ var ContractComponent = new (function () {
         {
             title: " tenant",
             className: "align-middle",
-            data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
+            data: (data, index) => `<span class="text-primary-custom">${data.tenant_name}</span>`,
         },
         {
             title: "Business Type",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;">${data.business_name}</span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;">${data.business_type}</span>`;
+            }
+        },
+        {
+            title: "Space Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-yp-custom" style="width:75px;">${data.space_type}</span>`;
             }
         },
         {
@@ -58,12 +67,12 @@ var ContractComponent = new (function () {
             }
         },
         {
-            title: "space",
+            title: "space code",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.space_id ?? 'N/A'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.space_code ?? 'N/A'}</span>
                     </div>
                 `;
             }
@@ -131,7 +140,7 @@ var ContractComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.ContractListView = new ListView('_contract_list', {
-            fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -169,8 +178,8 @@ var ContractComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblBuilding = mThis.ContractListView.getTable();
-        mThis.initDropdownMenus(mThis.tblBuilding);
+        mThis.tblContract = mThis.ContractListView.getTable();
+        mThis.initDropdownMenus(mThis.tblContract);
 
 
 
@@ -216,21 +225,15 @@ var ContractComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+                
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_contact"
+                    name: "edit_contract"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Contract"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_contract"
@@ -244,16 +247,13 @@ var ContractComponent = new (function () {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
+                   
                     case 'edit_contract': {
-                        mThis.editBuilding(id, menuLink);
+                        mThis.editContract(id, menuLink);
                         break;
                     }
                     case 'delete_contract': {
-                        mThis.deleteBuilding(id, menuLink);
+                        mThis.deleteContract(id, menuLink);
                         break;
                     }
 
@@ -266,7 +266,7 @@ var ContractComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editBuilding = (id, menulink) => {
+    mThis.editContract = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -279,7 +279,7 @@ var ContractComponent = new (function () {
 
         ContractDialog.show(op);
     }
-    mThis.deleteBuilding = (id, menuLink) => {
+    mThis.deleteContract = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -294,7 +294,7 @@ var ContractComponent = new (function () {
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/contract/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.ContractListView.showPage();
                     }
@@ -306,47 +306,50 @@ var ContractComponent = new (function () {
         });
     }
 
-    mThis.changeStatus = (id, lnk) => {
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123, status_id);
+    // mThis.changeStatus = (id, lnk) => {
+    //     const tr = lnk.closest('tr');
+    //     const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+    //     console.log(123, status_id);
 
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Building Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
-                { status_id: "1", name: "Available" },
-                { status_id: "2", name: "Unavailable" }
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions, (selected) => {
-            if (!selected) return;
-            if (!AuthManager.allowed(321)) return;
-            const status = { id, status_id: selected.value };
-            vsapi.call(`${mThis.base_url}/prm/building/update-status`, status).then(res => {
-                if (res.status_code === 200) {
-                    InputBox2.close();
-                    cv_interact.success('The Contract Status has been updated');
-                    mThis.ContractListView.showPage(mThis.getFilterData());
+    //     const inputOptions = {
+    //         title: 'Change Status',
+    //         dataLabel: "Building Status",
+    //         valueMember: "status_id",
+    //         textMember: "name",
+    //         confirmButtonText: "Save",
+    //         blankErrorMessage: "Status is not correct!",
+    //         data: [
+    //             { status_id: "1", name: "Available" },
+    //             { status_id: "2", name: "Unavailable" }
+    //         ],
+    //         defaultValue: status_id
+    //     };
+    //     InputBox2.show(inputOptions, (selected) => {
+    //         if (!selected) return;
+    //         if (!AuthManager.allowed(321)) return;
+    //         const status = { id, status_id: selected.value };
+    //         vsapi.call(`${mThis.base_url}/prm/building/update-status`, status).then(res => {
+    //             if (res.status_code === 200) {
+    //                 InputBox2.close();
+    //                 cv_interact.success('The Contract Status has been updated');
+    //                 mThis.ContractListView.showPage(mThis.getFilterData());
 
-                } else {
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
+    //             } else {
+    //                 cv_interact.error(res.error_message || 'Unable to update status');
+    //             }
+    //         });
+    //     });
 
-    }
+    // }
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'building_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
+                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'Business Type', null);
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
+
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -393,12 +396,7 @@ const ContractDialog = (() => {
                  </div>
             </div>
 
-             <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="tenant">Space</label>
-                 <div class="material-input outlined">
-                     <select name="space_code" class="data-input form-control" data-field="building_space_code"> </select>
-                 </div>
-            </div>
+            
             <div class="col-6">
                 <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
                 <div class="material-input outlined">
@@ -406,6 +404,12 @@ const ContractDialog = (() => {
                     </select>
                                     
                 </div>
+            </div>
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="tenant">Space</label>
+                 <div class="material-input outlined">
+                     <select name="space_code" class="data-input form-control" data-field="building_space_code"> </select>
+                 </div>
             </div>
            
 
@@ -487,7 +491,12 @@ const ContractDialog = (() => {
 
                 },
                 configSelect: [
-                    
+                    {
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
                     {
                         name: "business_type_id",
                         data: "business_types",
@@ -506,9 +515,9 @@ const ContractDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Create New Contract",
                     modifyTitle: "Modify Contract",
-                    targetProp: "building_details",
+                    targetProp: "contract_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -516,7 +525,7 @@ const ContractDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    //LocaleManager.translateZone(me.divModal); //Translation is automatic!
+                    //LocaleManager.translateZone(me.divModal); 
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
@@ -561,7 +570,8 @@ const ContractDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/building/save",].join(""), op, btn, null).then((res) => {
+                            
+                            vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
@@ -586,4 +596,6 @@ const ContractDialog = (() => {
 
 
     return self;
+    
 })();
+

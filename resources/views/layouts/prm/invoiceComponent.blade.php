@@ -17,6 +17,7 @@
                     <span vslang="buttons.Generate Invoice"></span>
                 </button>
             </div>
+            
         </div>
 
     </div> 
