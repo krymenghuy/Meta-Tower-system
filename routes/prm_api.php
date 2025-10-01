@@ -144,12 +144,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->g
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
     Route::post('/save', [ContractController::class, 'saveContract']);
-    Route::post('/list-paginate', [ContractController::class, 'getListContract']);
+    Route::post('/list-paginate', [ContractController::class, 'getListPaginate']);
     Route::post('/details', [ContractController::class, 'contractDetails']);
-    Route::post('/form-options', [ContractController::class, 'getFormOptions']);
+     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
-    Route::post('/update-status', [ContractController::class, 'updateContractStatus']);
 });
+
 
 
    

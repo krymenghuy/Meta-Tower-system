@@ -7,6 +7,16 @@
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
+
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select id="tenant_id" class="data-input filter-field form-control" data-field="tenant_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="business_type_id" class="data-input filter-field form-control" data-field="business_type_id"></select>
+            </div>  
+             <div class="col-12 col-md-6 col-lg-2">
+                <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id"></select>
+            </div>
         
         <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">

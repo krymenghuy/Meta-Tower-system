@@ -138,7 +138,6 @@ class BuildingSpace
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $search_value = $d->search_value ?? null;
         $str_search = "1=1";
         $str_moreWhere = "2=2";
         if($search_value){
@@ -170,10 +169,6 @@ class BuildingSpace
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
-
-
-
-
         
     }
 

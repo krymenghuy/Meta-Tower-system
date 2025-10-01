@@ -2,100 +2,136 @@
 
 namespace App\Models\Prm;
 
+use App\Models\Ypg\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
-
-class Contract 
+class Contract
 {
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'contracts';
-    public function __construct($id = null, $userInfo = null){
+
+    public function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    public function createTenant($arr = [],$id = null, $ss = null){
+    public function saveContract($arr = [], $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name' => '1|string|0-200|text=Tenant name must be provided',
-            'legal_name' => '0|string|0-250',
-            'phone_number' => '0|phone|0-23',
-            'email' => '0|email|1-50',
-            'address' => '0|string|0-350',
+            'tenant_id'        => '1|number|exists=tenants.id',
+            'business_type_id' => '0|number|exists=business_types.id',
+            'space_id'         => '0|number|exists=building_spaces.id',
+            'sqm_size'         => '0|number',
+            'price'            => '0|number',
+            'price_type'       => '0|string|default=sqm',
+            'start_date'       => '0|date',
+            'end_date'         => '0|date',
+            'remarks'          => '0|string',
         ];
-        $email_char = ['@','.','-','_'];
-        $address_char = ['@',',','.','#'];
-        $res = DBX::validateObject($arr,$v_rule,1,['email'=>$email_char,'address'=> $address_char],$ss->lang,0,null);
-        if($res->error) return DV::error($res->error);
+
+        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        if ($res->error) return DV::error($res->error);
+
+        // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
+        
+    
         $inputs = $res->values;
-        if(!$id) {
-            $exist = DB::table('contracts')->where('phone_number',$inputs['phone_number'])
-                ->where('name',$inputs['name'])
-                ->exists();
-                if($exist){
-                    return DV::error('Create failed: This Tenant already exists');
-                }
+        
+        $isCreate = $id === null;
+        
+        $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
+
+        if ($id > 0) {
+            return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
-        $id = DBX::saveData($ss,'contracts',['id'=>$id],$inputs,[],1);
-        if($id > 0){
-            return DV::depends(1,['contracts'=>$inputs,'id'=>$id]);
-        }
-        return DV::error('Error saving tenant...!');
+
+        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
+   
     public function getListPaginate($arr, $ss = null){
+
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-        $search_value = isset($arr['search_value']) ? $arr['search_value'] : null;
+        $search_value = $d->search_value ?? null;
+        $tenant_id = $d->tenant_id ?? null;
+        $space_id = $d->space_id ?? null;
+        $business_type_id = $d->business_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-        if(!is_numeric($current_page)){
-            $current_page = 1;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;  
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $search_value = $d->search_value ?? null;
-        $str_search = "1=1";
+        $str_search = '1=1';
+        $str_moreWhere = '2=2';
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%')";
+            $str_search = "(t.name LIKE '%".$search_value."%')";
         }
-        $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
-        $query = DB::table('contracts as t')
+        if($tenant_id){
+            $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
+        }
+        if($space_id){
+            $str_moreWhere .= ' AND c.space_id = ' . $space_id;
+        }
+        if($business_type_id){
+            $str_moreWhere .= ' AND c.business_type_id = ' . $business_type_id;
+        }
+        $start_date = DBX::formatDate("c.start_date", 'start_date' );
+        $end_date = DBX::formatDate("c.end_date", 'end_date' );
+        $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $query = DB::table('contracts as c')
+            ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
             ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.legal_name,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+            ->whereRaw($str_moreWhere)
+            ->selectRaw($selectCols)
+            ->orderByRaw('c.id desc');
         $clone_query = clone $query;
-        $count = $clone_query->count('t.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
+        $count = $clone_query->count('c.id');
+        $rows  = $query->skip($skip_rows)->take($per_page)->get();
 
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public static function getDetails($id){
-        return DB::table('contracts as t')
-            ->where('t.id',$id)
-            ->selectRaw('t.id,t.name,t.legal_name,t.phone_number,t.email,t.address')
-            ->first();
-    }
+    
+    public static function contractDetails($id)
+{
+    return DB::table('contracts as c')
+       ->where('c.id', $id)
+        ->selectRaw('c.id,c.tenant_id,c.space_id,c.business_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
+        ->first();
+}
 
-    public static function getFormOptions($id){
-        $details = $id ? self::getDetails($id) : null;
+    public static function getFormOptions($id,$ss)
+    {
+        $contract_details = $id ? self::contractDetails($id) : null;
         return (object) [
-            'contracts' => $details,
+            'contract_details' => $contract_details,
+            'tenants'      => GeneralSettings::options_tenant($ss),
+            'space_types'      => GeneralSettings::options_space_type($ss),
+            'business_types'   => GeneralSettings::options_business_type($ss)
         ];
     }
-    
-    public function delete($id = null){
+    public static function deleteContract($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('contracts')->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
     
+
+
 }
+        

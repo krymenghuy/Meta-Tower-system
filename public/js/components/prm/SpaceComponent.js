@@ -24,7 +24,7 @@ var SpaceComponent = new (function () {
             },
         
             {
-                title: "Floors",
+                title: "Floor",
                 className: "align-middle",
                 data: (data) => {
                     const floor = data.floor_number ?? '';
@@ -54,35 +54,15 @@ var SpaceComponent = new (function () {
                     const cur_symbol = data.cur_symbol ?? '$';
                     const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
 
-                    return data.price_type === 'total'
-                        ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/ room</small></span>`
-                        : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/ sqm</small></span>`;
-                }
-            },
-            {
-                title: "Space Type",
-                className: "align-middle",
-                data: (data) => {
-                    return `<span class="text-primary-custom">${data.space_type ?? ''}</span>`
-                }
-            },
-            {
-                title: "Status",
-                className: "align-middle",
-                data: (data, index, tr) => {
-                    const cls = data.status
-                        ? data.status.toLowerCase() === "offline"
-                            ? "bg-secondary text-white"
-                            : data.status.toLowerCase() === "active"
-                            ? "bg-primary text-white"
-                            : "bg-danger text-white"
-                        : "bg-danger text-white";
-                    return `<span style="min-width: 90px; padding: 4px 10px;" class="d-inline-block text-capitalize text-center ${cls} rounded-2 text-white">${
-                        data.status ?? ""
-                    }</span>`;
-                },
-            },
+                return data.price_type === 'total'
+                    ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
+                    : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
+            }
+        },
 
+  
+        
+            
             {
                 title: "Updated By",
                 className: 'align-middle',
@@ -272,6 +252,7 @@ var SpaceComponent = new (function () {
     }
 
    
+
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
@@ -334,7 +315,7 @@ const BuildingSpaceDialog = (() => {
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
                                         <option value="">Select Price Type</option>
-                                        <option value="sqm">Per SQM</option>
+                                        <option value="sqm">Per Sqaure Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
                                     <label class="d-none">Price Type</label>
