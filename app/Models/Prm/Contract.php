@@ -29,12 +29,13 @@ class Contract
         $v_rule = [
             'tenant_id'        => '1|number|exists=tenants.id',
             'business_type_id' => '0|number|exists=business_types.id',
+            'space_type_id' => '0|number|exists=space_types.id',
             'space_id'         => '0|number|exists=building_spaces.id',
             'sqm_size'         => '0|number',
             'price'            => '0|number',
             'price_type'       => '0|string|default=sqm',
-            'start_date'       => '0|date',
-            'end_date'         => '0|date',
+            'start_date'       => '1|date',
+            'end_date'         => '1|date',
             'remarks'          => '0|string',
         ];
 
@@ -45,10 +46,21 @@ class Contract
         
     
         $inputs = $res->values;
+        $d = (object) $arr;
+
+        $duplicateId = self::checkDuplicateContractId(
+            $d->space_id,
+            // $d->building_space_code,
+            $id
+        );
+         if ($duplicateId) {
+            return DV::error("Cannot create contract: this space code is already occupied by another contract. ");
+        }
         
-        $isCreate = $id === null;
+       $created = !$id;
         
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
+
 
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
@@ -57,7 +69,19 @@ class Contract
         return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
-   
+   static function checkDuplicateContractId($space_id, $contract_id = null){
+        $query = DB::table('contracts as c')
+            ->where('c.space_id', $space_id);
+            // ->where('c.floor_number', $floor)
+            // ->where('c.space_code', $space_code);
+
+        if (!empty($contract_id)) {
+            $query->where('c.id', '<>', $contract_id);
+        }
+
+        $id = $query->value('id');
+        return $id ?: null;
+    }
     public function getListPaginate($arr, $ss = null){
 
         $d = (object) $arr;
@@ -90,11 +114,12 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
+            ->join('space_types as st', 'st.id', '=', 'c.space_type_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols)
@@ -111,7 +136,7 @@ class Contract
 {
     return DB::table('contracts as c')
        ->where('c.id', $id)
-        ->selectRaw('c.id,c.tenant_id,c.space_id,c.business_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
+        ->selectRaw('c.id,c.tenant_id,c.space_id,c.business_type_id,c.space_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
         ->first();
 }
 
@@ -122,6 +147,7 @@ class Contract
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
+            'building_spaces'      => GeneralSettings::options_building_space($ss),
             'business_types'   => GeneralSettings::options_business_type($ss)
         ];
     }

@@ -271,12 +271,9 @@ var ContractComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                ;
                 mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
-
-
         ContractDialog.show(op);
     }
     mThis.deleteContract = (id, menuLink) => {
@@ -406,9 +403,9 @@ const ContractDialog = (() => {
                 </div>
             </div>
             <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="tenant">Space</label>
+                <label style="color:#777777;padding-left:6px;" for="buildingSpace">Space Code</label>
                  <div class="material-input outlined">
-                     <select name="space_code" class="data-input form-control" data-field="building_space_code"> </select>
+                     <select name="space_id" class="data-input form-control" data-field="space_id"> </select>
                  </div>
             </div>
            
@@ -509,6 +506,12 @@ const ContractDialog = (() => {
                         textField: "space_type",
                         valueField: "id",
                     },
+                    {
+                        name: "space_id",
+                        data: "building_spaces",
+                        textField: "code",
+                        valueField: "id",
+                    },
 
                 ],
                 
@@ -525,7 +528,7 @@ const ContractDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    //LocaleManager.translateZone(me.divModal); 
+                    LocaleManager.translateZone(me.divModal); 
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');

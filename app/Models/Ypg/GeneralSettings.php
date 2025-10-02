@@ -315,6 +315,10 @@ class GeneralSettings //extends Model
 
      static function options_business_type($ss){
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
+    } 
+
+    static function options_building_space($ss){
+        return DB::table('building_spaces')->selectRaw('id,code')->get();
     }
 
 }
