@@ -152,6 +152,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
+    Route::post('/save', [InvoiceController::class, 'saveService']);
+    Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
+    Route::post('/details', [InvoiceController::class, 'serviceDetails']);
+     Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
+    Route::post('/delete', [InvoiceController::class, 'deleteService']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
     Route::post('/save', [InvoiceController::class, 'saveInvoice']);
     Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
     Route::post('/details', [InvoiceController::class, 'invoiceDetails']);

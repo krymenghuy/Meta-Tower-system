@@ -3,7 +3,7 @@ var InvoiceComponent =   ( () => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
-     mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
+    mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
     mThis.elSearch = mThis.self.querySelector("#_search_invoice");
@@ -24,13 +24,9 @@ var InvoiceComponent =   ( () => {
             className: "align-middle ",
             data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
         },
-            {
-            title: "Building ",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.building_name}</span>`,
-        },
+            
         {
-            title: "Description",
+            title: "Service Name",
             className: "align-middle ",
             data: (data) => {
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
@@ -39,7 +35,7 @@ var InvoiceComponent =   ( () => {
 
         
         {
-            title: "Due ",
+            title: " Physical Unit",
             className: "align-middle",
             data: (data, index, tr) => {
                 const cur_symbol = data.cur_symbol ?? '$', amount = data.due_amount ?? 0;
@@ -47,7 +43,7 @@ var InvoiceComponent =   ( () => {
             }
         },
         {
-            title: "paid  ",
+            title: "Quantity ",
             className: "align-middle",
             data: (data, index, tr) => {
                 const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
@@ -57,7 +53,7 @@ var InvoiceComponent =   ( () => {
        
         
         {
-            title: " issue date",
+            title: " Unit Price",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `
@@ -68,7 +64,18 @@ var InvoiceComponent =   ( () => {
         },
 
         {
-            title: " pmt date",
+            title: " total",
+            className: 'align-middle',
+            data: (data, index, tr) => {
+                return `
+                   <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
+                    </div>`;
+            }
+        },
+
+        {
+            title: " Remark",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `
