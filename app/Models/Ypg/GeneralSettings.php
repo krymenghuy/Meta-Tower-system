@@ -321,4 +321,7 @@ class GeneralSettings //extends Model
         return DB::table('building_spaces')->selectRaw('id,code')->get();
     }
 
+    static function options_service_status($ss){
+        return DB::table('service_statuses')->selectRaw('id,status_code as service_status')->get();
+    }
 }

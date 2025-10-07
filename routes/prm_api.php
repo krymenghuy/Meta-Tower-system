@@ -20,6 +20,8 @@ use App\Http\Controllers\Prm\TenantController;
 use App\Http\Controllers\Prm\BuildingController;
 use App\Http\Controllers\Prm\BuildingSpaceController;
 use App\Http\Controllers\Prm\ContractController;
+use App\Http\Controllers\Prm\ServiceController;
+use App\Http\Controllers\Prm\InvoiceController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -151,7 +153,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->group(function () {
+    Route::post('/save', [ServiceController::class, 'saveService']);
+    Route::post('/list-paginate', [ServiceController::class, 'getListPaginate']);
+    Route::post('/details', [ServiceController::class, 'serviceDetails']);
+    Route::post('/form-options', [ServiceController::class, 'getFormOptions']);
+    Route::post('/delete', [ServiceController::class, 'deleteService']);
+    Route::post('/update-status', [ServiceController::class, 'updateServiceStatus']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->group(function () {
     Route::post('/save', [InvoiceController::class, 'saveInvoice']);
     Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
     Route::post('/details', [InvoiceController::class, 'invoiceDetails']);

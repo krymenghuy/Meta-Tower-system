@@ -7,10 +7,12 @@
                 <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
             </div>
          </div>
-
+             <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="el_status" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btn btn--Options w-80 w-md-auto" id="_btnpayment">
-                      <i class="fa-solid fa-money-check-dollar mr-2"></i>
+                <button type="button" class="btn btn--Options w-80 w-md-auto" id="_btnService">
+                      <i class="fa-solid fa-gears mr-2"></i>
                     <span vslang="buttons.Add New Service"></span>
                 </button>
             </div>
