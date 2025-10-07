@@ -383,7 +383,7 @@ const Invoicedialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
+                                <label style="color:#777777;padding-left:6px;" for="building">Contact</label>
                                 <div class="material-input outlined">
                                     <select name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
@@ -395,21 +395,41 @@ const Invoicedialog = (() => {
                              <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="description" required class="data-input form-control" data-field="service_type" placeholder=" " />
-                                    <label>Item</label>
+                                    <label>Service Name</label>
+                                </div>
+                            </div>
+
+                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="building">Physical Unit</label>
+                                <div class="material-input outlined">
+                                    <select name="building_id" class="data-input form-control" data-field="building_id">
+                                    </select>
                                 </div>
                             </div>
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
                                     <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                    <label>Due Amount</label>
+                                    <label>Quantity</label>
                                 </div>
                             </div>
 
                             <div class="col-12">    
                                 <div class="material-input outlined">
                                     <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
-                                    <label>Paid Amount</label>
+                                    <label> Unit Price</label>
+                                </div>
+                            </div>
+                            <div class="col-12">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
+                                    <label>Total Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-12">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
+                                    <label>Remark</label>
                                 </div>
                             </div>
                         </div>`

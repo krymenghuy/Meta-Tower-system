@@ -258,7 +258,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/setting.png') }}" />
                             </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Company progfile"></span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Company profile"></span>
                         </a>
                     </li>
                     <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Prm;
 
 use App\Http\Controllers\Controller;
+use App\Models\Prm\Service;
 use Illuminate\Http\Request;
-use App\Model\Prm\Service;
 use JDV;
 use XAuthService;
 
 class ServiceController extends Controller
 {
     protected $services;
-    public function __contruct(){
+    public function __construct(){
         $this->services = new Service();
     }
 
@@ -42,7 +42,7 @@ class ServiceController extends Controller
             return JDV::raw($ss);
         }
         if(!isset($req->id) || !is_numeric($req->id)){
-            return JDV::error('Invalid Id');
+            return JDV::error('Invalid ID');
         }
         return JDV::result($this->services->serviceDetails($req->id));
 
@@ -53,5 +53,29 @@ class ServiceController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
+        return JDV::result($this->services->getFormOptions($req->id,$ss));
+    }
+
+    public function deleteService(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->services->deleteService($req->id);
+        return JDV::raw($res);
+    }   
+
+    public function updateServiceStatus(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? null;
+        $service = new Service();
+        $res = $service->updateServiceStatus($req->status_id, $id,$ss);
+        return JDV::raw($res);
     }
 }

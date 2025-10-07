@@ -17,92 +17,68 @@ var ServiceComponent =   ( () => {
         },
          
         {
-            title: "Utilities Service",
+            title: "Service Name",
             className: "align-middle ",
            data: (data) => {
                 return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
             }
         },
         {
-            title: "Physical Unit ",
+            title: "Unit Type ",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
+            data: (data) => `<span class="text-yp-custom">${data.unit_type ?? ''}</span>`,
         },
             
         {
-            title: "Unit Price",
-            className: "align-middle ",
+            title: "Price",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
-            }
+                const cur_symbol = data.cur_symbol ?? '$';
+                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+
+                const unitLabel = data.unit_type ? `/${data.unit_type}` : '';
+
+                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
+         }
         },
-        {
-            title: " Description",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
-       
-        // {
-        //     title: "paid  ",
-        //     className: "align-middle",
-        //     data: (data, index, tr) => {
-        //         const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
-        //         return [cur_symbol, amount].join(' ');
-        //     }
-        // },
-       
-        
-        // {
-        //     title: " Remark",
-        //     className: 'align-middle',
-        //     data: (data, index, tr) => {
-        //         return `
-        //            <div class="text-yp-custom" style="width:50px;">
-        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
-        //             </div>`;
-        //     }
-        // },
 
         {
-            title: " booking service",
-            className: 'align-middle',
+            title: "Description",
+            className: "align-middle ",
             data: (data, index, tr) => {
                 return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
-                    </div>`;
+                    <div class="text-yp-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
+                    </div>
+                `;
             }
         },
         
-
         {
-            title: " Status",
+            title: "Status",
             className: "align-middle",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'text-info';
 
-                if (status === 'unpaid') {
+                if (status === 'inactive') {
                     cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'paid') {
+                } else if (status === 'active') {
                     cls = 'text-success px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        {
+
+
+       {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.update_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -123,7 +99,7 @@ var ServiceComponent =   ( () => {
         if (mThis.initAlready) return;
 
         mThis.ServiceListView = new ListView('_service_list', {
-            fetchApi: `${main_view.base_url}/prm/building/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -133,8 +109,8 @@ var ServiceComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('tenant');
-              tr.setAttribute('id',['building_id',data.id].join('')); 
+              tr.classList.add('service');
+              tr.setAttribute('id',['service_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -146,11 +122,11 @@ var ServiceComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.serviceListView.showPage(mThis.getFilterData());
+                    mThis.ServiceListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            Servicedialog.show(op);
+            CreateServicedialog.show(op);
         };
 
 
@@ -162,8 +138,8 @@ var ServiceComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblTenant = mThis.ServiceListView.getTable();
-        mThis.initDropdownMenus(mThis.tblTenant);
+        mThis.tblService = mThis.ServiceListView.getTable();
+        mThis.initDropdownMenus(mThis.tblService);
 
 
 
@@ -220,13 +196,13 @@ var ServiceComponent =   ( () => {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_invoice"
+                    name: "edit_service"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice"
+                    name: "delete_service"
                 },
             ],
             // adjustPosition: {
@@ -241,12 +217,12 @@ var ServiceComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_invoice': {
-                        mThis.editTenant(id, menuLink);
+                    case 'edit_service': {
+                        mThis.editService(id, menuLink);
                         break;
                     }
-                    case 'delete_invoice': {
-                        mThis.deleteTenant(id, menuLink);
+                    case 'delete_service': {
+                        mThis.deleteService(id, menuLink);
                         break;
                     }
 
@@ -259,7 +235,7 @@ var ServiceComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editTenant = (id, menulink) =>{
+    mThis.editService = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
@@ -270,7 +246,7 @@ var ServiceComponent =   ( () => {
         
         CreateServicedialog.show(op);
     }
-     mThis.deleteTenant = (id, menuLink) => {
+     mThis.deleteService = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -279,13 +255,13 @@ var ServiceComponent =   ( () => {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Space??', {
-            title: 'Delete Space',
+        cv_interact.confirm('Delete this Service??', {
+            title: 'Delete Service',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.ServiceListView.showPage();
                     }
@@ -304,25 +280,26 @@ var ServiceComponent =   ( () => {
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "Invoice Status",
-            valueMember: "invoice_id",
+            dataLabel: "Service Status",
+            valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
-                {status_id:"1",name:"Paid"},
-                {status_id:"2",name:"Unpaid"},
+                {status_id:"1",name:"Active"},
+                {status_id:"0",name:"Inactive"},
             ],
             defaultValue: status_id
         };
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/building/update-status`,status).then(res=>{
+            
+            const payload = {id, status_id :selected.value};
+            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Invoice Status has been updated');
+                    cv_interact.success('Service Status has been updated');
                     mThis.ServiceListView.showPage(mThis.getFilterData());
 
                 }else{
@@ -334,10 +311,10 @@ var ServiceComponent =   ( () => {
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/building/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -354,7 +331,7 @@ var ServiceComponent =   ( () => {
     return mThis;
 })();
 
-const Servicedialog = (() => {
+const CreateServicedialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -370,31 +347,36 @@ const Servicedialog = (() => {
                         `<div class="row justify-content-center">
 
                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Utility Service</label>
                                 <div class="material-input outlined">
-                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id">
-                                    </select>
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label>Service Name</label>
                                 </div>
                             </div>
                             
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                    <label>Physical Unit</label>
+                                    <input type="name" name="unit_type" required class="data-input form-control" data-field="unit_type" placeholder=" " />
+                                    <label>Unit Type</label>
                                 </div>
                             </div>
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Unit Price</label>
                                 </div>
                             </div>
+                             <div class="col-12">
+                                <div class="d-none material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div> 
 
-                            <div class="col-12">    
+                            <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
+                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                     <label>Description</label>
                                 </div>
                             </div>
@@ -441,10 +423,10 @@ const Servicedialog = (() => {
                 // ],
                 prepareFormOptions: {
                     createTitle: "Create New Service",
-                    modifyTitle: "Modify Space ",
-                    targetProp: "building_details",
+                    modifyTitle: "Modify Service ",
+                    targetProp: "service_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -474,16 +456,16 @@ const Servicedialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/service/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Tenant has been updated successfully"
+                                            "Service has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New tenant has been added successfully"
+                                            "New service has been added successfully"
                                         );
                                     }
                                 } else {
