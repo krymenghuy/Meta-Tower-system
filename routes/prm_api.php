@@ -169,6 +169,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
      Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
+    Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
 });
 
    

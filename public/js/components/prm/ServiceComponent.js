@@ -6,7 +6,7 @@ var ServiceComponent =   ( () => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnService");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector('#_service_status');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
 
     mThis.cols = [
@@ -166,7 +166,7 @@ var ServiceComponent =   ( () => {
 
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -287,7 +287,7 @@ var ServiceComponent =   ( () => {
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Active"},
-                {status_id:"0",name:"Inactive"},
+                {status_id:"2",name:"Inactive"},
             ],
             defaultValue: status_id
         };

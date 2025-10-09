@@ -14,11 +14,33 @@ var InvoiceComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
+        // {
+        //     title: "Inv Number",
+        //     className: "align-middle ",
+        //     data: (data,index) => `<span class="text-yp-custom">${'INV-100001' + index}</span>`,
+        // },
         {
-            title: "Inv Number",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${'INV-100001' + index}</span>`,
+            title: "Invoice Number",
+            className: 'align-middle text-capitalize',
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}" data-status="${data.status}">${data.invoice_number ?? ''}</a>
+                    <small class="text-capitalize text-left text-success">${data.invoice_type ? data.invoice_type.replace(/\_/g, ' ') : 'General'}</small>
+                </div>`;
+            }
         },
+
+        // {
+        //     title: "Invoice Number",
+        //     className: 'align-middle',
+        //     data: (data, index, tr) => {
+        //         return `<div class="d-flex flex-column">
+        //             <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}" data-status="${data.status}">${data.invoice_number ?? ''}</a>
+        //             <small class="text-capitalize text-left text-success">${data.invoice_type ? data.invoice_type.replace(/\_/g, ' ') : 'General'}</small>
+        //         </div>`;
+        //     }
+        // },
+
         {
             title: "Consumer ",
             className: "align-middle ",
@@ -26,7 +48,57 @@ var InvoiceComponent =   ( () => {
         },
             
         {
-            title: "Service Name",
+            title: "Room code",
+            className: "align-middle ",
+            data: (data) => {
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+            }
+        },
+         {
+            title: "room type",
+            className: "align-middle ",
+            data: (data) => {
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+            }
+        },
+        {
+            title: "due ",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
+        },
+           
+        {
+            title: "Paid",
+            className: "align-middle ",
+            data: (data) => {
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+            }
+        },
+         {
+            title: "balance",
+            className: "align-middle ",
+            data: (data) => {
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+            }
+        },
+        {
+            title: " issue date",
+            className: 'align-middle',
+            data: (data, index, tr) => {
+                return `
+                   <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
+                    </div>`;
+            }
+        },
+         {
+            title: "Pmt date ",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
+        },
+            
+        {
+            title: "issue status",
             className: "align-middle ",
             data: (data) => {
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
@@ -34,56 +106,47 @@ var InvoiceComponent =   ( () => {
         },
 
         
-        {
-            title: " Physical Unit",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.due_amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
-        {
-            title: "Quantity ",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
+        // {
+        //     title: " Physical Unit",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         const cur_symbol = data.cur_symbol ?? '$', amount = data.due_amount ?? 0;
+        //         return [cur_symbol, amount].join(' ');
+        //     }
+        // },
+        // {
+        //     title: "Quantity ",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
+        //         return [cur_symbol, amount].join(' ');
+        //     }
+        // },
        
         
-        {
-            title: " Unit Price",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
+        // {
+        //     title: " Unit Price",
+        //     className: 'align-middle',
+        //     data: (data, index, tr) => {
+        //         return `
+        //            <div class="text-yp-custom" style="width:50px;">
+        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
+        //             </div>`;
+        //     }
+        // },
 
-        {
-            title: " total",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
+        
 
-        {
-            title: " Remark",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
+        // {
+        //     title: " Remark",
+        //     className: 'align-middle',
+        //     data: (data, index, tr) => {
+        //         return `
+        //            <div class="text-yp-custom" style="width:50px;">
+        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.prepareFormOptions_date ?? 'N/A'}</span>
+        //             </div>`;
+        //     }
+        // },
         
 
         {
@@ -108,7 +171,7 @@ var InvoiceComponent =   ( () => {
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.update_at ?? ''}</small>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },

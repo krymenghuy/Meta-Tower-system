@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Prm;
 
 use App\Http\Controllers\Controller;
-use App\Model\Prm\Invoice;
+use App\Models\Prm\Invoice;
 use JDV;
 use XAuthService;
 use Illuminate\Http\Request;
@@ -22,8 +22,8 @@ class InvoiceController extends Controller
         }
         $id = $req->invoice_id ?? $req->id;
         $invoice = new Invoice();
-        $save = $invoice->saveInvoice($req->all(),$id,$ss);
-        return JDV::raw($save);
+        $res = $invoice->saveInvoice($req->all(),$id,$ss);
+        return JDV::raw($res);
 
     }
 
@@ -69,6 +69,17 @@ class InvoiceController extends Controller
        $res = $this->invoices->deleteInvoice($req->id);
        return JDV::raw($res);
 
+    }
+
+    public function updateServiceStatus(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? null;
+        $service = new Service();
+        $res = $service->updateServiceStatus($req->status_id, $id,$ss);
+        return JDV::raw($res);
     }
 
 }
