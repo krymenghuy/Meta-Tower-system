@@ -9,9 +9,9 @@
          </div>
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btn btn--Options w-100 w-md-auto" id="_btnpayment">
+                <button type="button" class="btn btn--Options w-100 w-md-auto" id="_btnPayment">
                       <i class="fa-solid fa-money-check-dollar mr-2"></i>
-                    <span vslang="buttons.Create Payment"></span>
+                    <span vslang="buttons.Export Payment"></span>
                 </button>
             </div>
         </div>

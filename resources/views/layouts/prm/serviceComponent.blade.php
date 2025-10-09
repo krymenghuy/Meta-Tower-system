@@ -8,7 +8,7 @@
             </div>
          </div>
              <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="el_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                <select type="id" id="_service_status" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btn btn--Options w-80 w-md-auto" id="_btnService">

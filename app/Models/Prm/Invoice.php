@@ -28,12 +28,14 @@ class Invoice //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'due_amount' => '1|number',
-            'tenant_id' => '1|number|exists=tenants.id',
-            'building_id' => '1|number|exists=buildings.id',
+            
+            'tenant_id' => '1|number',
+            'building_id' => '1|number',
             'paid_amount' => '0|number',
             'paid_date' => '0|date',
             'remarks' => '0|string',
+            'status_id' => '0|number|default=1',
+            'service_id' => '0|number|exists=services.id',
 
         ];
         $res == DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);

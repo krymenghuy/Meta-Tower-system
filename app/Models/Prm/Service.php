@@ -98,7 +98,7 @@ class Service
         $service_details = $id ? self::serviceDetails($id) : null;
         return (object) [
             'service_details' => $service_details,
-            'service_statuses' => GeneralSettings::options_service_status($ss)
+            'statuses' => GeneralSettings::options_service_status($ss)
         ];
     }
     

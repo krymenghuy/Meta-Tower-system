@@ -322,6 +322,6 @@ class GeneralSettings //extends Model
     }
 
     static function options_service_status($ss){
-        return DB::table('service_statuses')->selectRaw('id,status_code as service_status')->get();
+        return DB::table('service_statuses')->selectRaw('id,name as service_status')->get();
     }
 }
