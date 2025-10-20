@@ -16,6 +16,11 @@ var AccountStaffComponent =   ( () => {
             className: "align-middle text-capitalize",
         },
         {
+            title: "Tenant ID",
+            className: "align-middle text-capitalize",
+            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_id ?? 'N/A'}</small></span>`,
+        },
+        {
             title: "Staff ID",
             className: "align-middle text-capitalize",
             data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
@@ -29,12 +34,17 @@ var AccountStaffComponent =   ( () => {
                         <small class="text-muted">${sexLabel}</small>`;
             }
         },
-
         {
-            title: "Position",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.role ?? ''}</span>`,
+            title: "Khmer Name",
+            className: "align-middle  text-capitalize ",
+            data: (data) => {
+                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name_kh ?? ''}</small></span>
+                        <small class="text-muted">${sexLabel}</small>`;
+            }
         },
+
+        
         {
             title: "Contact Info",
             className: "align-middle",
@@ -68,28 +78,17 @@ var AccountStaffComponent =   ( () => {
                         <div>${telegramHTML}</div>
                     </div>`;
             }
+
         },
         {
-            title: "Zone",
+            title: "Address",
             className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.zones ?? 'N/A'}</small>
-                    </div>
-                `;
-            }
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.address ?? ''}</span>`,
         },
-           {
-            title: "Floor",
+        {
+            title: "Remark",
             className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <small class="text-wrap text-break" style ="word-break:break-word;">${data.floors ?? 'N/A'}</small>
-                    </div>
-                `;
-            }
+            data: (data) => `<span class="text-nowrap text-yp-custom">${data.remarks ?? ''}</span>`,
         },
         {
             title: "Status",
@@ -146,8 +145,8 @@ var AccountStaffComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('staff');
-              tr.setAttribute('id',['staff_id',data.id].join('')); 
+              tr.classList.add('zone');
+              tr.setAttribute('id',['zone_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -369,8 +368,6 @@ var AccountStaffComponent =   ( () => {
 })();
 
 
-
-
 const AccStaffDialog = (() => {
     const self = {};
     let dialog = null;
@@ -385,36 +382,34 @@ const AccStaffDialog = (() => {
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="id" name="id" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
+                                    <label>Tenant ID</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="id" name="id" required class="data-input form-control" data-field="code" placeholder=" " />
+                                    <label>Staff ID</label>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                     <label>Staff Name</label>
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select required class="data-input form-control" data-field="sex">
-                                        <option value="" disabled selected>Select Gender</option>
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                    </select>
-                                    <label class="d-none">Gender</label>
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name_kh" placeholder=" " />
+                                    <label>Khmer Name</label>
                                 </div>
                             </div>
                             
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="role" required class="data-input form-control" data-field="role">
-                                        <option value="" disabled selected>Select Role</option>
-                                        <option value="Staff">Staff</option>
-                                        <option value="IT">IT</option>
-                                        <option value="HR">HR</option>
-                                        <option value="Manager">Manager</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
-                                </div>
-                            </div>
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">
@@ -423,41 +418,18 @@ const AccStaffDialog = (() => {
                                 </div>
                             </div>
                             
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="zones" required class="data-input form-control" data-field="zones">
-                                        <option value="" disabled selected>Select Zone</option>
-                                        <option value="1">Zone A</option>
-                                        <option value="2">Zone B</option>
-                                        <option value="3">Zone C</option>
-                                    </select>
-                                    <label class="d-none">Zones</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <select name="floors" required class="data-input form-control" data-field="floors">
-                                        <option value="" disabled selected>Select Floor</option>
-                                        <option value="1">1st Floor</option>
-                                        <option value="2">2nd Floor</option>
-                                        <option value="3">3rd Floor</option>
-                                    </select>
-                                    <label class="d-none">Floors</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12 d-none">
-                                <div class="material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div>  
                             
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
                                     <label>Address</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label>Remarks</label>
                                 </div>
                             </div>
                         </div>`
@@ -541,11 +513,11 @@ const AccStaffDialog = (() => {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Member has been updated successfully"
+                                            "Staff has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New member has been added successfully"
+                                            "New staff has been added successfully"
                                         );
                                     }
                                 } else {
