@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 
 
 class AccountStaffController extends Controller
-{
+{ 
+    protected $acc_staff;
     public function saveAccountStaff(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){

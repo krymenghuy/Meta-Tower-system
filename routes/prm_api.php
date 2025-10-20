@@ -25,6 +25,8 @@ use App\Http\Controllers\Prm\InvoiceController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
+use App\Http\Controllers\tenant\ZoneController;
+
 
 
 
@@ -133,6 +135,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff
     Route::post('/form-options', [AccountStaffController::class, 'getFormOptions']);
     Route::post('/delete', [AccountStaffController::class, 'deleteAccountStaff']);
     Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff')->group(function () {
+    Route::post('/save', [ZoneController::class, 'saveZone']);
+    Route::post('/list-paginate', [ZoneController::class, 'getListZone']);
+    Route::post('/details', [ZoneController::class, 'ZoneDetails']);
+    Route::post('/form-options', [ZoneController::class, 'getFormOptions']);
+    Route::post('/delete', [ZoneController::class, 'deleteZone']);
+    // Route::post('/update-status', [ZoneController::class, 'updateAccountStaffStatus']);
 });
    
 
