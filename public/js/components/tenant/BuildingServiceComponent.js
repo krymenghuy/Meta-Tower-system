@@ -1,107 +1,60 @@
 "use strict";
-var ZoneManagementComponent =   ( () => {
-    const mThis = {};
-    mThis.title_prop = "Zone & Floor";
-    mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_zone_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddZone");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_zone");
-    mThis.elSearch = mThis.self.querySelector("#_search_zone_info");
+
+var BuildingServiceComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = "Building Service";
+    mThis.self = main_view.VSAppContent.querySelector("#_main_buildingService_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddBuildingService");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_building_service");
+    mThis.elSearch = mThis.self.querySelector("#_search_buildingService_info");
     mThis.elFilter_status = mThis.self.querySelector("#el_status");
+
    
-    
-    
-     mThis.cols = [
+    mThis.cols = [
 
         {
             title: "",
             className: "align-middle text-capitalize",
         },
-        // {
-        //     title: "room ID",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-yp-custom"><small>${data.tenant_id ?? 'N/A'}</small></span>`,
-        // },
-        //  {
-        //     title: "Staff ID",
-        //     className: "align-middle text-capitalize",
-        //     data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
-        // },
+         
         {
-            title: "Zone Name",
-            className: "align-middle  text-capitalize ",
-            data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name ?? ''}</small></span>
-                        <small class="text-muted">${sexLabel}</small>`;
+            title: "Service Name",
+            className: "align-middle ",
+           data: (data) => {
+                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
             }
         },
-        // {
-        //     title: "Khmer Name",
-        //     className: "align-middle  text-capitalize ",
-        //     data: (data) => {
-        //         const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-        //         return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.name_kh ?? ''}</small></span>
-        //                 <small class="text-muted">${sexLabel}</small>`;
-        //     }
-        // },
+        {
+            title: "Unit Type ",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.unit_type ?? ''}</span>`,
+        },
+            
+        {
+            title: "Price",
+            className: "align-middle",
+            data: (data) => {
+                const cur_symbol = data.cur_symbol ?? '$';
+                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+
+                const unitLabel = data.unit_type ? `/${data.unit_type}` : '';
+
+                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
+         }
+        },
+
+        {
+            title: "Description",
+            className: "align-middle ",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:150px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
         
-        {
-            title: "Floor Number",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_id ?? 'N/A'}</small></span>`,
-        },
-        {
-            title: "Unit code",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code ?? 'N/A'}</small></span>`,
-        },
-        
-        // {
-        //     title: "Contact Info",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const phone = data.phone_number || 'N/A';
-
-        //         let telegramHTML = '<span class="text-muted">Telegram: N/A</span>';
-        //         if (data.telegram_link && data.telegram_link.trim() !== '') {
-        //             const url = data.telegram_link.trim();
-        //             const displayText = url.replace(/^https?:\/\/t\.me\//, '');
-
-        //             const deepLink = displayText.startsWith('+')
-        //                 ? `tg://resolve?phone=${displayText.replace(/^\+/, '')}`
-        //                 : `tg://resolve?domain=${displayText}`;
-
-        //             telegramHTML = `
-        //                 <a href="${url}"
-        //                 onclick="event.preventDefault(); window.location='${deepLink}';"
-        //                 class="text-decoration-none d-inline-flex align-items-center mt-1"
-        //                 target="_blank"
-        //                 title="Open in Telegram"
-        //                 aria-label="Telegram">
-        //                     <small><i class="fa-brands fa-telegram me-1" style="color:#229ED9;"></i></small>
-        //                     <small class="text-nowrap">${displayText}</small>
-        //                 </a>`;
-        //         }
-
-        //         return `
-        //             <div class="d-flex flex-column">
-        //                 <div><small><i class="fa-solid fa-phone me-1 text-success"></i></small><small class="text-nowrap text-yp-custom">${phone}</small></div>
-        //                 <div>${telegramHTML}</div>
-        //             </div>`;
-        //     }
-
-        // },
-        {
-            title: "Location",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.address ?? ''}</span>`,
-        },
-        {
-            title: "Note",
-            className: "align-middle text-capitalize",
-            data: (data) => `<span class="text-nowrap text-yp-custom">${data.remarks ?? ''}</span>`,
-        },
         {
             title: "Status",
             className: "align-middle",
@@ -118,25 +71,25 @@ var ZoneManagementComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        {
+
+
+       {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
         {
+            title : "Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-yp-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
-                       </button>
+                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
                     </a>
                 </div>`
         },
@@ -146,8 +99,8 @@ var ZoneManagementComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.AccStaffListView = new ListView('staffAccount_info_list', {
-            fetchApi: `${main_view.base_url}/prm/account-staff/list-paginate`,
+        mThis.ServiceListView = new ListView('_service_list', {
+            fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -157,8 +110,8 @@ var ZoneManagementComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('zone');
-              tr.setAttribute('id',['zone_id',data.id].join('')); 
+              tr.classList.add('service');
+              tr.setAttribute('id',['service_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -167,18 +120,18 @@ var ZoneManagementComponent =   ( () => {
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
-                // id: null,
+                id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.AccStaffListView.showPage(mThis.getFilterData());
+                    mThis.ServiceListView.showPage(mThis.getFilterData());
                 }
             };
-            if (!AuthManager.allowed(240)) return;
-            ZoneDialog.show(op);
+            // if (!AuthManager.allowed(240)) return;
+            CreateServicedialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.AccStaffListView.getListContainer();
+        mThis.pr_tbl = mThis.ServiceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -186,8 +139,8 @@ var ZoneManagementComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblZone = mThis.AccStaffListView.getTable();
-        mThis.initDropdownMenus(mThis.tblZone);
+        mThis.tblService = mThis.ServiceListView.getTable();
+        mThis.initDropdownMenus(mThis.tblService);
 
 
 
@@ -196,7 +149,7 @@ var ZoneManagementComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -204,7 +157,7 @@ var ZoneManagementComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.ServiceListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -241,16 +194,16 @@ var ZoneManagementComponent =   ( () => {
                     name: "change_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Edit Staff"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_staff"
+                    name: "edit_service"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Staff"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_staff"
+                    name: "delete_service"
                 },
             ],
             // adjustPosition: {
@@ -265,12 +218,12 @@ var ZoneManagementComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_staff': {
-                        mThis.editStaff(id, menuLink);
+                    case 'edit_service': {
+                        mThis.editService(id, menuLink);
                         break;
                     }
-                    case 'delete_staff': {
-                        mThis.deleteStaff(id, menuLink);
+                    case 'delete_service': {
+                        mThis.deleteService(id, menuLink);
                         break;
                     }
 
@@ -283,70 +236,35 @@ var ZoneManagementComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-        
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Account Staff Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/account-staff/update-status`,status).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('The Account Staff Status has been updated');
-                    mThis.AccStaffListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
-    };
-    mThis.editStaff = (id, menulink) =>{
+    mThis.editService = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
             onClose:()=>{;
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
-        ZoneDialog.show(op);
+        
+        CreateServicedialog.show(op);
     }
-     mThis.deleteStaff = (id, menuLink) => {
+     mThis.deleteService = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.AccStaffListView.showPage(mThis.getFilterData());
+                mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Zone?', {
-            title: 'Delete Zone',
+        cv_interact.confirm('Delete this Service??', {
+            title: 'Delete Service',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/account-staff/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.AccStaffListView.showPage();
+                        mThis.ServiceListView.showPage();
                     }
                 })
             }
@@ -355,32 +273,66 @@ var ZoneManagementComponent =   ( () => {
             }
         });
     }
+
+      mThis.changeStatus = (id, lnk) =>{
+        const tr = lnk.closest('tr');
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        // console.log(123,status_id);
+        
+        const inputOptions = {
+            title: 'Change Status',
+            dataLabel: "Service Status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data:[
+                {status_id:"1",name:"Active"},
+                {status_id:"2",name:"Inactive"},
+            ],
+            defaultValue: status_id
+        };
+        InputBox2.show(inputOptions,(selected)=>{
+            if(!selected) return;
+            if(!AuthManager.allowed(321)) return;
+            
+            const payload = {id, status_id :selected.value};
+            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
+                if(res.status_code ===200){
+                    InputBox2.close();
+                    cv_interact.success('Service Status has been updated');
+                    mThis.ServiceListView.showPage(mThis.getFilterData());
+
+                }else{
+                    cv_interact.error(res.error_message || 'Unable to update status');
+                }
+            });
+        });
+
+    };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/account-staff/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'staff_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-
-  
 
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.AccStaffListView.showPage(mThis.getFilterData());
+            mThis.ServiceListView.showPage(mThis.getFilterData());
         });
 
     };
     return mThis;
 })();
 
-
-const ZoneDialog = (() => {
+const CreateServicedialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -395,39 +347,38 @@ const ZoneDialog = (() => {
                     return [
                         `<div class="row justify-content-center">
 
-                            <div class="col-12">
+                           <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Zone Name</label>
+                                    <label>Service Name</label>
                                 </div>
                             </div>
-
-                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="id" name="id" required class="data-input form-control" data-field="tenant_id" placeholder=" " />
-                                    <label>Floor Number</label>
-                                </div>
-                            </div>
-
-                             <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="id" name="id" required class="data-input form-control" data-field="code" placeholder=" " />
-                                    <label>Unit Code</label>
-                                </div>
-                            </div>
-
                             
-                            <div class="col-12">
+                            
+                            <div class="col-12">    
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Location</label>
+                                    <input type="name" name="unit_type" required class="data-input form-control" data-field="unit_type" placeholder=" " />
+                                    <label>Unit Type</label>
                                 </div>
                             </div>
+                            
+                            <div class="col-12">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label>Unit Price</label>
+                                </div>
+                            </div>
+                             <div class="col-12">
+                                <div class="d-none material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div> 
 
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                    <label>Note</label>
+                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>`
@@ -472,11 +423,11 @@ const ZoneDialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create Account Zone",
-                    modifyTitle: "Edit Account Zone",
-                    targetProp: "acc_staff_details",
+                    createTitle: "Create New Service",
+                    modifyTitle: "Modify Service ",
+                    targetProp: "service_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/account-staff/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -484,8 +435,8 @@ const ZoneDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal); 
-                    console.log(12,data);
+                    // LocaleManager.translateZone(me.divModal); 
+                    // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
@@ -506,16 +457,16 @@ const ZoneDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/account-staff/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/service/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Zone has been updated successfully"
+                                            "Service has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New zone has been added successfully"
+                                            "New service has been added successfully"
                                         );
                                     }
                                 } else {
@@ -531,6 +482,7 @@ const ZoneDialog = (() => {
 
     return self;
 })();
+
 
 
 
