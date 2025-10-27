@@ -152,9 +152,10 @@ return [
                 '/js/components/common/pusher_client.js',
                 '/js/components/tenant/DashboardComponent.js',
                 '/js/components/tenant/AccountStaffComponent.js',
-                '/js/components/tenant/ZoneManagementComponent.js',
-                
-
+                '/js/components/tenant/ContractsComponent.js',
+                '/js/components/tenant/InvoiceComponent.js',
+                '/js/components/tenant/BuildingServiceComponent.js',
+                '/js/components/tenant/AnnouncementComponent.js',
 
 
             ]

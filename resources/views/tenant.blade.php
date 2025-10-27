@@ -310,7 +310,12 @@
                         <div class="pb-2" id="_app_content">
                             @include('layouts.tenant.dashboardComponent')
                             @include('layouts.tenant.accountStaffComponent')
-                            @include('layouts.tenant.zoneManagementComponent')
+                            @include('layouts.tenant.contractsComponent')
+                            @include('layouts.tenant.invoiceComponent')
+                            @include('layouts.tenant.buildingServiceComponent')
+                            @include('layouts.tenant.announcementComponent')
+
+                            
 
                             
 

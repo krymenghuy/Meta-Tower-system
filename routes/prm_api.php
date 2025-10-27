@@ -137,7 +137,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff
     Route::post('/update-status', [AccountStaffController::class, 'updateAccountStaffStatus']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account-staff')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group(function () {
     Route::post('/save', [ZoneController::class, 'saveZone']);
     Route::post('/list-paginate', [ZoneController::class, 'getListZone']);
     Route::post('/details', [ZoneController::class, 'ZoneDetails']);
@@ -159,7 +159,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/save', [ContractController::class, 'saveContract']);
     Route::post('/list-paginate', [ContractController::class, 'getListPaginate']);
     Route::post('/details', [ContractController::class, 'contractDetails']);
-     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
+    Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
 });
 
@@ -178,7 +178,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/save', [InvoiceController::class, 'saveInvoice']);
     Route::post('/list-paginate', [InvoiceController::class, 'getListPaginate']);
     Route::post('/details', [InvoiceController::class, 'invoiceDetails']);
-     Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
+    Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
 });
