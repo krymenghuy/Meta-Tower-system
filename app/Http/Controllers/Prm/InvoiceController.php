@@ -20,9 +20,9 @@ class InvoiceController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        $id = $req->invoice_id ?? $req->id;
-        $invoice = new Invoice();
-        $res = $invoice->saveInvoice($req->all(),$id,$ss);
+        $id = $req->id ?? $req->invoice_id;
+        $invoice = new Invoice($id, $ss);
+        $res = $invoice->saveInvoice($req->all());
         return JDV::raw($res);
 
     }
@@ -32,7 +32,6 @@ class InvoiceController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-
         return JDV:: result($this->invoices->getListPaginate($req->all(),$ss));
     }
 
@@ -54,7 +53,7 @@ class InvoiceController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->invoices->getFormOptions($req->id));
+       return JDV::result($this->invoices->getFormOptions($req->id,$ss));
     }
 
     public function deleteInvoice(Request $req){
@@ -66,20 +65,19 @@ class InvoiceController extends Controller
        if(!isset($req->id) || !is_numeric($req->id)){
            return JDV::error('Invalid ID');
        }
-       $res = $this->invoices->deleteInvoice($req->id);
-       return JDV::raw($res);
+       return JDV::raw($this->invoices->deleteInvoice($req->id));
 
     }
 
-    public function updateServiceStatus(Request $req){
-        $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $id = $req->id ?? null;
-        $service = new Service();
-        $res = $service->updateServiceStatus($req->status_id, $id,$ss);
-        return JDV::raw($res);
-    }
+    // public function updateServiceStatus(Request $req){
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+    //     $id = $req->id ?? null;
+    //     $service = new Service();
+    //     $res = $service->updateServiceStatus($req->status_id, $id,$ss);
+    //     return JDV::raw($res);
+    // }
 
 }

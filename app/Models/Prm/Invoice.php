@@ -25,45 +25,169 @@ class Invoice //extends Model
     public function saveInvoice($arr = [], $id = null, $ss = null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        $branch_id = $ss->branch_id;
 
         $v_rule = [
             
-            'tenant_id' => '1|number',
-            'building_id' => '1|number',
+            'tenant_id' => '1|number|exists=tenants.id',
+            'building_id'   => '1|number|exists=buildings.id',
+            'space_type_id'   => '1|number|exists=building_spaces.id',
+            'price' => '0|number',
             'paid_amount' => '0|number',
-            'paid_date' => '0|date',
+            'floor_number' => '0|number',
+            'due_date' => '0|date',
             'remarks' => '0|string',
             'status_id' => '0|number|default=1',
             'service_id' => '0|number|exists=services.id',
+            'status_id' => '0|number|exist',
 
         ];
         $res == DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
 
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        $isCreate = $id === null;
-        $id = DBX::saveData($ss, 'invoices',['id' => $id], $inputs,[], 1);
+        $d = (object) $inputs;
+        if(!$d->tenant_id){
+            return DV::error('Tenant cannot be empty.');
+        }
+        $duplicateId = self::checkDuplicateIvoiceId (
+            $d->tenant_id,
+            $d->building_id,
+            $d->floor_number,
+            $id
+        );
+        if($duplicateId > 0){
+            return DV::error('Invoice already exists.');
+        }
 
+        $created = !$id;
+        $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
+
+        if($id && $created){
+            self::createInvoiceNumber(
+                $branch_id,
+                $inputs['tenant_id'],
+                (int)$inputs['building_id'],
+                $id
+            );
+        }
         if($id > 0){
             return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
         }
-        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+        return DV::error('Error saving ...!');
 
+    }
+    function createInvoiiceNumber($branch_id, $building_id, $floor_number, $tenant_id){
+
+    $invoicePrefix = $tenant_id * 100;
+
+    $row = DB::table('space_code_control')
+        ->where('branch_id', $branch_id)
+        ->where('prefix', $floor_number)
+        ->first();
+
+    $next_num = $row ? $row->last_id + 1 : 1;
+    $invoiceCode = $invoicePrefix + $next_num;
+
+    DB::table('building_spaces')
+        ->where('id', $space_id)
+        ->update(['code' => $invoiceCode]);
+
+    if ($row) {
+        DB::table('space_code_control')
+            ->where('branch_id', $branch_id)
+            ->where('prefix', $floor_number)
+            ->update(['last_id' => $next_num]);
+    } else {
+        DB::table('space_code_control')
+            ->insert([
+                'branch_id' => $branch_id,
+                'prefix'    => $floor_number,
+                'last_id'   => $next_num,
+            ]);
+    }
+
+    return $invoiceCode;
+    }
+
+    static function checkDuplicateSpaceId($building_id, $floor, $tenant_id, $space_id = null){
+        $query = DB::table('invoices as i')
+            ->where('i.building_id', $building_id)
+            ->where('i.floor_number', $floor)
+            ->where('i.tenant_id', $tenant_id);
+
+        if (!empty($invoice_id)) {
+            $query->where('i.id', '<>', $invoice_id);
+        }
+
+        $id = $query->value('id');
+        return $id ?: null;
     }
 
     public function getListPaginate($arr, $ss = null){
         $d = (object) $arr;
-        $search_value =$d->search_value ?? null;
+        $branch_id = $ss->branch_id;
+        $search_value = $d->search_value ?? null;
+        $building_id = $d->building_id ?? null;
+        $tenant_id = $d->tenant_id ?? null;
+        $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
             $current_page = 1;
         }
         $skip_rows = ($current_page -1) * $per_page;
+        
         $str_search = '1=1';
         $str_moreWhere = '2=2';
-        
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = DBX::whereLowerCase('i.number',"%$search_value%",'like');
+        }
+        if($building_id){
+            $str_moreWhere .= ' AND i.building_id = ' . $building_id;
+        }
+        if($tenant_id){
+            $str_moreWhere .= ' AND i.tenant_id = ' . $tenant_id;
+        }
+        if($status_id){
+            $str_moreWhere .= ' AND i.status_id = ' . $status_id;
+        } 
+        $updated_at = DBX::formatTime("i.updated_at", 'updated_at');
+        $selectCols = 'i.id,i.building_id,i.name as building_name,i.code,i.floor_number,i.tenant_id as tenant_name,st.name as space_type,i.sqm_size,i.price,i.price_type,i.status_id,i.name as status,i.update_user,'.$updated_at.'';
+        $query = DB::table('invoices as i')
+            ->join('invoices as i','i.id','=','i.invoice_id')
+            ->join('invoice_statuses as is','is.id','=','is.status_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
+            ->selectRaw($selectCols);
+        $query->orderByRaw('i.id desc');
+        $clone_query = clone $query;
+        $count = $clone_query->count('i.number');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        return new LengthAwarePaginator($rows,$count,$per_page,$current_page);    
+    
+    }
+     public static function invoiceDetails($id){
+        return DB::table('invoices as i')
+            ->where('i.id',$id)
+            ->selectRaw('i.id,i.building_space_code,i.floor_number,i.building_id,i.tenant_id,i.status_id,i.space_type_id,i.price,')
+            ->first();
 
+    }
+
+    public static function getFormOptions($id,$ss){
+        $invoice_details = $id ? self::invoiceDetails($id) : null;
+        return (object)[
+            'invoice_details' => $invoice_details,
+            'buildings' =>GeneralSettings::options_building($ss),
+            'tenants_id'=> GeneralSettings::options_tenant($ss)
+        ];
+    }
+    public function delete($id = null){
+        $id = $id ?? $this->id;
+        $deleted = DB::table('invoices')->where('id',$id)->delete();
+        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
 }

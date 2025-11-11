@@ -70,7 +70,7 @@ class Building //extends Model
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-             $str_search = DBX::whereLowerCase('b.name',"%$search_value%",'like');
+            $str_search = DBX::whereLowerCase('b.name',"%$search_value%",'like');
         }
      
         $updated_at = DBX::formatTime('b.updated_at','updated_at');

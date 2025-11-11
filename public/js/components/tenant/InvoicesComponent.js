@@ -1,87 +1,80 @@
 "use strict";
-var InvoiceComponent =   ( () => {
-    const mThis = {};
-    mThis.title_prop = "Invoice Management";
-    mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elBuilding = mThis.self.querySelector('#building_id');
-    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
-    mThis.elTenant = mThis.self.querySelector('#tenant_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_invoice");
 
-    mThis.cols = [
+var InvoicesComponent = new (function () {
+    const mThis = this;
+    mThis.title_prop = " Invoice Management";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_invoices_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnInvoices");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_invoices");
+    mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
+    mThis.elSearch = mThis.self.querySelector("#_search_invoices");
+
+     mThis.cols = [
 
         {
             title: "",
             className: "align-middle text-capitalize",
         },
-        // {
-        //     title: "Inv Number",
-        //     className: "align-middle ",
-        //     data: (data,index) => `<span class="text-yp-custom">${'INV-100001' + index}</span>`,
-        // },
-        {
-            title: "Invoice Number",
-            className: 'align-middle text-capitalize',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}" data-status="${data.status}">${data.invoice_number ?? ''}</a>
-                    <small class="text-capitalize text-left text-success">${data.invoice_number ? data.invoice_number.replace(/\_/g, ' ') : 'General'}</small>
-                </div>`;
-            }
-        },
-        {
-            title: "Invoice Date",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.due_date ?? 'N/A'}</small></span>`,
-        },
-
-        {
-            title: "Consumer ",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
-        },
-            
-        {
-            title: "Building",
-            className: "align-middle ",
-            data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
-            }
-        },
          {
-            title: "Floor",
+            title: "invoice number ",
+            className: "align-middle ",
+             data: (data, index) => `<span class="text-yp-custom">${inv100001 + index}</span>`,
+        },
+        {
+            title: "item",
+            className: "align-middle ",
+             data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.date ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "service type ",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.customer_id  ?? 'N/A'}</small></span>`,
+        },
+            {
+            title: " price ",
+            className: "align-middle ",
+            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
+        },
+        {
+            title: "total amount($)",
             className: "align-middle ",
             data: (data) => {
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
             }
         },
         {
-            title: "Code",
+            title: "remark",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code}</small></span>`,
-        },
-           
-        {
-            title: "Due Amount",
-            className: "align-middle ",
-            data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.due_amount ?? 'N/A'}</small></span>`;
-            }
+            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
         },
 
-        {
-            title: " Remark",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
-                    </div>`;
-            }
-        },
+        // {
+        //     title: "Category",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
+        //         return [cur_symbol, amount].join(' ');
+        //     }
+        // },
+        // {
+        //     title: "Description",
+        //     className: 'align-middle',
+        //     data: (data, index, tr) => {
+        //         return `
+        //            <div class="text-yp-custom" style="width:50px;">
+        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
+        //             </div>`;
+        //     }
+        // },
+
+        
         
 
         {
@@ -100,34 +93,33 @@ var InvoiceComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
-                </div>`;
-            }
-        },
-        {
-            title : "Action",
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-                    </a>
-                </div>`
-        },
+            {
+                title: "Paid date",
+                className: 'align-middle',
+                data: (data, index, tr) => {
+                    return `<div class="d-flex flex-column">
+                        <small class="text-muted">${data.update_at ?? ''}</small>
+                    </div>`;
+                }
+            },
+            //{
+            //     title : "Action",
+            //     className: 'col_action align-middle',
+            //     data: (data) => `
+            //         <div class="d-flex justify-content-center align-items-end">
+            //             <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+            //                <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+            //             </a>
+            //         </div>`
+            // },
 
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.InvoiceListView = new ListView('_invoice_list', {
-            fetchApi: `${main_view.base_url}/prm/invoice/list-paginate`,
+        mThis.InvoicesListView = new ListView('_invoices_list', {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -137,8 +129,8 @@ var InvoiceComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('invoice');
-              tr.setAttribute('id',['invoice_id',data.id].join('')); 
+              tr.classList.add('tenant');
+              tr.setAttribute('id',['tenant_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -150,15 +142,15 @@ var InvoiceComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.InvoiceListView.showPage(mThis.getFilterData());
+                    mThis.InvoicesListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            Invoicedialog.show(op);
+            InvoicesDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.InvoiceListView.getListContainer();
+        mThis.pr_tbl = mThis.InvoicesListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -166,8 +158,8 @@ var InvoiceComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblInvoice = mThis.InvoiceListView.getTable();
-        mThis.initDropdownMenus(mThis.tblInvoice);
+        mThis.tblInvoices = mThis.InvoicesListView.getTable();
+        mThis.initDropdownMenus(mThis.tblInvoices);
 
 
 
@@ -176,7 +168,7 @@ var InvoiceComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.InvoiceListView.showPage(mThis.getFilterData());
+                mThis.InvoicesListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -184,7 +176,7 @@ var InvoiceComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.InvoiceListView.showPage(mThis.getFilterData());
+                mThis.InvoicesListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -246,11 +238,11 @@ var InvoiceComponent =   ( () => {
                         break;
                     }
                     case 'edit_invoice': {
-                        mThis.editInvoice(id, menuLink);
+                        mThis.editTenant(id, menuLink);
                         break;
                     }
                     case 'delete_invoice': {
-                        mThis.deleteInvoice(id, menuLink);
+                        mThis.deleteTenant(id, menuLink);
                         break;
                     }
 
@@ -263,35 +255,35 @@ var InvoiceComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editInvoice = (id, menulink) =>{
+    mThis.editBilling = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
             onClose:()=>{;
-                mThis.InvoiceListView.showPage(mThis.getFilterData());
+                mThis.InvoicesListView.showPage(mThis.getFilterData());
             }
         };
         
-        Invoicedialog.show(op);
+        CreateInvoicesDialog.show(op);
     }
-     mThis.deleteInvoice = (id, menuLink) => {
+     mThis.deleteBilling = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.InvoiceListView.showPage(mThis.getFilterData());
+                mThis.InvoicesListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Invoice??', {
+        cv_interact.confirm('Delete this Space??', {
             title: 'Delete Space',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/invoice/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.InvoiceListView.showPage();
+                        mThis.InvoicesListView.showPage();
                     }
                 })
             }
@@ -323,11 +315,11 @@ var InvoiceComponent =   ( () => {
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
             const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/invoice/update-status`,status).then(res=>{
+            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
                     cv_interact.success('Invoice Status has been updated');
-                    mThis.InvoiceListView.showPage(mThis.getFilterData());
+                    mThis.InvoicesListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -338,12 +330,10 @@ var InvoiceComponent =   ( () => {
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/invoice/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'invoice_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
+                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -353,14 +343,14 @@ var InvoiceComponent =   ( () => {
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.InvoiceListView.showPage(mThis.getFilterData());
+            mThis.InvoicesListView.showPage(mThis.getFilterData());
         });
 
     };
     return mThis;
 })();
 
-const Invoicedialog = (() => {
+const InvoicesDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -368,67 +358,89 @@ const Invoicedialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
+                       const today = new Date();
+                        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                        const day = String(today.getDate()).padStart(2,'0');
+                        const month = months[today.getMonth()];
+                        const year = today.getFullYear();
+                        const formattedDate = `${day}-${month}-${year}`;
 
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
-                                <div class="material-input outlined">
-                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id">
-                                    </select>
+                        return [
+                            `<div class="row justify-content-center">
+                                <div class="col-6">
+                                    <div class="material-input outlined">
+                                       <input name="paid_date" type="text" class="form-control form-control-sm" value="${new Date().toLocaleDateString()}" readonly />
+                                        <label>Paid Date</label>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
-                                <div class="material-input outlined">
-                                    <select name="building_id" class="data-input form-control" data-field="building_id">
-                                    </select>
+                                 <div class="col-6">
+                                    <div class="material-input outlined">
+                                        <select name="from_account" placeholder=" " class="data-input form-control" data-field="from_account">
+                                            <option value="">Select Account</option>
+                                            <option value="1">Financial Account: KHR 69,853 </option>
+                                            <option value="2">Accounting officer: $ 51,941 </option>
+                                            <option value="3">Expense Account: KHR 21222.69 </option>
+                                           
+                                        </select>
+                                        <label class="d-none">Select Account</label>
+                                    </div>
                                 </div>
-                            </div>
+                                 <div class="col-6">
+                                    <div class="material-input outlined">
+                                        <input type="number" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                        <label> Available Balance: 228168.88 KHR </label>
+                                       
+                                    
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="material-input outlined">
+                                        <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
+                                        <label>Reciever Account Number </label>
+                                    </div>
+                                </div>
+                               
+                                <div class="col-6">    
+                                    <div class="material-input outlined">
+                                        <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                        <label>Amount</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">    
+                                    <div class="material-input outlined">
+                                        <input type="text" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
+                                        <label>Category</label>
+                                    </div>
+                                </div>
 
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="floorNumber">Floor Number</label>
-                                <div class="material-input outlined">
-                                    <select name="floor_number" class="data-input form-control" data-field="floor_number">
-                                    </select>
-                                </div>
-                            </div>
+                               
 
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="room">Room Code</label>
-                                <div class="material-input outlined">
-                                    <select name="building_space" class="data-input form-control" data-field="building_spaces_code">
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="service">Service Type</label>
-                                <div class="material-input outlined">
-                                    <select name="service_id" class="data-input form-control" data-field="service_id">
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="number" name="price" class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                    <label>Amount</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
-                                    <label>Remark</label>
-                                </div>
-                            </div>
-                        </div>`
+                                <table class="table header-light-blue">
+                        <thead name="tuition_payment_thead">
+                            <tr>
+                                <th class="text-nowrap ">Category</th>
+                                <th class="text-nowrap">Amount</th>
+                                <th class="text-nowrap ">From Account</th>
+                                <th class="text-nowrap">To Account</th>
+                                <th colspan="2" class="text text-nowrap">Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody name="tuition_payment_tbody"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="11">
+                                   
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                                
+                            </div>`
                     ].join("");
                 },
 
@@ -448,7 +460,7 @@ const Invoicedialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -456,37 +468,26 @@ const Invoicedialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
+                    
                  
 
 
                 },
-                configSelect: [
-                    {
-                        name: "building_id",
-                        data: "buildings",
-                        textField: "building",
-                        valueField: "id",
-                    },
-                    {
-                        name: "space_type_id",
-                        data: "space_types",
-                        textField: "space_type",
-                        valueField: "id",
-                    },
-                    {
-                        name: "tenant_id",
-                        data: "tenants",
-                        textField: "tenant",
-                        valueField: "id",
-                    },
+                // configSelect: [
+                //     {
+                //         name: "nationality_id",
+                //         data: "nationality",
+                //         textField: "nationality",
+                //         valueField: "id",
+                //     },
 
-                ],
+                // ],
                 prepareFormOptions: {
-                    createTitle: "Generate Invoice",
+                    createTitle: "New Expanse",
                     modifyTitle: "Modify Space ",
-                    targetProp: "invoice_details",
+                    targetProp: "building_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/invoice/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -516,16 +517,16 @@ const Invoicedialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/invoice/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Invoice has been updated successfully"
+                                            "Billing has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New invoice has been added successfully"
+                                            "New Billing has been added successfully"
                                         );
                                     }
                                 } else {
@@ -538,9 +539,13 @@ const Invoicedialog = (() => {
             });
         dialog.show(op);
     };
+     
 
     return self;
 })();
+
+
+
 
 
 

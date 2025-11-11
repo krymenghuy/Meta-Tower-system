@@ -111,6 +111,7 @@ var ContractComponent = new (function () {
                 `;
             }
         },
+        
         {
             title: "Updated By",
             className: 'align-middle',
@@ -344,8 +345,8 @@ var ContractComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
-                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'Business Type', null);
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
+                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'All Business Type', null);
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
 
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -424,9 +425,9 @@ const ContractDialog = (() => {
                 </div>
             </div>
              <div class="col-12">
+                <label style="color:#777777;padding-left:6px;" for="priceType"> Select Price Type</label>
                 <div class="material-input outlined">
                 <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                    <option value="">Select Price Type</option>
                     <option value="sqm">Per Square Meter</option>
                     <option value="total">Whole Room</option>
                 </select>

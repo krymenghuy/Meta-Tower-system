@@ -64,7 +64,7 @@ class Tenant
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%')";
+            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.address LIKE '%" . $search_value . "%')";
         }
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
         $query = DB::table('tenants as t')

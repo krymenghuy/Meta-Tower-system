@@ -153,7 +153,7 @@ return [
                 '/js/components/tenant/DashboardComponent.js',
                 '/js/components/tenant/AccountStaffComponent.js',
                 '/js/components/tenant/ContractsComponent.js',
-                '/js/components/tenant/InvoiceComponent.js',
+                '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
 

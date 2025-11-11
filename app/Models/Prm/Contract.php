@@ -106,7 +106,7 @@ class Contract
             $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
         }
         if($space_id){
-            $str_moreWhere .= ' AND c.space_id = ' . $space_id;
+            $str_moreWhere .= ' AND c.space_type_id = ' . $space_type_id;
         }
         if($business_type_id){
             $str_moreWhere .= ' AND c.business_type_id = ' . $business_type_id;
