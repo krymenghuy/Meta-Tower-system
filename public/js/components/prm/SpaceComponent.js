@@ -2,12 +2,13 @@
 
 var SpaceComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Space Management";
+    mThis.title_prop = "Building Space Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
 
     mThis.cols = [
@@ -39,6 +40,11 @@ var SpaceComponent = new (function () {
                 data: (data) => `<span class="text-primary-custom">${data.code}</span>`,
             },
             {
+                title: "Space Type",
+                className: "align-middle ",
+                data: (data) => `<span class="text-primary-custom">${data.space_type}</span>`,
+            },
+            {
                 title: "Size",
                 className: "align-middle",
                 data: (data) => {
@@ -60,7 +66,22 @@ var SpaceComponent = new (function () {
             }
         },
 
-  
+        {
+            title: "Status",
+            className: "align-middle",
+            data: (data) => {
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'text-info';
+
+                if (status === 'available') {
+                    cls = 'text-success px-2 py-1 d-inline-block';
+                } else if (status === 'unavailable') {
+                    cls = 'text-danger px-2 py-1 d-inline-block';
+                }
+
+                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+            },
+        },
         
             
             {
@@ -173,7 +194,16 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+
                 {
+                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "change_status"
+                },
+                {
+
                     html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -193,7 +223,10 @@ var SpaceComponent = new (function () {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
+                    case 'change_status': {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
                   
                     case 'edit_space': {
                         mThis.editSpace(id, menuLink);
@@ -250,16 +283,52 @@ var SpaceComponent = new (function () {
             }
         });
     }
+    mThis.changeStatus = (id, lnk) =>{
+        const tr = lnk.closest('tr');
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        // console.log(123,status_id);
+        
+        const inputOptions = {
+            title: 'Change Status',
+            dataLabel: "Building Space Status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data:[
+                {status_id:"1",name:"Available"},
+                {status_id:"2",name:"Maintenance"},
+                {status_id:"3",name:"Unavailable"},
+            ],
+            defaultValue: status_id
+        };
+        InputBox2.show(inputOptions,(selected)=>{
+            if(!selected) return;
+            if(!AuthManager.allowed(321)) return;
+            
+            const payload = {id, status_id :selected.value};
+            vsapi.call(`${mThis.base_url}/prm/building-space/update-status`,payload).then(res=>{
+                if(res.status_code ===200){
+                    InputBox2.close();
+                    cv_interact.success('Building Space Status has been updated');
+                    mThis.ServiceListView.showPage(mThis.getFilterData());
 
-   
+                }else{
+                    cv_interact.error(res.error_message || 'Unable to update status');
+                }
+            });
+        });
+
+    };      
 
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -304,7 +373,7 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
+                                <label style="color:#777777;padding-left:6px;" for="spaceType"> Select Space Type</label>
                                 <div class="material-input outlined">
                                     <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
@@ -312,9 +381,9 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="spaceType"> Select Price Type</label>
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                        <option value="">Select Price Type</option>
                                         <option value="sqm">Per Sqaure Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>

@@ -4,6 +4,10 @@ var PaymentComponent =   ( () => {
     mThis.title_prop = "Payment Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_payment_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnPayment");
+    mThis.elTenant = mThis.self.querySelector('#tenant_id');
+    mThis.elInvoice = mThis.self.querySelector('#invoice_id');
+    mThis.elPaymentMethod = mThis.self.querySelector('#payment_method_id');
+    mThis.elPaymentStatus = mThis.self.querySelector('#payment_status_id');
     mThis.divFilter = mThis.self.querySelector("#_divFilter_payment");
     mThis.elSearch = mThis.self.querySelector("#_search_payment");
 
@@ -17,14 +21,12 @@ var PaymentComponent =   ( () => {
         {
             title: "Pmt Number",
             className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${'PMT-100001' + index}</span>`,
+            data: (data,index) => `<span class="text-yp-custom">${'PMT-100' + index}</span>`,
         },
         {
-            title: "consumer Name",
-            className: "align-middle ",
-           data: (data) => {
-                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
-            }
+            title: " tenant",
+            className: "align-middle",
+            data: (data, index) => `<span class="text-primary-custom">${data.tenant_name}</span>`,
         },
         {
             title: "Building/Room",
@@ -118,7 +120,7 @@ var PaymentComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.ServiceListView = new ListView('_payment_list', {
+        mThis.PaymentListView = new ListView('_service_list', {
             fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -130,27 +132,27 @@ var PaymentComponent =   ( () => {
               
               tr.dataset.statusid = data.status_id;
               tr.classList.add('payment');
-              tr.setAttribute('id',['service_id',data.id].join('')); 
+              tr.setAttribute('id',['payment_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
-                }
-            };
-            // if (!AuthManager.allowed(240)) return;
-            CreatePaymentdialog.show(op);
-        };
+        // mThis.btnAdd.onclick = function (e) {
+        //     e.preventDefault();
+        //     const op = {
+        //         id: null,
+        //         btn: e.target,
+        //         onClose: () => {
+        //             mThis.PaymentListView.showPage(mThis.getFilterData());
+        //         }
+        //     };
+        //     // if (!AuthManager.allowed(240)) return;
+        //     CreatePaymentdialog.show(op);
+        // };
 
 
-        mThis.pr_tbl = mThis.ServiceListView.getListContainer();
+        mThis.pr_tbl = mThis.PaymentListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -158,8 +160,8 @@ var PaymentComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblService = mThis.ServiceListView.getTable();
-        mThis.initDropdownMenus(mThis.tblService);
+        mThis.tblPayment = mThis.PaymentListView.getTable();
+        mThis.initDropdownMenus(mThis.tblPayment);
 
 
 
@@ -168,7 +170,7 @@ var PaymentComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.PaymentListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -176,7 +178,7 @@ var PaymentComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.PaymentListView.showPage(mThis.getFilterData());
             }, 250);
         });
      
@@ -216,13 +218,13 @@ var PaymentComponent =   ( () => {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_service"
+                    name: "edit_payment"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_service"
+                    name: "delete_payment"
                 },
             ],
             // adjustPosition: {
@@ -233,16 +235,16 @@ var PaymentComponent =   ( () => {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                    // case 'change_status': {
+                    //     mThis.changeStatus(id, menuLink);
+                    //     break;
+                    // }
+                    case 'edit_payment': {
+                        mThis.editPayment(id, menuLink);
                         break;
                     }
-                    case 'edit_service': {
-                        mThis.editService(id, menuLink);
-                        break;
-                    }
-                    case 'delete_service': {
-                        mThis.deleteService(id, menuLink);
+                    case 'delete_payment': {
+                        mThis.deletePayment(id, menuLink);
                         break;
                     }
 
@@ -255,35 +257,35 @@ var PaymentComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editService = (id, menulink) =>{
+    mThis.editPayment = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
             onClose:()=>{;
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.PaymentListView.showPage(mThis.getFilterData());
             }
         };
         
         CreatePaymentdialog.show(op);
     }
-     mThis.deleteService = (id, menuLink) => {
+     mThis.deletePayment = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.PaymentListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Service??', {
-            title: 'Delete Service',
+        cv_interact.confirm('Delete this Payment??', {
+            title: 'Delete Payment',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.ServiceListView.showPage();
+                        mThis.PaymentListView.showPage();
                     }
                 })
             }
@@ -298,19 +300,19 @@ var PaymentComponent =   ( () => {
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
         
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Service Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"},
-            ],
-            defaultValue: status_id
-        };
+        // const inputOptions = {
+        //     title: 'Change Status',
+        //     dataLabel: "Payment Status",
+        //     valueMember: "status_id",
+        //     textMember: "name",
+        //     confirmButtonText: "Save",
+        //     blankErrorMessage: "Status is not correct!",
+        //     data:[
+        //         {status_id:"1",name:"Active"},
+        //         {status_id:"2",name:"Inactive"},
+        //     ],
+        //     defaultValue: status_id
+        // };
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
@@ -319,8 +321,8 @@ var PaymentComponent =   ( () => {
             vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+                    cv_interact.success('Payment Status has been updated');
+                    mThis.PaymentListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -334,7 +336,7 @@ var PaymentComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
+                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_statuses', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -344,7 +346,7 @@ var PaymentComponent =   ( () => {
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceListView.showPage(mThis.getFilterData());
+            mThis.PaymentListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -442,9 +444,9 @@ const CreatePaymentdialog = (() => {
 
                 // ],
                 prepareFormOptions: {
-                    createTitle: "Create New Service",
-                    modifyTitle: "Modify Service ",
-                    targetProp: "service_details",
+                    createTitle: "Create New Payment",
+                    modifyTitle: "Modify Payment ",
+                    targetProp: "payment_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),
                         params: (op) => {
@@ -481,11 +483,11 @@ const CreatePaymentdialog = (() => {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Service has been updated successfully"
+                                            "Payment has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New service has been added successfully"
+                                            "New payment has been added successfully"
                                         );
                                     }
                                 } else {

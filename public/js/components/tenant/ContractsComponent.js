@@ -13,22 +13,54 @@ var ContractsComponent =   ( () => {
 
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle",
         },
-         
         {
-            title: " Name",
-            className: "align-middle ",
-           data: (data) => {
-                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
+            title: " Contract ID",
+            className: "align-middle",
+            data: (data, index) => `<span class="text-yp-custom">${data.id}</span>`,
+        },
+        {
+            title: " Name ",
+            className: "align-middle",
+            data: (data, index) => `<span class="text-primary-custom">${data.tenant_name}</span>`,
+        },
+        // {
+        //     title: "Lease Date",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="d-block text-yp-custom" style="width:75px;">${data.start_date}</span>`;
+        //     }
+        // },
+        // {
+        //     title: "End date",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="d-block text-yp-custom" style="width:75px;">${data.end_date}</span>`;
+        //     }
+        // },
+        
+        {
+            title: "space code",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.space_code ?? 'N/A'}</span>
+                    </div>
+                `;
             }
         },
+
         {
-            title: "Space Type ",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.unit_type ?? ''}</span>`,
+            title: "Size",
+            className: "align-middle",
+            data: (data) => {
+                return data.price_type === 'total'
+                    ? `<span class="text-primary-custom">Whole Room</span>`
+                    : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
+            }
         },
-            
         {
             title: "Price",
             className: "align-middle",
@@ -36,43 +68,47 @@ var ContractsComponent =   ( () => {
                 const cur_symbol = data.cur_symbol ?? '$';
                 const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
 
-                const unitLabel = data.unit_type ? `/${data.unit_type}` : '';
-
-                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
-         }
+                return data.price_type === 'total'
+                    ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
+                    : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
+            }
         },
 
         {
-            title: "Description",
-            className: "align-middle ",
+            title: "lease date",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
+                    <div class="text-yp-custom" style="width:85px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.start_date ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "end date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:85px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.end_date ?? 'N/A'}</span>
                     </div>
                 `;
             }
         },
         
         {
-            title: "Status",
+            title: "remark",
             className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
-
-                if (status === 'inactive') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'active') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
-                }
-
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:50px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
+                    </div>
+                `;
+            }
         },
-
-
-       {
+        {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
@@ -83,12 +119,14 @@ var ContractsComponent =   ( () => {
             }
         },
         {
-            title : "Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
+                           <span><i class="fa fa-pencil"></i></span>
+                           <i class="fa-solid fa-caret-down"></i>
+                       </button>
                     </a>
                 </div>`
         },
@@ -98,21 +136,21 @@ var ContractsComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.ServiceListView = new ListView('_service_list', {
-            fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
+        mThis.ContractListView = new ListView('_contract_list', {
+            fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
-                
-              
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('service');
-              tr.setAttribute('id',['service_id',data.id].join('')); 
+            rowCreated: (data, index, tr) => {
 
-            }, 
+
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('contract');
+                tr.setAttribute('id', ['contract_id', data.id].join(''));
+
+            },
             listContainerClass: null
         });
 
@@ -122,15 +160,14 @@ var ContractsComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+                    mThis.ContractListView.showPage(mThis.getFilterData());
                 }
             };
-            // if (!AuthManager.allowed(240)) return;
-            CreateServicedialog.show(op);
+            ContractDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.ServiceListView.getListContainer();
+        mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -138,8 +175,8 @@ var ContractsComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblService = mThis.ServiceListView.getTable();
-        mThis.initDropdownMenus(mThis.tblService);
+        mThis.tblContract = mThis.ContractListView.getTable();
+        mThis.initDropdownMenus(mThis.tblContract);
 
 
 
@@ -148,7 +185,7 @@ var ContractsComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -156,17 +193,17 @@ var ContractsComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
+            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -185,24 +222,18 @@ var ContractsComponent =   ( () => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+                
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_service"
+                    name: "edit_contract"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Contract"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_service"
+                    name: "delete_contract"
                 },
             ],
             // adjustPosition: {
@@ -213,16 +244,13 @@ var ContractsComponent =   ( () => {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                   
+                    case 'edit_contract': {
+                        mThis.editContract(id, menuLink);
                         break;
                     }
-                    case 'edit_service': {
-                        mThis.editService(id, menuLink);
-                        break;
-                    }
-                    case 'delete_service': {
-                        mThis.deleteService(id, menuLink);
+                    case 'delete_contract': {
+                        mThis.deleteContract(id, menuLink);
                         break;
                     }
 
@@ -235,35 +263,34 @@ var ContractsComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editService = (id, menulink) =>{
+    mThis.editContract = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
-        
-        CreateServicedialog.show(op);
+        ContractDialog.show(op);
     }
-     mThis.deleteService = (id, menuLink) => {
+    mThis.deleteContract = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.ContractListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Service??', {
-            title: 'Delete Service',
+        cv_interact.confirm('Delete this contract?', {
+            title: 'Delete Contract',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/contract/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.ServiceListView.showPage();
+                        mThis.ContractListView.showPage();
                     }
                 })
             }
@@ -273,65 +300,69 @@ var ContractsComponent =   ( () => {
         });
     }
 
-      mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // console.log(123,status_id);
-        
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Service Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"},
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+    // mThis.changeStatus = (id, lnk) => {
+    //     const tr = lnk.closest('tr');
+    //     const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+    //     console.log(123, status_id);
 
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
+    //     const inputOptions = {
+    //         title: 'Change Status',
+    //         dataLabel: "Building Status",
+    //         valueMember: "status_id",
+    //         textMember: "name",
+    //         confirmButtonText: "Save",
+    //         blankErrorMessage: "Status is not correct!",
+    //         data: [
+    //             { status_id: "1", name: "Available" },
+    //             { status_id: "2", name: "Unavailable" }
+    //         ],
+    //         defaultValue: status_id
+    //     };
+    //     InputBox2.show(inputOptions, (selected) => {
+    //         if (!selected) return;
+    //         if (!AuthManager.allowed(321)) return;
+    //         const status = { id, status_id: selected.value };
+    //         vsapi.call(`${mThis.base_url}/prm/building/update-status`, status).then(res => {
+    //             if (res.status_code === 200) {
+    //                 InputBox2.close();
+    //                 cv_interact.success('The Contract Status has been updated');
+    //                 mThis.ContractListView.showPage(mThis.getFilterData());
 
-    };
+    //             } else {
+    //                 cv_interact.error(res.error_message || 'Unable to update status');
+    //             }
+    //         });
+    //     });
+
+    // }
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
+                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'Business Type', null);
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'Space Type', null);
+
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceListView.showPage(mThis.getFilterData());
+            mThis.ContractListView.showPage(mThis.getFilterData());
         });
 
     };
     return mThis;
 })();
 
-const CreateServicedialog = (() => {
+
+
+
+const ContractDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -342,50 +373,88 @@ const CreateServicedialog = (() => {
                 cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
+                createContent: () => {
+    return [
+        `<div class="row justify-content-center">
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                 <div class="material-input outlined">
+                     <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                 </div>
+            </div>
 
-                           <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Service Name</label>
-                                </div>
-                            </div>
-                            
-                            
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="name" name="unit_type" required class="data-input form-control" data-field="unit_type" placeholder=" " />
-                                    <label>Unit Type</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Unit Price</label>
-                                </div>
-                            </div>
-                             <div class="col-12">
-                                <div class="d-none material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div> 
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
+                 <div class="material-input outlined">
+                     <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                 </div>
+            </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label>Description</label>
-                                </div>
-                            </div>
-                        </div>`
-                    ].join("");
-                },
+            
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
+                <div class="material-input outlined">
+                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                    </select>
+                                    
+                </div>
+            </div>
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="buildingSpace">Space Code</label>
+                 <div class="material-input outlined">
+                     <select name="space_id" class="data-input form-control" data-field="space_id"> </select>
+                 </div>
+            </div>
+           
 
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
+                    <label>Start Date</label>
+                </div>
+            </div>
 
-                contentCreated: (me) => {
+            <div class="col-6">
+                <div class="material-input outlined">
+                    <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
+                    <label>End Date</label>
+                </div>
+            </div>
+             <div class="col-12">
+                <div class="material-input outlined">
+                <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                    <option value="">Select Price Type</option>
+                    <option value="sqm">Per Square Meter</option>
+                    <option value="total">Whole Room</option>
+                </select>
+                     <label class="d-none">Price Type</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="material-input outlined sqm-wrapper" style="display:none;">
+                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                    <label>Size (m²)</label>
+                </div>
+            </div>
+            <div class="col-12">    
+                <div class="material-input outlined">
+                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                    <label>Price</label>
+                </div>
+            </div>
+            
+
+            <div class="col-12">
+                <div class="material-input outlined">
+                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                    <label>Remarks</label>
+                </div>
+            </div>
+        </div>`
+    ].join("");
+},
+
+                  contentCreated: (me) => {
                     const footer = me.divModal.querySelector('.modal-footer');
                     const header = me.divModal.querySelector('.modal-header');
 
@@ -407,26 +476,48 @@ const CreateServicedialog = (() => {
 
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
-
-                 
+                    me.controls.price_type.onchange = (e) => {
+                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                        if (!sqmWrapper) return;
+                        sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    };
 
 
                 },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
+                configSelect: [
+                    {
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
+                    {
+                        name: "business_type_id",
+                        data: "business_types",
+                        textField: "business_type",
+                        valueField: "id",
+                    },
+                    {
+                        name: "space_type_id",
+                        data: "space_types",
+                        textField: "space_type",
+                        valueField: "id",
+                    },
+                    {
+                        name: "space_id",
+                        data: "building_spaces",
+                        textField: "code",
+                        valueField: "id",
+                    },
 
-                // ],
+                ],
+                
                 prepareFormOptions: {
-                    createTitle: "Create New Service",
-                    modifyTitle: "Modify Service ",
-                    targetProp: "service_details",
+                    createTitle: "Create New Contract",
+                    modifyTitle: "Modify Contract",
+                    targetProp: "contract",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -434,14 +525,37 @@ const CreateServicedialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
-                    // console.log(12,data);
+                    LocaleManager.translateZone(me.divModal); 
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
+
+                    
                 },
 
-             
+
+                // onPrepareForm: (me, data) => {
+                //     LocaleManager.translateZone(me.divModal);
+                //     me.controls.price_type.onchange = function (e) {
+                //         e.preventDefault();
+                //         const value = me.controls.price_type.value;
+                //         const parent = me.controls.price_type.closest('.col-12');
+                //         if (!parent) return;
+
+                //         const container = parent.parentElement;
+                //         if (!container) return;
+
+                //         const labelElement = container.querySelector('label[vslang="titles.Total (m²)"]');
+                //         if (!labelElement) return;
+
+                //         labelElement.textContent = value === 'price'
+                //             ? LocaleManager.trans('Total (m²)', 'titles')
+                //             : LocaleManager.trans('Total ($)', 'titles');
+                //     };
+                //     me.controls.discount_type.dispatchEvent(new Event('change'));
+                // },
+
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
@@ -456,16 +570,17 @@ const CreateServicedialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/service/save",].join(""), op, btn, null).then((res) => {
+                            
+                            vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Service has been updated successfully"
+                                            "Contract has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New service has been added successfully"
+                                            "New contract has been added successfully"
                                         );
                                     }
                                 } else {
@@ -479,10 +594,8 @@ const CreateServicedialog = (() => {
         dialog.show(op);
     };
 
+
     return self;
+    
 })();
-
-
-
-
 

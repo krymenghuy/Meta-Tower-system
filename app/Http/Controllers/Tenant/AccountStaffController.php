@@ -17,7 +17,7 @@ class AccountStaffController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-         $id = $req->staff_id ?? $req->id;
+        $id = $req->staff_id ?? $req->id;
         $acc_staff = new AccountStaff($id,$ss);
         $res = $acc_staff->saveAccountStaff($req->all(),$id);
         return JDV::raw($res);

@@ -22,10 +22,12 @@ use App\Http\Controllers\Prm\BuildingSpaceController;
 use App\Http\Controllers\Prm\ContractController;
 use App\Http\Controllers\Prm\ServiceController;
 use App\Http\Controllers\Prm\InvoiceController;
+use App\Http\Controllers\Prm\PaymentController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
 use App\Http\Controllers\tenant\ZoneController;
+use App\Http\Controllers\tenant\ContractsController;
 
 
 
@@ -184,4 +186,20 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
 });
 
    
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->group(function () {
+    Route::post('/save', [ContractsController::class, 'saveContracts']);
+    Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
+    Route::post('/details', [ContractsController::class, 'contractsDetails']);
+    Route::post('/form-options', [ContractsController::class, 'getFormOptions']);
+    Route::post('/delete', [ContractsController::class, 'deleteContracts']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->group(function () {
+    Route::post('/save', [PaymentController::class, 'savePayment']);
+    Route::post('/list-paginate', [PaymentController::class, 'getListPayment']);
+    Route::post('/details', [PaymentController::class, 'paymentDetails']);
+    Route::post('/form-options', [PaymentController::class, 'getFormOption']);
+    Route::post('/delete', [PaymentController::class, 'deletePayment']);
+});
+
 

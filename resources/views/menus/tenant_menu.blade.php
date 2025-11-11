@@ -179,7 +179,7 @@ function v_display($mod_id, $module_ids = null)
                         </li>
 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                            <a href="InvoiceComponent" modid="201" class="menu-item kt-menu__link">
+                            <a href="InvoicesComponent" modid="201" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/staff.svg') }}" />
                                 </span>

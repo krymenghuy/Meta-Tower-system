@@ -7,8 +7,12 @@
                 <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
             </div>
          </div>
-         <div class="col-6 col-md-3 col-lg-2  text-md-end">
-                <input data-select="datepicker" class="form-control filter-field" placeholder="Select Date" data-field="start_date" />
+
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="tenant_id" class="data-input filter-field form-control" data-field="tenant_id"></select>
             </div>
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">

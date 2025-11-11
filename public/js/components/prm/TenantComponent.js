@@ -164,13 +164,13 @@ var TenantComponent =   ( () => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+                // {
+                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
+                //     cssClass: "border-bottom pb-2",
+                //     name: "change_status"
+                // },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
