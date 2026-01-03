@@ -28,18 +28,19 @@ class Invoice //extends Model
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            
+            'due_date' => '0|date',
+            'amount' => '0|number',
             'tenant_id' => '1|number|exists=tenants.id',
             'building_id'   => '1|number|exists=buildings.id',
-            'space_type_id'   => '1|number|exists=building_spaces.id',
+            'invoice_number' => '0|number',
+            'space_id'   => '1|number|exists=spaces.id',
             'price' => '0|number',
             'paid_amount' => '0|number',
             'floor_number' => '0|number',
-            'due_date' => '0|date',
             'remarks' => '0|string',
             'status_id' => '0|number|default=1',
             'service_id' => '0|number|exists=services.id',
-            'status_id' => '0|number|exist',
+           
 
         ];
         $res == DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -56,7 +57,7 @@ class Invoice //extends Model
             $d->floor_number,
             $id
         );
-        if($duplicateId > 0){
+        if($duplicateId){
             return DV::error('Invoice already exists.');
         }
 
@@ -110,14 +111,15 @@ class Invoice //extends Model
     return $invoiceCode;
     }
 
-    static function checkDuplicateSpaceId($building_id, $floor, $tenant_id, $space_id = null){
-        $query = DB::table('invoices as i')
-            ->where('i.building_id', $building_id)
-            ->where('i.floor_number', $floor)
-            ->where('i.tenant_id', $tenant_id);
+    static function checkDuplicateSpaceId($building_id, $floor, $tenant_id, $invoice_id = null){
+        $query = DB::table('invoices as inv')
+            ->where('inv.building_id', $building_id)
+            ->where('inv.floor_number', $floor)
+            ->where('inv.tenant_id', $tenant_id)
+            ->where('inv.invoice_id', $invoice_id);
 
         if (!empty($invoice_id)) {
-            $query->where('i.id', '<>', $invoice_id);
+            $query->where('inv.id', '<>', $invoice_id);
         }
 
         $id = $query->value('id');
@@ -131,6 +133,7 @@ class Invoice //extends Model
         $building_id = $d->building_id ?? null;
         $tenant_id = $d->tenant_id ?? null;
         $status_id = $d->status_id ?? null;
+        $space_type_id = $d->space_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -143,36 +146,36 @@ class Invoice //extends Model
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = DBX::whereLowerCase('i.number',"%$search_value%",'like');
+            $str_search = DBX::whereLowerCase('inv.name',"%$search_value%",'like');
         }
         if($building_id){
-            $str_moreWhere .= ' AND i.building_id = ' . $building_id;
+            $str_moreWhere .= ' AND inv.building_id = ' . $building_id;
         }
         if($tenant_id){
-            $str_moreWhere .= ' AND i.tenant_id = ' . $tenant_id;
+            $str_moreWhere .= ' AND inv.tenant_id = ' . $tenant_id;
         }
         if($status_id){
-            $str_moreWhere .= ' AND i.status_id = ' . $status_id;
+            $str_moreWhere .= ' AND inv.status_id = ' . $status_id;
         } 
-        $updated_at = DBX::formatTime("i.updated_at", 'updated_at');
-        $selectCols = 'i.id,i.building_id,i.name as building_name,i.code,i.floor_number,i.tenant_id as tenant_name,st.name as space_type,i.sqm_size,i.price,i.price_type,i.status_id,i.name as status,i.update_user,'.$updated_at.'';
+        $updated_at = DBX::formatTime("inv.updated_at", 'updated_at');
+        $selectCols = 'inv.id,inv.building_id,inv.name as building_name,inv.code,inv.floor_number,inv.tenant_id as tenant_name,st.name as space_type,inv.sqm_size,inv.price,inv.price_type,inv.status_id,inv.name as status,inv.update_user,'.$updated_at.'';
         $query = DB::table('invoices as i')
-            ->join('invoices as i','i.id','=','i.invoice_id')
-            ->join('invoice_statuses as is','is.id','=','is.status_id')
+            ->join('invoices as inv','inv.id','=','inv.invoice_id')
+            ->join('space_types as st','st.id','=','inv.space_type_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols);
-        $query->orderByRaw('i.id desc');
+        $query->orderByRaw('inv.id desc');
         $clone_query = clone $query;
-        $count = $clone_query->count('i.number');
+        $count = $clone_query->count('inv.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);    
     
     }
      public static function invoiceDetails($id){
-        return DB::table('invoices as i')
-            ->where('i.id',$id)
-            ->selectRaw('i.id,i.building_space_code,i.floor_number,i.building_id,i.tenant_id,i.status_id,i.space_type_id,i.price,')
+        return DB::table('invoices as inv')
+            ->where('inv.id',$id)
+            ->selectRaw('inv.id,inv.building_space_code,inv.floor_number,inv.building_id,inv.tenant_id,inv.status_id,inv.space_type_id,inv.price,')
             ->first();
 
     }

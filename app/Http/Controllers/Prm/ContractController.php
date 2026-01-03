@@ -52,7 +52,6 @@ class ContractController extends Controller
 
         return JDV::result($this->contracts->contractDetails($req->id));
     }
-
   
     public function getFormOptions(Request $req)
     {
