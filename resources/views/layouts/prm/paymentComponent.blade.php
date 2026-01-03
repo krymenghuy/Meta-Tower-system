@@ -7,20 +7,25 @@
                 <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
             </div>
          </div>
-             <div class="col-12 col-md-6 col-lg-2">
+             <div class="col-12 col-md-6 col-lg-2 d-none">
+                <select id="tenant_id" class="data-input filter-field form-control" data-field="tenant_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="payment_status" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
                 <select id="payment_method_id" class="data-input filter-field form-control" data-field="payment_method_id"></select>
             </div>  
-             <div class="col-12 col-md-6 col-lg-2">
-                <select id="payment_status_id" class="data-input filter-field form-control" data-field="payment_status_id"></select>
-            </div>
-            <!-- <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btn btn--Options w-100 w-md-auto" id="_btnPayment">
+             
+            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
+                <button type="button" class="btn btn--Options w-70 w-md-auto" id="_btnPayment">
                       <i class="fa-solid fa-money-check-dollar mr-2"></i>
-                    <span vslang="buttons.Export Payment"></span>
+                    <span vslang="buttons. Payment"></span>
                 </button>
-            </div> -->
+            </div>
         </div>
     </div> 
 
     <div id="_payment_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
 </div>
+

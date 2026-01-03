@@ -163,6 +163,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/details', [ContractController::class, 'contractDetails']);
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
+    
 });
 
 
@@ -198,8 +199,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
     Route::post('/save', [PaymentController::class, 'savePayment']);
     Route::post('/list-paginate', [PaymentController::class, 'getListPayment']);
     Route::post('/details', [PaymentController::class, 'paymentDetails']);
-    Route::post('/form-options', [PaymentController::class, 'getFormOption']);
+    Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
     Route::post('/delete', [PaymentController::class, 'deletePayment']);
+    Route::post('/update-status', [PaymentController::class, 'updatePaymentStatus']);
 });
 
 

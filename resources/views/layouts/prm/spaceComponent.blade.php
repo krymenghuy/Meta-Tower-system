@@ -14,6 +14,9 @@
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id"></select>
             </div>
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnSpace">
                     <i class="fa fa-user-plus me-2"></i>

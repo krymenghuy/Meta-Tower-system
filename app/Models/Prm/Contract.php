@@ -157,7 +157,5 @@ class Contract
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
     
-
-
 }
         

@@ -322,7 +322,7 @@
                             @include('layouts.prm.accessControlComponent')
                             @include('layouts.prm.settingComponent')
                             @include('layouts.prm.reportComponent')
-                            @include('layouts.prm.billingComponent')
+                            @include('layouts.prm.expenseComponent')
 
 
                            

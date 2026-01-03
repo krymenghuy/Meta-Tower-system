@@ -3,6 +3,7 @@
 var SpaceComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Building Space Management";
+    mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_space_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
@@ -77,6 +78,8 @@ var SpaceComponent = new (function () {
                     cls = 'text-success px-2 py-1 d-inline-block';
                 } else if (status === 'unavailable') {
                     cls = 'text-danger px-2 py-1 d-inline-block';
+                } else if (status === 'maintainance') {
+                    cls = 'text-warning px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
@@ -175,7 +178,7 @@ var SpaceComponent = new (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -286,7 +289,7 @@ var SpaceComponent = new (function () {
     mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // console.log(123,status_id);
+        console.log(123,status_id);
         
         const inputOptions = {
             title: 'Change Status',
@@ -311,7 +314,7 @@ var SpaceComponent = new (function () {
                 if(res.status_code ===200){
                     InputBox2.close();
                     cv_interact.success('Building Space Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+                    mThis.SpaceListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -402,6 +405,12 @@ const BuildingSpaceDialog = (() => {
                                     <label>Price</label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <div class="d-none material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div> 
                          
 
                         </div>`
@@ -438,10 +447,6 @@ const BuildingSpaceDialog = (() => {
                         if (!sqmWrapper) return;
                         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
                     };
-
-
-                 
-
 
                 },
                 configSelect: [

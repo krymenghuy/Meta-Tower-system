@@ -310,7 +310,6 @@ class GeneralSettings //extends Model
      }
      static function options_tenant($ss){
         return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
-
      }
 
      static function options_business_type($ss){
@@ -323,5 +322,16 @@ class GeneralSettings //extends Model
 
     static function options_service_status($ss){
         return DB::table('service_statuses')->selectRaw('id,name as service_status')->get();
+    }
+
+    static function options_space_status($ss){
+        return DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
+    }
+    static function options_payment_status($ss){
+        return DB::table('payment_statuses')->selectRaw('id,name as payment_status')->get();
+    }
+
+    static function options_payment_method($ss){
+        return DB::table('payment_methods')->selectRaw('id,name as payment_method')->get();
     }
 }

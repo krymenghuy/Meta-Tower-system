@@ -122,7 +122,7 @@ return [
                 'js/components/prm/AccessControlComponent.js',
                 'js/components/prm/SettingComponent.js',
                 'js/components/prm/ReportComponent.js',
-                'js/components/prm/BillingComponent.js',
+                'js/components/prm/ExpenseComponent.js',
 
 
             ]
