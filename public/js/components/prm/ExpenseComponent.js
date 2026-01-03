@@ -1,12 +1,18 @@
 "use strict";
-var BillingComponent =   ( () => {
+var ExpenseComponent =   ( () => {
     const mThis = {};
     mThis.title_prop = "Expense Management";
-    mThis.self = main_view.VSAppContent.querySelector("#_main_billing_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnBilling");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_billing");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_expense_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnExpense");
+    mThis.elTenant = mThis.self.querySelector('#tenant_id');
+    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elInvoice = mThis.self.querySelector('#invoice_id');
+    mThis.elSpace = mThis.self.querySelector('#space_id');
+    mThis.elPaymentMethod = mThis.self.querySelector('#payment_method_id');
+    mThis.elFilter_status = mThis.self.querySelector('#payment_status');
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_expense");
     mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elSearch = mThis.self.querySelector("#_search_billing");
+    mThis.elSearch = mThis.self.querySelector("#_search_expense");
 
 
     mThis.cols = [
@@ -15,90 +21,104 @@ var BillingComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
-         {
-            title: "Trx. iD ",
-            className: "align-middle text-capitalize",
-             data: (data, index) => `<span class="text-yp-custom">${Trx100001 + index}</span>`,
+        {
+            title: "PMT Number",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.payment_no ?? ''}</span>`,
         },
         {
-            title: "paid Date",
+            title: "Payment Date",
             className: "align-middle ",
-             data: (data, index, tr) => {
+            data: (data) => `<span class="text-yp-custom" >${data.payment_date ?? ''}</span>`,
+        },
+        {
+            title: "inv number",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.invoice_no ?? ''}</span>`,
+        },
+        {
+            title: "Tenant Name",
+            className: "align-middle",
+            data: (data) => `<span class="text-primary-custom" >${data.tenant_name}</span>`,
+        },
+        {
+            title: "space code",
+            className: "align-middle ",
+            data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.date ?? 'N/A'}</span>
+                    <div class="text-yp-custom align-middle" >
+                        <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.space_code ?? ''}</span></span>
+                        <span class="text-muted" >${data.building_name ?? ''}</span>
                     </div>
                 `;
             }
         },
+            
         {
-            title: "payment method ",
+            title: "Payment method",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.customer_id  ?? 'N/A'}</small></span>`,
-        },
-            {
-            title: "paid to ",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.payment_method}</span>`,
         },
         {
-            title: "From Account",
-            className: "align-middle ",
-            data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
-            }
-        },
-        {
-            title: "amount($)",
-            className: "align-middle ",
-            data: (data,index) => `<span class="text-yp-custom">${data.building_id ?? 'N/A'}</span>`,
-        },
-
-        {
-            title: "Category",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                const cur_symbol = data.cur_symbol ?? '$', amount = data.paid_amount ?? 0;
-                return [cur_symbol, amount].join(' ');
-            }
-        },
-        {
-            title: "Description",
+            title: "Reference No",
             className: 'align-middle',
             data: (data, index, tr) => {
-                return `
-                   <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.issue_date ?? 'N/A'}</span>
-                    </div>`;
+                return `<div class="d-flex flex-column" style="width:150px;" >
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
+                    
+                </div>`;
             }
         },
-
-        
-        
+        {
+            title: "note",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.note ?? ''}</span>`,
+        },
+        {
+            title: "amount",
+            className: "align-middle ",
+           data: (data) => {
+                return `<span class="text-yp-custom">${data.amount ?? ''}</span>`;
+            }
+        },
+        {
+            title: "discount",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.discount ?? ''}</span>`,
+        },
 
         {
-            title: " Status",
+            title: "Total Paid",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom">${data.total_paid ?? ''}</span>`,
+        },
+
+       {
+            title: "Status",
             className: "align-middle",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'text-info';
 
-                if (status === 'unpaid') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'paid') {
+                if (status === 'paid') {
                     cls = 'text-success px-2 py-1 d-inline-block';
+                } else if (status === 'unpaid') {
+                    cls = 'text-danger px-2 py-1 d-inline-block';
+                } else if (status === 'partially paid') {
+                    cls = 'text-warning px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        {
+
+       {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.update_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.updated_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
         },
@@ -113,13 +133,13 @@ var BillingComponent =   ( () => {
                 </div>`
         },
 
-    ];
+    ]; 
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.BillingListView = new ListView('_billing_list', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+        mThis.BillingListView = new ListView('_expense_list', {
+            fetchApi: `${main_view.base_url}/prm/payments/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -129,8 +149,8 @@ var BillingComponent =   ( () => {
                 
               
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join('')); 
+              tr.classList.add('payment');
+              tr.setAttribute('id',['payments_id',data.id].join('')); 
 
             }, 
             listContainerClass: null
@@ -145,8 +165,7 @@ var BillingComponent =   ( () => {
                     mThis.BillingListView.showPage(mThis.getFilterData());
                 }
             };
-            // if (!AuthManager.allowed(240)) return;
-            BillingDialog.show(op);
+            CreateBillingdialog.show(op);
         };
 
 
@@ -158,8 +177,8 @@ var BillingComponent =   ( () => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblTenant = mThis.BillingListView.getTable();
-        mThis.initDropdownMenus(mThis.tblTenant);
+        mThis.tblBilling = mThis.BillingListView.getTable();
+        mThis.initDropdownMenus(mThis.tblBilling);
 
 
 
@@ -205,24 +224,18 @@ var BillingComponent =   ( () => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
+                
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_invoice"
+                    name: "edit_billing"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_invoice"
+                    name: "delete_billing"
                 },
             ],
             // adjustPosition: {
@@ -237,12 +250,12 @@ var BillingComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_invoice': {
-                        mThis.editTenant(id, menuLink);
+                    case 'edit_billing': {
+                        mThis.editBilling(id, menuLink);
                         break;
                     }
-                    case 'delete_invoice': {
-                        mThis.deleteTenant(id, menuLink);
+                    case 'delete_billing': {
+                        mThis.deleteBilling(id, menuLink);
                         break;
                     }
 
@@ -264,7 +277,7 @@ var BillingComponent =   ( () => {
             }
         };
         
-        CreateBillingDialog.show(op);
+        CreateBillingdialog.show(op);
     }
      mThis.deleteBilling = (id, menuLink) => {
         let op = {
@@ -275,13 +288,13 @@ var BillingComponent =   ( () => {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Space??', {
-            title: 'Delete Space',
+        cv_interact.confirm('Delete this Billing??', {
+            title: 'Delete Billing',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/payments/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.BillingListView.showPage();
                     }
@@ -300,25 +313,27 @@ var BillingComponent =   ( () => {
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "Invoice Status",
-            valueMember: "invoice_id",
+            dataLabel: "Payment Status",
+            valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Paid"},
                 {status_id:"2",name:"Unpaid"},
+                {status_id:"3",name:"partially Paid"},
             ],
             defaultValue: status_id
         };
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
+            
+            const payload = {id, status_id :selected.value};
+            vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Invoice Status has been updated');
+                    cv_interact.success('Payment Status has been updated');
                     mThis.BillingListView.showPage(mThis.getFilterData());
 
                 }else{
@@ -330,10 +345,12 @@ var BillingComponent =   ( () => {
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/payments/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', null);
+                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '','All Payment Method', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -344,13 +361,13 @@ var BillingComponent =   ( () => {
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.BillingListView.showPage(mThis.getFilterData());
-        });
+        }); 
 
     };
     return mThis;
 })();
 
-const BillingDialog = (() => {
+const CreateBillingdialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -358,89 +375,82 @@ const BillingDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
-                       const today = new Date();
-                        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-                        const day = String(today.getDate()).padStart(2,'0');
-                        const month = months[today.getMonth()];
-                        const year = today.getFullYear();
-                        const formattedDate = `${day}-${month}-${year}`;
-
-                        return [
-                            `<div class="row justify-content-center">
-                                <div class="col-6">
-                                    <div class="material-input outlined">
-                                       <input name="paid_date" type="text" class="form-control form-control-sm" value="${new Date().toLocaleDateString()}" readonly />
-                                        <label>Paid Date</label>
-                                    </div>
-                                </div>
-                                 <div class="col-6">
-                                    <div class="material-input outlined">
-                                        <select name="from_account" placeholder=" " class="data-input form-control" data-field="from_account">
-                                            <option value="">Select Account</option>
-                                            <option value="1">Financial Account: KHR 69,853 </option>
-                                            <option value="2">Accounting officer: $ 51,941 </option>
-                                            <option value="3">Expense Account: KHR 21222.69 </option>
-                                           
-                                        </select>
-                                        <label class="d-none">Select Account</label>
-                                    </div>
-                                </div>
-                                 <div class="col-6">
-                                    <div class="material-input outlined">
-                                        <input type="number" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                        <label> Available Balance: 228168.88 KHR </label>
-                                       
-                                    
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="material-input outlined">
-                                        <input type="code" name="building_id" required class="data-input form-control" data-field="building_id" placeholder=" " />
-                                        <label>Reciever Account Number </label>
-                                    </div>
-                                </div>
-                               
-                                <div class="col-6">    
-                                    <div class="material-input outlined">
-                                        <input type="number" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                        <label>Amount</label>
-                                    </div>
-                                </div>
-                                <div class="col-6">    
-                                    <div class="material-input outlined">
-                                        <input type="text" name="due_amount" required class="data-input form-control" data-field="due_amount" placeholder=" " />
-                                        <label>Category</label>
-                                    </div>
-                                </div>
-
-                               
-
-                                <table class="table header-light-blue">
-                        <thead name="tuition_payment_thead">
-                            <tr>
-                                <th class="text-nowrap ">Category</th>
-                                <th class="text-nowrap">Amount</th>
-                                <th class="text-nowrap ">From Account</th>
-                                <th class="text-nowrap">To Account</th>
-                                <th colspan="2" class="text text-nowrap">Remark</th>
-                            </tr>
-                        </thead>
-                        <tbody name="tuition_payment_tbody"></tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="11">
-                                   
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
                     
-                                
-                            </div>`
+                    return [
+                            
+                        
+                        `<div class="row justify-content-center">
+
+                            <div class="col-12">
+                             <label style="color:#777777;padding-left:6px;" for="tenant_name">Tenant</label>
+                                <div class="material-input outlined">
+                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
+                                <div class="material-input outlined">
+                                    <select name="building_id" class="data-input form-control" data-field="building_id">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="buildingSpace">Space Code</label>
+                                <div class="material-input outlined">
+                                    <select name="space_id" class="data-input form-control" data-field="space_id"> </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="paymentMethod"> Select Payment Method</label>
+                                <div class="material-input outlined">
+                                    <select   name="payment_method_id" placeholder=" " class="data-input form-control" data-field="payment_method_id">
+                                    </select>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="col-6">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="amount" required class="data-input form-control" data-field="amount" placeholder=" " />
+                                    <label>Amount</label>
+                                </div>
+                            </div>
+
+                            <div class="col-6">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="discount" required class="data-input form-control" data-field="discount" placeholder=" " />
+                                    <label>Discount</label>
+                                </div>
+                            </div>
+
+                            <div class="col-6">    
+                                <div class="material-input outlined">
+                                    <input type="number" name="total" required class="data-input form-control" data-field="total_paid" placeholder=" " />
+                                    <label>Total</label>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="note" placeholder=" "></textarea>
+                                    <label>Note</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-none material-input outlined">
+                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                    <label>Status ID</label>
+                                </div>
+                            </div> 
+                        </div>`
                     ].join("");
                 },
 
@@ -460,7 +470,7 @@ const BillingDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-
+                
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -468,26 +478,48 @@ const BillingDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                    
                  
 
 
                 },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
+                configSelect: [
+                    {
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
 
-                // ],
+                    {
+                        name: "payment_method_id",
+                        data: "payment_methods",
+                        textField: "payment_method",
+                        valueField: "id",
+                    },
+
+                    {
+                        name: "space_id",
+                        data: "building_spaces",
+                        textField: "code",
+                        valueField: "id",
+                    },
+
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    
+                    
+
+                ],
                 prepareFormOptions: {
-                    createTitle: "New Expanse",
-                    modifyTitle: "Modify Space ",
-                    targetProp: "building_details",
+                    createTitle: "Create New Payment",
+                    modifyTitle: "Modify Payment ",
+                    targetProp: "payment_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/payments/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -495,7 +527,7 @@ const BillingDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    LocaleManager.translateZone(me.divModal); 
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
@@ -517,16 +549,16 @@ const BillingDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/payments/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Billing has been updated successfully"
+                                            "Payment has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New Billing has been added successfully"
+                                            "New payment has been added successfully"
                                         );
                                     }
                                 } else {
@@ -539,11 +571,9 @@ const BillingDialog = (() => {
             });
         dialog.show(op);
     };
-     
 
     return self;
 })();
-
 
 
 

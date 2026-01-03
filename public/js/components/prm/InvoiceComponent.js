@@ -2,6 +2,7 @@
 var InvoiceComponent =   ( () => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
+    mThis.currency_symbol = '$';
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
@@ -17,20 +18,11 @@ var InvoiceComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
-        // {
-        //     title: "Inv Number",
-        //     className: "align-middle ",
-        //     data: (data,index) => `<span class="text-yp-custom">${'INV-100001' + index}</span>`,
-        // },
+       
         {
             title: "Invoice Number",
-            className: 'align-middle text-capitalize',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <a href="javascript:void(0)" class="btn-inv-print" data-id="${data.id}" data-status="${data.status}">${data.invoice_number ?? ''}</a>
-                    <small class="text-capitalize text-left text-success">${data.invoice_number ? data.invoice_number.replace(/\_/g, ' ') : 'General'}</small>
-                </div>`;
-            }
+            className: "align-middle ",
+            data: (data,index) => `<span class="text-yp-custom">${'INV-100' + index}</span>`,
         },
         {
             title: "Invoice Date",
@@ -138,7 +130,7 @@ var InvoiceComponent =   ( () => {
               
               tr.dataset.statusid = data.status_id;
               tr.classList.add('invoice');
-              tr.setAttribute('id',['invoice_id',data.id].join('')); 
+              tr.setAttribute('id',['invoice_id',data.id].join(''));
 
             }, 
             listContainerClass: null
@@ -368,7 +360,7 @@ const Invoicedialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg modal-content-vs-dialog",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {

@@ -33,7 +33,7 @@ class BuildingSpace
             'sqm_size'      => '0|number',
             'price'         => '0|number',
             'price_type'    => '0|string|default=sqm',
-            'status_id' => '0|number|exists=space_statuses.id|default=3',
+            'status_id' => '0|number|exists=space_statuses.id|default=1',
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -143,7 +143,7 @@ class BuildingSpace
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_number LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_number LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
         }
         if($building_id){
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
@@ -185,12 +185,31 @@ class BuildingSpace
         return (object)[
             'space_details' => $space_details,
             'buildings' =>GeneralSettings::options_building($ss),
-            'space_types'=> GeneralSettings::options_space_type($ss)
+            'space_types'=> GeneralSettings::options_space_type($ss),
+            'statuses' => GeneralSettings::options_space_status($ss)
         ];
     }
     public function delete($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('building_spaces')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
+    }
+
+    function updateBuildingSpaceStatus($status_id, $id = null, $ss = null)
+    {
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $currentStatus = DB::table('building_spaces')->where('id', $id)->value('status_id');
+
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status');
+        }
+        $x = DB::table('building_spaces')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user'=>$ss->full_name,
+            'updated_at'=>getNowTime(),
+            
+        ]);
+        return DV::depends($x, ['building space status', 'updated']);
     }
 }

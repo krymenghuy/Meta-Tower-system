@@ -21,7 +21,7 @@ class BuildingSpaceController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        $id = $req->id ?? $req->space_id;
+        $id = $req->id ?? $req->building_space_id;
         $building_space = new BuildingSpace($id, $ss);
         $res = $building_space->saveBuildingSpace($req->all());
         return JDV::raw($res);
@@ -64,6 +64,16 @@ class BuildingSpaceController extends Controller
             return JDV::error('Invalid ID');
         }
         return JDV::raw($this->building_spaces->delete($req->id));
+    }
+    public function updateBuildingSpaceStatus(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? null;
+        $building_space = new BuildingSpace();
+        $res = $building_space->updateBuildingSpaceStatus($req->status_id, $id,$ss);
+        return JDV::raw($res);
     }
     
 }
