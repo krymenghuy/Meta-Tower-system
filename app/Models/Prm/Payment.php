@@ -100,7 +100,7 @@ class Payment
             $str_search = "(t.name LIKE '%" .$search_value ."%')";
         }
         if($tenant_id){
-            $str_moreWhere .= ' AND p.tenant_id = ' . $tenant_id;
+            $str_moreWhere .= ' AND p.tenant_id = ' . $tenant_id; 
         }
         if($building_id){
             $str_moreWhere .= ' AND p.building_id = ' . $building_id;
