@@ -257,9 +257,9 @@
 
       <form action="{{ url('/processLogin') }}" method="POST">
         {{ csrf_field() }}
-        <span class="error_text">
-          <?php if(session()->has('login_error')) echo session('login_error'); ?>
-        </span>
+         @if(!empty($login_error))
+           <span class="error_text">{{ $login_error }}</span>
+         @endif
 
         <div class="form-group">
           <i class="fa fa-user input-icon"></i>

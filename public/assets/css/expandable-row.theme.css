@@ -1,0 +1,271 @@
+/* =========================================================
+   ExpandableRowConfig – Vectorasoft Default Theme
+   (OPTIONAL / OVERRIDABLE)
+   ========================================================= */
+
+/* ---------- Theme Variables (override freely) ---------- */
+:root {
+  /* Expand container */
+  --vs-expand-bg: #ffffff;
+  --vs-expand-border: #e5e7eb;
+  --vs-expand-radius: 12px;
+  --vs-expand-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --vs-expand-padding: 16px;
+  --vs-expand-margin: 12px;
+
+  /* Accent line */
+  --vs-expand-accent: #3b82f6;
+  --vs-expand-accent-height: 3px;
+
+  /* Arrow */
+  --vs-arrow-color: #64748b;
+  --vs-arrow-hover-color: #2563eb;
+  --vs-arrow-opacity-idle: 0.45;
+  --vs-arrow-opacity-hover: 0.85;
+}
+
+/* =========================================================
+   EXPAND CONTAINER
+   ========================================================= */
+
+.vs-expand-container,
+.expandable-row-container {
+  position: relative;
+  margin: var(--vs-expand-margin);
+  padding: var(--vs-expand-padding);
+  background: var(--vs-expand-bg);
+  border-radius: var(--vs-expand-radius);
+  border: 1px solid var(--vs-expand-border);
+  box-shadow: var(--vs-expand-shadow);
+  overflow: hidden;
+}
+
+/* Slim professional accent line */
+.vs-expand-container::before,
+.expandable-row-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--vs-expand-accent-height);
+  background: var(--vs-expand-accent);
+}
+
+/* =========================================================
+   EXTREMELY BEAUTIFUL SLIDE-DOWN ANIMATION
+   ========================================================= */
+
+/* Initial hidden state */
+.detail-row {
+  opacity: 0;
+  transform:
+    translateY(-10px)
+    scaleY(0.96);
+  transform-origin: top;
+  transition:
+    opacity 280ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+/* Visible (expanded) */
+tr.row-expanded + .detail-row {
+  opacity: 1;
+  transform:
+    translateY(0)
+    scaleY(1);
+}
+/* Invoice-only: slower, calmer slide */
+.invoice-list .detail-row {
+  transition:
+    opacity 320ms ease,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* =========================================================
+   EXPAND INDICATOR (DOUBLE CHEVRON)
+   ========================================================= */
+
+.vs-expand-indicator {
+  margin-top: 6px;
+  color: var(--vs-arrow-color);
+  opacity: var(--vs-arrow-opacity-idle);
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* Hover emphasis */
+tbody tr.expand-row:hover .vs-expand-indicator {
+  opacity: var(--vs-arrow-opacity-hover);
+  color: var(--vs-arrow-hover-color);
+}
+
+/* Arrow sizing */
+.vs-expand-arrow {
+  width: 18px;
+  height: 18px;
+}
+
+/* Expanded state */
+tr.row-expanded .vs-expand-indicator {
+  opacity: 1;
+  color: var(--vs-arrow-hover-color);
+}
+
+/* =========================================================
+   SUGGESTIVE ARROW ANIMATION
+   ========================================================= */
+
+@keyframes vs-expand-hint {
+  0% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+}
+
+/* Animate only when collapsed */
+tr.expand-row:not(.row-expanded) .vs-expand-arrow {
+  animation: vs-expand-hint 1.8s ease-in-out infinite;
+}
+
+/* Stop animation when expanded */
+tr.row-expanded .vs-expand-arrow {
+  animation: none;
+}
+
+/* =========================================================
+   OPTIONAL: REDUCE MOTION SUPPORT
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  tr.expand-row:not(.row-expanded) .vs-expand-arrow {
+    animation: none;
+  }
+
+  .detail-row {
+    transition: none;
+  }
+}
+
+
+ /* =========================================================
+   EXPAND INDICATOR – EXPRESSIVE RIPPLE ATTENTION
+   ========================================================= */
+
+:root {
+  --vs-arrow-ripple-color: rgba(59, 130, 246, 0.45);
+  --vs-arrow-ripple-size: 42px;
+}
+
+/* Prepare indicator */
+.vs-expand-indicator {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Ripple layer */
+.vs-expand-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: var(--vs-arrow-ripple-size);
+  height: var(--vs-arrow-ripple-size);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      var(--vs-arrow-ripple-color) 0%,
+      rgba(59, 130, 246, 0.25) 35%,
+      rgba(59, 130, 246, 0.12) 55%,
+      transparent 70%
+    );
+  transform: translate(-50%, -50%) scale(0.25);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Second wave (subtle echo) */
+.vs-expand-indicator::before {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: calc(var(--vs-arrow-ripple-size) * 1.2);
+  height: calc(var(--vs-arrow-ripple-size) * 1.2);
+  border-radius: 50%;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Trigger on hover */
+tbody tr.expand-row:hover .vs-expand-indicator::after {
+  animation: vs-arrow-ripple-core 2s cubic-bezier(.22,1,.36,1) 1;
+}
+
+tbody tr.expand-row:hover .vs-expand-indicator::before {
+  animation: vs-arrow-ripple-echo 2s cubic-bezier(.22,1,.36,1) 1;
+}
+
+/* =========================================================
+   RIPPLE KEYFRAMES
+   ========================================================= */
+
+@keyframes vs-arrow-ripple-core {
+  0% {
+    transform: translate(-50%, -50%) scale(0.25);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  55% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes vs-arrow-ripple-echo {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0.15;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  tbody tr.expand-row:hover .vs-expand-indicator::after,
+  tbody tr.expand-row:hover .vs-expand-indicator::before {
+    animation: none;
+  }
+}
+

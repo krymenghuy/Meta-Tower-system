@@ -28,6 +28,7 @@
         "vsd/localization": "*",
         "vsd/money": "*",
         "vsd/response": "*",
+        "vsd/script-manager": "dev-main",
         "vsd/storage": "*",
         "vsd/vsloquent": "dev-main",
         "vsd/xauth": "dev-main"

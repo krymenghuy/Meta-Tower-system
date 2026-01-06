@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 //use app\Http\Middleware\CustomRateLimiter;
 use App\Http\Controllers\Bhr\ExcelReportController;
 use App\Http\Controllers\Bhr\ContractController;
-use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Register\RegisterController; 
 
 //use App\Http\Controllers\DbExportController;
@@ -19,31 +19,24 @@ use Illuminate\Support\Facades\DB;
 use function Ramsey\Uuid\v1;
 
 //use App\Models\UM;
-
-// Route::get('/getlogin', function(){
-//     $email = 'admin@gmail.com';
-//     $password = '123456';
-//     $data = (object ) array('email'=>$email, 'password'=>$password);
-//     return response()->json($data);
+ 
+// Route::get('/reset-user-role', function () {
+//     $selectCols = 'role_id,module_id';
+//     $user_role = DB::table('um_role_modules')->selectRaw($selectCols)->get();
+//     foreach ($user_role as $ur) {
+//         $users = DB::table('um_user_roles')->where('role_id', $ur->role_id)->selectRaw('user_id')->get();
+//         foreach ($users as $u) {
+//             $exist =  DB::table('um_user_modules')->where('user_id', $u->user_id)->where('module_id', $ur->module_id)->take(1)->value('id');
+//             if (!$exist) {
+//                 DB::table('um_user_modules')->insert([
+//                     'user_id' => $u->user_id,
+//                     'role_id' => $ur->role_id,
+//                     'module_id' => $ur->module_id
+//                 ]);
+//             }
+//         }
+//     }
 // });
-
-Route::get('/reset-user-role', function () {
-    $selectCols = 'role_id,module_id';
-    $user_role = DB::table('um_role_modules')->selectRaw($selectCols)->get();
-    foreach ($user_role as $ur) {
-        $users = DB::table('um_user_roles')->where('role_id', $ur->role_id)->selectRaw('user_id')->get();
-        foreach ($users as $u) {
-            $exist =  DB::table('um_user_modules')->where('user_id', $u->user_id)->where('module_id', $ur->module_id)->take(1)->value('id');
-            if (!$exist) {
-                DB::table('um_user_modules')->insert([
-                    'user_id' => $u->user_id,
-                    'role_id' => $ur->role_id,
-                    'module_id' => $ur->module_id
-                ]);
-            }
-        }
-    }
-});
 
 Route::get('/get-enc-data/{q}', function ($q) {
     $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
@@ -52,42 +45,7 @@ Route::get('/get-enc-data/{q}', function ($q) {
 });
 
 Route::get('create-contract/{q}', [ContractController::class, 'createContract']);
-
-Route::get('test-event', function () {
-    $d = (object)['branch_id' => 1, 'sender_id' => 1, 'message' => "some message for testing event here", "channel" => Config::get('app.pusher_channel_prefix')];
-    $res = Notifier::notify_admin('message_received', $d);
-    return response()->json($d);
-});
-
-Route::get('tell-driver/{user_id}', function ($user_id = null) {
-    $branch_id = 1;
-    $general = "Private to $user_id";
-    if ($user_id == 0) {
-        $user_id = null;
-        $general = "General";
-    }
-    $cdata = [
-        ['user_class' => 'driver', 'target_user_id' => $user_id, 'title' => "Hello Driver $general " . getNowTime(), 'message' => 'Testing notification from Vectorasoft', 'data' => null, 'persist' => 0]
-    ];
-    $res = Notifier::notify_mobile($branch_id, $cdata);
-    return response()->json($res);
-});
-
-Route::get('tell-merchant/{user_id}', function ($user_id = null) {
-    $branch_id = 1;
-    //user_id is official_id
-    $general = "Private to id $user_id";
-    if ($user_id == 0) {
-        $user_id = null;
-        $general = "General";
-    }
-    $cdata = [
-        ['user_class' => 'merchant', 'target_user_id' => $user_id, 'title' => "Hello Merchant $general at " . getNowTime(), 'message' => 'Testing notification from Vectorasoft', 'data' => null, 'persist' => 0]
-    ];
-    $res = Notifier::notify_mobile($branch_id, $cdata);
-    return response()->json($res);
-});
-
+ 
 Route::get('excel-report/{q}', [ExcelReportController::class, 'index']);
 
 Route::get('privacy', function () {
@@ -113,24 +71,6 @@ Route::get('test-count', function () {
     $rows = DB::select(DB::raw($sql));
     return response()->json($rows);
 });
-
-// Route::get('reset-merchant-code',function(){
-//    $res = \App\Models\Dms\Sender::resetCodes(1,'HM');
-//    echo response()->json($res);
-// });
-
-// Route::get('reset-driver-code',function(){
-//     $res = \App\Models\Dms\Driver::resetCodes(1,'HD');
-//     echo response()->json($res);
-// });
-
-Route::get('/', function () {
-    return view('login.prm_login');
-});
-
-Route::get('logout', function () {
-    return view('login.prm_login');
-});
  
 
 // Also ensure you have a login route for the "Already have an account?" link
@@ -138,32 +78,23 @@ Route::get('/login', function () {
     return view('auth.login'); // Assuming you have a login view
 })->name('login');
 
-//Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
-//Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);
-// Route::get('sales-module-report/{q}', [SalesModuleReportController::class, 'showReport']);
-//Route::get('hs-merchant-invoice/{q}', [WebReportController::class, 'hs_merchant_invoice']);
-//Route::get('hs-merchant-invoice-v2/{q}', [WebReportController::class, 'hs_merchant_invoice_v2']);
-//Route::get('merchant-invoice/{q}', [WebReportController::class, 'merchant_invoice']);
+Route::get('/', fn () => view('login.prm_login'));
+Route::get('/login', fn () => view('login.prm_login'));
+//Login Web Admin
+Route::post('/processLogin', [AuthController::class, 'processLogin']);
+//Logout for web
+Route::get('/logout', [AuthController::class, 'logout']);
 
-Route::post('processLogin', [LoginController::class, 'processLogin']);
-Route::post('processRegister', [RegisterController::class, 'processRegister']);
-// Route::post('process_mac_login', [LoginController::class, 'process_mac_login']);
-
-//route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
-Route::get('login', [LoginController::class, 'login']);
-
+//Route::post('processRegister', [RegisterController::class, 'processRegister']);
 Route::get('attendance', function () {
     $data = [];
     return view('attendance', $data);
 });
+
 // //Todo: set authentication and authorization
 // Route::get('/export-db031181', [DbExportController::class, 'exportDatabase']);
 // Route::get('/export-dbbydate031181/{date?}', [DbExportController::class, 'exportDataByDate']);
-
-
-
-
-
+  
 Route::get('landingpoint', function () {
     if (!XAuthService::user()) {
         $base_url = url('/');
@@ -172,8 +103,7 @@ Route::get('landingpoint', function () {
     };
     return view('landing_page');
 });
-
-
+ 
 Route::get('prm/{componentName?}', function ($componentName = null) {
     if (!XAuthService::user()) {
         // return redirect('/')

@@ -36,10 +36,13 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
                 //'assets/css/vs-pagination.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
-                    'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
+                'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
                 'assets/plugins/chart.js/Chart.css',
                 'assets/css/prm_style.css', /** Must be placed below all.min.css **/
+                'assets/css/vs_search_input.css',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/vs_search_input_example.css',
+                'assets/css/expandable-row.theme.css',
             ]
             ],    
         'report-styles' => [
