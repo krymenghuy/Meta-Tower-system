@@ -67,7 +67,7 @@ return [
         'Grave List' => 'បញ្ជីកន្លែងសព',
         'Association Structure' => 'រចនាសម្ព័ន្ធនៃសមាគម',
         'Association Policy' => 'មាត្រនិងបទបញ្ញាត្តិផ្ទៃក្នុងរបស់សមាគម',
-        'Association Profile'=> 'អំពីសមាគម',
+        'Company Profile'=> 'អំពីសមាគម',
         'Locations' => 'ទីតាំង និង តំបន់',
         'Location Management' => 'ទីតាំង និង តំបន់',
         'User and Roles' => 'អ្នកប្រើប្រាស់និងតួនាទី',
