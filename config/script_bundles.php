@@ -13,9 +13,9 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/priority-one.min.js?v=13',
             'files' => [
-               'https://cdn.vectoraclouds.com/frontcore/components/LocaleManager.v3.js',
               'https://cdn.vectoraclouds.com/frontcore/utils/vsapi.js',
-                '/assets/js/priority-load.js',
+              'https://cdn.vectoraclouds.com/frontcore/components/LocaleManager.v3.js',
+               '/assets/js/priority-load.js',
             ]
         ],
         'primary' => [
