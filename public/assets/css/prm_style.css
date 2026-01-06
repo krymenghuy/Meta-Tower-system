@@ -214,6 +214,22 @@ li.kt-menu__section {
     height: 30px !important;
 }
 
+.menu-pending {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.menu-ready {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 120ms ease-in;
+}
+@media (prefers-reduced-motion: reduce) {
+    .menu-ready {
+        transition: none;
+    }
+}
+
 .menu-selected {
     background: linear-gradient(135deg, #3c2fa3 0%, #f6d673 100%);
     box-shadow: 1px 1px 1px #000 !important;

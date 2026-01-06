@@ -17,7 +17,8 @@ var main_view = (()=>{
     mThis.VSAppContent = document.querySelector('#_app_content');
     //mThis.appContent = $(mThis.VSAppContent); //should no longer use it !!!
    
-    mThis.auth_script_url = [mThis.asset_url,'/js/AuthManager.v2.js?v=5'].join('');
+    mThis.auth_script_url = 'https://cdn.vectoraclouds.com/frontcore/utils/AuthManager.v2.js';
+    //mThis.auth_script_url = [mThis.asset_url,'/js/AuthManager.v2.js?v=5'].join('');
     mThis.secure_endpoint =  [mThis.base_url,'/api/1a2b3c4d5e6f7g8h9i0j1k2l3m/en'].join('');
     mThis.top_right_menus = document.querySelector('#_main_top_right_menus');
       
@@ -47,32 +48,7 @@ var main_view = (()=>{
             onFinish(res.data || res);
         }); 
     }
-
-    // function channelPrefix(){
-    //     return 'vsksmkidsworld';
-    // }
-
-    // mThis.createChannelName = () => {
-    //     const subs_id = mThis.subs_id;
-    //     const user_id = mThis.user_id;
-    //     const branch_id = mThis.branch_id;
-    //     const user_class = mThis.user_class;
-
-    //     if (user_id && user_id > 0) {
-    //         return channelPrefix() + "_backend_" + subs_id + "_" + user_id;
-    //     } else {
-    //         if (branch_id && branch_id > 0 && user_class) {
-    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id + "_" + user_class;
-    //         } else if (branch_id && branch_id > 0) {
-    //             return channelPrefix() + "_backend_" + subs_id + "_" + branch_id;
-    //         } else if (user_class) {
-    //             return channelPrefix() + "_backend_" + subs_id + "_" + user_class;
-    //         } else {
-    //             return channelPrefix() + "_backend_" + subs_id;
-    //         }
-    //     }
-    // };
-
+  
 mThis.init_vsapi = async () => {
   await vsapi.init({
     authType: vsapi.authTypes.BEARER,
@@ -143,18 +119,7 @@ mThis.init_vsapi = async () => {
             return;
            }
         }
-   
-        // $(document).on('click', function(e){
-        //     let x = $(this).find('body div.dropdown-menu');
-        //     let container = x.parent();
-        //     if(container){
-        //         if(!container.is(e.target) && container.has(e.target).length === 0){
-        //             x.removeClass('show');
-        //         }
-        //     }
-        //     e.stopPropagation();
-        // });
-
+    
         document.addEventListener('click', e => {
             let dropdownMenu =  mThis.prev_shown_dropdown_menus ; // //document.querySelector('.dropdown-menu');
             // Get the container element
