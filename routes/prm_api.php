@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Ypg\DashboardController;
 use App\Http\Controllers\CompanyProfileController;
-use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Auth\AuthController;
 
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -36,8 +36,8 @@ use App\Http\Controllers\tenant\ContractsController;
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
     // Route::post('auth/login', [ApiController::class, 'externalLogin']);
-    Route::post('admin/login', [LoginController::class, 'apiLogin']);
-    //Route::post('auth/login', [LoginController::class, 'apiLogin']);
+    Route::post('admin/login', [AuthController::class, 'apiLogin']);
+    //Route::post('auth/login', [AuthController::class, 'apiLogin']);
 });
 //end:: api without Authentication
 // Route::post('/employee/attendance/scan',[AttendanceController::class,'scanAttendance']);
@@ -147,7 +147,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group
     Route::post('/delete', [ZoneController::class, 'deleteZone']);
     // Route::post('/update-status', [ZoneController::class, 'updateAccountStaffStatus']);
 });
-   
+
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->group(function () {
     Route::post('/save', [BuildingController::class, 'saveBuilding']);
@@ -163,7 +163,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/details', [ContractController::class, 'contractDetails']);
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
-    
+
 });
 
 
@@ -186,7 +186,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
 });
 
-   
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contracts')->group(function () {
     Route::post('/save', [ContractsController::class, 'saveContracts']);
     Route::post('/list-paginate', [ContractsController::class, 'getListContracts']);
