@@ -1,0 +1,24 @@
+.vssearch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.vssearch-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.vssearch-item:last-child {
+  border-bottom: none;
+}
+
+.vssearch-item:hover,
+.vssearch-item.active {
+  background: #edf4ff;
+  border-left: 3px solid #2d66f7;
+}

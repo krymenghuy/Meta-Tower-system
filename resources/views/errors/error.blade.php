@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- begin::Head -->
-
 <head>
-    <!--end::Base Path -->
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <title>Oops</title>
-
     <style>
-        <blade import|%20url(%26%2334%3Bhttps%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DVT323%26%2334%3B)%3B>:root {
+        @import url("https://fonts.googleapis.com/css?family=VT323");
+
+        :root {
             --width: 280px;
             --height: 180px;
         }
 
         body {
             background: #6BA1CA;
+            margin: 0;
+            padding: 0;
         }
 
         .error-500 {
@@ -22,12 +22,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-family: 'VT323';
+            font-family: 'VT323', monospace;
             color: #1E4B6D;
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, .3);
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
         }
 
-        .error-500:after {
+        .error-500::after {
             content: attr(data-text);
             display: block;
             margin-top: calc(var(--height) / 10 + 15px);
@@ -38,10 +38,10 @@
         spaguetti {
             width: var(--width);
             height: var(--height);
-            filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, .2));
             display: block;
             margin: 0 auto;
             position: relative;
+            filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.2));
         }
 
         plate {
@@ -54,7 +54,7 @@
             z-index: 4;
         }
 
-        plate:before {
+        plate::before {
             content: '500 Spaghetti Report';
             position: absolute;
             top: 50%;
@@ -62,11 +62,12 @@
             transform: translate(-50%, -50%);
             text-transform: uppercase;
             font-weight: bold;
-            color: rgba(0, 0, 0, .2);
+            color: rgba(0, 0, 0, 0.2);
             text-align: center;
+            font-size: 11px;
         }
 
-        plate:after {
+        plate::after {
             content: '';
             width: calc(var(--width) / 2);
             height: calc(var(--height) / 10);
@@ -86,11 +87,13 @@
             position: absolute;
             bottom: calc(calc(var(--height) / 2.5) / 3);
             right: 10px;
-            box-shadow: calc(-1 * calc(var(--width) / 4) - 60px) 10px 1px 10px #EED269, calc(-1 * calc(var(--width) / 4) - 60px) 10px 0 15px #DEA631;
+            box-shadow:
+                -130px 10px 1px 10px #EED269,
+                -130px 10px 0 15px #DEA631;
             z-index: 2;
         }
 
-        pasta:before {
+        pasta::before {
             content: '';
             width: calc(var(--width) / 4);
             height: calc(var(--width) / 4);
@@ -100,10 +103,12 @@
             position: absolute;
             bottom: -5px;
             right: 60px;
-            box-shadow: calc(-1 * calc(var(--width) / 4) - 30px) 10px 1px 1px #EED269, calc(-1 * calc(var(--width) / 4) - 30px) 10px 0 5px #DEA631;
+            box-shadow:
+                -90px 10px 1px 1px #EED269,
+                -90px 10px 0 5px #DEA631;
         }
 
-        pasta:after {
+        pasta::after {
             content: '';
             width: calc(var(--width) / 3);
             height: calc(var(--width) / 4);
@@ -113,7 +118,9 @@
             position: absolute;
             bottom: -15px;
             right: 100px;
-            box-shadow: calc(var(--width) / 4) 10px 1px 1px #EED269, calc(var(--width) / 4) 10px 0 5px #DEA631;
+            box-shadow:
+                70px 10px 1px 1px #EED269,
+                70px 10px 0 5px #DEA631;
         }
 
         meat {
@@ -124,7 +131,10 @@
             position: absolute;
             bottom: calc(var(--height) / 2.5);
             right: 64px;
-            box-shadow: -150px -2px 0 0 #B64C19, -50px -7px 0 0 #B64C19, -100px 8px 0 0 #B64C19;
+            box-shadow:
+                -150px -2px 0 0 #B64C19,
+                -50px -7px 0 0 #B64C19,
+                -100px 8px 0 0 #B64C19;
             z-index: 3;
         }
 
@@ -139,14 +149,15 @@
             left: 75%;
             transform: translate(-75%, 0%) rotate(25deg);
         }
-
     </style>
-
 </head>
-
 <body>
-    <div class="error-500"
-        data-text="<?php if(!$error) $error ='Opps! Something went wrong. We are checking out the problem!'; echo $error; ?>">
+    @php
+        $errorMessage = $error ?? 'Oops! Something went wrong. We are checking out the problem!';
+        $errorMessage = strip_tags($errorMessage);
+    @endphp
+
+    <div class="error-500" data-text="{{ $errorMessage }}">
         <spaguetti>
             <fork></fork>
             <meat></meat>
@@ -154,23 +165,21 @@
             <plate></plate>
         </spaguetti>
     </div>
-    <script>
-        const error = document.querySelector(".error-500");
-        let i = 0,
-            data = "",
-            text = error.getAttribute("data-text");
 
-        let typing = setInterval(() => {
-            if (i == text.length) {
-                clearInterval(typing);
+    <script>
+        const errorDiv = document.querySelector(".error-500");
+        const message = errorDiv.getAttribute("data-text") || "Oops! Something went wrong.";
+        let i = 0, data = "";
+
+        const typeEffect = setInterval(() => {
+            if (i === message.length) {
+                clearInterval(typeEffect);
             } else {
-                data += text[i];
-                document.querySelector(".error-500").setAttribute("data-text", data);
+                data += message[i];
+                errorDiv.setAttribute("data-text", data);
                 i++;
             }
-        }, 100);
-
+        }, 90);
     </script>
 </body>
-
 </html>
