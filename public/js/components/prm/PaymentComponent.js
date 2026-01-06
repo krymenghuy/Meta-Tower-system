@@ -354,9 +354,9 @@ var PaymentComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/payments/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true, 'Payment Statuses', null);
                 VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', null);
-                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '','All Payment Method', null);
+                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '','Payment Method', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }

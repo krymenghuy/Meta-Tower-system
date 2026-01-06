@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Meta Estate - Login</title>
-  <link rel="icon" type="image/png" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}"/>
+  <link rel="icon" type="image/png" href="{{ asset('assets/images/meta/Meta_logo1.png') }}"/>
   <?php StyleManager::render('login-styles',1); ?>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 

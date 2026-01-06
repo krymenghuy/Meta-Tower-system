@@ -15,7 +15,7 @@ var BuildingComponent = ( () => {
         className: "align-middle",
     },
     {
-        title: "Building",
+        title: "Building Name",
         className: "align-middle",
         data: (data) => `
             <div class="d-flex flex-column">
