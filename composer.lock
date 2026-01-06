@@ -7480,12 +7480,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-dbx.git",
-                "reference": "72bc9cb33c8f4a25f334e22da2490993a8b1ea13"
+                "reference": "8787dfe99d4b42f3240b2792cb6079a385ec765a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/72bc9cb33c8f4a25f334e22da2490993a8b1ea13",
-                "reference": "72bc9cb33c8f4a25f334e22da2490993a8b1ea13",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-dbx/zipball/8787dfe99d4b42f3240b2792cb6079a385ec765a",
+                "reference": "8787dfe99d4b42f3240b2792cb6079a385ec765a",
                 "shasum": ""
             },
             "require": {
@@ -7515,7 +7515,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-dbx/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-dbx/issues"
             },
-            "time": "2025-08-23T16:15:47+00:00"
+            "time": "2025-12-24T04:09:45+00:00"
         },
         {
             "name": "vsd/localization",
@@ -7813,12 +7813,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "db94a910a4097d241436eed964642ca6282902ad"
+                "reference": "6032935923938118e9e786d9e1584f1818bee4fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/db94a910a4097d241436eed964642ca6282902ad",
-                "reference": "db94a910a4097d241436eed964642ca6282902ad",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/6032935923938118e9e786d9e1584f1818bee4fb",
+                "reference": "6032935923938118e9e786d9e1584f1818bee4fb",
                 "shasum": ""
             },
             "require": {
@@ -7848,7 +7848,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2025-09-10T10:05:48+00:00"
+            "time": "2026-01-05T02:35:46+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -10342,6 +10342,6 @@
     "platform": {
         "php": "^7.3|^8.2.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

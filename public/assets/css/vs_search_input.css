@@ -1,0 +1,147 @@
+/* =====================================================
+   VS SEARCH INPUT — ROOT WRAPPER
+   ===================================================== */
+.vs-search-wrapper {
+  position: relative;
+  width: 100%;
+  display: block;
+  isolation: isolate;
+  z-index: 10;
+}
+.vs-search-wrapper.is-open {
+  z-index: 20;
+}
+.vs-search-wrapper.is-select {
+  cursor: pointer;
+}
+
+/* =====================================================
+   VS SEARCH INPUT — INPUT FIELD
+   ===================================================== */
+.vs-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em 3em 0.5em 0.75em;
+  font-size: inherit;
+  line-height: normal;
+  background: inherit;
+  color: inherit;
+}
+.vs-search-wrapper.is-select .vs-search-input {
+  cursor: pointer;
+}
+
+/* =====================================================
+   VS SEARCH INPUT — ICON (SVG arrow or search)
+   ===================================================== */
+.vs-search-icon {
+  position: absolute;
+  top: 50%;
+  right: 0.75em;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.vs-search-icon {
+  top: 50%;
+  width: 18px;
+  height: 18px;
+}
+/* Display arrow icon ONLY if in select mode */
+.vs-search-wrapper.is-select .vs-search-icon {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+ 
+/* Rotate when dropdown is open */
+.vs-search-wrapper.is-select.is-open .vs-search-icon {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Optional: fade on focus */
+.vs-search-wrapper:focus-within .vs-search-icon {
+  opacity: 0.85;
+}
+/* Display search icon ONLY if not in select mode */
+.vs-search-wrapper:not(.is-select) .vs-search-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23222' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='20' y1='20' x2='15.5' y2='15.5'/%3E%3C/svg%3E");
+} 
+/* =====================================================
+   VS SEARCH INPUT — DROPDOWN CONTAINER
+   ===================================================== */
+.vs-search-dropdown {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
+  z-index: 1050;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+}
+.vs-search-wrapper.is-open .vs-search-dropdown {
+  display: block;
+}
+
+/* =====================================================
+   VS SEARCH INPUT — ITEM STYLING
+   ===================================================== */
+.vs-search-item {
+  padding: 0.6em 0.75em;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.15s ease;
+}
+.vs-search-item:hover {
+  background-color: #e9eaed;
+}
+.vs-search-item.active {
+  background-color: #cad6e4;
+}
+
+/* =====================================================
+   VS SEARCH INPUT — EMPTY STATE
+   ===================================================== */
+.vs-search-dropdown:empty {
+  display: none;
+}
+
+/* Optionally indicate dropdown ready */
+.vs-dropdown.dropdown-ready {
+  border-color: #22c55e;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+.vs-search-header,
+.vs-search-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.vs-search-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  z-index: 2;
+}
+
+.vs-search-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
