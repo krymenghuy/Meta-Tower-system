@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5d2e564407c0cbf145c2b6de45b50f3",
+    "content-hash": "f4db50fdc8abd244932f65cd080ea2cf",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7680,61 +7680,6 @@
             "time": "2025-12-27T08:34:16+00:00"
         },
         {
-            "name": "vsd/script-manager",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:vectorasoft-org/lib-script-manager.git",
-                "reference": "455c6a79f31ddbbaa66f11e6e0bdfe2021dd5026"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-script-manager/zipball/455c6a79f31ddbbaa66f11e6e0bdfe2021dd5026",
-                "reference": "455c6a79f31ddbbaa66f11e6e0bdfe2021dd5026",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Vsd\\ScriptManager\\Providers\\ScriptManagerServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Vsd\\ScriptManager\\": "src/"
-                }
-            },
-            "scripts": {
-                "post-install-cmd": [
-                    "npm install --prefix vendor/vsd/script-manager/src/node"
-                ],
-                "post-update-cmd": [
-                    "npm install --prefix vendor/vsd/script-manager/src/node"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Vectorasoft Co. Ltd.",
-                    "email": "support@vectorasoft.com"
-                }
-            ],
-            "description": "Vectorasoft Script Manager for Laravel (JS Bundling and Optimization)",
-            "support": {
-                "source": "https://github.com/vectorasoft-org/lib-script-manager/tree/main",
-                "issues": "https://github.com/vectorasoft-org/lib-script-manager/issues"
-            },
-            "time": "2025-07-19T13:08:44+00:00"
-        },
-        {
             "name": "vsd/storage",
             "version": "dev-main",
             "source": {
@@ -7783,12 +7728,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-vsloquent.git",
-                "reference": "366310ef07cbc9afdce599480b53611cb0bd854a"
+                "reference": "1dc9a27c7e3b47f4513eb276a5e6d347a0614fec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/366310ef07cbc9afdce599480b53611cb0bd854a",
-                "reference": "366310ef07cbc9afdce599480b53611cb0bd854a",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/1dc9a27c7e3b47f4513eb276a5e6d347a0614fec",
+                "reference": "1dc9a27c7e3b47f4513eb276a5e6d347a0614fec",
                 "shasum": ""
             },
             "require": {
@@ -7832,7 +7777,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-vsloquent/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-vsloquent/issues"
             },
-            "time": "2025-08-05T10:32:20+00:00"
+            "time": "2026-01-03T03:14:56+00:00"
         },
         {
             "name": "vsd/xauth",
@@ -7840,12 +7785,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "2d90c151afd3ac00ecf917b0bac4df8d13d11789"
+                "reference": "6032935923938118e9e786d9e1584f1818bee4fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/2d90c151afd3ac00ecf917b0bac4df8d13d11789",
-                "reference": "2d90c151afd3ac00ecf917b0bac4df8d13d11789",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/6032935923938118e9e786d9e1584f1818bee4fb",
+                "reference": "6032935923938118e9e786d9e1584f1818bee4fb",
                 "shasum": ""
             },
             "require": {
@@ -7875,7 +7820,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2026-01-02T06:37:02+00:00"
+            "time": "2026-01-05T02:35:46+00:00"
         }
     ],
     "packages-dev": [
@@ -10314,7 +10259,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "vsd/script-manager": 20,
         "vsd/vsloquent": 20,
         "vsd/xauth": 20
     },
