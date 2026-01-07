@@ -7,7 +7,7 @@
     <base href="../">
     <meta charset="utf-8" />
     <title>Meta Estate</title>
-    <link type="images/png" rel="icon" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}" />
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/meta/Meta_logo1.png') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -98,7 +98,6 @@
     ScriptManager::render('priority-one', 1, 9);
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
-
     ScriptManager::render('prm-components', 1, 238);
     //ScriptManager::render('pdfmake', 1);
     ?>

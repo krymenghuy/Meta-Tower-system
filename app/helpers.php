@@ -227,7 +227,7 @@ function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field
     //return $prefix.$branch_id.formatNumber(1,$len);
 }
 
- 
+
 
 
 //@param $name_orientation => 0="Khmer or Asia where faimily name appears first", 1="European or American"
@@ -676,7 +676,7 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
       $public_folder = env('ASSET_URL');
       $public_folder =  $public_folder? $public_folder."/":null;
       return url('/')."/".$public_folder.$uri;
-   } 
+   }
 
     function getCurrentSubsId($use_env_value = false){
         $user = XAuthService::user();
@@ -1263,7 +1263,7 @@ function createUUIDV1()
     //       }
     //     return $path;
     // }
- 
+
     // //To upport misspelling version
     // function getAdminAppId(){
     //     return Config::get('app.app_id');

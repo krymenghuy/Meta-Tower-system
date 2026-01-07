@@ -6,7 +6,7 @@ var InvoiceComponent =   ( () => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoice");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoice");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_status = mThis.self.querySelector('#payment_status');
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.elTenant = mThis.self.querySelector('#tenant_id');
@@ -77,16 +77,18 @@ var InvoiceComponent =   ( () => {
         
 
         {
-            title: " Status",
+            title: "Status",
             className: "align-middle",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'text-info';
 
-                if (status === 'unpaid') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'paid') {
+                if (status === 'paid') {
                     cls = 'text-success px-2 py-1 d-inline-block';
+                } else if (status === 'unpaid') {
+                    cls = 'text-danger px-2 py-1 d-inline-block';
+                } else if (status === 'partially paid') {
+                    cls = 'text-warning px-2 py-1 d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
@@ -186,7 +188,7 @@ var InvoiceComponent =   ( () => {
 
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
+            status_id: mThis.elFilter_status.value,    
             search_value: mThis.elSearch.value,
         };
 
@@ -205,13 +207,13 @@ var InvoiceComponent =   ( () => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+                // {
+                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
+                //     cssClass: "border-bottom pb-2",
+                //     name: "change_status"
+                // },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -333,8 +335,7 @@ var InvoiceComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/invoice/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'invoice_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true,'Payment Status', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
                 if (typeof onFinish === 'function') onFinish();
             })

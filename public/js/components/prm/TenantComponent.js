@@ -24,7 +24,10 @@ var TenantComponent =   ( () => {
             title: "Name",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
+                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
+                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gary "></i>${data.name ?? ''}</span>
+                        <small class="d-block text-muted text-">${sexLabel}</small>`;
+                
             }
         },
         {
@@ -339,6 +342,16 @@ const CreateTenantDialog = (() => {
                                     <label>Legal Name</label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
+                                <div class="material-input outlined">
+                                    <select   name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
                             
                             <div class="col-12">    
                                 <div class="material-input outlined">

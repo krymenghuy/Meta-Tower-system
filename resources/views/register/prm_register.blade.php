@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/yavpheng/CYPA_logo.png') }}"/>
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/meta/Meta_logo1.png') }}"/>
     <?php StyleManager::render('login-styles', 1); ?>
     <title>Sign Up - Yav Pheng Association</title>
 

@@ -1,93 +1,3 @@
-<style>
-    /* li.kt-menu__section {
-        margin: 8px 0 !important;
-        background: #dce5e5 !important;
-        border: 1px solid #dce5e5 !important;
-        opacity: 0.9;
-        padding: 10px;
-    } */
-
-    /* .admin_email {
-        display: flex;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 60%;
-    } */
-
-    /* .kt-menu__section-text {
-        font-weight: bold !important;
-    } */
-
-    /* .menu-selected {
-        box-shadow: 1px 1px 1px #000 !important;
-        border-radius: 25px 0 0 25px;
-        color: #000;
-    } */
-
-    /* .kt-menu__link-icon img {
-        width: 22px;
-        height: 22px;
-        object-fit: contain;
-        margin-right: 5px;
-        color: #fff;
-    } */
-    
-   
-    /* .kt-menu__link-text {
-        color: #ffffff;
-    } */
-
-    /* .kt-menu__section {
-        color: rgb(26 22 71 / var(--tw-text-opacity, 1));
-        padding: 10px;
-        margin-bottom: 15px;
-    }
- 
-    .kt-aside__brand-logo {
-        height: 150px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: #ffffff;
-    } */
- 
-  
-
-    /* .company {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-        font-size: 14px;
-        font-weight: bold;
-        color: white;
-    } */
-
-    /* .admin_info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: 20px;
-    }
-
-    .admin_info img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-    } */
-
-    /* .kt-menu__link-text[vslang]:hover {
-        border-radius: 0 0 0 20px;
-        color: #cab54a;
-    } */
-</style>
-
 <?php
 function v_display($mod_id, $module_ids = null)
 {
@@ -145,7 +55,7 @@ function v_display($mod_id, $module_ids = null)
                 </button>
             </div>
         </div>
-         <div class="" id ="_dms_aside_menus" style="display:none;">
+         <div id ="_dms_aside_menus" class ="menu-pending">
                 <ul class="kt-menu__nav">
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
                         <a href="DashboardComponent" modid="238" class="menu-item kt-menu__link">
@@ -276,43 +186,58 @@ function v_display($mod_id, $module_ids = null)
 </div>
 
 <script>
-        (() => {
-            const menuPanel = document.querySelector('#kt_aside_menu_wrapper');
-            const __dx = menuPanel.querySelector('#_dms_aside_menus');
-            const __brandArea = menuPanel.querySelector('#kt_aside_brand');
-            if (!__dx) return;
+(() => {
+    const waitForLocaleManager = (cb) => {
+        if (
+            window.LocaleManager &&
+            typeof window.LocaleManager.translateZone === 'function'
+        ) {
+            cb();
+            return;
+        }
+        requestAnimationFrame(() => waitForLocaleManager(cb));
+    };
 
-            const updateMenuHeight = () => {
-                const offsetTop = __brandArea.offsetHeight || 0;
-                const maxHeight = window.innerHeight - offsetTop;
-                __dx.style.maxHeight = maxHeight + 'px';
-                __dx.style.overflowY = 'hidden';
-            };
+    // ------------------------------------------------------------
+    // 2️⃣ Menu initialization (runs ONLY when LocaleManager exists)
+    // ------------------------------------------------------------
+    const initMenu = () => {
+        const menuPanel  = document.querySelector('#kt_aside_menu_wrapper');
+        const __dx       = menuPanel?.querySelector('#_dms_aside_menus');
+        const __brand    = menuPanel?.querySelector('#kt_aside_brand');
+        if (!__dx) return;
 
-            window.vsapp = window.vsapp || {};
-            window.vsapp.menuTranslated = false;
+        const updateMenuHeight = () => {
+            const offsetTop = __brand?.offsetHeight || 0;
+            __dx.style.maxHeight = (window.innerHeight - offsetTop) + 'px';
+            __dx.style.overflowY = 'hidden';
+        };
 
-            const tryTranslateMenu = () => {
-                if (typeof LocaleManager === 'object' || typeof LocaleManager === 'function') {
-                    LocaleManager.translateZone(__dx, null, () => {});
-                    __dx.style.display = 'block';
-                    window.vsapp.menuTranslated = true;
-                }
-            };
+        // Prevent double execution (important for SPA / VSRoute)
+        window.vsapp = window.vsapp || {};
+        if (window.vsapp.menuTranslated) return;
 
-            document.addEventListener('DOMContentLoaded', () => {
-                tryTranslateMenu();
-                setTimeout(updateMenuHeight, 0); // ensure layout is ready
-            });
+        LocaleManager.translateZone(__dx, null, () => {
+            window.vsapp.menuTranslated = true;
+            requestAnimationFrame(updateMenuHeight);
+        });
+        __dx.classList.remove('menu-pending');
+        __dx.classList.add('menu-ready');
+-
+        window.addEventListener('resize', updateMenuHeight);
 
-            window.addEventListener('resize', updateMenuHeight);
+        __dx.addEventListener('mouseenter', () => {
+            __dx.style.overflowY = 'auto';
+        });
 
-            __dx.addEventListener('mouseover', () => {
-                __dx.style.overflowY = 'auto';
-            });
-            __dx.addEventListener('mouseout', () => {
-                __dx.style.overflowY = 'hidden';
-            });
-        })();
- 
+        __dx.addEventListener('mouseleave', () => {
+            __dx.style.overflowY = 'hidden';
+        });
+    };
+
+    // ------------------------------------------------------------
+    // 3️⃣ Boot
+    // ------------------------------------------------------------
+    waitForLocaleManager(initMenu);
+})();
 </script>

@@ -31,7 +31,7 @@ class AuthController extends Controller
      * =================================================== */
     public function apiLogin(Request $request)
     {
-        $appId = $request->app_id ?? Config::get('app.ksm_app_id');
+        $appId = $request->app_id ?? Config::get('app.admin_app_id');
 
         return XAuthService::verifyUser(
             $appId,
@@ -111,7 +111,7 @@ class AuthController extends Controller
         'login_name'  => $request->login_name,
     ]);
 }
-  
+
     /* =====================================================
      * TENANT CLIENT PORTAL LOGIN (WEB, SAME COOKIE RULES)
      * =================================================== */
@@ -157,7 +157,7 @@ public function processClientLogin(Request $request)
     return redirect('tenant')
         ->withCookie($this->authCookie($accessToken));
 }
- 
+
     public function logout(Request $request)
     {
         $token = XAuthService::getWebToken($request);
