@@ -24,9 +24,9 @@ var TenantComponent =   ( () => {
             title: "Name",
             className: "align-middle",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gary "></i>${data.name ?? ''}</span>
-                        <small class="d-block text-muted text-">${sexLabel}</small>`;
+                const sexLabel = data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : 'Other';
+                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gray "></i>${data.name ?? ''}</span>
+                        <small class="d-block text-muted">${sexLabel}</small>`;
                 
             }
         },
@@ -332,27 +332,26 @@ const CreateTenantDialog = (() => {
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                     <label>Full Name</label>
                                 </div>
-                            </div>
-                            
-                            
+                            </div>                           
 
-                             <div class="col-12">
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
                                     <label>Legal Name</label>
                                 </div>
                             </div>
+
+                            
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
                                 <div class="material-input outlined">
-                                    <select   name="sex" placeholder=" " class="data-input form-control" data-field="sex">
-                                        <option value="m">Male</option>
-                                        <option value="f">Female</option>
+                                    <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
                                     </select>
                                 </div>
                             </div>
-                            
-                            
+
                             <div class="col-12">    
                                 <div class="material-input outlined">
                                     <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
