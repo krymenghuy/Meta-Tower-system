@@ -10,7 +10,6 @@ var TenantComponent =   ( () => {
     // mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [
-
         {
             title: "",
             className: "align-middle",
@@ -26,8 +25,22 @@ var TenantComponent =   ( () => {
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gary "></i>${data.name ?? ''}</span>
-                        <small class="d-block text-muted text-">${sexLabel}</small>`;
-                
+                        <small class="d-block text-muted">${sexLabel}</small>`;
+
+            }
+        },
+        {
+            title: "National ID",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-yp-custom">${data.national_id ?? ''}</span>`;
+            }
+        },
+        {
+            title: "Passport Number",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-yp-custom">${data.passport_number ?? ''}</span>`;
             }
         },
         {
@@ -88,13 +101,13 @@ var TenantComponent =   ( () => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
+
+
               tr.dataset.statusid = data.status_id;
               tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join('')); 
+              tr.setAttribute('id',['tenant_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -141,7 +154,7 @@ var TenantComponent =   ( () => {
                 mThis.TenantListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -226,7 +239,7 @@ var TenantComponent =   ( () => {
             }
         };
         console.log(1123,op);
-        
+
         CreateTenantDialog.show(op);
     }
      mThis.deleteTenant = (id, menuLink) => {
@@ -260,7 +273,7 @@ var TenantComponent =   ( () => {
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         console.log(123,status_id);
-        
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Tenant Status",
@@ -333,8 +346,8 @@ const CreateTenantDialog = (() => {
                                     <label>Full Name</label>
                                 </div>
                             </div>
-                            
-                            
+
+
 
                              <div class="col-12">
                                 <div class="material-input outlined">
@@ -345,29 +358,29 @@ const CreateTenantDialog = (() => {
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
                                 <div class="material-input outlined">
-                                    <select   name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                    <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
                                         <option value="m">Male</option>
                                         <option value="f">Female</option>
                                     </select>
                                 </div>
                             </div>
-                            
-                            
-                            <div class="col-12">    
+
+
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
                                     <label>Phone Number</label>
                                 </div>
                             </div>
 
-                            <div class="col-12">    
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
                                     <label>Email</label>
                                 </div>
                             </div>
-                             
-                            
+
+
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
@@ -394,7 +407,7 @@ const CreateTenantDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -402,7 +415,7 @@ const CreateTenantDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -428,14 +441,14 @@ const CreateTenantDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    // LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',

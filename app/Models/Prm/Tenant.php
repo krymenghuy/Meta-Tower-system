@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
-class Tenant 
+class Tenant
 {
     protected $id = null;
     protected $userInfo = null;
@@ -25,6 +25,8 @@ class Tenant
         $v_rule = [
             'name' => '1|string|0-200|text=Tenant name must be provided',
             'legal_name' => '0|string|0-250',
+            'national_id'=>'1|string|0-100',
+            'passport_number'=>'0|string|0-100',
             'phone_number' => '0|phone|0-23',
             'email' => '0|email|1-50',
             'address' => '0|string|0-350',
@@ -70,7 +72,7 @@ class Tenant
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
         $query = DB::table('tenants as t')
             ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.legal_name,t.sex,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+            ->selectRaw("t.id,t.name,t.legal_name,t.national_id,passport_number,t.sex,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -81,7 +83,7 @@ class Tenant
     public static function getDetails($id){
         return DB::table('tenants as t')
             ->where('t.id',$id)
-            ->selectRaw('t.id,t.name,t.legal_name,t.sex,t.phone_number,t.email,t.address')
+            ->selectRaw('t.id,t.name,t.national_id,passport_number,t.sex,t.legal_name,t.phone_number,t.email,t.address')
             ->first();
     }
 
@@ -91,7 +93,7 @@ class Tenant
             'tenants' => $details,
         ];
     }
-    
+
     public function delete($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('tenants')->where('id',$id)->delete();

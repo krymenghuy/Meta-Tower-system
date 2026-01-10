@@ -18,13 +18,13 @@ var SpaceComponent = new (function () {
                 title: "",
                 className: "align-middle text-capitalize",
             },
-            
+
             {
                 title: "Building",
                 className: "align-middle",
                 data: (data,index) => `<span class="text-primary-custom">${data.building_name}</span>`,
             },
-        
+
             {
                 title: "Floor",
                 className: "align-middle",
@@ -85,8 +85,8 @@ var SpaceComponent = new (function () {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-        
-            
+
+
             {
                 title: "Updated By",
                 className: 'align-middle',
@@ -119,13 +119,13 @@ var SpaceComponent = new (function () {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
+
+
               tr.dataset.statusid = data.status_id;
               tr.classList.add('building-space');
-              tr.setAttribute('id',['building-space_id',data.id].join('')); 
+              tr.setAttribute('id',['building-space_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -171,7 +171,7 @@ var SpaceComponent = new (function () {
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -230,7 +230,7 @@ var SpaceComponent = new (function () {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                  
+
                     case 'edit_space': {
                         mThis.editSpace(id, menuLink);
                         break;
@@ -257,7 +257,7 @@ var SpaceComponent = new (function () {
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
-        
+
         BuildingSpaceDialog.show(op);
     }
      mThis.deleteSpace = (id, menuLink) => {
@@ -290,7 +290,7 @@ var SpaceComponent = new (function () {
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         console.log(123,status_id);
-        
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Building Space Status",
@@ -308,7 +308,7 @@ var SpaceComponent = new (function () {
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            
+
             const payload = {id, status_id :selected.value};
             vsapi.call(`${mThis.base_url}/prm/building-space/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
@@ -322,7 +322,7 @@ var SpaceComponent = new (function () {
             });
         });
 
-    };      
+    };
 
     mThis.prepareFormOptions = (onFinish) => {
 
@@ -380,7 +380,7 @@ const BuildingSpaceDialog = (() => {
                                 <div class="material-input outlined">
                                     <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
-                                    
+
                                 </div>
                             </div>
                             <div class="col-12">
@@ -399,7 +399,7 @@ const BuildingSpaceDialog = (() => {
                                     <label>Size (m²)</label>
                                 </div>
                             </div>
-                            <div class="col-12">    
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
@@ -410,8 +410,8 @@ const BuildingSpaceDialog = (() => {
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
                                 </div>
-                            </div> 
-                         
+                            </div>
+
 
                         </div>`
                     ].join("");
@@ -433,7 +433,7 @@ const BuildingSpaceDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -441,7 +441,7 @@ const BuildingSpaceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-    
+
                  me.controls.price_type.onchange = (e) => {
                         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
                         if (!sqmWrapper) return;
@@ -477,14 +477,13 @@ const BuildingSpaceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    // LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
@@ -500,7 +499,7 @@ const BuildingSpaceDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
                             console.log(9090,op);
-                            
+
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
