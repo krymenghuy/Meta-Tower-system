@@ -80,7 +80,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/space.svg') }}" />
                             </span>
-                            <span class="kt-menu__link-text font-color" vslang="menus.Building Spaces"></span>
+                            <span class="kt-menu__link-text font-color" vslang="menus.Spaces"></span>
                         </a>
                     </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(244); ?>>
