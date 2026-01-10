@@ -65,10 +65,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                         </a>
                     </li>
-                    <li class="kt-menu__section">
-                        <h4 class="kt-menu__section-text " vslang="menus.tenant_management">Tenant Managements</h4>
-                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                    </li>
+                   
 
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(239); ?>>
                         <a href="TenantComponent" modid="239" class="menu-item kt-menu__link">
@@ -94,10 +91,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color" vslang="menus.Contracts"></span>
                         </a>
                     </li>
-                    <li class="kt-menu__section">
-                        <h4 class="kt-menu__section-text " vslang="menus.payments">Payments & Expenses</h4>
-                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
-                    </li>
+                   
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                         <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">

@@ -157,16 +157,16 @@
                                             </div>
                                         </div>
                                 </div>
-                                <div id="_main_top_right_menus" class="d-flex flex-row gap-2 w-50 flex-wrap px-3 justify-content-end align-items-center">
+                                <div id="_main_top_right_menus" class="d-flex flex-row gap-2 flex-wrap px-3 justify-content-end align-items-center">
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2                        ">
+                                                <span id="_main_lang_name" class="mx-2 text-white">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="fa-solid fa-caret-down ps-2 fs-5"></i>
+                                                <i class="fa-solid fa-caret-down text-white ps-2 fs-5"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 <span class="lang-menu-header"></span>
@@ -189,7 +189,7 @@
                                     <div class="dropdown nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#080809;"></i>
+                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#ffffff;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -203,7 +203,7 @@
                                     </div>
 
                                     <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#080809;"></i> </button>
+                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#ffffff;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -268,7 +268,7 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2">
+                                                <span class="mx-2 text-white">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';

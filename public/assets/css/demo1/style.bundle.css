@@ -48733,7 +48733,7 @@ body {
 .kt-aside-menu .kt-menu__nav>.kt-menu__item>.kt-menu__heading,
 .kt-aside-menu .kt-menu__nav>.kt-menu__item>.kt-menu__link {
   cursor: pointer;
-  min-height: 44px;
+  min-height: 40px;
 }
 
 .kt-aside-menu .kt-menu__nav>.kt-menu__item>.kt-menu__heading .kt-menu__link-text,
