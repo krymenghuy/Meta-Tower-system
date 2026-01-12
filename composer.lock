@@ -2144,16 +2144,16 @@
         },
         {
             "name": "laravel/tinker",
-            "version": "v2.10.1",
+            "version": "v2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/tinker.git",
-                "reference": "22177cc71807d38f2810c6204d8f7183d88a57d3"
+                "reference": "3d34b97c9a1747a81a3fde90482c092bd8b66468"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/tinker/zipball/22177cc71807d38f2810c6204d8f7183d88a57d3",
-                "reference": "22177cc71807d38f2810c6204d8f7183d88a57d3",
+                "url": "https://api.github.com/repos/laravel/tinker/zipball/3d34b97c9a1747a81a3fde90482c092bd8b66468",
+                "reference": "3d34b97c9a1747a81a3fde90482c092bd8b66468",
                 "shasum": ""
             },
             "require": {
@@ -2204,9 +2204,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/tinker/issues",
-                "source": "https://github.com/laravel/tinker/tree/v2.10.1"
+                "source": "https://github.com/laravel/tinker/tree/v2.11.0"
             },
-            "time": "2025-01-27T14:24:01+00:00"
+            "time": "2025-12-19T19:16:45+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -4809,27 +4809,27 @@
         },
         {
             "name": "riverline/multipart-parser",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Riverline/multipart-parser.git",
-                "reference": "1410f23a8fd416a0cf5c8867ea9c95544016c831"
+                "reference": "67937af1966be008f5b7ef3c45865710f30270f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/1410f23a8fd416a0cf5c8867ea9c95544016c831",
-                "reference": "1410f23a8fd416a0cf5c8867ea9c95544016c831",
+                "url": "https://api.github.com/repos/Riverline/multipart-parser/zipball/67937af1966be008f5b7ef3c45865710f30270f4",
+                "reference": "67937af1966be008f5b7ef3c45865710f30270f4",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": ">=5.6.0"
+                "php": ">=7.0"
             },
             "require-dev": {
-                "laminas/laminas-diactoros": "^1.8.7 || ^2.11.1",
-                "phpunit/phpunit": "^5.7 || ^9.0",
-                "psr/http-message": "^1.0",
-                "symfony/psr-http-message-bridge": "^1.1 || ^2.0"
+                "laminas/laminas-diactoros": "*",
+                "phpunit/phpunit": "*",
+                "psr/http-message": "*",
+                "symfony/psr-http-message-bridge": "*"
             },
             "type": "library",
             "autoload": {
@@ -4859,9 +4859,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Riverline/multipart-parser/issues",
-                "source": "https://github.com/Riverline/multipart-parser/tree/2.2.0"
+                "source": "https://github.com/Riverline/multipart-parser/tree/2.2.1"
             },
-            "time": "2025-04-29T08:38:14+00:00"
+            "time": "2026-01-07T12:25:13+00:00"
         },
         {
             "name": "rize/uri-template",
@@ -7780,12 +7780,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-vsloquent.git",
-                "reference": "1dc9a27c7e3b47f4513eb276a5e6d347a0614fec"
+                "reference": "515d01a2ad5b16b4a2c2322b7edb8fed23ada6be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/1dc9a27c7e3b47f4513eb276a5e6d347a0614fec",
-                "reference": "1dc9a27c7e3b47f4513eb276a5e6d347a0614fec",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-vsloquent/zipball/515d01a2ad5b16b4a2c2322b7edb8fed23ada6be",
+                "reference": "515d01a2ad5b16b4a2c2322b7edb8fed23ada6be",
                 "shasum": ""
             },
             "require": {
@@ -7797,7 +7797,10 @@
                 "laravel": {
                     "providers": [
                         "Vsd\\Vsloquent\\VsloquentServiceProvider"
-                    ]
+                    ],
+                    "aliases": {
+                        "VSModel": "Vsd\\Vsloquent\\VSModel"
+                    }
                 }
             },
             "autoload": {
@@ -7829,7 +7832,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-vsloquent/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-vsloquent/issues"
             },
-            "time": "2026-01-03T03:14:56+00:00"
+            "time": "2026-01-09T11:32:23+00:00"
         },
         {
             "name": "vsd/xauth",
@@ -7837,12 +7840,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:vectorasoft-org/lib-xauth.git",
-                "reference": "6032935923938118e9e786d9e1584f1818bee4fb"
+                "reference": "c6d3c0db8400929ea056bf55d3e8c79301e8e7a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/6032935923938118e9e786d9e1584f1818bee4fb",
-                "reference": "6032935923938118e9e786d9e1584f1818bee4fb",
+                "url": "https://api.github.com/repos/vectorasoft-org/lib-xauth/zipball/c6d3c0db8400929ea056bf55d3e8c79301e8e7a3",
+                "reference": "c6d3c0db8400929ea056bf55d3e8c79301e8e7a3",
                 "shasum": ""
             },
             "require": {
@@ -7872,7 +7875,7 @@
                 "source": "https://github.com/vectorasoft-org/lib-xauth/tree/main",
                 "issues": "https://github.com/vectorasoft-org/lib-xauth/issues"
             },
-            "time": "2026-01-05T02:35:46+00:00"
+            "time": "2026-01-10T06:20:35+00:00"
         }
     ],
     "packages-dev": [

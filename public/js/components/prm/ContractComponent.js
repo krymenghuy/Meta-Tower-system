@@ -15,94 +15,123 @@ var ContractComponent = new (function () {
 
 
     mThis.cols = [
-
         {
             title: "",
             className: "align-middle",
         },
         {
-            title: " ID",
-            className: "align-middle",
-            data: (data, index) => `<span class="text-yp-custom">${data.id}</span>`,
+            title: "ID",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data, index) =>  `<span class="text-yp-custom">${String(index + 1).padStart(3, '0')}</span>`
         },
         {
-            title: " tenant",
-            className: "align-middle",
+            title: "Name",
+            className: "align-middle text-nowrap text-capitalize",
             data: (data, index) => `<span class="text-primary-custom">${data.tenant_name}</span>`,
         },
         {
-            title: "Business Type",
-            className: "align-middle",
+            title: " Legal Name",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data, index) => `<span class="text-primary-custom fw-medium">${data.legal_name}</span>`,
+        },
+        {
+            title: "Contact Info",
+            className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;">${data.business_type}</span>`;
+                return `<span class="d-block" style="font-size:12px;">${data.phone_number ?? ''}</span>
+                        <small class="d-block text-primary">${data.email}</small>`;
             }
         },
         {
-            title: "Space Type",
-            className: "align-middle",
+            title: "Business / Space",
+            className: "align-middle text-nowrap text-capitalize",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;">${data.space_type}</span>`;
+                return `<span class="d-block" style="font-size:12px;">${data.business_type ?? ''}</span>
+                        <small class="d-block text-muted">${data.space_type}</small>`;
             }
         },
         {
-            title: "start date",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.start_date ?? 'N/A'}</span>
-                    </div>
-                `;
-            }
-        },
-        {
-            title: "end date",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.end_date ?? 'N/A'}</span>
-                    </div>
-                `;
-            }
-        },
-        {
-            title: "space code",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:50px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.space_code ?? 'N/A'}</span>
-                    </div>
-                `;
-            }
-        },
+            title: "Duration",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data) => {
+                const end = new Date(data.end_date);
+                const today = new Date();
+                let progressClass = 'bg-success';
+                let statusText = 'Active';
+                let textColor = 'text-success';
+                const diffDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+                if (today > end) {
+                    progressClass = 'bg-danger';
+                    statusText = 'Expired';
+                    textColor = 'text-danger';
+                } else if (diffDays <= 7) {
+                    progressClass = 'bg-warning';
+                    textColor = 'text-warning';
+                    statusText = 'Expiring';
+                }
 
-        {
-            title: "Size",
-            className: "align-middle",
-            data: (data) => {
-                return data.price_type === 'total'
-                    ? `<span class="text-primary-custom">Whole Room</span>`
-                    : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
-            }
-        },
-        {
-            title: "Price",
-            className: "align-middle",
-            data: (data) => {
-                const cur_symbol = data.cur_symbol ?? '$';
-                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+                return `
+                    <div class="d-flex flex-column gap-1">
+                        <small class="text-muted">
+                            ${data.start_date} – ${data.end_date}
+                        </small>
+                        <div class="progress" style="height:6px; width:70%;">
+                            <div
+                                class="progress-bar ${progressClass} progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                style="width:100%"
+                                aria-valuenow="100"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="${statusText}">
+                            </div>
+                        </div>
 
-                return data.price_type === 'total'
-                    ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
-                    : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
+                        <small class="text-start ${textColor}">• ${statusText}</small>
+                    </div>
+                `;
             }
         },
-        
+        {
+            title: "Space / code",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data, index, tr) => {
+                return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
+            }
+        },
+        {
+            title: "Price / Size",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data) => {
+                const cur = data.cur_symbol ?? '$';
+                const price = data.price ? Number(data.price).toLocaleString() : '-';
+
+                if (data.price_type === 'total') {
+                    return `
+                        <span class="fw-semibold">
+                            ${cur} ${price}
+                            <small class="text-muted">/month</small>
+                        </span>
+                        <div class="text-muted small">Whole Room</div>
+                    `;
+                }
+
+                return `
+                    <span class="text-primary-custom">
+                        ${cur} ${price}
+                        <small class="text-muted">/sqm</small>
+                    </span>
+                    <div class="text-muted small">
+                        ${data.sqm_size ?? '-'} sqm
+                    </div>
+                `;
+            }
+        },
         {
             title: "remark",
-            className: "align-middle",
+            className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `
                     <div class="text-yp-custom" style="width:50px;">
@@ -111,10 +140,9 @@ var ContractComponent = new (function () {
                 `;
             }
         },
-        
         {
             title: "Updated By",
-            className: 'align-middle',
+            className: 'align-middle text-nowrap text-capitalize',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
@@ -123,18 +151,17 @@ var ContractComponent = new (function () {
             }
         },
         {
-            className: 'col_action align-middle',
+            className: 'col_action align-middle text-capitalize',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-yp-custom rounded-2 text-nowrap">
+                       <button class="btn btn-sm btn-outline-prm-custom rounded-2 text-nowrap">
                            <span><i class="fa fa-pencil"></i></span>
                            <i class="fa-solid fa-caret-down"></i>
                        </button>
                     </a>
                 </div>`
         },
-
     ];
 
     mThis.init = () => {
@@ -146,7 +173,7 @@ var ContractComponent = new (function () {
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
 
 
@@ -173,9 +200,9 @@ var ContractComponent = new (function () {
 
         mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
@@ -374,7 +401,7 @@ const ContractDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -466,7 +493,7 @@ const ContractDialog = (() => {
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.classList.add('bg-prm-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
 
