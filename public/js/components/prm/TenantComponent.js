@@ -337,7 +337,7 @@ const CreateTenantDialog = (() => {
                 cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
@@ -349,12 +349,14 @@ const CreateTenantDialog = (() => {
 
 
 
-                             <div class="col-12">
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
                                     <label>Legal Name</label>
                                 </div>
                             </div>
+
+
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
                                 <div class="material-input outlined">

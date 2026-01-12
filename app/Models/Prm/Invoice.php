@@ -112,7 +112,7 @@ class Invoice //extends Model
     }
 
     static function checkDuplicateSpaceId($building_id, $floor, $tenant_id, $invoice_id = null){
-        $query = DB::table('invoices as inv')
+        $query = DB::table('invoices as i')
             ->where('i.building_id', $building_id)
             ->where('i.floor_number', $floor)
             ->where('i.tenant_id', $tenant_id)

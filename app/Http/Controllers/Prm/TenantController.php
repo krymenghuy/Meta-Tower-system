@@ -35,7 +35,7 @@ class TenantController extends Controller
         return JDV::result($this->tenants->getListPaginate($req->all(),$ss));
     }
 
-    public function tenantDetails(Request $req){
+    public function getDetails(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !== 200){
             return JDV::raw($ss);
@@ -43,7 +43,7 @@ class TenantController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->tenants->tenantDetails($req->id));
+        return JDV::result($this->tenants->getDetails($req->id));
     }
     public function getFormOptions(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);

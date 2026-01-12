@@ -142,7 +142,7 @@
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#e7e7e7;">
+                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:hsl(0, 0%, 91%);">
                            <div id="_main_top_right_menus" class="mainview-top-right">
                                 <div class="show--title mx-4 d-flex flex-grow-1">
                                   <div class="screen-info" id="kt_header_menu_wrapper">
@@ -227,8 +227,8 @@
                                                         $route = '/'.ltrim($app->home_route, '/');
                                                     ?>
                                                     <div class="col">
-                                                        <a href="<?= $route ?>" 
-                                                        class="app-link d-block text-decoration-none text-dark small" 
+                                                        <a href="<?= $route ?>"
+                                                        class="app-link d-block text-decoration-none text-dark small"
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
                                                             <?= $icon ?>
                                                             <div class="mt-2 text-truncate"><?= $name ?></div>
@@ -303,7 +303,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_p2" class="h-100" id="kt_content">
+                <div id="_p2" class="h-100 " id="kt_content">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
@@ -324,7 +324,7 @@
                             @include('layouts.prm.expenseComponent')
 
 
-                           
+
 
 
                         </div>

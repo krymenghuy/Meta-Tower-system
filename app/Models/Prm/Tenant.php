@@ -30,7 +30,7 @@ class Tenant
             'phone_number' => '0|phone|0-23',
             'email' => '0|email|1-50',
             'address' => '0|string|0-350',
-            'sex' => '1|choice|f,F,m,M,o,O',
+            'sex' => '1|choice|F,M',
         ];
         $email_char = ['@','.','-','_'];
         $address_char = ['@',',','.','#'];
