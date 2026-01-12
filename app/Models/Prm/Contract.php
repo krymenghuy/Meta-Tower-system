@@ -43,11 +43,8 @@ class Contract
         if ($res->error) return DV::error($res->error);
 
         // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        
-    
         $inputs = $res->values;
         $d = (object) $arr;
-
         $duplicateId = self::checkDuplicateContractId(
             $d->space_id,
             // $d->building_space_code,
@@ -66,7 +63,7 @@ class Contract
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
 
-        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+        return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
 
    static function checkDuplicateContractId($space_id, $contract_id = null){
@@ -114,7 +111,7 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.email,t.phone_number,t.legal_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')

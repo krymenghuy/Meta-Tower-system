@@ -90,29 +90,34 @@
 .text-dark-custom {
     color: #38373a;
 }
-.bg-yp-custom {
+.bg-prm-custom {
     background-color: #1A1647;
     border-top-left-radius : 15px;
     border-top-right-radius : 15px;
 
 }
-.btn-yp-custom {
+.btn-prm-custom {
     background-color: #1a1647;
     color: #fff;
-    border-color: #fff;
+    border-color: #1a1647;
 }
-.btn-yp-custom:hover {
+.btn-prm-custom:hover {
+    background-color: #fff;
+    color: #1a1647;
+    border-color: #1a1647;
+}
+.btn-outline-prm-custom {
+    background-color: #fff;
+    color: #1a1647;
+    border-color: #1a1647;
+}
+
+.btn-outline-prm-custom:hover {
+    background-color: #1a1647;
     color: #fff;
-    background-color: #f6d674;
+    border-color: #1a1647;
 }
-.btn-outline-yp-custom {
-    color: #27444a;
-    border-color: #27444a;
-}
-.btn-outline-yp-custom:hover {
-    color: #fff;
-    background-color: #27444a;
-}
+
 .border-dark-custom {
     border-color: 2px solid #38373a;
 }
@@ -1942,7 +1947,7 @@ tfoot,
 th,
 thead,
 tr {
-    padding: 7px !important;
+    padding: 10px !important;
 }
 .table--white tr:hover td {
     background: rgb(224, 231, 234) !important;
