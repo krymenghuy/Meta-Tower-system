@@ -68,6 +68,18 @@ var SpaceComponent = new (function () {
         },
 
         {
+            title: "Location",
+            className: "align-middle text-capitalize",
+            data: (data, index, tr) => {
+                return `
+                    <div class="text-yp-custom" style="width:150px;">
+                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+                    </div>
+                `;
+            }
+        },
+
+        {
             title: "Status",
             className: "align-middle",
             data: (data) => {
@@ -403,6 +415,12 @@ const BuildingSpaceDialog = (() => {
                                 <div class="material-input outlined">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                     <label>Price</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <label>Location</label>
                                 </div>
                             </div>
                             <div class="col-12">
