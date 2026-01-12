@@ -80,7 +80,7 @@
 
         .font-en {
             /* font-family: Verdana, sans-serif; */
-            font-family: 'Battambang';
+            /* font-family: 'Battambang'; */
              /* font-family: "Source Sans 3", sans-serif; */
              /* font-family: "Open Sans", sans-serif; */
              /* font-family: "Roboto", sans-serif; */
@@ -88,7 +88,7 @@
             /* font-family: 'Segoe UI', sans-serif; */
             /* font-family: Arial, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
-           /* font-family: 'Inter', sans-serif; */
+           font-family: 'Inter', sans-serif;
         }
         .svg-white {
     filter: brightness(0) invert(1);
