@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('tenant-style', 1, 37);
+    StyleManager::render('tenant-style', 1, 39);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -100,7 +100,7 @@
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
 
-    ScriptManager::render('tenant-components', 1, 238);
+    ScriptManager::render('tenant-components', 1, 239);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>
