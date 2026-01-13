@@ -56,7 +56,7 @@ function v_display($mod_id, $module_ids = null)
             </div>
         </div>
          <div id ="_dms_aside_menus" class ="menu-pending">
-                <ul class="kt-menu__nav">
+                <ul class="kt-menu__nav side_menu_list">
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(238); ?>>
                         <a href="DashboardComponent" modid="238" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -66,7 +66,10 @@ function v_display($mod_id, $module_ids = null)
                         </a>
                     </li>
                    
-
+                    <li class="kt-menu__section mb-2">
+                        <h4 class="kt-menu__section-text " vslang="menus.Main Menu"></h4>
+                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                    </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(239); ?>>
                         <a href="TenantComponent" modid="239" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -109,6 +112,10 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Payments"></span>
                         </a>
                     </li>
+                    <li class="kt-menu__section mb-2">
+                        <h4 class="kt-menu__section-text " vslang="menus.Operational"></h4>
+                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                    </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                         <a href="ExpenseComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -150,12 +157,16 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                         </a>
                     </li>
+                    <li class="kt-menu__section mb-2">
+                        <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
+                        <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                    </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
                         <a href="SettingComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/setting.png') }}" />
                             </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Setting"></span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.System Settings"></span>
                         </a>
                     </li>
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(270); ?>>
