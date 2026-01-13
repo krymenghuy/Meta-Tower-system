@@ -5,9 +5,11 @@ var ServiceComponent =   ( () => {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnService");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
-    mThis.elFilter_status = mThis.self.querySelector('#_service_status');
-    mThis.elSearch = mThis.self.querySelector("#_search_service");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
+    mThis.elFilter_status = mThis.self.querySelector('#_service_status');
+    mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
+    mThis.elSearch = mThis.self.querySelector("#_search_service");
+    
 
     mThis.cols = [
 
@@ -15,20 +17,20 @@ var ServiceComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
-         
         {
-            title: "Service Name",
-            className: "align-middle ",
+            title: "Service",
+            className: "align-middle",
            data: (data) => {
-                return `<span class="text-yp-custom">${data.name ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
             }
         },
         {
-            title: "Unit Type ",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.unit_type ?? ''}</span>`,
+            title: "Category",
+            className: "align-middle",
+           data: (data) => {
+                return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
+            }
         },
-            
         {
             title: "Price",
             className: "align-middle",
@@ -36,7 +38,7 @@ var ServiceComponent =   ( () => {
                 const cur_symbol = data.cur_symbol ?? '$';
                 const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
 
-                const unitLabel = data.unit_type ? `/${data.unit_type}` : '';
+                const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
 
                 return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
          }
@@ -44,10 +46,10 @@ var ServiceComponent =   ( () => {
 
         {
             title: "Description",
-            className: "align-middle ",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
+                    <div class="text-primary-custom" style="width:150px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
                     </div>
                 `;
@@ -61,10 +63,10 @@ var ServiceComponent =   ( () => {
                 const status = (data.status ?? '').toLowerCase();
                 let cls = 'text-info';
 
-                if (status === 'inactive') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'active') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
+                if (status == 'inactive') {
+                    cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
+                } else if (status == 'active') {
+                    cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
@@ -77,7 +79,7 @@ var ServiceComponent =   ( () => {
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-capitalize text-start text-primary-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
                     <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
@@ -132,7 +134,7 @@ var ServiceComponent =   ( () => {
 
         mThis.pr_tbl = mThis.ServiceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
@@ -167,6 +169,7 @@ var ServiceComponent =   ( () => {
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
+            service_type_id: mThis.elFilter_type.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -315,6 +318,7 @@ var ServiceComponent =   ( () => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -345,26 +349,35 @@ const CreateServicedialog = (() => {
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_types">Category</label>
+                                <div class="material-input outlined">
+                                    <select name="service_types" class="data-input form-control" data-field="service_type_id">
+                                    </select>
+                                </div>
+                           </div>
                            <div class="col-12">
+                                <label style="padding-left:6px;">Service</label>
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Service Name</label>
                                 </div>
                             </div>
                             
-                            
-                            <div class="col-12">    
-                                <div class="material-input outlined">
-                                    <input type="name" name="unit_type" required class="data-input form-control" data-field="unit_type" placeholder=" " />
-                                    <label>Unit Type</label>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">    
+                            <div class="col-12">   
+                                <label style="padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Unit Price</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_types">Charge As</label>
+                                <div class="material-input outlined">
+                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
+                                        <option value="hour">Price Per Hour</option>
+                                        <option value="month">Price Per Month</option>
+                                        <option value="time">Per Usage / Per Time</option>
+                                        <option value="one_time">One-time Service</option>
+                                    </select>
                                 </div>
                             </div>
                              <div class="col-12">
@@ -375,9 +388,9 @@ const CreateServicedialog = (() => {
                             </div> 
 
                             <div class="col-12">
+                                <label style="padding-left:6px;">Remarks</label>
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                    <label>Description</label>
                                 </div>
                             </div>
                         </div>`
@@ -393,7 +406,7 @@ const CreateServicedialog = (() => {
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.classList.add('bg-prm-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
 
@@ -412,17 +425,17 @@ const CreateServicedialog = (() => {
 
 
                 },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
+                configSelect: [
+                    {
+                        name: "service_types",
+                        data: "service_types",
+                        textField: "service_type",
+                        valueField: "id",
+                    },
 
-                // ],
+                ],
                 prepareFormOptions: {
-                    createTitle: "Create New Service",
+                    createTitle: "Create Service",
                     modifyTitle: "Modify Service ",
                     targetProp: "service_details",
                     api: {

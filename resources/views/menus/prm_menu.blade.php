@@ -93,6 +93,14 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color" vslang="menus.Contracts"></span>
                         </a>
                     </li>
+                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
+                        <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
+                            <span class="kt-menu__link-icon">
+                                <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
+                            </span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
+                        </a>
+                    </li>
                    
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
                         <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">
@@ -158,14 +166,7 @@ function v_display($mod_id, $module_ids = null)
                         <div class="kt-menu__submenu">
                             <span class="kt-menu__arrow"></span>
                             <ul class="kt-menu__subnav">
-                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
-                                    <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
-                                        <span class="kt-menu__link-icon">
-                                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
-                                        </span>
-                                        <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
-                                    </a>
-                                </li>
+                                
                                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
                                     <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
