@@ -131,8 +131,6 @@ var SpaceComponent = new (function () {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
               tr.dataset.statusid = data.status_id;
               tr.classList.add('building-space');
               tr.setAttribute('id',['building-space_id',data.id].join('')); 
