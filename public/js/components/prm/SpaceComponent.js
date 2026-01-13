@@ -88,9 +88,11 @@ var SpaceComponent = new (function () {
 
                 if (status === 'available') {
                     cls = 'text-success px-2 py-1 d-inline-block';
-                } else if (status === 'unavailable') {
+                } else if (status === 'leased') {
                     cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'maintainance') {
+                } else if (status === 'maintenance') {
+                    cls = 'text-info px-2 py-1 d-inline-block';
+                } else if (status === 'reserved') {
                     cls = 'text-warning px-2 py-1 d-inline-block';
                 }
 
@@ -311,7 +313,8 @@ var SpaceComponent = new (function () {
             data:[
                 {status_id:"1",name:"Available"},
                 {status_id:"2",name:"Maintenance"},
-                {status_id:"3",name:"Unavailable"},
+                {status_id:"3",name:"Leased"},
+                {status_id:"4",name:"Reserved"},
             ],
             defaultValue: status_id
         };
