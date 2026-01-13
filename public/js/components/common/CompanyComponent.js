@@ -39,7 +39,7 @@ var CompanyComponent = (function(){
 		mThis.btnSave.addEventListener('click', function(e) {
             e.preventDefault();
             const p = mThis.getData();
-            if (!AuthManager.allowed(259)) return;
+            if (!AuthManager.allowed(209)) return;
 
             vsapi.call(`${mThis.base_url}/api/company/save-details`, p, null).then(res => {
                 if (res.status_code === 200) {
