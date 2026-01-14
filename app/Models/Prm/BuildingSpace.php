@@ -132,6 +132,7 @@ class BuildingSpace
         $building_id = $d->building_id ?? null;
         $space_type_id = $d->space_type_id ?? null;
         $status_id = $d->status_id ?? null;
+        $floor_number = $d->floor_number ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
@@ -147,6 +148,9 @@ class BuildingSpace
         }
         if($building_id){
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
+        }
+         if($floor_number){
+            $str_moreWhere .= ' AND bs.floor_number = ' . $floor_number;
         }
         if($space_type_id){
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
@@ -185,6 +189,7 @@ class BuildingSpace
         return (object)[
             'space_details' => $space_details,
             'buildings' =>GeneralSettings::options_building($ss),
+            'floors' =>GeneralSettings::options_floor($ss),
             'space_types'=> GeneralSettings::options_space_type($ss),
             'statuses' => GeneralSettings::options_space_status($ss)
         ];

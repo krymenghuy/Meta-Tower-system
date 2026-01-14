@@ -45,7 +45,7 @@ var ServiceComponent =   ( () => {
         },
 
         {
-            title: "Description",
+            title: "Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -128,7 +128,7 @@ var ServiceComponent =   ( () => {
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateServicedialog.show(op);
+            CreateServiceDialog.show(op);
         };
 
 
@@ -141,6 +141,7 @@ var ServiceComponent =   ( () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
         mThis.tblService = mThis.ServiceListView.getTable();
+        
         mThis.initDropdownMenus(mThis.tblService);
 
 
@@ -182,6 +183,8 @@ var ServiceComponent =   ( () => {
     };
 
     mThis.initDropdownMenus = (table) => {
+        console.log(44,table);
+        
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
@@ -247,7 +250,7 @@ var ServiceComponent =   ( () => {
             }
         };
         
-        CreateServicedialog.show(op);
+        CreateServiceDialog.show(op);
     }
      mThis.deleteService = (id, menuLink) => {
         let op = {
@@ -335,7 +338,7 @@ var ServiceComponent =   ( () => {
     return mThis;
 })();
 
-const CreateServicedialog = (() => {
+const CreateServiceDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -363,13 +366,13 @@ const CreateServicedialog = (() => {
                                 </div>
                             </div>
                             
-                            <div class="col-12">   
+                            <div class="col-4">   
                                 <label style="padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-8">
                                 <label style="padding-left:6px;" for="service_types">Charge As</label>
                                 <div class="material-input outlined">
                                     <select name="unit_type" class="data-input form-control" data-field="unit_type">

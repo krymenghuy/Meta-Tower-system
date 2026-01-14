@@ -8,118 +8,120 @@ var SpaceComponent = new (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
     mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elFloor = mThis.self.querySelector('#floor_number');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
+    let div = mThis.self.querySelector("#_space_list");
 
-    mThis.cols = [
+    // mThis.cols = [
 
-            {
-                title: "",
-                className: "align-middle text-capitalize",
-            },
+    //         {
+    //             title: "",
+    //             className: "align-middle text-capitalize",
+    //         },
             
-            {
-                title: "Building",
-                className: "align-middle",
-                data: (data,index) => `<span class="text-primary-custom">${data.building_name}</span>`,
-            },
+    //         {
+    //             title: "Building",
+    //             className: "align-middle",
+    //             data: (data,index) => `<span class="text-primary-custom">${data.building_name}</span>`,
+    //         },
         
-            {
-                title: "Floor",
-                className: "align-middle",
-                data: (data) => {
-                    const floor = data.floor_number ?? '';
-                    let floorText = `${floor}th Floor`;
+    //         {
+    //             title: "Floor",
+    //             className: "align-middle",
+    //             data: (data) => {
+    //                 const floor = data.floor_number ?? '';
+    //                 let floorText = `${floor}th Floor`;
 
-                    return `<span class="text-primary-custom">${floorText}</span>`;
-                }
-            },
-            {
-                title: "Code",
-                className: "align-middle ",
-                data: (data) => `<span class="text-primary-custom">${data.code}</span>`,
-            },
-            {
-                title: "Space Type",
-                className: "align-middle ",
-                data: (data) => `<span class="text-primary-custom">${data.space_type}</span>`,
-            },
-            {
-                title: "Size",
-                className: "align-middle",
-                data: (data) => {
-                    return data.price_type === 'total'
-                        ? `<span class="text-primary-custom">Whole Room</span>`
-                        : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
-                }
-            },
-            {
-                title: "Price",
-                className: "align-middle",
-                data: (data) => {
-                    const cur_symbol = data.cur_symbol ?? '$';
-                    const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+    //                 return `<span class="text-primary-custom">${floorText}</span>`;
+    //             }
+    //         },
+    //         {
+    //             title: "Code",
+    //             className: "align-middle ",
+    //             data: (data) => `<span class="text-primary-custom">${data.code}</span>`,
+    //         },
+    //         {
+    //             title: "Space Type",
+    //             className: "align-middle ",
+    //             data: (data) => `<span class="text-primary-custom">${data.space_type}</span>`,
+    //         },
+    //         {
+    //             title: "Size",
+    //             className: "align-middle",
+    //             data: (data) => {
+    //                 return data.price_type === 'total'
+    //                     ? `<span class="text-primary-custom">Whole Room</span>`
+    //                     : `<span class="text-primary-custom">${data.sqm_size ?? '-'} <small class="text-danger">(sqm)</small></span>`;
+    //             }
+    //         },
+    //         {
+    //             title: "Price",
+    //             className: "align-middle",
+    //             data: (data) => {
+    //                 const cur_symbol = data.cur_symbol ?? '$';
+    //                 const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
 
-                return data.price_type === 'total'
-                    ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
-                    : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
-            }
-        },
+    //             return data.price_type === 'total'
+    //                 ? `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">/monthly</small></span>`
+    //                 : `<span class="text-primary-custom">${cur_symbol} ${formattedPrice} <small class="text-muted">/sqm</small></span>`;
+    //         }
+    //     },
 
-        {
-            title: "Location",
-            className: "align-middle text-capitalize",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
-                    </div>
-                `;
-            }
-        },
+    //     {
+    //         title: "Location",
+    //         className: "align-middle text-capitalize",
+    //         data: (data, index, tr) => {
+    //             return `
+    //                 <div class="text-yp-custom" style="width:150px;">
+    //                     <small><i class="fa-solid fa-location-dot text-primary me-2"></i></small><small class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</small>
+    //                 </div>
+    //             `;
+    //         }
+    //     },
 
-        {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
+    //     {
+    //         title: "Status",
+    //         className: "align-middle",
+    //         data: (data) => {
+    //             const status = (data.status ?? '').toLowerCase();
+    //             let cls = 'text-info';
 
-                if (status === 'available') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
-                } else if (status === 'unavailable') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'maintainance') {
-                    cls = 'text-warning px-2 py-1 d-inline-block';
-                }
+    //             if (status === 'available') {
+    //                 cls = 'text-success px-2 py-1 d-inline-block';
+    //             } else if (status === 'unavailable') {
+    //                 cls = 'text-danger px-2 py-1 d-inline-block';
+    //             } else if (status === 'maintainance') {
+    //                 cls = 'text-warning px-2 py-1 d-inline-block';
+    //             }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
-        },
+    //             return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+    //         },
+    //     },
         
             
-            {
-                title: "Updated By",
-                className: 'align-middle',
-                data: (data, index, tr) => {
-                    return `<div class="d-flex flex-column">
-                        <span class="text-capitalize text-start fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                        <small class="text-muted">${data.updated_at ?? ''}</small>
-                    </div>`;
-                }
-            },
-            {
-                className: 'col_action align-middle',
-                data: (data) => `
-                    <div class="d-flex justify-content-center align-items-end">
-                        <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-                        </a>
-                    </div>`
-            },
+    //         {
+    //             title: "Updated By",
+    //             className: 'align-middle',
+    //             data: (data, index, tr) => {
+    //                 return `<div class="d-flex flex-column">
+    //                     <span class="text-capitalize text-start fw-semibold"><small>${data.update_user ?? ''}</small></span>
+    //                     <small class="text-muted">${data.updated_at ?? ''}</small>
+    //                 </div>`;
+    //             }
+    //         },
+    //         {
+    //             className: 'col_action align-middle',
+    //             data: (data) => `
+    //                 <div class="d-flex justify-content-center align-items-end">
+    //                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+    //                     <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+    //                     </a>
+    //                 </div>`
+    //         },
 
-    ];
+    // ];
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -136,6 +138,15 @@ var SpaceComponent = new (function () {
               tr.setAttribute('id',['building-space_id',data.id].join('')); 
 
             }, 
+           processResponse: (res) => {
+                return res.data;
+            },
+            renderItems: (data,list_container) => {
+                console.log(124,data);
+                
+                mThis.renderSpaceCard(list_container, data);
+
+            },
             listContainerClass: null
         });
 
@@ -154,11 +165,11 @@ var SpaceComponent = new (function () {
 
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        sh_parent.style.height = (window.innerHeight - 330) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 330) + 'px';
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
@@ -185,10 +196,13 @@ var SpaceComponent = new (function () {
 
         mThis.initAlready = true;
     };
+   
 
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
+            building_id: mThis.elBuilding.value,
+            status_id: mThis.elFloor.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -258,6 +272,152 @@ var SpaceComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
+     mThis.renderSpaceCard = (div,data) => {
+        data = data ?? [];
+        if(!AuthManager)
+        {
+            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
+            return;
+        }
+
+        AuthManager.init().then(user => {
+           mThis.renderSpace(data,user)
+        });
+    }
+ mThis.renderSpace = (data) => {
+    let html = `<div class="row g-4">`;
+    let cmt = 0;
+
+    if (Array.isArray(data) && data.length > 0) {
+        data.forEach(d => {
+
+            // ===== STATUS DEFAULT (Available) =====
+            let statusColor = 'bg-success';
+            let statusText = 'Available';
+            let btnClass = 'btn-outline-success';
+            let btnIcon = 'assignment_turned_in';
+            let btnText = 'Create Lease';
+            let progressWidth = '0%';
+
+            const statusId = d.status_id ?? 1;
+
+            // ===== STATUS MAPPING =====
+            if (statusId === 2) { // Maintenance
+                statusColor = 'bg-danger';
+                statusText = 'Maintenance';
+                btnClass = 'btn-outline-danger';
+                btnIcon = 'build';
+                btnText = 'View Tickets';
+                progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '50%';
+
+            } else if (statusId === 3) { // Occupied
+                statusColor = 'bg-primary';
+                statusText = 'Occupied';
+                btnClass = 'btn-outline-primary';
+                btnIcon = 'settings_input_component';
+                btnText = 'Manage Space';
+                progressWidth = '100%';
+            }
+
+            // ===== PRICE & SIZE =====
+            const sizeLabel = d.price_type === 'total'
+                ? 'Whole Room'
+                : `${d.sqm_size ?? '-'} sqm`;
+
+            const priceLabel = d.price_type === 'total'
+                ? `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /month`
+                : `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /sqm`;
+
+            html += `
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="unit-card position-relative overflow-hidden group h-100">
+                    <div class="p-4 d-flex flex-column gap-3">
+
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="unit-name mb-1 text-truncate">
+                                    ${d.building_name ?? 'Building'} - ${d.code ?? 'Unit'}
+                                </h5>
+                                <p class="unit-floor text-muted small mb-0">
+                                    Floor ${d.floor_number ?? '-'} • ${d.wing ?? 'West Wing'}
+                                </p>
+                            </div>
+                            <span class="unit-status-indicator ${statusColor}"></span>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="d-flex justify-content-between text-muted small">
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                                <span>${sizeLabel}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="fa-regular fa-building"></i>
+                                <span>${d.space_type ?? 'Residential'}</span>
+                            </div>
+                        </div>
+
+                        <!-- Occupancy -->
+                        <div>
+                            <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
+                                <span>Status</span>
+                                <span class="${
+                                    statusId === 1 ? 'text-success' :
+                                    statusId === 2 ? 'text-danger' :
+                                    'text-primary'
+                                }">${statusText}</span>
+                            </div>
+                            <div class="progress mt-1" style="height:6px;">
+                                <div class="progress-bar ${statusColor}" style="width:${progressWidth};"></div>
+                            </div>
+                        </div>
+
+                        <!-- Price & Action -->
+                        <div class="mt-auto">
+                            <div class="text-muted small mb-2">Price: ${priceLabel}</div>
+                            <button class="btn ${btnClass} btn-sm w-100 d-flex align-items-center justify-content-center gap-2 btn_space_action"
+                                data-id="${d.id}" data-statusid="${statusId}">
+                                <span class="material-symbols-outlined fs-6"></span>
+                                ${btnText}
+                            </button>
+                             <div class="d-flex justify-content-between text-muted small">
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="text-muted mt-2">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="text-muted mt-2"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                </div>
+                            </div>
+                             
+                        </div>
+                    </div>
+                    
+
+                    <input type="checkbox"
+                        class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
+                </div>
+            </div>
+            `;
+            cmt++;
+        });
+    }
+
+    // ===== NO DATA =====
+    if (cmt === 0) {
+        html += `
+        <div class="col-12">
+            <div class="bg-white rounded-3 p-4 text-center">
+                <h5 class="text-muted m-0">No Units Available</h5>
+            </div>
+        </div>`;
+    }
+
+    html += `</div>`;
+    div.innerHTML = html;
+};
+
+
 
     mThis.editSpace = (id, menulink) =>{
         let op = {
@@ -341,6 +501,7 @@ var SpaceComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'floor_number', '','All Floor', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
