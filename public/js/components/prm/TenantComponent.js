@@ -9,6 +9,15 @@ var TenantComponent =   ( () => {
     mThis.elSearch = mThis.self.querySelector("#_search_tenant");
     // mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
+    // View toggle button card and list table
+    mThis.btnListView = mThis.self.querySelector("#_btnListView");
+    mThis.btnCardView = mThis.self.querySelector("#_btnCardView");
+    mThis.listContainer = mThis.self.querySelector("#_tenant_list");
+    mThis.cardContainer = mThis.self.querySelector("#_tenant_cards");
+
+    mThis.currentView = 'list'; // default view
+
+
     mThis.cols = [
         {
             title: "",
@@ -92,7 +101,7 @@ var TenantComponent =   ( () => {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
+        // Initialize list View
         mThis.TenantListView = new ListView('_tenant_list', {
             fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
@@ -100,17 +109,31 @@ var TenantComponent =   ( () => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
-
-
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join(''));
-
+            rowCreated:(data,index,tr)=>{
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('tenant');
+                tr.setAttribute('id',['tenant_id',data.id].join(''));
             },
             listContainerClass: null
         });
+        // Initialize Card View
+        mThis.TenatCardView = new CardView('_tenant_cards', {
+        fetchApi:`${main_view.base_url}/prm/tenant/list-all`,
+        perPage: 12,
+        apiCluster: main_view.apiCluster,
+        cardTemaple: mThis.createCardTemplate,
+        onCardCreated: mThis.onCardCreated
+        });
 
+        mThis.btnListView.onclick = (e)=>{
+            e.preventDefault();
+            mThis.switchView('list');
+        }
+        mThis.btnCardView.onclick =(e) =>{
+            e.preventDefault();
+            mThis.switchView('card');
+        }
+        
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -136,9 +159,6 @@ var TenantComponent =   ( () => {
         mThis.tblTenant = mThis.TenantListView.getTable();
         mThis.initDropdownMenus(mThis.tblTenant);
 
-
-
-
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
@@ -157,6 +177,24 @@ var TenantComponent =   ( () => {
 
 
         mThis.initAlready = true;
+    };
+
+    // Switch between List and Card View
+    mThis.switchView = (view) =>{
+        mThis.currentView = ViewType;
+        if(viewType ==='list'){
+            mThis.listContainer.classList.add('d-none');
+            mThis.cardContainer.classList.remove('d-none');
+            mThis.btnCardView.classList.remove('active');
+            mThis.btnListView.classList.add('active');
+            mThis.TenatListView.showPage(mThis.getFilterData());
+        }else{
+            mThis.cardContainer.classlist.add('d-none');
+            mThis.listContainer.classlist.remove('d-none');
+            mThis.btnListView.classList.remove('active');
+            mThis.btnCardView.classList.add('active');
+            mThis.TenantCardView.showPage(mThis.getFilterData());
+        }
     };
 
     mThis.getFilterData = () => {

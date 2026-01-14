@@ -5,7 +5,7 @@
     -webkit-user-drag: none;
     /* font-family: "Source Sans 3", sans-serif; */
 
-   
+
 }
   .disabled {
     pointer-events: none;
@@ -196,7 +196,7 @@ input {
     }
     #_dms_aside_menus, #kt_aside_menu {
          background-color: #1A1647;
-    }  
+    }
       #_dms_aside_menus::-webkit-scrollbar {
         display: none;
     }
@@ -339,6 +339,87 @@ a.menu-selected .kt-menu__link-text {
     justify-content: center;
     margin-left: 15px;
 }
+
+/* add selet demo item  button  */
+.button-select-enhanced {
+    background-color: #1A1647;
+    padding: 5px;
+    width: 110px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* box-shadow: 0 6px 20px rgba(26, 22, 71, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1); */
+}
+
+.btn-list-enhanced {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    width: 48px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-list-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* background: linear-gradient(135deg, #ffffff 20%); */
+    /* background-color: #48456c; */
+    background-color: rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.btn-list-enhanced i {
+    color: #f6d673;
+    font-size: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-list-enhanced:hover::before {
+    opacity: 1;
+}
+
+.btn-list-enhanced:hover {
+    transform: translateY(-2px);
+}
+
+.btn-list-enhanced:hover i {
+    transform: scale(1.1);
+}
+
+.btn-list-enhanced:active {
+    transform: translateY(0);
+}
+
+.btn-list-enhanced.active::before {
+    opacity: 1;
+}
+
+/* .btn-list-enhanced.active {
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+} */
+
+/* ----------------------- */
+
 .user--info {
     background-color: #1a1647;
     /* background: linear-gradient(135deg, #53c8ff 0%, #d491ff 100%); */
@@ -496,7 +577,7 @@ a.menu-selected .kt-menu__link-text {
     /* background: linear-gradient(135deg, #3b2e9f 0%, #f6d673 100%); */
     background-color: #1a1647;
     border-radius: 6px;
-    color: #ffffff; 
+    color: #ffffff;
 }
 
 .show--title .screen-title{
@@ -2107,7 +2188,7 @@ tr {
       color: #1a1647;
     }
 
-  
+
 
 .photo-preview {
     width: 100px;
