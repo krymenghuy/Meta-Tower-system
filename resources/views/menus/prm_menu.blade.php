@@ -183,16 +183,7 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                                     </a>
                                 </li>
-                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
-                                    <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
-                                        <span class="kt-menu__link-icon">
-                                            <img class="icons opacity-icons"
-                                                src="{{ asset('assets/images/icons/location.png') }}" />
-                                        </span>
-                                        <span class="kt-menu__link-text font-color"
-                                            vslang="menus.Countries and Cities"></span>
-                                    </a>
-                                </li>
+                                
                                
                             </ul>
                         </div>
