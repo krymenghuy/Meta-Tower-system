@@ -547,68 +547,57 @@ const BuildingSpaceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
                                     <select name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
-                                <div class="material-input outlined">
-                                    <input type="number" name="floor_number" class="data-input form-control" data-field="floor_number" placeholder=" " />
-                                </div>
-                            </div>
+                           
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="spaceType"> Select Space Type</label>
+                                <label style="color:#777777;padding-left:6px;" for="spaceType">Category</label>
                                 <div class="material-input outlined">
                                     <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
 
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="spaceType"> Select Price Type</label>
+                             <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="floor_number" class="data-input form-control" data-field="floor_number" placeholder=" " />
+                                </div>
+                            </div>
+                           
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Price</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                </div>
+                            </div>
+                             <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="spaceType">Price Type</label>
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                        <option value="sqm">Per Sqaure Meter</option>
+                                        <option value="sqm">Per Square Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
                                     <label class="d-none">Price Type</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="material-input outlined sqm-wrapper" style="display:none;">
+                            <div class="col-12 sqm-wrapper" style="display:none;">
+                                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                <div class="material-input outlined">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                    <label>Size (m²)</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                    <label>Price</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Location</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="d-none material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div>
-
 
                         </div>`
                     ].join("");
