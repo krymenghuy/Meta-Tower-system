@@ -308,6 +308,10 @@ class GeneralSettings //extends Model
         return  DB::table('buildings')->selectRaw('id,name AS building')->get();
 
      }
+      static function options_floor($ss){
+        return  DB::table('building_spaces')->selectRaw('id,floor_number')->get();
+
+     }
      static function options_tenant($ss){
         return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
      }
@@ -322,6 +326,9 @@ class GeneralSettings //extends Model
 
     static function options_service_status($ss){
         return DB::table('service_statuses')->selectRaw('id,name as service_status')->get();
+    }
+    static function options_service_types($ss){
+        return DB::table('service_types')->selectRaw('id,name as service_type')->get();
     }
 
     static function options_space_status($ss){

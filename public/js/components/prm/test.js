@@ -1,91 +1,71 @@
 "use strict";
-var ServiceComponent =   ( () => {
+var TenantComponent =   ( () => {
     const mThis = {};
-    mThis.title_prop = "Service Management";
+    mThis.title_prop = "Tenant Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnService");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
-    mThis.elFilter_status = mThis.self.querySelector('#_service_status');
-    mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_service");
-    
+    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
+    mThis.elSearch = mThis.self.querySelector("#_search_tenant");
+    // mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
     mThis.cols = [
 
         {
             title: "",
-            className: "align-middle text-capitalize",
-        },
-        {
-            title: "Service",
             className: "align-middle",
-           data: (data) => {
-                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
-            }
         },
+        // {
+        //     title: "Tenant ID",
+        //     className: "align-middle",
+        //    data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
+        // },
         {
-            title: "Category",
-            className: "align-middle",
-           data: (data) => {
-                return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Price",
+            title: "Name",
             className: "align-middle",
             data: (data) => {
-                const cur_symbol = data.cur_symbol ?? '$';
-                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+                const sexLabel = data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : 'Other';
+                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gray "></i>${data.name ?? ''}</span>
+                        <small class="d-block text-muted">${sexLabel}</small>`;
 
-                const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-
-                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
-         }
+            }
         },
-
         {
-            title: "Remarks",
+            title: "Legal Name",
             className: "align-middle",
+            data: (data) => {
+                return `<span class="text-yp-custom">${data.legal_name ?? ''}</span>`;
+            }
+        },
+        {
+            title: "contact Info",
+            className: "align-middle",
+            data: (data, index, tr) =>
+                `<span class="d-block text-primary" style="font-size:12px;"><i class="fa-solid text-success px-1 fa-envelope"></i> ${data.email ?? ""}</span>
+                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
+        },
+        {
+            title: "Address",
+            className: "align-middle ",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
+                    <div class="text-yp-custom" style="width:150px;">
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
                     </div>
                 `;
             }
         },
-        
         {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
-
-                if (status == 'inactive') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
-                } else if (status == 'active') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
-                }
-
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
-        },
-
-
-       {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-primary-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
         {
-            title : "Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
@@ -100,21 +80,21 @@ var ServiceComponent =   ( () => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.ServiceListView = new ListView('_service_list', {
-            fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
+        mThis.TenantListView = new ListView('_tenant_list', {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('service');
-              tr.setAttribute('id',['service_id',data.id].join('')); 
 
-            }, 
+
+              tr.dataset.statusid = data.status_id;
+              tr.classList.add('tenant');
+              tr.setAttribute('id',['tenant_id',data.id].join(''));
+
+            },
             listContainerClass: null
         });
 
@@ -124,25 +104,24 @@ var ServiceComponent =   ( () => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+                    mThis.TenantListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateServiceDialog.show(op);
+            CreateTenantDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.ServiceListView.getListContainer();
+        mThis.pr_tbl = mThis.TenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblService = mThis.ServiceListView.getTable();
-        
-        mThis.initDropdownMenus(mThis.tblService);
+        mThis.tblTenant = mThis.TenantListView.getTable();
+        mThis.initDropdownMenus(mThis.tblTenant);
 
 
 
@@ -151,7 +130,7 @@ var ServiceComponent =   ( () => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -159,18 +138,17 @@ var ServiceComponent =   ( () => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
-            service_type_id: mThis.elFilter_type.value,
+            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -183,32 +161,30 @@ var ServiceComponent =   ( () => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        console.log(44,table);
-        
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+                // {
+                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
+                //     cssClass: "border-bottom pb-2",
+                //     name: "change_status"
+                // },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_service"
+                    name: "edit_tenant"
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_service"
+                    name: "delete_tenant"
                 },
             ],
             // adjustPosition: {
@@ -223,12 +199,12 @@ var ServiceComponent =   ( () => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'edit_service': {
-                        mThis.editService(id, menuLink);
+                    case 'edit_tenant': {
+                        mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'delete_service': {
-                        mThis.deleteService(id, menuLink);
+                    case 'delete_tenant': {
+                        mThis.deleteTenant(id, menuLink);
                         break;
                     }
 
@@ -241,35 +217,36 @@ var ServiceComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editService = (id, menulink) =>{
+    mThis.editTenant = (id, menulink) =>{
         let op = {
             id:id,
             btn:menulink,
             onClose:()=>{;
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }
         };
-        
-        CreateServiceDialog.show(op);
+        console.log(1123,op);
+
+        CreateTenantDialog.show(op);
     }
-     mThis.deleteService = (id, menuLink) => {
+     mThis.deleteTenant = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.ServiceListView.showPage(mThis.getFilterData());
+                mThis.TenantListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Service??', {
-            title: 'Delete Service',
+        cv_interact.confirm('Delete this Tenant??', {
+            title: 'Delete Tenant',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.ServiceListView.showPage();
+                        mThis.TenantListView.showPage();
                     }
                 })
             }
@@ -282,31 +259,30 @@ var ServiceComponent =   ( () => {
       mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // console.log(123,status_id);
-        
+        console.log(123,status_id);
+
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "Service Status",
-            valueMember: "status_id",
+            dataLabel: "Tenant Status",
+            valueMember: "tenant_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"},
+                {status_id:"2",name:"Inactive"}
             ],
             defaultValue: status_id
         };
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
+            const status = {id,status_id:selected.value};
+            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
+                    cv_interact.success('Tenant Status has been updated');
+                    mThis.TenantListView.showPage(mThis.getFilterData());
 
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
@@ -317,11 +293,10 @@ var ServiceComponent =   ( () => {
     };
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
+                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -331,14 +306,14 @@ var ServiceComponent =   ( () => {
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceListView.showPage(mThis.getFilterData());
+            mThis.TenantListView.showPage(mThis.getFilterData());
         });
 
     };
     return mThis;
 })();
 
-const CreateServiceDialog = (() => {
+const CreateTenantDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -353,47 +328,49 @@ const CreateServiceDialog = (() => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
-                                <label style="padding-left:6px;" for="service_types">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="service_types" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                           </div>
-                           <div class="col-12">
-                                <label style="padding-left:6px;">Service</label>
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label>Full Name</label>
                                 </div>
                             </div>
-                            
-                            <div class="col-4">   
-                                <label style="padding-left:6px;">Price</label>
+
+                            <div class="col-12">
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
+                                    <label>Legal Name</label>
                                 </div>
                             </div>
-                            <div class="col-8">
-                                <label style="padding-left:6px;" for="service_types">Charge As</label>
+
+
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
                                 <div class="material-input outlined">
-                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
-                                        <option value="hour">Price Per Hour</option>
-                                        <option value="month">Price Per Month</option>
-                                        <option value="time">Per Usage / Per Time</option>
-                                        <option value="one_time">One-time Service</option>
+                                    <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
                                     </select>
                                 </div>
                             </div>
-                             <div class="col-12">
-                                <div class="d-none material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
-                            </div> 
 
                             <div class="col-12">
-                                <label style="padding-left:6px;">Remarks</label>
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label>Phone Number</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label>Email</label>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                    <label>Address</label>
                                 </div>
                             </div>
                         </div>`
@@ -409,14 +386,14 @@ const CreateServiceDialog = (() => {
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
-                    header.classList.add('bg-prm-custom', 'modal-header-custom');
+                    header.classList.add('bg-yp-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
 
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -424,25 +401,25 @@ const CreateServiceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
-                configSelect: [
-                    {
-                        name: "service_types",
-                        data: "service_types",
-                        textField: "service_type",
-                        valueField: "id",
-                    },
+                // configSelect: [
+                //     {
+                //         name: "nationality_id",
+                //         data: "nationality",
+                //         textField: "nationality",
+                //         valueField: "id",
+                //     },
 
-                ],
+                // ],
                 prepareFormOptions: {
-                    createTitle: "Create Service",
-                    modifyTitle: "Modify Service ",
-                    targetProp: "service_details",
+                    createTitle: "Create New Tenant",
+                    modifyTitle: "Modify Tenant ",
+                    targetProp: "tenants",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/service/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/tenant/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -450,14 +427,14 @@ const CreateServiceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    // LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
@@ -472,16 +449,16 @@ const CreateServiceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/service/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Service has been updated successfully"
+                                            "Tenant has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New service has been added successfully"
+                                            "New tenant has been added successfully"
                                         );
                                     }
                                 } else {
@@ -497,8 +474,3 @@ const CreateServiceDialog = (() => {
 
     return self;
 })();
-
-
-
-
-
