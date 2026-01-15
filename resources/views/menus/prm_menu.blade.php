@@ -76,7 +76,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Tenant"></span>
                         </a>
                     </li>
-                 
+
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                         <a href="SpaceComponent" modid="244" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -101,7 +101,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
                         </a>
                     </li>
-                   
+
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
                         <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -110,7 +110,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Invoices"></span>
                         </a>
                     </li>
-                    
+
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(205); ?>>
                         <a href="PaymentComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -131,7 +131,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Expense"></span>
                         </a>
                     </li>
-                    
+
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
                         <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -140,8 +140,8 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Report & Export"></span>
                         </a>
                     </li>
-                 
-                 
+
+
                     <li class="kt-menu__section mb-2">
                         <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
                         <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -166,7 +166,7 @@ function v_display($mod_id, $module_ids = null)
                         <div class="kt-menu__submenu">
                             <span class="kt-menu__arrow"></span>
                             <ul class="kt-menu__subnav">
-                                
+
                                  <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
                                     <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
@@ -183,8 +183,17 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                                     </a>
                                 </li>
-                                
-                               
+                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
+                                    <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
+                                        {{-- <span class="kt-menu__link-icon">
+                                            <img class="icons opacity-icons"
+                                                src="{{ asset('assets/images/icons/location.png') }}" />
+                                        </span> --}}
+                                        <span class="kt-menu__link-text font-color"
+                                            vslang="menus.Countries and Cities"></span>
+                                    </a>
+                                </li>
+
                             </ul>
                         </div>
                     </li>

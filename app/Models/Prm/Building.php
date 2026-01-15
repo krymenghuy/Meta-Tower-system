@@ -19,7 +19,7 @@ class Building //extends Model
 
     }
 
- 
+
     public function saveBuilding($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
@@ -44,7 +44,8 @@ class Building //extends Model
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
 
-    
+// 1 or 2  datascope  subid is binary
+
 
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
 
@@ -72,7 +73,7 @@ class Building //extends Model
             $search_value = escape_like_str($search_value);
             $str_search = DBX::whereLowerCase('b.name',"%$search_value%",'like');
         }
-     
+
         $updated_at = DBX::formatTime('b.updated_at','updated_at');
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
@@ -92,7 +93,7 @@ class Building //extends Model
             ->where('b.id', $id)
             ->selectRaw('b.id, b.name, b.total_floor, b.total_space, b.total_area,b.address')
             ->first();
- 
+
         return $row;
     }
 
@@ -116,10 +117,4 @@ class Building //extends Model
             ? DV::depends(['action' => 'deleted'], 'Delete successful')
             : DV::error('Delete failed.');
     }
-
-
-
-    
-
-
 }

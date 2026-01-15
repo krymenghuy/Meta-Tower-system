@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Prm;
 use App\Http\Controllers\Controller;
 use App\Models\Prm\Tenant;
 use JDV;
+
 use XAuthService;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,12 @@ class TenantController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? $req->tenant_id;
+        $data = $req->all();
+        if($req->hasFile('image')){
+            $data['image'] = $req->file('image'); // UploadedFile object
+        }
         $tenant = new Tenant($id,$ss);
-        $res = $tenant->createTenant($req->all());
+        $res = $tenant->createTenant($data,$id,$ss);
         return JDV::raw($res);
     }
 
