@@ -547,29 +547,29 @@ const BuildingSpaceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-lg",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-12">
+                            <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
                                     <select name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="floor_number" class="data-input form-control" data-field="floor_number" placeholder=" " />
-                                    <label>Floor Number</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="spaceType"> Select Space Type</label>
                                 <div class="material-input outlined">
-                                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
 
                                 </div>
@@ -623,7 +623,7 @@ const BuildingSpaceDialog = (() => {
                     const btnClose = header.querySelector('button');
 
                     btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
+                    header.classList.add('bg-prm-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
 
@@ -662,7 +662,7 @@ const BuildingSpaceDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create New Space",
+                    createTitle: "Create Space",
                     modifyTitle: "Modify Space ",
                     targetProp: "space_details",
                     api: {
