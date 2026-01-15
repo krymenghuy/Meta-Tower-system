@@ -28,9 +28,9 @@ class Contract
 
         $v_rule = [
             'tenant_id'        => '1|number|exists=tenants.id',
-            'business_type_id' => '0|number|exists=business_types.id',
-            'space_type_id'    => '0|number|exists=space_types.id',
-            'space_id'         => '0|number|exists=building_spaces.id',
+            'business_type_id' => '1|number|exists=business_types.id',
+            'space_type_id'    => '1|number|exists=space_types.id',
+            'space_id'         => '1|number|exists=building_spaces.id',
             'sqm_size'         => '0|number',
             'price'            => '0|number',
             'price_type'       => '0|string|default=sqm',
@@ -41,24 +41,19 @@ class Contract
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) return DV::error($res->error);
-
         // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
         $inputs = $res->values;
         $d = (object) $arr;
-        $duplicateId = self::checkDuplicateContractId(
-            $d->space_id,
-            // $d->building_space_code,
-            $id
-        );
-         if ($duplicateId) {
-            return DV::error("Cannot create contract: this space code is already occupied by another contract. ");
+        $space_id = $d->space_id ?? null;
+        $dup_id = self::checkDuplicateContract($space_id ?? null, $id);
+        if ($dup_id) {
+            return DV::error('This space already has a contract.');
         }
-        
-       $created = !$id;
-        
+        $created = !$id;
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
-
-
+        if($id){
+            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+        }
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
@@ -66,18 +61,18 @@ class Contract
         return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
 
-   static function checkDuplicateContractId($space_id, $contract_id = null){
+  static function checkDuplicateContract($space_id, $id = null)
+    {
+        if (!$space_id) return null;
+
         $query = DB::table('contracts as c')
             ->where('c.space_id', $space_id);
-            // ->where('c.floor_number', $floor)
-            // ->where('c.space_code', $space_code);
 
-        if (!empty($contract_id)) {
-            $query->where('c.id', '<>', $contract_id);
+        if ($id) {
+            $query->where('c.id', '<>', $id);
         }
 
-        $id = $query->value('id');
-        return $id ?: null;
+        return $query->value('id');
     }
     public function getListPaginate($arr, $ss = null){
 
