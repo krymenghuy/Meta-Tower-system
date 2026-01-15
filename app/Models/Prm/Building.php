@@ -117,4 +117,19 @@ class Building //extends Model
             ? DV::depends(['action' => 'deleted'], 'Delete successful')
             : DV::error('Delete failed.');
     }
+
+
+    public function getListFloor($building_id,$ss=null){
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+        $updated_at = DBX::formatTime('b.updated_at','updated_at');
+        $cols = 'f.id,f.building_id,f.name,f.floor_no,f.description,f.status_id,b.name as building,f.update_user,'.$updated_at.' ';
+       return DB::table('floors as f')
+            ->join('buildings as b','b.id','=','f.building_id')
+            ->where('b.id',$building_id)
+            ->selectRaw($cols)
+            ->where('b.branch_id',$branch_id)
+            ->orderByRaw('f.name ASC')->get();
+
+    }
 }

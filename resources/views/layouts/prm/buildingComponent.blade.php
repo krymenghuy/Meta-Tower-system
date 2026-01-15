@@ -21,3 +21,18 @@
     <div id="_building_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
     
 </div>
+<style>
+
+    .tbl_list_floor thead th {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.tbl_list_floor tbody td {
+    vertical-align: middle;
+}
+
+.tbl_list_floor tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
