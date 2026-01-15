@@ -164,6 +164,8 @@ var SpaceComponent = new (function () {
 
 
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
+        mThis.setAction(div);
+
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 330) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -248,19 +250,19 @@ var SpaceComponent = new (function () {
             //     left: -300
             // },
 
-            onClick: (menuLink, id, name) => {
+            onClick: (menulink, id, name) => {
                 switch (name) {
                     case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                        mThis.changeStatus(id, menulink);
                         break;
                     }
                   
                     case 'edit_space': {
-                        mThis.editSpace(id, menuLink);
+                        mThis.editSpace(id, menulink);
                         break;
                     }
                     case 'delete_space': {
-                        mThis.deleteSpace(id, menuLink);
+                        mThis.deleteSpace(id, menulink);
                         break;
                     }
 
@@ -284,138 +286,142 @@ var SpaceComponent = new (function () {
            mThis.renderSpace(data,user)
         });
     }
- mThis.renderSpace = (data) => {
-    let html = `<div class="row g-4">`;
-    let cmt = 0;
+    mThis.renderSpace = (data) => {
+        let html = `<div class="row g-4">`;
+        let cmt = 0;
 
-    if (Array.isArray(data) && data.length > 0) {
-        data.forEach(d => {
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(d => {
+                console.log(222,d);
+                
+                // ===== STATUS DEFAULT (Available) =====
+                let statusColor = 'bg-success';
+                let statusText = 'Available';
+                let btnClass = 'btn-outline-success rounded-2 btn-create-contract';
+                let icon = '<i class="fa-solid fa-file-contract"></i>';
+                let btnText = 'Create Contract';
+                let progressWidth = '0%';
 
-            // ===== STATUS DEFAULT (Available) =====
-            let statusColor = 'bg-success';
-            let statusText = 'Available';
-            let btnClass = 'btn-outline-success';
-            let btnIcon = 'assignment_turned_in';
-            let btnText = 'Create Lease';
-            let progressWidth = '0%';
+                const statusId = d.status_id ?? 1;
 
-            const statusId = d.status_id ?? 1;
+                // ===== STATUS MAPPING =====
+                if (statusId === 2) { // Maintenance
+                    statusColor = 'bg-danger';
+                    statusText = 'Maintenance';
+                    btnClass = 'btn-outline-danger rounded-2 btn-view-ticket';
+                    icon = '<i class="fa-solid fa-eye"></i>';
+                    btnText = 'View Tickets';
+                    progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '50%';
 
-            // ===== STATUS MAPPING =====
-            if (statusId === 2) { // Maintenance
-                statusColor = 'bg-danger';
-                statusText = 'Maintenance';
-                btnClass = 'btn-outline-danger';
-                btnIcon = 'build';
-                btnText = 'View Tickets';
-                progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '50%';
+                } else if (statusId === 3) { // Occupied
+                    statusColor = 'bg-primary';
+                    statusText = 'Occupied';
+                    btnClass = 'btn-outline-primary rounded-2 btn-manage-space';
+                    icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
+                    btnText = 'Manage Space';
+                    progressWidth = '100%';
+                }
 
-            } else if (statusId === 3) { // Occupied
-                statusColor = 'bg-primary';
-                statusText = 'Occupied';
-                btnClass = 'btn-outline-primary';
-                btnIcon = 'settings_input_component';
-                btnText = 'Manage Space';
-                progressWidth = '100%';
-            }
+                // ===== PRICE & SIZE =====
+                const sizeLabel = d.price_type === 'total'
+                    ? 'Whole Room'
+                    : `${d.sqm_size ?? '-'} sqm`;
 
-            // ===== PRICE & SIZE =====
-            const sizeLabel = d.price_type === 'total'
-                ? 'Whole Room'
-                : `${d.sqm_size ?? '-'} sqm`;
+                const priceLabel = d.price_type === 'total'
+                    ? `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /month`
+                    : `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /sqm`;
 
-            const priceLabel = d.price_type === 'total'
-                ? `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /month`
-                : `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /sqm`;
+                html += `
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <div class="unit-card position-relative overflow-hidden group h-100">
+                        <div class="p-4 d-flex flex-column gap-3">
 
-            html += `
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <div class="unit-card position-relative overflow-hidden group h-100">
-                    <div class="p-4 d-flex flex-column gap-3">
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="unit-name mb-1 text-truncate">
+                                        ${d.building_name ?? 'Building'} - ${d.code ?? 'Unit'}
+                                    </h5>
+                                    <p class="unit-floor text-muted small mb-0">
+                                        Floor ${d.floor_number ?? '-'} • ${d.wing ?? 'West Wing'}
+                                    </p>
+                                </div>
+                                <span><a href="javascript:void(0)" class="${d.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                </a></span>
+                                <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
+                            </div>
 
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-start">
+                            <!-- Info -->
+                            <div class="d-flex justify-content-between text-muted small">
+                                <div class="d-flex align-items-center gap-1">
+                                    <i class="fa-solid fa-ruler-combined"></i>
+                                    <span>${sizeLabel}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <i class="fa-regular fa-building"></i>
+                                    <span>${d.space_type ?? 'Residential'}</span>
+                                </div>
+                            </div>
+
+                            <!-- Occupancy -->
                             <div>
-                                <h5 class="unit-name mb-1 text-truncate">
-                                    ${d.building_name ?? 'Building'} - ${d.code ?? 'Unit'}
-                                </h5>
-                                <p class="unit-floor text-muted small mb-0">
-                                    Floor ${d.floor_number ?? '-'} • ${d.wing ?? 'West Wing'}
-                                </p>
-                            </div>
-                            <span class="unit-status-indicator ${statusColor}"></span>
-                        </div>
-
-                        <!-- Info -->
-                        <div class="d-flex justify-content-between text-muted small">
-                            <div class="d-flex align-items-center gap-1">
-                                <i class="fa-solid fa-ruler-combined"></i>
-                                <span>${sizeLabel}</span>
-                            </div>
-                            <div class="d-flex align-items-center gap-1">
-                                <i class="fa-regular fa-building"></i>
-                                <span>${d.space_type ?? 'Residential'}</span>
-                            </div>
-                        </div>
-
-                        <!-- Occupancy -->
-                        <div>
-                            <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
-                                <span>Status</span>
-                                <span class="${
-                                    statusId === 1 ? 'text-success' :
-                                    statusId === 2 ? 'text-danger' :
-                                    'text-primary'
-                                }">${statusText}</span>
-                            </div>
-                            <div class="progress mt-1" style="height:6px;">
-                                <div class="progress-bar ${statusColor}" style="width:${progressWidth};"></div>
-                            </div>
-                        </div>
-
-                        <!-- Price & Action -->
-                        <div class="mt-auto">
-                            <div class="text-muted small mb-2">Price: ${priceLabel}</div>
-                            <button class="btn ${btnClass} btn-sm w-100 d-flex align-items-center justify-content-center gap-2 btn_space_action"
-                                data-id="${d.id}" data-statusid="${statusId}">
-                                <span class="material-symbols-outlined fs-6"></span>
-                                ${btnText}
-                            </button>
-                             <div class="d-flex justify-content-between text-muted small">
-                                <div class="d-flex align-items-center gap-1">
-                                    <div class="text-muted mt-2">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
+                                    <span>Status</span>
+                                    <span class="${
+                                        statusId === 1 ? 'text-success' :
+                                        statusId === 2 ? 'text-danger' :
+                                        'text-primary'
+                                    }">${statusText}</span>
                                 </div>
-                                <div class="d-flex align-items-center gap-1">
-                                    <div class="text-muted mt-2"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                <div class="progress mt-1" style="height:6px;">
+                                    <div class="progress-bar ${statusColor}" style="width:${progressWidth};"></div>
                                 </div>
                             </div>
-                             
+
+                            <!-- Price & Action -->
+                            <div class="mt-auto">
+                                <div class="text-muted small mb-2">Price: ${priceLabel}</div>
+                                <button class="btn ${btnClass} btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
+                                    data-id="${d.id}" data-statusid="${statusId}">
+                                    <span>${icon}</span>
+                                    ${btnText}
+                                </button>
+                                <div class="d-flex justify-content-between text-muted small">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <div class="text-muted mt-2">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <div class="text-muted mt-2"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                    </div>
+                                </div>
+                                
+                            </div>
                         </div>
+                        
+
+                        <input type="checkbox"
+                            class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
                     </div>
-                    
-
-                    <input type="checkbox"
-                        class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
                 </div>
-            </div>
-            `;
-            cmt++;
-        });
-    }
+                `;
+                cmt++;
+            });
+        }
 
-    // ===== NO DATA =====
-    if (cmt === 0) {
-        html += `
-        <div class="col-12">
-            <div class="bg-white rounded-3 p-4 text-center">
-                <h5 class="text-muted m-0">No Units Available</h5>
-            </div>
-        </div>`;
-    }
+        // ===== NO DATA =====
+        if (cmt === 0) {
+            html += `
+            <div class="col-12">
+                <div class="bg-white rounded-3 p-4 text-center">
+                    <h5 class="text-muted m-0">No Units Available</h5>
+                </div>
+            </div>`;
+        }
 
-    html += `</div>`;
-    div.innerHTML = html;
-};
+        html += `</div>`;
+        div.innerHTML = html;
+    };
 
 
 
@@ -430,7 +436,7 @@ var SpaceComponent = new (function () {
         
         BuildingSpaceDialog.show(op);
     }
-     mThis.deleteSpace = (id, menuLink) => {
+     mThis.deleteSpace = (id, menulink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -456,14 +462,14 @@ var SpaceComponent = new (function () {
             }
         });
     }
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+    mThis.changeStatus = (id, menulink) =>{
+
+        const status_id = menulink.dataset.statusid;
         console.log(123,status_id);
         
         const inputOptions = {
             title: 'Change Status',
-            dataLabel: "Building Space Status",
+            dataLabel: "Space Status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
@@ -471,7 +477,7 @@ var SpaceComponent = new (function () {
             data:[
                 {status_id:"1",name:"Available"},
                 {status_id:"2",name:"Maintenance"},
-                {status_id:"3",name:"Unavailable"},
+                {status_id:"3",name:"Occupied"},
             ],
             defaultValue: status_id
         };
@@ -492,7 +498,24 @@ var SpaceComponent = new (function () {
             });
         });
 
-    };      
+    };  
+    mThis.setAction = (tbl)=>{
+        tbl.addEventListener('click',(e) =>{
+        let btn = VSUtil.closestLimited(e.target,'.btn-create-contract');
+        if(btn){
+           e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.SpaceListView.showPage(mThis.getFilterData());
+                }
+            };
+            ContractDialog.show(op);
+        }
+        })
+    }
+
 
     mThis.prepareFormOptions = (onFinish) => {
 
