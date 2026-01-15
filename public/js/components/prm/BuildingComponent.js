@@ -236,7 +236,25 @@ var BuildingComponent = ( () => {
                 mThis.BuildingListView.showPage(mThis.getFilterData());
             }
         });
+        mThis.cfg = new ExpandableRowConfig(mThis.tblBuilding.getAttribute('id'), {
+            dontExpandByClickingOn: ['btn_leave_action'],
+            // showExpandSignal: false,
+            onOpen: (container, detail_tr, parent_tr) => {
+                const id = parent_tr.dataset.id;
+                if (id > 0) {
+                    mThis.displayFloorNumber(container,id);
+                }
+            }
+        });
 
+        // {
+
+        //     dontExpandByClickingOn:['btn_leave_action'],
+        //     onOpen:(container,detail_tr,parent_tr) => {
+        //         const id = parent_tr.dataset.id;
+        //         if(id > 0) mThis.displayFloorNumber(container,id);
+        //     }
+        // });
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
@@ -247,7 +265,103 @@ var BuildingComponent = ( () => {
 
         mThis.initAlready = true;
     };
+    mThis.displayFloorNumber = (container, id) => {
+        let html = null;
+        container.innerHTML = '';
+        console.log(444,id);
 
+        vsapi.call(`${main_view.base_url}/prm/building/list-floor`,{
+            building_id: id
+        },null).then(res => {
+            const data = res.status_code === 200 ? res.data : [];
+            console.log(444,data);
+            
+            html = `<div class="rounded-3 p-2 bg-white">
+                <button data-buildingid="${building_id}" class="btn-add-floor btn btn-sm btn-primary-custom btn-sm" type="button">
+                    <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
+                </button>
+            </div>
+            <div class="table-responsive p-1">
+            <table class="table table-sm table-hover align-middle tbl_list_floor">
+            <thead class="table-light text-nowrap">
+                <tr>
+                    <th>${LocaleManager.trans('Name')}</th>
+                    <th>${LocaleManager.trans('Floor No')}</th>
+                    <th>${LocaleManager.trans('Last Updated')}</th>
+                    <th>${LocaleManager.trans('Action')}</th>
+                </tr>
+            </thead>
+            <tbody></tbody>`;
+
+            html = html+`</table></div>`;
+            container.innerHTML =  html;
+
+            const tbody = container.querySelector('table.tbl_list_floor > tbody');
+            const btnNewFloor = container.querySelector('.btn-add-floor');
+
+            btnNewFloor.addEventListener('click',e => {
+                e.preventDefault();
+                let building_id = btnNewFloor.dataset.buildingid;
+                let op = {
+                    id: null,
+                    building_id: building_id,
+                    onClose: (levels) => {
+                        mThis.renderLevelList(tbody,levels);
+                    }
+                };
+
+                if(!AuthManager.allowed(264)) return;
+                ProgramLevelDialog.show(op);
+            });
+
+            mThis.renderLevelList(tbody, data);
+        });
+    }
+    mThis.renderLevelList = (tbody, data) => {
+        let html = null;
+        if(!data) data = [];
+        
+        (data || []).map(level => {
+        console.log(66,level);
+
+            let shortcut = level.name ? `(${level.name ?? ''})` : '';
+            html = [html,`<tr>
+                <td>
+                    <span class="fw-semibold d-block">${level.name ?? ''}</span>
+                    <span class="d-block text-muted">
+                        <small>${shortcut ?? ''}</small>
+                    </span>
+                </td>
+                <td>${level.floor_no ?? ''}</td>
+                <td>
+                    <span class="d-block p-1 fw-semibold">${level.update_user ?? ''}</span>
+                    <span>
+                        <small>${level.updated_at ?? ''}</small>
+                    </span>
+                </td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="javascript:void(0)" class="btn-level-modify" data-buildingid ="${level.building_id}" data-id="${level.id}">
+                           <span class="tool-tip">
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                            <span class="tool-tiptext fs-6">Modify</span>
+                           </span>
+                        </a>
+                        <a href="javascript:void(0)" class="btn-level-delete" data-programid ="${level.building_id}" data-id="${level.id}">
+                           <span class="tool-tip">
+                            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                            <span class="tool-tiptext fs-6">Delete</span>
+                           </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>`].join('');
+        });
+        tbody.innerHTML = html;
+        //mThis.makeSortable(tbody);
+        // mThis.setActionHandlers(tbody);
+
+    }
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
@@ -349,7 +463,7 @@ var BuildingComponent = ( () => {
 
     mThis.show = (options) => {
         mThis.init();
-        mThis.options = options;
+        if(!options) options = {};
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self,mThis.title_prop);
             mThis.fetchSummaryData();
@@ -373,33 +487,38 @@ const BuildingDialog = (() => {
                 return [
                     `<div class="row justify-content-center">
                         <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Building Name</label>
                             <div class="material-input outlined">
                                 <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label>Building Name</label>
+                                
                             </div>
-                        </div>
+                        </div>                   
                         <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             <div class="material-input outlined">
                                 <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
-                                <label>Total Floor</label>
+                               
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Total Area</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
-                                <label>Total Area</label>
+                                
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Total Space</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
-                                <label>Total Space</label>
+                                
                             </div>
                         </div>
                         <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Address</label>
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                <label>Address</label>
+                                
                             </div>
                         </div>
                     </div>`
@@ -412,7 +531,7 @@ const BuildingDialog = (() => {
                 const btnClose = header.querySelector('button');
 
                 btnClose.classList.add('d-none');
-                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.classList.add('bg-prm-custom', 'modal-header-custom');
                 header.parentElement.classList.add('overflow-hidden');
                 header.parentElement.style = 'border-radius: 20px !important;';
 
