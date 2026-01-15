@@ -1,5 +1,6 @@
 "use strict";
-var TenantComponent =   ( () => {
+
+var TenantComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Tenant Management";
     mThis.base_url = main_view.base_url;
@@ -7,35 +8,37 @@ var TenantComponent =   ( () => {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant");
-    // mThis.elFilter_status = mThis.self.querySelector("#el_status");
 
-    // View toggle button card and list table
+    // View toggle buttons
     mThis.btnListView = mThis.self.querySelector("#_btnListView");
     mThis.btnCardView = mThis.self.querySelector("#_btnCardView");
     mThis.listContainer = mThis.self.querySelector("#_tenant_list");
     mThis.cardContainer = mThis.self.querySelector("#_tenant_cards");
 
-    mThis.currentView = 'list'; // default view
-
-
+    mThis.currentView = 'card';
     mThis.cols = [
         {
             title: "",
             className: "align-middle",
         },
-        // {
-        //     title: "Tenant ID",
-        //     className: "align-middle",
-        //    data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
-        // },
+        {
+            title: "Image",
+            className: "align-middle",
+            data: (data) => {
+                const imageUrl = data.image? `${main_view.base_url}/storage/${data.image}` : null;
+                if (imageUrl) {
+                    return `<img src="${imageUrl}" alt="${data.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2216%22>?</text></svg>'" />`;
+                }
+                return `<i class="fa-solid fa-user text-muted fs-4"></i>`;
+            }
+        },
         {
             title: "Name",
             className: "align-middle",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gary "></i>${data.name ?? ''}</span>
+                return `<span class="d-block text-yp-custom" style="font-size:12px;">${data.name ?? ''}</span>
                         <small class="d-block text-muted">${sexLabel}</small>`;
-
             }
         },
         {
@@ -60,19 +63,20 @@ var TenantComponent =   ( () => {
             }
         },
         {
-            title: "contact Info",
+            title: "Contact Info",
             className: "align-middle",
-            data: (data, index, tr) =>
+            data: (data) =>
                 `<span class="d-block text-primary" style="font-size:12px;"><i class="fa-solid text-success px-1 fa-envelope"></i> ${data.email ?? ""}</span>
-                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
+                <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
         },
         {
             title: "Address",
-            className: "align-middle ",
-            data: (data, index, tr) => {
+            className: "align-middle",
+            data: (data) => {
                 return `
                     <div class="text-yp-custom" style="width:150px;">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i>
+                        <span class="text-wrap text-break" style="word-break:break-word;">${data.address ?? 'N/A'}</span>
                     </div>
                 `;
             }
@@ -80,7 +84,7 @@ var TenantComponent =   ( () => {
         {
             title: "Updated By",
             className: 'align-middle',
-            data: (data, index, tr) => {
+            data: (data) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
@@ -91,115 +95,223 @@ var TenantComponent =   ( () => {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                    <a href="javascript:void(0)"
+                    class="btn--Options btn_leave_action"
+                    data-id="${data.id}"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    style="cursor: pointer; padding: 8px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
                     </a>
                 </div>`
         },
-
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-        // Initialize list View
+
+        // Initialize List View
         mThis.TenantListView = new ListView('_tenant_list', {
             fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
-            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated:(data,index,tr)=>{
+            rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('tenant');
-                tr.setAttribute('id',['tenant_id',data.id].join(''));
+                tr.setAttribute('id', ['tenant_id', data.id].join(''));
             },
             listContainerClass: null
         });
+
         // Initialize Card View
-        mThis.TenatCardView = new CardView('_tenant_cards', {
-        fetchApi:`${main_view.base_url}/prm/tenant/list-all`,
-        perPage: 12,
-        apiCluster: main_view.apiCluster,
-        cardTemaple: mThis.createCardTemplate,
-        onCardCreated: mThis.onCardCreated
+        mThis.TenantCardView = new CardView('_tenant_cards', {
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+            perPage: 12,
+            apiCluster: main_view.apiCluster,
+            cardTemplate: mThis.createCardTemplate,
+            onCardCreated: (container) => {
+                // Initialize dropdown menus for card view
+                mThis.initDropdownMenus(container);
+            }
         });
 
-        mThis.btnListView.onclick = (e)=>{
+        mThis.btnListView.onclick = (e) => {
             e.preventDefault();
             mThis.switchView('list');
-        }
-        mThis.btnCardView.onclick =(e) =>{
+        };
+
+        mThis.btnCardView.onclick = (e) => {
             e.preventDefault();
             mThis.switchView('card');
-        }
-        
+        };
+
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.TenantListView.showPage(mThis.getFilterData());
+                    mThis.refreshCurrentView();
                 }
             };
-            // if (!AuthManager.allowed(240)) return;
             CreateTenantDialog.show(op);
         };
-
 
         mThis.pr_tbl = mThis.TenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+
+        // Card container scroll management
+        const card_parent = mThis.cardContainer;
+        card_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        card_parent.classList.add("overflow-y-auto");
+
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        }
+            card_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        };
+
         mThis.tblTenant = mThis.TenantListView.getTable();
+        console.log('tblTenant:', mThis.tblTenant);
         mThis.initDropdownMenus(mThis.tblTenant);
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }
+                mThis.refreshCurrentView();
+            };
         });
 
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.refreshCurrentView();
             }, 250);
         });
-
-
         mThis.initAlready = true;
     };
 
     // Switch between List and Card View
-    mThis.switchView = (view) =>{
-        mThis.currentView = ViewType;
-        if(viewType ==='list'){
+    mThis.switchView = (view) => {
+        mThis.currentView = view;
+        if (view === 'list') {
+            mThis.cardContainer.classList.add('d-none');
+            mThis.listContainer.classList.remove('d-none');
+            mThis.btnListView.classList.add('active');
+            mThis.btnCardView.classList.remove('active');
+            mThis.TenantListView.showPage(mThis.getFilterData());
+        } else {
             mThis.listContainer.classList.add('d-none');
             mThis.cardContainer.classList.remove('d-none');
-            mThis.btnCardView.classList.remove('active');
-            mThis.btnListView.classList.add('active');
-            mThis.TenatListView.showPage(mThis.getFilterData());
-        }else{
-            mThis.cardContainer.classlist.add('d-none');
-            mThis.listContainer.classlist.remove('d-none');
-            mThis.btnListView.classList.remove('active');
             mThis.btnCardView.classList.add('active');
+            mThis.btnListView.classList.remove('active');
             mThis.TenantCardView.showPage(mThis.getFilterData());
         }
     };
 
+    // Refresh current view
+    mThis.refreshCurrentView = () => {
+        if (mThis.currentView === 'list') {
+            mThis.TenantListView.showPage(mThis.getFilterData());
+            setTimeout(() => {
+                mThis.initDropdownMenus(mThis.tblTenant);
+            }, 100);
+        } else {
+            mThis.TenantCardView.showPage(mThis.getFilterData());
+        }
+    };
+
+    // Create card template
+    mThis.createCardTemplate = (data) => {
+        const sexLabel = data.sex?.toUpperCase() === 'M' ? 'Male' : data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
+        const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
+
+        return `
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 card-box">
+                <div class="tenant-card" data-id="${data.id}">
+                    <div class="tenant-card-header d-flex justify-content-end align-items-center">
+                        <a href="javascript:void(0)"
+                        class="btn--Options btn_leave_action"
+                        data-id="${data.id}"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        style="cursor: pointer; padding: 8px;">
+                            <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
+                        </a>
+                    </div>
+                    <div class="tenant-card-avatar-section">
+                        <div class="tenant-avatar-wrapper">
+                            <div class="tenant-avatar">
+                                ${imageUrl
+                                    ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                       <i class="fa-solid fa-user" style="display:none;"></i>`
+                                    : `<i class="fa-solid fa-user"></i>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tenant-card-body">
+                        <h5 class="tenant-name">${data.name ?? 'N/A'}</h5>
+
+                        <div class="tenant-info-grid">
+                            <div class="tenant-info-row">
+                                <div class="info-label">
+                                    <i class="fa-solid fa-id-card text-primary"></i>
+                                    <span>National ID</span>
+                                </div>
+                                <div class="info-value">: ${data.national_id ?? 'N/A'}</div>
+                            </div>
+
+                            <div class="tenant-info-row">
+                                <div class="info-label">
+                                    <i class="fa-solid fa-building"></i>
+                                    <span>Passport</span>
+                                </div>
+                                <div class="info-value">: ${data.passport_number ?? 'N/A'}</div>
+                            </div>
+
+                            <div class="tenant-info-row">
+                                <div class="info-label">
+                                    <i class="fa-solid fa-phone text-success"></i>
+                                    <span>Phone</span>
+                                </div>
+                                <div class="info-value">: ${data.phone_number ?? 'N/A'}</div>
+                            </div>
+
+                            <div class="tenant-info-row">
+                                <div class="info-label">
+                                    <i class="fa-solid fa-envelope text-warning"></i>
+                                    <span>Email</span>
+                                </div>
+                                <div class="info-value text-truncate" title="${data.email ?? 'N/A'}">: ${data.email ?? 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tenant-card-footer">
+                        <span class="footer-label">Office</span>
+                        <div class="footer-actions">
+                            <button class="btn-icon btn-edit-tenant" data-id="${data.id}" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-icon btn-view-tenant" data-id="${data.id}" title="View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -211,45 +323,28 @@ var TenantComponent =   ( () => {
         return p;
     };
 
-    mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
+    // Initialize dropdown menus for both table and cards
+    mThis.initDropdownMenus = (container) => {
+        const menuOptions = {
+            containerElement: container,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
-                // {
-                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                //     cssClass: "border-bottom pb-2",
-                //     name: "change_status"
-                // },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_tenant"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2">Delete</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_tenant"
                 },
             ],
-            // adjustPosition: {
-            //     top: -200,
-            //     left: -300
-            // },
-
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case 'edit_tenant': {
                         mThis.editTenant(id, menuLink);
                         break;
@@ -258,38 +353,60 @@ var TenantComponent =   ( () => {
                         mThis.deleteTenant(id, menuLink);
                         break;
                     }
-
                     default: {
                         break;
                     }
                 }
             }
-        }
-        new VSDropdownMenu(menuOptopns);
-    }
-
-    mThis.editTenant = (id, menulink) =>{
-        let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }
         };
-        console.log(1123,op);
+        new VSDropdownMenu(menuOptions);
 
-        CreateTenantDialog.show(op);
-    }
-     mThis.deleteTenant = (id, menuLink) => {
+        // Also attach click handlers to card footer buttons
+        container.querySelectorAll('.btn-edit-tenant').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const id = e.currentTarget.dataset.id;
+                mThis.editTenant(id, btn);
+            };
+        });
+
+        container.querySelectorAll('.btn-view-tenant').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const id = e.currentTarget.dataset.id;
+                mThis.viewTenant(id, btn);
+            };
+        });
+    };
+
+    mThis.editTenant = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
+                mThis.refreshCurrentView();
+            }
+        };
+        CreateTenantDialog.show(op);
+    };
+
+    mThis.viewTenant = (id, btn) => {
+        // Implement view functionality
+        console.log(`Viewing tenant with ID: ${id}`);
+        // You can open a view dialog or navigate to a detail page here
+        cv_interact.info(`View functionality for tenant ID: ${id}`);
+    };
+
+    mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.refreshCurrentView();
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Tenant??', {
+        cv_interact.confirm('Delete this Tenant?', {
             title: 'Delete Tenant',
             context: 'delete',
             confirmButtonText: "Delete"
@@ -297,234 +414,322 @@ var TenantComponent =   ( () => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.TenantListView.showPage();
+                        mThis.refreshCurrentView();
+                        cv_interact.success('Tenant deleted successfully');
+                    } else {
+                        cv_interact.error(res.error_message);
                     }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
+                });
             }
         });
-    }
-
-      mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Tenant Status",
-            valueMember: "tenant_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Tenant Status has been updated');
-                    mThis.TenantListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
     };
-    mThis.prepareFormOptions = (onFinish) => {
 
+    mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
-            })
-    }
+            });
+    };
 
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.TenantListView.showPage(mThis.getFilterData());
+            mThis.switchView(mThis.currentView);
         });
-
     };
+
     return mThis;
 })();
+
+// Enhanced CardView class with proper pagination
+class CardView {
+    constructor(containerId, options) {
+        this.container = document.getElementById(containerId);
+        this.options = options;
+        this.currentPage = 1;
+        this.totalPages = 1;
+        this.paginationContainer = null;
+        this.lastParams = {};
+    }
+
+    showPage(params = {}) {
+        this.lastParams = params;
+        params.page = this.currentPage;
+        params.per_page = this.options.perPage || 12;
+
+        vsapi.call(this.options.fetchApi, params).then(res => {
+            if (res.status_code === 200) {
+                this.totalPages = res.data.last_page || 1;
+                this.render(res.data);
+                this.renderPagination(res.data);
+
+                // Call onCardCreated callback after rendering
+                if (this.options.onCardCreated) {
+                    this.options.onCardCreated(this.container);
+                }
+            }
+        });
+    }
+
+    render(data) {
+        const items = data.data || [];
+        let html = '<div class="row">';
+
+        if (items.length === 0) {
+            html += `
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-users fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No tenants found</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            items.forEach(item => {
+                html += this.options.cardTemplate(item);
+            });
+        }
+
+        html += '</div>';
+        html += '<div class="card-pagination mt-3"></div>';
+        this.container.innerHTML = html;
+        this.paginationContainer = this.container.querySelector('.card-pagination');
+    }
+
+    renderPagination(data) {
+        if (!this.paginationContainer || this.totalPages <= 1) return;
+
+        let html = '<nav><ul class="pagination justify-content-center">';
+
+        // Previous button
+        html += `
+            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage - 1}">Previous</a>
+            </li>
+        `;
+
+        // Page numbers
+        for (let i = 1; i <= this.totalPages; i++) {
+            if (i === 1 || i === this.totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
+                html += `
+                    <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+        }
+
+        // Next button
+        html += `
+            <li class="page-item ${this.currentPage === this.totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage + 1}">Next</a>
+            </li>
+        `;
+
+        html += '</ul></nav>';
+        this.paginationContainer.innerHTML = html;
+
+        // Add click handlers
+        this.paginationContainer.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = parseInt(e.target.dataset.page);
+                if (page && page !== this.currentPage && page >= 1 && page <= this.totalPages) {
+                    this.currentPage = page;
+                    this.showPage(this.lastParams);
+                }
+            });
+        });
+    }
+}
 
 const CreateTenantDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Full Name</label>
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-md",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row justify-content-center">
+                        <div class="col-12">
+                            <div class="image-upload-section mb-3">
+                                <div class="image-preview-container">
+                                    <div class="image-preview" id="imagePreview">
+                                        <i class="fa-solid fa-user fa-3x text-white"></i>
+                                    </div>
+                                    <label for="imageInput" class="image-upload-label">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="d-none">
                                 </div>
+                                <small class="text-muted d-block text-center mt-2">Click camera to upload (Max 5MB - JPG, PNG, GIF, WEBP)</small>
                             </div>
-
-
-
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                    <label>Legal Name</label>
-                                </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                <label>Full Name</label>
                             </div>
-
-
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
-                                <div class="material-input outlined">
-                                    <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
-                                        <option value="m">Male</option>
-                                        <option value="f">Female</option>
-                                    </select>
-                                </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
+                                <label>Legal Name</label>
                             </div>
-
-
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
-                                </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="text" name="national_id" required class="data-input form-control" data-field="national_id" placeholder=" " />
+                                <label>National ID</label>
                             </div>
-
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email</label>
-                                </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="text" name="passport_number" required class="data-input form-control" data-field="passport_number" placeholder=" " />
+                                <label>Passport Number</label>
                             </div>
-
-
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
-                                </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;" for="sex">Select Gender</label>
+                            <div class="material-input outlined">
+                                <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
                             </div>
-                        </div>`
-                    ].join("");
-                },
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                <label>Phone Number</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <input type="email" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
+                                <label>Email</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
+                                <label>Address</label>
+                            </div>
+                        </div>
+                    </div>`
+                ].join("");
+            },
+            contentCreated: (me) => {
+                const footer = me.divModal.querySelector('.modal-footer');
+                const header = me.divModal.querySelector('.modal-header');
+                const headerTitle = header.querySelector('.modal-title');
+                const btnClose = header.querySelector('button');
 
+                if (btnClose) btnClose.classList.add('d-none');
+                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.parentElement.classList.add('overflow-hidden');
+                header.parentElement.style = 'border-radius: 20px !important;';
 
-                contentCreated: (me) => {
-                    const footer = me.divModal.querySelector('.modal-footer');
-                    const header = me.divModal.querySelector('.modal-header');
-
-                    const headerTitle = header.querySelector('.modal-title');
-                    const btnClose = header.querySelector('button');
-
-                    btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
-                    header.parentElement.classList.add('overflow-hidden');
-                    header.parentElement.style = 'border-radius: 20px !important;';
-
-                    const headerWrapper = document.createElement('div');
-                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-
-
-
-                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    headerWrapper.appendChild(headerTitle);
-
-                    header.innerHTML = '';
-                    header.appendChild(headerWrapper);
-
-
-
-
-                },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
-
-                // ],
-                prepareFormOptions: {
-                    createTitle: "Create New Tenant",
-                    modifyTitle: "Modify Tenant ",
-                    targetProp: "tenants",
-                    api: {
-                        endpoint: [main_view.base_url, "/prm/tenant/form-options",].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
+                const headerWrapper = document.createElement('div');
+                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                headerWrapper.appendChild(headerTitle);
+                header.innerHTML = '';
+                header.appendChild(headerWrapper);
+            },
+            prepareFormOptions: {
+                createTitle: "Create New Tenant",
+                modifyTitle: "Modify Tenant",
+                targetProp: "tenants",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/tenant/form-options"].join(""),
+                    params: (op) => {
+                        return { id: op.id };
                     },
                 },
+            },
+            onPrepareForm: (me, data) => {
+                const header = me.divModal.querySelector('.modal-header');
+                const btnClose = header.querySelector('button');
+                if (btnClose) btnClose.classList.add('d-none');
 
-                onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
-                },
+                // Image upload handler
+                const imageInput = me.divModal.querySelector('#imageInput');
+                const imagePreview = me.divModal.querySelector('#imagePreview');
 
+                // Show existing image if editing
+                if (data.tenants && data.tenants.image) {
+                    const imgUrl = `${main_view.base_url}/storage/${data.tenants.image}`;
+                    imagePreview.innerHTML = `<img src="${imgUrl}" alt="Tenant" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
 
-                buttons: [
-                    {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
+                // Handle file selection
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    // Validate size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        cv_interact.error('Image size must be less than 5MB');
+                        e.target.value = '';
+                        return;
+                    }
+
+                    // Validate type
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                    if (!allowedTypes.includes(file.type)) {
+                        cv_interact.error('Only JPG, PNG, GIF, and WEBP images are allowed');
+                        e.target.value = '';
+                        return;
+                    }
+
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.innerHTML = `<img src="${event.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            },
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel',
+                    click: (me, btn) => {
+                        me.hide(false);
                     },
-                    {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Tenant has been updated successfully"
-                                        );
-                                    } else {
-                                        cv_interact.success(
-                                            "New tenant has been added successfully"
-                                        );
-                                    }
+                },
+                {
+                    label: '<span>Submit</span>',
+                    cssClass: 'btn-vs-save',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.id = me.dataOptions.id;
+                        vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
+                            if (res.status_code === 200) {
+                                me.hide(true, op);
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Tenant has been updated successfully");
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.success("New tenant has been added successfully");
                                 }
-                            });
-                        },
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
                     },
-                ],
-            });
+                },
+            ],
+        });
         dialog.show(op);
     };
-
     return self;
 })();

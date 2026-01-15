@@ -15,7 +15,7 @@ var BuildingComponent = ( () => {
         className: "align-middle",
     },
     {
-        title: "Building Name",
+        title: "Building",
         className: "align-middle",
         data: (data) => `
             <div class="d-flex flex-column">
@@ -33,7 +33,7 @@ var BuildingComponent = ( () => {
         className: "align-middle",
         data: (data) => {
             let area = data.total_area ?? '';
-            return `<span class="text-yp-custom">${area}${area ? ' sqm' : ''}</span>`;
+            return `<span class="text-primary-custom">${area}${area ? ' sqm' : ''}</span>`;
         },
     },
 
@@ -48,7 +48,7 @@ var BuildingComponent = ( () => {
     {
         title: "Total Space",
         className: "align-middle",
-        data: (data) => `<span class="text-yp-custom">${data.total_space ?? ''}</span>`,
+        data: (data) => `<span class="text-primary-custom">${data.total_space ?? ''}</span>`,
     },
     {
         title: "Occupancy",
@@ -76,7 +76,7 @@ var BuildingComponent = ( () => {
         className: "align-middle",
         data: (data) => `
             <div class="d-flex flex-column">
-                <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
                 <span class="text-muted small">${data.updated_at ?? ''}</span>
             </div>
         `,

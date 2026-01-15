@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <?php
-    StyleManager::render('prm-style', 1, 37);
+    StyleManager::render('prm-style', 1, 40);
     ?>
     <style>
         /* Custom animations for the modal like Materialize css effect */
@@ -79,15 +79,16 @@
         }
 
         .font-en {
-            /* font-family: Verdana, sans-serif;
-            font-family: 'Battambang'; */
+            /* font-family: Verdana, sans-serif; */
+            /* font-family: 'Battambang'; */
              /* font-family: "Source Sans 3", sans-serif; */
              /* font-family: "Open Sans", sans-serif; */
              /* font-family: "Roboto", sans-serif; */
 
             /* font-family: 'Segoe UI', sans-serif; */
-            font-family: Arial, sans-serif;
+            /* font-family: Arial, sans-serif; */
            /* font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; */
+           font-family: 'Inter', sans-serif;
         }
         .svg-white {
     filter: brightness(0) invert(1);
@@ -98,7 +99,7 @@
     ScriptManager::render('priority-one', 1, 9);
     ScriptManager::render('primary', 1, 13);
     ScriptManager::render('primary-defer', 1, 37);
-    ScriptManager::render('prm-components', 1, 238);
+    ScriptManager::render('prm-components', 1, 240);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

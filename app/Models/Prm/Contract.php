@@ -29,7 +29,7 @@ class Contract
         $v_rule = [
             'tenant_id'        => '1|number|exists=tenants.id',
             'business_type_id' => '0|number|exists=business_types.id',
-            'space_type_id' => '0|number|exists=space_types.id',
+            'space_type_id'    => '0|number|exists=space_types.id',
             'space_id'         => '0|number|exists=building_spaces.id',
             'sqm_size'         => '0|number',
             'price'            => '0|number',
@@ -43,11 +43,8 @@ class Contract
         if ($res->error) return DV::error($res->error);
 
         // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        
-    
         $inputs = $res->values;
         $d = (object) $arr;
-
         $duplicateId = self::checkDuplicateContractId(
             $d->space_id,
             // $d->building_space_code,
@@ -66,7 +63,7 @@ class Contract
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
 
-        return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
+        return DV::error($created ? 'Create failed.' : 'Update failed.');
     }
 
    static function checkDuplicateContractId($space_id, $contract_id = null){
@@ -87,7 +84,7 @@ class Contract
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
         $tenant_id = $d->tenant_id ?? null;
-        $space_id = $d->space_id ?? null;
+        $space_type_id = $d->space_type_id ?? null;
         $business_type_id = $d->business_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -105,7 +102,7 @@ class Contract
         if($tenant_id){
             $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
         }
-        if($space_id){
+        if($space_type_id){
             $str_moreWhere .= ' AND c.space_type_id = ' . $space_type_id;
         }
         if($business_type_id){
@@ -114,7 +111,7 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.email,t.phone_number,t.legal_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')

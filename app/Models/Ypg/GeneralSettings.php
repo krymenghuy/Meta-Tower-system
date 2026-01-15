@@ -323,6 +323,9 @@ class GeneralSettings //extends Model
     static function options_service_status($ss){
         return DB::table('service_statuses')->selectRaw('id,name as service_status')->get();
     }
+    static function options_service_types($ss){
+        return DB::table('service_types')->selectRaw('id,name as service_type')->get();
+    }
 
     static function options_space_status($ss){
         return DB::table('space_statuses')->selectRaw('id,name as space_status')->get();

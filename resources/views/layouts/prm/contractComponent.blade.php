@@ -1,5 +1,5 @@
 <div id="_main_contract_component" class="mobile-padding p-3" style="display: none;">
-   <div id="_divFilter_contract" class= "rounded-2 p-3 bg-white shadow-sm">
+   <div id="_divFilter_contract" class= "rounded-2 p-3" style="background-color:#eaeaea;">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class=" position-relative w-100">
@@ -22,7 +22,7 @@
             </button>
             </div>
         </div>
- </div> 
-    <div id="_contract_list" class="table-responsive mt-3 bg-white rounded-2 border"></div>
+    </div> 
+    <div id="_contract_list" class="table-responsive border bg-white rounded-2 mt-3"></div>
 </div>
 
