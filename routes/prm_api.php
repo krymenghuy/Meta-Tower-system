@@ -151,6 +151,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->group(function () {
     Route::post('/save', [BuildingController::class, 'saveBuilding']);
+    Route::post('/list-floor', [BuildingController::class, 'getListFloor']);
     Route::post('/list-paginate', [BuildingController::class, 'getListBuilding']);
     Route::post('/details', [BuildingController::class, 'buildingDetails']);
     Route::post('/form-options', [BuildingController::class, 'getFormOptions']);

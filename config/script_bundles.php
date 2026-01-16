@@ -49,7 +49,8 @@ return [
                 //'/assets/js/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.v2.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                // '/assets/js/expandableTableRow.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/UMExpandItemView.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
@@ -90,7 +91,7 @@ return [
                 //'/assets/js/ImageHelper.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
-              
+                'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
                 //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',
@@ -161,7 +162,7 @@ return [
 
             ]
         ],
-                'umt-primary-defer' => [
+        'umt-primary-defer' => [
             'attr' => 'defer',
             'single_file' => 1,
             'output_file' => '/dist/js/ksm.primary-defer.js',
@@ -204,7 +205,7 @@ return [
                 '/assets/js/ckeditor.js',
             ]
         ],
-    'umt-components'=>[
+        'umt-components'=>[
             'attr'=>'defer',
             'single_file'=>1,
             'output_file'=>'/dist/js/umt.components.js',

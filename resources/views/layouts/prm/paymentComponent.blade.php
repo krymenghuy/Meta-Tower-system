@@ -1,5 +1,5 @@
 <div id="_main_payment_component" class="mobile-padding p-3" style="display:none;">
-     <div id="_divFilter_payment" class="rounded-2 p-3 bg-white shadow-sm">
+     <div id="_divFilter_payment" class="rounded-2 p-3 bg-white shadow-lg">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
@@ -25,7 +25,7 @@
             </div>
         </div>
     </div> 
-
-    <div id="_payment_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_summary_cards" class="mt-3 rounded-2 "></div>
+    <div id="_payment_list" class="table-responsive  mt-3 bg-white shadow-lg rounded-2 border"></div>
 </div>
 
