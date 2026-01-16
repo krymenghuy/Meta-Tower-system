@@ -201,7 +201,7 @@ var SpaceComponent = new (function () {
         let p = {
             status_id: mThis.elFilter_status.value,
             building_id: mThis.elBuilding.value,
-            status_id: mThis.elFloor.value,
+            floor_id: mThis.elFloor.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -337,10 +337,10 @@ var SpaceComponent = new (function () {
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-truncate">
-                                        ${d.building_name ?? 'Building'} - ${d.code ?? 'Unit'}
+                                        ${d.building_name ?? 'Building'}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        Floor ${d.floor_number ?? '-'} • ${d.wing ?? 'West Wing'}
+                                        ${d.floor_number ?? '-'} • ${d.code ?? ''}
                                     </p>
                                 </div>
                                 <span><a href="javascript:void(0)" class="${d.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -436,13 +436,13 @@ var SpaceComponent = new (function () {
      mThis.deleteSpace = (id, menulink) => {
         let op = {
             id: id,
-            btn: menuLink,
+            btn: menulink,
             onClose: () => {
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Space??', {
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Space?', {
             title: 'Delete Space',
             context: 'delete',
             confirmButtonText: "Delete"
@@ -450,13 +450,15 @@ var SpaceComponent = new (function () {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/building-space/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
+                        
+                        cv_interact.success('Space has been deleted')
                         mThis.SpaceListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
-            else {
-                cv_interact.error(res.error_message);
-            }
+           
         });
     }
     mThis.changeStatus = (id, menulink) =>{
@@ -520,8 +522,8 @@ var SpaceComponent = new (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '','All Building', null);
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'floor_number', '','All Floor', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', null,null, 1);
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '','All Floor', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -572,7 +574,8 @@ const BuildingSpaceDialog = (() => {
                              <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
-                                    <input type="number" name="floor_number" class="data-input form-control" data-field="floor_number" placeholder=" " />
+                                    <select name="floor_number" placeholder=" " class="data-input form-control" data-field="floor_id">
+                                    </select>
                                 </div>
                             </div>
                            
@@ -640,6 +643,12 @@ const BuildingSpaceDialog = (() => {
                         name: "building_id",
                         data: "buildings",
                         textField: "building",
+                        valueField: "id",
+                    },
+                    {
+                        name: "floor_number",
+                        data: "floors",
+                        textField: "name",
                         valueField: "id",
                     },
                     {
