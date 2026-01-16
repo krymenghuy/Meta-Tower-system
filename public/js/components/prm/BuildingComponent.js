@@ -53,27 +53,27 @@ var BuildingComponent = ( () => {
             className: "align-middle",
             data: (data) => `<span class="text-primary-custom">${data.total_space ?? '0'}</span>`,
         },
-        {
-            title: "Occupancy",
-            className: "align-middle",
-            data: (data) => {
-                let occ = data.occupancy ?? 75;
-                let space = data.total_space ?? 100;
-                let percent = space > 0 ? Math.round((occ / space) * 100) : 0;
+        // {
+        //     title: "Occupancy",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         let occ = data.occupancy ?? 75;
+        //         let space = data.total_space ?? 100;
+        //         let percent = space > 0 ? Math.round((occ / space) * 100) : 0;
 
-                return `
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="progress" style="width:120px; height:8px;">
-                            <div class="progress-bar bg-primary" role="progressbar" 
-                                style="width: ${percent}%;" 
-                                aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
-                            </div>
-                        </div>
-                        <span class="fw-semibold text-dark">${percent}%</span>
-                    </div>
-                `;
-            }
-        },
+        //         return `
+        //             <div class="d-flex align-items-center gap-2">
+        //                 <div class="progress" style="width:120px; height:8px;">
+        //                     <div class="progress-bar bg-primary" role="progressbar" 
+        //                         style="width: ${percent}%;" 
+        //                         aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+        //                     </div>
+        //                 </div>
+        //                 <span class="fw-semibold text-dark">${percent}%</span>
+        //             </div>
+        //         `;
+        //     }
+        // },
         {
             title: "Updated By",
             className: "align-middle",
