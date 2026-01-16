@@ -2,59 +2,9 @@
  //use Illuminate\support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
- //use Ramsey\Uuid\Uuid;
- //use GuzzleHttp\Client;
+
  use Illuminate\Http\Client\RequestException;
-//use Illuminate\Support\Facades\Session;
- //BEGIN:: LocaleManager class
 
- //END:: LocaleManager class
-
-//  $mimeTypes = [
-//     'pdf'=>"application/pdf",
-//     'xlsx'=>"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-//     'xls'=>"application/vnd.ms-excel",
-//     'xlsm'=>"application/vnd.ms-excel.sheet.macroEnabled.12",
-//     'docx'=>"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-//     'doc'=>"application/msword",
-//     'gif'=>"image/gif",
-//     'jpeg'=>"image/jpeg",
-//     'jpg'=>"image/jpeg",
-//     'png'=>"image/png",
-//     'csv'=>"text/csv"
-// ];
-
-// function isPureIneger($string) {
-//     return ctype_digit($string);
-// }
-
-// function api_response($data,$error_code=300,$error_message=null) {
-//     $d = (object)[];
-//      if($error_code ==350 || $data =='#350' || $error_code===401 || $data ===401)
-//      {
-//         //Authentication, Token Expired, No-Permission
-//         $data =null;
-//         $error_message ="Authentication failed"; /** user not authenticated **/
-//         $d->status ='Error';
-//         $d->status_code =401;
-//         $d->error_message = $error_message;
-//         return response()->json($d);
-//      }else{
-//             if (isset($data->error_message))
-//             {
-//                 //data validation error
-//                 $data->status_code = 405;
-//                 return response()->json($data);
-//             }
-//             else{
-//                 $d->status ='OK';
-//                 $d->status_code =200;
-//                 $d->error_message = null;
-//                 $d->data = $data;
-//                 return response()->json($d);
-//             }
-//      }
-// }
 
 function getAccessBranches($ss=null,$filter_branch_id = null){
     if(!$ss) $ss = XAuthService::user();

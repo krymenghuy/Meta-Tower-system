@@ -30,7 +30,7 @@
     </div>
 
     <div id="_tenant_list" class="table-responsive mt-3  rounded-2 border"></div>
-    <div id="_tenant_cards" class="mt-3"></div>b
+    <div id="_tenant_cards" class="mt-3"></div>
 </div>
 
 <style>
