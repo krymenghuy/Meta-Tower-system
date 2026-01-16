@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Ypg;
+namespace App\Models\Prm;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 //use Carbon\Carbon;
@@ -309,7 +309,7 @@ class GeneralSettings //extends Model
 
      }
       static function options_floor($ss){
-        return  DB::table('building_spaces')->selectRaw('id,floor_number')->get();
+        return  DB::table('floors')->selectRaw('id,name')->get();
 
      }
      static function options_tenant($ss){
@@ -341,4 +341,10 @@ class GeneralSettings //extends Model
     static function options_payment_method($ss){
         return DB::table('payment_methods')->selectRaw('id,name as payment_method')->get();
     }
+    //     static function options_floors($building_id=null, $ss){
+    //     //$branch_id = $ss->branch_id;
+    //     $str_building ="1=1";
+    //     if($building_id) $str_building ="f.building_id =$building_id";
+    //     return DB::table(table: 'floors as f')->whereRaw($str_building)->select('id','name')->orderBy('f.id','ASC')->get();
+    // }
 }

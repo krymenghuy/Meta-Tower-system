@@ -25,7 +25,10 @@
 
     .tbl_list_floor thead th {
     font-weight: 600;
-    font-size: 0.875rem;
+    color: #1A1647 !important;
+    background-color: #e9eaea !important;
+
+
 }
 
 .tbl_list_floor tbody td {

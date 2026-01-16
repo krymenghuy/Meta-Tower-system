@@ -45,13 +45,13 @@ var BuildingComponent = ( () => {
             title: "Total Floors",
             className: "align-middle",
             data: (data) => `
-                <span class="text-primary-custom">${data.total_floor ?? 'N/A'}</span>
+                <span class="text-primary-custom">${data.total_floor ?? '0'}</span>
             `,
         },
         {
             title: "Total Space",
             className: "align-middle",
-            data: (data) => `<span class="text-primary-custom">${data.total_space ?? ''}</span>`,
+            data: (data) => `<span class="text-primary-custom">${data.total_space ?? '0'}</span>`,
         },
         {
             title: "Occupancy",
@@ -271,13 +271,13 @@ var BuildingComponent = ( () => {
         console.log(444,id);
 
         vsapi.call(`${main_view.base_url}/prm/building/list-floor`,{
-            building_id: id
+                id: id
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
             console.log(444,data);
             
-            html = `<div class="rounded-3 p-2 bg-white">
-                <button data-buildingid="${building_id}" class="btn-add-floor btn btn-sm btn-primary-custom btn-sm" type="button">
+            html = `<div class="d-none rounded-3 p-2 bg-white">
+                <button data-id="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
                 </button>
             </div>
@@ -286,9 +286,11 @@ var BuildingComponent = ( () => {
             <thead class="table-light text-nowrap">
                 <tr>
                     <th>${LocaleManager.trans('Name')}</th>
-                    <th>${LocaleManager.trans('Floor No')}</th>
+                    <th>${LocaleManager.trans('Floor Number')}</th>
+                    <th>${LocaleManager.trans('Total Space')}</th>
+                    <th>${LocaleManager.trans('Description')}</th>
                     <th>${LocaleManager.trans('Last Updated')}</th>
-                    <th>${LocaleManager.trans('Action')}</th>
+                    <!-- <th>${LocaleManager.trans('Action')}</th> -->
                 </tr>
             </thead>
             <tbody></tbody>`;
@@ -301,17 +303,18 @@ var BuildingComponent = ( () => {
 
             btnNewFloor.addEventListener('click',e => {
                 e.preventDefault();
-                let building_id = btnNewFloor.dataset.buildingid;
+                let id = btnNewFloor.dataset.id;
                 let op = {
                     id: null,
-                    building_id: building_id,
-                    onClose: (levels) => {
-                        mThis.renderLevelList(tbody,levels);
+                    id: id,
+                    onClose: (me,d,cancel) => {
+                        mThis.renderLevelList(tbody,d.levels);
                     }
                 };
 
-                if(!AuthManager.allowed(264)) return;
-                ProgramLevelDialog.show(op);
+                // if(!AuthManager.allowed(264)) return;
+                alert('soon');
+                floorDialog.show(op);
             });
 
             mThis.renderLevelList(tbody, data);
@@ -333,28 +336,30 @@ var BuildingComponent = ( () => {
                     </span>
                 </td>
                 <td>${level.floor_no ?? ''}</td>
+                <td>${level.total_space ?? ''}</td>
+                <td>${level.description ?? ''}</td>
                 <td>
                     <span class="d-block p-1 fw-semibold">${level.update_user ?? ''}</span>
                     <span>
                         <small>${level.updated_at ?? ''}</small>
                     </span>
                 </td>
-                <td>
+                <!-- <td>
                     <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" class="btn-level-modify" data-buildingid ="${level.building_id}" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-level-modify" data-buildingid ="${level.id}" data-id="${level.id}">
                            <span class="tool-tip">
                             <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
                             <span class="tool-tiptext fs-6">Modify</span>
                            </span>
                         </a>
-                        <a href="javascript:void(0)" class="btn-level-delete" data-programid ="${level.building_id}" data-id="${level.id}">
+                        <a href="javascript:void(0)" class="btn-level-delete" data-programid ="${level.id}" data-id="${level.id}">
                            <span class="tool-tip">
                             <i class="fa-regular fa-trash-can text-danger fs-5"></i>
                             <span class="tool-tiptext fs-6">Delete</span>
                            </span>
                         </a>
                     </div>
-                </td>
+                </td> -->
             </tr>`].join('');
         });
         tbody.innerHTML = html;

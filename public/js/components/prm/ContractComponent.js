@@ -261,11 +261,17 @@ var ContractComponent = new (function () {
                     name: "edit_contract"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Contract"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_contract"
+                    name: "print_contract"
                 },
+                // {
+                //     html: '<span class="ps-2" vslang="titles.Delete Contract"></span>',
+                //     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "delete_contract"
+                // },
             ],
             // adjustPosition: {
             //     top: -200,
@@ -280,10 +286,14 @@ var ContractComponent = new (function () {
                         mThis.editContract(id, menuLink);
                         break;
                     }
-                    case 'delete_contract': {
-                        mThis.deleteContract(id, menuLink);
+                    case 'print_contract': {
+                        mThis.printContract(id, menuLink);
                         break;
                     }
+                    // case 'delete_contract': {
+                    //     mThis.deleteContract(id, menuLink);
+                    //     break;
+                    // }
 
                     default: {
                         break;
@@ -304,32 +314,35 @@ var ContractComponent = new (function () {
         };
         ContractDialog.show(op);
     }
-    mThis.deleteContract = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.ContractListView.showPage(mThis.getFilterData());
-            }
-        };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this contract?', {
-            title: 'Delete Contract',
-            context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/contract/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.ContractListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
+    mThis.printContract = (id, menulink) => {
+       alert('Coming Soon');
     }
+    // mThis.deleteContract = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.ContractListView.showPage(mThis.getFilterData());
+    //         }
+    //     };
+    //     if (!AuthManager.allowed(242)) return;
+    //     cv_interact.confirm('Delete this contract?', {
+    //         title: 'Delete Contract',
+    //         context: 'delete',
+    //         confirmButtonText: "Delete"
+    //     }, function (e) {
+    //         if (e) {
+    //             vsapi.call(`${main_view.base_url}/prm/contract/delete`, op, false, false, false).then(res => {
+    //                 if (res.status_code == 200) {
+    //                     mThis.ContractListView.showPage();
+    //                 }
+    //             })
+    //         }
+    //         else {
+    //             cv_interact.error(res.error_message);
+    //         }
+    //     });
+    // }
 
     // mThis.changeStatus = (id, lnk) => {
     //     const tr = lnk.closest('tr');
