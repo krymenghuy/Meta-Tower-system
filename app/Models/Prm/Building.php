@@ -119,17 +119,21 @@ class Building //extends Model
     }
 
 
-    public function getListFloor($building_id,$ss=null){
+    public function getListFloor($id,$ss=null){
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $updated_at = DBX::formatTime('b.updated_at','updated_at');
-        $cols = 'f.id,f.building_id,f.name,f.floor_no,f.description,f.status_id,b.name as building,f.update_user,'.$updated_at.' ';
-       return DB::table('floors as f')
-            ->join('buildings as b','b.id','=','f.building_id')
-            ->where('b.id',$building_id)
+        $updated_at = DBX::formatTime('f.updated_at','updated_at');
+      
+        $cols = 'f.id,f.name,f.floor_no,f.description,f.status_id,f.update_user,'.$updated_at.' ';
+        $rows = DB::table('floors as f')
             ->selectRaw($cols)
-            ->where('b.branch_id',$branch_id)
-            ->orderByRaw('f.name ASC')->get();
-
+            // ->where('f.branch_id',$branch_id)
+            ->orderByRaw('f.id ASC')->get();
+           foreach ($rows as $row) {
+            $row->total_space = DB::table('building_spaces')
+                ->where('floor_id', $row->id)
+                ->count();
+        }
+        return $rows;
     }
 }

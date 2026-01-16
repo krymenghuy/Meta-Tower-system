@@ -70,8 +70,8 @@ class BuildingController extends Controller
         if($ss->status_code !=200) return $ss;
 
         $row = new building();
-        $building_id = $req->building_id?$req->building_id:$req->id;
-        $list = $row->getListFloor($building_id,$ss);
+        $id = $req->id?$req->id:$req->building_id;
+        $list = $row->getListFloor($id,$ss);
         return JDV::result($list);
     }
  
