@@ -108,7 +108,7 @@ class Tenant
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
         $query = DB::table('tenants as t')
             ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.legal_name,t.image_path,t.national_id,passport_number,t.sex,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+            ->selectRaw("t.id,t.name,t.legal_name,t.image,t.national_id,passport_number,t.sex,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -119,7 +119,7 @@ class Tenant
     public static function getDetails($id){
         return DB::table('tenants as t')
             ->where('t.id',$id)
-            ->selectRaw('t.id,t.name,t.national_id,passport_number,t.image_path,t.sex,t.legal_name,t.phone_number,t.email,t.address')
+            ->selectRaw('t.id,t.name,t.national_id,passport_number,t.image,t.sex,t.legal_name,t.phone_number,t.email,t.address')
             ->first();
     }
 
