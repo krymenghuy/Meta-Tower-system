@@ -23,11 +23,15 @@ var TenantComponent = (() => {
         },
         {
             title: "Image",
-            className: "align-middle",
+            className: "align-middle text-center",
             data: (data) => {
-                const imageUrl = data.image? `${main_view.base_url}/storage/${data.image}` : null;
+                const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
                 if (imageUrl) {
-                    return `<img src="${imageUrl}" alt="${data.name}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2216%22>?</text></svg>'" />`;
+                    return `<img src="${imageUrl}" 
+                                alt="${data.name}" 
+                                class="rounded-circle" 
+                                style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #e5e7eb;" 
+                                onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-user text-muted fs-4\\'></i>';" />`;
                 }
                 return `<i class="fa-solid fa-user text-muted fs-4"></i>`;
             }
@@ -232,81 +236,79 @@ var TenantComponent = (() => {
         const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
 
         return `
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 card-box">
-                <div class="tenant-card" data-id="${data.id}">
-                    <div class="tenant-card-header d-flex justify-content-end align-items-center">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+            <div class="tenant-card" data-id="${data.id}">
+                <div class="card-header btn-relative">
+                    <div class="avatar-wrapper">
+                        <div class="avatar">
+                            ${imageUrl
+                                ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <i class="fa-solid fa-user" style="display:none;"></i>`
+                                : `<i class="fa-solid fa-user"></i>`
+                            }
+                        </div>
+                    </div>
+                    <div class="header-info">
+                        
+                        <div class="header-info-name">${data.name}</div>
+                        <div class="tenant-company">${data.legal_name}</div>
+                    </div>
+                    <div class="menu-btn-wrapper btn-absolute">
                         <a href="javascript:void(0)"
-                        class="btn--Options btn_leave_action"
-                        data-id="${data.id}"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        style="cursor: pointer; padding: 8px;">
-                            <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
-                        </a>
+                            class=" btn_leave_action "
+                            data-id="${data.id}"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            style="cursor: pointer; padding: 8px;">
+                                <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="pointer-events: none;"></i>
+                            </a>
                     </div>
-                    <div class="tenant-card-avatar-section">
-                        <div class="tenant-avatar-wrapper">
-                            <div class="tenant-avatar">
-                                ${imageUrl
-                                    ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                       <i class="fa-solid fa-user" style="display:none;"></i>`
-                                    : `<i class="fa-solid fa-user"></i>`
-                                }
+                </div>
+                <div class="card-body">
+                    <div class="d-flex box-card">
+                        <div class="info-grid">
+                            <div class="vertical-sidebar-left">
+                                <div class="vertical-icon info-icon text-primary">
+                                    <i class="fas fa-id-card info-icon.id"></i>
+                                </div>
+                                <div class="vertical-icon info-icon text-success">
+                                    <i class="fas fa-phone info-icon.phone"></i>
+                                </div>
+                                <div class="vertical-icon info-icon text-warning">
+                                    <i class="fas fa-envelope info-icon.email"></i>
+                                </div>
+                                <div class="vertical-icon info-icon text-light">
+                                    <i class="fas fa-map-marker-alt info-icon.location"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="tenant-card-body">
-                        <h5 class="tenant-name">${data.name ?? 'N/A'}</h5>
-
-                        <div class="tenant-info-grid">
-                            <div class="tenant-info-row">
-                                <div class="info-label">
-                                    <i class="fa-solid fa-id-card text-primary"></i>
-                                    <span>National ID</span>
-                                </div>
-                                <div class="info-value">: ${data.national_id ?? 'N/A'}</div>
+                        <div class="info-grid" style="position: relative; flex: 1;">
+                            <div class="info-row">
+                                <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
                             </div>
-
-                            <div class="tenant-info-row">
-                                <div class="info-label">
-                                    <i class="fa-solid fa-building"></i>
-                                    <span>Passport</span>
-                                </div>
-                                <div class="info-value">: ${data.passport_number ?? 'N/A'}</div>
+                            <div class="info-row">
+                                <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
                             </div>
-
-                            <div class="tenant-info-row">
-                                <div class="info-label">
-                                    <i class="fa-solid fa-phone text-success"></i>
-                                    <span>Phone</span>
-                                </div>
-                                <div class="info-value">: ${data.phone_number ?? 'N/A'}</div>
+                            <div class="info-row">
+                                <div class="info-text">: ${data.email ?? 'N/A'}</div>
                             </div>
-
-                            <div class="tenant-info-row">
-                                <div class="info-label">
-                                    <i class="fa-solid fa-envelope text-warning"></i>
-                                    <span>Email</span>
-                                </div>
-                                <div class="info-value text-truncate" title="${data.email ?? 'N/A'}">: ${data.email ?? 'N/A'}</div>
+                            <div class="info-row">
+                                <div class="info-text">: ${data.address ?? 'N/A'}</div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="tenant-card-footer">
-                        <span class="footer-label">Office</span>
-                        <div class="footer-actions">
-                            <button class="btn-icon btn-edit-tenant" data-id="${data.id}" title="Edit">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button class="btn-icon btn-view-tenant" data-id="${data.id}" title="View">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
+                            <div class="image-background"></div>
                         </div>
                     </div>
                 </div>
+                <div class=" footer-actions">
+                    <div class="left-icons text-success">
+                        Active
+                    </div>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
             </div>
+        </div>
         `;
     };
 
@@ -553,7 +555,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md",
+            cssClass: "modal-lg",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -699,36 +701,36 @@ const CreateTenantDialog = (() => {
                     reader.readAsDataURL(file);
                 });
             },
-            buttons: [
-                {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
-                    click: (me, btn) => {
-                        me.hide(false);
+                buttons: [
+                    {
+                        label: '<span>Cancel</span>',
+                        cssClass: 'btn-vs-cancel',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
                     },
-                },
-                {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
-                    click: (me, btn) => {
-                        const op = me.getData();
-                        op.id = me.dataOptions.id;
-                        vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
-                            if (res.status_code === 200) {
-                                me.hide(true, op);
-                                if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Tenant has been updated successfully");
+                    {
+                        label: '<span>Submit</span>',
+                        cssClass: 'btn-vs-save',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success("Tenant has been updated successfully");
+                                    } else {
+                                        cv_interact.success("New tenant has been added successfully");
+                                    }
                                 } else {
-                                    cv_interact.success("New tenant has been added successfully");
+                                    cv_interact.error(res.error_message);
                                 }
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
+                            });
+                        },
                     },
-                },
-            ],
-        });
+                ],
+            });
         dialog.show(op);
     };
     return self;
