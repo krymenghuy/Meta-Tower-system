@@ -341,10 +341,18 @@ class GeneralSettings //extends Model
     static function options_payment_method($ss){
         return DB::table('payment_methods')->selectRaw('id,name as payment_method')->get();
     }
-    //     static function options_floors($building_id=null, $ss){
-    //     //$branch_id = $ss->branch_id;
-    //     $str_building ="1=1";
-    //     if($building_id) $str_building ="f.building_id =$building_id";
-    //     return DB::table(table: 'floors as f')->whereRaw($str_building)->select('id','name')->orderBy('f.id','ASC')->get();
-    // }
+        static function options_floors($building_id=null, $ss=null){
+        //$branch_id = $ss->branch_id;
+        $building_id = $building_id ?? -1;
+
+        $str_building ="1=0";
+        if($building_id > 0){
+            $str_building ='f.building_id = ' . $building_id;
+        } 
+        return DB::table(table: 'floors as f')
+            ->whereRaw($str_building)
+            ->selectRaw('f.id,f.building_id,f.name')
+            ->orderBy('f.id','ASC')->get();
+    }
+  
 }

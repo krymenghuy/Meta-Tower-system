@@ -25,13 +25,13 @@
             </div>
         </div>
     </div> 
-    <div class="container-fluid rounded-2 bg-white shadow-sm">
+    <div id="_space_div_summary" class="container-fluid rounded-2 bg-white shadow-sm">
         <div class="row mt-3 pb-3 g-3">
         <div class="col-12 col-sm-6 col-lg-2">
             <div class="stat-card">
             <p class="stat-label">Total Units</p>
             <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">450</p>
+                <p class="stat-value">10</p>
                 <p class="stat-up">+5%</p>
             </div>
             </div>
@@ -49,9 +49,9 @@
 
         <div class="col-12 col-sm-6 col-lg-2">
             <div class="stat-card">
-            <p class="stat-label">Vacant Units</p>
+            <p class="stat-label">Available Units</p>
             <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">34</p>
+                <p class="stat-value">3</p>
                 <p class="badge badge-demand">High Demand</p>
             </div>
             </div>
@@ -59,10 +59,10 @@
 
         <div class="col-12 col-sm-6 col-lg-2">
             <div class="stat-card">
-            <p class="stat-label">Pending Leases</p>
+            <p class="stat-label">Pending Contract</p>
             <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">12</p>
-                <p class="text-warning small fw-semibold">8 Expiring Soon</p>
+                <p class="stat-value">3</p>
+                <p class="text-warning small fw-semibold">2 Expiring Soon</p>
             </div>
             </div>
         </div>
