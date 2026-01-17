@@ -139,8 +139,6 @@ var SpaceComponent = new (function () {
                 return res.data;
             },
             renderItems: (data,list_container) => {
-                console.log(124,data);
-
                 mThis.renderSpaceCard(list_container, data);
 
             },
@@ -173,7 +171,19 @@ var SpaceComponent = new (function () {
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
+        mThis.elBuilding.addEventListener('change',(e)=>{
+            e.preventDefault();
+            // mThis.enrollStudentListView.showPage(mThis.getFilterData());
+            const p = {
+                building_id: e.target.value
+            }
 
+            vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
+                
+                const data = res.status_code == 200 ? res.data : [];
+                VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
+            });
+        });
 
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -283,6 +293,7 @@ var SpaceComponent = new (function () {
            mThis.renderSpace(data,user)
         });
     }
+
     mThis.renderSpace = (data) => {
         let html = `<div class="row g-4">`;
         let cmt = 0;
@@ -517,16 +528,16 @@ var SpaceComponent = new (function () {
 
 
     mThis.prepareFormOptions = (onFinish) => {
-
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', null,null, 1);
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '','All Floor', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
+                // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', false,'', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
+
     }
 
     mThis.show = (options) => {
@@ -630,7 +641,7 @@ const BuildingSpaceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-
+                 
                  me.controls.price_type.onchange = (e) => {
                         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
                         if (!sqmWrapper) return;
@@ -650,6 +661,20 @@ const BuildingSpaceDialog = (() => {
                         data: "floors",
                         textField: "name",
                         valueField: "id",
+                        defaultValue: (me, op) => {
+                            return op?.data?.building_id ?? null;
+                        },
+                        depends: {
+                            name: "building_id",
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                                params: (me, op) => ({
+                                    building_id: me.controls.building_id?.value ?? null,
+                                }),
+                            },
+                            
+                        },
+                        
                     },
                     {
                         name: "space_type_id",

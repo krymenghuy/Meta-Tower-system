@@ -636,7 +636,7 @@ const CreateTenantDialog = (() => {
                 const btnClose = header.querySelector('button');
 
                 if (btnClose) btnClose.classList.add('d-none');
-                header.classList.add('bg-yp-custom', 'modal-header-custom');
+                header.classList.add('bg-prm-custom', 'modal-header-custom');
                 header.parentElement.classList.add('overflow-hidden');
                 header.parentElement.style = 'border-radius: 20px !important;';
 

@@ -2,7 +2,7 @@
 
 namespace App\Models\Prm;
 
-use App\Models\Ypg\GeneralSettings;
+use App\Models\Prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -160,7 +160,7 @@ class Invoice //extends Model
         $updated_at = DBX::formatTime("i.updated_at", 'updated_at');
         $selectCols = 'i.id,i.building_id,i.name as building_name,i.code,i.floor_number,i.tenant_id as tenant_name,st.name as space_type,i.sqm_size,i.price,i.price_type,i.status_id,i.name as status,i.update_user,'.$updated_at.'';
         $query = DB::table('invoices as i')
-            ->join('invoices as i','i.id','=','i.invoice_id')
+            // ->join('invoices as i','i.id','=','i.invoice_id')
             ->join('space_types as st','st.id','=','i.space_type_id')
             ->join('payment_statuses as ps','ps.id','=','i.status_id')
             ->whereRaw($str_search)

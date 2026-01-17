@@ -205,11 +205,12 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
 
     public static function getFormOptions($id,$ss){
         $space_details = $id ? self::getDetails($id) : null;
-        $building_id = $space_details->building_id ?? null;
+        $building_id = $d->building_id ?? null;
+
         return (object)[
             'space_details' => $space_details,
             'buildings' =>GeneralSettings::options_building($ss),
-            'floors' =>GeneralSettings::options_floor($ss),
+            'floors' =>GeneralSettings::options_floors($building_id,$ss),
             'space_types'=> GeneralSettings::options_space_type($ss),
             'statuses' => GeneralSettings::options_space_status($ss)
         ];

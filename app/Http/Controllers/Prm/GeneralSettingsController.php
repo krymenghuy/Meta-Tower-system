@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Ypg;
+namespace App\Http\Controllers\Prm;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Ypg\GeneralSettings;
+use App\Models\Prm\GeneralSettings;
 use JDV;
 use App\Models\UM;
 use XAuthService;
@@ -66,7 +66,13 @@ class GeneralSettingsController extends Controller
      return JDV::result($rows);
    }
   
-
+    function getOptions_Floors(Request $req)
+    {
+          $ss = XAuthService::verifyAuth($req,-1);
+        if ($ss->status_code != 200) return $ss; //user not authenticated
+        $building_id = $req->building_id ? $req->building_id : $req->id;
+        return JDV::result(GeneralSettings::options_floors($building_id, $ss));
+    }
   
   
 }
