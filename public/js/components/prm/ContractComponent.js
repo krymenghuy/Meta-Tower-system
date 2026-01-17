@@ -419,11 +419,17 @@ const ContractDialog = (() => {
                 keyboard: true,
                 createContent: () => {
     return [
-        `<div class="row justify-content-center">
+        `<div class="row justify-content-start">
             <div class="col-6">
                 <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                  <div class="material-input outlined">
                      <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                 </div>
+            </div>
+            <div class="col-6">
+                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
+                 <div class="material-input outlined">
+                     <select name="legal_name" class="data-input form-control" data-field="legal_name"> </select>
                  </div>
             </div>
 
@@ -443,7 +449,7 @@ const ContractDialog = (() => {
                                     
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-4">
                 <label style="color:#777777;padding-left:6px;" for="buildingSpace">Space Code</label>
                  <div class="material-input outlined">
                      <select name="space_id" class="data-input form-control" data-field="space_id"> </select>
@@ -451,47 +457,46 @@ const ContractDialog = (() => {
             </div>
            
 
-            <div class="col-6">
+            <div class="col-4">
+                <label style="color:#777777;padding-left:6px;">Start Date</label>
                 <div class="material-input outlined">
                     <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
-                    <label>Start Date</label>
                 </div>
             </div>
 
-            <div class="col-6">
+            <div class="col-4">
+                <label style="color:#777777;padding-left:6px;">End Date</label>
                 <div class="material-input outlined">
                     <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
-                    <label>End Date</label>
                 </div>
             </div>
-             <div class="col-12">
+             <div class="col-4">
                 <label style="color:#777777;padding-left:6px;" for="priceType"> Select Price Type</label>
                 <div class="material-input outlined">
                 <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
                     <option value="sqm">Per Square Meter</option>
                     <option value="total">Whole Room</option>
                 </select>
-                     <label class="d-none">Price Type</label>
                 </div>
             </div>
-            <div class="col-12">
-                <div class="material-input outlined sqm-wrapper" style="display:none;">
+            <div class="col-4 sqm-wrapper" style="display:none;">
+                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                <div class="material-input outlined">
                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                    <label>Size (m²)</label>
                 </div>
             </div>
-            <div class="col-12">    
+            <div class="col-4">
+                <label style="color:#777777;padding-left:6px;">Price</label>
                 <div class="material-input outlined">
                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                    <label>Price</label>
                 </div>
             </div>
             
 
             <div class="col-12">
+                <label style="color:#777777;padding-left:6px;">Remarks</label>
                 <div class="material-input outlined">
                     <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                    <label>Remarks</label>
                 </div>
             </div>
         </div>`

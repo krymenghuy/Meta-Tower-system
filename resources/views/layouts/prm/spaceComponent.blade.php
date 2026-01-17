@@ -1,4 +1,4 @@
-<div id="_main_space_component" class="mobile-padding p-3" style="display:none;">
+<div id="_main_space_component" class="mobile-padding px-3" style="display:none;">
      <div id="_divFilter_space" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
@@ -25,54 +25,68 @@
             </div>
         </div>
     </div> 
-    <div id="_space_div_summary" class="container-fluid rounded-2 bg-white shadow-sm">
-        <div class="row mt-3 pb-3 g-3">
+ <div id="_space_div_summary" class="container-fluid p-3">
+    <div class="row g-2">
         <div class="col-12 col-sm-6 col-lg-2">
-            <div class="stat-card">
-            <p class="stat-label">Total Units</p>
-            <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">10</p>
-                <p class="stat-up">+5%</p>
-            </div>
+            <div class="metric-card-sm" style="border-left: 6px solid #5867dd;">
+                <div class="metric-head-sm">
+                    <span class="metric-dot bg-primary"></span>
+                    <span>Total Units</span>
+                </div>
+                <div class="metric-value-sm">
+                    10 <span class="trend up">+5%</span>
+                </div>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-lg-2">
-            <div class="stat-card">
-            <p class="stat-label">Occupancy Rate</p>
-            <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">92.4%</p>
-                <p class="stat-down">-1.2%</p>
-            </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-2">
-            <div class="stat-card">
-            <p class="stat-label">Available Units</p>
-            <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">3</p>
-                <p class="badge badge-demand">High Demand</p>
-            </div>
+            <div class="metric-card-sm" style="border-left: 6px solid #0abb87;">
+                <div class="metric-head-sm">
+                    <span class="metric-dot bg-success"></span>
+                    <span>Occupancy</span>
+                </div>
+                <div class="metric-value-sm">
+                    92.4% <span class="trend down">-1.2%</span>
+                </div>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-lg-2">
-            <div class="stat-card">
-            <p class="stat-label">Pending Contract</p>
-            <div class="d-flex align-items-baseline gap-2">
-                <p class="stat-value">3</p>
-                <p class="text-warning small fw-semibold">2 Expiring Soon</p>
-            </div>
+            <div class="metric-card-sm" style="border-left: 6px solid #fd397a;">
+                <div class="metric-head-sm">
+                    <span class="metric-dot bg-danger"></span>
+                    <span>Available</span>
+                </div>
+                <div class="metric-value-sm">
+                    3 <span class="pill danger">High Demand</span>
+                </div>
             </div>
         </div>
+
+        <div class="col-12 col-sm-6 col-lg-2">
+            <div class="metric-card-sm" style="border-left: 6px solid #ffb822;">
+                <div class="metric-head-sm">
+                    <span class="metric-dot bg-warning"></span>
+                    <span>Pending</span>
+                </div>
+                <div class="metric-value-sm">
+                    3 <span class="pill warning">2 Expiry Soon</span>
+                </div>
+            </div>
         </div>
+
     </div>
+</div>
 
-    <div id="_space_list" class="mt-3 px-3"></div>
+
+
+
+    <div id="_space_list" class="px-3 pb-2"></div>
+    <!-- <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div> -->
+
 </div>
  <style>
- .stat-card {
+ /* .stat-card {
   background: #f5f5f5;
   border: 1px solid #dce0e5;
   border-radius: 12px;
@@ -162,7 +176,7 @@
   border: none;
   font-size: .75rem;
   font-weight: 600;
-}
+} */
 .unit-card {
   background: #fff;
   border: 1px solid #dce0e5;
@@ -207,5 +221,74 @@
   border-color: #0d6efd;
   color: #0d6efd;
 }
+.metric-card-sm {
+    height: 100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: linear-gradient(
+        91deg,
+        rgba(255,255,255,0.95),
+        rgb(26 22 71 / 31%)
+    );
+    /* border: 1px solid rgba(0,0,0,0.06); */
+    backdrop-filter: blur(6px);
+}
+
+.metric-head-sm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.metric-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.metric-value-sm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #111418;
+}
+
+.trend {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.trend.up {
+    color: #16a34a;
+}
+
+.trend.down {
+    color: #dc2626;
+}
+
+.pill {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.pill.danger {
+    background: rgba(220,38,38,0.12);
+    color: #dc2626;
+}
+
+.pill.warning {
+    background: rgba(245,158,11,0.15);
+    color: #d97706;
+}
+
+
 
 </style>

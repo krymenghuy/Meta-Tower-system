@@ -132,14 +132,14 @@ function v_display($mod_id, $module_ids = null)
                         </a>
                     </li>
 
-                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
+                    <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
                         <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/company.svg') }}" />
                             </span>
                             <span class="kt-menu__link-text font-color " vslang="menus.Report & Export"></span>
                         </a>
-                    </li>
+                    </li> -->
 
 
                     <li class="kt-menu__section mb-2">
@@ -167,14 +167,14 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__arrow"></span>
                             <ul class="kt-menu__subnav">
 
-                                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
+                                 <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
                                     <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
                                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/access.svg') }}" />
                                         </span>
                                         <span class="kt-menu__link-text font-color " vslang="menus.Access Control"></span>
                                     </a>
-                                </li>
+                                </li> -->
                                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
                                     <a href="BuildingComponent" modid="244" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
@@ -183,7 +183,7 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                                     </a>
                                 </li>
-                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
+                                <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
                                     <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                         {{-- <span class="kt-menu__link-icon">
                                             <img class="icons opacity-icons"
@@ -192,7 +192,7 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-text font-color"
                                             vslang="menus.Countries and Cities"></span>
                                     </a>
-                                </li>
+                                </li> -->
 
                             </ul>
                         </div>
