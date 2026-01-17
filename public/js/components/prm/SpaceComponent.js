@@ -13,6 +13,8 @@ var SpaceComponent = new (function () {
     mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
     let div = mThis.self.querySelector("#_space_list");
+    // mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
+
 
     // mThis.cols = [
 
@@ -127,10 +129,12 @@ var SpaceComponent = new (function () {
 
         mThis.SpaceListView = new ListView('_space_list', {
             fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
+            paginationContainer: mThis.paginationContainer,
+
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                 rowCreated:(data,index,tr)=>{
 
@@ -162,11 +166,11 @@ var SpaceComponent = new (function () {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 330) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 330) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
@@ -295,7 +299,7 @@ var SpaceComponent = new (function () {
     }
 
     mThis.renderSpace = (data) => {
-        let html = `<div class="row g-4">`;
+        let html = `<div class="row g-3">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
