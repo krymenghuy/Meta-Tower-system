@@ -65,15 +65,21 @@ class BuildingController extends Controller
         $res = $this->buildings->deleteBuilding($req->id);
         return JDV::raw($res);
     }
-    public function getListFloor(Request $req){
-        $ss = XAuthService::verifyAuth($req,-1);
-        if($ss->status_code !=200) return $ss;
+  public function getListFloor(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code != 200) return $ss;
 
-        $row = new building();
-        $id = $req->id?$req->id:$req->building_id;
-        $list = $row->getListFloor($id,$ss);
+        $building_id = $req->building_id ?? $req->id;
+        if (!$building_id) {
+            return JDV::error('building_id is required');
+        }
+        $building = new Building();
+        $list = $building->getListFloor($building_id, $ss);
+
         return JDV::result($list);
     }
+
  
     
 }

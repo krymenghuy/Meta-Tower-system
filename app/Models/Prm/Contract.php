@@ -2,7 +2,7 @@
 
 namespace App\Models\Prm;
 
-use App\Models\Ypg\GeneralSettings;
+use App\Models\prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;

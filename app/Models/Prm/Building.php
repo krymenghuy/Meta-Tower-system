@@ -124,8 +124,10 @@ class Building //extends Model
         $branch_id = $ss->branch_id;
         $updated_at = DBX::formatTime('f.updated_at','updated_at');
       
-        $cols = 'f.id,f.name,f.floor_no,f.description,f.status_id,f.update_user,'.$updated_at.' ';
+        $cols = 'f.id,f.name,f.floor_no,f.building_id,f.description,f.status_id,f.update_user,'.$updated_at.' ';
         $rows = DB::table('floors as f')
+            ->join('buildings as b','b.id','=','f.building_id')
+            ->where('f.building_id', $id)
             ->selectRaw($cols)
             // ->where('f.branch_id',$branch_id)
             ->orderByRaw('f.id ASC')->get();
