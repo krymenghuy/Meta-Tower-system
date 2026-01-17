@@ -48,16 +48,6 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
     if (!$floor) {
         return DV::error('Invalid floor selected.');
     }
-    $duplicateId = self::checkDuplicateSpaceId(
-        $d->building_id,
-        $d->floor_id,
-        $d->space_type_id,
-        $id
-    );
-
-    if ($duplicateId) {
-        return DV::error('Building space already exists for this building, floor and space type.');
-    }
     $created = !$id;
     $id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
@@ -128,12 +118,12 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
 
 
 
-    static function checkDuplicateSpaceId($building_id, $floor_id, $space_type_id, $space_id = null)
+    static function checkDuplicateSpaceCode($building_id, $floor_id, $space_code, $space_id = null)
     {
         $query = DB::table('building_spaces as bs')
             ->where('bs.building_id', $building_id)
             ->where('bs.floor_id', $floor_id)
-            ->where('bs.space_type_id', $space_type_id);
+            ->where('bs.space_code', $space_code);
 
         if (!empty($space_id)) {
             $query->where('bs.id', '<>', $space_id);
