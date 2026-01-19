@@ -3722,7 +3722,7 @@ input[type="button"].btn-block {
 .input-group-text {
   display: flex;
   align-items: center;
-  padding: 0.65rem 1rem;
+  /* padding: 0.65rem 1rem; */
   margin-bottom: 0;
   font-size: 1rem;
   font-weight: 400;
