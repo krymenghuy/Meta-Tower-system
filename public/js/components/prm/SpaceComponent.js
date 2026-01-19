@@ -307,12 +307,12 @@ var SpaceComponent = new (function () {
                 console.log(222,d);
                 
                 // ===== STATUS DEFAULT (Available) =====
-                let statusColor = 'bg-success';
+                let statusColor = 'bg-prm-custom';
                 let statusText = 'Available';
-                let btnClass = 'btn-outline-success rounded-2 btn-create-contract';
+                let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
                 let btnText = 'Create Contract';
-                let progressWidth = '0%';
+                let progressWidth = '100%';
 
                 const statusId = d.status_id ?? 1;
 
@@ -320,15 +320,23 @@ var SpaceComponent = new (function () {
                 if (statusId === 2) { // Maintenance
                     statusColor = 'bg-danger';
                     statusText = 'Maintenance';
-                    btnClass = 'btn-outline-danger rounded-2 btn-view-ticket';
+                    btnClass = 'rounded-2 btn-view-ticket';
                     icon = '<i class="fa-solid fa-eye"></i>';
                     btnText = 'View Tickets';
-                    progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '50%';
+                    progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '100%';
 
-                } else if (statusId === 3) { // Occupied
+                } else if (statusId === 3) { // Reserved
+                    statusColor = 'bg-warning';
+                    statusText = 'Reserved';
+                    btnClass = 'rounded-2 btn-reserved-contract';
+                    icon = '<i class="fa-solid fa-hourglass-half"></i>';
+                    btnText = 'Create Contract';
+                    progressWidth = '80%';
+
+                } else if (statusId === 4) { // Occupied
                     statusColor = 'bg-primary';
                     statusText = 'Occupied';
-                    btnClass = 'btn-outline-primary rounded-2 btn-manage-space';
+                    btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
                     btnText = 'Manage Space';
                     progressWidth = '100%';
@@ -345,7 +353,7 @@ var SpaceComponent = new (function () {
 
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <div class="unit-card position-relative overflow-hidden group h-100">
+                    <div class="unit-card position-relative overflow-hidden group h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
                         <div class="p-4 d-flex flex-column gap-3">
 
                             <!-- Header -->
@@ -370,9 +378,9 @@ var SpaceComponent = new (function () {
                                     <i class="fa-solid fa-ruler-combined"></i>
                                     <span>${sizeLabel}</span>
                                 </div>
-                                <div class="d-flex align-items-center gap-1">
+                                <div class="d-flex align-items-center text-prm-custom gap-2">
                                     <i class="fa-regular fa-building"></i>
-                                    <span>${d.space_type ?? 'Residential'}</span>
+                                    <span class="space-type">${d.space_type ?? 'Residential'}</span>
                                 </div>
                             </div>
 
@@ -381,7 +389,7 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 1 ? 'text-success' :
+                                        statusId === 1 ? 'text-prm-custom' :
                                         statusId === 2 ? 'text-danger' :
                                         'text-primary'
                                     }">${statusText}</span>
@@ -394,17 +402,17 @@ var SpaceComponent = new (function () {
                             <!-- Price & Action -->
                             <div class="mt-auto">
                                 <div class="text-muted small mb-2">Price: ${priceLabel}</div>
-                                <button class="btn ${btnClass} btn-sm w-100 d-flex align-items-center justify-content-center gap-2"
-                                    data-id="${d.id}" data-statusid="${statusId}">
+                                <button class="${btnClass} btnAddNewPrm w-100 d-flex align-items-center justify-content-center gap-2"
+                                    data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
                                     <span>${icon}</span>
                                     ${btnText}
                                 </button>
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-2">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? 'System'}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-2"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
+                                        <div class="text-muted mt-3"><i class="fa-regular fa-clock text-prm-custom"></i> <span>${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
                                 
@@ -520,6 +528,13 @@ var SpaceComponent = new (function () {
            e.preventDefault();
             const op = {
                 id: null,
+                data:{
+                    space_type_id:btn.dataset.spacetypeid,
+                    code:btn.dataset.spaceid,
+                    price_type:btn.dataset.pricetype,
+                    price:btn.dataset.price,
+                    sqm_size:btn.dataset.sqmsize,
+                },
                 btn: e.target,
                 onClose: () => {
                     mThis.SpaceListView.showPage(mThis.getFilterData());

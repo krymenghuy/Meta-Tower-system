@@ -31,6 +31,7 @@ class Contract
             'legal_name'       => '0|string|0-100',
             'business_type_id' => '1|number|exists=business_types.id',
             'space_type_id'    => '1|number|exists=space_types.id',
+            'space_status_id' => '1|number|in=3,4',
             'space_id'         => '1|number|exists=building_spaces.id',
             'sqm_size'         => '0|number',
             'price'            => '0|number',
@@ -52,9 +53,9 @@ class Contract
         }
         $created = !$id;
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
-        if($id){
-            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 3]);
-        }
+        // if($id){
+        //     DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 3]);
+        // }
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
         }
@@ -139,6 +140,7 @@ class Contract
         return (object) [
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
+            'legal_names'      => GeneralSettings::options_legal($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
             'building_spaces'      => GeneralSettings::options_building_space($ss),
             'business_types'   => GeneralSettings::options_business_type($ss)
