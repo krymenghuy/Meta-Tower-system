@@ -48,4 +48,3 @@ class PusherController extends Controller
             }
         }
     
-}

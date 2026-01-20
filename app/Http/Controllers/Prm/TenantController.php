@@ -22,12 +22,8 @@ class TenantController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? $req->tenant_id;
-        $data = $req->all();
-        if($req->hasFile('image')){
-            $data['image'] = $req->file('image'); // UploadedFile object
-        }
         $tenant = new Tenant($id,$ss);
-        $res = $tenant->createTenant($data,$id,$ss);
+        $res = $tenant->createTenant($req->all(),$id,$ss);
         return JDV::raw($res);
     }
 
@@ -66,6 +62,33 @@ class TenantController extends Controller
             return JDV::error('Invalid ID');
         }
         $res = $this->tenants->delete($req->id);
+        return JDV::raw($res);
+    }
+
+    function getProfilePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+        $id = $req->tenant_id ?? $req->id;
+        $img = Tenant::profilePicture($id,$ss);
+        return JDV::result($img);
+    }
+    function saveProfilePhoto(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->tenant_id ?? $req->id;
+        $photo = $req->photo ?? $req->img;
+        $res = Tenant::saveProfilePicture($photo,null,$id,$ss);
+        return JDV::raw($res);
+    }
+     function deleteProfilePhoto(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->employee_id ?? $req->id;
+        $emp = new Tenant($id, $ss);
+        $res = $emp->deleteProfilePicture($id);
         return JDV::raw($res);
     }
 
