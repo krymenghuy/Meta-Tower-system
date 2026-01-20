@@ -131,7 +131,7 @@ class Tenant
         }else return $def_image;
     }
     
-     static function saveProfilePicture($photo_data,$file_type = null, $id = null, $ss = null){
+     static function createProfilePicture($photo_data,$file_type = null, $id = null, $ss = null){
         $id = $id ?? $id;
         $ss = $ss ?? $ss;
         $col_subs_id = DBX::getHEX('t.subs_id','subs_id');
@@ -166,7 +166,7 @@ class Tenant
         return url('') . '/assets/images/meta/default_tenant.jpg';
     }
     public static function getDetails($id, $ss = null){
-        return DB::table('tenants as t')
+        $row = DB::table('tenants as t')
             ->where('t.id',$id)
             ->selectRaw('t.id,t.name,t.national_id,passport_number,t.photo_file_name,t.sex,t.legal_name,t.phone_number,t.email,t.address')
             ->first();
@@ -181,7 +181,7 @@ class Tenant
     public static function getFormOptions($id){
         $details = $id ? self::getDetails($id) : null;
         return (object) [
-            'tenants' => $details,
+            'tenant' => $details,
         ];
     }
 

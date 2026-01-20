@@ -246,86 +246,90 @@ var TenantComponent = (() => {
     };
 
     // Create card template
-    mThis.createCardTemplate = (data) => {
-        const sexLabel = data.sex?.toUpperCase() === 'M' ? 'Male' : data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
-        const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
+   mThis.createCardTemplate = (data) => {
+    const sexLabel = data.sex?.toUpperCase() === 'M' ? 'Male' : data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
+    const imageUrl = data.image_url || `${main_view.base_url}/assets/images/meta/default_tenant.jpg`;
 
-        return `
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-            <div class="tenant-card" data-id="${data.id}">
-                <div class="card-header btn-relative">
-                    <div class="avatar-wrapper">
-                        <div class="avatar">
-                            ${imageUrl
-                                ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <i class="fa-solid fa-user" style="display:none;"></i>`
-                                : `<i class="fa-solid fa-user"></i>`
-                            }
-                        </div>
-                    </div>
-                    <div class="header-info">
-                        
-                        <div class="header-info-name">${data.name}</div>
-                        <div class="tenant-company">${data.legal_name}</div>
-                    </div>
-                    <div class="menu-btn-wrapper btn-absolute">
-                        <a href="javascript:void(0)"
-                            class=" btn_leave_action "
-                            data-id="${data.id}"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            style="cursor: pointer; padding: 8px;">
-                                <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="pointer-events: none;"></i>
-                            </a>
+    return `
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+        <div class="tenant-card" data-id="${data.id}">
+            <div class="card-header btn-relative">
+                <div class="avatar-wrapper">
+                    <div class="avatar">
+                        ${data.image_url
+                            ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img btn-view-tenant-photo" data-id="${data.id}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <i class="fa-solid fa-user" style="display:none;"></i>`
+                            : `<i class="fa-solid fa-user"></i>`
+                        }
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex box-card">
-                        <div class="info-grid">
-                            <div class="vertical-sidebar-left">
-                                <div class="vertical-icon info-icon text-primary">
-                                    <i class="fas fa-id-card info-icon.id"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-success">
-                                    <i class="fas fa-phone info-icon.phone"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-warning">
-                                    <i class="fas fa-envelope info-icon.email"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-light">
-                                    <i class="fas fa-map-marker-alt info-icon.location"></i>
-                                </div>
+                <div class="header-info">
+                    <div class="header-info-name">${data.name ?? ''}</div>
+                    <div class="tenant-company">${data.legal_name ?? ''}</div>
+                    <small class="text-muted">${sexLabel}</small>
+                </div>
+                <div class="menu-btn-wrapper btn-absolute">
+                    <a href="javascript:void(0)"
+                        class="btn--Options btn_leave_action"
+                        data-id="${data.id}"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        style="cursor: pointer; padding: 8px;">
+                            <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="pointer-events: none;"></i>
+                        </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex box-card">
+                    <div class="info-grid">
+                        <div class="vertical-sidebar-left">
+                            <div class="vertical-icon info-icon text-primary">
+                                <i class="fas fa-id-card info-icon.id"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-primary">
+                                <i class="fas fa-passport info-icon.passport"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-success">
+                                <i class="fas fa-phone info-icon.phone"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-warning">
+                                <i class="fas fa-envelope info-icon.email"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-light">
+                                <i class="fas fa-map-marker-alt info-icon.location"></i>
                             </div>
                         </div>
-                        <div class="info-grid" style="position: relative; flex: 1;">
-                            <div class="info-row">
-                                <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.email ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.address ?? 'N/A'}</div>
-                            </div>
-                            <div class="image-background"></div>
+                    </div>
+                    <div class="info-grid" style="position: relative; flex: 1;">
+                        <div class="info-row">
+                            <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
                         </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.passport_number ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.email ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.address ?? 'N/A'}</div>
+                        </div>
+                        <div class="image-background"></div>
                     </div>
                 </div>
-                <div class=" footer-actions">
-                    <div class="left-icons text-success">
-                        Active
-                    </div>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+            </div>
+            <div class="footer-actions">
+                <div class="left-icons text-muted">
+                    <small>Updated by ${data.update_user ?? 'N/A'} • ${data.updated_at ?? 'N/A'}</small>
                 </div>
-
+                <i class="fa-solid fa-arrow-right"></i>
             </div>
         </div>
-        `;
-    };
+    </div>
+    `;
+};
 
     mThis.getFilterData = () => {
         let p = {
@@ -342,6 +346,8 @@ var TenantComponent = (() => {
 
     // Initialize dropdown menus for both table and cards
     mThis.initDropdownMenus = (container) => {
+        console.log('Initializing dropdowns for container:', container); // Debug
+        console.log('Found action buttons:', container.querySelectorAll('.btn_leave_action').length); // Debug
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
@@ -379,19 +385,18 @@ var TenantComponent = (() => {
         new VSDropdownMenu(menuOptions);
 
         // Also attach click handlers to card footer buttons
-        container.querySelectorAll('.btn-edit-tenant').forEach(btn => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const id = e.currentTarget.dataset.id;
-                mThis.editTenant(id, btn);
-            };
-        });
-
-        container.querySelectorAll('.btn-view-tenant').forEach(btn => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const id = e.currentTarget.dataset.id;
-                mThis.viewTenant(id, btn);
+       container.querySelectorAll('.btn-view-tenant-photo').forEach(btn => {
+        btn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            ImageBox.viewPhoto({
+                imageUrl: btn.src,
+                features: ['zoom', 'rotate', 'brightness', 'contrast'],
+                imageClass: '',
+                dialogClass: '',
+                dialogSize: 'lg',
+                freeZoom: true,
+                });
             };
         });
     };
@@ -745,7 +750,7 @@ const CreateTenantDialog = (() => {
             prepareFormOptions: {
                 createTitle: "Create New Tenant",
                 modifyTitle: "Modify Tenant",
-                targetProp: "tenants",
+                targetProp: "tenant",
                 api: {
                     endpoint: [main_view.base_url, "/prm/tenant/form-options"].join(""),
                     params: (op) => {
@@ -761,7 +766,10 @@ const CreateTenantDialog = (() => {
 
             extendMethod: {
                     setData: (me, data) => {
+                        // console.log(data);
+                        
                         me.tenantImageBox.setImage(data.image_url);
+                        
                     }
                 },
                 buttons: [

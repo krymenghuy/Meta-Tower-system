@@ -74,7 +74,7 @@ class TenantController extends Controller
         $img = Tenant::profilePicture($id,$ss);
         return JDV::result($img);
     }
-    function saveProfilePhoto(Request $req){
+    function createProfilePhoto(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $id = $req->tenant_id ?? $req->id;
