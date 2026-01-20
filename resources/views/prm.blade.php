@@ -311,7 +311,6 @@
                             @include('layouts.common.companyComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
-
                             @include('layouts.prm.tenantComponent')
                             @include('layouts.prm.buildingComponent')
                             @include('layouts.prm.paymentComponent')
@@ -323,9 +322,7 @@
                             @include('layouts.prm.settingComponent')
                             @include('layouts.prm.reportComponent')
                             @include('layouts.prm.expenseComponent')
-
-
-
+                            @include('layouts.prm.serviceRequestComponent')
 
 
                         </div>

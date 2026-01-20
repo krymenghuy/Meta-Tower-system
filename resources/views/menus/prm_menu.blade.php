@@ -101,6 +101,15 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
                         </a>
                     </li>
+                    {{-- add Request Service Component --}}
+                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
+                        <a href="ServiceRequestComponent" modid="270" class="menu-item kt-menu__link">
+                            <span class="kt-menu__link-icon">
+                                <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
+                            </span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Service Request"></span>
+                        </a>
+                    </li>
 
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
                         <a href="InvoiceComponent" modid="270" class="menu-item kt-menu__link">

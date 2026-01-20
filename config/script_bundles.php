@@ -125,6 +125,7 @@ return [
                 'js/components/prm/SettingComponent.js',
                 'js/components/prm/ReportComponent.js',
                 'js/components/prm/ExpenseComponent.js',
+                'js/components/prm/ServiceRequestComponent.js',
 
 
             ]
@@ -143,7 +144,7 @@ return [
                 //'/assets/js/ImageHelper.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
                 //'/assets/js/ImageBox.js',
-              
+
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
                 //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',
@@ -178,7 +179,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/UMExpandItemView.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownMenu.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSDropdownButton.js',
-                
+
                 'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
                 //'/assets/vendors/general/popper.js/dist/umd/popper.js',
                 // '/assets/material-js/bootstrap.min.js',
