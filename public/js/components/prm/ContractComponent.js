@@ -431,7 +431,7 @@ const ContractDialog = (() => {
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
                                 <div class="material-input outlined">
-                                    <select name="legal_name" class="data-input form-control" data-field="legal_name"> </select>
+                                    <input name="legal_name" class="data-input form-control" data-field="legal_name" />
                                 </div>
                             </div>
 
@@ -446,7 +446,7 @@ const ContractDialog = (() => {
                             <div class="col-4">
                                 <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
                                 <div class="material-input outlined">
-                                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
                                                     
                                 </div>
@@ -455,18 +455,9 @@ const ContractDialog = (() => {
                             <div class="col-4">
                                 <label style="color:#777777;padding-left:6px;" for="Code">Code</label>
                                 <div class="material-input outlined">
-                                    <select   name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                    <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
                                     </select>
                                                     
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <label style="color:#777777;padding-left:6px;" for="buildingSpace">Contract Status</label>
-                                <div class="material-input outlined">
-                                    <select name="space_status_id" class="data-input form-control" data-field="space_status_id">
-                                        <option value="3">Reserved</option>
-                                        <option value="4">Occupied</option>
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -547,12 +538,12 @@ const ContractDialog = (() => {
                         textField: "tenant",
                         valueField: "id",
                     },
-                    {
-                        name: "legal_name",
-                        data: "legal_names",
-                        textField: "legal_name",
-                        valueField: "id",
-                    },
+                    // {
+                    //     name: "legal_name",
+                    //     data: "legal_names",
+                    //     textField: "legal_name",
+                    //     valueField: "id",
+                    // },
                     {
                         name: "business_type_id",
                         data: "business_types",
@@ -590,7 +581,8 @@ const ContractDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal); 
-                    const isReadOnly = me.dataOptions.id > 0;
+                    
+                    const isReadOnly = me.dataOptions.data.code > 0;
                     me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
                     // const price = me.divModal.querySelector(
                     //     '[data-field="price"]'

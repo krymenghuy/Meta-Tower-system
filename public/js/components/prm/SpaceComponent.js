@@ -307,7 +307,7 @@ var SpaceComponent = new (function () {
                 console.log(222,d);
                 
                 // ===== STATUS DEFAULT (Available) =====
-                let statusColor = 'bg-prm-custom';
+                let statusColor = 'bg-secondary-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -317,24 +317,8 @@ var SpaceComponent = new (function () {
                 const statusId = d.status_id ?? 1;
 
                 // ===== STATUS MAPPING =====
-                if (statusId === 2) { // Maintenance
-                    statusColor = 'bg-danger';
-                    statusText = 'Maintenance';
-                    btnClass = 'rounded-2 btn-view-ticket';
-                    icon = '<i class="fa-solid fa-eye"></i>';
-                    btnText = 'View Tickets';
-                    progressWidth = d.occupancy_percent ? d.occupancy_percent + '%' : '100%';
-
-                } else if (statusId === 3) { // Reserved
-                    statusColor = 'bg-warning';
-                    statusText = 'Reserved';
-                    btnClass = 'rounded-2 btn-reserved-contract';
-                    icon = '<i class="fa-solid fa-hourglass-half"></i>';
-                    btnText = 'Create Contract';
-                    progressWidth = '80%';
-
-                } else if (statusId === 4) { // Occupied
-                    statusColor = 'bg-primary';
+                if (statusId === 2) { // Occupied
+                    statusColor = 'bg-prm-custom';
                     statusText = 'Occupied';
                     btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
@@ -389,9 +373,9 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 1 ? 'text-prm-custom' :
-                                        statusId === 2 ? 'text-danger' :
-                                        'text-primary'
+                                        statusId === 1 ? 'text-secondary-custom' :
+                                        statusId === 2 ? 'text-prm-custom' :
+                                        'text-success'
                                     }">${statusText}</span>
                                 </div>
                                 <div class="progress mt-1" style="height:6px;">
@@ -402,7 +386,7 @@ var SpaceComponent = new (function () {
                             <!-- Price & Action -->
                             <div class="mt-auto">
                                 <div class="text-muted small mb-2">Price: ${priceLabel}</div>
-                                <button class="${btnClass} btnAddNewPrm w-100 d-flex align-items-center justify-content-center gap-2"
+                                <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
                                     data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
                                     <span>${icon}</span>
                                     ${btnText}
