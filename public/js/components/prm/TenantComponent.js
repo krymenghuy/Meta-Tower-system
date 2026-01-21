@@ -7,15 +7,11 @@ var TenantComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
-    mThis.elSearch = mThis.self.querySelector("#_search_tenant");
+    mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
+    mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
+    mThis.currentViewMode = 'card';
 
-    // View toggle buttons
-    mThis.btnListView = mThis.self.querySelector("#_btnListView");
-    mThis.btnCardView = mThis.self.querySelector("#_btnCardView");
-    mThis.listContainer = mThis.self.querySelector("#_tenant_list");
-    mThis.cardContainer = mThis.self.querySelector("#_tenant_cards");
-
-    mThis.currentView = 'card';
     mThis.cols = [
         {
             title: "",
@@ -100,47 +96,93 @@ var TenantComponent = (() => {
                 </div>`
         },
     ];
+    mThis.renderTenantCard = (data) => {
+    const sexLabel =
+        data.sex?.toUpperCase() === 'M' ? 'Male' :
+        data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
+
+    const imageUrl = data.image
+        ? `${main_view.base_url}/storage/${data.image}`
+        : null;
+
+    return `
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+        <div class="tenant-card" data-id="${data.id}">
+            <div class="card-header position-relative">
+                <div class="avatar-wrapper">
+                    <div class="avatar">
+                        ${
+                            imageUrl
+                                ? `<img src="${imageUrl}" alt="${data.name}"
+                                    class="tenant-avatar-img"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                   <i class="fa-solid fa-user d-none"></i>`
+                                : `<i class="fa-solid fa-user"></i>`
+                        }
+                    </div>
+                </div>
+
+                <div class="header-info">
+                    <div class="header-info-name">${data.name ?? ''}</div>
+                    <div class="tenant-company">${data.legal_name ?? ''}</div>
+                </div>
+
+                <div class="menu-btn-wrapper position-absolute top-0 end-0">
+                    <a href="javascript:void(0)"
+                       class="btn_leave_action"
+                       data-id="${data.id}">
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="info-row">ID : ${data.national_id ?? 'N/A'}</div>
+                <div class="info-row">Phone : ${data.phone_number ?? 'N/A'}</div>
+                <div class="info-row">Email : ${data.email ?? 'N/A'}</div>
+                <div class="info-row">Address : ${data.address ?? 'N/A'}</div>
+            </div>
+
+            <div class="card-footer text-success fw-semibold">
+                Active
+            </div>
+        </div>
+    </div>
+    `;
+};
+
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        // Initialize List View
-        mThis.TenantListView = new ListView('_tenant_list', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
+        mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
+            fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.status_id;
-                tr.classList.add('tenant');
-                tr.setAttribute('id', ['tenant_id', data.id].join(''));
+            renderItems: (items, container) => {
+                // container.innerHTML = '';
+                // let html = '<div class="row">';
+                // items.forEach(item => {
+                //     html += mThis.renderTenantCard(item);
+                // });
+                // html += '</div>';
+                // container.innerHTML = html;
+                mThis.renderTenantCard(container, items);
             },
             listContainerClass: null
         });
 
-        // Initialize Card View
-        mThis.TenantCardView = new CardView('_tenant_cards', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
-            perPage: 12,
+        // List View
+        mThis.tenantListView = new ListView(mThis.listViewContainer, {
+            fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
+            perPage: 10,
+            columns: mThis.cols,
             apiCluster: main_view.apiCluster,
-            cardTemplate: mThis.createCardTemplate,
-            onCardCreated: (container) => {
-                // Initialize dropdown menus for card view
-                mThis.initDropdownMenus(container);
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            rowCreated: (data, index, tr) => {
+                tr.dataset.id = data.id;
+                tr.dataset.statusid = data.status_id;
             }
         });
-
-        mThis.btnListView.onclick = (e) => {
-            e.preventDefault();
-            mThis.switchView('list');
-        };
-
-        mThis.btnCardView.onclick = (e) => {
-            e.preventDefault();
-            mThis.switchView('card');
-        };
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -153,433 +195,185 @@ var TenantComponent = (() => {
             CreateTenantDialog.show(op);
         };
 
-        mThis.pr_tbl = mThis.TenantListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        const cardTab = document.getElementById('tenantViewCard');
+        const listTab = document.getElementById('tenantViewList');
 
-        // Card container scroll management
-        const card_parent = mThis.cardContainer;
-        card_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        card_parent.classList.add("overflow-y-auto");
+        if (cardTab && listTab) {
+            cardTab.addEventListener('change', () => {
+                mThis.currentViewMode = 'card';
+                mThis.renderView();
+            });
 
-        window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-            card_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            listTab.addEventListener('change', () => {
+                mThis.currentViewMode = 'list';
+                mThis.renderView();
+            });
+        }
+
+        mThis.renderTenantCard = (div, data) => {
+            data = data ?? [];
+            // if (!AuthManager) {
+            //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+            //     return;
+            // }
+            AuthManager.init().then((user) => {
+                mThis.renderCard(data, user);
+            });
         };
+   mThis.renderCard = (items) => {
 
-        mThis.tblTenant = mThis.TenantListView.getTable();
-        // console.log('tblTenant:', mThis.tblTenant);
-        mThis.initDropdownMenus(mThis.tblTenant);
+    let html = `<div class="row g-3">`;
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = (e) => {
-                e.preventDefault();
-                mThis.refreshCurrentView();
-            };
+    if (Array.isArray(items) && items.length > 0) {
+
+        items.forEach(d => {
+
+            const imageUrl = d.image
+                ? `${main_view.base_url}/storage/${d.image}`
+                : null;
+
+            html += `
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card tenant-card h-100 shadow-sm border-0" data-id="${d.id}">
+
+                    <!-- Header -->
+                    <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="tenant-avatar">
+                                ${
+                                    imageUrl
+                                        ? `<img src="${imageUrl}" alt="${d.name}"
+                                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">`
+                                        : `<i class="fa-solid fa-user"></i>`
+                                }
+                                <i class="fa-solid fa-user ${imageUrl ? 'd-none' : ''}"></i>
+                            </div>
+
+                            <div class="text-truncate">
+                                <div class="fw-semibold text-dark text-truncate">${d.name ?? ''}</div>
+                                <div class="text-muted small text-truncate">${d.legal_name ?? ''}</div>
+                            </div>
+                        </div>
+
+                        <a href="javascript:void(0)"
+                           class="text-muted btn_leave_action"
+                           data-id="${d.id}">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </a>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="card-body pt-2 small text-muted">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-regular fa-id-card me-2"></i>
+                            ${d.national_id ?? 'N/A'}
+                        </div>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-phone me-2"></i>
+                            ${d.phone_number ?? 'N/A'}
+                        </div>
+
+                        <div class="d-flex align-items-center mb-2 text-truncate">
+                            <i class="fa-regular fa-envelope me-2"></i>
+                            ${d.email ?? 'N/A'}
+                        </div>
+
+                        <div class="d-flex align-items-start text-truncate">
+                            <i class="fa-solid fa-location-dot me-2 mt-1"></i>
+                            ${d.address ?? 'N/A'}
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                        <a href="javascript:void(0)" class="text-primary small">
+                            View →
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            `;
         });
 
-        mThis.elSearch.addEventListener('keyup', (e) => {
-            e.preventDefault();
+    } else {
+
+        html += `
+        <div class="col-12">
+            <div class="alert alert-light border text-center text-danger">
+                Tenant not found!
+            </div>
+        </div>
+        `;
+    }
+
+    html += `</div>`;
+
+    mThis.cardViewContainer.innerHTML = html;
+};
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = () => mThis.renderView();
+        });
+        mThis.elSearch.addEventListener('keyup', () => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.refreshCurrentView();
+                mThis.renderView();
             }, 250);
         });
 
-        mThis.tblTenant.addEventListener("click", function (e) {
-            let btn = e.target.closest(".btn-view-tenant-photo");
-            if (btn) {
-                ImageBox.viewPhoto({
-                    imageUrl: btn.src,
-                    features: ['zoom', 'rotate', 'brightness', 'contrast'],
-                    imageClass: '',
-                    dialogClass: '',
-                    dialogSize: 'lg',
-                    freeZoom: true,
-                    //imageClass:"",
-                    //photoViewSize: "lg", //lg or xl
-                    //freeZoom:false,
-
-                });
-
-                // let op = {
-                //     id: btn.dataset.member_id,
-                //     image_url: btn.src
-                // };
-                // PreViewMemberDialog.show(op);
-                return;
-            }
-        })
         mThis.initAlready = true;
     };
 
-    // Switch between List and Card View
-    mThis.switchView = (view) => {
-        mThis.currentView = view;
-        if (view === 'list') {
-            mThis.cardContainer.classList.add('d-none');
-            mThis.listContainer.classList.remove('d-none');
-            mThis.btnListView.classList.add('active');
-            mThis.btnCardView.classList.remove('active');
-            mThis.TenantListView.showPage(mThis.getFilterData());
+    mThis.renderView = () => {
+        const params = mThis.getFilterData();
+
+        if (mThis.currentViewMode === 'card') {
+            mThis.cardViewContainer.classList.remove('d-none');
+            mThis.listViewContainer.classList.add('d-none');
+
+            mThis.tenantCardView.showPage(params);
         } else {
-            mThis.listContainer.classList.add('d-none');
-            mThis.cardContainer.classList.remove('d-none');
-            mThis.btnCardView.classList.add('active');
-            mThis.btnListView.classList.remove('active');
-            mThis.TenantCardView.showPage(mThis.getFilterData());
+            mThis.cardViewContainer.classList.add('d-none');
+            mThis.listViewContainer.classList.remove('d-none');
+
+            mThis.tenantListView.showPage(params);
         }
     };
-
-    // Refresh current view
-    mThis.refreshCurrentView = () => {
-        if (mThis.currentView === 'list') {
-            mThis.TenantListView.showPage(mThis.getFilterData());
-            setTimeout(() => {
-                mThis.initDropdownMenus(mThis.tblTenant);
-            }, 100);
-        } else {
-            mThis.TenantCardView.showPage(mThis.getFilterData());
-        }
-    };
-
-    // Create card template
-    mThis.createCardTemplate = (data) => {
-        const sexLabel = data.sex?.toUpperCase() === 'M' ? 'Male' : data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
-        const imageUrl = data.image_url || `${main_view.base_url}/assets/images/meta/default_tenant.jpg`;
-
-        return `
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-        <div class="tenant-card" data-id="${data.id}">
-            <div class="card-header btn-relative">
-                <div class="avatar-wrapper">
-                    <div class="avatar">
-                        ${data.image_url
-                            ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img btn-view-tenant-photo" data-id="${data.id}" onerror="this.onerror=null; this.src='${main_view.base_url}/assets/images/meta/default_tenant.jpg';">`
-                            : `<img src="${main_view.base_url}/assets/images/meta/default_tenant.jpg" alt="Default Avatar" class="tenant-avatar-img btn-view-tenant-photo" data-id="${data.id}">`
-                        }
-                    </div>
-                </div>
-                <div class="header-info">
-                    <div class="header-info-name">${data.name ?? ''}</div>
-                    <div class="tenant-company">${data.legal_name ?? ''}</div>
-                    <small class="text-muted">${sexLabel}</small>
-                </div>
-                <div class="menu-btn-wrapper btn-absolute">
-                    <a href="javascript:void(0)"
-                    class="btn--Options btn_leave_action"
-                    data-id="${data.id}"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    style="cursor: pointer; padding: 8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex box-card">
-                    <div class="info-grid">
-                        <div class="vertical-sidebar-left">
-                            <div class="vertical-icon info-icon text-primary">
-                                <i class="fas fa-id-card info-icon.id"></i>
-                            </div>
-                            <div class="vertical-icon info-icon text-primary">
-                                <i class="fas fa-passport info-icon.passport"></i>
-                            </div>
-                            <div class="vertical-icon info-icon text-success">
-                                <i class="fas fa-phone info-icon.phone"></i>
-                            </div>
-                            <div class="vertical-icon info-icon text-warning">
-                                <i class="fas fa-envelope info-icon.email"></i>
-                            </div>
-                            <div class="vertical-icon info-icon text-light">
-                                <i class="fas fa-map-marker-alt info-icon.location"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="info-grid" style="position: relative; flex: 1;">
-                        <div class="info-row">
-                            <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-text">: ${data.passport_number ?? 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-text">: ${data.email ?? 'N/A'}</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="info-text">: ${data.address ?? 'N/A'}</div>
-                        </div>
-                        <div class="image-background"></div>
-                    </div>
-                </div>
-                <div class=" footer-actions">
-                    <div class="left-icons text-success">
-                        Active
-                    </div>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <div class=" footer-actions">
-                <div class="left-icons text-success">
-                    Active
-                </div>
-                <i class="fa-solid fa-arrow-right"></i> 
-            </div>
-        </div>
-    </div>
-    `;
-    };
-
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value,
+            search_value: mThis.elSearch.value
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
+            p[el.dataset.field] = el.value;
         });
 
         return p;
     };
-
-    // Initialize dropdown menus for both table and cards
-    mThis.initDropdownMenus = (container) => {
-        
-        
-        const menuOptions = {
-            containerElement: container,
-            actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2">Modify</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_tenant"
-                },
-                {
-                    html: '<span class="ps-2">Delete</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_tenant"
-                },
-            ],
-            
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case 'edit_tenant': {
-                        mThis.editTenant(id, menuLink);
-                        break;
-                    }
-                    case 'delete_tenant': {
-                        mThis.deleteTenant(id, menuLink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            }
-        };
-        new VSDropdownMenu(menuOptions);
-
-        // Also attach click handlers to card footer buttons
-        // container.querySelectorAll('.btn-view-tenant-photo').forEach(btn => {
-        //     btn.onclick = (e) => {
-        //         e.preventDefault();
-        //         e.stopPropagation();
-        //         ImageBox.viewPhoto({
-        //             imageUrl: btn.src,
-        //             features: ['zoom', 'rotate', 'brightness', 'contrast'],
-        //             imageClass: '',
-        //             dialogClass: '',
-        //             dialogSize: 'lg',
-        //             freeZoom: true,
-        //         });
-        //     };
-        // });
-    };
-
-    mThis.editTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.refreshCurrentView();
-            }
-        };
-        CreateTenantDialog.show(op);
-    };
-
-    mThis.viewTenant = (id, btn) => {
-        // Implement view functionality
-        console.log(`Viewing tenant with ID: ${id}`);
-        // You can open a view dialog or navigate to a detail page here
-        cv_interact.info(`View functionality for tenant ID: ${id}`);
-    };
-
-    mThis.deleteTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.refreshCurrentView();
-            }
-        };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Tenant?', {
-            title: 'Delete Tenant',
-            context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.refreshCurrentView();
-                        cv_interact.success('Tenant deleted successfully');
-                    } else {
-                        cv_interact.error(res.error_message);
-                    }
-                });
-            }
-        });
-    };
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 if (typeof onFinish === 'function') onFinish();
             });
     };
-
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.switchView(mThis.currentView);
+            mThis.renderView();
         });
     };
 
     return mThis;
 })();
 
-// Enhanced CardView class with proper pagination
-class CardView {
-    constructor(containerId, options) {
-        this.container = document.getElementById(containerId);
-        this.options = options;
-        this.currentPage = 1;
-        this.totalPages = 1;
-        this.paginationContainer = null;
-        this.lastParams = {};
-    }
+   
 
-    showPage(params = {}) {
-        this.lastParams = params;
-        params.page = this.currentPage;
-        params.per_page = this.options.perPage || 12;
 
-        vsapi.call(this.options.fetchApi, params).then(res => {
-            if (res.status_code === 200) {
-                this.totalPages = res.data.last_page || 1;
-                this.render(res.data);
-                this.renderPagination(res.data);
-
-                // // Call onCardCreated callback after rendering
-                // if (this.options.onCardCreated) {
-                //     this.options.onCardCreated(this.container);
-                // }
-            }
-        });
-    }
-
-    render(data) {
-        const items = data.data || [];
-        let html = '<div class="row">';
-
-        if (items.length === 0) {
-            html += `
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class="fa-solid fa-users fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No tenants found</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            items.forEach(item => {
-                html += this.options.cardTemplate(item);
-            });
-        }
-
-        html += '</div>';
-        html += '<div class="card-pagination mt-3"></div>';
-        this.container.innerHTML = html;
-        this.paginationContainer = this.container.querySelector('.card-pagination');
-
-        if (this.options.onCardCreated) {
-            this.options.onCardCreated(this.container);
-        }
-    }
-
-    renderPagination(data) {
-        if (!this.paginationContainer || this.totalPages <= 1) return;
-
-        let html = '<nav><ul class="pagination justify-content-center">';
-
-        // Previous button
-        html += `
-            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${this.currentPage - 1}">Previous</a>
-            </li>
-        `;
-
-        // Page numbers
-        for (let i = 1; i <= this.totalPages; i++) {
-            if (i === 1 || i === this.totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
-                html += `
-                    <li class="page-item ${i === this.currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" data-page="${i}">${i}</a>
-                    </li>
-                `;
-            } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
-                html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
-            }
-        }
-
-        // Next button
-        html += `
-            <li class="page-item ${this.currentPage === this.totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${this.currentPage + 1}">Next</a>
-            </li>
-        `;
-
-        html += '</ul></nav>';
-        this.paginationContainer.innerHTML = html;
-
-        // Add click handlers
-        this.paginationContainer.querySelectorAll('a.page-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const page = parseInt(e.target.dataset.page);
-                if (page && page !== this.currentPage && page >= 1 && page <= this.totalPages) {
-                    this.currentPage = page;
-                    this.showPage(this.lastParams);
-                }
-            });
-        });
-    }
-}
 
 const CreateTenantDialog = (() => {
     const self = {};
@@ -591,73 +385,121 @@ const CreateTenantDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
-                return [
-                    `<form>
-                    <div class="row justify-content-center">
-                        <div class="col-3">
-                            <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
-                                <div   name="div_tenant_photo"
-                                    class="data-input h-100 w-100" 
-                                    data-field="photo" 
-                                    style="background-image: url('/assets/images/default/placeholder.svg'); background-size: cover; background-position: center;"></div>
+                return `
+                <form class="tenant-form">
+
+                    <!-- Profile Section -->
+                    <div class="row g-4 align-items-start mb-3">
+                        <div class="col-12 col-md-3 text-center">
+                            <div class="tenant-photo-wrapper mx-auto">
+                                <div name="div_tenant_photo"
+                                    class="data-input tenant-photo"
+                                    data-field="photo"
+                                    style="background-image:url('/assets/images/default/placeholder.svg');">
+                                </div>
                             </div>
-                            <label class="mt-2 text-muted small d-block text-center">Profile Photo</label>
+                            <small class="text-muted d-block mt-2">Profile Photo</small>
                         </div>
-                        <div class="col-12">
+
+                        <div class="col-12 col-md-9">
+                            <label class="form-label">Full Name</label>
                             <div class="material-input outlined">
-                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                <label>Full Name</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="material-input outlined">
-                                <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                <label>Legal Name</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="material-input outlined">
-                                <input type="text" name="national_id" required class="data-input form-control" data-field="national_id" placeholder=" " />
-                                <label>National ID</label>
+                                <input type="text"
+                                    name="name"
+                                    class="data-input form-control"
+                                    data-field="name"
+                                    placeholder=" "
+                                    required />
                             </div>
                         </div>
-                        <div class="col-12">
+                    </div>
+
+                    <!-- Basic Info -->
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Gender</label>
                             <div class="material-input outlined">
-                                <input type="text" name="passport_number" required class="data-input form-control" data-field="passport_number" placeholder=" " />
-                                <label>Passport Number</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;" for="sex">Select Gender</label>
-                            <div class="material-input outlined">
-                                <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
+                                <select name="sex"
+                                    class="data-input form-control"
+                                    data-field="sex">
+                                    <option value="">Select</option>
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-12">
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">National ID</label>
                             <div class="material-input outlined">
-                                <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                <label>Phone Number</label>
+                                <input type="text"
+                                    name="national_id"
+                                    class="data-input form-control"
+                                    data-field="national_id"
+                                    placeholder=" " />
                             </div>
                         </div>
-                        <div class="col-12">
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Legal Name</label>
                             <div class="material-input outlined">
-                                <input type="email" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
-                                <label>Email</label>
+                                <input type="text"
+                                    name="legal_name"
+                                    class="data-input form-control"
+                                    data-field="legal_name"
+                                    placeholder=" " />
                             </div>
                         </div>
-                        <div class="col-12">
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Passport Number</label>
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                <label>Address</label>
+                                <input type="text"
+                                    name="passport_number"
+                                    class="data-input form-control"
+                                    data-field="passport_number"
+                                    placeholder=" " />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <div class="material-input outlined">
+                                <input type="tel"
+                                    name="phone_number"
+                                    class="data-input form-control"
+                                    data-field="phone_number"
+                                    placeholder=" " />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Email</label>
+                            <div class="material-input outlined">
+                                <input type="email"
+                                    name="email"
+                                    class="data-input form-control"
+                                    data-field="email"
+                                    placeholder=" " />
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control"
+                                    data-field="address"
+                                    rows="3"
+                                    placeholder=" ">
+                                </textarea>
                             </div>
                         </div>
                     </div>
-                </form>`
-                ].join("");
+
+                </form>
+                `;
             },
+
             contentCreated: (me) => {
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');

@@ -3,25 +3,23 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                    <input type="text" class="form-control rounded-2 pe-5 filter-field" id="_search_tenant_" placeholder="Search">
+                    <input type="text" class="form-control rounded-2 pe-5 filter-field" id="_search_tenant" placeholder="Search">
                     <i class="fa fa-search fs-6 text-muted position-absolute"
                         style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
-           <div class="col-12 col-md-6 col-lg-3">
-                <div class="btn-group btn-group-sm bg-light p-1 rounded" role="group">
-                    <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewCard">
-                        <i class="fa-solid fa-grip me-1"></i> Card
-                    </label>
-
-                    <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewList">
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewList">
-                        <i class="fa-solid fa-rectangle-list me-1"></i> List
-                    </label>
+            {{-- View Toggle Buttons  --}}
+            <div class="col-12 col-md-3 col-lg-2">
+                <div class="button-select-enhanced">
+                    <button class="btn btn-list-enhanced active" id="_btnCardView">
+                        <i class="fa-solid fa-grip"></i>
+                    </button>
+                    <button class="btn btn-list-enhanced" id="_btnListView">
+                        <i class="fa-solid fa-list"></i>
+                    </button>
                 </div>
-
             </div>
+
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddTenant">
                     <i class="fa fa-user-plus me-2"></i>
@@ -30,9 +28,9 @@
             </div>
         </div>
     </div>
-    <div id="_tenant_card_view" class="mt-3"></div>
 
-    <div id="_tenant_list_view" class="table-responsive mt-3  rounded-2 border"></div>
+    <div id="_tenant_list" class="table-responsive mt-3  rounded-2 border"></div>
+    <div id="_tenant_cards" class="mt-3"></div>
 </div>
 
 <style>
@@ -55,15 +53,6 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
 }
-.btn-group .btn {
-    border-radius: 0.375rem;
-}
-
-.btn-check:checked + .btn {
-    background-color: #fff;
-    color: #212529;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-}
 
 
 @media (max-width: 768px) {
@@ -71,30 +60,4 @@
         width: 100%;
     }
 }
-
-
-
-
-.tenant-photo-wrapper {
-    width: 110px;
-    height: 110px;
-    border-radius: 12px;
-    border: 1px dashed #dee2e6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-}
-
-.tenant-photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-}
-
-
-
 </style>
