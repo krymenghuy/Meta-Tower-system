@@ -54,21 +54,21 @@ var PaymentComponent = new (function () {
             }
         },
             
-        {
-            title: "Payment method",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.payment_method}</span>`,
-        },
-        {
-            title: "Reference No",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column" style="width:150px;" >
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
+        // {
+        //     title: "Payment method",
+        //     className: "align-middle ",
+        //     data: (data) => `<span class="text-yp-custom">${data.payment_method}</span>`,
+        // },
+        // {
+        //     title: "Reference No",
+        //     className: 'align-middle',
+        //     data: (data, index, tr) => {
+        //         return `<div class="d-flex flex-column" style="width:150px;" >
+        //             <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
                     
-                </div>`;
-            }
-        },
+        //         </div>`;
+        //     }
+        // },
         {
             title: "note",
             className: "align-middle ",
@@ -81,11 +81,11 @@ var PaymentComponent = new (function () {
                 return `<span class="text-yp-custom">${data.amount ?? ''}</span>`;
             }
         },
-        {
-            title: "discount",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.discount ?? ''}</span>`,
-        },
+        // {
+        //     title: "discount",
+        //     className: "align-middle ",
+        //     data: (data) => `<span class="text-yp-custom">${data.discount ?? ''}</span>`,
+        // },
 
         {
             title: "Total Paid",
@@ -255,7 +255,7 @@ var PaymentComponent = new (function () {
 
         mThis.pr_tbl = mThis.PaymentListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 350) + 'px';
+        sh_parent.style.height = (window.innerHeight - 320) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
