@@ -82,7 +82,7 @@
 
 
     <div id="_space_list" class="px-3 pb-2"></div>
-    <!-- <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div> -->
+    <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div>
 
 </div>
  <style>
@@ -183,6 +183,11 @@
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0,0,0,.05);
   transition: box-shadow .2s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 14px;
+    transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .unit-card:hover {
@@ -289,13 +294,7 @@
     color: #d97706;
 }
 
-.unit-card {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 14px;
-    transition: transform .25s ease, box-shadow .25s ease;
-}
+
 
 /* .unit-card::before {
     content: "";

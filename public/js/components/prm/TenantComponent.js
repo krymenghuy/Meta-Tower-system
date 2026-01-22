@@ -86,12 +86,12 @@ var TenantComponent = (() => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
-                    class="btn--Options btn_leave_action"
+                    class="btn-tenant-dropdown-action"
                     data-id="${data.id}"
                     aria-haspopup="true"
                     aria-expanded="false"
                     style="cursor: pointer; padding: 8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" ></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
                     </a>
                 </div>`
         },
@@ -103,22 +103,13 @@ var TenantComponent = (() => {
         if (mThis.initAlready) return;
         mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
             fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
-                // container.innerHTML = '';
-                // let html = '<div class="row">';
-                // items.forEach(item => {
-                //     html += mThis.renderTenantCard(item);
-                // });
-                // html += '</div>';
-                // container.innerHTML = html;
                 mThis.renderTenantCard(container, items);
             },
             listContainerClass: null
         });
-
-        // List View
         mThis.tenantListView = new ListView(mThis.listViewContainer, {
             fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
@@ -128,6 +119,7 @@ var TenantComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
+                mThis.initDropdownMenus(tr);
             }
         });
         mThis.btnAdd.onclick = function (e) {
@@ -136,15 +128,11 @@ var TenantComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.refreshCurrentView();
+                    mThis.renderView();
                 }
             };
             CreateTenantDialog.show(op);
         };
-
-       
-
-
         const cardTab = document.getElementById('tenantViewCard');
         const listTab = document.getElementById('tenantViewList');
 
@@ -177,52 +165,79 @@ var TenantComponent = (() => {
 
                 items.forEach(d => {
                     html += `
-                        <aside class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card tenant-card shadow-sm rounded-4 border-0 p-4 text-center" style="background-size: contain;  background-repeat: no-repeat;background-image:url('${d.bg_image ?? '/assets/images/default/bg_card7.jpg'}');">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="status_tenant px-3"> <span>Active</span> </div>
-                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white" style="width:32px;height:32px;">
-                                        <div class="">
-                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="avatar-wrapper">
-                                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjuoKqwfDiuhAYJ6E7wlc9xrtEi-JtrlhkqnJr6SD4vdfKOer1EIPtrn6Wn3q1aomxXf9PHQb8w9o-DPlr5kjvUIGibK2-e_msAv-FYV7Xx-EvgkAzqtZFUlDDFScFH6JRUStbFX0TlRLEnAnKSlW8TOTDxSUpLXDKQa-MP5gBHYR-n1uuRHxDckGQAfIHKPXK20hjiCvPMRwhAIbuO787sbe7hpNt292QOm6vuOK7uFS74sTthpwN4k6eLwMbrqi2Qy0MMKrYS3xX" alt="Jonathan Miller">
-                                    <div class="status-badge">
-                                        <i class="fa-solid fa-circle-check fs-4"></i>
-                                    </div>
-                                </div>
-                                <h5>${d.name}</h5>
-                                <p class="card-subtitle mb-4">#TEN-88420 • Verified Tenant</p>
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-4">
+                                <div class="card-header border-0 rounded-top-4 d-flex justify-content-between align-items-center px-3 p-3" >
+                                    <span class="badge rounded-pill bg-success px-3">Active</span>
 
-                                <div class="text-start mx-auto" style="max-width: 250px;">
-                                    <p class="mb-2 text-truncate">
-                                        <i class="fa-solid fa-envelope text-muted me-2"></i>
-                                        <span>${d.email ?? 'N/A'}</span>
-                                    </p>
-                                    <p class="mb-2 text-truncate">
-                                        <i class="fa-solid fa-phone text-muted me-2"></i>
-                                        <span>${d.phone_number ?? 'N/A'}</span>
-                                    </p>
-                                    <p class="mb-0 text-truncate">
-                                       <i class="fa-brands fa-space-awesome text-muted fs-6 me-2"></i>
-                                        <span>Unit 502, Meta Tower</span>
-                                    </p>
+                                    <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                                    </a>
                                 </div>
-                                <div class="mt-3 d-flex justify-content-between align-items-center">
-                                    
-                                    <div class="text-start">
-                                       <small class="text-muted">Created By</small> <small class="text-muted"> : ${d.update_user}</small>
-                                        <!-- <small class="text-muted">Date :</small><small class="text-muted">${d.updated_at}</small>-->
+                                <div class="card-body text-center">
+                                    <div class="px-2  pb-4 d-flex justify-content-between align-items-start">
+                                        <div class="d-flex gap-3 align-items-center">
+                                           <div class="rounded-3 border shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                                style="width:56px;height:56px;">
+                                                <img
+                                                    src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}"
+                                                    alt="Profile"
+                                                    class="img-fluid w-100 h-100 object-fit-cover"
+                                                >
+                                            </div>
+
+
+                                            <div>
+                                                <h6 class="fw-semibold text-start mb-1 text-dark">
+                                                    ${d.name}
+                                                </h6>
+
+                                                <div class="d-flex align-items-center gap-2 small">
+                                                    <span class="rounded-circle bg-success" style="width:8px;height:8px;"></span>
+                                                    <span class="text-success fw-semibold text-uppercase">Active</span>
+                                                    <span class="text-muted">• #T-8821</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:void(0)"
+                                        class="d-none btn-tenant-dropdown-action text-prm-custom p-2 rounded-circle hover-bg"
+                                        aria-haspopup="true">
+                                            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                                        </a>
                                     </div>
-                                    <div class="text-start"><a href="javascript:void(0)" class="text-primary small">View →</a></div>
+
+                                    <div class="card_container" style="max-width: 250px;" >
+                                        <p class="ps-3 mb-2 text-white">
+                                            #  ${d.code || "TEN-10001"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-phone me-2 text-white"></i>
+                                            ${d.phone_number || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-envelope me-2 text-white"></i>
+                                            ${d.email || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-brands fa-space-awesome text-white fs-6 me-2"></i>
+                                            <span>Unit 502, Meta Tower</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center px-3 p-2 small">
+                                    <span class="text-muted">
+                                        Create By : ${d.update_user || ""}
+                                    </span>
+                                    <a href="javascript:void(0)"
+                                    class="text-primary-custom see-detail"
+                                    data-id="${d.id}">
+                                        <i class="fa-regular fa-eye"></i> View Details
+                                    </a>
+                                
                                 </div>
 
                             </div>
-                        </aside>
+                        </div>
                         `;
                     });
 
@@ -270,25 +285,17 @@ var TenantComponent = (() => {
             //menuItemClass:"",
             menus: [
 
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status",
-                },
-                {
-
-                    html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
+               {
+                    html: '<span class="ps-2">Edit Tenant</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_space",
+                    name: "edit_tenant"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
+                    html: '<span class="ps-2">Delete Tenant</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_space",
+                    name: "delete_tenant"
                 },
             ],
             // adjustPosition: {
@@ -298,20 +305,14 @@ var TenantComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_status": {
-                        mThis.changeStatus(id, menuLink);
+                    case 'edit_tenant': {
+                        mThis.editTenant(id, menuLink);
                         break;
                     }
-
-                    case "edit_space": {
-                        mThis.editSpace(id, menuLink);
+                    case 'delete_tenant': {
+                        mThis.deleteTenant(id, menuLink);
                         break;
                     }
-                    case "delete_space": {
-                        mThis.deleteSpace(id, menuLink);
-                        break;
-                    }
-
                     default: {
                         break;
                     }
@@ -319,6 +320,42 @@ var TenantComponent = (() => {
             },
         };
         new VSDropdownMenu(menuOptopns);
+    };
+    mThis.editTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        CreateTenantDialog.show(op);
+    };
+    mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Tenant?', {
+            title: 'Delete Tenant',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.renderView();
+                        cv_interact.success('Tenant deleted');
+                    } else {
+                        cv_interact.error(res.error_message);
+                    }
+                });
+            }
+        });
     };
 
     mThis.renderView = () => {

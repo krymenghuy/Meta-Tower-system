@@ -30,109 +30,53 @@
             </div>
         </div>
     </div>
-    <div id="_tenant_card_view" class="mt-3"></div>
+    <div id="_tenant_card_view" class="mt-3 px-3 mb-2"></div>
 
     <div id="_tenant_list_view" class="table-responsive mt-3  rounded-2 border"></div>
 </div>
 
 <style>
-.btn--Options {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #1a1647;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    font-weight: 500;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
 
-.btn--Options:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
-}
-.btn-group .btn {
-    border-radius: 0.375rem;
-}
+    .card {
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px 0px grey;
+    }
 
-.btn-check:checked + .btn {
-    background-color: #fff;
-    color: #212529;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-}
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 16px;
+        border: none;
+        align-items: center;
+        background-color: #647686;
+    }
 
+    .card-body {
 
-@media (max-width: 768px) {
-    .btn--Options {
+        /* background-image:url('https://img.freepik.com/free-vector/ombre-blue-curve-light-blue-background-vector_53876-140344.jpg'); */
+        background-color: #fff;
+        /* background-size: cover;  background-repeat: no-repeat;background-image:url('${d.bg_image ?? '/assets/images/default/bg-card2.jpg'}'); */
+    }
+
+    .card_container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #8b8b8b;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 10px;
+
+    }
+    .container_bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
         width: 100%;
     }
-}
+    
 
-
-
-
-
-
- .tenant-card {
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    padding: 2rem 1.5rem 1.5rem 1.5rem;
-    background-color: #c9c8cb;
-    position: relative;
-  }
-  .tenant-card .avatar-wrapper {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1rem;
-    position: relative;
-  }
-  .tenant-card .avatar-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #f8f9fa;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  .tenant-card .status-badge {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background-color: #28a745;
-    color: white;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .tenant-card .info p {
-    margin-bottom: 0.5rem;
-  }
-  .tenant-card .info span {
-    color: #6c757d;
-    font-size: 0.9rem;
-  }
-  .tenant-card .action-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-.tenant-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    transition: 0.3s;
-}
-.status_tenant{
-    background: linear-gradient(rgb(12 32 126), rgb(22 119 196));
-    color: #fff;
-    border: 1px solid #fffbff;
-    padding: 3px;
-    border-radius: 114px;
-}
 
 </style>
+
