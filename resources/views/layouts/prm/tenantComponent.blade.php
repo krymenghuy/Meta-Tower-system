@@ -30,71 +30,53 @@
             </div>
         </div>
     </div>
-    <div id="_tenant_card_view" class="mt-3"></div>
+    <div id="_tenant_card_view" class="mt-3 px-3 mb-2"></div>
 
     <div id="_tenant_list_view" class="table-responsive mt-3  rounded-2 border"></div>
 </div>
 
 <style>
-.btn--Options {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%); */
-    background-color: #1a1647;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    font-weight: 500;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
 
-.btn--Options:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
-}
-.btn-group .btn {
-    border-radius: 0.375rem;
-}
+    .card {
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px 0px grey;
+    }
 
-.btn-check:checked + .btn {
-    background-color: #fff;
-    color: #212529;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-}
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 16px;
+        border: none;
+        align-items: center;
+        background-color: #647686;
+    }
 
+    .card-body {
 
-@media (max-width: 768px) {
-    .btn--Options {
+        /* background-image:url('https://img.freepik.com/free-vector/ombre-blue-curve-light-blue-background-vector_53876-140344.jpg'); */
+        background-color: #fff;
+        /* background-size: cover;  background-repeat: no-repeat;background-image:url('${d.bg_image ?? '/assets/images/default/bg-card2.jpg'}'); */
+    }
+
+    .card_container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #8b8b8b;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 10px;
+
+    }
+    .container_bottom {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
         width: 100%;
     }
-}
-
-
-
-
-.tenant-photo-wrapper {
-    width: 110px;
-    height: 110px;
-    border-radius: 12px;
-    border: 1px dashed #dee2e6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-}
-
-.tenant-photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-}
-
+    
 
 
 </style>
+

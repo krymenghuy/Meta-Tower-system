@@ -13,7 +13,7 @@ var SpaceComponent = new (function () {
     mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
     let div = mThis.self.querySelector("#_space_list");
-    // mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
+    mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
 
     // mThis.cols = [
@@ -129,22 +129,17 @@ var SpaceComponent = new (function () {
 
         mThis.SpaceListView = new ListView('_space_list', {
             fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
-            perPage: 8,
-            // rememberCurrentPage: false,
+            perPage: 6,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
             paginationContainer: mThis.paginationContainer,
-
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                 rowCreated:(data,index,tr)=>{
-
             },
            processResponse: (res) => {
                 return res.data;
             },
             renderItems: (data,list_container) => {
                 mThis.renderSpaceCard(list_container, data);
-
             },
             listContainerClass: null
         });
@@ -337,7 +332,7 @@ var SpaceComponent = new (function () {
 
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <div class="unit-card position-relative overflow-hidden group h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
+                    <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
                         <div class="p-4 d-flex flex-column gap-3">
 
                             <!-- Header -->

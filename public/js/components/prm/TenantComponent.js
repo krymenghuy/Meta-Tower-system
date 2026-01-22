@@ -86,92 +86,30 @@ var TenantComponent = (() => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
-                    class="btn--Options btn_leave_action"
+                    class="btn-tenant-dropdown-action"
                     data-id="${data.id}"
                     aria-haspopup="true"
                     aria-expanded="false"
                     style="cursor: pointer; padding: 8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
                     </a>
                 </div>`
         },
     ];
-    mThis.renderTenantCard = (data) => {
-    const sexLabel =
-        data.sex?.toUpperCase() === 'M' ? 'Male' :
-        data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
 
-    const imageUrl = data.image
-        ? `${main_view.base_url}/storage/${data.image}`
-        : null;
-
-    return `
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-        <div class="tenant-card" data-id="${data.id}">
-            <div class="card-header position-relative">
-                <div class="avatar-wrapper">
-                    <div class="avatar">
-                        ${
-                            imageUrl
-                                ? `<img src="${imageUrl}" alt="${data.name}"
-                                    class="tenant-avatar-img"
-                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                   <i class="fa-solid fa-user d-none"></i>`
-                                : `<i class="fa-solid fa-user"></i>`
-                        }
-                    </div>
-                </div>
-
-                <div class="header-info">
-                    <div class="header-info-name">${data.name ?? ''}</div>
-                    <div class="tenant-company">${data.legal_name ?? ''}</div>
-                </div>
-
-                <div class="menu-btn-wrapper position-absolute top-0 end-0">
-                    <a href="javascript:void(0)"
-                       class="btn_leave_action"
-                       data-id="${data.id}">
-                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="info-row">ID : ${data.national_id ?? 'N/A'}</div>
-                <div class="info-row">Phone : ${data.phone_number ?? 'N/A'}</div>
-                <div class="info-row">Email : ${data.email ?? 'N/A'}</div>
-                <div class="info-row">Address : ${data.address ?? 'N/A'}</div>
-            </div>
-
-            <div class="card-footer text-success fw-semibold">
-                Active
-            </div>
-        </div>
-    </div>
-    `;
-};
 
 
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
             fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             renderItems: (items, container) => {
-                // container.innerHTML = '';
-                // let html = '<div class="row">';
-                // items.forEach(item => {
-                //     html += mThis.renderTenantCard(item);
-                // });
-                // html += '</div>';
-                // container.innerHTML = html;
                 mThis.renderTenantCard(container, items);
             },
             listContainerClass: null
         });
-
-        // List View
         mThis.tenantListView = new ListView(mThis.listViewContainer, {
             fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
@@ -181,6 +119,7 @@ var TenantComponent = (() => {
             rowCreated: (data, index, tr) => {
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
+                mThis.initDropdownMenus(tr);
             }
         });
         mThis.btnAdd.onclick = function (e) {
@@ -189,12 +128,11 @@ var TenantComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.refreshCurrentView();
+                    mThis.renderView();
                 }
             };
             CreateTenantDialog.show(op);
         };
-
         const cardTab = document.getElementById('tenantViewCard');
         const listTab = document.getElementById('tenantViewList');
 
@@ -220,99 +158,111 @@ var TenantComponent = (() => {
                 mThis.renderCard(data, user);
             });
         };
-   mThis.renderCard = (items) => {
+        mThis.renderCard = (items) => {
 
-    let html = `<div class="row g-3">`;
+            let html = `<div class="row g-3">`;
+            if (Array.isArray(items) && items.length > 0) {
 
-    if (Array.isArray(items) && items.length > 0) {
+                items.forEach(d => {
+                    html += `
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-4">
+                                <div class="card-header border-0 rounded-top-4 d-flex justify-content-between align-items-center px-3 p-3" >
+                                    <span class="badge rounded-pill bg-success px-3">Active</span>
 
-        items.forEach(d => {
+                                    <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="px-2  pb-4 d-flex justify-content-between align-items-start">
+                                        <div class="d-flex gap-3 align-items-center">
+                                           <div class="rounded-3 border shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                                style="width:56px;height:56px;">
+                                                <img
+                                                    src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}"
+                                                    alt="Profile"
+                                                    class="img-fluid w-100 h-100 object-fit-cover"
+                                                >
+                                            </div>
 
-            const imageUrl = d.image
-                ? `${main_view.base_url}/storage/${d.image}`
-                : null;
 
-            html += `
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <div class="card tenant-card h-100 shadow-sm border-0" data-id="${d.id}">
+                                            <div>
+                                                <h6 class="fw-semibold text-start mb-1 text-dark">
+                                                    ${d.name}
+                                                </h6>
 
-                    <!-- Header -->
-                    <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="tenant-avatar">
-                                ${
-                                    imageUrl
-                                        ? `<img src="${imageUrl}" alt="${d.name}"
-                                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">`
-                                        : `<i class="fa-solid fa-user"></i>`
-                                }
-                                <i class="fa-solid fa-user ${imageUrl ? 'd-none' : ''}"></i>
+                                                <div class="d-flex align-items-center gap-2 small">
+                                                    <span class="rounded-circle bg-success" style="width:8px;height:8px;"></span>
+                                                    <span class="text-success fw-semibold text-uppercase">Active</span>
+                                                    <span class="text-muted">• #T-8821</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:void(0)"
+                                        class="d-none btn-tenant-dropdown-action text-prm-custom p-2 rounded-circle hover-bg"
+                                        aria-haspopup="true">
+                                            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="card_container" style="max-width: 250px;" >
+                                        <p class="ps-3 mb-2 text-white">
+                                            #  ${d.code || "TEN-10001"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-phone me-2 text-white"></i>
+                                            ${d.phone_number || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-envelope me-2 text-white"></i>
+                                            ${d.email || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-brands fa-space-awesome text-white fs-6 me-2"></i>
+                                            <span>Unit 502, Meta Tower</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center px-3 p-2 small">
+                                    <span class="text-muted">
+                                        Create By : ${d.update_user || ""}
+                                    </span>
+                                    <a href="javascript:void(0)"
+                                    class="text-primary-custom see-detail"
+                                    data-id="${d.id}">
+                                        <i class="fa-regular fa-eye"></i> View Details
+                                    </a>
+                                
+                                </div>
+
                             </div>
-
-                            <div class="text-truncate">
-                                <div class="fw-semibold text-dark text-truncate">${d.name ?? ''}</div>
-                                <div class="text-muted small text-truncate">${d.legal_name ?? ''}</div>
-                            </div>
                         </div>
+                        `;
+                    });
 
-                        <a href="javascript:void(0)"
-                           class="text-muted btn_leave_action"
-                           data-id="${d.id}">
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </a>
-                    </div>
-
-                    <!-- Body -->
-                    <div class="card-body pt-2 small text-muted">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fa-regular fa-id-card me-2"></i>
-                            ${d.national_id ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fa-solid fa-phone me-2"></i>
-                            ${d.phone_number ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-center mb-2 text-truncate">
-                            <i class="fa-regular fa-envelope me-2"></i>
-                            ${d.email ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-start text-truncate">
-                            <i class="fa-solid fa-location-dot me-2 mt-1"></i>
-                            ${d.address ?? 'N/A'}
+                } else {
+                    html += `
+                    <div class="col-12">
+                        <div class="alert alert-light border text-center text-danger">
+                            Tenant not found!
                         </div>
                     </div>
+                    `;
+                }
+                html += `</div>`;
+                mThis.cardViewContainer.innerHTML = html;
+        };
 
-                    <!-- Footer -->
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                        <span class="badge bg-success-subtle text-success">Active</span>
-                        <a href="javascript:void(0)" class="text-primary small">
-                            View →
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-            `;
-        });
-
-    } else {
-
-        html += `
-        <div class="col-12">
-            <div class="alert alert-light border text-center text-danger">
-                Tenant not found!
-            </div>
-        </div>
-        `;
-    }
-
-    html += `</div>`;
-
-    mThis.cardViewContainer.innerHTML = html;
-};
+         mThis.pr_tbl = mThis.tenantCardView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
+        mThis.tblTenant = mThis.tenantCardView.getTable();
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.renderView();
@@ -323,8 +273,89 @@ var TenantComponent = (() => {
                 mThis.renderView();
             }, 250);
         });
-
+        mThis.initDropdownMenus(mThis.cardViewContainer);
         mThis.initAlready = true;
+    };
+
+     mThis.initDropdownMenus = (listContainer) => {
+        const menuOptopns = {
+            containerElement: listContainer,
+            actionButtonClass: "btn-tenant-dropdown-action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+
+               {
+                    html: '<span class="ps-2">Edit Tenant</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_tenant"
+                },
+                {
+                    html: '<span class="ps-2">Delete Tenant</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_tenant"
+                },
+            ],
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case 'edit_tenant': {
+                        mThis.editTenant(id, menuLink);
+                        break;
+                    }
+                    case 'delete_tenant': {
+                        mThis.deleteTenant(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptopns);
+    };
+    mThis.editTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        CreateTenantDialog.show(op);
+    };
+    mThis.deleteTenant = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Tenant?', {
+            title: 'Delete Tenant',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.renderView();
+                        cv_interact.success('Tenant deleted');
+                    } else {
+                        cv_interact.error(res.error_message);
+                    }
+                });
+            }
+        });
     };
 
     mThis.renderView = () => {
