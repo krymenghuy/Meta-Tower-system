@@ -132,7 +132,7 @@
 .border-dark-custom {
     border-color: 2px solid #38373a;
 }
-.border-ypg-custom {
+.border-prm-custom {
     border-color:  #27444a !important;;
 }
 .box-shadow{
@@ -2164,7 +2164,7 @@ tr {
     .material-input.outlined select,
     .material-input.outlined textarea {
       width: 100%;
-      padding: 18px 12px 6px 12px;
+      /* padding: 18px 12px 6px 12px; */
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
