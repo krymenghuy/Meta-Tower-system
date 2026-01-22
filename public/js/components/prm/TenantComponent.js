@@ -91,65 +91,12 @@ var TenantComponent = (() => {
                     aria-haspopup="true"
                     aria-expanded="false"
                     style="cursor: pointer; padding: 8px;">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" ></i>
                     </a>
                 </div>`
         },
     ];
-    mThis.renderTenantCard = (data) => {
-    const sexLabel =
-        data.sex?.toUpperCase() === 'M' ? 'Male' :
-        data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
 
-    const imageUrl = data.image
-        ? `${main_view.base_url}/storage/${data.image}`
-        : null;
-
-    return `
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-        <div class="tenant-card" data-id="${data.id}">
-            <div class="card-header position-relative">
-                <div class="avatar-wrapper">
-                    <div class="avatar">
-                        ${
-                            imageUrl
-                                ? `<img src="${imageUrl}" alt="${data.name}"
-                                    class="tenant-avatar-img"
-                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                   <i class="fa-solid fa-user d-none"></i>`
-                                : `<i class="fa-solid fa-user"></i>`
-                        }
-                    </div>
-                </div>
-
-                <div class="header-info">
-                    <div class="header-info-name">${data.name ?? ''}</div>
-                    <div class="tenant-company">${data.legal_name ?? ''}</div>
-                </div>
-
-                <div class="menu-btn-wrapper position-absolute top-0 end-0">
-                    <a href="javascript:void(0)"
-                       class="btn_leave_action"
-                       data-id="${data.id}">
-                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="info-row">ID : ${data.national_id ?? 'N/A'}</div>
-                <div class="info-row">Phone : ${data.phone_number ?? 'N/A'}</div>
-                <div class="info-row">Email : ${data.email ?? 'N/A'}</div>
-                <div class="info-row">Address : ${data.address ?? 'N/A'}</div>
-            </div>
-
-            <div class="card-footer text-success fw-semibold">
-                Active
-            </div>
-        </div>
-    </div>
-    `;
-};
 
 
     mThis.init = () => {
@@ -195,6 +142,9 @@ var TenantComponent = (() => {
             CreateTenantDialog.show(op);
         };
 
+       
+
+
         const cardTab = document.getElementById('tenantViewCard');
         const listTab = document.getElementById('tenantViewList');
 
@@ -220,99 +170,84 @@ var TenantComponent = (() => {
                 mThis.renderCard(data, user);
             });
         };
-   mThis.renderCard = (items) => {
+        mThis.renderCard = (items) => {
 
-    let html = `<div class="row g-3">`;
+            let html = `<div class="row g-3">`;
+            if (Array.isArray(items) && items.length > 0) {
 
-    if (Array.isArray(items) && items.length > 0) {
+                items.forEach(d => {
+                    html += `
+                        <aside class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                            <div class="card tenant-card shadow-sm rounded-4 border-0 p-4 text-center" style="background-size: contain;  background-repeat: no-repeat;background-image:url('${d.bg_image ?? '/assets/images/default/bg_card7.jpg'}');">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="status_tenant px-3"> <span>Active</span> </div>
+                                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary text-white" style="width:32px;height:32px;">
+                                        <div class="">
+                                            <a href="javascript:void(0)" class="btn-tenant-dropdown-action" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="avatar-wrapper">
+                                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjuoKqwfDiuhAYJ6E7wlc9xrtEi-JtrlhkqnJr6SD4vdfKOer1EIPtrn6Wn3q1aomxXf9PHQb8w9o-DPlr5kjvUIGibK2-e_msAv-FYV7Xx-EvgkAzqtZFUlDDFScFH6JRUStbFX0TlRLEnAnKSlW8TOTDxSUpLXDKQa-MP5gBHYR-n1uuRHxDckGQAfIHKPXK20hjiCvPMRwhAIbuO787sbe7hpNt292QOm6vuOK7uFS74sTthpwN4k6eLwMbrqi2Qy0MMKrYS3xX" alt="Jonathan Miller">
+                                    <div class="status-badge">
+                                        <i class="fa-solid fa-circle-check fs-4"></i>
+                                    </div>
+                                </div>
+                                <h5>${d.name}</h5>
+                                <p class="card-subtitle mb-4">#TEN-88420 • Verified Tenant</p>
 
-        items.forEach(d => {
+                                <div class="text-start mx-auto" style="max-width: 250px;">
+                                    <p class="mb-2 text-truncate">
+                                        <i class="fa-solid fa-envelope text-muted me-2"></i>
+                                        <span>${d.email ?? 'N/A'}</span>
+                                    </p>
+                                    <p class="mb-2 text-truncate">
+                                        <i class="fa-solid fa-phone text-muted me-2"></i>
+                                        <span>${d.phone_number ?? 'N/A'}</span>
+                                    </p>
+                                    <p class="mb-0 text-truncate">
+                                       <i class="fa-brands fa-space-awesome text-muted fs-6 me-2"></i>
+                                        <span>Unit 502, Meta Tower</span>
+                                    </p>
+                                </div>
+                                <div class="mt-3 d-flex justify-content-between align-items-center">
+                                    
+                                    <div class="text-start">
+                                       <small class="text-muted">Created By</small> <small class="text-muted"> : ${d.update_user}</small>
+                                        <!-- <small class="text-muted">Date :</small><small class="text-muted">${d.updated_at}</small>-->
+                                    </div>
+                                    <div class="text-start"><a href="javascript:void(0)" class="text-primary small">View →</a></div>
+                                </div>
 
-            const imageUrl = d.image
-                ? `${main_view.base_url}/storage/${d.image}`
-                : null;
-
-            html += `
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                <div class="card tenant-card h-100 shadow-sm border-0" data-id="${d.id}">
-
-                    <!-- Header -->
-                    <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="tenant-avatar">
-                                ${
-                                    imageUrl
-                                        ? `<img src="${imageUrl}" alt="${d.name}"
-                                            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">`
-                                        : `<i class="fa-solid fa-user"></i>`
-                                }
-                                <i class="fa-solid fa-user ${imageUrl ? 'd-none' : ''}"></i>
                             </div>
+                        </aside>
+                        `;
+                    });
 
-                            <div class="text-truncate">
-                                <div class="fw-semibold text-dark text-truncate">${d.name ?? ''}</div>
-                                <div class="text-muted small text-truncate">${d.legal_name ?? ''}</div>
-                            </div>
-                        </div>
-
-                        <a href="javascript:void(0)"
-                           class="text-muted btn_leave_action"
-                           data-id="${d.id}">
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </a>
-                    </div>
-
-                    <!-- Body -->
-                    <div class="card-body pt-2 small text-muted">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fa-regular fa-id-card me-2"></i>
-                            ${d.national_id ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fa-solid fa-phone me-2"></i>
-                            ${d.phone_number ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-center mb-2 text-truncate">
-                            <i class="fa-regular fa-envelope me-2"></i>
-                            ${d.email ?? 'N/A'}
-                        </div>
-
-                        <div class="d-flex align-items-start text-truncate">
-                            <i class="fa-solid fa-location-dot me-2 mt-1"></i>
-                            ${d.address ?? 'N/A'}
+                } else {
+                    html += `
+                    <div class="col-12">
+                        <div class="alert alert-light border text-center text-danger">
+                            Tenant not found!
                         </div>
                     </div>
+                    `;
+                }
+                html += `</div>`;
+                mThis.cardViewContainer.innerHTML = html;
+        };
 
-                    <!-- Footer -->
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
-                        <span class="badge bg-success-subtle text-success">Active</span>
-                        <a href="javascript:void(0)" class="text-primary small">
-                            View →
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-            `;
-        });
-
-    } else {
-
-        html += `
-        <div class="col-12">
-            <div class="alert alert-light border text-center text-danger">
-                Tenant not found!
-            </div>
-        </div>
-        `;
-    }
-
-    html += `</div>`;
-
-    mThis.cardViewContainer.innerHTML = html;
-};
+         mThis.pr_tbl = mThis.tenantCardView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        // sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
+        mThis.tblTenant = mThis.tenantCardView.getTable();
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.renderView();
@@ -323,8 +258,67 @@ var TenantComponent = (() => {
                 mThis.renderView();
             }, 250);
         });
-
+        mThis.initDropdownMenus(mThis.cardViewContainer);
         mThis.initAlready = true;
+    };
+
+     mThis.initDropdownMenus = (listContainer) => {
+        const menuOptopns = {
+            containerElement: listContainer,
+            actionButtonClass: "btn-tenant-dropdown-action",
+            cssClass: "bg-white shadow",
+            //menuItemClass:"",
+            menus: [
+
+                {
+                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "change_status",
+                },
+                {
+
+                    html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_space",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_space",
+                },
+            ],
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "change_status": {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
+
+                    case "edit_space": {
+                        mThis.editSpace(id, menuLink);
+                        break;
+                    }
+                    case "delete_space": {
+                        mThis.deleteSpace(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptopns);
     };
 
     mThis.renderView = () => {
