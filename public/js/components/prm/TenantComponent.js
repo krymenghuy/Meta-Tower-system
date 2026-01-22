@@ -22,19 +22,9 @@ var TenantComponent = (() => {
             className: "align-middle",
         },
         {
-            title: "Image",
-            className: "align-middle text-center",
-            data: (data) => {
-                const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
-                if (imageUrl) {
-                    return `<img src="${imageUrl}" 
-                                alt="${data.name}" 
-                                class="rounded-circle" 
-                                style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #e5e7eb;" 
-                                onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-user text-muted fs-4\\'></i>';" />`;
-                }
-                return `<i class="fa-solid fa-user text-muted fs-4"></i>`;
-            }
+            title: "photo",
+            className: "align-middle",
+            data: (data) => `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/default_tenant.jpg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
         {
             title: "Name",
@@ -180,7 +170,7 @@ var TenantComponent = (() => {
         };
 
         mThis.tblTenant = mThis.TenantListView.getTable();
-        console.log('tblTenant:', mThis.tblTenant);
+        // console.log('tblTenant:', mThis.tblTenant);
         mThis.initDropdownMenus(mThis.tblTenant);
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -197,6 +187,31 @@ var TenantComponent = (() => {
                 mThis.refreshCurrentView();
             }, 250);
         });
+
+        mThis.tblTenant.addEventListener("click", function (e) {
+            let btn = e.target.closest(".btn-view-tenant-photo");
+            if (btn) {
+                ImageBox.viewPhoto({
+                    imageUrl: btn.src,
+                    features: ['zoom', 'rotate', 'brightness', 'contrast'],
+                    imageClass: '',
+                    dialogClass: '',
+                    dialogSize: 'lg',
+                    freeZoom: true,
+                    //imageClass:"",
+                    //photoViewSize: "lg", //lg or xl
+                    //freeZoom:false,
+
+                });
+
+                // let op = {
+                //     id: btn.dataset.member_id,
+                //     image_url: btn.src
+                // };
+                // PreViewMemberDialog.show(op);
+                return;
+            }
+        })
         mThis.initAlready = true;
     };
 
@@ -233,70 +248,74 @@ var TenantComponent = (() => {
     // Create card template
     mThis.createCardTemplate = (data) => {
         const sexLabel = data.sex?.toUpperCase() === 'M' ? 'Male' : data.sex?.toUpperCase() === 'F' ? 'Female' : 'Other';
-        const imageUrl = data.image ? `${main_view.base_url}/storage/${data.image}` : null;
+        const imageUrl = data.image_url || `${main_view.base_url}/assets/images/meta/default_tenant.jpg`;
 
         return `
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
-            <div class="tenant-card" data-id="${data.id}">
-                <div class="card-header btn-relative">
-                    <div class="avatar-wrapper">
-                        <div class="avatar">
-                            ${imageUrl
-                                ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <i class="fa-solid fa-user" style="display:none;"></i>`
-                                : `<i class="fa-solid fa-user"></i>`
-                            }
-                        </div>
-                    </div>
-                    <div class="header-info">
-                        
-                        <div class="header-info-name">${data.name}</div>
-                        <div class="tenant-company">${data.legal_name}</div>
-                    </div>
-                    <div class="menu-btn-wrapper btn-absolute">
-                        <a href="javascript:void(0)"
-                            class=" btn_leave_action "
-                            data-id="${data.id}"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            style="cursor: pointer; padding: 8px;">
-                                <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" style="pointer-events: none;"></i>
-                            </a>
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4">
+        <div class="tenant-card" data-id="${data.id}">
+            <div class="card-header btn-relative">
+                <div class="avatar-wrapper">
+                    <div class="avatar">
+                        ${data.image_url
+                            ? `<img src="${imageUrl}" alt="${data.name}" class="tenant-avatar-img btn-view-tenant-photo" data-id="${data.id}" onerror="this.onerror=null; this.src='${main_view.base_url}/assets/images/meta/default_tenant.jpg';">`
+                            : `<img src="${main_view.base_url}/assets/images/meta/default_tenant.jpg" alt="Default Avatar" class="tenant-avatar-img btn-view-tenant-photo" data-id="${data.id}">`
+                        }
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex box-card">
-                        <div class="info-grid">
-                            <div class="vertical-sidebar-left">
-                                <div class="vertical-icon info-icon text-primary">
-                                    <i class="fas fa-id-card info-icon.id"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-success">
-                                    <i class="fas fa-phone info-icon.phone"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-warning">
-                                    <i class="fas fa-envelope info-icon.email"></i>
-                                </div>
-                                <div class="vertical-icon info-icon text-light">
-                                    <i class="fas fa-map-marker-alt info-icon.location"></i>
-                                </div>
+                <div class="header-info">
+                    <div class="header-info-name">${data.name ?? ''}</div>
+                    <div class="tenant-company">${data.legal_name ?? ''}</div>
+                    <small class="text-muted">${sexLabel}</small>
+                </div>
+                <div class="menu-btn-wrapper btn-absolute">
+                    <a href="javascript:void(0)"
+                    class="btn--Options btn_leave_action"
+                    data-id="${data.id}"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    style="cursor: pointer; padding: 8px;">
+                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5" style="pointer-events: none;"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex box-card">
+                    <div class="info-grid">
+                        <div class="vertical-sidebar-left">
+                            <div class="vertical-icon info-icon text-primary">
+                                <i class="fas fa-id-card info-icon.id"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-primary">
+                                <i class="fas fa-passport info-icon.passport"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-success">
+                                <i class="fas fa-phone info-icon.phone"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-warning">
+                                <i class="fas fa-envelope info-icon.email"></i>
+                            </div>
+                            <div class="vertical-icon info-icon text-light">
+                                <i class="fas fa-map-marker-alt info-icon.location"></i>
                             </div>
                         </div>
-                        <div class="info-grid" style="position: relative; flex: 1;">
-                            <div class="info-row">
-                                <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.email ?? 'N/A'}</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-text">: ${data.address ?? 'N/A'}</div>
-                            </div>
-                            <div class="image-background"></div>
+                    </div>
+                    <div class="info-grid" style="position: relative; flex: 1;">
+                        <div class="info-row">
+                            <div class="info-text">: ${data.national_id ?? 'N/A'}</div>
                         </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.passport_number ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.phone_number ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.email ?? 'N/A'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-text">: ${data.address ?? 'N/A'}</div>
+                        </div>
+                        <div class="image-background"></div>
                     </div>
                 </div>
                 <div class=" footer-actions">
@@ -308,8 +327,15 @@ var TenantComponent = (() => {
                 </div>
 
             </div>
+            <div class=" footer-actions">
+                <div class="left-icons text-success">
+                    Active
+                </div>
+                <i class="fa-solid fa-arrow-right"></i> 
+            </div>
         </div>
-        `;
+    </div>
+    `;
     };
 
     mThis.getFilterData = () => {
@@ -327,6 +353,8 @@ var TenantComponent = (() => {
 
     // Initialize dropdown menus for both table and cards
     mThis.initDropdownMenus = (container) => {
+        
+        
         const menuOptions = {
             containerElement: container,
             actionButtonClass: "btn_leave_action",
@@ -345,6 +373,7 @@ var TenantComponent = (() => {
                     name: "delete_tenant"
                 },
             ],
+            
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case 'edit_tenant': {
@@ -364,21 +393,20 @@ var TenantComponent = (() => {
         new VSDropdownMenu(menuOptions);
 
         // Also attach click handlers to card footer buttons
-        container.querySelectorAll('.btn-edit-tenant').forEach(btn => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const id = e.currentTarget.dataset.id;
-                mThis.editTenant(id, btn);
-            };
-        });
-
-        container.querySelectorAll('.btn-view-tenant').forEach(btn => {
-            btn.onclick = (e) => {
-                e.preventDefault();
-                const id = e.currentTarget.dataset.id;
-                mThis.viewTenant(id, btn);
-            };
-        });
+        // container.querySelectorAll('.btn-view-tenant-photo').forEach(btn => {
+        //     btn.onclick = (e) => {
+        //         e.preventDefault();
+        //         e.stopPropagation();
+        //         ImageBox.viewPhoto({
+        //             imageUrl: btn.src,
+        //             features: ['zoom', 'rotate', 'brightness', 'contrast'],
+        //             imageClass: '',
+        //             dialogClass: '',
+        //             dialogSize: 'lg',
+        //             freeZoom: true,
+        //         });
+        //     };
+        // });
     };
 
     mThis.editTenant = (id, menuLink) => {
@@ -467,10 +495,10 @@ class CardView {
                 this.render(res.data);
                 this.renderPagination(res.data);
 
-                // Call onCardCreated callback after rendering
-                if (this.options.onCardCreated) {
-                    this.options.onCardCreated(this.container);
-                }
+                // // Call onCardCreated callback after rendering
+                // if (this.options.onCardCreated) {
+                //     this.options.onCardCreated(this.container);
+                // }
             }
         });
     }
@@ -498,6 +526,10 @@ class CardView {
         html += '<div class="card-pagination mt-3"></div>';
         this.container.innerHTML = html;
         this.paginationContainer = this.container.querySelector('.card-pagination');
+
+        if (this.options.onCardCreated) {
+            this.options.onCardCreated(this.container);
+        }
     }
 
     renderPagination(data) {
@@ -560,20 +592,16 @@ const CreateTenantDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row justify-content-center">
-                        <div class="col-12">
-                            <div class="image-upload-section mb-3">
-                                <div class="image-preview-container">
-                                    <div class="image-preview" id="imagePreview">
-                                        <i class="fa-solid fa-user fa-3x text-white"></i>
-                                    </div>
-                                    <label for="imageInput" class="image-upload-label">
-                                        <i class="fa-solid fa-camera"></i>
-                                    </label>
-                                    <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="d-none">
-                                </div>
-                                <small class="text-muted d-block text-center mt-2">Click camera to upload (Max 5MB - JPG, PNG, GIF, WEBP)</small>
+                    `<form>
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <div class="data-input border border-ypg-custom rounded-3 d-flex justify-content-center align-items-center mx-auto" style="width:100px; height:100px;">
+                                <div   name="div_tenant_photo"
+                                    class="data-input h-100 w-100" 
+                                    data-field="photo" 
+                                    style="background-image: url('/assets/images/default/placeholder.svg'); background-size: cover; background-position: center;"></div>
                             </div>
+                            <label class="mt-2 text-muted small d-block text-center">Profile Photo</label>
                         </div>
                         <div class="col-12">
                             <div class="material-input outlined">
@@ -626,7 +654,8 @@ const CreateTenantDialog = (() => {
                                 <label>Address</label>
                             </div>
                         </div>
-                    </div>`
+                    </div>
+                </form>`
                 ].join("");
             },
             contentCreated: (me) => {
@@ -646,11 +675,94 @@ const CreateTenantDialog = (() => {
                 headerWrapper.appendChild(headerTitle);
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
+
+
+
+                const div_tenant_photo = me.controls.div_tenant_photo;
+                me.tenantImageBox = new ImageBox(div_tenant_photo, {
+                    defaultPhotoName: "default-skill",
+                    containerClass: "tenant-profile-container",
+                    imgClass: "data-input",
+                    dataset: {
+                        field: "photo",
+                    } /** please set field: photo so that we can use for both Edit and Create easily */,
+                    //dataset: { field: "image_url" },
+                    beforeDeleteImage: async () => {
+                        if (me.dataOptions.id > 0) {
+                            const yes = await cv_interact.confirm(
+                                "Are you sure to delete this profile photo?",
+                                { title: "Delete Photo", context: "delete" }
+                            );
+                            if (yes) {
+                                //delete member's photo from backend
+                                me.deleteProfilePhoto(me.dataOptions.id);
+                                return true;
+                            } else
+                                return false;
+                        } else {
+                            //Case of Create new member, just clear photo
+                            me.tenantImageBox.setImage(null);
+                        }
+                        return true;
+                    },
+                    //When user browse new photo and loads it in the IMG element
+                    onOpenImage: (img) => {
+                        if (me.dataOptions.id > 0) {
+                            //This is case of Editing Existing member information
+                            me.saveProfilePhoto(img, me.dataOptions.id);
+                        }
+                    },
+
+                });
+
+                me.deleteProfilePhoto = (id) => {
+                    const p = { id: id };
+                    vsapi
+                        .call(
+                            [
+                                main_view.base_url,
+                                "/prm/tenant/profile/photo/delete",
+                            ].join(""),
+                            p,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                me.tenantImageBox.setImage(null);
+                                cv_interact.info(
+                                    "Profile photo was deleted!"
+                                );
+                            } else cv_interact.error(res.error_message);
+                        });
+                };
+
+                me.saveProfilePhoto = (photo, id) => {
+                    const p = { "photo": photo, "id": id };
+                    vsapi
+                        .call(
+                            [
+                                main_view.base_url,
+                                "/prm/tenant/profile/photo/save",
+                            ].join(""),
+                            p,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                me.tenantImageBox.setImage(res.data.image_url);
+                                cv_interact.success(
+                                    "Profile photo was saved!"
+                                );
+                            } else cv_interact.error(res.error_message);
+                        });
+                };
+
             },
             prepareFormOptions: {
                 createTitle: "Create New Tenant",
                 modifyTitle: "Modify Tenant",
-                targetProp: "tenants",
+                targetProp: "tenant",
                 api: {
                     endpoint: [main_view.base_url, "/prm/tenant/form-options"].join(""),
                     params: (op) => {
@@ -662,76 +774,51 @@ const CreateTenantDialog = (() => {
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if (btnClose) btnClose.classList.add('d-none');
-
-                // Image upload handler
-                const imageInput = me.divModal.querySelector('#imageInput');
-                const imagePreview = me.divModal.querySelector('#imagePreview');
-
-                // Show existing image if editing
-                if (data.tenants && data.tenants.image) {
-                    const imgUrl = `${main_view.base_url}/storage/${data.tenants.image}`;
-                    imagePreview.innerHTML = `<img src="${imgUrl}" alt="Tenant" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-                }
-
-                // Handle file selection
-                imageInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-
-                    // Validate size (5MB)
-                    if (file.size > 5 * 1024 * 1024) {
-                        cv_interact.error('Image size must be less than 5MB');
-                        e.target.value = '';
-                        return;
-                    }
-
-                    // Validate type
-                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                    if (!allowedTypes.includes(file.type)) {
-                        cv_interact.error('Only JPG, PNG, GIF, and WEBP images are allowed');
-                        e.target.value = '';
-                        return;
-                    }
-
-                    // Show preview
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        imagePreview.innerHTML = `<img src="${event.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-                    };
-                    reader.readAsDataURL(file);
-                });
             },
-                buttons: [
-                    {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
+
+            extendMethod: {
+                setData: (me, data) => {
+                    // console.log(data);
+
+                    me.tenantImageBox.setImage(data.image_url);
+
+                }
+            },
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel',
+                    click: (me, btn) => {
+                        me.hide(false);
                     },
-                    {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Tenant has been updated successfully");
-                                    } else {
-                                        cv_interact.success("New tenant has been added successfully");
-                                    }
+                },
+                {
+                    label: '<span>Submit</span>',
+                    cssClass: 'btn-vs-save',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.id = me.dataOptions.id;
+                        op.photo = me.tenantImageBox ? me.tenantImageBox.getImage() : '';
+                        vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
+                            if (res.status_code === 200) {
+                                me.hide(true, op);
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Tenant has been updated successfully");
                                 } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.success("New tenant has been added successfully");
                                 }
-                            });
-                        },
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
                     },
-                ],
-            });
+                },
+            ],
+        });
         dialog.show(op);
     };
     return self;
 })();
+
+
+

@@ -289,6 +289,30 @@
     color: #d97706;
 }
 
+.unit-card {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 14px;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
 
+/* .unit-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.35),
+        rgba(0,0,0,0.75)
+    );
+    z-index: 0;
+} */
+
+/* .unit-card > .p-4 {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+} */
 
 </style>

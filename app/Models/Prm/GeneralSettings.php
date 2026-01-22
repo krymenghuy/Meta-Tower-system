@@ -315,6 +315,9 @@ class GeneralSettings //extends Model
      static function options_tenant($ss){
         return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
      }
+     static function options_legal($ss){
+        return  DB::table('tenants')->selectRaw('id,legal_name')->get();
+     }
 
      static function options_business_type($ss){
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();

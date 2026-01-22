@@ -61,6 +61,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->group(function () {
     Route::post('/create', [TenantController::class, 'createTenant']);
+    Route::post('/profile/photo',[TenantController::class,'getProfilePhoto']);
+    Route::post('/profile/photo/delete',[TenantController::class,'deleteProfilePhoto']);
+    Route::post('/profile/photo/create',[TenantController::class,'createProfilePhoto']);
     Route::post('/list-paginate', [TenantController::class, 'getListPaginate']);
     Route::post('/details', [TenantController::class, 'getDetails']);
     Route::post('/form-options', [TenantController::class, 'getFormOptions']);
@@ -117,6 +120,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-request')->group(function () {
     Route::post('/save', [ServiceRequestController::class, 'saveServiceRequest']);
     Route::post('/list',[ServiceRequestController::class, 'getServiceRequestListPaginate']);
+    Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
+    Route::post('/delete',[ServiceRequestController::class,'delete']);
+    Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);
 });
 
 

@@ -1,5 +1,5 @@
 <div id="_main_contract_component" class="mobile-padding p-3" style="display: none;">
-   <div id="_divFilter_contract" class= "rounded-2 p-3" style="background-color:#eaeaea;">
+   <div id="_divFilter_contract" class= "rounded-2 p-3" style="background-color:white;">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-3">
                 <div class=" position-relative w-100">
@@ -15,7 +15,7 @@
                 <select id="space_type_id" class="data-input filter-field form-control" data-field="space_type_id"></select>
             </div>
         
-            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end mt-2">
+            <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end mt-2 d-none">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">
                 <i class="fa-regular fa-building fa-lg me-2 pt-1"></i>
                 <span vslang="buttons.Create Contract"></span>

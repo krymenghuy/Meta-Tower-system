@@ -38,7 +38,6 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
 
     $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
     if ($res->error) return DV::error($res->error);
-
     $inputs = $res->values;
     $d = (object) $inputs;
     $floor = DB::table('floors')

@@ -409,8 +409,10 @@ var ContractComponent = new (function () {
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
-
+    
     self.show = (op) => {
+    console.log(88888,op);
+
         dialog =
             dialog ||
             new GeneralDialog({
@@ -418,95 +420,95 @@ const ContractDialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
-    return [
-        `<div class="row justify-content-start">
-            <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
-                 <div class="material-input outlined">
-                     <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
-                 </div>
-            </div>
-            <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
-                 <div class="material-input outlined">
-                     <select name="legal_name" class="data-input form-control" data-field="legal_name"> </select>
-                 </div>
-            </div>
+                    return [
+                        `<div class="row justify-content-start">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <div class="material-input outlined">
+                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
+                                <div class="material-input outlined">
+                                    <input name="legal_name" class="data-input form-control" data-field="legal_name" />
+                                </div>
+                            </div>
 
-            <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
-                 <div class="material-input outlined">
-                     <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
-                 </div>
-            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
+                                <div class="material-input outlined">
+                                    <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                                </div>
+                            </div>
 
-            
-            <div class="col-6">
-                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
-                <div class="material-input outlined">
-                    <select   name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
-                    </select>
-                                    
-                </div>
-            </div>
-            <div class="col-4">
-                <label style="color:#777777;padding-left:6px;" for="buildingSpace">Space Code</label>
-                 <div class="material-input outlined">
-                     <select name="space_id" class="data-input form-control" data-field="space_id"> </select>
-                 </div>
-            </div>
-           
+                            
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
+                                <div class="material-input outlined">
+                                    <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    </select>
+                                                    
+                                </div>
+                            </div>
+                           
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="Code">Code</label>
+                                <div class="material-input outlined">
+                                    <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                    </select>
+                                                    
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                <div class="material-input outlined">
+                                    <input type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                </div>
+                            </div>
 
-            <div class="col-4">
-                <label style="color:#777777;padding-left:6px;">Start Date</label>
-                <div class="material-input outlined">
-                    <input type="date" name="start_date" required class="data-input form-control" data-field="start_date" placeholder=" " />
-                </div>
-            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">End Date</label>
+                                <div class="material-input outlined">
+                                    <input type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                <div class="material-input outlined">
+                                <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                                    <option value="sqm">Per Square Meter</option>
+                                    <option value="total">Whole Room</option>
+                                </select>
+                                </div>
+                            </div>
+                            <div class="col-4 sqm-wrapper" style="display:none;">
+                                <label style="color:#777777;padding-left:6px;">Unit (m²)</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Price</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                </div>
+                            </div>
+                        </div>`
+                    ].join("");
+                },
 
-            <div class="col-4">
-                <label style="color:#777777;padding-left:6px;">End Date</label>
-                <div class="material-input outlined">
-                    <input type="date" name="end_date" required class="data-input form-control" data-field="end_date" placeholder=" " />
-                </div>
-            </div>
-             <div class="col-4">
-                <label style="color:#777777;padding-left:6px;" for="priceType"> Select Price Type</label>
-                <div class="material-input outlined">
-                <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                    <option value="sqm">Per Square Meter</option>
-                    <option value="total">Whole Room</option>
-                </select>
-                </div>
-            </div>
-            <div class="col-4 sqm-wrapper" style="display:none;">
-                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
-                <div class="material-input outlined">
-                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                </div>
-            </div>
-            <div class="col-4">
-                <label style="color:#777777;padding-left:6px;">Price</label>
-                <div class="material-input outlined">
-                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                </div>
-            </div>
-            
+                contentCreated: (me) => {
+                    DateTimePicker.initAll(me.divModal);
 
-            <div class="col-12">
-                <label style="color:#777777;padding-left:6px;">Remarks</label>
-                <div class="material-input outlined">
-                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                </div>
-            </div>
-        </div>`
-    ].join("");
-},
-
-                  contentCreated: (me) => {
                     const footer = me.divModal.querySelector('.modal-footer');
                     const header = me.divModal.querySelector('.modal-header');
-
                     const headerTitle = header.querySelector('.modal-title');
                     const btnClose = header.querySelector('button');
 
@@ -514,15 +516,10 @@ const ContractDialog = (() => {
                     header.classList.add('bg-prm-custom', 'modal-header-custom');
                     header.parentElement.classList.add('overflow-hidden');
                     header.parentElement.style = 'border-radius: 20px !important;';
-
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-
-                
-
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
-
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
                     me.controls.price_type.onchange = (e) => {
@@ -530,6 +527,7 @@ const ContractDialog = (() => {
                         if (!sqmWrapper) return;
                         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
                     };
+                    
 
 
                 },
@@ -540,6 +538,12 @@ const ContractDialog = (() => {
                         textField: "tenant",
                         valueField: "id",
                     },
+                    // {
+                    //     name: "legal_name",
+                    //     data: "legal_names",
+                    //     textField: "legal_name",
+                    //     valueField: "id",
+                    // },
                     {
                         name: "business_type_id",
                         data: "business_types",
@@ -553,7 +557,7 @@ const ContractDialog = (() => {
                         valueField: "id",
                     },
                     {
-                        name: "space_id",
+                        name: "code",
                         data: "building_spaces",
                         textField: "code",
                         valueField: "id",
@@ -562,12 +566,14 @@ const ContractDialog = (() => {
                 ],
                 
                 prepareFormOptions: {
-                    createTitle: "Create New Contract",
+                    createTitle: "Create Contract",
                     modifyTitle: "Modify Contract",
                     targetProp: "contract_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
                         params: (op) => {
+                            console.log(33,op);
+                            
                             return { id: op.id };
                         },
                     },
@@ -575,11 +581,32 @@ const ContractDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal); 
+                    
+                    const isReadOnly = me.dataOptions.data.code > 0;
+                    me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
+                    // const price = me.divModal.querySelector(
+                    //     '[data-field="price"]'
+                    // );
+                    // if (price) {
+                    //     if (me.dataOptions && me.dataOptions.id) {
+                    //         price.disabled = true;
+                    //     } else {
+                    //         price.disabled = false;
+                    //     }
+                    // }
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
-
+                    console.log(909,me.dataOptions);
                     
+                    me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
+                    me.controls.code.value = me.dataOptions.data.code;
+                    me.controls.price_type.value = me.dataOptions.data.price_type;
+                    me.controls.price.value = me.dataOptions.data.price;
+                    me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
+
+                  
+
                 },
 
 
@@ -619,6 +646,7 @@ const ContractDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            console.log(909090,op);
                             
                             vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {

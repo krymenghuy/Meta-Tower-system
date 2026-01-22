@@ -46,6 +46,5 @@ class PusherController extends Controller
                 ////***response as JSON object
                 return JDV::error("Forbidden (Pusher authentication failed)");
             }
-        }
-    
 }
+    
