@@ -386,21 +386,20 @@ const CreateTenantDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return `
-                <form class="tenant-form row p-1">
+                <div class="tenant-form row p-1">
 
                     <!-- Profile Section -->
                         <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                             <div class="tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 140px; cursor: pointer; background-color: #f8f8f8;">
                                 <div name="div_tenant_photo"
-                                    class="w-100 h-100"
-                                    style="background-size: cover; background-position: center;">
+                                    class="w-100 h-100">
                                 </div>
                             </div>
                             <small class="text-muted d-block mt-2">Profile Photo</small>
                         </div>
                         <div class="col-md-8 row pb-3">
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 ">
                                 <label class="form-label">Full Name</label>
                                 <div class="material-input outlined">
                                     <input type="text"
@@ -410,7 +409,7 @@ const CreateTenantDialog = (() => {
                                         placeholder=" " />
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 ">
                                 <label class="form-label">Legal Name</label>
                                 <div class="material-input outlined">
                                     <input type="text"
@@ -420,8 +419,20 @@ const CreateTenantDialog = (() => {
                                         placeholder=" " />
                                 </div>
                             </div>
-
-                            <div class="col-12 col-md-6">
+                        </div>
+                        <div class="col-12 row pb-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">Gender</label>
+                                <div class="material-input outlined">
+                                    <select name="sex"
+                                        class="data-input form-control"
+                                        data-field="sex">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
                                 <label class="form-label">Phone Number </label>
                                 <div class="material-input outlined">
                                     <input type="number"
@@ -431,7 +442,7 @@ const CreateTenantDialog = (() => {
                                         placeholder=" " />
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-4">
                                 <label class="form-label">Email</label>
                                 <div class="material-input outlined">
                                     <input type="email"
@@ -442,53 +453,40 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                         </div>
-                        
+   
                     <!-- Basic Info -->
-                    <div class="row g-2 mx-1">
-                        <div class="col-12 col-md-4">
-                            <label class="form-label">Gender</label>
-                            <div class="material-input outlined">
-                                <select name="sex"
-                                    class="data-input form-control"
-                                    data-field="sex">
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                </select>
+                        <div class="col-12 row pb-3">
+                           <div class="col-12 col-md-4">
+                                <label class="form-label">National ID </label>
+                                <div class="material-input outlined">
+                                    <input type="number"
+                                        name="national_id"
+                                        class="data-input form-control"
+                                        data-field="national_id"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">Passport Number </label>
+                                <div class="material-input outlined">
+                                    <input type="number"
+                                        name="passport_number"
+                                        class="data-input form-control"
+                                        data-field="passport_number"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">Upload File</label>
+                                <div class="material-input outlined d-flex align-items-center justify-content-center">
+                                    <input type="file"
+                                        name="file_name"
+                                        class="data-input form-control"
+                                        data-field="file_name" />
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-12 col-md-4">
-                            <label class="form-label">National ID</label>
-                            <div class="material-input outlined">
-                                <input type="text"
-                                    name="national_id"
-                                    class="data-input form-control"
-                                    data-field="national_id"
-                                    placeholder=" " />
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-4">
-                            <label class="form-label">Passport Number</label>
-                            <div class="material-input outlined">
-                                <input type="text"
-                                    name="passport_number"
-                                    class="data-input form-control"
-                                    data-field="passport_number"
-                                    placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label class="form-label">Upload File</label>
-                            <div style="border: 1px solid lightgray; border-radius: 6px;">
-                                <input type="file"
-                                    name="file_name"
-                                    class="data-input form-control"
-                                    data-field="file_name" />
-                            </div>
-                        </div>
-
-                        <div class="col-12 ">
+                        <div class="col-12 pb-3">
                             <label class="form-label">Address</label>
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control"
@@ -498,9 +496,9 @@ const CreateTenantDialog = (() => {
                                 </textarea>
                             </div>
                         </div>
-                    </div>
+                    
 
-                </form>
+                </div>
                 `;
             },
 
@@ -596,7 +594,7 @@ const CreateTenantDialog = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                me.tenantImageBox.setImage(res.data.image_url);
+                                me.tenantImageBox.setImage(res.data.image_url); 
                                 cv_interact.success(
                                     "Profile photo was saved!"
                                 );

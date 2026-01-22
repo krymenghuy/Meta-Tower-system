@@ -37,8 +37,9 @@ class Tenant
 
     $email_char  = ['@','.','-','_'];
     $address_char = ['@',',','.','#'];
+    $legal_name_char = ['@',',','.','#'];
 
-    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char],$ss->lang ?? 'en',0,null);
+    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char, 'legal_name' => $legal_name_char],$ss->lang ?? 'en',0,null);
 
     if ($res->error) {
         return DV::error($res->error);

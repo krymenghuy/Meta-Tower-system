@@ -41,8 +41,9 @@ class Contract
             'end_date'         => '1|date',
             'remarks'          => '0|string|0-255',
         ];
+        $legal_name_char = ['@',',','.','#'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, [ 'legal_name' => $legal_name_char], $ss->lang, 0, null);
         if ($res->error) return DV::error($res->error);
         // $allowSign = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
         $inputs = $res->values;
