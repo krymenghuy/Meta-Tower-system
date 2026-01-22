@@ -323,7 +323,6 @@
                             @include('layouts.prm.settingComponent')
                             @include('layouts.prm.reportComponent')
                             @include('layouts.prm.expenseComponent')
-                            @include('layouts.prm.messageComponent')
 
 
 
