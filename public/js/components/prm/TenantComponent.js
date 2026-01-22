@@ -386,43 +386,71 @@ const CreateTenantDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return `
-                <form class="tenant-form">
+                <form class="tenant-form row p-1">
 
                     <!-- Profile Section -->
-                    <div class="row g-4 align-items-start mb-3">
-                        <div class="col-12 col-md-3 text-center">
-                            <div class="tenant-photo-wrapper mx-auto">
+                        <div class="col-md-4 text-center d-flex flex-column justify-content-center">
+                            <div class="tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
+                                style="width: 210px; height: 140px; cursor: pointer; background-color: #f8f8f8;">
                                 <div name="div_tenant_photo"
-                                    class="data-input tenant-photo"
-                                    data-field="photo"
-                                    style="background-image:url('/assets/images/default/placeholder.svg');">
+                                    class="w-100 h-100"
+                                    style="background-size: cover; background-position: center;">
                                 </div>
                             </div>
                             <small class="text-muted d-block mt-2">Profile Photo</small>
                         </div>
+                        <div class="col-md-8 row pb-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <div class="material-input outlined">
+                                    <input type="text"
+                                        name="name"
+                                        class="data-input form-control"
+                                        data-field="name"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Legal Name</label>
+                                <div class="material-input outlined">
+                                    <input type="text"
+                                        name="legal_name"
+                                        class="data-input form-control"
+                                        data-field="legal_name"
+                                        placeholder=" " />
+                                </div>
+                            </div>
 
-                        <div class="col-12 col-md-9">
-                            <label class="form-label">Full Name</label>
-                            <div class="material-input outlined">
-                                <input type="text"
-                                    name="name"
-                                    class="data-input form-control"
-                                    data-field="name"
-                                    placeholder=" "
-                                    required />
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Phone Number </label>
+                                <div class="material-input outlined">
+                                    <input type="number"
+                                        name="phone_number"
+                                        class="data-input form-control"
+                                        data-field="phone_number"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Email</label>
+                                <div class="material-input outlined">
+                                    <input type="email"
+                                        name="email"
+                                        class="data-input form-control"
+                                        data-field="email"
+                                        placeholder=" " />
+                                </div>
                             </div>
                         </div>
-                    </div>
-
+                        
                     <!-- Basic Info -->
-                    <div class="row g-3">
+                    <div class="row g-2 mx-1">
                         <div class="col-12 col-md-4">
                             <label class="form-label">Gender</label>
                             <div class="material-input outlined">
                                 <select name="sex"
                                     class="data-input form-control"
                                     data-field="sex">
-                                    <option value="">Select</option>
                                     <option value="M">Male</option>
                                     <option value="F">Female</option>
                                 </select>
@@ -441,17 +469,6 @@ const CreateTenantDialog = (() => {
                         </div>
 
                         <div class="col-12 col-md-4">
-                            <label class="form-label">Legal Name</label>
-                            <div class="material-input outlined">
-                                <input type="text"
-                                    name="legal_name"
-                                    class="data-input form-control"
-                                    data-field="legal_name"
-                                    placeholder=" " />
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
                             <label class="form-label">Passport Number</label>
                             <div class="material-input outlined">
                                 <input type="text"
@@ -461,30 +478,17 @@ const CreateTenantDialog = (() => {
                                     placeholder=" " />
                             </div>
                         </div>
-
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Phone Number</label>
-                            <div class="material-input outlined">
-                                <input type="tel"
-                                    name="phone_number"
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Upload File</label>
+                            <div style="border: 1px solid lightgray; border-radius: 6px;">
+                                <input type="file"
+                                    name="file_name"
                                     class="data-input form-control"
-                                    data-field="phone_number"
-                                    placeholder=" " />
+                                    data-field="file_name" />
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-6">
-                            <label class="form-label">Email</label>
-                            <div class="material-input outlined">
-                                <input type="email"
-                                    name="email"
-                                    class="data-input form-control"
-                                    data-field="email"
-                                    placeholder=" " />
-                            </div>
-                        </div>
-
-                        <div class="col-12">
+                        <div class="col-12 ">
                             <label class="form-label">Address</label>
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control"
