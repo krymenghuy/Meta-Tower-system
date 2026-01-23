@@ -11,6 +11,7 @@ var TenantComponent = (() => {
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
     mThis.currentViewMode = 'card';
+    mThis.paginationContainer = mThis.self.querySelector("#tenant_card_container_pagination");
 
     mThis.cols = [
         {
@@ -105,6 +106,7 @@ var TenantComponent = (() => {
             fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
+            paginationContainer: mThis.paginationContainer,
             renderItems: (items, container) => {
                 mThis.renderTenantCard(container, items);
             },
@@ -117,6 +119,8 @@ var TenantComponent = (() => {
             apiCluster: main_view.apiCluster,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
+                console.log(9090,tr);
+                
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -148,121 +152,17 @@ var TenantComponent = (() => {
             });
         }
 
-        mThis.renderTenantCard = (div, data) => {
-            data = data ?? [];
-            // if (!AuthManager) {
-            //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
-            //     return;
-            // }
-            AuthManager.init().then((user) => {
-                mThis.renderCard(data, user);
-            });
-        };
-        mThis.renderCard = (items) => {
+      
 
-            let html = `<div class="row g-3">`;
-            if (Array.isArray(items) && items.length > 0) {
-
-                items.forEach(d => {
-                    html += `
-                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 shadow-sm border-0 rounded-4">
-                                <div class="card-header border-0 rounded-top-4 d-flex justify-content-between align-items-center px-3 p-3" >
-                                    <span class="badge rounded-pill bg-success px-3">Active</span>
-
-                                    <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-                                    </a>
-                                </div>
-                                <div class="card-body text-center">
-                                    <div class="px-2  pb-4 d-flex justify-content-between align-items-start">
-                                        <div class="d-flex gap-3 align-items-center">
-                                           <div class="rounded-3 border shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                                style="width:56px;height:56px;">
-                                                <img
-                                                    src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}"
-                                                    alt="Profile"
-                                                    class="img-fluid w-100 h-100 object-fit-cover"
-                                                >
-                                            </div>
-
-
-                                            <div>
-                                                <h6 class="fw-semibold text-start mb-1 text-dark">
-                                                    ${d.name}
-                                                </h6>
-
-                                                <div class="d-flex align-items-center gap-2 small">
-                                                    <span class="rounded-circle bg-success" style="width:8px;height:8px;"></span>
-                                                    <span class="text-success fw-semibold text-uppercase">Active</span>
-                                                    <span class="text-muted">• #T-8821</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:void(0)"
-                                        class="d-none btn-tenant-dropdown-action text-prm-custom p-2 rounded-circle hover-bg"
-                                        aria-haspopup="true">
-                                            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                                        </a>
-                                    </div>
-
-                                    <div class="card_container" style="max-width: 250px;" >
-                                        <p class="ps-3 mb-2 text-white">
-                                            #  ${d.code || "TEN-10001"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-solid fa-phone me-2 text-white"></i>
-                                            ${d.phone_number || "?"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-solid fa-envelope me-2 text-white"></i>
-                                            ${d.email || "?"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-brands fa-space-awesome text-white fs-6 me-2"></i>
-                                            <span>Unit 502, Meta Tower</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center px-3 p-2 small">
-                                    <span class="text-muted">
-                                        Create By : ${d.update_user || ""}
-                                    </span>
-                                    <a href="javascript:void(0)"
-                                    class="text-primary-custom see-detail"
-                                    data-id="${d.id}">
-                                        <i class="fa-regular fa-eye"></i> View Details
-                                    </a>
-                                
-                                </div>
-
-                            </div>
-                        </div>
-                        `;
-                    });
-
-                } else {
-                    html += `
-                    <div class="col-12">
-                        <div class="alert alert-light border text-center text-danger">
-                            Tenant not found!
-                        </div>
-                    </div>
-                    `;
-                }
-                html += `</div>`;
-                mThis.cardViewContainer.innerHTML = html;
-        };
-
-         mThis.pr_tbl = mThis.tenantCardView.getListContainer();
+        mThis.pr_tbl = mThis.tenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 190) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 190) + 'px';
         }
-        mThis.tblTenant = mThis.tenantCardView.getTable();
+        mThis.tblTenant = mThis.tenantListView.getTable();
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.renderView();
@@ -357,6 +257,123 @@ var TenantComponent = (() => {
             }
         });
     };
+      mThis.renderTenantCard = (div, data) => {
+            data = data ?? [];
+            // if (!AuthManager) {
+            //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+            //     return;
+            // }
+            AuthManager.init().then((user) => {
+                mThis.renderCard(data, user);
+            });
+        };
+        mThis.renderCard = (items) => {
+             let cnt = 0;
+            let html = `<div class="row g-3">`;
+            if (Array.isArray(items) && items.length > 0) {
+
+                items.forEach(d => {
+                    cnt++;
+                    html += `
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-4">
+                                <div class="card-header border-0 rounded-top-4 d-flex justify-content-between align-items-center px-3 p-3" >
+                                    <span class="badge rounded-pill bg-success px-3">Active</span>
+
+                                    <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="px-2  pb-4 d-flex justify-content-between align-items-start">
+                                        <div class="d-flex gap-3 align-items-center">
+                                           <div class="rounded-3 border shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                                style="width:56px;height:56px;">
+                                                <img
+                                                    src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}"
+                                                    alt="Profile"
+                                                    class="img-fluid w-100 h-100 object-fit-cover"
+                                                >
+                                            </div>
+
+
+                                            <div>
+                                                <h6 class="fw-semibold text-start mb-1 text-dark">
+                                                    ${d.name}
+                                                </h6>
+
+                                                <div class="d-flex align-items-center gap-2 small">
+                                                    <span class="rounded-circle bg-success" style="width:8px;height:8px;"></span>
+                                                    <span class="text-success fw-semibold text-uppercase">Active</span>
+                                                    <span class="text-muted">• #T-8821</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:void(0)"
+                                        class="d-none btn-tenant-dropdown-action text-prm-custom p-2 rounded-circle hover-bg"
+                                        aria-haspopup="true">
+                                            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="card_container" style="max-width: 250px;" >
+                                        <p class="ps-3 mb-2 text-white">
+                                            #  ${d.code || "TEN-10001"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-phone me-2 text-white"></i>
+                                            ${d.phone_number || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-solid fa-envelope me-2 text-white"></i>
+                                            ${d.email || "?"}
+                                        </p>
+                                        <p class="ps-3 mb-2 text-white">
+                                            <i class="fa-brands fa-space-awesome text-white fs-6 me-2"></i>
+                                            <span>Unit 502, Meta Tower</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center px-3 p-2 small">
+                                    <span class="text-muted">
+                                        Create By : ${d.update_user || ""}
+                                    </span>
+                                    <a href="javascript:void(0)"
+                                    class="text-primary-custom see-detail"
+                                    data-id="${d.id}">
+                                        <i class="fa-regular fa-eye"></i> View Details
+                                    </a>
+                                
+                                </div>
+
+                            </div>
+                        </div>
+                        `;
+                    });
+
+                } else {
+                    html += `
+                    <div class="col-12">
+                        <div class="alert alert-light border text-center text-danger">
+                            Tenant not found!
+                        </div>
+                    </div>
+                    `;
+                }
+                html += `</div>`;
+                mThis.cardViewContainer.innerHTML = html;
+                if (cnt > 0) {
+            const container = mThis.cardViewContainer;
+            const te_parent = container;
+            
+            te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+            te_parent.classList.add("overflow-y-auto");
+
+            window.onresize = () => {
+                te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+            };
+            }
+        };
 
     mThis.renderView = () => {
         const params = mThis.getFilterData();
@@ -364,12 +381,16 @@ var TenantComponent = (() => {
         if (mThis.currentViewMode === 'card') {
             mThis.cardViewContainer.classList.remove('d-none');
             mThis.listViewContainer.classList.add('d-none');
+            mThis.paginationContainer.style.display = 'block';
+           
 
             mThis.tenantCardView.showPage(params);
         } else {
+            console.log(3333, mThis.paginationContainer);
+            
             mThis.cardViewContainer.classList.add('d-none');
             mThis.listViewContainer.classList.remove('d-none');
-
+            mThis.paginationContainer.style.display = 'none';
             mThis.tenantListView.showPage(params);
         }
     };

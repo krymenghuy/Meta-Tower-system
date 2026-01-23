@@ -102,7 +102,7 @@ var ServiceComponent =   ( () => {
 
         mThis.ServiceListView = new ListView('_service_list', {
             fetchApi: `${main_view.base_url}/prm/service/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,

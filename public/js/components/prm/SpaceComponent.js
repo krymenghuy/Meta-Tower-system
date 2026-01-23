@@ -129,7 +129,7 @@ var SpaceComponent = new (function () {
 
         mThis.SpaceListView = new ListView('_space_list', {
             fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
-            perPage: 6,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
@@ -161,11 +161,11 @@ var SpaceComponent = new (function () {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
