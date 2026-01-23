@@ -348,7 +348,7 @@ var SpaceComponent = new (function () {
                                 </span>
                                 <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
                             </div>
-                            <div class="d-flex justify-content-between text-muted small">
+                            <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center gap-1">
                                     <i class="fa-solid fa-ruler-combined"></i>
                                     <span>${sizeLabel}</span>
@@ -360,7 +360,7 @@ var SpaceComponent = new (function () {
                             </div>
 
                             <div>
-                                <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
+                                <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
                                         statusId === 1 ? 'text-secondary-custom' :
@@ -374,7 +374,7 @@ var SpaceComponent = new (function () {
                             </div>
 
                             <div class="mt-auto">
-                                <div class="text-muted small mb-2">Price: ${priceLabel}</div>
+                                <div class="text-muted mb-2">Price: ${priceLabel}</div>
                                 <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
                                     data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
                                     <span>${icon}</span>
