@@ -33,12 +33,10 @@ class ServiceRequest extends VSModel
             'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
             'name' => '1|string|1-100|text=Service name must be provided',
-            'building_id' => '1|number|exists=buildings.id',
-            'floor_id' => '0|number|exists=floors.id',
-            'space_type_id' => '0|number|exists=space_types.id',
+            'building_space_id' => '1|number|exists=building_spaces.id',
             'priority' => '1|enum=low,medium,high,urgent|text=Priority must be one of: low, medium, high, or urgent',
             'description' => '0|string|0-1000',
-            'status_id' => '0|number|default=2|exists=service_statuses.id',
+            'request_status_id' => '0|number|default=2|exists=service_statuses.id',
             'request_date' => '0|date',
             'scheduled_date' => '0|date',
             'completed_date' => '0|date',
@@ -86,7 +84,7 @@ class ServiceRequest extends VSModel
         $d = (object) $arr;
         $branch_id = $ss->branch_id ?? null;
         $search_value = $d->search_value ?? null;
-        $status_id = $d->status_id ?? null;
+        $request_status_id = $d->request_status_id ?? null;
         $service_type_id = $d->service_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -118,8 +116,8 @@ class ServiceRequest extends VSModel
             )";
         }
 
-        if ($status_id) {
-            $str_moreWhere .= ' AND sr.status_id = ' . intval($status_id);
+        if ($request_status_id) {
+            $str_moreWhere .= ' AND sr.request_status_id = ' . intval($request_status_id);
         }
 
         if ($service_type_id) {
@@ -131,12 +129,9 @@ class ServiceRequest extends VSModel
         $query = DB::table('service_requests as sr')
             // Join tenants table
             ->leftJoin('tenants as t', 't.id', '=', 'sr.tenant_id')
-            ->leftJoin('buildings as b', 'b.id', '=', 'sr.building_id')
-            ->leftJoin('floors as f', 'f.id', '=', 'sr.floor_id')
+            ->leftJoin('building_spaces as b', 'b.id', '=', 'sr.building_space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
-            ->leftJoin('service_types as st', 'st.id', '=', 's.service_type_id')
-            ->leftJoin('service_statuses as ss', 'ss.id', '=', 'sr.status_id')
-            ->leftJoin('space_types as spt', 'spt.id', '=', 'sr.space_type_id')
+            ->leftJoin('request_status as rr', 'rr.id', '=', 'sr.request_status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
@@ -144,24 +139,24 @@ class ServiceRequest extends VSModel
                 sr.name,
                 sr.tenant_id,
                 t.name as tenant_name,
-                sr.building_id,
-                b.name as building_name,
-                sr.floor_id,
-                f.name as floor_name,
-                sr.space_type_id,
-                spt.name as space_type_name,
+                sr.building_space_id,
+                b.floor_id as building_space_floor_id,
+                b.building_id as building_space_building_id,
                 sr.service_id,
                 s.name as service_name,
-                s.price,
+                s.price as service_price,
+                s.status_code  as service_status_code,
+                s.unit_type as service_unit_price,
                 sr.description,
                 sr.priority,
-                sr.status_id,
-                ss.name as status,
+                sr.request_status_id,
+                rr.name as request_status_name,
                 $request_date,
                 $updated_at,
                 sr.update_user,
                 sr.scheduled_date,
-                sr.completed_date
+                sr.completed_date,
+                sr.create_uid
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -183,11 +178,8 @@ class ServiceRequest extends VSModel
                 sr.id,
                 sr.name,
                 sr.tenant_id,
-                sr.building_id,
-                sr.floor_id,
-                sr.space_type_id,
-                sr.price,
-                sr.status_id,
+                sr.building_space_id,
+                sr.request_status_id,
                 sr.service_id,
                 sr.description,
                 sr.priority,
@@ -196,67 +188,13 @@ class ServiceRequest extends VSModel
                 sr.scheduled_date,
                 sr.completed_date,
                 sr.create_uid,
+                sr.update_uid,
                 sr.create_user,
                 sr.created_at
             ')
             ->first();
         return $row;
     }
-    // public function getServiceRequestDetails($id, $ss = null)
-    //     {
-    //         $branch_id = $ss->branch_id ?? null;
-    //         $query = DB::table('service_requests as sr')
-    //             ->leftJoin('tenants as t', 't.id', '=', 'sr.tenant_id')
-    //             ->leftJoin('buildings as b', 'b.id', '=', 'sr.building_id')
-    //             ->leftJoin('floors as f', 'f.id', '=', 'sr.floor_id')
-    //             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
-    //             ->leftJoin('service_types as st', 'st.id', '=', 's.service_type_id')
-    //             ->leftJoin('service_statuses as ss_status', 'ss_status.id', '=', 'sr.status_id')
-    //             ->leftJoin('space_types as spt', 'spt.id', '=', 'sr.space_type_id')
-    //             ->where('sr.id', $id);
-
-    //         if ($branch_id) {
-    //             $query->where('sr.branch_id', $branch_id);
-    //         }
-
-    //         $row = $query->selectRaw('
-    //             sr.id,
-    //             sr.name,
-    //             sr.tenant_id,
-    //             t.name as tenant_name,
-    //             sr.building_id,
-    //             b.name as building_name,
-    //             sr.floor_id,
-    //             f.name as floor_name,
-    //             sr.space_type_id,
-    //             spt.name as space_type_name,
-    //             sr.service_id,
-    //             s.name as service_name,
-    //             s.price as service_price,
-    //             s.unit_type as service_unit_type,
-    //             st.name as service_type,
-    //             sr.status_id,
-    //             ss_status.name as status_name,
-    //             sr.description,
-    //             sr.priority,
-    //             sr.request_date,
-    //             sr.scheduled_date,
-    //             sr.completed_date,
-    //             sr.create_uid,
-    //             sr.create_user,
-    //             sr.created_at,
-    //             sr.update_user,
-    //             sr.updated_at
-    //         ')->first();
-
-    //         if ($row) {
-    //             return DV::success((array) $row);
-    //         }
-
-    //         return DV::error('Service request not found');
-    // }
-
-
     public function delete($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('service_requests')
@@ -264,23 +202,23 @@ class ServiceRequest extends VSModel
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
 
-    public function updateStatus($id, $status_id, $ss = null)
+    public function updateStatus($id, $request_status_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
 
-        if (!$id || !$status_id) {
+        if (!$id || !$request_status_id) {
             return DV::error('Invalid parameters');
         }
 
         $data = [
-            'status_id' => $status_id,
+            'request_status_id' => $request_status_id,
             'update_user' => $ss->name ?? 'System',
             'update_uid' => $ss->uid ?? null,
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
         // If status is completed, set completed_date
-        $statusName = DB::table('service_statuses')->where('id', $status_id)->value('name');
+        $statusName = DB::table('service_statuses')->where('id', $request_status_id)->value('name');
         if (strtolower($statusName) === 'completed') {
             $data['completed_date'] = date('Y-m-d H:i:s');
         }

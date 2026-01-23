@@ -1,5 +1,5 @@
 <div id="_main_service_request_component" class="mobile-padding p-3" style="display:none;">
-     <div id="_divFilter_service" class="rounded-2 p-3 bg-white shadow-sm">
+     <div id="_divFilter_service_request" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
@@ -14,9 +14,9 @@
                 <select type="id" id="_service_request_type_id" class="data-input filter-field form-control" data-field="service_type_id"></select>
             </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnService">
+                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnServiceRequest">
                         <i class="fa-solid fa-gears mr-2"></i>
-                    <span vslang="buttons.Create Service"></span>
+                    <span vslang="buttons.Create Request "></span>
                 </button>
             </div>
         </div>

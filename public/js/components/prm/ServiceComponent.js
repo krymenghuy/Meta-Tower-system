@@ -41,9 +41,8 @@ var ServiceComponent =   ( () => {
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
 
                 return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
-         }
+        }
         },
-
         {
             title: "Remarks",
             className: "align-middle",
@@ -72,9 +71,7 @@ var ServiceComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-
-
-       {
+        {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
@@ -271,8 +268,7 @@ var ServiceComponent =   ( () => {
             }
         });
     }
-
-      mThis.changeStatus = (id, lnk) =>{
+    mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
@@ -300,7 +296,6 @@ var ServiceComponent =   ( () => {
                     InputBox2.close();
                     cv_interact.success('Service Status has been updated');
                     mThis.ServiceListView.showPage(mThis.getFilterData());
-
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
                 }
