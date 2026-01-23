@@ -21,7 +21,7 @@ var TenantComponent = (() => {
         {
             title: "photo",
             className: "align-middle",
-            data: (data) => `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/default_tenant.jpg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+            data: (data) => `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
         {
             title: "Name",
@@ -276,72 +276,75 @@ var TenantComponent = (() => {
                     cnt++;
                     html += `
                         <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 shadow-sm border-0 rounded-4">
-                                <div class="card-header border-0 rounded-top-4 d-flex justify-content-between align-items-center px-3 p-3" >
-                                    <span class="badge rounded-pill bg-success px-3">Active</span>
-
-                                    <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-                                    </a>
-                                </div>
-                                <div class="card-body text-center">
-                                    <div class="px-2  pb-4 d-flex justify-content-between align-items-start">
-                                        <div class="d-flex gap-3 align-items-center">
-                                           <div class="rounded-3 border shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                                style="width:56px;height:56px;">
-                                                <img
-                                                    src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}"
-                                                    alt="Profile"
-                                                    class="img-fluid w-100 h-100 object-fit-cover"
-                                                >
+                            <div class="card h-100 shadow-sm border-0 rounded-2">
+                                <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex gap-3 align-items-start">
+                                           <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                                style="width:80px;height:80px;">
+                                                <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                             </div>
-
-
-                                            <div>
-                                                <h6 class="fw-semibold text-start mb-1 text-dark">
-                                                    ${d.name}
-                                                </h6>
-
+                                            <div class="flex items-start justify-between mb-6">
+                                                <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
+                                                <span class="text-muted small">#TEN-1001 • Unit 402</span>
                                                 <div class="d-flex align-items-center gap-2 small">
-                                                    <span class="rounded-circle bg-success" style="width:8px;height:8px;"></span>
-                                                    <span class="text-success fw-semibold text-uppercase">Active</span>
-                                                    <span class="text-muted">• #T-8821</span>
+                                                    <small class="text-white rounded-1 bg-success px-2 mt-1 fw-semibold text-uppercase" >Active</small>
                                                 </div>
                                             </div>
+                                            <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                            </a>
+                                            </div>
                                         </div>
-                                        <a href="javascript:void(0)"
-                                        class="d-none btn-tenant-dropdown-action text-prm-custom p-2 rounded-circle hover-bg"
-                                        aria-haspopup="true">
-                                            <i class="fa-solid fa-ellipsis-vertical fs-5"></i>
-                                        </a>
                                     </div>
+                                </div>
+                                <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
+                                    <div class="row g-4 py-2 border-bottom border-gray">
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column text-center gap-1">
+                                                <span class="text-nowrap text-muted fw-bold mb-1">
+                                                    Lease Expiry
+                                                </span>
+                                                <small class="fw-semibold mb-0 text-dark">
+                                                    Dec 15, 2024
+                                                </small>
+                                            </div>
+                                        </div>
 
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column text-center gap-1">
+                                                <span class="text-nowrap fw-bold mb-1 text-muted" >
+                                                    Next Payment
+                                                </span>
+                                                <small class="fw-semibold mb-0 text-center text-dark">
+                                                    Oct 01, 2024
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card_container" style="max-width: 250px;" >
-                                        <p class="ps-3 mb-2 text-white">
-                                            #  ${d.code || "TEN-10001"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-solid fa-phone me-2 text-white"></i>
+                                        <p class="ps-3 mb-2 text-prm-custom">
+                                            <i class="fa-solid fa-phone me-2 text-muted"></i>
                                             ${d.phone_number || "?"}
                                         </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-solid fa-envelope me-2 text-white"></i>
+                                        <p class="ps-3 mb-2 text-prm-custom">
+                                            <i class="fa-solid fa-at me-2 text-muted"></i>
                                             ${d.email || "?"}
                                         </p>
-                                        <p class="ps-3 mb-2 text-white">
-                                            <i class="fa-brands fa-space-awesome text-white fs-6 me-2"></i>
+                                        <p class="ps-3 mb-2 text-prm-custom">
+                                            <i class="fa-regular fa-building me-2 text-muted"></i>
                                             <span>Unit 502, Meta Tower</span>
                                         </p>
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center px-3 p-2 small">
+                                <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
                                     <span class="text-muted">
                                         Create By : ${d.update_user || ""}
                                     </span>
                                     <a href="javascript:void(0)"
                                     class="text-primary-custom see-detail"
                                     data-id="${d.id}">
-                                        <i class="fa-regular fa-eye"></i> View Details
+                                        View Details <small><i class="fa-solid fa-chevron-right fw-6"></i></small>
                                     </a>
                                 
                                 </div>

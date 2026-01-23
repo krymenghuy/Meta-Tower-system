@@ -118,9 +118,9 @@
     box-shadow: 0 8px 16px rgba(106, 94, 94, 0.2);
 }
 .btn-outline-prm-custom {
-    background-color: #fff;
+    background-color: #e9eaea;
     color: #1a1647;
-    border-color: #1a1647;
+    border-color: #fff;
 }
 
 .btn-outline-prm-custom:hover {
