@@ -300,8 +300,6 @@ var SpaceComponent = new (function () {
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 console.log(222,d);
-                
-                // ===== STATUS DEFAULT (Available) =====
                 let statusColor = 'bg-secondary-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
@@ -311,7 +309,6 @@ var SpaceComponent = new (function () {
 
                 const statusId = d.status_id ?? 1;
 
-                // ===== STATUS MAPPING =====
                 if (statusId === 2) { // Occupied
                     statusColor = 'bg-prm-custom';
                     statusText = 'Occupied';
@@ -321,7 +318,6 @@ var SpaceComponent = new (function () {
                     progressWidth = '100%';
                 }
 
-                // ===== PRICE & SIZE =====
                 const sizeLabel = d.price_type === 'total'
                     ? 'Whole Room'
                     : `${d.sqm_size ?? '-'} sqm`;
@@ -338,20 +334,20 @@ var SpaceComponent = new (function () {
                             <!-- Header -->
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h5 class="unit-name mb-1 text-truncate">
-                                        ${d.building_name ?? 'Building'}
+                                    <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
+                                        ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.code ?? ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
                                     </p>
                                 </div>
-                                <span><a href="javascript:void(0)" class="${d.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                </a></span>
+                                <span>
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                    </a>
+                                </span>
                                 <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
                             </div>
-
-                            <!-- Info -->
                             <div class="d-flex justify-content-between text-muted small">
                                 <div class="d-flex align-items-center gap-1">
                                     <i class="fa-solid fa-ruler-combined"></i>
@@ -359,11 +355,10 @@ var SpaceComponent = new (function () {
                                 </div>
                                 <div class="d-flex align-items-center text-prm-custom gap-2">
                                     <i class="fa-regular fa-building"></i>
-                                    <span class="space-type">${d.space_type ?? 'Residential'}</span>
+                                    <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                             </div>
 
-                            <!-- Occupancy -->
                             <div>
                                 <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
                                     <span>Status</span>
@@ -378,7 +373,6 @@ var SpaceComponent = new (function () {
                                 </div>
                             </div>
 
-                            <!-- Price & Action -->
                             <div class="mt-auto">
                                 <div class="text-muted small mb-2">Price: ${priceLabel}</div>
                                 <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
@@ -388,7 +382,7 @@ var SpaceComponent = new (function () {
                                 </button>
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         <div class="text-muted mt-3"><i class="fa-regular fa-clock text-prm-custom"></i> <span>${d.updated_at ?? ''}</span></div>
@@ -397,18 +391,13 @@ var SpaceComponent = new (function () {
                                 
                             </div>
                         </div>
-                        
-
-                        <input type="checkbox"
-                            class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
+                        <input type="checkbox" class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
                     </div>
                 </div>
                 `;
                 cmt++;
             });
         }
-
-        // ===== NO DATA =====
         if (cmt === 0) {
             html += `
             <div class="col-12">

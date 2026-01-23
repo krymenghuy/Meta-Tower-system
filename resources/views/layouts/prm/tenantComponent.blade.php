@@ -9,15 +9,15 @@
                 </div>
             </div>
            <div class="col-12 col-md-6 col-lg-3">
-                <div class="btn-group btn-group-sm bg-light p-1 rounded" role="group">
+                <div class="btn-group btn-group-sm gap-1 rounded" role="group">
                     <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewCard">
-                        <i class="fa-solid fa-grip me-1"></i> Card
+                    <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">
+                        <i class="fa-solid fa-grip me-1"></i> View Card
                     </label>
 
                     <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewList">
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewList">
-                        <i class="fa-solid fa-rectangle-list me-1"></i> List
+                    <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewList">
+                        <i class="fa-solid fa-rectangle-list me-1"></i> View List
                     </label>
                 </div>
 
@@ -42,39 +42,45 @@
         box-shadow: 0px 0px 3px 0px grey;
     }
 
-    .card-header {
+    .card-header-tenant {
         display: flex;
+        height:120px;
         justify-content: space-between;
-        padding: 8px 16px;
+        padding: 18px 16px;
         border: none;
         align-items: center;
-        background-color: #647686;
+        /* background-color: #fff; */
+        background: 
+        /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
+        url('../assets/images/default/bg_card7.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
     }
 
     .card-body {
+    /* background: 
+        /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
+        url('../assets/images/default/bg-card1.jpg'); */
+    /* background-size: cover; */
+    /* background-repeat: no-repeat; */
+}
 
-        /* background-image:url('https://img.freepik.com/free-vector/ombre-blue-curve-light-blue-background-vector_53876-140344.jpg'); */
-        background-color: #fff;
-        /* background-size: cover;  background-repeat: no-repeat;background-image:url('${d.bg_image ?? '/assets/images/default/bg-card2.jpg'}'); */
-    }
 
     .card_container {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        background-color: #8b8b8b;
+        /* background-color: #e9eaea; */
         padding: 10px;
         border-radius: 10px;
-        font-size: 10px;
 
     }
-    .container_bottom {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        align-items: flex-start;
-        width: 100%;
+    .btn-check:checked+.btn{
+        background-color: #1a1647;
+    color: #fff;
+
     }
+
     
 
 
