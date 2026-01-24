@@ -155,9 +155,10 @@ var ContractComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-prm-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
+                       <button class="btn btn-sm  rounded-2 text-nowrap">
+                            <span>  
+                                <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                            </span>
                        </button>
                     </a>
                 </div>`

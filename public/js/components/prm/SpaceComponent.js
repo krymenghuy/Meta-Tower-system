@@ -363,8 +363,8 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 1 ? 'text-secondary-custom' :
-                                        statusId === 2 ? 'text-prm-custom' :
+                                        statusId === 3 ? 'text-secondary-custom' :
+                                        // statusId === 1 ? 'text-prm-custom' :
                                         'text-success'
                                     }">${statusText}</span>
                                 </div>
@@ -466,7 +466,7 @@ var SpaceComponent = new (function () {
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Available"},
-                {status_id:"2",name:"Maintenance"},
+                // {status_id:"2",name:"Maintenance"},
                 {status_id:"3",name:"Occupied"},
             ],
             defaultValue: status_id
@@ -518,7 +518,7 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
                 // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', false,'', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
