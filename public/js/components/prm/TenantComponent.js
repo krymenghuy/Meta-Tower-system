@@ -1,17 +1,30 @@
 "use strict";
 
-var TenantComponent = (() => {
-    const mThis = {};
+var TenantComponent = new(function () {
+    const mThis = this;
     mThis.title_prop = "Tenant Management";
-    mThis.base_url = main_view.base_url;
+    this.defaultPage = 'tenant_list';
     mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.btnBack = document.querySelector("#_btn_back_tenant");
+
+    mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
+    mThis.divProfileView = document.querySelector('#_ten_profile_view');
+    
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
     mThis.currentViewMode = 'card';
     mThis.paginationContainer = mThis.self.querySelector("#tenant_card_container_pagination");
+    this.pages = {
+        tenant_list: this.divTenantListContainer,
+        profile_view: this.divProfileView
+    };  
+    console.log(8989,this.pages);
+    
+
+    mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant");
 
     mThis.cols = [
         {
@@ -103,7 +116,7 @@ var TenantComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
-            fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
@@ -113,7 +126,7 @@ var TenantComponent = (() => {
             listContainerClass: null
         });
         mThis.tenantListView = new ListView(mThis.listViewContainer, {
-            fetchApi: `${mThis.base_url}/prm/tenant/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
@@ -136,6 +149,10 @@ var TenantComponent = (() => {
                 }
             };
             CreateTenantDialog.show(op);
+        };
+         mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            mThis.showPage('tenant_list',mThis.getFilterData());
         };
         const cardTab = document.getElementById('tenantViewCard');
         const listTab = document.getElementById('tenantViewList');
@@ -257,126 +274,152 @@ var TenantComponent = (() => {
             }
         });
     };
-      mThis.renderTenantCard = (div, data) => {
-            data = data ?? [];
-            // if (!AuthManager) {
-            //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
-            //     return;
-            // }
-            AuthManager.init().then((user) => {
-                mThis.renderCard(data, user);
-            });
-        };
-        mThis.renderCard = (items) => {
-             let cnt = 0;
-            let html = `<div class="row g-3">`;
-            if (Array.isArray(items) && items.length > 0) {
+    mThis.renderTenantCard = (div, data) => {
+        data = data ?? [];
+        // if (!AuthManager) {
+        //     cv_interact.info("It seems that you have problem with connection, you may need to refresh page and try again!");
+        //     return;
+        // }
+        AuthManager.init().then((user) => {
+            mThis.renderCard(data, user);
+        });
+    };
+    mThis.renderCard = (items) => {
+            let cnt = 0;
+        let html = `<div class="row g-3">`;
+        if (Array.isArray(items) && items.length > 0) {
 
-                items.forEach(d => {
-                    cnt++;
-                    html += `
-                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 shadow-sm border-0 rounded-2">
-                                <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="d-flex gap-3 align-items-start">
-                                           <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
-                                                style="width:80px;height:80px;">
-                                                <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+            items.forEach(d => {
+                cnt++;
+                html += `
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm border-0 rounded-2">
+                            <div class="card-header-tenant border-0 rounded-top-2 d-flex justify-content-center align-items-center">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex gap-3 align-items-start">
+                                        <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
+                                            style="width:80px;height:80px;">
+                                            <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                        </div>
+                                        <div class="flex items-start justify-between mb-6">
+                                            <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
+                                            <span class="text-muted small">#TEN-1001 • Unit 402</span>
+                                            <div class="d-flex align-items-center gap-2 small">
+                                                <small class="text-white rounded-1 bg-success px-2 mt-1 fw-semibold text-uppercase" >Active</small>
                                             </div>
-                                            <div class="flex items-start justify-between mb-6">
-                                                <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                                <span class="text-muted small">#TEN-1001 • Unit 402</span>
-                                                <div class="d-flex align-items-center gap-2 small">
-                                                    <small class="text-white rounded-1 bg-success px-2 mt-1 fw-semibold text-uppercase" >Active</small>
-                                                </div>
-                                            </div>
-                                            <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                            </a>
-                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                        </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
-                                    <div class="row g-4 py-2 border-bottom border-gray">
-                                        <div class="col-6">
-                                            <div class="d-flex flex-column text-center gap-1">
-                                                <span class="text-nowrap text-muted fw-bold mb-1">
-                                                    Lease Expiry
-                                                </span>
-                                                <small class="fw-semibold mb-0 text-dark">
-                                                    Dec 15, 2024
-                                                </small>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-6">
-                                            <div class="d-flex flex-column text-center gap-1">
-                                                <span class="text-nowrap fw-bold mb-1 text-muted" >
-                                                    Next Payment
-                                                </span>
-                                                <small class="fw-semibold mb-0 text-center text-dark">
-                                                    Oct 01, 2024
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card_container" style="max-width: 250px;" >
-                                        <p class="ps-3 mb-2 text-prm-custom">
-                                            <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                            ${d.phone_number || "?"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-prm-custom">
-                                            <i class="fa-solid fa-at me-2 text-muted"></i>
-                                            ${d.email || "?"}
-                                        </p>
-                                        <p class="ps-3 mb-2 text-prm-custom">
-                                            <i class="fa-regular fa-building me-2 text-muted"></i>
-                                            <span>Unit 502, Meta Tower</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
-                                    <span class="text-muted">
-                                        Create By : ${d.update_user || ""}
-                                    </span>
-                                    <a href="javascript:void(0)"
-                                    class="text-primary-custom see-detail"
-                                    data-id="${d.id}">
-                                        View Details <small><i class="fa-solid fa-chevron-right fw-6"></i></small>
-                                    </a>
-                                
-                                </div>
-
                             </div>
-                        </div>
-                        `;
-                    });
+                            <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
+                                <div class="row g-4 py-2 border-bottom border-gray">
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column text-center gap-1">
+                                            <span class="text-nowrap text-muted fw-bold mb-1">
+                                                Lease Expiry
+                                            </span>
+                                            <small class="fw-semibold mb-0 text-dark">
+                                                Dec 15, 2024
+                                            </small>
+                                        </div>
+                                    </div>
 
-                } else {
-                    html += `
-                    <div class="col-12">
-                        <div class="alert alert-light border text-center text-danger">
-                            Tenant not found!
+                                    <div class="col-6">
+                                        <div class="d-flex flex-column text-center gap-1">
+                                            <span class="text-nowrap fw-bold mb-1 text-muted" >
+                                                Next Payment
+                                            </span>
+                                            <small class="fw-semibold mb-0 text-center text-dark">
+                                                Oct 01, 2024
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card_container" style="max-width: 250px;" >
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-phone me-2 text-muted"></i>
+                                        ${d.phone_number || "?"}
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-at me-2 text-muted"></i>
+                                        ${d.email || "?"}
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-regular fa-building me-2 text-muted"></i>
+                                        <span>Unit 502, Meta Tower</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
+                                <span class="text-muted">
+                                    Create By : ${d.update_user || ""}
+                                </span>
+                                <a href="javascript:void(0)"
+                                class="text-primary-custom see-tenant-detail"
+                                data-id="${d.id}">
+                                    View Details <small><i class="fa-solid fa-chevron-right fw-6"></i></small>
+                                </a>
+                            
+                            </div>
+
                         </div>
                     </div>
                     `;
-                }
-                html += `</div>`;
-                mThis.cardViewContainer.innerHTML = html;
-                if (cnt > 0) {
-            const container = mThis.cardViewContainer;
-            const te_parent = container;
-            
-            te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-            te_parent.classList.add("overflow-y-auto");
+                });
 
-            window.onresize = () => {
-                te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-            };
+            } else {
+                html += `
+                <div class="col-12">
+                    <div class="alert alert-light border text-center text-danger">
+                        Tenant not found!
+                    </div>
+                </div>
+                `;
             }
-        };
+            html += `</div>`;
+            mThis.cardViewContainer.innerHTML = html;
+            const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+            seeProfileInfo.forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const tenantId = e.target.dataset.id;
+                    mThis.tenant_id = tenantId;
+                    mThis.showPage('profile_view',tenantId);
+                    //const employeeData = data.find((emp) => emp.id == employeeId);
+                    // if (employeeData) {
+                    //     let sub_content = mThis.self.querySelector("#sub_content");
+                    //     sub_content.classList.add("d-none");
+                    //     let view_see_info =
+                    //         mThis.self.querySelector("#view_see_info__");
+                    //     view_see_info.classList.remove("d-none");
+
+                    //     mThis.renderProfile(employeeData);
+                    //     mThis.renderCardCenter(employeeId);
+                    //     mThis.renderCardLeft(employeeId);
+                    //     mThis.renderCardRight(employeeId);
+                    //     mThis.renderCardTaxAllowance(employeeId);
+                    //     mThis.renderEmpDocuments(employeeId);
+                    // } else {
+                    //     console.error(
+                    //         "Employee data not found for ID:",
+                    //         employeeId
+                    //     );
+                    // }
+                });
+            });
+            if (cnt > 0) {
+                const container = mThis.cardViewContainer;
+                const te_parent = container;
+                te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+                te_parent.classList.add("overflow-y-auto");
+                window.onresize = () => {
+                    te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+                };
+            }
+    };
 
     mThis.renderView = () => {
         const params = mThis.getFilterData();
@@ -408,6 +451,209 @@ var TenantComponent = (() => {
 
         return p;
     };
+     mThis.getPageContainer =(pageName)=>{
+        return mThis.pages[pageName];
+    };
+    mThis.showPage = async (pageName, op = {})=>{
+       if(this.self.style.display !=='block'){
+         main_view.setContentView(this.self, this.title_prop);
+       }
+       switch(pageName){
+         case 'tenant_list':{
+            mThis.currentPage = 'tenant_list';
+            mThis.renderView();
+            break;
+         }
+         case 'profile_view':
+            {
+                mThis.currentPage = 'profile_view';
+                const tenant_id = (op.tenant_id || op.id || op);
+                const p = {"id": tenant_id};
+                const res = await vsapi.call([main_view.base_url, '/prm/tenant/details'].join(''),p,false,null);
+                const data = res.data || {};
+                mThis.renderProfile(data);
+                // mThis.renderCardCenter(emp_id);
+                // mThis.renderCardLeft(emp_id);
+                // mThis.renderCardRight(emp_id);
+                // mThis.renderCardTaxAllowance(emp_id);
+                // mThis.renderEmpDocuments(emp_id);
+
+                break;
+            }
+          default:{
+             return;
+          }
+       }
+       const targetPage = mThis.getPageContainer(pageName);
+       console.log(9090,targetPage);
+       
+       const siblings = Array.from(targetPage.parentElement.children);
+       // Hide all siblings smoothly
+       siblings.forEach((div) => {
+           if (div !== targetPage && div.style.display !== 'none') {
+               div.style.display = 'none';
+           }
+       });
+       targetPage.style.display = 'block';
+    };
+mThis.renderProfile = (data) => {
+    console.log(90909090,data);
+    let html = '';
+    html += `
+    <div class="row g-4">
+        <div class="col-12 col-lg-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="position-relative d-inline-block mb-3">
+                        <img src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}"
+                             class="rounded-circle border"
+                             width="130" height="130">
+                        <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white"
+                              style="width:14px;height:14px;"></span>
+                    </div>
+                    <h4 class="fw-bold mb-1">Jonathan Harker</h4>
+                    <div class="mb-3">
+                        <span class="badge bg-success me-1">Verified</span>
+                        <span class="badge bg-primary">Active</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Move-in Date</small>
+                        <strong>Oct 12, 2022</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Rent Status</small>
+                        <span class="badge bg-success">PAID</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Security Deposit</small>
+                        <strong>$2,400.00</strong>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <small class="text-muted">Lease Terms</small>
+                            <div class="fw-bold fs-5">12 Months</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <small class="text-muted">Unit Number</small>
+                            <div class="fw-bold fs-5 text-primary">402-B</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="col-12 col-lg-9">
+
+            <div class="card shadow-sm h-100">
+
+                <!-- Tabs -->
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active fw-semibold" href="#">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="#">Lease History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="#">Documents</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fa fa-user me-1 text-primary"></i>
+                        Personal Information
+                    </h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <small class="text-muted">Passport Number</small>
+                            <div class="fw-semibold">${data.passport_number ?? 'PK-982****44'}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">National ID</small>
+                            <div class="fw-semibold">${data.national_id ?? '920-11-2093-2'}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Phone</small>
+                            <div class="fw-semibold text-primary">${data.phone_number ?? '+855 000 000 00'}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Email</small>
+                            <div class="fw-semibold text-primary">${data.email ?? ''}</div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-4">
+                        <i class="fa fa-phone me-1 text-primary"></i>
+                        Emergency Contact
+                    </h5>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <small class="text-muted">Contact Name</small>
+                            <div class="fw-semibold">Mina Murray</div>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Relationship</small>
+                            <div class="fw-semibold">Partner</div>
+                        </div>
+                        <div class="col-md-12">
+                            <small class="text-muted">Emergency Phone</small>
+                            <div class="fw-semibold">+1 (555) 000-1122</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <small class="text-muted">
+                        Managed by <strong>Admin: Heng Dara</strong>
+                    </small>
+                    <div>
+                        <button class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</button>
+                        <button class="btn btn-prm-custom btn-sm rounded-2">
+                            <i class="fa fa-edit me-1"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="text-center text-muted small mt-4">
+        Profile ID: TEN-992834-2023 · Created Oct 24, 2023 · Updated 2 days ago
+    </div>
+
+
+    `;
+
+    mThis.profile_info_tenant.innerHTML = html;
+};
+
+
+
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
@@ -418,8 +664,9 @@ var TenantComponent = (() => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.renderView();
+            // main_view.setContentView(mThis.self, mThis.title_prop);
+            // mThis.renderView();
+             mThis.showPage(mThis.defaultPage,mThis.getFilterData());
         });
     };
 
