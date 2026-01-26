@@ -34,7 +34,7 @@ var ServiceRequestComponent = (function () {
             title: "Floor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.building_space_floor_id ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.building_space_code ?? ''}</span>`;
             }
         },
         {
@@ -51,12 +51,15 @@ var ServiceRequestComponent = (function () {
                 return `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`;
             }
         },
-         {
+        {
             title: "Price",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.service_price ?? ''}</span>`;
-            }
+                const cur_symbol = data.cur_symbol ?? '$';
+                const formattedPrice = data.service_price ? Number(data.service_price).toLocaleString() : '-';
+                const unitLabel = data.service_unit_price ? `/ ${data.service_unit_price}` : '';
+                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
+        }
         },
         {
             title: "Remarks",
@@ -402,7 +405,7 @@ const CreateServiceRequestDialog = (() => {
                             <div class="col-8">
                                 <label style="padding-left:6px;" for="service_types">Charge As</label>
                                 <div class="material-input outlined">
-                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
+                                    <select name="service_unit_price" class="data-input form-control" data-field="service_unit_price">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
                                         <option value="time">Per Usage / Per Time</option>
