@@ -48,14 +48,7 @@ var ServiceRequestComponent = (function () {
             title: "Category",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.service_status_code ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Price",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.service_price ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`;
             }
         },
          {
@@ -80,7 +73,7 @@ var ServiceRequestComponent = (function () {
             title: "Status",
             className: "align-middle",
             data: (data) => {
-                const request_status_name = (data.request_status_name ?? '').toLowerCase();
+                const request_status_name = (data.status_name ?? '').toLowerCase();
                 let cls = 'text-info';
 
                 if (request_status_name == 'inactive') {
@@ -351,30 +344,41 @@ const CreateServiceRequestDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-12 ">
-                                <label style="padding-left:6px;" for="service_type">Full Name</label>
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="name">Tenant</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
+                                    <select name="name" class="data-input form-control" data-field="tenant_id">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Category</label>
                                 <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_type">
+                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="padding-left:6px;">Service</label>
+                                <label style="padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <select name="building" class="data-input form-control" data-field="building_id">
+                                    </select>
                                 </div>
                             </div>
-
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_type">Floor</label>
+                                <div class="material-input outlined">
+                                    <select name="service_type" class="data-input form-control" data-field="floor_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_type">Service</label>
+                                <div class="material-input outlined">
+                                    <select name="service_type" class="data-input form-control" data-field="service_id">
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-4">
                                 <label style="padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
@@ -432,19 +436,31 @@ const CreateServiceRequestDialog = (() => {
 
                 configSelect: [
                     {
-                        name: "building_space_id",
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
+                    {
+                        name: "building_id",
                         data: "building_spaces",
-                        textField: "name",
+                        textField: "building_id",
+                        valueField: "id"
+                    },
+                    {
+                        name: "floor_id",
+                        data: "building_spaces",
+                        textField: "floor_id",
                         valueField: "id",
                     },
                     {
                         name: "service_id",
                         data: "services",
-                        textField: "name",
+                        textField: "service",
                         valueField: "id",
                     },
                     {
-                        name: "service_type",
+                        name: "service_type_id",
                         data: "service_types",
                         textField: "service_type",
                         valueField: "id",

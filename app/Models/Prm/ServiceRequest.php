@@ -32,12 +32,13 @@ class ServiceRequest extends VSModel
         $v_rule = [
             'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
-            'name' => '1|string|1-100|text=Service name must be provided',
-            'building_space_id' => '1|number|exists=building_spaces.id',
-            'priority' => '1|enum=low,medium,high,urgent|text=Priority must be one of: low, medium, high, or urgent',
+            'building_space_id' => '0|number|exists=building_spaces.id',
+            'space_id' => '0|number',
+            'service_type_id' => '1|number|exists=service_types.id',
+            'priority' => '0|enum=low,medium,high,urgent|text=Priority must be one of: low, medium, high, or urgent',
             'description' => '0|string|0-1000',
             'request_status_id' => '0|number|default=2|exists=service_statuses.id',
-            'request_date' => '0|date',
+            'request_date' => '0|date',  // Date field that will be converted to integer format YYYYMMDD
             'scheduled_date' => '0|date',
             'completed_date' => '0|date',
         ];
@@ -60,9 +61,12 @@ class ServiceRequest extends VSModel
 
         $input = $res->values;
 
-        // Set request_date if not provided
-        if (!isset($input['request_date'])) {
-            $input['request_date'] = date('Y-m-d H:i:s');
+        // Convert request_date to integer format YYYYMMDD if provided, otherwise use current date
+        if (isset($input['request_date'])) {
+            // Convert date string to integer format (YYYYMMDD)
+            $input['request_date'] = (int) date('Ymd', strtotime($input['request_date']));
+        } else {
+            $input['request_date'] = (int) date('Ymd'); // Today's date as integer
         }
 
         // Set default priority if not provided
@@ -109,7 +113,6 @@ class ServiceRequest extends VSModel
             $search_value = escape_like_str($search_value);
             $str_search = "(
                 sr.description LIKE '%" . $search_value . "%'
-                OR sr.name LIKE '%" . $search_value . "%'
                 OR t.name LIKE '%" . $search_value . "%'
                 OR b.name LIKE '%" . $search_value . "%'
                 OR st.name LIKE '%" . $search_value . "%'
@@ -121,22 +124,22 @@ class ServiceRequest extends VSModel
         }
 
         if ($service_type_id) {
-            $str_moreWhere .= ' AND s.service_type_id = ' . intval($service_type_id);
+            $str_moreWhere .= ' AND sr.service_type_id = ' . intval($service_type_id);
         }
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
-        $request_date = DBX::formatTime("sr.request_date", 'request_date');
+        $requested_date = DBX::formatTime("sr.requested_date", 'requested_date');
+
         $query = DB::table('service_requests as sr')
-            // Join tenants table
             ->leftJoin('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->leftJoin('building_spaces as b', 'b.id', '=', 'sr.building_space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
-            ->leftJoin('service_statuses as rr', 'rr.id', '=', 'sr.request_status_id')
+            ->leftJoin('service_types as k', 'k.id', '=', 'sr.service_type_id')
+            ->leftJoin('service_statuses as st', 'st.id', '=', 'sr.request_status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
                 sr.id,
-                sr.name,
                 sr.tenant_id,
                 t.name as tenant_name,
                 sr.building_space_id,
@@ -145,13 +148,14 @@ class ServiceRequest extends VSModel
                 sr.service_id,
                 s.name as service_name,
                 s.price as service_price,
-                s.status_code  as service_status_code,
                 s.unit_type as service_unit_price,
+                sr.service_type_id,
+                k.name as service_type_name,
+                sr.request_date,
                 sr.description,
                 sr.priority,
                 sr.request_status_id,
-                rr.name as request_status_name,
-                $request_date,
+                st.name as status_name,
                 $updated_at,
                 sr.update_user,
                 sr.scheduled_date,
@@ -173,16 +177,17 @@ class ServiceRequest extends VSModel
     public static function getServiceRequestDetails($id, $ss = null)
     {
         $row = DB::table('service_requests as sr')
-            ->where('sr.id',$id)
+            ->where('sr.id', $id)
             ->selectRaw('
                 sr.id,
-                sr.name,
                 sr.tenant_id,
                 sr.building_space_id,
-                sr.request_status_id,
+                sr.space_id,
                 sr.service_id,
+                sr.service_type_id,
                 sr.description,
                 sr.priority,
+                sr.request_status_id,
                 sr.request_date,
                 sr.update_user,
                 sr.scheduled_date,
@@ -195,11 +200,13 @@ class ServiceRequest extends VSModel
             ->first();
         return $row;
     }
-    public function delete($id = null){
+
+    public function delete($id = null)
+    {
         $id = $id ?? $this->id;
         $deleted = DB::table('service_requests')
-        ->where('id',$id)->delete();
-        return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
+            ->where('id', $id)->delete();
+        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)
@@ -209,6 +216,7 @@ class ServiceRequest extends VSModel
         if (!$id || !$request_status_id) {
             return DV::error('Invalid parameters');
         }
+
         $data = [
             'request_status_id' => $request_status_id,
             'update_user' => $ss->name ?? 'System',
@@ -233,12 +241,15 @@ class ServiceRequest extends VSModel
         return DV::error('Error updating status');
     }
 
-    public static function getFormOptions($ss,$id){
+    public static function getFormOptions($ss, $id)
+    {
         $details = $id ? self::getServiceRequestDetails($id) : null;
         return (object) [
             'service_requests' => $details,
-            'service_types'=> GeneralSettings::options_service_types($ss)
+            'service_types' => GeneralSettings::options_service_types($ss),
+            'tenants' => GeneralSettings::options_tenant($ss),
+            'services'=> GeneralSettings::options_service($ss),
+            'building_spaces' =>GeneralSettings::options_building_space($ss)
         ];
     }
-
 }
