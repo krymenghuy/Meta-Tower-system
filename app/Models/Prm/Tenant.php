@@ -17,21 +17,41 @@ class Tenant
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
+function checkUniqueTenantByNID($nid, $id = null)
+{
+    if(!$nid) return null;
+    $str_id = '1=1';
+    if (!$nid) return 'National ID cannot be empty';
+    if ($id > 0) $str_id = "t.id <> $id";
+    $x = DB::table('tenants as t')->where('t.national_id', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
+    if ($x) return 'National ID ?? has been used by another Tenant::'. $nid;
+    return null;
+}
+function checkUniqueTenantByPhone($phone_number, $id = null)
+{
+    $str_id = "1=1";
+    if (!$phone_number) return 'Phone number cannot be empty';
+    if ($id > 0) $str_id = "t.id <> $id";
+    $x = DB::table('tenants as t')->where('t.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+    if ($x) return 'phone number"' . $phone_number . '" has been used by another tenant';
+    return null;
+}
  public function createTenant($arr = [], $id = null, $ss = null)
 {
     $id   = $id   ?? $this->id;
     $ss   = $ss   ?? $this->userInfo;
-
+    $branch_id = $ss->branch_id;
     $v_rule = [
-        'name'          => '1|string|0-200|text=Tenant name must be provided',
-        'legal_name'    => '0|string|0-250',
-        'national_id'   => '0|string|0-100',
-        'passport_number' => '0|string|0-100',
-        'phone_number'  => '0|phone|0-23',
+        'name'          => '1|string|0-100|text=Tenant name must be provided',
+        'sex'           => '1|choice|F,M',
+        'date_of_birth' => '1|date',
+        'nationality_id'=> '1|number',
+        'legal_name'    => '1|string|0-100',
+        'national_id'   => '1|string|0-50',
+        'passport_number' => '0|string|0-50',
+        'phone_number'  => '1|phone|0-20',
         'email'         => '0|email|1-50',
         'address'       => '0|string|0-350',
-        'sex'           => '1|choice|F,M',           // ← required
         'photo' => '0|image'
     ];
 
@@ -40,7 +60,6 @@ class Tenant
     $legal_name_char = ['@',',','.','#'];
 
     $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char, 'legal_name' => $legal_name_char],$ss->lang ?? 'en',0,null);
-
     if ($res->error) {
         return DV::error($res->error);
     }
@@ -48,25 +67,29 @@ class Tenant
     $inputs = $res->values;
     $d = (object) $inputs;
 
-    // ── Duplicate check (only for create, not update)
-    if (!$id) {
-        $exists = DB::table('tenants')
-            ->where('phone_number', $inputs['phone_number'] ?? '')
-            ->where('name', $inputs['name'])
-            ->exists();
+    $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
+        $inputs['phone_number'] = $d->phone_number;
+        $phone_check = $this->checkUniqueTenantByPhone($d->phone_number, $id);
+        if ($phone_check) return DV::error($phone_check);
 
-        if ($exists) {
-            return DV::error('Create failed: This Tenant already exists (same name + phone number)');
-        }
-    }
+    $national_id = $d->national_id ?? null;
 
-     $photo = $d->photo ?? null;
+    $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
+        if ($nid_check) return DV::error($nid_check);
+
+   
+    $photo = $d->photo ?? null;
     unset($inputs['photo']);
     $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
 
     $created = !$id;
     $id = DBX::saveData($ss, 'tenants', ['id' => $id], $inputs, [], 1);
+    if ($id && $created) {
+            
+            $prefix = 'TEN';
+            $res = setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], $prefix, 5, null);
 
+        }
     if ($id > 0) {
         if ($delete_prev_image) {
             $file_name = DB::table('tenants as t')->where('t.id', $id)->take(1)->value('t.photo_file_name');
@@ -104,9 +127,12 @@ class Tenant
             $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.address LIKE '%" . $search_value . "%')";
         }
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
+        $date_of_birth = DBX::formatTime("t.date_of_birth", 'date_of_birth');
         $query = DB::table('tenants as t')
+
+            ->join('tenant_statuses as ts','ts.id','=','t.status_id')
             ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.legal_name,t.photo_file_name,t.national_id,passport_number,t.sex,t.phone_number,t.email,t.address,$updated_at,t.update_user")->orderBy('t.id','DESC');
+            ->selectRaw("t.id,t.name,t.sex,$date_of_birth,t.nationality_id,t.legal_name,t.code,t.photo_file_name,t.national_id,passport_number,t.phone_number,t.email,t.address,t.status_id,ts.name as status,$updated_at,t.update_user")->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -179,10 +205,12 @@ class Tenant
         return $row;
     }
 
-    public static function getFormOptions($id){
+    public static function getFormOptions($id,$ss){
         $details = $id ? self::getDetails($id) : null;
         return (object) [
             'tenant' => $details,
+            'nationalities' => GeneralSettings::options_nationality($ss),
+
         ];
     }
 

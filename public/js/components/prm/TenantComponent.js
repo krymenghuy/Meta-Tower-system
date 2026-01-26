@@ -290,6 +290,21 @@ var TenantComponent = new(function () {
         if (Array.isArray(items) && items.length > 0) {
 
             items.forEach(d => {
+                const status = d.status || "Pending";
+                let statusClass = "badge rounded-3 px-3 py-1 ";
+                switch (status) {
+                    case "Active":
+                        statusClass += " bg-success-subtle text-success border border-success-subtle";
+                        break;
+                    case "Inactive":
+                        statusClass += " bg-secondary-subtle text-grey border border-secondary-subtle";
+                        break;
+                    case "Pending":
+                    default:
+                        statusClass += " bg-warning-subtle text-warning border border-warning-subtle";
+                        break;
+                }
+
                 cnt++;
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
@@ -303,9 +318,9 @@ var TenantComponent = new(function () {
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
                                             <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                            <span class="text-muted small">#TEN-1001 • Unit 402</span>
-                                            <div class="d-flex align-items-center gap-2 small">
-                                                <small class="text-white rounded-1 bg-success px-2 mt-1 fw-semibold text-uppercase" >Active</small>
+                                            <span class="text-muted">#${d.code ?? ''} • Unit #</span>
+                                            <div class="d-flex align-items-center mt-1 gap-2">
+                                                <small class="${statusClass}">${status}</small>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
@@ -496,22 +511,20 @@ var TenantComponent = new(function () {
        });
        targetPage.style.display = 'block';
     };
-mThis.renderProfile = (data) => {
-    console.log(90909090,data);
-    let html = '';
-    html += `
+   mThis.renderProfile = (data) => {
+    console.log(90909090, data);
+    let html = `
     <div class="row g-4">
         <div class="col-12 col-lg-3">
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center">
                     <div class="position-relative d-inline-block mb-3">
                         <img src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}"
-                             class="rounded-circle border"
-                             width="130" height="130">
-                        <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white"
-                              style="width:14px;height:14px;"></span>
+                            class="rounded-circle border" width="130" height="130">
+                        <span class="position-absolute d-none bottom-0 end-0 bg-success rounded-circle border border-white"
+                            style="width:14px;height:14px;"></span>
                     </div>
-                    <h4 class="fw-bold mb-1">Jonathan Harker</h4>
+                    <h4 class="fw-bold mb-1">${data.name}</h4>
                     <div class="mb-3">
                         <span class="badge bg-success me-1">Verified</span>
                         <span class="badge bg-primary">Active</span>
@@ -525,12 +538,10 @@ mThis.renderProfile = (data) => {
                         <small class="text-muted">Rent Status</small>
                         <span class="badge bg-success">PAID</span>
                     </div>
-
                     <div class="d-flex justify-content-between">
                         <small class="text-muted">Security Deposit</small>
                         <strong>$2,400.00</strong>
                     </div>
-
                 </div>
             </div>
 
@@ -544,7 +555,6 @@ mThis.renderProfile = (data) => {
                         </div>
                     </div>
                 </div>
-
                 <div class="col-6">
                     <div class="card text-center shadow-sm">
                         <div class="card-body">
@@ -554,102 +564,140 @@ mThis.renderProfile = (data) => {
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- RIGHT COLUMN -->
         <div class="col-12 col-lg-9">
-
             <div class="card shadow-sm h-100">
 
                 <!-- Tabs -->
                 <div class="card-header bg-white">
-                    <ul class="nav nav-tabs card-header-tabs">
+                    <ul class="nav nav-tabs card-header-tabs" id="tenantTabs">
                         <li class="nav-item">
-                            <a class="nav-link active fw-semibold" href="#">Overview</a>
+                            <a class="nav-link active fw-semibold" href="#overview">Overview</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="#">Lease History</a>
+                            <a class="nav-link fw-semibold" href="#lease-history">Lease History</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" href="#">Documents</a>
+                            <a class="nav-link fw-semibold" href="#documents">Documents</a>
                         </li>
                     </ul>
                 </div>
-                <div class="card-body">
-                    <h5 class="fw-bold mb-4">
-                        <i class="fa fa-user me-1 text-primary"></i>
-                        Personal Information
-                    </h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-6">
-                            <small class="text-muted">Passport Number</small>
-                            <div class="fw-semibold">${data.passport_number ?? 'PK-982****44'}</div>
+
+                <!-- Tab Content -->
+                <div class="card-body tab-content">
+                    <div class="tab-pane active" id="overview">
+                        <h5 class="fw-bold mb-4"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
+                            <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
+                            <div class="col-md-8"><small class="text-muted">Address</small><div class="fw-semibold text-primary">${data.address ?? ''}</div></div>
                         </div>
-                        <div class="col-md-6">
-                            <small class="text-muted">National ID</small>
-                            <div class="fw-semibold">${data.national_id ?? '920-11-2093-2'}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted">Phone</small>
-                            <div class="fw-semibold text-primary">${data.phone_number ?? '+855 000 000 00'}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted">Email</small>
-                            <div class="fw-semibold text-primary">${data.email ?? ''}</div>
+
+                        <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
+                            <div class="col-md-6"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
+                            <div class="col-md-12"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
                         </div>
                     </div>
 
-                    <h5 class="fw-bold mb-4">
-                        <i class="fa fa-phone me-1 text-primary"></i>
-                        Emergency Contact
-                    </h5>
-
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <small class="text-muted">Contact Name</small>
-                            <div class="fw-semibold">Mina Murray</div>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted">Relationship</small>
-                            <div class="fw-semibold">Partner</div>
-                        </div>
-                        <div class="col-md-12">
-                            <small class="text-muted">Emergency Phone</small>
-                            <div class="fw-semibold">+1 (555) 000-1122</div>
-                        </div>
+                    <div class="tab-pane" id="lease-history">
+                        <h5 class="fw-bold mb-4"><i class="fa fa-file-text me-1 text-primary"></i> Lease History</h5>
+                        <p>Lease history content goes here...</p>
                     </div>
 
+                    <div class="tab-pane" id="documents">
+                        <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
+                        <p>Tenant documents content goes here...</p>
+                    </div>
                 </div>
 
                 <!-- Footer -->
                 <div class="card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                    <small class="text-muted">
-                        Managed by <strong>Admin: Heng Dara</strong>
-                    </small>
+                    <small class="text-muted">Managed by <strong>Admin: chhorng</strong></small>
                     <div>
-                        <button class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</button>
-                        <button class="btn btn-prm-custom btn-sm rounded-2">
-                            <i class="fa fa-edit me-1"></i> Edit Profile
-                        </button>
+                        <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
+                        <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
                     </div>
                 </div>
 
             </div>
-
         </div>
-
     </div>
 
     <div class="text-center text-muted small mt-4">
         Profile ID: TEN-992834-2023 · Created Oct 24, 2023 · Updated 2 days ago
     </div>
-
-
     `;
 
     mThis.profile_info_tenant.innerHTML = html;
+
+    // ===== Tabs JS =====
+    const tabLinks = mThis.profile_info_tenant.querySelectorAll('#tenantTabs a');
+    const tabPanes = mThis.profile_info_tenant.querySelectorAll('.tab-pane');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('href').replace('#','');
+
+            // remove active class
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+
+            // add active to selected
+            link.classList.add('active');
+            mThis.profile_info_tenant.querySelector(`#${target}`).classList.add('active');
+        });
+    });
+
+    mThis.setActionsProfileInfo(mThis.profile_info_tenant);
 };
+
+    mThis.setActionsProfileInfo = (divProfile) => {
+        console.log(33,divProfile);
+        
+        divProfile.addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
+            if (btn) {
+                mThis.editTenantInfo(btn.dataset.id, btn);
+                return;
+            }
+            // btn = VSUtil.closestLimited(e.target, ".delete_employee");
+            // if (btn) {
+            //     mThis.deleteEmployee(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".set_resign");
+            // if (btn) {
+            //     mThis.setResign(btn.dataset.id, btn);
+            //     return;
+            // }
+            // btn = VSUtil.closestLimited(e.target, ".movement");
+            // if (btn) {
+            //     mThis.movement(btn.dataset.id, btn);
+            //     return;
+            // }
+        });
+    };
+       mThis.editTenantInfo = (id, menuLink) => {
+        const op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+
+            },
+        };
+        CreateTenantDialog.show(op);
+    };
 
 
 
@@ -702,7 +750,7 @@ const CreateTenantDialog = (() => {
                         </div>
                         <div class="col-md-8 row pb-3">
                             <div class="col-12 ">
-                                <label class="form-label">Full Name</label>
+                                <label style="color:#777777;padding-left:6px;">Full Name</label>
                                 <div class="material-input outlined">
                                     <input type="text"
                                         name="name"
@@ -711,20 +759,8 @@ const CreateTenantDialog = (() => {
                                         placeholder=" " />
                                 </div>
                             </div>
-                            <div class="col-12 ">
-                                <label class="form-label">Legal Name</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="legal_name"
-                                        class="data-input form-control"
-                                        data-field="legal_name"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 row pb-3">
-                            <div class="col-12 col-md-4">
-                                <label class="form-label">Gender</label>
+                            <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Gender</label>
                                 <div class="material-input outlined">
                                     <select name="sex"
                                         class="data-input form-control"
@@ -734,32 +770,35 @@ const CreateTenantDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <label class="form-label">Phone Number </label>
+                            <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Date of Birth</label>
                                 <div class="material-input outlined">
-                                    <input type="number"
-                                        name="phone_number"
-                                        class="data-input form-control"
-                                        data-field="phone_number"
-                                        placeholder=" " />
+                                    <input type="date" name="date_of_birth"
+                                        class="data-input form-control form_input"
+                                        data-field="date_of_birth" />
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <label class="form-label">Email</label>
-                                <div class="material-input outlined">
-                                    <input type="email"
-                                        name="email"
-                                        class="data-input form-control"
-                                        data-field="email"
-                                        placeholder=" " />
-                                </div>
-                            </div>
+                            
                         </div>
-   
-                    <!-- Basic Info -->
                         <div class="col-12 row pb-3">
-                           <div class="col-12 col-md-4">
-                                <label class="form-label">National ID </label>
+                            <div class="col-12 col-md-4">
+                                <label style="color:#777777;padding-left:6px;">Legal Name</label>
+                                <div class="material-input outlined">
+                                    <input type="text"
+                                        name="legal_name"
+                                        class="data-input form-control"
+                                        data-field="legal_name"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label style="color:#777777;padding-left:6px;">Nationality</label>
+                                <div class="material-input outlined">
+                                    <select name="nationality_id" class="data-input form-control" data-field="nationality_id"></select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label style="color:#777777;padding-left:6px;">National ID </label>
                                 <div class="material-input outlined">
                                     <input type="number"
                                         name="national_id"
@@ -769,7 +808,7 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label class="form-label">Passport Number </label>
+                                <label style="color:#777777;padding-left:6px;">Passport Number </label>
                                 <div class="material-input outlined">
                                     <input type="number"
                                         name="passport_number"
@@ -779,17 +818,27 @@ const CreateTenantDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label class="form-label">Upload File</label>
-                                <div class="material-input outlined d-flex align-items-center justify-content-center">
-                                    <input type="file"
-                                        name="file_name"
+                                <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                <div class="material-input outlined">
+                                    <input type="number"
+                                        name="phone_number"
                                         class="data-input form-control"
-                                        data-field="file_name" />
+                                        data-field="phone_number"
+                                        placeholder=" " />
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 pb-3">
-                            <label class="form-label">Address</label>
+                            <div class="col-12 col-md-4">
+                                <label style="color:#777777;padding-left:6px;">Email</label>
+                                <div class="material-input outlined">
+                                    <input type="email"
+                                        name="email"
+                                        class="data-input form-control"
+                                        data-field="email"
+                                        placeholder=" " />
+                                </div>
+                            </div>
+                        <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Address</label>
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control"
                                     data-field="address"
@@ -805,6 +854,8 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
+                DateTimePicker.init(me.controls.date_of_birth);
+
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = header.querySelector('.modal-title');
@@ -905,6 +956,14 @@ const CreateTenantDialog = (() => {
                 };
 
             },
+            configSelect: [
+                    {
+                        name: "nationality_id",
+                        data: "nationalities",
+                        textField: "nationality",
+                        valueField: "id", // "id" is the country_id
+                    },
+            ],
             prepareFormOptions: {
                 createTitle: "Create New Tenant",
                 modifyTitle: "Modify Tenant",

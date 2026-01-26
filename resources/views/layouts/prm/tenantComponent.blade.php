@@ -2,7 +2,7 @@
     <div id="_tenant_list_container" style ="display:none">
         <div id="_divFilter_tenant" class="rounded-2 p-3 bg-white shadow-sm">
             <div class="row g-3 align-items-center">
-                <div class="col-12 col-md-6 col-lg-4">
+                <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
                         <input type="text" class="form-control rounded-2 pe-5 filter-field" id="_search_tenant_" placeholder="Search">
                         <i class="fa fa-search fs-6 text-muted position-absolute"
