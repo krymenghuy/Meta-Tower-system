@@ -133,6 +133,7 @@ var TenantComponent = (() => {
                 btn: e.target,
                 onClose: () => {
                     mThis.renderView();
+                    mThis.tenantListView.showPage(mThis.getFilterData());
                 }
             };
             CreateTenantDialog.show(op);
@@ -558,6 +559,7 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
+                
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = header.querySelector('.modal-title');

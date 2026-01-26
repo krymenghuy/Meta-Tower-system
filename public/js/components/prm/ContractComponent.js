@@ -524,7 +524,7 @@ const ContractDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
                     me.controls.price_type.onchange = (e) => {
-                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
                         if (!sqmWrapper) return;
                         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
                     };
@@ -671,9 +671,6 @@ const ContractDialog = (() => {
             });
         dialog.show(op);
     };
-
-
     return self;
-    
 })();
 
