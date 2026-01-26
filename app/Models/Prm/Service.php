@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
-class Service 
+class Service
 {
     protected $id = null;
     protected $userInfo = null;
@@ -99,7 +99,7 @@ class Service
         }
         if($status_id){
             $str_moreWhere .= ' AND s.status_id =' . $status_id ;
-        } 
+        }
         if($service_type_id){
             $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;
         }
@@ -134,7 +134,7 @@ class Service
 
         ];
     }
-    
+
     public function deleteService($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('services')->where('id',$id)->delete();
@@ -154,7 +154,7 @@ class Service
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
             'updated_at'=>getNowTime(),
-            
+
         ]);
         return DV::depends($x, ['service status', 'updated']);
     }
