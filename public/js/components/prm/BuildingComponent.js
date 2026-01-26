@@ -3,7 +3,6 @@ var BuildingComponent = ( () => {
     const mThis = {};
     mThis.title_prop = "Buildings";
 
-    mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
