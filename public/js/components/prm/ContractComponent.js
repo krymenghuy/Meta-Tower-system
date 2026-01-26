@@ -5,6 +5,7 @@ var ContractComponent = new (function () {
     mThis.title_prop = "Contract Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
+    mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
     mThis.elTenant = mThis.self.querySelector('#tenant_id');
     mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
@@ -51,49 +52,72 @@ var ContractComponent = new (function () {
             }
         },
         {
-            title: "Duration",
-            className: "align-middle text-nowrap text-capitalize",
-            data: (data) => {
-                const end = new Date(data.end_date);
-                const today = new Date();
-                let progressClass = 'bg-success';
-                let statusText = 'Active';
-                let textColor = 'text-success';
-                const diffDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-                if (today > end) {
-                    progressClass = 'bg-danger';
-                    statusText = 'Expired';
-                    textColor = 'text-danger';
-                } else if (diffDays <= 7) {
-                    progressClass = 'bg-warning';
-                    textColor = 'text-warning';
-                    statusText = 'Expiring';
-                }
+    title: "Duration",
+    className: "align-middle text-nowrap text-capitalize",
+    
+    data: (data) => {
+        
+        const parseDate = (dateStr) => {
+            const months = {
+                'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+            };
+            const [day, month, year] = dateStr.split('-');
+            return new Date(year, months[month], day);
+        };
 
-                return `
-                    <div class="d-flex flex-column gap-1">
-                        <small class="text-muted">
-                            ${data.start_date} – ${data.end_date}
-                        </small>
-                        <div class="progress" style="height:6px; width:70%;">
-                            <div
-                                class="progress-bar ${progressClass} progress-bar-striped progress-bar-animated"
-                                role="progressbar"
-                                style="width:100%"
-                                aria-valuenow="100"
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="${statusText}">
-                            </div>
-                        </div>
+        const start = parseDate(data.start_date);
+        const end = parseDate(data.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        let progressClass = 'bg-success';
+        let statusText = 'Active';
+        let textColor = 'text-success';
+        
+        const diffDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+        
+        if (today < start) {
+            // Contract hasn't started yet
+            progressClass = 'bg-info';
+            statusText = 'Pending';
+            textColor = 'text-info';
+        } else if (today > end) {
+            // Contract has ended
+            progressClass = 'bg-danger';
+            statusText = 'Expired';
+            textColor = 'text-danger';
+        } else if (diffDays <= 7) {
+            // Contract is active but expiring soon
+            progressClass = 'bg-warning';
+            textColor = 'text-warning';
+            statusText = 'Expiring';
+        }
+        // else remains Active (default)
 
-                        <small class="text-start ${textColor}">• ${statusText}</small>
+        return `
+            <div class="d-flex flex-column gap-1">
+                <small class="text-muted">
+                    ${data.start_date} – ${data.end_date}
+                </small>
+                <div class="progress" style="height:6px; width:70%;">
+                    <div
+                        class="progress-bar ${progressClass} progress-bar-striped progress-bar-animated"
+                        role="progressbar"
+                        style="width:100%"
+                        aria-valuenow="100"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="${statusText}">
                     </div>
-                `;
-            }
-        },
+                </div>
+                <small class="text-start ${textColor}">• ${statusText}</small>
+            </div>
+        `;
+    }
+},
         {
             title: "Space / code",
             className: "align-middle text-nowrap text-capitalize",
@@ -134,7 +158,7 @@ var ContractComponent = new (function () {
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:50px;">
+                    <div class="text-yp-custom" style="width:120px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -155,9 +179,10 @@ var ContractComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <button class="btn btn-sm btn-outline-prm-custom rounded-2 text-nowrap">
-                           <span><i class="fa fa-pencil"></i></span>
-                           <i class="fa-solid fa-caret-down"></i>
+                       <button class="btn btn-sm  rounded-2 text-nowrap">
+                            <span>  
+                                <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                            </span>
                        </button>
                     </a>
                 </div>`
@@ -523,7 +548,7 @@ const ContractDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
                     me.controls.price_type.onchange = (e) => {
-                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
                         if (!sqmWrapper) return;
                         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
                     };
@@ -670,9 +695,6 @@ const ContractDialog = (() => {
             });
         dialog.show(op);
     };
-
-
     return self;
-    
 })();
 

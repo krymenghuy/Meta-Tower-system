@@ -299,10 +299,8 @@ var SpaceComponent = new (function () {
 
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                console.log(222,d);
-
-                // ===== STATUS DEFAULT (Available) =====
-                let statusColor = 'bg-secondary-custom';
+                // console.log(222,d);
+                let statusColor = 'bg-prm-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -312,7 +310,7 @@ var SpaceComponent = new (function () {
                 const statusId = d.status_id ?? 1;
 
                 if (statusId === 2) { // Occupied
-                    statusColor = 'bg-prm-custom';
+                    statusColor = 'bg-secondary-custom';
                     statusText = 'Occupied';
                     btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
@@ -365,8 +363,8 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 1 ? 'text-secondary-custom' :
-                                        statusId === 2 ? 'text-prm-custom' :
+                                        statusId === 2 ? 'text-secondary-custom' :
+                                        // statusId === 1 ? 'text-prm-custom' :
                                         'text-success'
                                     }">${statusText}</span>
                                 </div>
@@ -471,8 +469,8 @@ var SpaceComponent = new (function () {
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Available"},
-                {status_id:"2",name:"Maintenance"},
-                {status_id:"3",name:"Occupied"},
+                // {status_id:"2",name:"Maintenance"},
+                {status_id:"2",name:"Occupied"},
             ],
             defaultValue: status_id
         };
@@ -523,7 +521,7 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
                 // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', false,'', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
