@@ -9,7 +9,7 @@ var ServiceComponent =   ( () => {
     mThis.elFilter_status = mThis.self.querySelector('#_service_status');
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
-    
+
 
     mThis.cols = [
 
@@ -41,9 +41,8 @@ var ServiceComponent =   ( () => {
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
 
                 return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
-         }
+        }
         },
-
         {
             title: "Remarks",
             className: "align-middle",
@@ -55,7 +54,7 @@ var ServiceComponent =   ( () => {
                 `;
             }
         },
-        
+
         {
             title: "Status",
             className: "align-middle",
@@ -72,14 +71,12 @@ var ServiceComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-
-
-       {
+        {
             title: "Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-primary-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
                     <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
@@ -90,7 +87,7 @@ var ServiceComponent =   ( () => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                       <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
         },
@@ -108,13 +105,13 @@ var ServiceComponent =   ( () => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
+
+
               tr.dataset.statusid = data.status_id;
               tr.classList.add('service');
-              tr.setAttribute('id',['service_id',data.id].join('')); 
+              tr.setAttribute('id',['service_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -141,11 +138,8 @@ var ServiceComponent =   ( () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
         mThis.tblService = mThis.ServiceListView.getTable();
-        
+
         mThis.initDropdownMenus(mThis.tblService);
-
-
-
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
@@ -162,7 +156,7 @@ var ServiceComponent =   ( () => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -184,7 +178,7 @@ var ServiceComponent =   ( () => {
 
     mThis.initDropdownMenus = (table) => {
         console.log(44,table);
-        
+
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
@@ -211,10 +205,6 @@ var ServiceComponent =   ( () => {
                     name: "delete_service"
                 },
             ],
-            // adjustPosition: {
-            //     top: -200,
-            //     left: -300
-            // },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -249,7 +239,7 @@ var ServiceComponent =   ( () => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
-        
+
         CreateServiceDialog.show(op);
     }
      mThis.deleteService = (id, menuLink) => {
@@ -278,12 +268,11 @@ var ServiceComponent =   ( () => {
             }
         });
     }
-
-      mThis.changeStatus = (id, lnk) =>{
+    mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
-        
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Service Status",
@@ -300,14 +289,13 @@ var ServiceComponent =   ( () => {
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            
+
             const payload = {id, status_id :selected.value};
             vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
                     InputBox2.close();
                     cv_interact.success('Service Status has been updated');
                     mThis.ServiceListView.showPage(mThis.getFilterData());
-
                 }else{
                     cv_interact.error(res.error_message || 'Unable to update status');
                 }
@@ -365,8 +353,8 @@ const CreateServiceDialog = (() => {
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                 </div>
                             </div>
-                            
-                            <div class="col-4">   
+
+                            <div class="col-4">
                                 <label style="padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
@@ -388,7 +376,7 @@ const CreateServiceDialog = (() => {
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
                                 </div>
-                            </div> 
+                            </div>
 
                             <div class="col-12">
                                 <label style="padding-left:6px;">Remarks</label>
@@ -416,7 +404,7 @@ const CreateServiceDialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -424,7 +412,7 @@ const CreateServiceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -450,14 +438,14 @@ const CreateServiceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    // LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
@@ -494,7 +482,6 @@ const CreateServiceDialog = (() => {
             });
         dialog.show(op);
     };
-
     return self;
 })();
 

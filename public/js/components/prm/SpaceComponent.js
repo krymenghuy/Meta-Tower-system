@@ -178,7 +178,7 @@ var SpaceComponent = new (function () {
             }
 
             vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
-                
+
                 const data = res.status_code == 200 ? res.data : [];
                 VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
             });
@@ -299,8 +299,8 @@ var SpaceComponent = new (function () {
 
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                console.log(222,d);
-                let statusColor = 'bg-secondary-custom';
+                // console.log(222,d);
+                let statusColor = 'bg-prm-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -310,7 +310,7 @@ var SpaceComponent = new (function () {
                 const statusId = d.status_id ?? 1;
 
                 if (statusId === 2) { // Occupied
-                    statusColor = 'bg-prm-custom';
+                    statusColor = 'bg-secondary-custom';
                     statusText = 'Occupied';
                     btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
@@ -363,8 +363,8 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 1 ? 'text-secondary-custom' :
-                                        statusId === 2 ? 'text-prm-custom' :
+                                        statusId === 2 ? 'text-secondary-custom' :
+                                        // statusId === 1 ? 'text-prm-custom' :
                                         'text-success'
                                     }">${statusText}</span>
                                 </div>
@@ -388,10 +388,13 @@ var SpaceComponent = new (function () {
                                         <div class="text-muted mt-3"><i class="fa-regular fa-clock text-prm-custom"></i> <span>${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
-                        <input type="checkbox" class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
+
+
+                        <input type="checkbox"
+                            class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
                     </div>
                 </div>
                 `;
@@ -441,7 +444,7 @@ var SpaceComponent = new (function () {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/building-space/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        
+
                         cv_interact.success('Space has been deleted')
                         mThis.SpaceListView.showPage();
                     } else {
@@ -449,7 +452,7 @@ var SpaceComponent = new (function () {
                     }
                 })
             }
-           
+
         });
     }
     mThis.changeStatus = (id, menulink) =>{
@@ -466,8 +469,8 @@ var SpaceComponent = new (function () {
             blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Available"},
-                {status_id:"2",name:"Maintenance"},
-                {status_id:"3",name:"Occupied"},
+                // {status_id:"2",name:"Maintenance"},
+                {status_id:"2",name:"Occupied"},
             ],
             defaultValue: status_id
         };
@@ -488,7 +491,7 @@ var SpaceComponent = new (function () {
             });
         });
 
-    };  
+    };
     mThis.setAction = (tbl)=>{
         tbl.addEventListener('click',(e) =>{
         let btn = VSUtil.closestLimited(e.target,'.btn-create-contract');
@@ -518,7 +521,7 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
                 // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', false,'', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
@@ -560,7 +563,7 @@ const BuildingSpaceDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                           
+
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="spaceType">Category</label>
                                 <div class="material-input outlined">
@@ -576,7 +579,7 @@ const BuildingSpaceDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                           
+
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
@@ -628,7 +631,7 @@ const BuildingSpaceDialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
                  me.controls.price_type.onchange = (e) => {
                         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
                         if (!sqmWrapper) return;
@@ -659,9 +662,9 @@ const BuildingSpaceDialog = (() => {
                                     building_id: me.controls.building_id?.value ?? null,
                                 }),
                             },
-                            
+
                         },
-                        
+
                     },
                     {
                         name: "space_type_id",

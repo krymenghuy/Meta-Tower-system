@@ -20,7 +20,7 @@
                 </button>
             </div>
         </div>
-    </div> 
+    </div>
 
     <div id="_service_list" class="mt-3  rounded-2"></div>
 </div>
