@@ -73,17 +73,29 @@ var ServiceRequestComponent = (function () {
             title: "Status",
             className: "align-middle",
             data: (data) => {
-                const request_status_name = (data.status_name ?? '').toLowerCase();
-                let cls = 'text-info';
+                const rawStatus = data.status_name || data.request_status_name || '';
+                const status_name = rawStatus.toLowerCase();
 
-                if (request_status_name == 'inactive') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
-                } else if (request_status_name == 'active') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
-                }
-                return `<span class="${cls} text-capitalize" data-status_id="${data.request_status_id}"><small>${data.request_status_name ?? ''}</small></span>`;
+                const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
+
+                const statusMap = {
+                    rejected: 'bg-danger',
+                    approved: 'bg-success',
+                    pending: 'bg-primary','in progress': 'bg-warning text-dark',
+                    completed: 'bg-success',
+                };
+
+                const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
+
+                return `
+                    <span class="${cls}" data-status_id="${data.request_status_id}">
+                        <small>${rawStatus}</small>
+                    </span>
+                `;
             },
         },
+
+
         {
             title: "Updated By",
             className: 'align-middle',
@@ -100,15 +112,17 @@ var ServiceRequestComponent = (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
-                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}"
+                    class="btn--Options   ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}  bg-second pointer p-4"
                     data-id="${data.id}"
                     data-statusid="${data.request_status_id}"
                     aria-haspopup="true"
-                    aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                    aria-expanded="false"">
+                        <i class="fa-solid fa-ellipsis-vertical  fs-5 text-prm-custom"></i>
                     </a>
                 </div>`
         },
+
+
     ];
 
     mThis.init = () => {

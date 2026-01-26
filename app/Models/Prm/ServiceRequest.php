@@ -8,6 +8,7 @@ use Vsd\Vsloquent\VSModel;
 use DBX;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Log;
 
 class ServiceRequest extends VSModel
 {
@@ -21,24 +22,35 @@ class ServiceRequest extends VSModel
         $this->userInfo = $userInfo;
     }
 
-    /**
-     * Insert or Update service request
-     */
     public function upsert($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
+        // Log incoming data for debugging
+        Log::info('ServiceRequest upsert called', [
+            'input_data' => $arr,
+            'id' => $id,
+            'user' => $ss->name ?? 'Unknown',
+            'building_space_id' => $arr['building_space_id'] ?? 'NOT SET',
+            'building_id' => $arr['building_id'] ?? 'NOT SET',
+            'floor_id' => $arr['floor_id'] ?? 'NOT SET'
+        ]);
+
         $v_rule = [
             'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
             'building_space_id' => '0|number|exists=building_spaces.id',
+            'building_id' => '0|number',
+            'floor_id' => '0|number',
             'space_id' => '0|number',
             'service_type_id' => '1|number|exists=service_types.id',
-            'priority' => '0|enum=low,medium,high,urgent|text=Priority must be one of: low, medium, high, or urgent',
+            'service_price' => '0|number',
+            'unit_type' => '0|enum=hour,month,time,one_time',
+            'priority' => '0|enum=low,medium,high,urgent|default=medium|text=Priority must be one of: low, medium, high, or urgent',
             'description' => '0|string|0-1000',
             'request_status_id' => '0|number|default=2|exists=service_statuses.id',
-            'request_date' => '0|date',  // Date field that will be converted to integer format YYYYMMDD
+            'request_date' => '0|date',
             'scheduled_date' => '0|date',
             'completed_date' => '0|date',
         ];
@@ -56,31 +68,83 @@ class ServiceRequest extends VSModel
         );
 
         if ($res->error) {
+            Log::error('ServiceRequest validation failed', [
+                'error' => $res->error,
+                'input_data' => $arr
+            ]);
             return DV::error($res->error);
         }
 
         $input = $res->values;
 
+        // Log validated data
+        Log::info('ServiceRequest validation passed', ['validated_data' => $input]);
+
+        // Handle building_space_id - can come from building_id, floor_id, or building_space_id
+        if (!isset($input['building_space_id']) || empty($input['building_space_id'])) {
+            // Try to use building_id first
+            if (isset($input['building_id']) && !empty($input['building_id'])) {
+                $input['building_space_id'] = $input['building_id'];
+                Log::info('Using building_id as building_space_id', ['building_id' => $input['building_id']]);
+            }
+            // If building_id is also empty, try floor_id
+            elseif (isset($input['floor_id']) && !empty($input['floor_id'])) {
+                $input['building_space_id'] = $input['floor_id'];
+                Log::info('Using floor_id as building_space_id', ['floor_id' => $input['floor_id']]);
+            }
+            // If both are empty, return error
+            else {
+                Log::error('building_space_id cannot be determined', [
+                    'building_id' => $input['building_id'] ?? 'not set',
+                    'floor_id' => $input['floor_id'] ?? 'not set',
+                    'building_space_id' => $input['building_space_id'] ?? 'not set'
+                ]);
+                return DV::error('Building/Floor information is required. Please select a building or floor.');
+            }
+        }
+
         // Convert request_date to integer format YYYYMMDD if provided, otherwise use current date
         if (isset($input['request_date'])) {
-            // Convert date string to integer format (YYYYMMDD)
             $input['request_date'] = (int) date('Ymd', strtotime($input['request_date']));
         } else {
-            $input['request_date'] = (int) date('Ymd'); // Today's date as integer
+            $input['request_date'] = (int) date('Ymd');
         }
+        Log::info('Request date converted', ['request_date' => $input['request_date']]);
 
         // Set default priority if not provided
         if (!isset($input['priority'])) {
             $input['priority'] = 'medium';
         }
 
-        $id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-
-        if ($id) {
-            return DV::success(['id' => $id, 'message' => 'Service request saved successfully']);
+        // Remove fields that shouldn't be saved to service_requests table
+        $fieldsToRemove = ['building_id', 'floor_id', 'service_price', 'unit_type'];
+        foreach ($fieldsToRemove as $field) {
+            if (isset($input[$field])) {
+                Log::info("Removing field from insert: {$field}", ['value' => $input[$field]]);
+                unset($input[$field]);
+            }
         }
 
-        return DV::error('Error saving service request!');
+        Log::info('Final data before save', ['data' => $input]);
+
+        try {
+            $id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
+
+            if ($id) {
+                Log::info('ServiceRequest saved successfully', ['id' => $id]);
+                return DV::success(['id' => $id, 'message' => 'Service request saved successfully']);
+            }
+
+            Log::error('ServiceRequest save returned null/false');
+            return DV::error('Error saving service request!');
+
+        } catch (\Exception $e) {
+            Log::error('ServiceRequest save exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return DV::error('Error saving service request: ' . $e->getMessage());
+        }
     }
 
     public function getServiceRequest($arr, $ss = null)
@@ -128,14 +192,13 @@ class ServiceRequest extends VSModel
         }
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
-        $requested_date = DBX::formatTime("sr.requested_date", 'requested_date');
 
         $query = DB::table('service_requests as sr')
             ->leftJoin('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->leftJoin('building_spaces as b', 'b.id', '=', 'sr.building_space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
             ->leftJoin('service_types as k', 'k.id', '=', 'sr.service_type_id')
-            ->leftJoin('service_statuses as st', 'st.id', '=', 'sr.request_status_id')
+            ->leftJoin('request_status as st', 'st.id', '=', 'sr.request_status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
@@ -195,7 +258,9 @@ class ServiceRequest extends VSModel
                 sr.create_uid,
                 sr.update_uid,
                 sr.create_user,
-                sr.created_at
+                sr.created_at,
+                sr.building_space_id
+
             ')
             ->first();
         return $row;
@@ -204,16 +269,33 @@ class ServiceRequest extends VSModel
     public function delete($id = null)
     {
         $id = $id ?? $this->id;
+
+        Log::info('ServiceRequest delete called', ['id' => $id]);
+
         $deleted = DB::table('service_requests')
             ->where('id', $id)->delete();
-        return $deleted ? DV::depends($deleted, ['action' => 'deleted']) : DV::error('Delete failed.');
+
+        if ($deleted) {
+            Log::info('ServiceRequest deleted successfully', ['id' => $id]);
+            return DV::depends($deleted, ['action' => 'deleted']);
+        }
+
+        Log::error('ServiceRequest delete failed', ['id' => $id]);
+        return DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
 
+        Log::info('ServiceRequest updateStatus called', [
+            'id' => $id,
+            'request_status_id' => $request_status_id,
+            'user' => $ss->name ?? 'Unknown'
+        ]);
+
         if (!$id || !$request_status_id) {
+            Log::error('ServiceRequest updateStatus invalid parameters');
             return DV::error('Invalid parameters');
         }
 
@@ -235,21 +317,27 @@ class ServiceRequest extends VSModel
             ->update($data);
 
         if ($updated !== false) {
+            Log::info('ServiceRequest status updated successfully', ['id' => $id]);
             return DV::success(['message' => 'Status updated successfully']);
         }
 
+        Log::error('ServiceRequest updateStatus failed', ['id' => $id]);
         return DV::error('Error updating status');
     }
 
-    public static function getFormOptions($ss, $id)
+    public static function getFormOptions($ss, $id = null)
     {
+        Log::info('ServiceRequest getFormOptions called', ['id' => $id]);
+
         $details = $id ? self::getServiceRequestDetails($id) : null;
+
         return (object) [
             'service_requests' => $details,
             'service_types' => GeneralSettings::options_service_types($ss),
             'tenants' => GeneralSettings::options_tenant($ss),
-            'services'=> GeneralSettings::options_service($ss),
-            'building_spaces' =>GeneralSettings::options_building_space($ss)
+            'services' => GeneralSettings::options_service($ss),
+            'building_spaces' => GeneralSettings::options_building_space($ss),
+            'service_statuses' => GeneralSettings::options_service_status($ss)
         ];
     }
 }
