@@ -1,4 +1,4 @@
-<?php
+s<?php
 
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
@@ -123,6 +123,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
     Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
     Route::post('/delete',[ServiceRequestController::class,'delete']);
     Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);
+    Route::post('/from-options',[ServiceRequestController::class,'getFormOptions']);
+
 });
 
 

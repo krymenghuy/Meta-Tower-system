@@ -102,7 +102,9 @@ class GeneralSettings //extends Model
     static function options_exit_form($ss){
         return DB::table('forms as f')->selectRaw('id,name')->get();
     }
-
+    // static function options_service_types($ss){
+    //     return DB:: table('service_types')->selectRaw('id,name,code')->get();
+    // }
     static function options_pmt_status($ss=null){
        return [
         (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
@@ -252,7 +254,7 @@ class GeneralSettings //extends Model
 
     static function options_member_status($ss){
         return DB::table('member_statuses')->selectRaw('id,name AS member_status')->get();
-    } 
+    }
     static function options_acc_staff_status($ss){
         return DB::table('staff_statuses')->selectRaw('id,name AS staff_status')->get();
     }
@@ -321,7 +323,7 @@ class GeneralSettings //extends Model
 
      static function options_business_type($ss){
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
-    } 
+    }
 
     static function options_building_space($ss){
         return DB::table('building_spaces')->selectRaw('id,code')->get();
@@ -351,11 +353,11 @@ class GeneralSettings //extends Model
         $str_building ="1=0";
         if($building_id > 0){
             $str_building ='f.building_id = ' . $building_id;
-        } 
+        }
         return DB::table(table: 'floors as f')
             ->whereRaw($str_building)
             ->selectRaw('f.id,f.building_id,f.name')
             ->orderBy('f.id','ASC')->get();
     }
-  
+
 }

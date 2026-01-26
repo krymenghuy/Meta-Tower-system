@@ -22,5 +22,5 @@
         </div>
     </div>
 
-    <div id="_service_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_service_list" class="mt-3  rounded-2"></div>
 </div>

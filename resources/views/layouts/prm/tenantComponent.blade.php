@@ -9,15 +9,15 @@
                 </div>
             </div>
            <div class="col-12 col-md-6 col-lg-3">
-                <div class="btn-group btn-group-sm bg-light p-1 rounded" role="group">
+                <div class="btn-group btn-group-sm gap-1 rounded" role="group">
                     <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewCard">
-                        <i class="fa-solid fa-grip me-1"></i> Card
+                    <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">
+                        <i class="fa-solid fa-grip me-1"></i> View Card
                     </label>
 
                     <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewList">
-                    <label class="btn btn-outline-secondary px-3" for="tenantViewList">
-                        <i class="fa-solid fa-rectangle-list me-1"></i> List
+                    <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewList">
+                        <i class="fa-solid fa-rectangle-list me-1"></i> View List
                     </label>
                 </div>
 
@@ -30,71 +30,59 @@
             </div>
         </div>
     </div>
-    <div id="_tenant_card_view" class="mt-3"></div>
-
-    <div id="_tenant_list_view" class="table-responsive mt-3  rounded-2 border"></div>
+    <div id="_tenant_card_view" class="my-3 px-3"></div>
+    <div id="tenant_card_container_pagination" class="px-3 justify-content-start"></div>
+    <div id="_tenant_list_view" class="mt-3  rounded-2"></div>
 </div>
 
 <style>
-.btn--Options {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%); */
-    background-color: #1a1647;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    padding: 0.55rem 1.5rem;
-    font-weight: 500;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
 
-.btn--Options:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
-}
-.btn-group .btn {
-    border-radius: 0.375rem;
-}
-
-.btn-check:checked + .btn {
-    background-color: #fff;
-    color: #212529;
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-}
-
-
-@media (max-width: 768px) {
-    .btn--Options {
-        width: 100%;
+    .card {
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px 0px grey;
     }
+
+    .card-header-tenant {
+        display: flex;
+        height:120px;
+        justify-content: space-between;
+        padding: 18px 16px;
+        border: none;
+        align-items: center;
+        /* background-color: #fff; */
+        background: 
+        /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
+        url('../assets/images/default/bg_card7.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .card-body {
+    /* background: 
+        /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
+        url('../assets/images/default/bg-card1.jpg'); */
+    /* background-size: cover; */
+    /* background-repeat: no-repeat; */
 }
 
 
+    .card_container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        /* background-color: #e9eaea; */
+        padding: 10px;
+        border-radius: 10px;
 
+    }
+    .btn-check:checked+.btn{
+        background-color: #1a1647;
+    color: #fff;
 
-.tenant-photo-wrapper {
-    width: 110px;
-    height: 110px;
-    border-radius: 12px;
-    border: 1px dashed #dee2e6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-}
+    }
 
-.tenant-photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-}
-
+    
 
 
 </style>
+

@@ -131,7 +131,7 @@ class ServiceRequest extends VSModel
             ->leftJoin('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->leftJoin('building_spaces as b', 'b.id', '=', 'sr.building_space_id')
             ->leftJoin('services as s', 's.id', '=', 'sr.service_id')
-            ->leftJoin('request_status as rr', 'rr.id', '=', 'sr.request_status_id')
+            ->leftJoin('service_statuses as rr', 'rr.id', '=', 'sr.request_status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("
@@ -170,7 +170,7 @@ class ServiceRequest extends VSModel
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    public function getServiceRequestDetails($id, $ss = null)
+    public static function getServiceRequestDetails($id, $ss = null)
     {
         $row = DB::table('service_requests as sr')
             ->where('sr.id',$id)
@@ -209,7 +209,6 @@ class ServiceRequest extends VSModel
         if (!$id || !$request_status_id) {
             return DV::error('Invalid parameters');
         }
-
         $data = [
             'request_status_id' => $request_status_id,
             'update_user' => $ss->name ?? 'System',
@@ -233,4 +232,13 @@ class ServiceRequest extends VSModel
 
         return DV::error('Error updating status');
     }
+
+    public static function getFormOptions($ss,$id){
+        $details = $id ? self::getServiceRequestDetails($id) : null;
+        return (object) [
+            'service_requests' => $details,
+            'service_types'=> GeneralSettings::options_service_types($ss)
+        ];
+    }
+
 }

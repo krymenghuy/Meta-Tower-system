@@ -13,7 +13,7 @@ var SpaceComponent = new (function () {
     mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
     let div = mThis.self.querySelector("#_space_list");
-    // mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
+    mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
 
     // mThis.cols = [
@@ -130,21 +130,16 @@ var SpaceComponent = new (function () {
         mThis.SpaceListView = new ListView('_space_list', {
             fetchApi: `${main_view.base_url}/prm/building-space/list-paginate`,
             perPage: 8,
-            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
             paginationContainer: mThis.paginationContainer,
-
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                 rowCreated:(data,index,tr)=>{
-
             },
            processResponse: (res) => {
                 return res.data;
             },
             renderItems: (data,list_container) => {
                 mThis.renderSpaceCard(list_container, data);
-
             },
             listContainerClass: null
         });
@@ -166,11 +161,11 @@ var SpaceComponent = new (function () {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 240) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
@@ -316,7 +311,6 @@ var SpaceComponent = new (function () {
 
                 const statusId = d.status_id ?? 1;
 
-                // ===== STATUS MAPPING =====
                 if (statusId === 2) { // Occupied
                     statusColor = 'bg-prm-custom';
                     statusText = 'Occupied';
@@ -326,7 +320,6 @@ var SpaceComponent = new (function () {
                     progressWidth = '100%';
                 }
 
-                // ===== PRICE & SIZE =====
                 const sizeLabel = d.price_type === 'total'
                     ? 'Whole Room'
                     : `${d.sqm_size ?? '-'} sqm`;
@@ -337,40 +330,39 @@ var SpaceComponent = new (function () {
 
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                    <div class="unit-card position-relative overflow-hidden group h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
+                    <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
                         <div class="p-4 d-flex flex-column gap-3">
 
                             <!-- Header -->
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h5 class="unit-name mb-1 text-truncate">
-                                        ${d.building_name ?? 'Building'}
+                                    <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
+                                        ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.code ?? ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
                                     </p>
                                 </div>
-                                <span><a href="javascript:void(0)" class="${d.action_id > 1 ? 'd-none' : 'btn_space_action'}" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
-                                </a></span>
+                                <span>
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
+                                    </a>
+                                </span>
                                 <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
                             </div>
-
-                            <!-- Info -->
-                            <div class="d-flex justify-content-between text-muted small">
+                            <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center gap-1">
                                     <i class="fa-solid fa-ruler-combined"></i>
                                     <span>${sizeLabel}</span>
                                 </div>
                                 <div class="d-flex align-items-center text-prm-custom gap-2">
                                     <i class="fa-regular fa-building"></i>
-                                    <span class="space-type">${d.space_type ?? 'Residential'}</span>
+                                    <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                             </div>
 
-                            <!-- Occupancy -->
                             <div>
-                                <div class="d-flex justify-content-between small fw-bold text-muted text-uppercase">
+                                <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
                                         statusId === 1 ? 'text-secondary-custom' :
@@ -383,9 +375,8 @@ var SpaceComponent = new (function () {
                                 </div>
                             </div>
 
-                            <!-- Price & Action -->
                             <div class="mt-auto">
-                                <div class="text-muted small mb-2">Price: ${priceLabel}</div>
+                                <div class="text-muted mb-2">Price: ${priceLabel}</div>
                                 <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
                                     data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
                                     <span>${icon}</span>
@@ -393,7 +384,7 @@ var SpaceComponent = new (function () {
                                 </button>
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? 'System'}</div>
+                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
                                         <div class="text-muted mt-3"><i class="fa-regular fa-clock text-prm-custom"></i> <span>${d.updated_at ?? ''}</span></div>
@@ -412,8 +403,6 @@ var SpaceComponent = new (function () {
                 cmt++;
             });
         }
-
-        // ===== NO DATA =====
         if (cmt === 0) {
             html += `
             <div class="col-12">

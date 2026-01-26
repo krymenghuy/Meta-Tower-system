@@ -9,7 +9,6 @@ function v_display($mod_id, $module_ids = null)
 }
 ?>
 
-<!--class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" -->
 <div class="kt-aside-menu-wrapper d-flex flex-column h-100" style="overflow:hidden" id="kt_aside_menu_wrapper">
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand d-flex flex-row" id="kt_aside_brand">
@@ -55,7 +54,7 @@ function v_display($mod_id, $module_ids = null)
                 </button>
             </div>
         </div>
-         <div id ="_dms_aside_menus" class ="menu-pending">
+        <div id ="_dms_aside_menus" class ="menu-pending">
                 <ul class="kt-menu__nav side_menu_list">
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(200); ?>>
                         <a href="DashboardComponent" modid="238" class="menu-item kt-menu__link">
@@ -101,7 +100,6 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
                         </a>
                     </li>
-                    {{-- add Request Service Component --}}
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
                         <a href="ServiceRequestComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -140,7 +138,6 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Expense"></span>
                         </a>
                     </li>
-
                     <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
                         <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -149,8 +146,6 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Report & Export"></span>
                         </a>
                     </li> -->
-
-
                     <li class="kt-menu__section mb-2">
                         <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
                         <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -175,7 +170,6 @@ function v_display($mod_id, $module_ids = null)
                         <div class="kt-menu__submenu">
                             <span class="kt-menu__arrow"></span>
                             <ul class="kt-menu__subnav">
-
                                  <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(211); ?>>
                                     <a href="AccessControlComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">

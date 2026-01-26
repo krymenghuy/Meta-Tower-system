@@ -48,11 +48,11 @@ class ServiceRequestController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if(!isset($req->id) || !is_numeric($req->id)){
+        if(!$id || !is_numeric($id)){
             return JDV::error('Invalid ID');
         }
 
-        return JDV::result($this->serviceRequest->getServiceRequestDetails($req->id));
+        return JDV::result($this->serviceRequest->getServiceRequestDetails($id));
     }
 
     // Delete service request
@@ -70,6 +70,15 @@ class ServiceRequestController extends Controller
 
         $result = $this->serviceRequest->delete($id, $ss);
         return JDV::raw($result);
+    }
+
+    //  GetFromOption
+        public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->serviceRequest->getFormOptions($ss,$req->id));
     }
 
     // Update status
