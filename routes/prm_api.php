@@ -1,4 +1,4 @@
-<?php
+s<?php
 
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\Prm\ContractController;
 use App\Http\Controllers\Prm\ServiceController;
 use App\Http\Controllers\Prm\InvoiceController;
 use App\Http\Controllers\Prm\PaymentController;
+use App\Http\Controllers\Prm\ServiceRequestController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -116,6 +117,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
 
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-request')->group(function () {
+    Route::post('/save', [ServiceRequestController::class, 'saveServiceRequest']);
+    Route::post('/list',[ServiceRequestController::class, 'getServiceRequestListPaginate']);
+    Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
+    Route::post('/delete',[ServiceRequestController::class,'delete']);
+    Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);
+    Route::post('/from-options',[ServiceRequestController::class,'getFormOptions']);
+
+});
+
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->group(function () {
     Route::post('/save', [ServiceController::class, 'saveService']);
@@ -125,6 +136,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
     Route::post('/delete', [ServiceController::class, 'deleteService']);
     Route::post('/update-status', [ServiceController::class, 'updateServiceStatus']);
 });
+
 
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->group(function () {
@@ -157,7 +169,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {
     Route::post('/options-floors', [GeneralSettingsController::class, 'getOptions_floors']);
     // Route::post('/options-program', [StudentController::class, 'getOptions_program']);
- 
+
 });
 
 
