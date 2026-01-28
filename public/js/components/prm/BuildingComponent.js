@@ -3,7 +3,6 @@ var BuildingComponent = ( () => {
     const mThis = {};
     mThis.title_prop = "Buildings";
 
-    mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_building_component");
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
@@ -93,7 +92,7 @@ var BuildingComponent = ( () => {
                        class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" 
                        data-id="${data.id}" 
                        data-statusid="${data.status_id}">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                       <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
                 </div>
             `,

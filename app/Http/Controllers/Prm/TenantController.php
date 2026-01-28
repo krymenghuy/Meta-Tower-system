@@ -50,7 +50,7 @@ class TenantController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->tenants->getFormOptions($req->id));
+        return JDV::result($this->tenants->getFormOptions($req->id,$ss));
     }
 
     public function delete(Request $req){
