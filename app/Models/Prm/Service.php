@@ -131,7 +131,6 @@ class Service
             'service_details' => $service_details,
             'statuses' => GeneralSettings::options_service_status($ss),
             'service_types' => GeneralSettings::options_service_types($ss)
-
         ];
     }
 

@@ -17,24 +17,17 @@ var ServiceRequestComponent = (function () {
             className: "align-middle text-capitalize",
         },
         {
-            title: "Name",
+            title: "Tenant",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`;
             }
         },
         {
-            title: "Building",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.building_space_building_id ?? ''}</span>`;
-            }
-        },
-        {
             title: "Floor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.building_space_code ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.building_space_code_id ?? ''}</span>`;
             }
         },
         {
@@ -82,10 +75,10 @@ var ServiceRequestComponent = (function () {
                 const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
 
                 const statusMap = {
-                    rejected: 'bg-danger',
+                    pending: 'bg-warning ','in progress': 'bg-warning text-dark',
                     approved: 'bg-success',
-                    pending: 'bg-primary','in progress': 'bg-warning text-dark',
-                    completed: 'bg-success',
+                    cancelled: 'bg-danger',
+                    completed: 'bg-primary',
                 };
 
                 const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
@@ -301,11 +294,11 @@ var ServiceRequestComponent = (function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-                {status_id: "1", name: "Approved"},
-                {status_id: "2", name: "Rejected"},
-                {status_id: "3", name: "Pending"},
-                {status_id: "4", name: "In Progress"},
-                {status_id: "5", name: "Completed"},
+                {status_id: "1", name: "Pending"},
+                {status_id: "2", name: "Approved"},
+                {status_id: "3", name: "Cancelled"},
+                {status_id: "4", name: "Completed"},
+
             ],
             defaultValue: status_id
         };
@@ -330,7 +323,7 @@ var ServiceRequestComponent = (function () {
         vsapi.call(`${main_view.base_url}/prm/service-request/from-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elServiceRequest_status, d.service_statuses, 'id', 'name', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elServiceRequest_status, d.request_status, 'id', 'name', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', true, 'All Service Types', null);
                 if (typeof onFinish === 'function') onFinish();
             });
@@ -372,13 +365,6 @@ const CreateServiceRequestDialog = (() => {
                                 <label style="padding-left:6px;" for="service_type">Category</label>
                                 <div class="material-input outlined">
                                     <select name="service_type" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="building">Building</label>
-                                <div class="material-input outlined">
-                                    <select name="building" class="data-input form-control" data-field="building_id">
                                     </select>
                                 </div>
                             </div>
@@ -457,12 +443,6 @@ const CreateServiceRequestDialog = (() => {
                         data: "tenants",
                         textField: "tenant",
                         valueField: "id",
-                    },
-                    {
-                        name: "building_id",
-                        data: "building_spaces",
-                        textField: "building_id",
-                        valueField: "id"
                     },
                     {
                         name: "floor_id",
