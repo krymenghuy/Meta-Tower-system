@@ -177,7 +177,6 @@ var ServiceComponent =   ( () => {
     };
 
     mThis.initDropdownMenus = (table) => {
-        console.log(44,table);
 
         const menuOptopns = {
             containerElement: table,

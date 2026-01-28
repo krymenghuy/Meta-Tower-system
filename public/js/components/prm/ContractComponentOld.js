@@ -53,7 +53,7 @@ var ContractComponent = new (function () {
         },
         {
             title: "Duration",
-            className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
+            className: "align-middle text-nowrap text-capitalize",
             
             data: (data) => {
                 
@@ -139,37 +139,19 @@ var ContractComponent = new (function () {
                         <small class="text-muted">
                             ${data.start_date} – ${data.end_date}
                         </small>
-                        <div class="position-relative" style="width:95%; ">
-                            <div class="d-flex align-items-center gap-2" style="width:95%;">
-                                <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
-                                    <div
-                                        class="progress-bar ${progressClass}"
-                                        role="progressbar"
-                                        style="width:${progressWidth}%; 
-                                            border-radius:20px; 
-                                            position:relative; 
-                                            background-image: repeating-linear-gradient(
-                                                45deg, 
-                                                transparent, 
-                                                transparent 10px, 
-                                                rgba(255,255,255,0.2) 10px, 
-                                                rgba(255,255,255,0.2) 20px
-                                            );"
-                                        aria-valuenow="${progressWidth}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        title="${tooltipText}">
-                                    </div>
-                                </div>
-                                <span style="font-weight:bold; 
-                                            color:#555; 
-                                            font-size:13px;
-                                            white-space:nowrap;">
-                                    ${progressWidth}%
-                                </span>
+                        <div class="progress" style="height:6px; width:70%;">
+                            <div
+                                class="progress-bar ${progressClass} progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                style="width:${progressWidth}%"
+                                aria-valuenow="${progressWidth}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="${tooltipText}">
                             </div>
+                        </div>
                         <small class="text-start ${textColor}">• ${statusText}</small>
                     </div>
                 `;
@@ -252,13 +234,17 @@ var ContractComponent = new (function () {
         mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
             perPage: 10,
+            // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
+
+
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('contract');
                 tr.setAttribute('id', ['contract_id', data.id].join(''));
+
             },
             listContainerClass: null
         });
@@ -275,20 +261,23 @@ var ContractComponent = new (function () {
             ContractDialog.show(op);
         };
 
+
         mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        
+        // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        
         mThis.tblContract = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblContract);
 
-        // Filter change handler with tooltip reinitialization
+
+
+
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+
             el.onchange = (e) => {
                 e.preventDefault();
                 mThis.ContractListView.showPage(mThis.getFilterData());
@@ -301,7 +290,6 @@ var ContractComponent = new (function () {
             }
         });
 
-        // Search handler with tooltip reinitialization
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
@@ -316,11 +304,13 @@ var ContractComponent = new (function () {
             }, 250);
         });
 
+
         mThis.initAlready = true;
     };
 
     mThis.getFilterData = () => {
         let p = {
+            // status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -337,7 +327,9 @@ var ContractComponent = new (function () {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
+            //menuItemClass:"",
             menus: [
+                
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -350,9 +342,22 @@ var ContractComponent = new (function () {
                     cssClass: "border-bottom pb-2",
                     name: "print_contract"
                 },
+                // {
+                //     html: '<span class="ps-2" vslang="titles.Delete Contract"></span>',
+                //     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "delete_contract"
+                // },
             ],
+            // adjustPosition: {
+            //     top: -200,
+            //     left: -300
+            // },
+
             onClick: (menuLink, id, name) => {
                 switch (name) {
+
+                   
                     case 'edit_contract': {
                         mThis.editContract(id, menuLink);
                         break;
@@ -361,6 +366,11 @@ var ContractComponent = new (function () {
                         mThis.printContract(id, menuLink);
                         break;
                     }
+                    // case 'delete_contract': {
+                    //     mThis.deleteContract(id, menuLink);
+                    //     break;
+                    // }
+
                     default: {
                         break;
                     }
@@ -380,12 +390,73 @@ var ContractComponent = new (function () {
         };
         ContractDialog.show(op);
     }
-    
     mThis.printContract = (id, menulink) => {
        alert('Coming Soon');
     }
+    // mThis.deleteContract = (id, menuLink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menuLink,
+    //         onClose: () => {
+    //             mThis.ContractListView.showPage(mThis.getFilterData());
+    //         }
+    //     };
+    //     if (!AuthManager.allowed(242)) return;
+    //     cv_interact.confirm('Delete this contract?', {
+    //         title: 'Delete Contract',
+    //         context: 'delete',
+    //         confirmButtonText: "Delete"
+    //     }, function (e) {
+    //         if (e) {
+    //             vsapi.call(`${main_view.base_url}/prm/contract/delete`, op, false, false, false).then(res => {
+    //                 if (res.status_code == 200) {
+    //                     mThis.ContractListView.showPage();
+    //                 }
+    //             })
+    //         }
+    //         else {
+    //             cv_interact.error(res.error_message);
+    //         }
+    //     });
+    // }
 
+    // mThis.changeStatus = (id, lnk) => {
+    //     const tr = lnk.closest('tr');
+    //     const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+    //     console.log(123, status_id);
+
+    //     const inputOptions = {
+    //         title: 'Change Status',
+    //         dataLabel: "Building Status",
+    //         valueMember: "status_id",
+    //         textMember: "name",
+    //         confirmButtonText: "Save",
+    //         blankErrorMessage: "Status is not correct!",
+    //         data: [
+    //             { status_id: "1", name: "Available" },
+    //             { status_id: "2", name: "Unavailable" }
+    //         ],
+    //         defaultValue: status_id
+    //     };
+    //     InputBox2.show(inputOptions, (selected) => {
+    //         if (!selected) return;
+    //         if (!AuthManager.allowed(321)) return;
+    //         const status = { id, status_id: selected.value };
+    //         vsapi.call(`${mThis.base_url}/prm/building/update-status`, status).then(res => {
+    //             if (res.status_code === 200) {
+    //                 InputBox2.close();
+    //                 cv_interact.success('The Contract Status has been updated');
+    //                 mThis.ContractListView.showPage(mThis.getFilterData());
+
+    //             } else {
+    //                 cv_interact.error(res.error_message || 'Unable to update status');
+    //             }
+    //         });
+    //     });
+
+    // }
     mThis.prepareFormOptions = (onFinish) => {
+
         vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
@@ -396,7 +467,6 @@ var ContractComponent = new (function () {
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-    
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
@@ -424,8 +494,8 @@ var ContractComponent = new (function () {
                 }, 3600000); // 1 hour = 3600000ms
             }
         });
+
     };
-    
     return mThis;
 })();
 
@@ -437,211 +507,263 @@ const ContractDialog = (() => {
     let dialog = null;
     
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row justify-content-start">
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
-                            <div class="material-input outlined">
-                                <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
-                            <div class="material-input outlined">
-                                <input name="legal_name" class="data-input form-control" data-field="legal_name" />
-                            </div>
-                        </div>
+    // console.log(88888,op);
 
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
-                            <div class="material-input outlined">
-                                <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row justify-content-start">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <div class="material-input outlined">
+                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
+                                <div class="material-input outlined">
+                                    <input name="legal_name" class="data-input form-control" data-field="legal_name" />
+                                </div>
+                            </div>
 
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
-                            <div class="material-input outlined">
-                                <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
+                                <div class="material-input outlined">
+                                    <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                                </div>
+                            </div>
+
+                            
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
+                                <div class="material-input outlined">
+                                    <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    </select>
+                                                    
+                                </div>
+                            </div>
+                           
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Code</label>
+                                <div class="material-input outlined">
+                                    <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                    </select>
+                                                    
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                <div class="material-input outlined">
+                                    <input type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">End Date</label>
+                                <div class="material-input outlined">
+                                    <input type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                <div class="material-input outlined">
+                                <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                                    <option value="sqm">Per Square Meter</option>
+                                    <option value="total">Whole Room</option>
                                 </select>
+                                </div>
                             </div>
-                        </div>
-                       
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Code</label>
-                            <div class="material-input outlined">
-                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
-                                </select>
+                            <div class="col-4 sqm-wrapper" style="display:none;">
+                                <label style="color:#777777;padding-left:6px;">Unit (m²)</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">Start Date</label>
-                            <div class="material-input outlined">
-                                <input type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Price</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                </div>
+                            </div>
+                        </div>`
+                    ].join("");
+                },
 
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">End Date</label>
-                            <div class="material-input outlined">
-                                <input type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
-                            </div>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
-                            <div class="material-input outlined">
-                            <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                <option value="sqm">Per Square Meter</option>
-                                <option value="total">Whole Room</option>
-                            </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-4 sqm-wrapper" style="display:none;">
-                            <label style="color:#777777;padding-left:6px;">Unit (m²)</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                            </div>
-                        </div>
-                        
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">Price</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                            </div>
-                        </div>
-                    </div>`
-                ].join("");
-            },
+                contentCreated: (me) => {
+                    DateTimePicker.initAll(me.divModal);
 
-            contentCreated: (me) => {
-                DateTimePicker.initAll(me.divModal);
+                    const footer = me.divModal.querySelector('.modal-footer');
+                    const header = me.divModal.querySelector('.modal-header');
+                    const headerTitle = header.querySelector('.modal-title');
+                    const btnClose = header.querySelector('button');
 
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                    btnClose.classList.add('d-none');
+                    header.classList.add('bg-prm-custom', 'modal-header-custom');
+                    header.parentElement.classList.add('overflow-hidden');
+                    header.parentElement.style = 'border-radius: 20px !important;';
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    headerWrapper.appendChild(headerTitle);
+                    header.innerHTML = '';
+                    header.appendChild(headerWrapper);
+                    me.controls.price_type.onchange = (e) => {
+                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
+                        if (!sqmWrapper) return;
+                        sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    };
+                    
 
-                btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
+
+                },
+                configSelect: [
+                    {
+                        name: "tenant_id",
+                        data: "tenants",
+                        textField: "tenant",
+                        valueField: "id",
+                    },
+                    // {
+                    //     name: "legal_name",
+                    //     data: "legal_names",
+                    //     textField: "legal_name",
+                    //     valueField: "id",
+                    // },
+                    {
+                        name: "business_type_id",
+                        data: "business_types",
+                        textField: "business_type",
+                        valueField: "id",
+                    },
+                    {
+                        name: "space_type_id",
+                        data: "space_types",
+                        textField: "space_type",
+                        valueField: "id",
+                    },
+                    {
+                        name: "code",
+                        data: "building_spaces",
+                        textField: "floor_id",
+                        valueField: "id",
+                    },
+
+                ],
                 
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
-                
-                me.controls.price_type.onchange = (e) => {
-                    const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
-                    if (!sqmWrapper) return;
-                    sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                };
-            },
-            
-            configSelect: [
-                {
-                    name: "tenant_id",
-                    data: "tenants",
-                    textField: "tenant",
-                    valueField: "id",
-                },
-                {
-                    name: "business_type_id",
-                    data: "business_types",
-                    textField: "business_type",
-                    valueField: "id",
-                },
-                {
-                    name: "space_type_id",
-                    data: "space_types",
-                    textField: "space_type",
-                    valueField: "id",
-                },
-                {
-                    name: "code",
-                    data: "building_spaces",
-                    textField: "floor_id",
-                    valueField: "id",
-                },
-            ],
-            
-            prepareFormOptions: {
-                createTitle: "Create Contract",
-                modifyTitle: "Modify Contract",
-                targetProp: "contract_details",
-                api: {
-                    endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
-                    params: (op) => {
-                        return { id: op.id };
+                prepareFormOptions: {
+                    createTitle: "Create Contract",
+                    modifyTitle: "Modify Contract",
+                    targetProp: "contract_details",
+                    api: {
+                        endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
+                        params: (op) => {
+                            // console.log(33,op);
+                            
+                            return { id: op.id };
+                        },
                     },
                 },
-            },
 
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal); 
-                
-                const isReadOnly = me.dataOptions.data.code > 0;
-                me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-                
-                const header = me.divModal.querySelector('.modal-header');
-                const btnClose = header.querySelector('button');
-                if(btnClose) btnClose.classList.add('d-none');
-                
-                me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
-                me.controls.code.value = me.dataOptions.data.code;
-                me.controls.price_type.value = me.dataOptions.data.price_type;
-                me.controls.price.value = me.dataOptions.data.price;
-                me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
-            },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal); 
+                    
+                    const isReadOnly = me.dataOptions.data.code > 0;
+                    me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
+                    // const price = me.divModal.querySelector(
+                    //     '[data-field="price"]'
+                    // );
+                    // if (price) {
+                    //     if (me.dataOptions && me.dataOptions.id) {
+                    //         price.disabled = true;
+                    //     } else {
+                    //         price.disabled = false;
+                    //     }
+                    // }
+                    const header = me.divModal.querySelector('.modal-header');
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
+                    console.log(909,me.dataOptions);
+                    
+                    me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
+                    me.controls.code.value = me.dataOptions.data.code;
+                    me.controls.price_type.value = me.dataOptions.data.price_type;
+                    me.controls.price.value = me.dataOptions.data.price;
+                    me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
 
-            buttons: [
-                {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
-                    click: (me, btn) => {
-                        me.hide(false);
-                    },
+                  
+
                 },
-                {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
-                    click: (me, btn) => {
-                        const op = me.getData();
-                        op.id = me.dataOptions.id;
-                        
-                        vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
-                            if (res.status_code === 200) {
-                                me.hide(true, op);
-                                if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Contract has been updated successfully");
+
+
+                // onPrepareForm: (me, data) => {
+                //     LocaleManager.translateZone(me.divModal);
+                //     me.controls.price_type.onchange = function (e) {
+                //         e.preventDefault();
+                //         const value = me.controls.price_type.value;
+                //         const parent = me.controls.price_type.closest('.col-12');
+                //         if (!parent) return;
+
+                //         const container = parent.parentElement;
+                //         if (!container) return;
+
+                //         const labelElement = container.querySelector('label[vslang="titles.Total (m²)"]');
+                //         if (!labelElement) return;
+
+                //         labelElement.textContent = value === 'price'
+                //             ? LocaleManager.trans('Total (m²)', 'titles')
+                //             : LocaleManager.trans('Total ($)', 'titles');
+                //     };
+                //     me.controls.discount_type.dispatchEvent(new Event('change'));
+                // },
+
+
+                buttons: [
+                    {
+                        label: '<span>Cancel</span>',
+                        cssClass: 'btn-vs-cancel',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span>Submit</span>',
+                        cssClass: 'btn-vs-save',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            // console.log(909090,op);  
+                            
+                            vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Contract has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New contract has been added successfully"
+                                        );
+                                    }
                                 } else {
-                                    cv_interact.success("New contract has been added successfully");
+                                    cv_interact.error(res.error_message);
                                 }
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
+                            });
+                        },
                     },
-                },
-            ],
-        });
+                ],
+            });
         dialog.show(op);
     };
     return self;
