@@ -49,7 +49,7 @@ class ServiceRequest extends VSModel
             'unit_type' => '0|enum=hour,month,time,one_time',
             'priority' => '0|enum=low,medium,high,urgent|default=medium|text=Priority must be one of: low, medium, high, or urgent',
             'description' => '0|string|0-1000',
-            'request_status_id' => '0|number|default=2|exists=service_statuses.id',
+            'request_status_id' => '0|number|default=2|exists=request_status.id',
             'request_date' => '0|date',
             'scheduled_date' => '0|date',
             'completed_date' => '0|date',
@@ -206,8 +206,7 @@ class ServiceRequest extends VSModel
                 sr.tenant_id,
                 t.name as tenant_name,
                 sr.building_space_id,
-                b.floor_id as building_space_floor_id,
-                b.building_id as building_space_building_id,
+                b.code as building_space_code_id,
                 sr.service_id,
                 s.name as service_name,
                 s.price as service_price,
@@ -307,7 +306,7 @@ class ServiceRequest extends VSModel
         ];
 
         // If status is completed, set completed_date
-        $statusName = DB::table('service_statuses')->where('id', $request_status_id)->value('name');
+        $statusName = DB::table('request_status')->where('id', $request_status_id)->value('name');
         if (strtolower($statusName) === 'completed') {
             $data['completed_date'] = date('Y-m-d H:i:s');
         }
@@ -337,7 +336,8 @@ class ServiceRequest extends VSModel
             'tenants' => GeneralSettings::options_tenant($ss),
             'services' => GeneralSettings::options_service($ss),
             'building_spaces' => GeneralSettings::options_building_space($ss),
-            'service_statuses' => GeneralSettings::options_service_status($ss)
+            'request_status' => GeneralSettings::options_request_status($ss)
         ];
     }
 }
+
