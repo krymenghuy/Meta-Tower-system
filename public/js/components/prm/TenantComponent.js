@@ -319,7 +319,7 @@ var TenantComponent = new(function () {
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
                                             <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                            <span class="text-muted">#${d.code ?? ''} • Unit #</span>
+                                            <span class="text-muted small">${d.code ?? ''} • Unit ${d.unit_code}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
                                                 <small class="${statusClass}">${status}</small>
                                             </div>

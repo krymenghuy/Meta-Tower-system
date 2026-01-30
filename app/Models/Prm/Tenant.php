@@ -137,6 +137,13 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
+             $contract = DB::table('contracts as c')
+                ->join('building_spaces as s', 's.id', '=', 'c.space_id')
+                ->where('c.tenant_id', $row->id)
+                ->orderBy('c.start_date', 'desc')
+                ->first();
+            $row->unit_code = $contract->code ?? null;
+
             $row->image_url = '';
             if($row->photo_file_name){
                 $row->image_url = self::profilePicture($row->id,$ss);
