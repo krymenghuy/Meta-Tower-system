@@ -266,6 +266,16 @@ class GeneralSettings //extends Model
         return  DB::table('members')->selectRaw('id,name AS recommender')->get();
 
      }
+    // static function options_service_status($ss){
+    //     return DB::table('service_statuses')->select('id,name as status_name')->get();
+    // }
+    public static function options_service_status($ss)
+    {
+        return DB::table('service_statuses')
+            ->select('id', 'name')
+            ->orderBy('id')
+            ->get();
+    }
 
     static function options_member($ss){
         $row = DB::table('members')->selectRaw('id,name AS member_name')->get();
@@ -335,8 +345,8 @@ class GeneralSettings //extends Model
         ->get();
     }
 
-    static function options_service_status($ss){
-        return DB::table('service_statuses')->selectRaw('id,name as service_status')->get();
+    static function options_request_status($ss){
+        return DB::table('request_status')->selectRaw('id,name')->get();
     }
     static function options_service_types($ss){
         return DB::table('service_types')->selectRaw('id,name as service_type')->get();

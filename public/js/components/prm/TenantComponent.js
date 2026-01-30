@@ -21,7 +21,7 @@ var TenantComponent = new(function () {
         tenant_list: this.divTenantListContainer,
         profile_view: this.divProfileView
     };  
-    console.log(8989,this.pages);
+    // console.log(8989,this.pages);
     
 
     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant");
@@ -132,7 +132,7 @@ var TenantComponent = new(function () {
             apiCluster: main_view.apiCluster,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-                console.log(9090,tr);
+                // console.log(9090,tr);
                 
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
