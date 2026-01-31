@@ -2,7 +2,7 @@
 var ServiceRequestComponent = (function () {
 
     const mThis = {};
-    mThis.title_prop = "Service Request Component";
+    mThis.title_prop = "Service Request";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
@@ -362,13 +362,6 @@ const CreateServiceRequestDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Floor</label>
                                 <div class="material-input outlined">
                                     <select name="service_type" class="data-input form-control" data-field="floor_id">
@@ -379,6 +372,13 @@ const CreateServiceRequestDialog = (() => {
                                 <label style="padding-left:6px;" for="service_type">Service</label>
                                 <div class="material-input outlined">
                                     <select name="service_type" class="data-input form-control" data-field="service_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_type">Category</label>
+                                <div class="material-input outlined">
+                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
                                     </select>
                                 </div>
                             </div>

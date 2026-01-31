@@ -41,7 +41,6 @@ class ServiceRequest extends VSModel
             'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
             'building_space_id' => '0|number|exists=building_spaces.id',
-            'building_id' => '0|number',
             'floor_id' => '0|number',
             'space_id' => '0|number',
             'service_type_id' => '1|number|exists=service_types.id',
@@ -117,7 +116,7 @@ class ServiceRequest extends VSModel
         }
 
         // Remove fields that shouldn't be saved to service_requests table
-        $fieldsToRemove = ['building_id', 'floor_id', 'service_price', 'unit_type'];
+        $fieldsToRemove = ['floor_id', 'service_price', 'unit_type'];
         foreach ($fieldsToRemove as $field) {
             if (isset($input[$field])) {
                 Log::info("Removing field from insert: {$field}", ['value' => $input[$field]]);
