@@ -292,19 +292,25 @@ var TenantComponent = new(function () {
 
             data.forEach(d => {
                 const status = d.status || "Pending";
-                let statusClass = "badge rounded-3 px-3 py-1 ";
-                switch (status) {
-                    case "Active":
-                        statusClass += " bg-success-subtle text-success border border-success-subtle";
-                        break;
-                    case "Inactive":
-                        statusClass += " bg-secondary-subtle text-grey border border-secondary-subtle";
-                        break;
-                    case "Pending":
-                    default:
-                        statusClass += " bg-warning-subtle text-warning border border-warning-subtle";
-                        break;
-                }
+
+                let statusClass = "";
+            let dotColor = "bg-warning"; // Default dot
+
+            switch (status) {
+                case "Active":
+                    statusClass = "text-success";
+                    dotColor = "bg-success";
+                    break;
+                case "Inactive":
+                    statusClass = "text-secondary";
+                    dotColor = "bg-secondary";
+                    break;
+                case "Pending":
+                default:
+                    statusClass = "text-warning";
+                    dotColor = "bg-warning";
+                    break;
+            }
                 cnt++;
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
@@ -320,7 +326,8 @@ var TenantComponent = new(function () {
                                             <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
                                             <span class="text-muted small">${d.code ?? '#TEN-0000'}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                <small class="${statusClass}">${status}</small>
+                                                <span class="rounded-circle ${dotColor}" style="width:8px; height:8px; display:inline-block;"></span>
+                                                 <span class="${statusClass}">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
