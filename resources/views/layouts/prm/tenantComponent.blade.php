@@ -9,7 +9,10 @@
                             style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                 </div>
-            <div class="col-12 col-md-6 col-lg-3">
+                 <div class="col-12 col-md-6 col-lg-2">
+                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-1 rounded" role="group">
                         <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
                         <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">

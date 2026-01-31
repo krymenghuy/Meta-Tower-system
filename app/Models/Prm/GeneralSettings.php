@@ -327,6 +327,9 @@ class GeneralSettings //extends Model
      static function options_tenant($ss){
         return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
      }
+     static function options_tenant_status($ss){
+        return  DB::table('tenant_statuses')->selectRaw('id,name')->get();
+     }
       static function options_service($ss){
         return  DB::table('services')->selectRaw('id,name AS service')->get();
      }

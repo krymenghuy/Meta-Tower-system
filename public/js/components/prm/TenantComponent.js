@@ -8,6 +8,7 @@ var TenantComponent = new(function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.elStatus = mThis.self.querySelector('#_el_tenant_status');
     mThis.btnBack = document.querySelector("#_btn_back_tenant");
 
     mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
@@ -182,8 +183,11 @@ var TenantComponent = new(function () {
         }
         mThis.tblTenant = mThis.tenantListView.getTable();
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => mThis.renderView();
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+            el.onchange = (e) =>{
+                 e.preventDefault();
+                 mThis.renderView();
+            } 
         });
         mThis.elSearch.addEventListener('keyup', () => {
             clearTimeout(mThis.search_timeout);
@@ -215,6 +219,7 @@ var TenantComponent = new(function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_tenant"
                 },
+         
             ],
             // adjustPosition: {
             //     top: -200,
@@ -286,32 +291,28 @@ var TenantComponent = new(function () {
         });
     };
     mThis.renderCard = (data) => {
-            let cnt = 0;
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
-
             data.forEach(d => {
                 const status = d.status || "Pending";
-
                 let statusClass = "";
-            let dotColor = "bg-warning"; // Default dot
+                let dotColor = "bg-warning"; // Default dot
 
-            switch (status) {
-                case "Active":
-                    statusClass = "text-success";
-                    dotColor = "bg-success";
-                    break;
-                case "Inactive":
-                    statusClass = "text-danger";
-                    dotColor = "bg-danger";
-                    break;
-                case "Pending":
-                default:
-                    statusClass = "text-warning";
-                    dotColor = "bg-warning";
-                    break;
-            }
-                cnt++;
+                switch (status) {
+                    case "Active":
+                        statusClass = "text-success";
+                        dotColor = "bg-success";
+                        break;
+                    case "Inactive":
+                        statusClass = "text-danger";
+                        dotColor = "bg-danger";
+                        break;
+                    case "Pending":
+                    default:
+                        statusClass = "text-warning";
+                        dotColor = "bg-warning";
+                        break;
+                }
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         <div class="card h-100 shadow-sm border-0 rounded-2">
@@ -327,7 +328,7 @@ var TenantComponent = new(function () {
                                             <span class="text-muted small">${d.code ?? '#TEN-0000'}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
                                                 <span class="rounded-circle ${dotColor}" style="width:8px; height:8px; display:inline-block;"></span>
-                                                 <span class="${statusClass}">${status}</span>
+                                                    <span class="${statusClass}">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
@@ -379,7 +380,7 @@ var TenantComponent = new(function () {
                                         ${d.email || ""}
                                     </p>
                                     
-                                   
+                                    
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
@@ -397,21 +398,11 @@ var TenantComponent = new(function () {
                         </div>
                     </div>
                     `;
+            });
 
-                });
-
-            } else {
-                html += `
-                <div class="col-12">
-                    <div class="alert alert-light border text-center text-danger">
-                        Tenant not found!
-                    </div>
-                </div>
-                `;
-            }
+        } 
             html += `</div>`;
             mThis.cardViewContainer.innerHTML = html;
-            
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
             seeProfileInfo.forEach((link) => {
                 link.addEventListener("click", (e) => {
@@ -440,15 +431,13 @@ var TenantComponent = new(function () {
                     // }
                 });
             });
-            if (cnt > 0) {
-                const container = mThis.cardViewContainer;
-                const te_parent = container;
+            const container = mThis.cardViewContainer;
+            const te_parent = container;
+            te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+            te_parent.classList.add("overflow-y-auto");
+            window.onresize = () => {
                 te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-                te_parent.classList.add("overflow-y-auto");
-                window.onresize = () => {
-                    te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-                };
-            }
+            };
     };
 
     mThis.renderView = () => {
@@ -458,12 +447,8 @@ var TenantComponent = new(function () {
             mThis.cardViewContainer.classList.remove('d-none');
             mThis.listViewContainer.classList.add('d-none');
             mThis.paginationContainer.style.display = 'block';
-           
-
             mThis.tenantCardView.showPage(params);
         } else {
-            console.log(3333, mThis.paginationContainer);
-            
             mThis.cardViewContainer.classList.add('d-none');
             mThis.listViewContainer.classList.remove('d-none');
             mThis.paginationContainer.style.display = 'none';
@@ -472,10 +457,11 @@ var TenantComponent = new(function () {
     };
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
+            status_id: mThis.elStatus.value,
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             p[el.dataset.field] = el.value;
         });
 
@@ -515,8 +501,6 @@ var TenantComponent = new(function () {
           }
        }
        const targetPage = mThis.getPageContainer(pageName);
-       console.log(9090,targetPage);
-       
        const siblings = Array.from(targetPage.parentElement.children);
        // Hide all siblings smoothly
        siblings.forEach((div) => {
@@ -527,7 +511,26 @@ var TenantComponent = new(function () {
        targetPage.style.display = 'block';
     };
    mThis.renderProfile = (data) => {
-    console.log(90909090, data);
+    let cls_class = '';
+    if (data && data.status) {
+        switch (data.status) {
+            case 'Pending':
+                cls_class = 'badge text-dark bg-warning-subtle border border-warning';
+                break;
+            case 'Active':
+                cls_class = 'badge text-dark bg-success-subtle border border-success'; 
+                break;
+            case 'Inactive':
+                cls_class = 'badge text-dark bg-danger-subtle border border-danger';
+                break;
+            default:
+                cls_class = 'badge text-muted bg-light';
+                break;
+        }
+    }
+
+
+
     let html = `
     <div class="row g-4">
         <div class="col-12 col-lg-3">
@@ -541,21 +544,21 @@ var TenantComponent = new(function () {
                     </div>
                     <h4 class="fw-bold mb-1">${data.name}</h4>
                     <div class="mb-3">
-                        <span class="badge bg-success me-1">Verified</span>
-                        <span class="badge bg-primary">Active</span>
+                        <span class="badge text-white bg-success border border-success me-1">Verified</span>
+                        <span class="${cls_class}">${data.status}</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted">Move-in Date</small>
-                        <strong>Oct 12, 2022</strong>
+                        <small>${data.start_date ?? 'N/A'}</small>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted">Rent Status</small>
-                        <span class="badge bg-success">PAID</span>
+                        <span class="text-muted">Unpaid</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <small class="text-muted">Security Deposit</small>
-                        <strong>$2,400.00</strong>
+                        <small>$2,400.00</small>
                     </div>
                 </div>
             </div>
@@ -720,6 +723,9 @@ var TenantComponent = new(function () {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
+                const d = res.status_code == 200 ? res.data :{};
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'name', true, 'All Statuses', null);
+
                 if (typeof onFinish === 'function') onFinish();
             });
     };

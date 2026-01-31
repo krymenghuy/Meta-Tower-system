@@ -112,19 +112,23 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     public function getListPaginate($arr, $ss = null){
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-        $search_value = isset($arr['search_value']) ? $arr['search_value'] : null;
+        $status_id = $d->status_id ?? null;
+        $search_value = $d->search_value ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $search_value = $d->search_value ?? null;
         $str_search = "1=1";
+        $str_moreWhere = "2=2";
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.address LIKE '%" . $search_value . "%')";
+        }
+        if($status_id){
+            $str_moreWhere .= ' AND t.status_id =' . $status_id;
         }
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
         $start_date = DBX::formatDate("c.start_date", 'start_date');
@@ -136,6 +140,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->leftJoin('business_types as bt', 'bt.id', '=', 'c.business_type_id')
             ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw("t.id,t.name,t.sex,$date_of_birth,t.nationality_id,t.legal_name,t.code,t.photo_file_name,t.national_id,t.passport_number,t.phone_number,t.email,t.address,t.status_id,ts.name as status,bt.name as business_type,bs.code as space_code,$start_date,$end_date,$updated_at,t.update_user")
             ->orderBy('t.id','DESC');
         $clone_query = clone $query;
@@ -198,9 +203,13 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         return url('') . '/assets/images/meta/default_tenant.jpg';
     }
     public static function getDetails($id, $ss = null){
+        $start_date = DBX::formatDate("c.start_date", 'start_date');
+        $end_date = DBX::formatDate("c.end_date", 'end_date');
         $row = DB::table('tenants as t')
+            ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
+            ->join('tenant_statuses as ts','ts.id','=','t.status_id')
             ->where('t.id',$id)
-            ->selectRaw('t.id,t.name,t.national_id,passport_number,t.photo_file_name,t.sex,t.legal_name,t.phone_number,t.email,t.address')
+            ->selectRaw("t.id,t.name,t.national_id,passport_number,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,$start_date,$end_date ")
             ->first();
             if($row){
                 $img = self::profilePicture($id,$ss);
@@ -215,6 +224,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         return (object) [
             'tenant' => $details,
             'nationalities' => GeneralSettings::options_nationality($ss),
+            'statuses' => GeneralSettings::options_tenant_status($ss),
 
         ];
     }
