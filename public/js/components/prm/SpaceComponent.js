@@ -300,7 +300,7 @@ var SpaceComponent = new (function () {
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 // console.log(222,d);
-                let statusColor = 'bg-prm-custom';
+                let statusColor = 'bg-secondary-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -310,7 +310,7 @@ var SpaceComponent = new (function () {
                 const statusId = d.status_id ?? 1;
 
                 if (statusId === 2) { // Occupied
-                    statusColor = 'bg-secondary-custom';
+                    statusColor = 'bg-prm-custom';
                     statusText = 'Occupied';
                     btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
@@ -349,7 +349,7 @@ var SpaceComponent = new (function () {
                                 <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
                             </div>
                             <div class="d-flex justify-content-between text-muted">
-                                <div class="d-flex align-items-center gap-1">
+                                <div class="d-flex align-items-center text-prm-custom gap-2">
                                     <i class="fa-solid fa-ruler-combined"></i>
                                     <span>${sizeLabel}</span>
                                 </div>
@@ -363,9 +363,9 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 2 ? 'text-secondary-custom' :
+                                        statusId === 2 ? 'text-prm-custom' :
                                         // statusId === 1 ? 'text-prm-custom' :
-                                        'text-success'
+                                        'text-secondary-custom'
                                     }">${statusText}</span>
                                 </div>
                                 <div class="progress mt-1" style="height:6px;">
@@ -374,7 +374,7 @@ var SpaceComponent = new (function () {
                             </div>
 
                             <div class="mt-auto">
-                                <div class="text-muted mb-2">Price: ${priceLabel}</div>
+                                <div class="text-prm-custom mb-2">Price: ${priceLabel}</div>
                                 <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
                                     data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
                                     <span>${icon}</span>

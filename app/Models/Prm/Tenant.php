@@ -127,12 +127,17 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.address LIKE '%" . $search_value . "%')";
         }
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
+        $start_date = DBX::formatDate("c.start_date", 'start_date');
+        $end_date = DBX::formatDate("c.end_date", 'end_date');
         $date_of_birth = DBX::formatTime("t.date_of_birth", 'date_of_birth');
         $query = DB::table('tenants as t')
-
-            ->join('tenant_statuses as ts','ts.id','=','t.status_id')
+            ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
+            ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
+            ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+            ->leftJoin('business_types as bt', 'bt.id', '=', 'c.business_type_id')
             ->whereRaw($str_search)
-            ->selectRaw("t.id,t.name,t.sex,$date_of_birth,t.nationality_id,t.legal_name,t.code,t.photo_file_name,t.national_id,passport_number,t.phone_number,t.email,t.address,t.status_id,ts.name as status,$updated_at,t.update_user")->orderBy('t.id','DESC');
+            ->selectRaw("t.id,t.name,t.sex,$date_of_birth,t.nationality_id,t.legal_name,t.code,t.photo_file_name,t.national_id,t.passport_number,t.phone_number,t.email,t.address,t.status_id,ts.name as status,bt.name as business_type,bs.code as space_code,$start_date,$end_date,$updated_at,t.update_user")
+            ->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

@@ -285,12 +285,12 @@ var TenantComponent = new(function () {
             mThis.renderCard(data, user);
         });
     };
-    mThis.renderCard = (items) => {
+    mThis.renderCard = (data) => {
             let cnt = 0;
         let html = `<div class="row g-3">`;
-        if (Array.isArray(items) && items.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
 
-            items.forEach(d => {
+            data.forEach(d => {
                 const status = d.status || "Pending";
                 let statusClass = "badge rounded-3 px-3 py-1 ";
                 switch (status) {
@@ -305,7 +305,6 @@ var TenantComponent = new(function () {
                         statusClass += " bg-warning-subtle text-warning border border-warning-subtle";
                         break;
                 }
-
                 cnt++;
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
@@ -319,7 +318,7 @@ var TenantComponent = new(function () {
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
                                             <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                            <span class="text-muted">#${d.code ?? ''} • Unit #</span>
+                                            <span class="text-muted small">${d.code ?? '#TEN-0000'}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
                                                 <small class="${statusClass}">${status}</small>
                                             </div>
@@ -335,39 +334,45 @@ var TenantComponent = new(function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-6">
                                         <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap text-muted fw-bold mb-1">
-                                                Lease Expiry
+                                            <span class="text-nowrap  text-muted">
+                                                Lease Date
                                             </span>
-                                            <small class="fw-semibold mb-0 text-dark">
-                                                Dec 15, 2024
+                                            <small class="text-nowrap mb-0">
+                                                ${d.start_date}
                                             </small>
                                         </div>
                                     </div>
 
                                     <div class="col-6">
                                         <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap fw-bold mb-1 text-muted" >
+                                            <span class="text-nowrap text-muted">
                                                 Next Payment
                                             </span>
-                                            <small class="fw-semibold mb-0 text-center text-dark">
-                                                Oct 01, 2024
+                                            <small class="text-nowrap mb-0">
+                                                ${d.end_date}
                                             </small>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_container" style="max-width: 250px;" >
                                     <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
+                                        <span class="movement">${d.space_code ?? 'N/A'}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-briefcase me-2 text-muted"></i>
+                                        <span>${d.business_type ?? 'N/A'}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        ${d.phone_number || "?"}
+                                        ${d.phone_number || ""}
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "?"}
+                                        ${d.email || ""}
                                     </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-regular fa-building me-2 text-muted"></i>
-                                        <span>Unit 502, Meta Tower</span>
-                                    </p>
+                                    
+                                   
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
@@ -385,6 +390,7 @@ var TenantComponent = new(function () {
                         </div>
                     </div>
                     `;
+
                 });
 
             } else {
@@ -398,6 +404,7 @@ var TenantComponent = new(function () {
             }
             html += `</div>`;
             mThis.cardViewContainer.innerHTML = html;
+            
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
             seeProfileInfo.forEach((link) => {
                 link.addEventListener("click", (e) => {
