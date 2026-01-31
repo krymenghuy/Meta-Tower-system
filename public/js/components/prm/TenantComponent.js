@@ -302,8 +302,8 @@ var TenantComponent = new(function () {
                     dotColor = "bg-success";
                     break;
                 case "Inactive":
-                    statusClass = "text-secondary";
-                    dotColor = "bg-secondary";
+                    statusClass = "text-danger";
+                    dotColor = "bg-danger";
                     break;
                 case "Pending":
                 default:
