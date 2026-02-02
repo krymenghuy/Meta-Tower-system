@@ -324,8 +324,7 @@ var TenantComponent = new(function () {
                                             <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
-                                            <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                            <span class="text-muted small">${d.code ?? '#TEN-0000'}</span>
+                                            <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
                                                 <span class="rounded-circle ${dotColor}" style="width:8px; height:8px; display:inline-block;"></span>
                                                     <span class="${statusClass}">${status}</span>
@@ -340,36 +339,31 @@ var TenantComponent = new(function () {
                             </div>
                             <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
                                 <div class="row g-4 py-2 border-bottom border-gray">
-                                    <div class="col-6">
-                                        <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap  text-muted">
-                                                Lease Date
-                                            </span>
-                                            <small class="text-nowrap mb-0">
-                                                ${d.start_date}
-                                            </small>
+                                    <div class="col-4">
+                                        <div class="card bg-prm-custom text-center shadow-sm">
+                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? 'N/A'}</div>
                                         </div>
                                     </div>
-
+                                    <div class="col-2"></div>
                                     <div class="col-6">
                                         <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap text-muted">
-                                                Next Payment
+                                            <span class="text-nowrap  text-prm-custom">
+                                                Lease Expiry
                                             </span>
-                                            <small class="text-nowrap mb-0">
+                                            <small class="text-muted mb-0">
                                                 ${d.end_date}
                                             </small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card_container" style="max-width: 250px;" >
+                                <div class="card_container" style="max-width: 250px;">
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span class="movement">${d.space_code ?? 'N/A'}</span>
+                                        <span>${d.code ?? 'N/A'}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-solid fa-briefcase me-2 text-muted"></i>
-                                        <span>${d.business_type ?? 'N/A'}</span>
+                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
+                                        <span>${d.date_of_birth ?? 'N/A'}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
@@ -686,7 +680,7 @@ var TenantComponent = new(function () {
                                     <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
                                     </div>
                                     <div class="text-end">
-                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mo</small></p>
+                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
                                     <small class="text-muted">Contract Value: $25,200</small>
                                     </div>
                                 </div>
@@ -888,7 +882,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-4">
                                 <label style="color:#777777;padding-left:6px;">Passport Number </label>
                                 <div class="material-input outlined">
-                                    <input type="number"
+                                    <input type="text"
                                         name="passport_number"
                                         class="data-input form-control"
                                         data-field="passport_number"

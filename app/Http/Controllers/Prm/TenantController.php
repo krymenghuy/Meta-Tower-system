@@ -61,7 +61,7 @@ class TenantController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        $res = $this->tenants->delete($req->id);
+        $res = $this->tenants->delete($req->id,$ss);
         return JDV::raw($res);
     }
 
