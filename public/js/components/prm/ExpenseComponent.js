@@ -309,38 +309,72 @@ var ExpenseComponent =   ( () => {
       mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // console.log(123,status_id);
-        
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Payment Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
+         
+        // const inputOptions = {
+        //     title: 'Change Status',
+        //     dataLabel: "Payment Status",
+        //     valueMember: "status_id",
+        //     textMember: "name",
+        //     confirmButtonText: "Save",
+        //     blankErrorMessage: "Status is not correct!",
+        //     data:[
+        //         {status_id:"1",name:"Paid"},
+        //         {status_id:"2",name:"Unpaid"},
+        //         {status_id:"3",name:"partially Paid"},
+        //     ],
+        //     defaultValue: status_id
+        // };
+  
+        // InputBox2.show(inputOptions,(selected)=>{
+        //     if(!selected) return;
+        //     if(!AuthManager.allowed(321)) return;
+            
+        //     const payload = {id, status_id :selected.value};
+        //     vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
+        //         if(res.status_code ===200){
+        //             InputBox2.close();
+        //             cv_interact.success('Payment Status has been updated');
+        //             mThis.BillingListView.showPage(mThis.getFilterData());
+
+        //         }else{
+        //             cv_interact.error(res.error_message || 'Unable to update status');
+        //         }
+        //     });
+        // });
+  
+        const options = {
+           title:'Change Status',
+           cssClass:'',
+           backdropClose:true,
+           //type:'select',
+           label:'Payment Status',
+           valueField:'status_id',
+           textField:'name',
+           confirmButtonText: "Submit",
+           requiredMessage:'Select one valid status!',
+           context:'success', // sucess | prmary | delete | danger | error
+           data:[
                 {status_id:"1",name:"Paid"},
                 {status_id:"2",name:"Unpaid"},
                 {status_id:"3",name:"partially Paid"},
             ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Payment Status has been updated');
-                    mThis.BillingListView.showPage(mThis.getFilterData());
+           defaultValue: status_id,
+           onConfirm:(value,btn,me)=>{
+              const payload = {id, value :selected.value};
+                    vsapi.post(`${mThis.base_url}/prm/payment/update-status`,payload,{loader:false}).then(res=>{
+                        if(res.status_code ===200){
+                            me.close(); 
+                            cv_interact.success('Payment Status has been updated');
+                            mThis.BillingListView.showPage(mThis.getFilterData());
 
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
+                        }else{
+                           me.setError(res.error_message || 'Unable to update status');
+                        }
+                    });
+           }
+        };
+
+        InputBox.show(options);
 
     };
     mThis.prepareFormOptions = (onFinish) => {
