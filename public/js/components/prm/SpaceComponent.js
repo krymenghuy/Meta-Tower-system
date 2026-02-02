@@ -335,7 +335,7 @@ var SpaceComponent = new (function () {
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
-                                        ${d.code ?? ''}
+                                        Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
