@@ -83,6 +83,11 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                'https://cdn.vectoraclouds.com/vfc/vfc.utils.configSelect.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
+                    'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
+                 'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/prm/main.js',
@@ -94,8 +99,6 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-                //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',
-                '/assets/js/InputBoxes.bs5.js',
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -137,6 +140,10 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                   'https://cdn.vectoraclouds.com/vfc/vfc.utils.configSelect.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
+                    'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/prm/main.js',
@@ -148,8 +155,7 @@ return [
 
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-                //'https://cdn.vectoraclouds.com/frontcore/components/Inputbox.bs5.js',
-                '/assets/js/InputBoxes.bs5.js',
+
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -212,7 +218,10 @@ return [
             'single_file'=>1,
             'output_file'=>'/dist/js/umt.components.js',
             'files'=>[
-                //'/assets/material-js/jquery.min.js',
+                'https://cdn.vectoraclouds.com/vfc/vfc.utils.configSelect.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
+                    'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
+                    'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 //'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
                 '/js/layout/umt/main.js',
@@ -225,7 +234,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/InputBox.bs5.js',
+          
                 '/assets/js/xlsx/xlsx.full.min.js',
                 '/js/components/umt/FindUserDialog.js',
                 '/js/components/umt/ChangeRoleDialog.js',
