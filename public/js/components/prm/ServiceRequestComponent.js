@@ -6,7 +6,7 @@ var ServiceRequestComponent = (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
     mThis.elSearch = mThis.self.querySelector("#_search_service_request");
-    mThis.elServiceRequest_status = mThis.self.querySelector("#_service_request_status");
+    mThis.elStatus = mThis.self.querySelector("#_service_request_status");
     mThis.elService_type = mThis.self.querySelector("#_service_request_type_id");
     mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
@@ -24,10 +24,10 @@ var ServiceRequestComponent = (function () {
             }
         },
         {
-            title: "Floor",
+            title: "Room Code",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.building_space_code_id ?? ''}</span>`;
+                return `<span class="text-primary-custom user-select: none; -webkit-user-select: none;">${data.space_code ?? ''}</span>`;
             }
         },
         {
@@ -49,10 +49,10 @@ var ServiceRequestComponent = (function () {
             className: "align-middle",
             data: (data) => {
                 const cur_symbol = data.cur_symbol ?? '$';
-                const formattedPrice = data.service_price ? Number(data.service_price).toLocaleString() : '-';
-                const unitLabel = data.service_unit_price ? `/ ${data.service_unit_price}` : '';
-                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
-        }
+                const Price = data.service_price ? Number(data.service_price).toLocaleString() : '-';
+                const unitLabel = data.service_unit_type ? `/ ${data.service_unit_type}` : '';
+                return `<span class="fw-semibold">${cur_symbol} ${Price} <small class="text-muted">${unitLabel}</small></span>`;
+            }
         },
         {
             title: "Remarks",
@@ -183,7 +183,7 @@ var ServiceRequestComponent = (function () {
 
     mThis.getFilterData = () => {
         let p = {
-            request_status_id: mThis.elServiceRequest_status.value,
+            request_status_id: mThis.elStatus.value,
             service_request_type_id: mThis.elService_type.value,
             search_value: mThis.elSearch.value,
         };
@@ -323,7 +323,9 @@ var ServiceRequestComponent = (function () {
         vsapi.call(`${main_view.base_url}/prm/service-request/from-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elServiceRequest_status, d.request_status, 'id', 'name', true, 'All Statuses', null);
+                // console.log(11,d);
+                
+                VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', true, 'All Service Types', null);
                 if (typeof onFinish === 'function') onFinish();
             });
@@ -361,6 +363,15 @@ const CreateServiceRequestDialog = (() => {
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="Code">Code</label>
+                                <div class="material-input outlined">
+                                    <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Category</label>
                                 <div class="material-input outlined">
@@ -368,13 +379,7 @@ const CreateServiceRequestDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Floor</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="floor_id">
-                                    </select>
-                                </div>
-                            </div>
+                            
                             <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Service</label>
                                 <div class="material-input outlined">
@@ -383,22 +388,24 @@ const CreateServiceRequestDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-4">
-                                <label style="padding-left:6px;">Price</label>
+                                <label style="padding-left:6px;" for="service_price">Price</label>
                                 <div class="material-input outlined">
-                                    <input type="number" name="service_price" required class="data-input form-control" data-field="service_price" placeholder=" " />
+                                    <input type="number" name="price" required class="data-input form-control" data-field="service_price"/>
                                 </div>
                             </div>
-                            <div class="col-8">
+
+                             <div class="col-8">
                                 <label style="padding-left:6px;" for="service_types">Charge As</label>
                                 <div class="material-input outlined">
-                                    <select name="service_unit_price" class="data-input form-control" data-field="service_unit_price">
+                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
                                         <option value="time">Per Usage / Per Time</option>
-                                        <option value="one_time">One-time Service</option>
+                                        <option value="one_time">One-time</option>
                                     </select>
                                 </div>
                             </div>
+
                             <div class="col-12">
                                 <div class="d-none material-input outlined">
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
@@ -445,11 +452,12 @@ const CreateServiceRequestDialog = (() => {
                         valueField: "id",
                     },
                     {
-                        name: "floor_id",
+                        name: "code",
                         data: "building_spaces",
                         textField: "floor_id",
                         valueField: "id",
                     },
+
                     {
                         name: "service_id",
                         data: "services",
@@ -467,7 +475,7 @@ const CreateServiceRequestDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Create Service Request",
                     modifyTitle: "Modify Service Request",
-                    targetProp: "service_requests",
+                    targetProp: "request_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/service-request/from-options"].join(""),
                         params: (op) => {
@@ -475,13 +483,6 @@ const CreateServiceRequestDialog = (() => {
                         },
                     },
                 },
-
-                onPrepareForm: (me, data) => {
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
-                },
-
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
@@ -495,6 +496,7 @@ const CreateServiceRequestDialog = (() => {
                         cssClass: 'btn-vs-save',
                         click: (me, btn) => {
                             const op = me.getData();
+                            
                             op.id = me.dataOptions.id;
                             vsapi.call([main_view.base_url, "/prm/service-request/save"].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {

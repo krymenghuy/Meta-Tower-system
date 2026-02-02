@@ -31,28 +31,27 @@ class ServiceRequestController extends Controller
     }
 
     // Get paginated list
-    public function getServiceRequestListPaginate(Request $req)
+    public function getServiceRequestList(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->serviceRequest->getServiceRequest($req->all(), $ss));
+        return JDV::result($this->serviceRequest->getServiceRequestList($req->all(), $ss));
     }
 
     // Get single service request details
-    public function serviceRequestDetails(Request $req, $id = null)
+    public function getserviceRequestDetails(Request $req, $id = null)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if(!$id || !is_numeric($id)){
+        if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-
-        return JDV::result($this->serviceRequest->getServiceRequestDetails($id));
+        return JDV::result($this->serviceRequest->getServiceRequestDetails($req->id));
     }
 
     // Delete service request

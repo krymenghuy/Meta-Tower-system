@@ -51,130 +51,7 @@ var ContractComponent = new (function () {
                         <small class="d-block text-muted">${data.space_type}</small>`;
             }
         },
-        {
-            title: "Duration",
-            className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
-            
-            data: (data) => {
-                
-                const parseDate = (dateStr) => {
-                    if (!dateStr) return null;
-                    
-                    const months = {
-                        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-                        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-                    };
-                    
-                    const parts = dateStr.split('-');
-                    if (parts.length !== 3) return null;
-                    
-                    const [day, month, year] = parts;
-                    if (!months.hasOwnProperty(month)) return null;
-                    
-                    return new Date(year, months[month], parseInt(day));
-                };
-
-                const start = parseDate(data.start_date);
-                const end = parseDate(data.end_date);
-                
-                if (!start || !end) {
-                    return `<small class="text-muted">Invalid date</small>`;
-                }
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Calculate days
-                const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                const elapsedDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
-                const remainingDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-                
-                let progressClass = 'bg-success';
-                let statusText = 'Active';
-                let textColor = 'text-success';
-                let progressWidth = 0;
-                let tooltipText = '';
-                
-                if (today < start) {
-                    // Contract hasn't started yet
-                    progressClass = 'bg-info';
-                    statusText = 'Pending';
-                    textColor = 'text-info';
-                    progressWidth = 0;
-                    const daysUntilStart = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
-                    tooltipText = `Starts in ${daysUntilStart} day${daysUntilStart !== 1 ? 's' : ''}`;
-                } else if (today > end) {
-                    // Contract has ended
-                    progressClass = 'bg-danger';
-                    statusText = 'Expired';
-                    textColor = 'text-danger';
-                    progressWidth = 100;
-                    const daysExpired = Math.ceil((today - end) / (1000 * 60 * 60 * 24));
-                    tooltipText = `Expired ${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago`;
-                } else {
-                    // Contract is active
-                    progressWidth = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
-                    
-                    if (remainingDays <= 7) {
-                        // Expiring soon (within 7 days)
-                        progressClass = 'bg-warning';
-                        textColor = 'text-warning';
-                        statusText = 'Expiring Soon';
-                        tooltipText = `${remainingDays} day${remainingDays !== 1 ? 's' : ''} remaining`;
-                    } else if (remainingDays <= 30) {
-                        // Expiring this month (within 30 days)
-                        progressClass = 'bg-warning';
-                        textColor = 'text-warning';
-                        statusText = 'Active';
-                        tooltipText = `${remainingDays} days remaining`;
-                    } else {
-                        // Active with plenty of time
-                        statusText = 'Active';
-                        tooltipText = `${remainingDays} days remaining`;
-                    }
-                }
-
-                return `
-                    <div class="d-flex flex-column gap-1">
-                        <small class="text-muted">
-                            ${data.start_date} – ${data.end_date}
-                        </small>
-                        <div class="position-relative" style="width:95%; ">
-                            <div class="d-flex align-items-center gap-2" style="width:95%;">
-                                <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
-                                    <div
-                                        class="progress-bar ${progressClass}"
-                                        role="progressbar"
-                                        style="width:${progressWidth}%; 
-                                            border-radius:20px; 
-                                            position:relative; 
-                                            background-image: repeating-linear-gradient(
-                                                45deg, 
-                                                transparent, 
-                                                transparent 10px, 
-                                                rgba(255,255,255,0.2) 10px, 
-                                                rgba(255,255,255,0.2) 20px
-                                            );"
-                                        aria-valuenow="${progressWidth}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        title="${tooltipText}">
-                                    </div>
-                                </div>
-                                <span style="font-weight:bold; 
-                                            color:#555; 
-                                            font-size:13px;
-                                            white-space:nowrap;">
-                                    ${progressWidth}%
-                                </span>
-                            </div>
-                        <small class="text-start ${textColor}">• ${statusText}</small>
-                    </div>
-                `;
-            }
-        },
+        
         {
             title: "Space / code",
             className: "align-middle text-nowrap text-capitalize",
@@ -210,6 +87,159 @@ var ContractComponent = new (function () {
                 `;
             }
         },
+        {
+    title: "Duration",
+    className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
+    
+    data: (data) => {
+        
+        const parseDate = (dateStr) => {
+            if (!dateStr) return null;
+            
+            // Handle multiple date formats
+            // ISO format: "2026-02-02 10:28:47" or "2026-02-02"
+            let date = new Date(dateStr);
+            
+            // If ISO parsing fails, try DD-Mon-YYYY format
+            if (isNaN(date.getTime())) {
+                const months = {
+                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                };
+                
+                const parts = dateStr.split('-');
+                if (parts.length === 3) {
+                    const [day, month, year] = parts;
+                    if (months.hasOwnProperty(month)) {
+                        date = new Date(year, months[month], parseInt(day));
+                    }
+                }
+            }
+            
+            return isNaN(date.getTime()) ? null : date;
+        };
+
+        // Use contract start_date and end_date
+        const start = parseDate(data.start_date);
+        const end = parseDate(data.end_date);
+        
+        if (!start || !end) {
+            return `<small class="text-muted">Invalid date</small>`;
+        }
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Calculate days
+        const totalDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+        const elapsedDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
+        const remainingDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+        
+        // Format dates for display
+        const formatDate = (date) => {
+            const day = date.getDate().toString().padStart(2, '0');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        };
+        
+        let progressClass = 'bg-success';
+        let cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
+        let progressWidth = 0;
+        let tooltipText = '';
+        
+        // Get status from database - use data.status like in Status column
+        const status = (data.status ?? '').toLowerCase();
+        // const statusText = data.status ?? '';
+        
+        // Calculate progress based on dates
+        if (today < start) {
+            // Contract hasn't started yet
+            progressClass = 'bg-info';
+            progressWidth = 0;
+            const daysUntilStart = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
+            tooltipText = `Starts in ${daysUntilStart} day${daysUntilStart !== 1 ? 's' : ''}`;
+        } else if (today > end) {
+            // Contract has ended
+            progressClass = 'bg-danger';
+            progressWidth = 100;
+            const daysExpired = Math.ceil((today - end) / (1000 * 60 * 60 * 24));
+            tooltipText = `Expired ${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago`;
+        } else {
+            // Contract is active - calculate progress
+            progressWidth = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
+            tooltipText = `${remainingDays} day${remainingDays !== 1 ? 's' : ''} remaining`;
+            
+            // Set color based on remaining days
+            if (remainingDays <= 7) {
+                progressClass = 'bg-warning';
+            } else if (remainingDays <= 30) {
+                progressClass = 'bg-warning';
+            } else {
+                progressClass = 'bg-success';
+            }
+        }
+        
+        // Set badge class based on status from database (like Status column)
+        if (status == 'pending') {
+            cls = 'text-info d-inline-block';
+        } else if (status == 'active') {
+            cls = 'text-success d-inline-block';
+        } else if (status == 'expiring soon' || status == 'expire_soon') {
+            cls = 'text-warning d-inline-block';
+        } else if (status == 'expired' || status == 'inactive') {
+            cls = 'text-danger d-inline-block';
+        } else {
+            cls = 'text-success d-inline-block';
+        }
+
+        return `
+            <div class="d-flex flex-column">
+                <small class="text-muted">
+                    ${formatDate(start)} – ${formatDate(end)}
+                </small>
+                <div class="position-relative" style="width:95%; ">
+                    <div class="d-flex align-items-center gap-2" style="width:95%;">
+                        <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
+                            <div
+                                class="progress-bar ${progressClass}"
+                                role="progressbar"
+                                style="width:${progressWidth}%; 
+                                    border-radius:20px; 
+                                    position:relative; 
+                                    background-image: repeating-linear-gradient(
+                                        45deg, 
+                                        transparent, 
+                                        transparent 10px, 
+                                        rgba(255,255,255,0.2) 10px, 
+                                        rgba(255,255,255,0.2) 20px
+                                    );"
+                                aria-valuenow="${progressWidth}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="${tooltipText}">
+                            </div>
+                        </div>
+                        <span style="font-weight:bold; 
+                                    color:#555; 
+                                    font-size:13px;
+                                    white-space:nowrap;">
+                            ${progressWidth}%
+                        </span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="${cls} text-capitalize" data-status_id="${data.status_id}">
+                            <small>${status}</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+},
         {
             title: "remark",
             className: "align-middle text-nowrap text-capitalize",
@@ -429,9 +459,6 @@ var ContractComponent = new (function () {
     return mThis;
 })();
 
-
-
-
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
@@ -442,7 +469,11 @@ const ContractDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
+                console.log(111,op);
+
                 return [
+                    
+                    
                     `<div class="row justify-content-start">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
