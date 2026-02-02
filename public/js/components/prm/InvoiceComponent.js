@@ -10,7 +10,7 @@ var InvoiceComponent =   ( () => {
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.elTenant = mThis.self.querySelector('#tenant_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_invoice");
+    mThis.elSearch = mThis.self.querySelector("#_search_invoice");
 
     mThis.cols = [
 
@@ -18,44 +18,35 @@ var InvoiceComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
-       
         {
-            title: "Invoice Number",
+            title: "Invoice Num",
             className: "align-middle ",
             data: (data,index) => `<span class="text-yp-custom">${'INV-100' + index}</span>`,
         },
-        {
-            title: "Invoice Date",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.due_date ?? 'N/A'}</small></span>`,
-        },
-
-        {
-            title: "Consumer ",
+         {
+            title: "Tenant ",
             className: "align-middle ",
             data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name}</small></span>`,
         },
-            
         {
             title: "Building",
             className: "align-middle ",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.building_name ?? 'N/A'}</small></span>`;
             }
         },
-         {
+        {
             title: "Floor",
             className: "align-middle ",
             data: (data) => {
-                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.invoice_type ?? 'N/A'}</small></span>`;
+                return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.floor_id ?? 'N/A'}</small></span>`;
             }
         },
         {
             title: "Code",
             className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom"><small>${data.code}</small></span>`,
+            data: (data) => `<span class="text-yp-custom"><small>${data.space_code}</small></span>`,
         },
-           
         {
             title: "Due Amount",
             className: "align-middle ",
@@ -63,19 +54,27 @@ var InvoiceComponent =   ( () => {
                 return `<span class="d-block text-yp-custom" style="width:75px;"><small>${data.due_amount ?? 'N/A'}</small></span>`;
             }
         },
+        {
+            title: "Invoice Date",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.due_date ?? 'N/A'}</small></span>`,
+        },
+        {
+            title: "Invoice Type",
+            className: "align-middle ",
+            data: (data) => `<span class="text-yp-custom"><small>${data.invoice_type}</small></span>`,
+        },
 
         {
             title: " Remark",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `
-                   <div class="text-yp-custom" style="width:50px;">
+                    <div class="text-yp-custom" style="width:50px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>`;
             }
         },
-        
-
         {
             title: "Status",
             className: "align-middle",
@@ -91,7 +90,7 @@ var InvoiceComponent =   ( () => {
                     cls = 'text-warning px-2 py-1 d-inline-block';
                 }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+                return `<span class="${cls} text-capitalize" data-status_id="${data.payment_status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
         {
@@ -110,7 +109,7 @@ var InvoiceComponent =   ( () => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
                     </a>
                 </div>`
         },
@@ -127,14 +126,14 @@ var InvoiceComponent =   ( () => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
-                
-              
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('invoice');
-              tr.setAttribute('id',['invoice_id',data.id].join(''));
+                rowCreated:(data,index,tr)=>{
 
-            }, 
+
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('invoice');
+                tr.setAttribute('id',['invoice_id',data.id].join(''));
+
+            },
             listContainerClass: null
         });
 
@@ -181,14 +180,14 @@ var InvoiceComponent =   ( () => {
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,    
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -265,7 +264,7 @@ var InvoiceComponent =   ( () => {
                 mThis.InvoiceListView.showPage(mThis.getFilterData());
             }
         };
-        
+
         Invoicedialog.show(op);
     }
      mThis.deleteInvoice = (id, menuLink) => {
@@ -299,7 +298,7 @@ var InvoiceComponent =   ( () => {
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
-        
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Invoice Status",
@@ -375,7 +374,7 @@ const Invoicedialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
@@ -399,7 +398,7 @@ const Invoicedialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;" for="service">Service Type</label>
                                 <div class="material-input outlined">
@@ -408,14 +407,14 @@ const Invoicedialog = (() => {
                                 </div>
                             </div>
 
-                            <div class="col-12">    
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="number" name="price" class="data-input form-control" data-field="due_amount" placeholder=" " />
                                     <label>Amount</label>
                                 </div>
                             </div>
 
-                            <div class="col-12">    
+                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="number" name="paid_amount" required class="data-input form-control" data-field="paid_amount" placeholder=" " />
                                     <label>Remark</label>
@@ -441,7 +440,7 @@ const Invoicedialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -449,7 +448,7 @@ const Invoicedialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -487,14 +486,14 @@ const Invoicedialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal); 
+                    // LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',

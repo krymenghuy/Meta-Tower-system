@@ -7,7 +7,7 @@ var BuildingComponent = ( () => {
     mThis.btnAddBuilding = mThis.self.querySelector("#_btnAddBuilding");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_building");
     mThis.elSearch = mThis.self.querySelector("#_search_building");
-    mThis.divSummaryCards = mThis.self.querySelector("#_summary_cards"); 
+    mThis.divSummaryCards = mThis.self.querySelector("#_summary_cards");
 
     mThis.cols = [
         {
@@ -20,15 +20,15 @@ var BuildingComponent = ( () => {
             data: (data) => `
                 <div class="d-flex flex-row align-items-center">
                     <img class="btn-view-member-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/meta/building_img.jpg`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px; object-fit: cover;"/>
-                  
-                  <div class="d-flex flex-column">  
+
+                  <div class="d-flex flex-column">
                     <span class="text-primary-custom fw-semibold d-inline-block" style="min-width:150px; ">
                         ${data.name ?? ''}
                     </span>
                     <small class="text-muted text-break" style="max-width:250px;">
                         ${data.address ?? ''}
                     </small>
-                  </div>  
+                  </div>
                 </div>
             `,
         },
@@ -63,8 +63,8 @@ var BuildingComponent = ( () => {
         //         return `
         //             <div class="d-flex align-items-center gap-2">
         //                 <div class="progress" style="width:120px; height:8px;">
-        //                     <div class="progress-bar bg-primary" role="progressbar" 
-        //                         style="width: ${percent}%;" 
+        //                     <div class="progress-bar bg-primary" role="progressbar"
+        //                         style="width: ${percent}%;"
         //                         aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
         //                     </div>
         //                 </div>
@@ -88,9 +88,9 @@ var BuildingComponent = ( () => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-center">
-                    <a href="javascript:void(0)" 
-                       class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" 
-                       data-id="${data.id}" 
+                    <a href="javascript:void(0)"
+                       class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}"
+                       data-id="${data.id}"
                        data-statusid="${data.status_id}">
                        <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5"></i>
                     </a>
@@ -99,7 +99,7 @@ var BuildingComponent = ( () => {
         },
     ];
 
-    
+
     mThis.renderSummaryCards = (summaryData) => {
         if (!mThis.divSummaryCards) return;
 
@@ -172,7 +172,7 @@ var BuildingComponent = ( () => {
         `;
     };
 
-    
+
     mThis.fetchSummaryData = () => {
         vsapi.call(`${main_view.base_url}/prm/building/summary`, null, null, null)
             .then(res => {
@@ -181,7 +181,7 @@ var BuildingComponent = ( () => {
                 }
             })
             .catch(err => {
-                
+
                 mThis.renderSummaryCards({});
             });
     };
@@ -198,8 +198,8 @@ var BuildingComponent = ( () => {
             rowCreated:(data,index,tr)=>{
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('building');
-                tr.setAttribute('id',['building_id',data.id].join('')); 
-            }, 
+                tr.setAttribute('id',['building_id',data.id].join(''));
+            },
             listContainerClass: null
         });
 
@@ -210,7 +210,7 @@ var BuildingComponent = ( () => {
                 btn: e.target,
                 onClose: () => {
                     mThis.BuildingListView.showPage(mThis.getFilterData());
-                    mThis.fetchSummaryData(); 
+                    mThis.fetchSummaryData();
                 }
             };
             BuildingDialog.show(op);
@@ -221,11 +221,11 @@ var BuildingComponent = ( () => {
         sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
-        
+
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        
+
         mThis.tblBuilding = mThis.BuildingListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuilding);
 
@@ -274,7 +274,7 @@ var BuildingComponent = ( () => {
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
             console.log(444,data);
-            
+
             html = `<div class="d-none rounded-3 p-2 bg-white">
                 <button data-id="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
@@ -322,7 +322,7 @@ var BuildingComponent = ( () => {
     mThis.renderLevelList = (tbody, data) => {
         let html = null;
         if(!data) data = [];
-        
+
         (data || []).map(level => {
         console.log(66,level);
 
@@ -362,8 +362,6 @@ var BuildingComponent = ( () => {
             </tr>`].join('');
         });
         tbody.innerHTML = html;
-        //mThis.makeSortable(tbody);
-        // mThis.setActionHandlers(tbody);
 
     }
     mThis.getFilterData = () => {
@@ -423,7 +421,7 @@ var BuildingComponent = ( () => {
             btn:menulink,
             onClose:()=>{
                 mThis.BuildingListView.showPage(mThis.getFilterData());
-                mThis.fetchSummaryData(); 
+                mThis.fetchSummaryData();
             }
         };
         BuildingDialog.show(op);
@@ -448,7 +446,7 @@ var BuildingComponent = ( () => {
                 vsapi.call(`${main_view.base_url}/prm/building/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.BuildingListView.showPage();
-                        mThis.fetchSummaryData(); 
+                        mThis.fetchSummaryData();
                     } else {
                         cv_interact.error(res.error_message || 'Delete failed');
                     }
@@ -494,35 +492,35 @@ const BuildingDialog = (() => {
                             <label style="color:#777777;padding-left:6px;">Building Name</label>
                             <div class="material-input outlined">
                                 <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                
+
                             </div>
-                        </div>                   
+                        </div>
                         <div class="col-12">
                             <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             <div class="material-input outlined">
                                 <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
-                               
+
                             </div>
                         </div>
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Total Area</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
-                                
+
                             </div>
                         </div>
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Total Space</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
-                                
+
                             </div>
                         </div>
                         <div class="col-12">
                             <label style="color:#777777;padding-left:6px;">Address</label>
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                
+
                             </div>
                         </div>
                     </div>`

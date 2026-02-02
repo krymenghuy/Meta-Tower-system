@@ -41,7 +41,7 @@ class Invoice
             'paid_amount'       => '0|numeric|min:0',
             'invoice_type'      => '0|string|max:50',
             'purpose'           => '0|string|max:200',
-            'note'              => '0|string|max:500',
+            'remarks'              => '0|string|max:500',
             'currency_code'     => '0|string|size:3',
             'invoice_class'     => '0|string|max:20',
             'unit_id'           => '0|integer',
@@ -161,11 +161,13 @@ class Invoice
             ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->leftJoin('buildings as bb', 'bb.id', '=', 'i.building_id')
             ->select([
                 'i.id',
                 'i.invoice_number',
                 'i.tenant_id',
                 'i.building_id',
+                'bb.name as building_name',
                 'i.floor_id',
                 'i.space_id',
                 'i.amount',
@@ -176,7 +178,7 @@ class Invoice
                 'i.payment_status_id',
                 'i.invoice_type',
                 'i.purpose',
-                'i.note',
+                'i.remarks',
                 'i.currency_code',
                 'i.contract_id',
                 't.name as tenant_name',
@@ -207,23 +209,6 @@ class Invoice
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-    // public static function invoiceDetails($id)
-    // {
-    //     return DB::table('invoices as i')
-    //         ->leftJoin('space_types as st', 'st.id', '=', 'i.space_type_id')
-    //         ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
-    //         ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
-    //         ->where('i.id', $id)
-    //         ->select([
-    //             'i.*',
-    //             'st.name as space_type_name',
-    //             'ps.name as payment_status_name',
-    //             'ct.price as contract_price',
-    //             'ct.price_type as price_type_id',
-    //         ])
-    //         ->first();
-    // }
     public static function getInvoiceDetails($id)
 {
     $row = DB::table('invoices as i')
