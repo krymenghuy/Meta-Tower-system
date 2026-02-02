@@ -147,7 +147,7 @@ var TenantComponent = new(function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.renderView();
-                    mThis.tenantListView.showPage(mThis.getFilterData());
+                    // mThis.tenantListView.showPage(mThis.getFilterData());
                 }
             };
             CreateTenantDialog.show(op);
@@ -604,9 +604,9 @@ var TenantComponent = new(function () {
                 </div>
 
                 <!-- Tab Content -->
-                <div class="card-body tab-content">
-                    <div class="tab-pane active" id="overview">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                <div class="card-body  tab-content">
+                    <div class="tab-pane py-2 active" id="overview">
+                        <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                         <div class="row g-4 mb-5">
                             <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
                             <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
@@ -622,37 +622,102 @@ var TenantComponent = new(function () {
                         <div class="row g-4">
                             <div class="col-md-6"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
                             <div class="col-md-6"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                            <div class="col-md-12"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
+                            <div class="col-md-6"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
                         </div>
                     </div>
 
                     <div class="tab-pane" id="lease-history">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-file-text me-1 text-primary"></i> Lease History</h5>
-                        <p>Lease history content goes here...</p>
-                    </div>
+                        <h5 class="fw-bold mb-2">
+                            <i class="fa fa-file-text me-1 text-primary"></i>
+                            Lease History
+                        </h5>
+                        <!-- Timeline Content -->
+                        <div class="container py-4 position-relative overflow-auto" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
 
-                    <div class="tab-pane" id="documents">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <p>Tenant documents content goes here...</p>
+                        <!-- Current Lease Card -->
+                        <div class="d-flex position-relative mb-4">
+                            <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                            <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
+                                <i class="fa fa-file-text text-white"></i>
+                            </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="card shadow-sm" style="border-left: 6px solid #0f49bd;border-radius: 14px;">
+                                    <div class="card-body" >
+                                    <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
+                                        <div>
+                                        <h5 class="card-title mb-1">Current Lease: Jan 2026 - Jan 2027 <span class="badge text-uppercase rounded-4" style="background-color:#0f49bd;">Current</span></h5>
+                                        <p class="text-muted mb-0">Unit 402 • 1,200 sq ft • Sunset Heights</p>
+                                        </div>
+                                        <div class="text-end">
+                                        <p class="h5 text-primary mb-0">$2,500 <small class="text-muted">/mon</small></p>
+                                        <small class="text-muted">Contract Value: $30,000</small>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled bg-light p-3 rounded mb-3">
+                                        <li class="d-flex align-items-start mb-2">
+                                        <i class="fa-solid fa-circle-exclamation text-success me-2"></i>
+                                        Renewal signed on Oct 15, 2023. Included a 4% standard escalation.
+                                        </li>
+                                        <li class="d-flex align-items-start">
+                                        <i class="fa-regular fa-circle-check text-info me-2"></i>
+                                        Security Deposit: $2,500 held in escrow.
+                                        </li>
+                                    </ul>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Initial Contract Card -->
+                        <div class="d-flex position-relative mb-0">
+                            <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                            <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                            <div class="card border rounded-4 shadow-sm">
+                                <div class="card-body">
+                                <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
+                                    <div>
+                                    <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
+                                    <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
+                                    </div>
+                                    <div class="text-end">
+                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mo</small></p>
+                                    <small class="text-muted">Contract Value: $25,200</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
+                                    <i class="material-icons">celebration</i>
+                                    First lease signed. Security deposit paid in full: $2,100.
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
                     </div>
+              
                 </div>
-
+                <div class="tab-pane" id="documents">
+                    <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
+                    <p>Tenant documents content goes here...</p>
+                </div>
                 <!-- Footer -->
                 <div class="card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                     <small class="text-muted">Managed by <strong>Admin: chhorng</strong></small>
                     <div>
                         <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
-                        <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
+                        <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2 d-none" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
                     </div>
                 </div>
 
             </div>
-        </div>
     </div>
 
-    <div class="text-center text-muted small mt-4">
-        Profile ID: TEN-992834-2023 · Created Oct 24, 2023 · Updated 2 days ago
-    </div>
+    
     `;
 
     mThis.profile_info_tenant.innerHTML = html;
@@ -683,11 +748,11 @@ var TenantComponent = new(function () {
         console.log(33,divProfile);
         
         divProfile.addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
-            if (btn) {
-                mThis.editTenantInfo(btn.dataset.id, btn);
-                return;
-            }
+            // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
+            // if (btn) {
+            //     mThis.editTenantInfo(btn.dataset.id, btn);
+            //     return;
+            // }
             // btn = VSUtil.closestLimited(e.target, ".delete_employee");
             // if (btn) {
             //     mThis.deleteEmployee(btn.dataset.id, btn);
@@ -705,17 +770,9 @@ var TenantComponent = new(function () {
             // }
         });
     };
-       mThis.editTenantInfo = (id, menuLink) => {
-        const op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
 
-            },
-        };
-        CreateTenantDialog.show(op);
-    };
+
+
 
 
 

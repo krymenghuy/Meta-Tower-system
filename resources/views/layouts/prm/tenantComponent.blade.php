@@ -65,11 +65,11 @@
     </div>
 
     <div class="mt-3">
-        <div class="overflow-auto mb-5" style="max-height: 550px;" id="sub_view_profile">
+        <div class="mb-5" style="max-height: 550px;" id="sub_view_profile">
 
             <!-- JS will render tenant profile here -->
-            <div id="profile_info_tenant" class="container-fluid">
-                <p class="text-muted">Loading profile...</p>
+            <div id="profile_info_tenant">
+               
             </div>
 
         </div>
