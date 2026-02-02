@@ -266,16 +266,33 @@ class GeneralSettings //extends Model
         return  DB::table('members')->selectRaw('id,name AS recommender')->get();
 
      }
-    // static function options_service_status($ss){
-    //     return DB::table('service_statuses')->select('id,name as status_name')->get();
-    // }
-    public static function options_service_status($ss)
-    {
-        return DB::table('service_statuses')
-            ->select('id', 'name')
-            ->orderBy('id')
-            ->get();
+    static function options_contract_status($ss){
+        return DB::table('contract_statuses')->selectRaw('id,name as status_name')->get();
     }
+
+    // Add a new method for tenants with active contracts
+public static function options_tenant_with_active_contract($ss)
+{
+    return DB::table('tenants as t')
+        ->join('contracts as c', 'c.tenant_id', '=', 't.id')
+        ->where('c.status_id', '=', 2)  // Only active contracts
+        ->where('t.branch_id', '=', $ss->branch_id)  // Filter by branch if needed
+        ->select('t.id', 't.name as tenant', 'c.id as contract_id')
+        ->distinct()  // In case tenant has multiple active contracts
+        ->orderBy('t.name')
+        ->get();
+}
+    static function options_service_status($ss){
+        return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
+    }
+    
+    // public static function options_service_status($ss)
+    // {
+    //     return DB::table('service_statuses')
+    //         ->select('id', 'name')
+    //         ->orderBy('id')
+    //         ->get();
+    // }
 
     static function options_member($ss){
         $row = DB::table('members')->selectRaw('id,name AS member_name')->get();
@@ -324,11 +341,25 @@ class GeneralSettings //extends Model
         return  DB::table('floors')->selectRaw('id,name')->get();
 
      }
-     static function options_tenant($ss){
-        return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
-     }
+     public static function options_tenant($ss) {
+       return DB::table('tenants as t')
+           ->leftJoin('contracts as c', function($join) {
+               $join->on('c.tenant_id', '=', 't.id')
+                    ->where('c.status_id', '=', 1); // Only active contracts
+           })
+           ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+           ->select(
+               't.id',
+               't.name as tenant',
+               't.code as tenant_code',
+               'c.space_id',
+               'bs.code as space_code'
+           )
+           ->where('t.status_id', 1)
+           ->get();
+   }
       static function options_service($ss){
-        return  DB::table('services')->selectRaw('id,name AS service')->get();
+        return  DB::table('services')->selectRaw('id,name AS service, price, unit_type')->get();
      }
      static function options_legal($ss){
         return  DB::table('tenants')->selectRaw('id,legal_name')->get();
@@ -350,6 +381,10 @@ class GeneralSettings //extends Model
     }
     static function options_service_types($ss){
         return DB::table('service_types')->selectRaw('id,name as service_type')->get();
+    }
+
+    static function options_contracts($ss){
+        return DB::table('contracts')->selectRaw('id,name as contract')->get();
     }
 
     static function options_space_status($ss){
