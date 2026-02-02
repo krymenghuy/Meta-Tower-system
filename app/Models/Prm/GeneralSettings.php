@@ -375,5 +375,5 @@ class GeneralSettings //extends Model
             ->selectRaw('f.id,f.building_id,f.name')
             ->orderBy('f.id','ASC')->get();
     }
-
+    
 }

@@ -23,7 +23,7 @@
     </div>
 
 
-     <div id="_space_div_summary" class="container-fluid p-3">
+    <div id="_space_div_summary" class="container-fluid p-3">
     <div class="row g-2">
         <div class="col-12 col-sm-6 col-lg-2">
             <div class="metric-card-sm" style="border-left: 6px solid #5867dd;">
