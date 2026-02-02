@@ -307,7 +307,7 @@ var ServiceComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
