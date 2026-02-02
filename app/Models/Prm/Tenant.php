@@ -59,7 +59,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     $address_char = ['@',',','.','#'];
     $legal_name_char = ['@',',','.','#'];
 
-    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char, 'legal_name' => $legal_name_char],$ss->lang ?? 'en',0,null);
+    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char,'passport_number' => $email_char, 'legal_name' => $legal_name_char],$ss->lang ?? 'en',0,null);
     if ($res->error) {
         return DV::error($res->error);
     }
@@ -86,8 +86,8 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     $id = DBX::saveData($ss, 'tenants', ['id' => $id], $inputs, [], 1);
     if ($id && $created) {
             
-            $prefix = 'TEN';
-            $res = setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], $prefix, 5, null);
+            $prefix = 'T-';
+            $res = setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], $prefix, 4, null);
 
         }
     if ($id > 0) {
@@ -133,7 +133,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $updated_at = DBX::formatTime("t.updated_at", 'updated_at');
         $start_date = DBX::formatDate("c.start_date", 'start_date');
         $end_date = DBX::formatDate("c.end_date", 'end_date');
-        $date_of_birth = DBX::formatTime("t.date_of_birth", 'date_of_birth');
+        $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
         $query = DB::table('tenants as t')
             ->join('tenant_statuses as ts', 'ts.id', '=', 't.status_id')
             ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
@@ -209,7 +209,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
             ->join('tenant_statuses as ts','ts.id','=','t.status_id')
             ->where('t.id',$id)
-            ->selectRaw("t.id,t.name,t.national_id,passport_number,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,$start_date,$end_date ")
+            ->selectRaw("t.id,t.name,t.national_id,passport_number,t.date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,$start_date,$end_date ")
             ->first();
             if($row){
                 $img = self::profilePicture($id,$ss);
@@ -229,8 +229,13 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         ];
     }
 
-    public function delete($id = null){
+    public function delete($id = null,$ss = null){
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $hasContract = DB::table('contracts')->where('tenant_id', $id)->exists();
+        if ($hasContract) {
+            return DV::error('Cannot delete this tenant because an active contract exists.');
+        }
         $deleted = DB::table('tenants')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }

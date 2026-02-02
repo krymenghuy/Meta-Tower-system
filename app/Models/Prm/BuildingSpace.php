@@ -93,9 +93,9 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
     $roomNumber = ($floor_number * 100) + $next_num; 
 
     
-    $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
+    // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
     // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-    // $fullCode = 'R-' . $roomNumber;
+    $fullCode = 'R-' . $roomNumber;
 
     DB::table('building_spaces')
         ->where('id', $space_id)

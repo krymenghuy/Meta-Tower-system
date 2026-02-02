@@ -41,8 +41,6 @@
 </div>
 
 <div id="_ten_profile_view" class="px-3" style ="display:none">
-
-    <!-- Header: Back + Breadcrumb -->
     <div class="d-flex justify-content-between align-items-center rounded-3 bg-white shadow-sm p-3 mt-2" id="view_buttons">
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <a href="javascript:void(0)" id="_btn_back_tenant" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 shadow-sm">
@@ -64,16 +62,12 @@
         </div>
     </div>
 
-    <div class="mt-3">
-        <div class="overflow-auto mb-5" style="max-height: 550px;" id="sub_view_profile">
-
-            <!-- JS will render tenant profile here -->
-            <div id="profile_info_tenant" class="container-fluid">
-                <p class="text-muted">Loading profile...</p>
+        <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
+            <div id="profile_info_tenant">
+               
             </div>
 
         </div>
-    </div>
 
 </div>
 

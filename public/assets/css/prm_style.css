@@ -93,6 +93,9 @@
 .text-dark-custom {
     color: #38373a;
 }
+.bg-gold-custom {
+    color: #f6d673;
+}
 .bg-prm-custom {
     background-color: #1A1647;
     border-top-left-radius : 15px;
