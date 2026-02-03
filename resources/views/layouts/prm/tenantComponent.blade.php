@@ -9,7 +9,10 @@
                             style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                     </div>
                 </div>
-            <div class="col-12 col-md-6 col-lg-3">
+                 <div class="col-12 col-md-6 col-lg-2">
+                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-1 rounded" role="group">
                         <input type="radio" class="btn-check" name="tenant_view_mode" id="tenantViewCard" checked>
                         <label class="btn btn-outline-prm-custom rounded-3 px-3" for="tenantViewCard">
@@ -38,8 +41,6 @@
 </div>
 
 <div id="_ten_profile_view" class="px-3" style ="display:none">
-
-    <!-- Header: Back + Breadcrumb -->
     <div class="d-flex justify-content-between align-items-center rounded-3 bg-white shadow-sm p-3 mt-2" id="view_buttons">
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <a href="javascript:void(0)" id="_btn_back_tenant" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 shadow-sm">
@@ -61,16 +62,12 @@
         </div>
     </div>
 
-    <div class="mt-3">
-        <div class="overflow-auto mb-5" style="max-height: 550px;" id="sub_view_profile">
-
-            <!-- JS will render tenant profile here -->
-            <div id="profile_info_tenant" class="container-fluid">
-                <p class="text-muted">Loading profile...</p>
+        <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
+            <div id="profile_info_tenant">
+               
             </div>
 
         </div>
-    </div>
 
 </div>
 

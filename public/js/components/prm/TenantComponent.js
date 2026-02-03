@@ -8,6 +8,7 @@ var TenantComponent = new(function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
+    mThis.elStatus = mThis.self.querySelector('#_el_tenant_status');
     mThis.btnBack = document.querySelector("#_btn_back_tenant");
 
     mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
@@ -146,7 +147,7 @@ var TenantComponent = new(function () {
                 btn: e.target,
                 onClose: () => {
                     mThis.renderView();
-                    mThis.tenantListView.showPage(mThis.getFilterData());
+                    // mThis.tenantListView.showPage(mThis.getFilterData());
                 }
             };
             CreateTenantDialog.show(op);
@@ -182,8 +183,11 @@ var TenantComponent = new(function () {
         }
         mThis.tblTenant = mThis.tenantListView.getTable();
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => mThis.renderView();
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+            el.onchange = (e) =>{
+                 e.preventDefault();
+                 mThis.renderView();
+            } 
         });
         mThis.elSearch.addEventListener('keyup', () => {
             clearTimeout(mThis.search_timeout);
@@ -215,6 +219,7 @@ var TenantComponent = new(function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_tenant"
                 },
+         
             ],
             // adjustPosition: {
             //     top: -200,
@@ -285,28 +290,29 @@ var TenantComponent = new(function () {
             mThis.renderCard(data, user);
         });
     };
-    mThis.renderCard = (items) => {
-            let cnt = 0;
+    mThis.renderCard = (data) => {
         let html = `<div class="row g-3">`;
-        if (Array.isArray(items) && items.length > 0) {
-
-            items.forEach(d => {
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(d => {
                 const status = d.status || "Pending";
-                let statusClass = "badge rounded-3 px-3 py-1 ";
+                let statusClass = "";
+                let dotColor = "bg-warning"; // Default dot
+
                 switch (status) {
                     case "Active":
-                        statusClass += " bg-success-subtle text-success border border-success-subtle";
+                        statusClass = "text-success";
+                        dotColor = "bg-success";
                         break;
                     case "Inactive":
-                        statusClass += " bg-secondary-subtle text-grey border border-secondary-subtle";
+                        statusClass = "text-danger";
+                        dotColor = "bg-danger";
                         break;
                     case "Pending":
                     default:
-                        statusClass += " bg-warning-subtle text-warning border border-warning-subtle";
+                        statusClass = "text-warning";
+                        dotColor = "bg-warning";
                         break;
                 }
-
-                cnt++;
                 html += `
                     <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                         <div class="card h-100 shadow-sm border-0 rounded-2">
@@ -318,10 +324,10 @@ var TenantComponent = new(function () {
                                             <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
-                                            <h6 class="fw-semibold text-start mb-1 text-dark">${d.name}</h6>
-                                            <span class="text-muted">#${d.code ?? ''} • Unit #</span>
+                                            <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                <small class="${statusClass}">${status}</small>
+                                                <span class="rounded-circle ${dotColor}" style="width:8px; height:8px; display:inline-block;"></span>
+                                                    <span class="${statusClass}">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
@@ -333,41 +339,42 @@ var TenantComponent = new(function () {
                             </div>
                             <div class="card-body text-center" style="background-color:#fbfcfd; padding: 1rem;">
                                 <div class="row g-4 py-2 border-bottom border-gray">
-                                    <div class="col-6">
-                                        <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap text-muted fw-bold mb-1">
-                                                Lease Expiry
-                                            </span>
-                                            <small class="fw-semibold mb-0 text-dark">
-                                                Dec 15, 2024
-                                            </small>
+                                    <div class="col-4">
+                                        <div class="card bg-prm-custom text-center shadow-sm">
+                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? 'N/A'}</div>
                                         </div>
                                     </div>
-
+                                    <div class="col-2"></div>
                                     <div class="col-6">
                                         <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap fw-bold mb-1 text-muted" >
-                                                Next Payment
+                                            <span class="text-nowrap  text-prm-custom">
+                                                Lease Expiry
                                             </span>
-                                            <small class="fw-semibold mb-0 text-center text-dark">
-                                                Oct 01, 2024
+                                            <small class="text-muted mb-0">
+                                                ${d.end_date}
                                             </small>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card_container" style="max-width: 250px;" >
+                                <div class="card_container" style="max-width: 250px;">
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-solid fa-hashtag me-2 text-muted"></i>
+                                        <span>${d.code ?? 'N/A'}</span>
+                                    </p>
+                                    <p class="ps-3 mb-2 text-prm-custom">
+                                        <i class="fa-regular fa-calendar me-2 text-muted"></i>
+                                        <span>${d.date_of_birth ?? 'N/A'}</span>
+                                    </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
-                                        ${d.phone_number || "?"}
+                                        ${d.phone_number || ""}
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-at me-2 text-muted"></i>
-                                        ${d.email || "?"}
+                                        ${d.email || ""}
                                     </p>
-                                    <p class="ps-3 mb-2 text-prm-custom">
-                                        <i class="fa-regular fa-building me-2 text-muted"></i>
-                                        <span>Unit 502, Meta Tower</span>
-                                    </p>
+                                    
+                                    
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
@@ -385,17 +392,9 @@ var TenantComponent = new(function () {
                         </div>
                     </div>
                     `;
-                });
+            });
 
-            } else {
-                html += `
-                <div class="col-12">
-                    <div class="alert alert-light border text-center text-danger">
-                        Tenant not found!
-                    </div>
-                </div>
-                `;
-            }
+        } 
             html += `</div>`;
             mThis.cardViewContainer.innerHTML = html;
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
@@ -426,15 +425,13 @@ var TenantComponent = new(function () {
                     // }
                 });
             });
-            if (cnt > 0) {
-                const container = mThis.cardViewContainer;
-                const te_parent = container;
+            const container = mThis.cardViewContainer;
+            const te_parent = container;
+            te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+            te_parent.classList.add("overflow-y-auto");
+            window.onresize = () => {
                 te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-                te_parent.classList.add("overflow-y-auto");
-                window.onresize = () => {
-                    te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-                };
-            }
+            };
     };
 
     mThis.renderView = () => {
@@ -444,12 +441,8 @@ var TenantComponent = new(function () {
             mThis.cardViewContainer.classList.remove('d-none');
             mThis.listViewContainer.classList.add('d-none');
             mThis.paginationContainer.style.display = 'block';
-           
-
             mThis.tenantCardView.showPage(params);
         } else {
-            console.log(3333, mThis.paginationContainer);
-            
             mThis.cardViewContainer.classList.add('d-none');
             mThis.listViewContainer.classList.remove('d-none');
             mThis.paginationContainer.style.display = 'none';
@@ -458,10 +451,11 @@ var TenantComponent = new(function () {
     };
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
+            status_id: mThis.elStatus.value,
         };
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
             p[el.dataset.field] = el.value;
         });
 
@@ -501,8 +495,6 @@ var TenantComponent = new(function () {
           }
        }
        const targetPage = mThis.getPageContainer(pageName);
-       console.log(9090,targetPage);
-       
        const siblings = Array.from(targetPage.parentElement.children);
        // Hide all siblings smoothly
        siblings.forEach((div) => {
@@ -513,7 +505,26 @@ var TenantComponent = new(function () {
        targetPage.style.display = 'block';
     };
    mThis.renderProfile = (data) => {
-    console.log(90909090, data);
+    let cls_class = '';
+    if (data && data.status) {
+        switch (data.status) {
+            case 'Pending':
+                cls_class = 'badge text-dark bg-warning-subtle border border-warning';
+                break;
+            case 'Active':
+                cls_class = 'badge text-dark bg-success-subtle border border-success'; 
+                break;
+            case 'Inactive':
+                cls_class = 'badge text-dark bg-danger-subtle border border-danger';
+                break;
+            default:
+                cls_class = 'badge text-muted bg-light';
+                break;
+        }
+    }
+
+
+
     let html = `
     <div class="row g-4">
         <div class="col-12 col-lg-3">
@@ -527,21 +538,21 @@ var TenantComponent = new(function () {
                     </div>
                     <h4 class="fw-bold mb-1">${data.name}</h4>
                     <div class="mb-3">
-                        <span class="badge bg-success me-1">Verified</span>
-                        <span class="badge bg-primary">Active</span>
+                        <span class="badge text-white bg-success border border-success me-1">Verified</span>
+                        <span class="${cls_class}">${data.status}</span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted">Move-in Date</small>
-                        <strong>Oct 12, 2022</strong>
+                        <small>${data.start_date ?? 'N/A'}</small>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <small class="text-muted">Rent Status</small>
-                        <span class="badge bg-success">PAID</span>
+                        <span class="text-muted">Unpaid</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <small class="text-muted">Security Deposit</small>
-                        <strong>$2,400.00</strong>
+                        <small>$2,400.00</small>
                     </div>
                 </div>
             </div>
@@ -587,9 +598,9 @@ var TenantComponent = new(function () {
                 </div>
 
                 <!-- Tab Content -->
-                <div class="card-body tab-content">
-                    <div class="tab-pane active" id="overview">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
+                <div class="card-body  tab-content">
+                    <div class="tab-pane py-2 active" id="overview">
+                        <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                         <div class="row g-4 mb-5">
                             <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
                             <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
@@ -605,37 +616,102 @@ var TenantComponent = new(function () {
                         <div class="row g-4">
                             <div class="col-md-6"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
                             <div class="col-md-6"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                            <div class="col-md-12"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
+                            <div class="col-md-6"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
                         </div>
                     </div>
 
                     <div class="tab-pane" id="lease-history">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-file-text me-1 text-primary"></i> Lease History</h5>
-                        <p>Lease history content goes here...</p>
-                    </div>
+                        <h5 class="fw-bold mb-2">
+                            <i class="fa fa-file-text me-1 text-primary"></i>
+                            Lease History
+                        </h5>
+                        <!-- Timeline Content -->
+                        <div class="container py-4 position-relative overflow-auto" style="max-height: 360px; scrollbar-width: thin;scrollbar-color: #888 #f1f1f1;">
 
-                    <div class="tab-pane" id="documents">
-                        <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <p>Tenant documents content goes here...</p>
+                        <!-- Current Lease Card -->
+                        <div class="d-flex position-relative mb-4">
+                            <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                            <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
+                                <i class="fa fa-file-text text-white"></i>
+                            </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="card shadow-sm" style="border-left: 6px solid #0f49bd;border-radius: 14px;">
+                                    <div class="card-body" >
+                                    <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
+                                        <div>
+                                        <h5 class="card-title mb-1">Current Lease: Jan 2026 - Jan 2027 <span class="badge text-uppercase rounded-4" style="background-color:#0f49bd;">Current</span></h5>
+                                        <p class="text-muted mb-0">Unit 402 • 1,200 sq ft • Sunset Heights</p>
+                                        </div>
+                                        <div class="text-end">
+                                        <p class="h5 text-primary mb-0">$2,500 <small class="text-muted">/mon</small></p>
+                                        <small class="text-muted">Contract Value: $30,000</small>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled bg-light p-3 rounded mb-3">
+                                        <li class="d-flex align-items-start mb-2">
+                                        <i class="fa-solid fa-circle-exclamation text-success me-2"></i>
+                                        Renewal signed on Oct 15, 2023. Included a 4% standard escalation.
+                                        </li>
+                                        <li class="d-flex align-items-start">
+                                        <i class="fa-regular fa-circle-check text-info me-2"></i>
+                                        Security Deposit: $2,500 held in escrow.
+                                        </li>
+                                    </ul>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Initial Contract Card -->
+                        <div class="d-flex position-relative mb-0">
+                            <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                            <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                            <div class="card border rounded-4 shadow-sm">
+                                <div class="card-body">
+                                <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
+                                    <div>
+                                    <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
+                                    <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
+                                    </div>
+                                    <div class="text-end">
+                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
+                                    <small class="text-muted">Contract Value: $25,200</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
+                                    <i class="material-icons">celebration</i>
+                                    First lease signed. Security deposit paid in full: $2,100.
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
                     </div>
+              
                 </div>
-
+                <div class="tab-pane" id="documents">
+                    <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
+                    <p>Tenant documents content goes here...</p>
+                </div>
                 <!-- Footer -->
                 <div class="card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                     <small class="text-muted">Managed by <strong>Admin: chhorng</strong></small>
                     <div>
                         <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
-                        <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
+                        <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2 d-none" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
                     </div>
                 </div>
 
             </div>
-        </div>
     </div>
 
-    <div class="text-center text-muted small mt-4">
-        Profile ID: TEN-992834-2023 · Created Oct 24, 2023 · Updated 2 days ago
-    </div>
+    
     `;
 
     mThis.profile_info_tenant.innerHTML = html;
@@ -666,11 +742,11 @@ var TenantComponent = new(function () {
         console.log(33,divProfile);
         
         divProfile.addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
-            if (btn) {
-                mThis.editTenantInfo(btn.dataset.id, btn);
-                return;
-            }
+            // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
+            // if (btn) {
+            //     mThis.editTenantInfo(btn.dataset.id, btn);
+            //     return;
+            // }
             // btn = VSUtil.closestLimited(e.target, ".delete_employee");
             // if (btn) {
             //     mThis.deleteEmployee(btn.dataset.id, btn);
@@ -688,17 +764,9 @@ var TenantComponent = new(function () {
             // }
         });
     };
-       mThis.editTenantInfo = (id, menuLink) => {
-        const op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.renderView();
 
-            },
-        };
-        CreateTenantDialog.show(op);
-    };
+
+
 
 
 
@@ -706,6 +774,9 @@ var TenantComponent = new(function () {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
+                const d = res.status_code == 200 ? res.data :{};
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'name', true, 'All Statuses', null);
+
                 if (typeof onFinish === 'function') onFinish();
             });
     };
@@ -811,7 +882,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-4">
                                 <label style="color:#777777;padding-left:6px;">Passport Number </label>
                                 <div class="material-input outlined">
-                                    <input type="number"
+                                    <input type="text"
                                         name="passport_number"
                                         class="data-input form-control"
                                         data-field="passport_number"

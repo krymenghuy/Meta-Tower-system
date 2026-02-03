@@ -98,7 +98,7 @@ class Service
             $str_search = "(s.name LIKE '%" . $search_value ."%' OR s.price LIKE '%" . $search_value . "%' OR s.description LIKE '%" . $search_value . "%')";
         }
         if($status_id){
-            $str_moreWhere .= ' AND s.status_id =' . $status_id ;
+            $str_moreWhere .= ' AND s.status_id =' . $status_id;
         }
         if($service_type_id){
             $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;

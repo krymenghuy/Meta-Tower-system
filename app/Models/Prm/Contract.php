@@ -56,9 +56,8 @@ class Contract
         $created = !$id;
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
-            DB::table('building_spaces')
-                ->where('id', $space_id)
-                ->update(['status_id' => 2]);
+            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+           DB::table('tenants')->where('id', $inputs['tenant_id'])->update(['status_id' => 2]);
         }
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);

@@ -341,23 +341,12 @@ public static function options_tenant_with_active_contract($ss)
         return  DB::table('floors')->selectRaw('id,name')->get();
 
      }
-     public static function options_tenant($ss) {
-       return DB::table('tenants as t')
-           ->leftJoin('contracts as c', function($join) {
-               $join->on('c.tenant_id', '=', 't.id')
-                    ->where('c.status_id', '=', 1); // Only active contracts
-           })
-           ->leftJoin('building_spaces as bs', 'bs.id', '=', 'c.space_id')
-           ->select(
-               't.id',
-               't.name as tenant',
-               't.code as tenant_code',
-               'c.space_id',
-               'bs.code as space_code'
-           )
-           ->where('t.status_id', 1)
-           ->get();
-   }
+     static function options_tenant($ss){
+        return  DB::table('tenants')->selectRaw('id,name AS tenant')->get();
+     }
+     static function options_tenant_status($ss){
+        return  DB::table('tenant_statuses')->selectRaw('id,name')->get();
+     }
       static function options_service($ss){
         return  DB::table('services')->selectRaw('id,name AS service, price, unit_type')->get();
      }
