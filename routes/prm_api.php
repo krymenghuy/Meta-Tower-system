@@ -120,7 +120,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-request')->group(function () {
     Route::post('/save', [ServiceRequestController::class, 'saveServiceRequest']);
-    Route::post('/list',[ServiceRequestController::class, 'getServiceRequestListPaginate']);
+    Route::post('/list',[ServiceRequestController::class, 'getServiceRequestList']);
     Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
     Route::post('/delete',[ServiceRequestController::class,'delete']);
     Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);

@@ -31,7 +31,7 @@ class Contract
             'legal_name'       => '0|string|0-100',
             'business_type_id' => '1|number|exists=business_types.id',
             'space_type_id'    => '1|number|exists=space_types.id',
-            'status_id'        => '1|number|default = 1',//-- 1=active, 2=expired, 3=terminated
+            'status_id'        => '0|number|default = 2',
             'space_id'         => '1|number|exists=building_spaces.id',
             // 'space_status_id'  => '1|number|in=3,4', // Reserved | Occupied
             'sqm_size'         => '0|number',
@@ -56,9 +56,8 @@ class Contract
         $created = !$id;
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
-            DB::table('building_spaces')
-                ->where('id', $space_id)
-                ->update(['status_id' => 2]);
+            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+           DB::table('tenants')->where('id', $inputs['tenant_id'])->update(['status_id' => 2]);
         }
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
@@ -85,6 +84,7 @@ class Contract
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
         $tenant_id = $d->tenant_id ?? null;
+        $status_id = $d->status_id ?? null;
         $space_type_id = $d->space_type_id ?? null;
         $business_type_id = $d->business_type_id ?? null;
         $current_page = $d->current_page ?? 1;
@@ -103,6 +103,9 @@ class Contract
         if($tenant_id){
             $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
         }
+        if($status_id){
+            $str_moreWhere .= ' AND c.status_id =' . $status_id ;
+        }
         if($space_type_id){
             $str_moreWhere .= ' AND c.space_type_id = ' . $space_type_id;
         }
@@ -112,9 +115,10 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.email,t.phone_number,c.legal_name,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+            ->join('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
             ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
             ->join('space_types as st', 'st.id', '=', 'c.space_type_id')
@@ -134,7 +138,7 @@ class Contract
 {
     return DB::table('contracts as c')
        ->where('c.id', $id)
-        ->selectRaw('c.id,c.tenant_id,c.legal_name,c.space_id,c.business_type_id,c.space_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
+        ->selectRaw('c.id,c.tenant_id,c.legal_name,c.space_id,c.status_id,c.business_type_id,c.space_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
         ->first();
 }
 
@@ -145,6 +149,7 @@ class Contract
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
             'legal_names'      => GeneralSettings::options_legal($ss),
+            'statuses'      => GeneralSettings::options_contract_status($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
             'building_spaces'      => GeneralSettings::options_building_space($ss),
             'business_types'   => GeneralSettings::options_business_type($ss)

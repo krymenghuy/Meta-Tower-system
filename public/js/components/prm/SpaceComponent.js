@@ -300,7 +300,7 @@ var SpaceComponent = new (function () {
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 // console.log(222,d);
-                let statusColor = 'bg-secondary-custom';
+                let statusColor = 'bg-warning';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -310,7 +310,7 @@ var SpaceComponent = new (function () {
                 const statusId = d.status_id ?? 1;
 
                 if (statusId === 2) { // Occupied
-                    statusColor = 'bg-prm-custom';
+                    statusColor = 'bg-success';
                     statusText = 'Occupied';
                     btnClass = 'rounded-2 btn-view-detail';
                     icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
@@ -363,9 +363,9 @@ var SpaceComponent = new (function () {
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
                                     <span class="${
-                                        statusId === 2 ? 'text-prm-custom' :
+                                        statusId === 2 ? 'text-success' :
                                         // statusId === 1 ? 'text-prm-custom' :
-                                        'text-secondary-custom'
+                                        'text-warning'
                                     }">${statusText}</span>
                                 </div>
                                 <div class="progress mt-1" style="height:6px;">
