@@ -325,7 +325,7 @@ var ExpenseComponent =   ( () => {
         //     defaultValue: status_id
         // };
   
-        // InputBox2.show(inputOptions,(selected)=>{
+        // InputBox2.show(inputOptions,(selected)=>{    
         //     if(!selected) return;
         //     if(!AuthManager.allowed(321)) return;
             

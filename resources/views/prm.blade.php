@@ -309,6 +309,7 @@
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
                             @include('layouts.common.companyComponent')
+                            @include('layouts.common.locationComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
                             @include('layouts.prm.tenantComponent')
