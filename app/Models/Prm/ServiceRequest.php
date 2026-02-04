@@ -159,6 +159,9 @@ class ServiceRequest extends VSModel
                 OR st.name LIKE '%" . $search_value . "%'
             )";
         }
+        if ($tenant_id) {
+            $str_moreWhere .= ' AND sr.tenant_id = ' . intval($tenant_id);
+        }
 
         if ($request_status_id) {
             $str_moreWhere .= ' AND sr.request_status_id = ' . intval($request_status_id);
@@ -171,9 +174,7 @@ class ServiceRequest extends VSModel
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
         $query = DB::table('service_requests as sr')
-            ->join('contracts as c', 'c.id', '=', 'sr.tenant_id')  // ✅ Fixed typo
-            ->where('c.status_id', '=', 2)  // ✅ Only active contracts
-            ->join('tenants as t', 't.id', '=', 'c.tenant_id')  // ✅ Added tenant join
+            ->join('tenants as t', 't.id', '=', 'sr.tenant_id')     
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('service_types as st', 'st.id', '=', 'sr.service_type_id')
@@ -246,22 +247,23 @@ class ServiceRequest extends VSModel
         $request_details = $id ? self::getServiceRequestDetails($id) : null;
         
         // Get current tenant ID if editing
-        $currentTenantId = $request_details->tenant_id ?? null;
+        // $currentTenantId = $request_details->tenant_id ?? null;
 
         // Get tenants with active contracts
-        $tenants = GeneralSettings::options_tenant_with_active_contract($ss, $currentTenantId);
+        // $tenants = GeneralSettings::options_tenant_with_active_contract($ss, $currentTenantId);
+        // $tenants = GeneralSettings::options_tenant($ss);
 
-        Log::info('ServiceRequest getFormOptions', [
-            'request_id' => $id,
-            'current_tenant_id' => $currentTenantId,
-            'tenants_count' => $tenants->count(),
-            'tenants' => $tenants->toArray()
-        ]);
+        // Log::info('ServiceRequest getFormOptions', [
+        //     'request_id' => $id,
+        //     'current_tenant_id' => $currentTenantId,
+        //     'tenants_count' => $tenants->count(),
+        //     // 'tenants' => $tenants->toArray()
+        // ]);
 
         return (object) [
             'request_details' => $request_details,
             'service_types' => GeneralSettings::options_service_types($ss),
-            'tenants' => $tenants,
+            'tenants' => GeneralSettings::options_tenant($ss),
             'services' => GeneralSettings::options_service($ss),
             'building_spaces' => GeneralSettings::options_building_space($ss),
             'request_statuses' => GeneralSettings::options_request_status($ss)
@@ -305,13 +307,13 @@ class ServiceRequest extends VSModel
             'request_status_id' => $request_status_id,
             'update_user' => $ss->name ?? 'System',
             'update_uid' => $ss->uid ?? null,
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Ymd')
         ];
 
         // If status is completed, set completed_date
         $statusName = DB::table('request_status')->where('id', $request_status_id)->value('name');
         if (strtolower($statusName) === 'completed') {
-            $data['completed_date'] = date('Y-m-d H:i:s');
+            $data['completed_date'] = (int) date('Ymd');
         }
 
         $updated = DB::table('service_requests')

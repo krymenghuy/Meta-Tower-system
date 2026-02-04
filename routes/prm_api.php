@@ -123,7 +123,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
     Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
     Route::post('/delete',[ServiceRequestController::class,'delete']);
     Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);
-    Route::post('/from-options',[ServiceRequestController::class,'getFormOptions']);
+    Route::post('/form-options',[ServiceRequestController::class,'getFormOptions']);
 
 });
 

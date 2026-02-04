@@ -184,7 +184,7 @@ var ServiceRequestComponent = (function () {
     mThis.getFilterData = () => {
         let p = {
             request_status_id: mThis.elStatus.value,
-            service_request_type_id: mThis.elService_type.value,
+            service_type_id: mThis.elService_type.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -285,42 +285,75 @@ var ServiceRequestComponent = (function () {
 
     mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
-        const status_id = tr?.dataset.statusid || "";
-        const inputOptions = {
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        // const inputOptions = {
+        //     title: 'Change Status',
+        //     dataLabel: "Service Request Status",
+        //     valueMember: "status_id",
+        //     textMember: "name",
+        //     confirmButtonText: "Save",
+        //     blankErrorMessage: "Status is not correct!",
+        //     data: [
+        //         {status_id: "1", name: "Pending"},
+        //         {status_id: "2", name: "Approved"},
+        //         {status_id: "3", name: "Cancelled"},
+        //         {status_id: "4", name: "Completed"},
+
+        //     ],
+        //     defaultValue: status_id
+        // };
+        // InputBox2.show(inputOptions, (selected) => {
+        //     if (!selected) return;
+        //     if (!AuthManager.allowed(321)) return;
+
+        //     const payload = {id, status_id: selected.value};
+        //     vsapi.call(`${mThis.base_url}/prm/service-request/update-status`, payload).then(res => {
+        //         if (res.status_code === 200) {
+        //             InputBox2.close();
+        //             cv_interact.success('Service Status has been updated');
+        //             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+        //         } else {
+        //             cv_interact.error(res.error_message || 'Unable to update status');
+        //         }
+        //     });
+        // });
+
+        const options = {
             title: 'Change Status',
-            dataLabel: "Service Request Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
+            cssClass: '',
+            backdropClose: true,
+            type: 'select',
+            label: 'Service Request Status',
+            valueField: 'status_id',
+            textField: 'name',
+            comfirmButtonText: "Submit",
+            requiredMessage: 'Select one valid status',
+            context: 'success', // success | primary | delete | danger | error
             data: [
                 {status_id: "1", name: "Pending"},
                 {status_id: "2", name: "Approved"},
                 {status_id: "3", name: "Cancelled"},
                 {status_id: "4", name: "Completed"},
-
             ],
-            defaultValue: status_id
+            defaultValue: status_id,
+            onComfirm: (value,btn,me)=>{
+                const payload = {id, status_id: value};
+                vsapi.post(`${mThis.base_url}/prm/service-request/update-status`,payload,{loader:false}).then(res=>{
+                    if(res.status_code === 200){
+                        me.close();
+                        cv_interact.success('Service Request Status has been updated');
+                        mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                    }else{
+                        me.setError(res.error_message || 'Unable to update status');
+                    }
+                })
+            }
         };
-        InputBox2.show(inputOptions, (selected) => {
-            if (!selected) return;
-            if (!AuthManager.allowed(321)) return;
-
-            const payload = {id, status_id: selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service-request/update-status`, payload).then(res => {
-                if (res.status_code === 200) {
-                    InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                } else {
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
+        InputBox.show(options);
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/service-request/from-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // console.log(11,d);
@@ -477,7 +510,7 @@ const CreateServiceRequestDialog = (() => {
                     modifyTitle: "Modify Service Request",
                     targetProp: "request_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/service-request/from-options"].join(""),
+                        endpoint: [main_view.base_url, "/prm/service-request/form-options"].join(""),
                         params: (op) => {
                             return {id: op.id};
                         },

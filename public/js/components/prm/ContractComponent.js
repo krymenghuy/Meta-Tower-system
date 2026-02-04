@@ -88,158 +88,160 @@ var ContractComponent = new (function () {
             }
         },
         {
-    title: "Duration",
-    className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
-    
-    data: (data) => {
-        
-        const parseDate = (dateStr) => {
-            if (!dateStr) return null;
+            title: "Duration",
+            className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
             
-            // Handle multiple date formats
-            // ISO format: "2026-02-02 10:28:47" or "2026-02-02"
-            let date = new Date(dateStr);
-            
-            // If ISO parsing fails, try DD-Mon-YYYY format
-            if (isNaN(date.getTime())) {
-                const months = {
-                    'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-                    'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+            data: (data) => {
+                
+                const parseDate = (dateStr) => {
+                    if (!dateStr) return null;
+                    
+                    // Handle multiple date formats
+                    // ISO format: "2026-02-02 10:28:47" or "2026-02-02"
+                    let date = new Date(dateStr);
+                    
+                    // If ISO parsing fails, try DD-Mon-YYYY format
+                    if (isNaN(date.getTime())) {
+                        const months = {
+                            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+                            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+                        };
+                        
+                        const parts = dateStr.split('-');
+                        if (parts.length === 3) {
+                            const [day, month, year] = parts;
+                            if (months.hasOwnProperty(month)) {
+                                date = new Date(year, months[month], parseInt(day));
+                            }
+                        }
+                    }
+                    
+                    return isNaN(date.getTime()) ? null : date;
+                };
+
+                // Use contract start_date and end_date
+                const start = parseDate(data.start_date);
+                const end = parseDate(data.end_date);
+                
+                if (!start || !end) {
+                    return `<small class="text-muted">Invalid date</small>`;
+                }
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Calculate days
+                const totalDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                const elapsedDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
+                const remainingDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+                
+                // Format dates for display
+                const formatDate = (date) => {
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const month = months[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
                 };
                 
-                const parts = dateStr.split('-');
-                if (parts.length === 3) {
-                    const [day, month, year] = parts;
-                    if (months.hasOwnProperty(month)) {
-                        date = new Date(year, months[month], parseInt(day));
+                // Initialize variables
+                let progressClass = 'bg-success';
+                let cls = 'text-success d-inline-block';
+                let progressWidth = 0;
+                let tooltipText = '';
+                let status = '';
+                let statusText = '';
+                
+                // Calculate status based on dates
+                if (today > end) {
+                    // Contract has ended
+                    status = 'expired';
+                    statusText = 'Expired';
+                    progressClass = 'bg-danger';
+                    cls = 'text-danger d-inline-block';
+                    progressWidth = 100;
+                    const daysExpired = Math.ceil((today - end) / (1000 * 60 * 60 * 24));
+                    tooltipText = `Expired ${daysExpired} day${daysExpired !== 2 ? 's' : ''} ago`;
+                } else if (today < start) {
+                    // Contract hasn't started yet
+                    status = 'pending';
+                    statusText = 'Pending';
+                    progressClass = 'bg-secondary';
+                    cls = 'text-secondary d-inline-block';
+                    progressWidth = 0;
+                    tooltipText = 'Contract not started';
+                } else {
+                    // Contract is active
+                    status = 'active';
+                    statusText = 'Active';
+                    progressWidth = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
+                    tooltipText = `${remainingDays} day${remainingDays !== 1 ? 's' : ''} remaining`;
+                    
+                    // Set color based on remaining days
+                    if (remainingDays <= 30) {
+                        progressClass = 'bg-warning';
+                        cls = 'text-warning d-inline-block';
+                        statusText = 'Expiring Soon';
+                    } else {
+                        progressClass = 'bg-success';
+                        cls = 'text-success d-inline-block';
                     }
                 }
-            }
-            
-            return isNaN(date.getTime()) ? null : date;
-        };
+                
+                // Check if manually terminated from database (override calculated status)
+                const dbStatus = (data.status ?? '').toLowerCase();
+                if (dbStatus === 'terminated') {
+                    status = 'terminated';
+                    statusText = 'Terminated';
+                    cls = 'text-warning d-inline-block';
+                }
 
-        // Use contract start_date and end_date
-        const start = parseDate(data.start_date);
-        const end = parseDate(data.end_date);
-        
-        if (!start || !end) {
-            return `<small class="text-muted">Invalid date</small>`;
-        }
-        
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        // Calculate days
-        const totalDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
-        const elapsedDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
-        const remainingDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-        
-        // Format dates for display
-        const formatDate = (date) => {
-            const day = date.getDate().toString().padStart(2, '0');
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const month = months[date.getMonth()];
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
-        };
-        
-        let progressClass = 'bg-success';
-        let cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
-        let progressWidth = 0;
-        let tooltipText = '';
-        
-        // Get status from database - use data.status like in Status column
-        const status = (data.status ?? '').toLowerCase();
-        // const statusText = data.status ?? '';
-        
-        // Calculate progress based on dates
-        if (today < start) {
-            // Contract hasn't started yet
-            progressClass = 'bg-info';
-            progressWidth = 0;
-            const daysUntilStart = Math.ceil((start - today) / (1000 * 60 * 60 * 24));
-            tooltipText = `Starts in ${daysUntilStart} day${daysUntilStart !== 1 ? 's' : ''}`;
-        } else if (today > end) {
-            // Contract has ended
-            progressClass = 'bg-danger';
-            progressWidth = 100;
-            const daysExpired = Math.ceil((today - end) / (1000 * 60 * 60 * 24));
-            tooltipText = `Expired ${daysExpired} day${daysExpired !== 1 ? 's' : ''} ago`;
-        } else {
-            // Contract is active - calculate progress
-            progressWidth = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
-            tooltipText = `${remainingDays} day${remainingDays !== 1 ? 's' : ''} remaining`;
-            
-            // Set color based on remaining days
-            if (remainingDays <= 7) {
-                progressClass = 'bg-warning';
-            } else if (remainingDays <= 30) {
-                progressClass = 'bg-warning';
-            } else {
-                progressClass = 'bg-success';
-            }
-        }
-        
-        // Set badge class based on status from database (like Status column)
-        if (status == 'pending') {
-            cls = 'text-info d-inline-block';
-        } else if (status == 'active') {
-            cls = 'text-success d-inline-block';
-        } else if (status == 'expiring soon' || status == 'expire_soon') {
-            cls = 'text-warning d-inline-block';
-        } else if (status == 'expired' || status == 'inactive') {
-            cls = 'text-danger d-inline-block';
-        } else {
-            cls = 'text-success d-inline-block';
-        }
-
-        return `
-            <div class="d-flex flex-column">
-                <small class="text-muted">
-                    ${formatDate(start)} – ${formatDate(end)}
-                </small>
-                <div class="position-relative" style="width:95%; ">
-                    <div class="d-flex align-items-center gap-2" style="width:95%;">
-                        <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
-                            <div
-                                class="progress-bar ${progressClass}"
-                                role="progressbar"
-                                style="width:${progressWidth}%; 
-                                    border-radius:20px; 
-                                    position:relative; 
-                                    background-image: repeating-linear-gradient(
-                                        45deg, 
-                                        transparent, 
-                                        transparent 10px, 
-                                        rgba(255,255,255,0.2) 10px, 
-                                        rgba(255,255,255,0.2) 20px
-                                    );"
-                                aria-valuenow="${progressWidth}"
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                title="${tooltipText}">
+                return `
+                    <div class="d-flex flex-column">
+                        <small class="text-muted">
+                            ${formatDate(start)} – ${formatDate(end)}
+                        </small>
+                        <div class="position-relative" style="width:95%; ">
+                            <div class="d-flex align-items-center gap-2" style="width:95%;">
+                                <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
+                                    <div
+                                        class="progress-bar ${progressClass}"
+                                        role="progressbar"
+                                        style="width:${progressWidth}%; 
+                                            border-radius:20px; 
+                                            position:relative; 
+                                            background-image: repeating-linear-gradient(
+                                                45deg, 
+                                                transparent, 
+                                                transparent 10px, 
+                                                rgba(255,255,255,0.2) 10px, 
+                                                rgba(255,255,255,0.2) 20px
+                                            );"
+                                        aria-valuenow="${progressWidth}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="${tooltipText}">
+                                    </div>
+                                </div>
+                                <span style="font-weight:bold; 
+                                            color:#555; 
+                                            font-size:13px;
+                                            white-space:nowrap;">
+                                    ${progressWidth}%
+                                </span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="${cls} text-capitalize" data-status_id="${data.status_id}">
+                                    <small>${statusText}</small>
+                                </span>
                             </div>
                         </div>
-                        <span style="font-weight:bold; 
-                                    color:#555; 
-                                    font-size:13px;
-                                    white-space:nowrap;">
-                            ${progressWidth}%
-                        </span>
                     </div>
-                    <div class="mt-2">
-                        <span class="${cls} text-capitalize" data-status_id="${data.status_id}">
-                            <small>${status}</small>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-},
+                `;
+            }
+        },
         {
             title: "remark",
             className: "align-middle text-nowrap text-capitalize",
