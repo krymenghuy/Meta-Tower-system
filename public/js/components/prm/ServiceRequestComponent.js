@@ -1,15 +1,19 @@
 "use strict";
 var ServiceRequestComponent = (function () {
-
     const mThis = {};
-    mThis.title_prop = "Service Request Component";
+    mThis.title_prop = "Service Requests";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
-    mThis.elSearch = mThis.self.querySelector("#_search_service_request");
-    mThis.elStatus = mThis.self.querySelector("#_service_request_status");
-    mThis.elService_type = mThis.self.querySelector("#_service_request_type_id");
-    mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
+    
+    //Cleanly create elements for use
+    const $ = sel => mThis.self.querySelector(sel);
+    Object.assign(mThis, {
+        elSearch: $("#_search_service_request"),
+        elStatus: $("#_service_request_status"),
+        elService_type: $("#_service_request_type_id"),
+        elBtnCreate: $("#_btnServiceRequest"),
+        divFilter: $("#_divFilter_service_request"),
+    });
 
     mThis.columns = [
         {
@@ -282,48 +286,17 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
-
-    mThis.changeStatus = (id, link) => {
+  
+      mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // const inputOptions = {
-        //     title: 'Change Status',
-        //     dataLabel: "Service Request Status",
-        //     valueMember: "status_id",
-        //     textMember: "name",
-        //     confirmButtonText: "Save",
-        //     blankErrorMessage: "Status is not correct!",
-        //     data: [
-        //         {status_id: "1", name: "Pending"},
-        //         {status_id: "2", name: "Approved"},
-        //         {status_id: "3", name: "Cancelled"},
-        //         {status_id: "4", name: "Completed"},
-
-        //     ],
-        //     defaultValue: status_id
-        // };
-        // InputBox2.show(inputOptions, (selected) => {
-        //     if (!selected) return;
-        //     if (!AuthManager.allowed(321)) return;
-
-        //     const payload = {id, status_id: selected.value};
-        //     vsapi.call(`${mThis.base_url}/prm/service-request/update-status`, payload).then(res => {
-        //         if (res.status_code === 200) {
-        //             InputBox2.close();
-        //             cv_interact.success('Service Status has been updated');
-        //             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-        //         } else {
-        //             cv_interact.error(res.error_message || 'Unable to update status');
-        //         }
-        //     });
-        // });
-
+        
         const options = {
             title: 'Change Status',
             cssClass: '',
             backdropClose: true,
             type: 'select',
-            label: 'Service Request Status',
+            label: 'Status',
             valueField: 'status_id',
             textField: 'name',
             comfirmButtonText: "Submit",
@@ -367,9 +340,10 @@ var ServiceRequestComponent = (function () {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
+      
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+            mThis.ServiceRequestListView.showPage(mThis.getFilterData());       
         });
     };
 
