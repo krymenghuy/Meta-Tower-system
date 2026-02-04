@@ -25,57 +25,8 @@
             </div>
         </div>
     </div> 
- <div id="_space_div_summary" class="container-fluid p-3">
-    <div class="row g-2">
-        <div class="col-12 col-sm-6 col-lg-2">
-            <div class="metric-card-sm" style="border-left: 6px solid #5867dd;">
-                <div class="metric-head-sm">
-                    <span class="metric-dot bg-primary"></span>
-                    <span>Total Units</span>
-                </div>
-                <div class="metric-value-sm">
-                    10 <span class="trend up">+5%</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-2">
-            <div class="metric-card-sm" style="border-left: 6px solid #0abb87;">
-                <div class="metric-head-sm">
-                    <span class="metric-dot bg-success"></span>
-                    <span>Occupancy</span>
-                </div>
-                <div class="metric-value-sm">
-                    92.4% <span class="trend down">-1.2%</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-2">
-            <div class="metric-card-sm" style="border-left: 6px solid #fd397a;">
-                <div class="metric-head-sm">
-                    <span class="metric-dot bg-danger"></span>
-                    <span>Available</span>
-                </div>
-                <div class="metric-value-sm">
-                    3 <span class="pill danger">High Demand</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-lg-2">
-            <div class="metric-card-sm" style="border-left: 6px solid #ffb822;">
-                <div class="metric-head-sm">
-                    <span class="metric-dot bg-warning"></span>
-                    <span>Pending</span>
-                </div>
-                <div class="metric-value-sm">
-                    3 <span class="pill warning">2 Expiry Soon</span>
-                </div>
-            </div>
-        </div>
-
-    </div>
+ <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3">
+    
 </div>
 
 

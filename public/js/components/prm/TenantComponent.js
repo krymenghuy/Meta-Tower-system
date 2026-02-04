@@ -23,10 +23,7 @@ var TenantComponent = new(function () {
         profile_view: this.divProfileView
     };  
     // console.log(8989,this.pages);
-    
-
     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant");
-
     mThis.cols = [
         {
             title: "",
@@ -111,9 +108,6 @@ var TenantComponent = new(function () {
                 </div>`
         },
     ];
-
-
-
     mThis.init = () => {
         if (mThis.initAlready) return;
         mThis.tenantCardView = new ListView(mThis.cardViewContainer, {
@@ -122,6 +116,7 @@ var TenantComponent = new(function () {
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
             renderItems: (items, container) => {
+                console.log(9999,items);
                 mThis.renderTenantCard(container, items);
             },
             listContainerClass: null
@@ -158,7 +153,6 @@ var TenantComponent = new(function () {
         };
         const cardTab = document.getElementById('tenantViewCard');
         const listTab = document.getElementById('tenantViewList');
-
         if (cardTab && listTab) {
             cardTab.addEventListener('change', () => {
                 mThis.currentViewMode = 'card';
@@ -170,9 +164,6 @@ var TenantComponent = new(function () {
                 mThis.renderView();
             });
         }
-
-      
-
         mThis.pr_tbl = mThis.tenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 190) + 'px';
@@ -183,18 +174,20 @@ var TenantComponent = new(function () {
         }
         mThis.tblTenant = mThis.tenantListView.getTable();
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
-            el.onchange = (e) =>{
-                 e.preventDefault();
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>{
                  mThis.renderView();
             } 
         });
-        mThis.elSearch.addEventListener('keyup', () => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function (e) {
+            e.preventDefault();
+            clearTimeout(timeOut);
+            timeOut = setTimeout(() => {
                 mThis.renderView();
             }, 250);
-        });
+        };
+       
         mThis.initDropdownMenus(mThis.cardViewContainer);
         mThis.initAlready = true;
     };
@@ -207,6 +200,12 @@ var TenantComponent = new(function () {
             //menuItemClass:"",
             menus: [
 
+                {
+                    html: '<span class="ps-2">Create Contract</span>',
+                    icon: `<i class="fa-solid fa-file-contract fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract"
+                },
                {
                     html: '<span class="ps-2">Edit Tenant</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -232,6 +231,10 @@ var TenantComponent = new(function () {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
+                    case 'create_contract': {
+                        mThis.createContract(id, menuLink);
+                        break;
+                    }
                     case 'delete_tenant': {
                         mThis.deleteTenant(id, menuLink);
                         break;
@@ -253,6 +256,16 @@ var TenantComponent = new(function () {
             }
         };
         CreateTenantDialog.show(op);
+    };
+    mThis.createContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        ContractDialog.show(op);
     };
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
@@ -292,25 +305,24 @@ var TenantComponent = new(function () {
     };
     mThis.renderCard = (data) => {
         let html = `<div class="row g-3">`;
+        console.log(8888,data);
+        
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = d.status || "Pending";
                 let statusClass = "";
-                let dotColor = "bg-warning"; // Default dot
-
                 switch (status) {
                     case "Active":
-                        statusClass = "text-success";
-                        dotColor = "bg-success";
+                        statusClass = "badge text-dark bg-success-subtle border border-success";
+                        
                         break;
                     case "Inactive":
-                        statusClass = "text-danger";
-                        dotColor = "bg-danger";
+                        statusClass = "badge text-dark bg-danger-subtle border border-danger";
+                        
                         break;
-                    case "Pending":
                     default:
-                        statusClass = "text-warning";
-                        dotColor = "bg-warning";
+                        statusClass = "badge text-dark bg-warning-subtle border border-warning";
+                        
                         break;
                 }
                 html += `
@@ -326,7 +338,6 @@ var TenantComponent = new(function () {
                                         <div class="flex items-start justify-between mb-6">
                                             <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                <span class="rounded-circle ${dotColor}" style="width:8px; height:8px; display:inline-block;"></span>
                                                     <span class="${statusClass}">${status}</span>
                                             </div>
                                         </div>
@@ -341,7 +352,7 @@ var TenantComponent = new(function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-4">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? 'N/A'}</div>
+                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? 'Unit'}</div>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
@@ -436,11 +447,14 @@ var TenantComponent = new(function () {
 
     mThis.renderView = () => {
         const params = mThis.getFilterData();
+        
+        
 
         if (mThis.currentViewMode === 'card') {
             mThis.cardViewContainer.classList.remove('d-none');
             mThis.listViewContainer.classList.add('d-none');
             mThis.paginationContainer.style.display = 'block';
+            console.log(6666,params);
             mThis.tenantCardView.showPage(params);
         } else {
             mThis.cardViewContainer.classList.add('d-none');
@@ -538,7 +552,7 @@ var TenantComponent = new(function () {
                     </div>
                     <h4 class="fw-bold mb-1">${data.name}</h4>
                     <div class="mb-3">
-                        <span class="badge text-white bg-success border border-success me-1">Verified</span>
+                        <span class="d-none badge text-white bg-success border border-success me-1">Verified</span>
                         <span class="${cls_class}">${data.status}</span>
                     </div>
                     <hr>
@@ -551,7 +565,7 @@ var TenantComponent = new(function () {
                         <span class="text-muted">Unpaid</span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <small class="text-muted">Security Deposit</small>
+                        <small class="text-muted">Monthly Rent</small>
                         <small>$2,400.00</small>
                     </div>
                 </div>
@@ -764,13 +778,6 @@ var TenantComponent = new(function () {
             // }
         });
     };
-
-
-
-
-
-
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
@@ -792,11 +799,6 @@ var TenantComponent = new(function () {
 
     return mThis;
 })();
-
-   
-
-
-
 const CreateTenantDialog = (() => {
     const self = {};
     let dialog = null;
@@ -1094,6 +1096,7 @@ const CreateTenantDialog = (() => {
     };
     return self;
 })();
+
 
 
 
