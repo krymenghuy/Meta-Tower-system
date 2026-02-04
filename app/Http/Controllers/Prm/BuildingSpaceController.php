@@ -52,7 +52,7 @@ class BuildingSpaceController extends Controller
         if($ss->status_code !== 200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->building_spaces->getFormOptions($req->id,$ss));
+        return JDV::result($this->building_spaces->getFormOptions($req->all(),$ss));
     }
 
     public function delete(Request $req){

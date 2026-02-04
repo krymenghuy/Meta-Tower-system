@@ -12,7 +12,7 @@
                 <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
-                <select id="floor_number" class="data-input filter-field form-control" data-field="floor_number"></select>
+                <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id"></select>
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select type="id" id="_space_status" class="data-input filter-field form-control" data-field="status_id"></select>
