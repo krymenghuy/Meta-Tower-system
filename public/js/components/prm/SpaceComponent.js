@@ -8,7 +8,7 @@ var SpaceComponent = new (function () {
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
     mThis.elBuilding = mThis.self.querySelector('#building_id');
-    mThis.elFloor = mThis.self.querySelector('#floor_number');
+    mThis.elFloor = mThis.self.querySelector('#floor_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
@@ -16,7 +16,6 @@ var SpaceComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
     mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
-    console.log(2020,mThis.divSummary);
     
 
 
@@ -159,7 +158,18 @@ var SpaceComponent = new (function () {
             };
             BuildingSpaceDialog.show(op);
         };
+        mThis.elBuilding.addEventListener('change',(e)=>{
+            e.preventDefault();
+            mThis.SpaceListView.showPage(mThis.getFilterData());
 
+            const p = {
+                building_id: e.target.value
+            }
+            vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
+                const data = res.status_code == 200 ? res.data : [];
+                VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
+            });
+        });
     
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         mThis.setAction(div);
@@ -174,25 +184,11 @@ var SpaceComponent = new (function () {
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
-        mThis.elBuilding.addEventListener('change',(e)=>{
-            e.preventDefault();
-            // mThis.enrollStudentListView.showPage(mThis.getFilterData());
-            const p = {
-                building_id: e.target.value
-            }
-
-            vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
-
-                const data = res.status_code == 200 ? res.data : [];
-                VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
-            });
-        });
+       
 
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-
-            el.onchange = (e) => {
-                e.preventDefault();
+            el.onchange = () => {
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         });
@@ -275,6 +271,8 @@ var SpaceComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
+        console.log(6767,p);
+        
 
         return p;
     };
@@ -354,9 +352,8 @@ var SpaceComponent = new (function () {
         let html = `<div class="row g-3">`;
         let cmt = 0;
 
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data) && data[0]) {
             data.forEach(d => {
-                // console.log(222,d);
                 let statusColor = 'bg-secondary-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
@@ -558,12 +555,27 @@ var SpaceComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
-                // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', false,'', null);
+                // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name',true,'All FLoor',null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
-                if (typeof onFinish === 'function') onFinish();
-            })
 
-    }
+                // mThis.elBuilding.onchange = function (e) {
+                //     e.preventDefault();
+                //     mThis.SpaceListView.showPage(mThis.getFilterData());
+                //     const p = {
+                //         building_id: e.target.value
+                //     }
+                //     vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
+                //         const data = res.status_code == 200 ? res.data : [];
+                //         console.log(3333,data);
+                        
+                //         VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
+                //     });
+                // };
+                
+                if (typeof onFinish === 'function') onFinish();
+            });
+
+    };
 
     mThis.show = (options) => {
         mThis.init();
