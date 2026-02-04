@@ -66,8 +66,7 @@ class ServiceRequestController extends Controller
         if (!$id || !is_numeric($id)) {
             return JDV::error('Invalid ID provided');
         }
-
-        $result = $this->serviceRequest->delete($id, $ss);
+        $result = $this->serviceRequest->deleteById($id, $ss);
         return JDV::raw($result);
     }
 

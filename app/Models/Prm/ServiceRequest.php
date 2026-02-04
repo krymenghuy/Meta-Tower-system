@@ -53,16 +53,16 @@ class ServiceRequest extends VSModel
         );
 
         if ($res->error) {
-            Log::error('ServiceRequest validation failed', [
-                'error' => $res->error,
-                'input_data' => $arr
-            ]);
+            // return DV::error('ServiceRequest validation failed', [
+            //     'error' => $res->error,
+            //     'input_data' => $arr
+            // ]);
             return DV::error($res->error);
         }
 
         $input = $res->values;
 
-        Log::info('ServiceRequest validation passed', ['validated_data' => $input]);
+        //Log::info('ServiceRequest validation passed', ['validated_data' => $input]);
 
         // Handle building_space_id - can come from building_id, floor_id, or building_space_id
         if (!isset($input['space_id']) || empty($input['space_id'])) {
@@ -270,22 +270,23 @@ class ServiceRequest extends VSModel
         ];
     }
 
-    public function delete($id = null)
+    public function deleteById($id = null)
     {
         $id = $id ?? $this->id;
+        $x = self::deleteBy(['id'=>$id]);
+        return DV::depends($x, 'Service Request Delete failed');
 
-        Log::info('ServiceRequest delete called', ['id' => $id]);
+        // Log::info('ServiceRequest delete called', ['id' => $id]);
+        // $deleted = DB::table('service_requests')
+        //     ->where('id', $id)->delete();
 
-        $deleted = DB::table('service_requests')
-            ->where('id', $id)->delete();
+        // if ($deleted) {
+        //     Log::info('ServiceRequest deleted successfully', ['id' => $id]);
+        //     return DV::depends($deleted, ['action' => 'deleted']);
+        // }
 
-        if ($deleted) {
-            Log::info('ServiceRequest deleted successfully', ['id' => $id]);
-            return DV::depends($deleted, ['action' => 'deleted']);
-        }
-
-        Log::error('ServiceRequest delete failed', ['id' => $id]);
-        return DV::error('Delete failed.');
+        // Log::error('ServiceRequest delete failed', ['id' => $id]);
+        // return DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)
