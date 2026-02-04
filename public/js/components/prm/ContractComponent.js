@@ -20,15 +20,12 @@ var ContractComponent = new (function () {
             title: "",
             className: "align-middle",
         },
-        {
-            title: "ID",
-            className: "align-middle text-nowrap text-capitalize",
-            data: (data, index) =>  `<span class="text-yp-custom">${String(index + 1).padStart(3, '0')}</span>`
-        },
+       
         {
             title: "Name",
             className: "align-middle text-nowrap text-capitalize",
-            data: (data, index) => `<span class="text-primary-custom">${data.tenant_name}</span>`,
+            data: (data, index) => `<span class="d-block text-primary-custom">${data.tenant_name}</span>
+                                    <span class="d-block text-muted">${data.code}</span>`,
         },
         {
             title: " Legal Name",
@@ -53,14 +50,14 @@ var ContractComponent = new (function () {
         },
         
         {
-            title: "Space / code",
+            title: "Unit",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
-            title: "Price / Size",
+            title: "Price",
             className: "align-middle text-nowrap text-capitalize",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';

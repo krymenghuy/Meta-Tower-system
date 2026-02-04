@@ -15,6 +15,10 @@ var SpaceComponent = new (function () {
     let div = mThis.self.querySelector("#_space_list");
     mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
+    mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
+    console.log(2020,mThis.divSummary);
+    
+
 
     // mThis.cols = [
 
@@ -156,7 +160,7 @@ var SpaceComponent = new (function () {
             BuildingSpaceDialog.show(op);
         };
 
-
+    
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         mThis.setAction(div);
 
@@ -204,7 +208,60 @@ var SpaceComponent = new (function () {
 
         mThis.initAlready = true;
     };
+    mThis.setDataSummary = () => {
 
+        const s = {
+            total_units: 10,
+            occupancy: 92.4,
+            available: 3,
+            pending: 3
+        };
+
+        let html = `<div class="row g-2">`;
+
+            html += `<div class="col-12 col-sm-6 col-lg-2">
+                <div class="metric-card-sm" style="border-left:6px solid #5867dd;">
+                    <div class="metric-head-sm">
+                        <span class="metric-dot bg-primary"></span>
+                        <span>Total Units</span>
+                    </div>
+                    <div class="metric-value-sm">${s.total_units}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <div class="metric-card-sm" style="border-left:6px solid #0abb87;">
+                    <div class="metric-head-sm">
+                        <span class="metric-dot bg-success"></span>
+                        <span>Occupancy</span>
+                    </div>
+                    <div class="metric-value-sm">${s.occupancy}%</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <div class="metric-card-sm" style="border-left:6px solid #fd397a;">
+                    <div class="metric-head-sm">
+                        <span class="metric-dot bg-danger"></span>
+                        <span>Available</span>
+                    </div>
+                    <div class="metric-value-sm">${s.available}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-2">
+                <div class="metric-card-sm" style="border-left:6px solid #ffb822;">
+                    <div class="metric-head-sm">
+                        <span class="metric-dot bg-warning"></span>
+                        <span>Pending</span>
+                    </div>
+                    <div class="metric-value-sm">${s.pending}</div>
+                </div>
+            </div>`;
+
+        html += `</div>`;
+        mThis.divSummary.innerHTML = html;
+    };
 
     mThis.getFilterData = () => {
         let p = {
@@ -231,11 +288,11 @@ var SpaceComponent = new (function () {
             menus: [
 
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Set Maintenance">Set Maintenance</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-info"></i>`,
 
                     cssClass: "border-bottom pb-2",
-                    name: "change_status"
+                    name: "set_maintenance"
                 },
                 {
 
@@ -258,8 +315,8 @@ var SpaceComponent = new (function () {
 
             onClick: (menulink, id, name) => {
                 switch (name) {
-                    case 'change_status': {
-                        mThis.changeStatus(id, menulink);
+                    case 'set_maintenance': {
+                        mThis.setMaintenance(id, menulink);
                         break;
                     }
 
@@ -300,7 +357,7 @@ var SpaceComponent = new (function () {
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 // console.log(222,d);
-                let statusColor = 'bg-warning';
+                let statusColor = 'bg-secondary-custom';
                 let statusText = 'Available';
                 let btnClass = 'rounded-2 btn-create-contract';
                 let icon = '<i class="fa-solid fa-file-contract"></i>';
@@ -335,7 +392,7 @@ var SpaceComponent = new (function () {
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
-                                        ${d.code ?? ''}
+                                        Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
@@ -365,7 +422,7 @@ var SpaceComponent = new (function () {
                                     <span class="${
                                         statusId === 2 ? 'text-success' :
                                         // statusId === 1 ? 'text-prm-custom' :
-                                        'text-warning'
+                                        'text-secondary-custom'
                                     }">${statusText}</span>
                                 </div>
                                 <div class="progress mt-1" style="height:6px;">
@@ -427,6 +484,17 @@ var SpaceComponent = new (function () {
 
         BuildingSpaceDialog.show(op);
     }
+     mThis.setMaintenance = (id, menulink) =>{
+        let op = {
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.SpaceListView.showPage(mThis.getFilterData());
+            }
+        };
+
+       alert('coming soon....')
+    }
      mThis.deleteSpace = (id, menulink) => {
         let op = {
             id: id,
@@ -455,43 +523,7 @@ var SpaceComponent = new (function () {
 
         });
     }
-    mThis.changeStatus = (id, menulink) =>{
-
-        const status_id = menulink.dataset.statusid;
-        console.log(123,status_id);
-
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Space Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Available"},
-                // {status_id:"2",name:"Maintenance"},
-                {status_id:"2",name:"Occupied"},
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/building-space/update-status`,payload).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Building Space Status has been updated');
-                    mThis.SpaceListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
-    };
+   
     mThis.setAction = (tbl)=>{
         tbl.addEventListener('click',(e) =>{
         let btn = VSUtil.closestLimited(e.target,'.btn-create-contract');
@@ -517,6 +549,9 @@ var SpaceComponent = new (function () {
     }
 
 
+
+
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
@@ -535,6 +570,7 @@ var SpaceComponent = new (function () {
         mThis.options = options;
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
+              mThis.setDataSummary();
             mThis.SpaceListView.showPage(mThis.getFilterData());
         });
 
@@ -572,11 +608,17 @@ const BuildingSpaceDialog = (() => {
 
                                 </div>
                             </div>
-                             <div class="col-12">
+                            <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
                                     <select name="floor_number" placeholder=" " class="data-input form-control" data-field="floor_id">
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Unit Code</label>
+                                <div class="material-input outlined">
+                                    <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
                                 </div>
                             </div>
 
