@@ -174,7 +174,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_number LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_id LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
         }
         if($building_id){
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
@@ -215,7 +215,10 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
 
     }
 
-    public static function getFormOptions($id,$ss){
+    public function getFormOptions($arr = [],$ss = null){
+        $ss = $ss ? $ss : $this->userInfo;
+        $d = (object)$arr;
+        $id = $d->id ?? $this->id;
         $space_details = $id ? self::getDetails($id) : null;
         $building_id = $d->building_id ?? null;
 

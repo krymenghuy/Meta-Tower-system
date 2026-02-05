@@ -388,11 +388,11 @@ public static function options_tenant_with_active_contract($ss)
     }
         static function options_floors($building_id=null, $ss=null){
         //$branch_id = $ss->branch_id;
-        $building_id = $building_id ?? -1;
-
-        $str_building ="1=0";
-        if($building_id > 0){
-            $str_building ='f.building_id = ' . $building_id;
+        // $building_id = $building_id ?? -  1;
+        
+        $str_building ="1=1";
+        if($building_id){
+            $str_building ="f.building_id = $building_id";
         }
         return DB::table(table: 'floors as f')
             ->whereRaw($str_building)
