@@ -34,25 +34,44 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
         'price'         => '1|number',
         'price_type'    => '0|string|default=sqm',
         'status_id'     => '0|number|exists=space_statuses.id|default=1',
+        'code'          => '0|string|max=50',
     ];
-
-    $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+    $code_char  = ['@','.','-','_'];
+    $res = DBX::validateObject($arr, $v_rule, 1, ['code' => $code_char,], $ss->lang, 0, null);
     if ($res->error) return DV::error($res->error);
+
     $inputs = $res->values;
     $d = (object) $inputs;
+
+    if (!empty($d->code)) {
+        $exists = DB::table('building_spaces')
+            ->where('code', $d->code)
+            ->when($id, fn($q) => $q->where('id', '<>', $id))
+            ->exists();
+
+        if ($exists) return DV::error('Space code already exists');
+    }
+
     $floor = DB::table('floors')
         ->select('floor_no')
         ->where('id', $d->floor_id)
         ->first();
-    if (!$floor) {
-        return DV::error('Invalid floor selected.');
-    }
+
+    if (!$floor) return DV::error('Invalid floor selected.');
+
     $created = !$id;
+
     $id = DBX::saveData($ss, 'building_spaces', ['id' => $id], $inputs, [], 1);
 
-    if ($id && $created) {
-        self::createBuildingSpaceCode($branch_id, $d->building_id, $floor->floor_no, $id);
+    if ($id && $created && empty($d->code)) {
+        self::createBuildingSpaceCode(
+            $branch_id,
+            $d->building_id,
+            $floor->floor_no,
+            $id
+        );
     }
+
     $total_space = DB::table('building_spaces')
         ->where('building_id', $d->building_id)
         ->count();
@@ -67,6 +86,7 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
 
     return DV::error('Error saving Building Space ...!');
 }
+
 
 function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space_id)
 {
@@ -154,7 +174,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_number LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
+            $str_search = "(bs.code LIKE '%" .$search_value ."%' OR bs.floor_id LIKE '%" . $search_value . "%' OR b.name LIKE '%" . $search_value . "%' )";
         }
         if($building_id){
             $str_moreWhere .= ' AND bs.building_id = ' . $building_id;
@@ -195,7 +215,10 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
 
     }
 
-    public static function getFormOptions($id,$ss){
+    public function getFormOptions($arr = [],$ss = null){
+        $ss = $ss ? $ss : $this->userInfo;
+        $d = (object)$arr;
+        $id = $d->id ?? $this->id;
         $space_details = $id ? self::getDetails($id) : null;
         $building_id = $d->building_id ?? null;
 

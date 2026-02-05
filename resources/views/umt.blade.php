@@ -61,7 +61,7 @@
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1,2);
-            ScriptManager::render('umt-primary-defer',1,2);
+            ScriptManager::render('primary-defer', 1, 37);
             ScriptManager::render('umt-components',1,19);
         ?>
     </head>

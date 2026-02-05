@@ -118,7 +118,7 @@
     <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
         <div class="kt-header-mobile__logo">
             <a href="javascript:void(0)">
-                <img alt="Logo" src="{{ asset('assets/images/logo/logo.png') }}" />
+                <img alt="Logo" src="{{ asset('assets/images/meta/Meta_logo.png') }}" />
             </a>
         </div>
         <div class="kt-header-mobile__toolbar" style="margin-bottom:10px">
@@ -309,6 +309,7 @@
                         <div class="pb-2" id="_app_content">
                             @include('layouts.prm.dashboardComponent')
                             @include('layouts.common.companyComponent')
+                            @include('layouts.common.locationComponent')
                             @include('layouts.umt.branchManagementComponent')
                             @include('layouts.umt.roleManagementComponent')
                             @include('layouts.prm.tenantComponent')

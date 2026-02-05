@@ -1,15 +1,19 @@
 "use strict";
 var ServiceRequestComponent = (function () {
-
     const mThis = {};
-    mThis.title_prop = "Service Request";
+    mThis.title_prop = "Service Request Component";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
-    mThis.elSearch = mThis.self.querySelector("#_search_service_request");
-    mThis.elStatus = mThis.self.querySelector("#_service_request_status");
-    mThis.elService_type = mThis.self.querySelector("#_service_request_type_id");
-    mThis.elBtnCreate = mThis.self.querySelector("#_btnServiceRequest");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_service_request");
+
+    //Cleanly create elements for use
+    const $ = sel => mThis.self.querySelector(sel);
+    Object.assign(mThis, {
+        elSearch: $("#_search_service_request"),
+        elStatus: $("#_service_request_status"),
+        elService_type: $("#_service_request_type_id"),
+        elBtnCreate: $("#_btnServiceRequest"),
+        divFilter: $("#_divFilter_service_request"),
+    });
 
     mThis.columns = [
         {
@@ -184,7 +188,7 @@ var ServiceRequestComponent = (function () {
     mThis.getFilterData = () => {
         let p = {
             request_status_id: mThis.elStatus.value,
-            service_request_type_id: mThis.elService_type.value,
+            service_type_id: mThis.elService_type.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -283,48 +287,50 @@ var ServiceRequestComponent = (function () {
         });
     };
 
-    mThis.changeStatus = (id, link) => {
+      mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
-        const status_id = tr?.dataset.statusid || "";
-        const inputOptions = {
+        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+
+        const options = {
             title: 'Change Status',
-            dataLabel: "Service Request Status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
+            cssClass: '',
+            backdropClose: true,
+            type: 'select',
+            label: 'Status',
+            valueField: 'status_id',
+            textField: 'name',
+            comfirmButtonText: "Submit",
+            requiredMessage: 'Select one valid status',
+            context: 'success', // success | primary | delete | danger | error
             data: [
                 {status_id: "1", name: "Pending"},
                 {status_id: "2", name: "Approved"},
                 {status_id: "3", name: "Cancelled"},
                 {status_id: "4", name: "Completed"},
-
             ],
-            defaultValue: status_id
+            defaultValue: status_id,
+            onComfirm: (value,btn,me)=>{
+                const payload = {id, status_id: value};
+                vsapi.post(`${mThis.base_url}/prm/service-request/update-status`,payload,{loader:false}).then(res=>{
+                    if(res.status_code === 200){
+                        me.close();
+                        cv_interact.success('Service Request Status has been updated');
+                        mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                    }else{
+                        me.setError(res.error_message || 'Unable to update status');
+                    }
+                })
+            }
         };
-        InputBox2.show(inputOptions, (selected) => {
-            if (!selected) return;
-            if (!AuthManager.allowed(321)) return;
-
-            const payload = {id, status_id: selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service-request/update-status`, payload).then(res => {
-                if (res.status_code === 200) {
-                    InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                } else {
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
+        InputBox.show(options);
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/service-request/from-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // console.log(11,d);
-                
+
                 VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', true, 'All Service Types', null);
                 if (typeof onFinish === 'function') onFinish();
@@ -334,6 +340,7 @@ var ServiceRequestComponent = (function () {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
+
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
@@ -373,22 +380,12 @@ const CreateServiceRequestDialog = (() => {
                             </div>
 
                             <div class="col-12">
-<<<<<<< HEAD
                                 <label style="padding-left:6px;" for="service_type">Floor</label>
                                 <div class="material-input outlined">
                                     <select name="service_type" class="data-input form-control" data-field="floor_id">
                                     </select>
                                 </div>
                             </div>
-=======
-                                <label style="padding-left:6px;" for="service_type">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                            </div>
-                            
->>>>>>> 769b3c61f4779a12f54a767745aaa49d1e51f3c7
                             <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Service</label>
                                 <div class="material-input outlined">
@@ -493,7 +490,7 @@ const CreateServiceRequestDialog = (() => {
                     modifyTitle: "Modify Service Request",
                     targetProp: "request_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/service-request/from-options"].join(""),
+                        endpoint: [main_view.base_url, "/prm/service-request/form-options"].join(""),
                         params: (op) => {
                             return {id: op.id};
                         },
@@ -512,7 +509,7 @@ const CreateServiceRequestDialog = (() => {
                         cssClass: 'btn-vs-save',
                         click: (me, btn) => {
                             const op = me.getData();
-                            
+
                             op.id = me.dataOptions.id;
                             vsapi.call([main_view.base_url, "/prm/service-request/save"].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {

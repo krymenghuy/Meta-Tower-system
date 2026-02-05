@@ -28,15 +28,9 @@ class ServiceRequest extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'tenant_id' => '1|number|exists=tenants.id', 
+            'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
-<<<<<<< HEAD
-            'building_space_id' => '0|number|exists=building_spaces.id',
-            'floor_id' => '0|number',
-            'space_id' => '0|number',
-=======
             'space_id' => '1|number|exists=building_spaces.id',
->>>>>>> 769b3c61f4779a12f54a767745aaa49d1e51f3c7
             'service_type_id' => '1|number|exists=service_types.id',
             'priority' => '0|enum=low,medium,high,urgent|default=medium',
             'description' => '0|string|0-1000',
@@ -59,16 +53,16 @@ class ServiceRequest extends VSModel
         );
 
         if ($res->error) {
-            Log::error('ServiceRequest validation failed', [
-                'error' => $res->error,
-                'input_data' => $arr
-            ]);
+            // return DV::error('ServiceRequest validation failed', [
+            //     'error' => $res->error,
+            //     'input_data' => $arr
+            // ]);
             return DV::error($res->error);
         }
 
         $input = $res->values;
 
-        Log::info('ServiceRequest validation passed', ['validated_data' => $input]);
+        //Log::info('ServiceRequest validation passed', ['validated_data' => $input]);
 
         // Handle building_space_id - can come from building_id, floor_id, or building_space_id
         if (!isset($input['space_id']) || empty($input['space_id'])) {
@@ -99,22 +93,12 @@ class ServiceRequest extends VSModel
             $input['priority'] = 'medium';
         }
 
-<<<<<<< HEAD
-        // Remove fields that shouldn't be saved to service_requests table
-        $fieldsToRemove = ['floor_id', 'service_price', 'unit_type'];
-        foreach ($fieldsToRemove as $field) {
-            if (isset($input[$field])) {
-                Log::info("Removing field from insert: {$field}", ['value' => $input[$field]]);
-                unset($input[$field]);
-            }
-=======
         // Convert scheduled_date and completed_date to integer format YYYYMMDD if provided
         if (isset($input['scheduled_date'])) {
             $input['scheduled_date'] = (int) date('Ymd', strtotime($input['scheduled_date']));
         }
         if (isset($input['completed_date'])) {
             $input['completed_date'] = (int) date('Ymd', strtotime($input['completed_date']));
->>>>>>> 769b3c61f4779a12f54a767745aaa49d1e51f3c7
         }
 
         Log::info('Final data before save', ['data' => $input]);
@@ -175,6 +159,9 @@ class ServiceRequest extends VSModel
                 OR st.name LIKE '%" . $search_value . "%'
             )";
         }
+        if ($tenant_id) {
+            $str_moreWhere .= ' AND sr.tenant_id = ' . intval($tenant_id);
+        }
 
         if ($request_status_id) {
             $str_moreWhere .= ' AND sr.request_status_id = ' . intval($request_status_id);
@@ -187,9 +174,7 @@ class ServiceRequest extends VSModel
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
         $query = DB::table('service_requests as sr')
-            ->join('contracts as c', 'c.id', '=', 'sr.tenant_id')  // ✅ Fixed typo
-            ->where('c.status_id', '=', 2)  // ✅ Only active contracts
-            ->join('tenants as t', 't.id', '=', 'c.tenant_id')  // ✅ Added tenant join
+            ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('service_types as st', 'st.id', '=', 'sr.service_type_id')
@@ -241,8 +226,8 @@ class ServiceRequest extends VSModel
                 sr.tenant_id,
                 sr.space_id,
                 sr.service_id,
-                s.price as service_price,        
-                s.unit_type as unit_type,          
+                s.price as service_price,
+                s.unit_type as unit_type,
                 sr.service_type_id,
                 sr.request_date,
                 sr.description,
@@ -260,46 +245,48 @@ class ServiceRequest extends VSModel
     public static function getFormOptions($ss, $id)
     {
         $request_details = $id ? self::getServiceRequestDetails($id) : null;
-        
+
         // Get current tenant ID if editing
-        $currentTenantId = $request_details->tenant_id ?? null;
+        // $currentTenantId = $request_details->tenant_id ?? null;
 
         // Get tenants with active contracts
-        $tenants = GeneralSettings::options_tenant_with_active_contract($ss, $currentTenantId);
+        // $tenants = GeneralSettings::options_tenant_with_active_contract($ss, $currentTenantId);
+        // $tenants = GeneralSettings::options_tenant($ss);
 
-        Log::info('ServiceRequest getFormOptions', [
-            'request_id' => $id,
-            'current_tenant_id' => $currentTenantId,
-            'tenants_count' => $tenants->count(),
-            'tenants' => $tenants->toArray()
-        ]);
+        // Log::info('ServiceRequest getFormOptions', [
+        //     'request_id' => $id,
+        //     'current_tenant_id' => $currentTenantId,
+        //     'tenants_count' => $tenants->count(),
+        //     // 'tenants' => $tenants->toArray()
+        // ]);
 
         return (object) [
             'request_details' => $request_details,
             'service_types' => GeneralSettings::options_service_types($ss),
-            'tenants' => $tenants,
+            'tenants' => GeneralSettings::options_tenant($ss),
             'services' => GeneralSettings::options_service($ss),
             'building_spaces' => GeneralSettings::options_building_space($ss),
             'request_statuses' => GeneralSettings::options_request_status($ss)
         ];
     }
 
-    public function delete($id = null)
+    public function deleteById($id = null)
     {
         $id = $id ?? $this->id;
+        $x = self::deleteBy(['id'=>$id]);
+        return DV::depends($x, 'Service Request Delete failed');
 
-        Log::info('ServiceRequest delete called', ['id' => $id]);
+        // Log::info('ServiceRequest delete called', ['id' => $id]);
+        // $deleted = DB::table('service_requests')
+        //     ->where('id', $id)->delete();
 
-        $deleted = DB::table('service_requests')
-            ->where('id', $id)->delete();
+        // if ($deleted) {
+        //     Log::info('ServiceRequest deleted successfully', ['id' => $id]);
+        //     return DV::depends($deleted, ['action' => 'deleted']);
+        // }
 
-        if ($deleted) {
-            Log::info('ServiceRequest deleted successfully', ['id' => $id]);
-            return DV::depends($deleted, ['action' => 'deleted']);
-        }
-
-        Log::error('ServiceRequest delete failed', ['id' => $id]);
-        return DV::error('Delete failed.');
+        // Log::error('ServiceRequest delete failed', ['id' => $id]);
+        // return DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)
@@ -321,13 +308,13 @@ class ServiceRequest extends VSModel
             'request_status_id' => $request_status_id,
             'update_user' => $ss->name ?? 'System',
             'update_uid' => $ss->uid ?? null,
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Ymd')
         ];
 
         // If status is completed, set completed_date
         $statusName = DB::table('request_status')->where('id', $request_status_id)->value('name');
         if (strtolower($statusName) === 'completed') {
-            $data['completed_date'] = date('Y-m-d H:i:s');
+            $data['completed_date'] = (int) date('Ymd');
         }
 
         $updated = DB::table('service_requests')

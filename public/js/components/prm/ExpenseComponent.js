@@ -10,9 +10,9 @@ var ExpenseComponent =   ( () => {
     mThis.elSpace = mThis.self.querySelector('#space_id');
     mThis.elPaymentMethod = mThis.self.querySelector('#payment_method_id');
     mThis.elFilter_status = mThis.self.querySelector('#payment_status');
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_expense");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
-    mThis.elSearch = mThis.self.querySelector("#_search_expense");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_expense");
+    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elSearch = mThis.self.querySelector("#_search_expense");
 
 
     mThis.cols = [
@@ -325,7 +325,7 @@ var ExpenseComponent =   ( () => {
         //     defaultValue: status_id
         // };
   
-        // InputBox2.show(inputOptions,(selected)=>{
+        // InputBox2.show(inputOptions,(selected)=>{    
         //     if(!selected) return;
         //     if(!AuthManager.allowed(321)) return;
             

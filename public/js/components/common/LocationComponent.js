@@ -7,7 +7,7 @@ var LocationComponent = (() =>{
     mThis.self = main_view.VSAppContent.querySelector('#_sttn_locationsComponent');
     mThis.apiCluster ='locapi';
 
-    mThis.show = (options=null) => {
+    mThis.show = (options=null) => {  
       CountryListPanel.displayCountries();
       let tab_view_name ='cities';
       ZoneTabView.show(mThis.selected_country_id,tab_view_name,false);
@@ -38,6 +38,7 @@ var LocationComponent = (() =>{
 
           }
       };
+      if (!AuthManager.allowed(407)) return;
       CountryDialog.show(options);
 
     };
@@ -55,6 +56,8 @@ var LocationComponent = (() =>{
                 mThis.displayCountries();
             },
             };
+            if (!AuthManager.allowed(408)) return;
+
             CountryDialog.show(op);
             return;
         }
@@ -62,6 +65,7 @@ var LocationComponent = (() =>{
         lnk = VSUtil.closestLimited(e.target, 'a._sttn_loc_delete_country');
         if (lnk) {
             const p = { id: lnk.dataset.id };
+            if (!AuthManager.allowed(409)) return;
             if (!p.id) p.id = 0;
             cv_interact.confirm('Delete this country?', { title: 'Delete Country', context: 'delete' }, function (e) {
             if (e) {
@@ -91,7 +95,7 @@ var LocationComponent = (() =>{
 
             return;
         }
-     };
+        };
 
 
     mThis.displayCountries = function(){
@@ -145,7 +149,6 @@ var LocationComponent = (() =>{
  })();
 //end::CountryListpanel
 
-
 //begin::ZoneTabView
 var ZoneTabView =  ( () =>{
   const mThis = {};
@@ -155,7 +158,6 @@ var ZoneTabView =  ( () =>{
 
   mThis.cur_view = 'cities';
   mThis.tabHeaders = mThis.self.querySelector('div.tab-header');
-
  mThis.tabHeaders.onclick = e => {
   e.preventDefault();
 
@@ -285,32 +287,35 @@ var ZoneTabView =  ( () =>{
 
   //begin::THIS CODE BLOCK IS NOT PART OF GENERAL SRCRIPT FOR TAB_VIEW OBJECT
          //begin::define specific elements, tables within this ZoneTabView tasks
-            const div = LocationComponent.self;
-            mThis.tblCities = div.querySelector('#_sttn_loc_tblCities');
-            mThis.tblDistricts =div.querySelector('#_sttn_loc_tblDistricts');
-            mThis.tblCommunes = div.querySelector('#_sttn_tblCommunes');
-            mThis.tblVillages = div.querySelector('#_sttn_loc_tblVillages');
+           const div = LocationComponent.self;
+           const $ = sel => div.querySelector(sel);
+           
+            Object.assign(mThis, {
+                    tblCities: $("#_sttn_loc_tblCities"),
+                    tblDistricts: $("#_sttn_loc_tblDistricts"),
+                    tblCommunes: $("#_sttn_tblCommunes"),
+                    tblVillages: $("#_sttn_loc_tblVillages"),
 
+                    tblCities_body: $("#_sttn_loc_tblCities_body"),
+                    tblDistricts_body: $("#_sttn_loc_tblDistricts_body"),
+                    tblCommunes_body: $("#_sttn_loc_tblCommunes_body"),
+                    tblVillages_body: $("#_sttn_loc_tblVillages_body"),
 
-            mThis.tblCities_body = div.querySelector('#_sttn_loc_tblCities_body');
-            mThis.tblDistricts_body = div.querySelector('#_sttn_loc_tblDistricts_body');
-            mThis.tblCommunes_body  = div.querySelector('#_sttn_loc_tblCommunes_body');
-            mThis.tblVillages_body  = div.querySelector('#_sttn_loc_tblVillages_body');
+                    lnkAddCity: $("#_sttn_loc_lnkNewCity"),
+                    lnkAddDistrict: $("#_sttn_loc_lnkNewDistrict"),
+                    lnkAddCommune: $("#_sttn_loc_lnkNewCommune"),
+                    lnkAddVillage: $("#_sttn_loc_lnkNewVillage"),
 
+                    // Filters
+                    elFilter_city: $("#_sttn_loc_filter_city"),
+                    elFilter_city_district: $("#_sttn_loc_filter_city_district"),
+                    elFilter_district: $("#_sttn_loc_filter_district"),
+                    elFilter_commune: $("#_sttn_loc_filter_commune"),
+                    elFilter_village: $("#_sttn_loc_filter_village"),
+                    elFilter_city_village: $("#_sttn_loc_filter_city_village"),
+                    elFilter_district_village: $("#_sttn_loc_filter_district_village"),
+            });
 
-            mThis.lnkAddCity= div.querySelector('#_sttn_loc_lnkNewCity');
-            mThis.lnkAddDistrict = div.querySelector('#_sttn_loc_lnkNewDistrict');
-            mThis.lnkAddCommune = div.querySelector('#_sttn_loc_lnkNewCommune');
-            mThis.lnkAddVillage = div.querySelector('#_sttn_loc_lnkNewVillage');
-
-            mThis.elFilter_city = div.querySelector('#_sttn_loc_filter_city'); //City Filter on District Panel. CommuneList requires TWO filters (City,District)
-            mThis.elFilter_city_district = div.querySelector('#_sttn_loc_filter_city_district'); // City filter on CommuneListPanel
-            mThis.elFilter_district = div.querySelector('#_sttn_loc_filter_district')
-            mThis.elFilter_commune = div.querySelector('#_sttn_loc_filter_commune');
-            mThis.elFilter_village = div.querySelector('#_sttn_loc_filter_village');
-
-            mThis.elFilter_city_village = div.querySelector('#_sttn_loc_filter_city_village');
-            mThis.elFilter_district_village = div.querySelector('#_sttn_loc_filter_district_village');
 
             mThis.contry_id = null;
 
@@ -571,8 +576,8 @@ var ZoneTabView =  ( () =>{
                                 '<td class="col_city_name text-yp-custom">',c.name,'</td>',
                                 '<td class="col_city_name text-yp-custom">',c.name_kh,'</td>',
                                 '<td class="col_action">',
-                                '<a href="#" class="_sttn_loc_edit_city" data-cityid="',c.id,'" data-countryid="',c.country_id,'"><i class="fa fa-edit" style="color:#27444a;font-size:1.3em"></i></a>&nbsp;&nbsp;',
-                                '<a href="#" class="_sttn_loc_delete_city" data-cityid="',c.id,'"><i class="fa-regular fa-trash-can text-warning" style="font-size:1.3em"></i></a>',
+                                '<a href="#" class="_sttn_loc_edit_city" data-cityid="',c.id,'" data-countryid="',c.country_id,'"><i class="fa fa-edit text-warning" style="font-size:1.2em"></i></a>&nbsp;&nbsp;',
+                                '<a href="#" class="_sttn_loc_delete_city" data-cityid="',c.id,'"><i class="fa-regular fa-trash-can text-danger" style="font-size:1.2em"></i></a>',
                                 '</td>',
                                 '</tr>'].join('');
                             i++;
@@ -598,7 +603,7 @@ var ZoneTabView =  ( () =>{
              p.city_id = city_id;
              mThis.tblDistricts_body.innerHTML = '';
 
-             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
+             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
                if(res.status_code===200){
                 const rows = res.data;
                 let i =0, c = null, html = '';
@@ -611,8 +616,8 @@ var ZoneTabView =  ( () =>{
                     '<td class="col_city_name">',c.city_name,'</td>',
                     '<td>',c.country_name,'</td>',
                     '<td class="col_action">',
-                    '<a href="#" class="_sttn_loc_edit_district" data-id="',c.id,'" data-cityid="',c.city_id,'"><i class="fa fa-edit" style="color:green;font-size:1.2em"></i></a>&nbsp;&nbsp;',
-                    '<a href="#" class="_sttn_loc_delete_district" data-id="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.4em"></i></a>',
+                    '<a href="#" class="_sttn_loc_edit_district" data-id="',c.id,'" data-cityid="',c.city_id,'"><i class="fa fa-edit text-warning" style="font-size:1.2em"></i></a>&nbsp;&nbsp;',
+                    '<a href="#" class="_sttn_loc_delete_district" data-id="',c.id,'"><i class="fa-regular fa-trash-can text-danger" style="font-size:1.2em"></i></a>',
                     '</td>',
                     '</tr>'].join('');
 
@@ -635,7 +640,7 @@ var ZoneTabView =  ( () =>{
                 if(!district_id) district_id = mThis.elFilter_district.value;
                 p.district_id = district_id;
                 mThis.tblCommunes_body.innerHTML = '';
-                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
+                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
                   if(res.status_code===200){
                         let rows = res.data;
 
@@ -649,8 +654,8 @@ var ZoneTabView =  ( () =>{
                           '<td class="col_district_name">',c.district,'</td>',
                           '<td class="col_city_name">',c.city,'</td>',
                           '<td class="col_action">',
-                          '<a href="#" class="_sttn_loc_edit_commune" data-id="',c.id,'" data-districtid="',c.district_id,'"><i class="fa fa-edit" style="color:green;font-size:1.2em"></i></a>&nbsp;&nbsp;',
-                          '<a href="#" class="_sttn_loc_delete_commune" data-id="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.3em"></i></a>',
+                          '<a href="#" class="_sttn_loc_edit_commune" data-id="',c.id,'" data-districtid="',c.district_id,'"><i class="fa fa-edit text-warning" style="font-size:1.2em"></i></a>&nbsp;&nbsp;',
+                          '<a href="#" class="_sttn_loc_delete_commune" data-id="',c.id,'"><i class="fa-regular fa-trash-can text-danger" style="font-size:1.2em"></i></a>',
                           '</td>',
                           '</tr>'].join('');
 
@@ -675,7 +680,7 @@ var ZoneTabView =  ( () =>{
                 p.commune_id = commune_id;
                 mThis.tblVillages_body.innerHTML = '';
 
-                vsapi.call([mThis.base_url,'/api/location/villages'].join(''),p,{loader:false,cluster:LocationComponent.apiCluster}).then(res=>{
+                vsapi.call([mThis.base_url,'/api/location/villages'].join(''),p,false,LocationComponent.apiCluster).then(res=>{
                   if(res.status_code===200){
                         let rows = res.data;
 
@@ -690,8 +695,8 @@ var ZoneTabView =  ( () =>{
                           '<td class="col_district_name">',c.district,'</td>',
                         //   '<td class="col_city_name">',c.city,'</td>',
                           '<td class="col_action">',
-                          '<a href="#" class="_sttn_loc_edit_village" data-id="',c.id,'" data-communeid="',c.commune_id,'"><i class="fa fa-edit" style="color:green;font-size:1.2em"></i></a>&nbsp;&nbsp;',
-                          '<a href="#" class="_sttn_loc_delete_village" data-id="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.3em"></i></a>',
+                          '<a href="#" class="_sttn_loc_edit_village" data-id="',c.id,'" data-communeid="',c.commune_id,'"><i class="fa fa-edit text-warning" style="font-size:1.2em"></i></a>&nbsp;&nbsp;',
+                          '<a href="#" class="_sttn_loc_delete_village" data-id="',c.id,'"><i class="fa-regular fa-trash-can text-danger" style="font-size:1.2em"></i></a>',
                           '</td>',
                           '</tr>'].join('');
 
@@ -714,7 +719,7 @@ const CountryDialog = (() => {
 
     self.show = (op) => {
 
-        dialog = dialog || new GeneralDialog({
+        dialog = new GeneralDialog({
             cssClass: "modal-lg",
             backdrop: "static",
             keyboard: true,
@@ -798,7 +803,7 @@ const CountryDialog = (() => {
 
                 me.deleteFlagPhoto = (country_id)=>{
                     const p = {"id":country_id};
-                    vsapi.call([main_view.base_url,'/api/location/country/delete-flag'].join(''),p,{loader:false}).then(res =>{
+                    vsapi.call([main_view.base_url,'/api/location/country/delete-flag'].join(''),p,false,false).then(res =>{
                         if(res.status_code == 200){
                           me.flagImageBox.setImage(null);
                           cv_interact.info('Flag photo was deleted!');
@@ -808,7 +813,7 @@ const CountryDialog = (() => {
 
                 me.saveFlagPhoto = (flag, country_id)=>{
                     const p = {"flag": flag, "id" : country_id};
-                    vsapi.call([main_view.base_url,'/api/location/country/save-flag'].join(''), p,{loader:false}).then(res =>{
+                    vsapi.call([main_view.base_url,'/api/location/country/save-flag'].join(''), p,false).then(res =>{
                         if(res.status_code == 200){
                           me.flagImageBox.setImage(res.data.image_url);
                           cv_interact.success('Flag photo was deleted!');
@@ -860,7 +865,7 @@ const CountryDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
                         p.flag = me.flagImageBox? me.flagImageBox.getImage(): '';
-                        vsapi.call([main_view.base_url, "/api/location/country/save"].join(""),p,{agent:btn,loader:false}).then((res) => {
+                        vsapi.call([main_view.base_url, "/api/location/country/save"].join(""),p,btn,false,false).then((res) => {
                             if (res.status_code == 200) {
                                 me.modal.hide(true, p);
                             } else cv_interact.error(res.error_message);
@@ -883,7 +888,8 @@ const ZoneDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
+
+        dialog = new GeneralDialog({
             cssClass: "modal-md modal-content-vs-dialog",
             backdrop: "static",
             keyboard: true,
@@ -958,7 +964,7 @@ const ZoneDialog = (() => {
                             p.commune_id = me.dataOptions.commune_id;
                         }
 
-                        vsapi.call([main_view.base_url, `/api/location/${op.zone_type}/save`].join(""),p,{loader:false,agent:btn}).then((res) => {
+                        vsapi.call([main_view.base_url, `/api/location/${op.zone_type}/save`].join(""),p,btn,false,false).then((res) => {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
                                     me.dataOptions.onClose();
