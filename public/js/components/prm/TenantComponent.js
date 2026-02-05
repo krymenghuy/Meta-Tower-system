@@ -247,8 +247,8 @@ var TenantComponent = new(function () {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'create_contract': {
-                        mThis.createContract(id, menuLink);
+                    case 'view_profile': {
+                        mThis.ViewProfile(id, menuLink);
                         break;
                     }
                     case 'delete_tenant': {
@@ -323,16 +323,16 @@ var TenantComponent = new(function () {
         let html = `<div class="row g-3">`;
         console.log(8888,data);
         
-        if (Array.isArray(data) && data[0]) {
+        if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                const status = d.status || "Pending";
+                const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
-                    case "Active":
+                    case "active":
                         statusClass = "badge text-dark bg-success-subtle border border-success";
                         
                         break;
-                    case "Inactive":
+                    case "inactive":
                         statusClass = "badge text-dark bg-danger-subtle border border-danger";
                         
                         break;
@@ -373,14 +373,32 @@ var TenantComponent = new(function () {
                                     </div>
                                     <div class="col-2"></div>
                                     <div class="col-6">
-                                        <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap  text-prm-custom">
-                                                Lease Expiry
-                                            </span>
-                                            <small class="text-muted mb-0">
-                                                ${d.end_date}
-                                            </small>
-                                        </div>
+                                        ${
+                                            d.end_date
+                                            ? `
+                                                <div class="d-flex flex-column text-center gap-1">
+                                                    <span class="text-prm-custom fw-semibold">
+                                                        Lease Expiry
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        ${d.end_date}
+                                                    </small>
+                                                </div>
+                                            `
+                                            : `
+                                                <div class="text-end">
+                                                    <a href="javascript:void(0)" 
+                                                    class="create-tenant-contract fw-semibold"
+                                                    data-id="${d.id}" data-name="${d.name}">
+                                                        <span class="tool-tip">
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-4"></i>
+                                                            <span class="tool-tiptext fs-6">Create Contract</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            `
+                                        }
+
                                     </div>
                                 </div>
                                 <div class="card_container" style="max-width: 250px;">
@@ -427,7 +445,7 @@ var TenantComponent = new(function () {
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
             seeProfileInfo.forEach((link) => {
                 link.addEventListener("click", (e) => {
-                    const tenantId = e.target.dataset.id;
+                    const tenantId = e.currentTarget.dataset.id;
                     mThis.tenant_id = tenantId;
                     mThis.showPage('profile_view',tenantId);
                     //const employeeData = data.find((emp) => emp.id == employeeId);
@@ -452,13 +470,22 @@ var TenantComponent = new(function () {
                     // }
                 });
             });
+            const createContract = mThis.cardViewContainer.querySelectorAll(".create-tenant-contract");
+            createContract.forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const tenantId = e.currentTarget.dataset.id;
+                    mThis.tenant_id = tenantId;
+                    ContractDialog.show(tenantId);
+                   
+                });
+            });
             const container = mThis.cardViewContainer;
             const te_parent = container;
             te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
             te_parent.classList.add("overflow-y-auto");
-            window.onresize = () => {
+            window.addEventListener('resize', () => {
                 te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-            };
+            });
     };
 
     mThis.renderView = () => {
@@ -956,11 +983,14 @@ var TenantComponent = new(function () {
             // }
         });
     };
+    function formatStatus (item) {
+        return `<span class=" bg-warning px-2 d-block w-100">${item.name}</span>`;
+    }
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data :{};
-                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'name', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id',formatStatus, true, 'All Statuses', null);
 
                 if (typeof onFinish === 'function') onFinish();
             });
