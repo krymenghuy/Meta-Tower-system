@@ -41,7 +41,7 @@ class Invoice
             'paid_amount'       => '0|numeric|min:0',
             'invoice_type'      => '0|string|max:50',
             'purpose'           => '0|string|max:200',
-            'remarks'              => '0|string|max:500',
+            'remarks'           => '0|string|max:500',
             'currency_code'     => '0|string|size:3',
             'invoice_class'     => '0|string|max:20',
             'unit_id'           => '0|integer',
@@ -134,6 +134,22 @@ class Invoice
         return (string) $invoiceCode;
     }
 
+    // public static function createInvoiceNumber(): string
+    // {
+    //     $year = now()->format('y');           // 26 in 2026
+    //     $prefix = 'MP' . $year;
+    //     $last = DB::table('invoices')
+    //         ->where('invoice_number', 'like', $prefix . '-%')
+    //         ->orderByDesc('id')
+    //         ->value('invoice_number');
+    //     $nextSeq = 1;
+    //     if ($last) {
+    //         $nextSeq = (int) substr($last, strlen($prefix) + 1) + 1;
+    //     }
+    //     return sprintf('%s-%04d', $prefix, $nextSeq);
+    // }
+
+
     public static function checkDuplicateSpaceId($building_id, $floor_id, $tenant_id, $invoice_id = null)
     {
         $query = DB::table('invoices as i')
@@ -210,42 +226,58 @@ class Invoice
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     public static function getInvoiceDetails($id)
-{
-    $row = DB::table('invoices as i')
-        ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
-        ->leftJoin('space_types as st', 'st.id', '=', 'i.space_type_id')
-        ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
-        ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
-        ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-        ->leftJoin('buildings as b', 'b.id', '=', 'i.building_id')
-        ->leftJoin('floors as f', 'f.id', '=', 'i.floor_id')
-        ->where('i.id', $id)
-        ->select(
-            'i.id',
-            't.name as tenant_name',
-            't.legal_name as tenant_legal_name',
-            't.phone_number as tenant_phone',
-            't.email as tenant_email',
-            't.address as tenant_address',
-            'st.name as space_type_name',
-            'bs.code as space_code',
-            'b.name as building_name',
-            'f.name as floor_name',
-            'ct.price as contract_price',
-            'ct.sqm_size as contract_sqm_size',
-            'ct.price_type as price_type_id',
-            'ct.start_date as contract_start_date',
-            'ct.end_date as contract_end_date',
-            'ps.name as payment_status_name',
-        )
+    {
+        $row = DB::table('invoices as i')
+            ->leftJoin('tenants as t', 't.id', '=', 'i.tenant_id')
+            ->leftJoin('space_types as st', 'st.id', '=', 'i.space_type_id')
+            ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
+            ->leftJoin('contracts as ct', 'ct.id', '=', 'i.contract_id')
+            ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->leftJoin('buildings as b', 'b.id', '=', 'i.building_id')
+            ->leftJoin('floors as f', 'f.id', '=', 'i.floor_id')
+            ->where('i.id', $id)
+            ->select(
+                'i.id',
+                'i.invoice_number',
+                'i.tenant_id',
+                'i.building_id',
+                'i.floor_id',
+                'i.space_id',
+                'i.amount',
+                'i.due_date',
+                'i.invoice_date',
+                'i.created_at',
+                'i.updated_at',
+                'i.payment_status_id',
+                'i.invoice_type',
+                'i.purpose',
+                'i.remarks',
+                'i.currency_code',
+                'i.contract_id',
+                't.name as tenant_name',
+                't.legal_name as tenant_legal_name',
+                't.phone_number as tenant_phone',
+                't.email as tenant_email',
+                't.address as tenant_address',
+                'st.name as space_type_name',
+                'bs.code as space_code',
+                'b.name as building_name',
+                'f.name as floor_name',
+                'ct.price as contract_price',
+                'ct.sqm_size as contract_sqm_size',
+                'ct.price_type as price_type_id',
+                'ct.start_date as contract_start_date',
+                'ct.end_date as contract_end_date',
+                'ps.name as payment_status_name',
+            )
         ->first();
-    return $row;
+        return $row;
 }
 
     public static function getFormOptions($id, $ss)
     {
         return (object) [
-            'invoice_details' => $id ? self::invoiceDetails($id) : null,
+            'invoice_details' => $id ? self::getInvoiceDetails($id) : null,
             'buildings'       => GeneralSettings::options_building($ss),
             'statuses'        => GeneralSettings::options_payment_status($ss),
 
