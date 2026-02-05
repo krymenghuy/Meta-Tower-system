@@ -287,6 +287,11 @@ var ServiceRequestComponent = (function () {
         });
     };
   
+      function formatStatus(item){
+        return `<span class="badge text-danger bg-light" >${item.name}</span>`;
+      }
+
+
       mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
@@ -295,10 +300,10 @@ var ServiceRequestComponent = (function () {
             title: 'Change Status',
             cssClass: '',
             backdropClose: true,
-            type: 'select',
+            // type: 'select',
             label: 'Status',
             valueField: 'status_id',
-            textField: 'name',
+            textField: formatStatus,
             comfirmButtonText: "Submit",
             requiredMessage: 'Select one valid status',
             context: 'success', // success | primary | delete | danger | error
