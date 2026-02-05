@@ -983,14 +983,12 @@ var TenantComponent = new(function () {
             // }
         });
     };
-    function formatStatus (item) {
-        return `<span class=" bg-warning px-2 d-block w-100">${item.name}</span>`;
-    }
+  
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data :{};
-                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id',formatStatus, true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id','name', true, 'All Statuses', null);
 
                 if (typeof onFinish === 'function') onFinish();
             });
