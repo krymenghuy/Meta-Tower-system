@@ -1,0 +1,5 @@
+.choices[data-type*="select-one"] .choices__inner {
+ padding-right: 3px !important;
+}
+/* Override Choices default padding for custom card templates */ 
+.choices__list--dropdown .choices__item--selectable, .choices__list[aria-expanded] .choices__item--selectable { padding-right: unset !important; }
