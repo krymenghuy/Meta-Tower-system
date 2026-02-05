@@ -559,7 +559,7 @@ var TenantComponent = new(function () {
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">Unit</div>
-                                    <div class="fw-semibold">${data.code ?? 'N/A'}</div>
+                                    <div class="fw-semibold">${data.space_code ?? 'N/A'}</div>
                                 </div>
                             </div>
                             <div class="col-6">
