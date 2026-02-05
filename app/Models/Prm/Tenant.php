@@ -208,9 +208,10 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $date_of_birth = DBX::formatDate("t.date_of_birth", 'date_of_birth');
         $row = DB::table('tenants as t')
             ->leftJoin('contracts as c', 'c.tenant_id', '=', 't.id')
+            ->leftJoin('building_spaces as bs','bs.id','=','c.space_id')
             ->join('tenant_statuses as ts','ts.id','=','t.status_id')
             ->where('t.id',$id)
-            ->selectRaw("t.id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date ")
+            ->selectRaw("t.id,t.name,t.code,t.national_id,passport_number,$date_of_birth,t.nationality_id,t.photo_file_name,t.sex,t.status_id,ts.name as status,t.legal_name,t.phone_number,t.email,t.address,c.price,c.price_type,c.sqm_size,$start_date,$end_date,bs.code as space_code ")
             ->first();
             if($row){
                 $img = self::profilePicture($id,$ss);
