@@ -36,7 +36,7 @@
         </div>
         <div id="_tenant_card_view" class="my-3 px-3"></div>
         <div id="tenant_card_container_pagination" class="px-3 justify-content-start"></div>
-        <div id="_tenant_list_view" class="mt-3  rounded-2"></div>
+        <div id="_tenant_list_view" class="mt-3 overflow-y-auto rounded-2"></div>
     </div>
 </div>
 

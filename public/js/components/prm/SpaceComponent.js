@@ -412,7 +412,6 @@ var SpaceComponent = new (function () {
                                     <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                             </div>
-
                             <div>
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>

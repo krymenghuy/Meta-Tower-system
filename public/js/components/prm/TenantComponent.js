@@ -39,56 +39,73 @@ var TenantComponent = new(function () {
             className: "align-middle",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="font-size:12px;">${data.name ?? ''}</span>
+                return `<span class="d-block text-prm-custom" style="font-size:12px;">${data.name ?? ''}</span>
                         <small class="d-block text-muted">${sexLabel}</small>`;
+            }
+        },
+        {
+            title: "Date of Birth",
+            className: "align-middle ",
+            data: (data) => {
+                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? ''}</span>`;
             }
         },
         {
             title: "National ID",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-yp-custom">${data.national_id ?? ''}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? ''}</span>`;
             }
         },
         {
-            title: "Passport Number",
+            title: "Passport",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-yp-custom">${data.passport_number ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Legal Name",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-yp-custom">${data.legal_name ?? ''}</span>`;
+                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? ''}</span>`;
             }
         },
         {
             title: "Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-primary" style="font-size:12px;"><i class="fa-solid text-success px-1 fa-envelope"></i> ${data.email ?? ""}</span>
-                <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
+                `<span class="d-block text-prm-custom"><i class="fa-solid text-muted px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
+                 <span class="d-block text-muted"><i class="fa-solid text-muted px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
-            title: "Address",
-            className: "align-middle",
+            title: "Status",
+            className: "align-middle text-center",
             data: (data) => {
+
+                const status = (data.status ?? '').toLowerCase();
+
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+
+                if (status === 'pending') {
+                    cls = 'badge text-dark bg-warning-subtle border border-warning';
+                } 
+                else if (status === 'inactive') {
+                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                } 
+                else if (status === 'active') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+
                 return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i>
-                        <span class="text-wrap text-break" style="word-break:break-word;">${data.address ?? 'N/A'}</span>
-                    </div>
+                    <span class="${cls} text-capitalize d-inline-block text-center"
+                        style="min-width:70px"
+                        data-status_id="${data.status_id}">
+                        ${data.status ?? ''}
+                    </span>
                 `;
-            }
+            },
         },
+
         {
             title: "Updated By",
             className: 'align-middle',
             data: (data) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
                     <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
@@ -125,7 +142,7 @@ var TenantComponent = new(function () {
             perPage: 10,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase text-nowrap',
             rowCreated: (data, index, tr) => {
                 // console.log(9090,tr);
                 
@@ -230,8 +247,8 @@ var TenantComponent = new(function () {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'create_contract': {
-                        mThis.createContract(id, menuLink);
+                    case 'view_profile': {
+                        mThis.ViewProfile(id, menuLink);
                         break;
                     }
                     case 'delete_tenant': {
@@ -306,16 +323,16 @@ var TenantComponent = new(function () {
         let html = `<div class="row g-3">`;
         console.log(8888,data);
         
-        if (Array.isArray(data) && data[0]) {
+        if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-                const status = d.status || "Pending";
+                const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
-                    case "Active":
+                    case "active":
                         statusClass = "badge text-dark bg-success-subtle border border-success";
                         
                         break;
-                    case "Inactive":
+                    case "inactive":
                         statusClass = "badge text-dark bg-danger-subtle border border-danger";
                         
                         break;
@@ -337,7 +354,7 @@ var TenantComponent = new(function () {
                                         <div class="flex items-start justify-between mb-6">
                                             <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
                                             <div class="d-flex align-items-center mt-1 gap-2">
-                                                    <span class="${statusClass}">${status}</span>
+                                                    <span class="${statusClass}" style="min-width:70px">${status}</span>
                                             </div>
                                         </div>
                                         <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
@@ -356,14 +373,32 @@ var TenantComponent = new(function () {
                                     </div>
                                     <div class="col-2"></div>
                                     <div class="col-6">
-                                        <div class="d-flex flex-column text-center gap-1">
-                                            <span class="text-nowrap  text-prm-custom">
-                                                Lease Expiry
-                                            </span>
-                                            <small class="text-muted mb-0">
-                                                ${d.end_date}
-                                            </small>
-                                        </div>
+                                        ${
+                                            d.end_date
+                                            ? `
+                                                <div class="d-flex flex-column text-center gap-1">
+                                                    <span class="text-prm-custom fw-semibold">
+                                                        Lease Expiry
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        ${d.end_date}
+                                                    </small>
+                                                </div>
+                                            `
+                                            : `
+                                                <div class="text-end">
+                                                    <a href="javascript:void(0)" 
+                                                    class="create-tenant-contract fw-semibold"
+                                                    data-id="${d.id}" data-name="${d.name}">
+                                                        <span class="tool-tip">
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-4"></i>
+                                                            <span class="tool-tiptext fs-6">Create Contract</span>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            `
+                                        }
+
                                     </div>
                                 </div>
                                 <div class="card_container" style="max-width: 250px;">
@@ -410,7 +445,7 @@ var TenantComponent = new(function () {
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
             seeProfileInfo.forEach((link) => {
                 link.addEventListener("click", (e) => {
-                    const tenantId = e.target.dataset.id;
+                    const tenantId = e.currentTarget.dataset.id;
                     mThis.tenant_id = tenantId;
                     mThis.showPage('profile_view',tenantId);
                     //const employeeData = data.find((emp) => emp.id == employeeId);
@@ -435,13 +470,22 @@ var TenantComponent = new(function () {
                     // }
                 });
             });
+            const createContract = mThis.cardViewContainer.querySelectorAll(".create-tenant-contract");
+            createContract.forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    const tenantId = e.currentTarget.dataset.id;
+                    mThis.tenant_id = tenantId;
+                    ContractDialog.show(tenantId);
+                   
+                });
+            });
             const container = mThis.cardViewContainer;
             const te_parent = container;
             te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
             te_parent.classList.add("overflow-y-auto");
-            window.onresize = () => {
+            window.addEventListener('resize', () => {
                 te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-            };
+            });
     };
 
     mThis.renderView = () => {
@@ -559,7 +603,7 @@ var TenantComponent = new(function () {
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">Unit</div>
-                                    <div class="fw-semibold">${data.code ?? 'N/A'}</div>
+                                    <div class="fw-semibold">${data.space_code ?? 'N/A'}</div>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -939,11 +983,12 @@ var TenantComponent = new(function () {
             // }
         });
     };
+  
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data :{};
-                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'name', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id','name', true, 'All Statuses', null);
 
                 if (typeof onFinish === 'function') onFinish();
             });
@@ -1089,6 +1134,8 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
+                DateTimePicker.init(me.controls.date_of_birth);
+
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = header.querySelector('.modal-title');
