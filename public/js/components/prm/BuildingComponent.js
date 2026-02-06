@@ -245,15 +245,6 @@ var BuildingComponent = ( () => {
                 }
             }
         });
-
-        // {
-
-        //     dontExpandByClickingOn:['btn_leave_action'],
-        //     onOpen:(container,detail_tr,parent_tr) => {
-        //         const id = parent_tr.dataset.id;
-        //         if(id > 0) mThis.displayFloorNumber(container,id);
-        //     }
-        // });
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);

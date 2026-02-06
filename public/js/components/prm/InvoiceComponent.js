@@ -17,7 +17,7 @@ var InvoiceComponent = (() => {
         { title: "", className: "align-middle text-capitalize" },
         {
             title: "Invoice Num",
-            className: "align-middle",
+            className: "align-middle text-start",
             data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
         },
         {
@@ -36,8 +36,24 @@ var InvoiceComponent = (() => {
             data: (data) => `<span class="text-yp-custom">${data.space_code || '—'}</span>`,
         },
         {
-            title: "Due Amount",
-            className: "align-middle text-end",
+            title: "Due",
+            className: "align-middle text-primary",
+            data: (data) => {
+                const amt = data.amount? Number(data.amount).toLocaleString() : '—';
+                return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+            }
+        },
+        {
+            title: "Pay",
+            className: "align-middle text-success",
+            data: (data) => {
+                const amt = data.paid_amount? Number(data.paid_amount).toLocaleString() : '—';
+                return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
+            }
+        },
+        {
+            title: "Balance",
+            className: "align-middle text-danger",
             data: (data) => {
                 const amt = data.amount? Number(data.amount).toLocaleString() : '—';
                 return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
@@ -47,16 +63,6 @@ var InvoiceComponent = (() => {
             title: "Due Date",
             className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.due_date || 'N/A'}</span>`,
-        },
-        {
-            title: "Type",
-            className: "align-middle",
-            data: (data) => `<span class="text-yp-custom">${data.invoice_type || '—'}</span>`,
-        },
-        {
-            title: "Remark",
-            className: "align-middle",
-            data: (data) => `<d class="text-yp-custom" style="max-width:140px;">${data.remarks || '—'}`,
         },
         {
             title: "Status",
@@ -86,7 +92,7 @@ var InvoiceComponent = (() => {
                 <div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}"
                         data-id="${data.id}" data-statusid="${data.status_id || ''}">
-                        <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
         },
@@ -165,8 +171,9 @@ var InvoiceComponent = (() => {
                     return;
                 }
 
-                const data = res.data || {};
-                mThis.renderInvoiceDetail(container, data);
+                const invoice = res.data || res || {};
+                console.log("Invoice detail loaded:", invoice);
+                mThis.renderInvoiceDetail(container, invoice);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error</div>`;
@@ -174,48 +181,40 @@ var InvoiceComponent = (() => {
     };
 
     mThis.renderInvoiceDetail = (container, invoice) => {
-        const netAmount = invoice.net_amount || invoice.due_amount || 0;
+        const amount    = Number(invoice.amount || invoice.total || invoice.total_amount || 0);
+        const discount  = Number(invoice.discount || invoice.discount_amount || 0);
+        const netAmount = Number(invoice.net_amount || invoice.final_amount || invoice.due_amount || (amount - discount) || amount);
+        const dueDate   = invoice.due_date || invoice.due_on || invoice.expiry_date || '—';
+        const feeType   = invoice.service_id || invoice.invoice_type || invoice.fee_type || invoice.type_name || invoice.type || '—';
 
         const html = `
-            <div class=" bg-white rounded ">
-                <!-- Invoice Items Table -->
+            <div class="bg-white rounded">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered">
                         <tbody>
-                                <tr style="background-color: #fbf8cc;">
-                                    <td><strong>Fee Type</strong></td>
-                                    <td><strong>Duration</strong></td>
-                                    <td class="text-end"><strong>Amount</strong></td>
-                                    <td class="text-end"><strong>Discount</strong></td>
-                                    <td class="text-end"><strong>Net Amount</strong></td>
-                                </tr>
-                            ${(invoice.items || []).map(item => `
-                                <tr>
-                                    <td>${item.fee_type || '—'}</td>
-                                    <td>${item.duration || '—'}</td>
-                                    <td class="text-end">${mThis.currency_symbol}${Number(item.amount || 0).toLocaleString()}</td>
-                                    <td class="text-end text-danger">-${mThis.currency_symbol}${Number(item.discount || 0).toLocaleString()}</td>
-                                    <td class="text-end fw-bold">${mThis.currency_symbol}${Number(item.net_amount || item.amount || 0).toLocaleString()}</td>
-                                </tr>
-                            `).join('') || '<tr><td colspan="5" class="text-center text-muted py-4">No items found</td></tr>'}
+                            <tr style="background-color: #fbf8cc;">
+                                <th>Fee Type</th>
+                                <th>Duration / Due Date</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-end">Discount</th>
+                                <th class="text-end">Net Amount</th>
+                            </tr>
+                            <tr>
+                                <td>${feeType}</td>
+                                <td>${dueDate}</td>
+                                <td class="text-end">${mThis.currency_symbol}${amount.toLocaleString()}</td>
+                                <td class="text-end text-danger">-${mThis.currency_symbol}${discount.toLocaleString()}</td>
+                                <td class="text-end fw-bold">${mThis.currency_symbol}${netAmount.toLocaleString()}</td>
+                            </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="4" class="text-end fw-bold">Total Net Amount:</td>
-                                <td class="text-end fw-bold fs-5">${mThis.currency_symbol}${Number(netAmount).toLocaleString()}</td>
+                                <td colspan="4" class="text-end fw-bold">Total Net Amount</td>
+                                <td class="text-end fw-bold fs-5">${mThis.currency_symbol}${netAmount.toLocaleString()}</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-
-                <!-- Remarks -->
-                ${invoice.remarks ? `
-                    <div class="border-top pt-3">
-                        <h6 class="fw-bold">Remarks:</h6>
-                        <p class="text-muted">${invoice.remarks}</p>
-                    </div>
-                ` : ''}
-
                 <div class="text-end mt-4">
                     <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
                         <i class="bi bi-printer me-1"></i> Print Invoice
@@ -226,6 +225,8 @@ var InvoiceComponent = (() => {
 
         container.innerHTML = html;
     };
+
+
 
     mThis.getFilterData = () => {
         const params = {
@@ -323,10 +324,6 @@ var InvoiceComponent = (() => {
 
     return mThis;
 })();
-
-// ────────────────────────────────────────────────
-// Invoicedialog – still basic (you can add cascading later)
-// ────────────────────────────────────────────────
 
 const Invoicedialog = (() => {
     const self = {};
