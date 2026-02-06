@@ -1,10 +1,10 @@
 "use strict";
 var ServiceRequestComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Service Requests";
+    mThis.title_prop = "Service Request Component";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
-    
+
     //Cleanly create elements for use
     const $ = sel => mThis.self.querySelector(sel);
     Object.assign(mThis, {
@@ -286,11 +286,11 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
-  
-      mThis.changeStatus = (id, link) => {
+
+    mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        
+
         const options = {
             title: 'Change Status',
             cssClass: '',
@@ -330,7 +330,7 @@ var ServiceRequestComponent = (function () {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // console.log(11,d);
-                
+
                 VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', true, 'All Statuses', null);
                 VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', true, 'All Service Types', null);
                 if (typeof onFinish === 'function') onFinish();
@@ -340,10 +340,10 @@ var ServiceRequestComponent = (function () {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-      
+
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.ServiceRequestListView.showPage(mThis.getFilterData());       
+            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
     };
 
@@ -380,17 +380,23 @@ const CreateServiceRequestDialog = (() => {
                             </div>
 
                             <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Category</label>
+                                <label style="padding-left:6px;" for="service_type">Floor</label>
                                 <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
+                                    <select name="service_type" class="data-input form-control" data-field="floor_id">
                                     </select>
                                 </div>
                             </div>
-                            
                             <div class="col-12">
                                 <label style="padding-left:6px;" for="service_type">Service</label>
                                 <div class="material-input outlined">
                                     <select name="service_type" class="data-input form-control" data-field="service_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_type">Category</label>
+                                <div class="material-input outlined">
+                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
                                     </select>
                                 </div>
                             </div>
@@ -503,7 +509,7 @@ const CreateServiceRequestDialog = (() => {
                         cssClass: 'btn-vs-save',
                         click: (me, btn) => {
                             const op = me.getData();
-                            
+
                             op.id = me.dataOptions.id;
                             vsapi.call([main_view.base_url, "/prm/service-request/save"].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {

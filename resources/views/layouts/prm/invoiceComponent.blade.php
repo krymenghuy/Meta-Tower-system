@@ -21,10 +21,10 @@
                     <span vslang="buttons.Generate Invoice"></span>
                 </button>
             </div>
-            
+
         </div>
 
-    </div> 
+    </div>
 
     <div id="_invoice_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
 </div>

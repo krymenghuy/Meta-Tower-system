@@ -110,9 +110,9 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         ->first();
 
     $next_num = $row ? $row->last_id + 1 : 1;
-    $roomNumber = ($floor_number * 100) + $next_num; 
+    $roomNumber = ($floor_number * 100) + $next_num;
 
-    
+
     // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
     // $fullCode = $floorPrefix . '-R-' . $roomNumber;
     $fullCode = 'R-' . $roomNumber;
@@ -136,8 +136,6 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
 
     return $fullCode;
 }
-
-
 
 
     static function checkDuplicateSpaceCode($building_id, $floor_id, $space_code, $space_id = null)
@@ -187,7 +185,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         }
         if($status_id){
             $str_moreWhere .= ' AND bs.status_id = ' . $status_id;
-        } 
+        }
 
         $updated_at = DBX::formatTime("bs.updated_at","updated_at");
         $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,ss.name as status,bs.update_user,'.$updated_at.'';
@@ -200,11 +198,11 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols);
         $query->orderByRaw('bs.id desc');
-        $clone_query = clone $query; 
+        $clone_query = clone $query;
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
-        
+
     }
 
     public static function getDetails($id){
@@ -242,7 +240,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         if ($space->status_id > 1) return DV::error('This space cannot be deleted because it is not available.');
         $deleted = DB::table('building_spaces')->where('id', $id)->delete();
         if ($deleted) {
-           
+
         $total_space = DB::table('building_spaces')
             ->where('building_id', $building_id)
             ->count();
@@ -270,7 +268,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
             'status_id' => $status_id,
             'update_user'=>$ss->full_name,
             'updated_at'=>getNowTime(),
-            
+
         ]);
         return DV::depends($x, ['building space status', 'updated']);
     }

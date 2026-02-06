@@ -1,476 +1,461 @@
-"use strict";
-var TenantComponent =   ( () => {
-    const mThis = {};
-    mThis.title_prop = "Tenant Management";
-    mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
-    mThis.elSearch = mThis.self.querySelector("#_search_tenant");
-    // mThis.elFilter_status = mThis.self.querySelector("#el_status");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Invoice Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
-    mThis.cols = [
+        :root {
+            --invoice-primary: #2c3e50;
+            --invoice-secondary: #34495e;
+            --invoice-border: #dee2e6;
+        }
 
-        {
-            title: "",
-            className: "align-middle",
-        },
-        // {
-        //     title: "Tenant ID",
-        //     className: "align-middle",
-        //    data: (data, index) => `<span class="text-yp-custom">${100001 + index}</span>`,
-        // },
-        {
-            title: "Name",
-            className: "align-middle",
-            data: (data) => {
-                const sexLabel = data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-yp-custom" style="font-size:12px;"><i class="fa-solid text-gray "></i>${data.name ?? ''}</span>
-                        <small class="d-block text-muted">${sexLabel}</small>`;
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #f8f9fa;
+        }
 
+        .invoice-wrapper {
+            background: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-separator {
+            border: 0;
+            border-top: 2px dashed var(--invoice-primary);
+            opacity: 0.5;
+        }
+
+        .company-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+
+        .invoice-badge {
+            background-color: #e74c3c;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--invoice-primary);
+            font-size: 0.85rem;
+        }
+
+        .info-value {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .section-title {
+            color: var(--invoice-primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--invoice-primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-invoice {
+            font-size: 0.85rem;
+        }
+
+        .table-invoice thead {
+            background-color: var(--invoice-primary);
+            color: white;
+        }
+
+        .table-invoice tbody tr {
+            border-bottom: 1px solid var(--invoice-border);
+        }
+
+        .table-invoice tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .item-note {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-style: italic;
+            margin-left: 1.5rem;
+        }
+
+        .totals-card {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--invoice-primary);
+        }
+
+        .total-row {
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--invoice-border);
+        }
+
+        .grand-total-row {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--invoice-primary);
+            padding: 0.75rem 0;
+            border-top: 3px double var(--invoice-primary);
+            border-bottom: none;
+        }
+
+        .payment-info-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #28a745;
+        }
+
+        .payment-method {
+            background: white;
+            border: 1px solid var(--invoice-border);
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-color: var(--invoice-primary);
+        }
+
+        .badge-custom {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-notes {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        @media print {
+            body {
+                background: white;
             }
-        },
-        {
-            title: "Legal Name",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-yp-custom">${data.legal_name ?? ''}</span>`;
+            .invoice-wrapper {
+                box-shadow: none;
             }
-        },
-        {
-            title: "contact Info",
-            className: "align-middle",
-            data: (data, index, tr) =>
-                `<span class="d-block text-primary" style="font-size:12px;"><i class="fa-solid text-success px-1 fa-envelope"></i> ${data.email ?? ""}</span>
-                 <span class="d-block" style="font-size:12px;"><i class="fa-solid text-warning px-1 fa-phone"></i> ${data.phone_number ?? ""}</span>`,
-        },
-        {
-            title: "Address",
-            className: "align-middle ",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom" style="width:150px;">
-                        <i class="fa-solid fa-location-dot text-primary me-2"></i><span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? 'N/A'}</span>
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="invoice-wrapper">
+            <!-- Company Header -->
+            <div class="company-header text-center py-4">
+                <h2 class="mb-2 fw-bold">META TOWER MANAGEMENT CO., LTD</h2>
+                <p class="mb-1"><i class="bi bi-geo-alt-fill"></i> SBC Tower, Street 2004, Phnom Penh, Cambodia</p>
+                <p class="mb-0 small">
+                    <span class="me-3"><i class="bi bi-card-text"></i> Tax ID: 000123456</span>
+                    <span><i class="bi bi-telephone-fill"></i> Tel: +855 23 999 888</span>
+                </p>
+            </div>
+
+            <hr class="invoice-separator my-0">
+
+            <!-- Invoice Title -->
+            <div class="text-center py-3 bg-light">
+                <h4 class="mb-0 fw-bold">
+                    <span class="badge invoice-badge px-4 py-2">TAX INVOICE / វិក្កយបត្រ</span>
+                </h4>
+            </div>
+
+            <!-- Invoice Meta Info -->
+            <div class="container-fluid px-4 py-3 bg-white border-bottom">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row mb-2">
+                            <div class="col-sm-4">
+                                <span class="info-label">Invoice No:</span>
+                            </div>
+                            <div class="col-sm-8">
+                                <span class="info-value fw-semibold">INV-202602-00703</span>
+                            </div>
+                        </div>
                     </div>
-                `;
-            }
-        },
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
-                </div>`;
-            }
-        },
-        {
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
-                    </a>
-                </div>`
-        },
+                    <div class="col-md-4">
+                        <div class="row mb-2">
+                            <div class="col-sm-5">
+                                <span class="info-label">Date:</span>
+                            </div>
+                            <div class="col-sm-7">
+                                <span class="info-value">02 February 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <span class="info-label">Due Date:</span>
+                            </div>
+                            <div class="col-sm-7">
+                                <span class="info-value fw-semibold text-danger">15 February 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    ];
+            <!-- Billing and Property Information -->
+            <div class="container-fluid px-4 py-4">
+                <div class="row g-4">
+                    <!-- Bill To -->
+                    <div class="col-md-6">
+                        <div class="card border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="section-title">
+                                    <i class="bi bi-person-circle me-2"></i>Bill To
+                                </h6>
+                                <p class="mb-1 fw-semibold">Prasat Soth</p>
+                                <p class="mb-1">Sovann Dana Co., Ltd.</p>
+                                <p class="mb-1">
+                                    <i class="bi bi-telephone"></i> Phone: 011 226 644
+                                </p>
+                                <p class="mb-0">
+                                    <i class="bi bi-envelope"></i> Email: prasatsoth@gmail.com
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-    mThis.init = () => {
-        if (mThis.initAlready) return;
-
-        mThis.TenantListView = new ListView('_tenant_list', {
-            fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
-            perPage: 10,
-            // rememberCurrentPage: false,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
-
-
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('tenant');
-              tr.setAttribute('id',['tenant_id',data.id].join(''));
-
-            },
-            listContainerClass: null
-        });
-
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            const op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.TenantListView.showPage(mThis.getFilterData());
-                }
-            };
-            // if (!AuthManager.allowed(240)) return;
-            CreateTenantDialog.show(op);
-        };
-
-
-        mThis.pr_tbl = mThis.TenantListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        }
-        mThis.tblTenant = mThis.TenantListView.getTable();
-        mThis.initDropdownMenus(mThis.tblTenant);
-
-
-
-
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-
-            el.onchange = (e) => {
-                e.preventDefault();
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }
-        });
-
-        mThis.elSearch.addEventListener('keyup', (e) => {
-            e.preventDefault();
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }, 250);
-        });
-
-
-        mThis.initAlready = true;
-    };
-
-    mThis.getFilterData = () => {
-        let p = {
-            // status_id: mThis.elFilter_status.value,
-            search_value: mThis.elSearch.value,
-        };
-
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-
-        return p;
-    };
-
-    mThis.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white shadow",
-            //menuItemClass:"",
-            menus: [
-                // {
-                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                //     cssClass: "border-bottom pb-2",
-                //     name: "change_status"
-                // },
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_tenant"
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_tenant"
-                },
-            ],
-            // adjustPosition: {
-            //     top: -200,
-            //     left: -300
-            // },
-
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
-                    case 'edit_tenant': {
-                        mThis.editTenant(id, menuLink);
-                        break;
-                    }
-                    case 'delete_tenant': {
-                        mThis.deleteTenant(id, menuLink);
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-        new VSDropdownMenu(menuOptopns);
-    }
-
-    mThis.editTenant = (id, menulink) =>{
-        let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }
-        };
-        console.log(1123,op);
-
-        CreateTenantDialog.show(op);
-    }
-     mThis.deleteTenant = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.TenantListView.showPage(mThis.getFilterData());
-            }
-        };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Tenant??', {
-            title: 'Delete Tenant',
-            context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.TenantListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
-        });
-    }
-
-      mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        console.log(123,status_id);
-
-        const inputOptions = {
-            title: 'Change Status',
-            dataLabel: "Tenant Status",
-            valueMember: "tenant_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"}
-            ],
-            defaultValue: status_id
-        };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-            const status = {id,status_id:selected.value};
-            vsapi.call(`${mThis.base_url}/prm/tenant/update-status`,status).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Tenant Status has been updated');
-                    mThis.TenantListView.showPage(mThis.getFilterData());
-
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
-    };
-    mThis.prepareFormOptions = (onFinish) => {
-
-        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                // VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'tenant_status', true, 'All Statuses', null);
-                if (typeof onFinish === 'function') onFinish();
-            })
-    }
-
-    mThis.show = (options) => {
-        mThis.init();
-        mThis.options = options;
-        mThis.prepareFormOptions(()=>{
-            main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.TenantListView.showPage(mThis.getFilterData());
-        });
-
-    };
-    return mThis;
-})();
-
-const CreateTenantDialog = (() => {
-    const self = {};
-    let dialog = null;
-
-    self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static",
-                keyboard: true,
-               createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label>Full Name</label>
+                    <!-- Property Details -->
+                    <div class="col-md-6">
+                        <div class="card border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="section-title">
+                                    <i class="bi bi-building me-2"></i>Property
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <small class="info-label d-block">Space:</small>
+                                        <span class="info-value">MT-F2-R1112</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="info-label d-block">Type:</small>
+                                        <span class="info-value">Office</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="info-label d-block">Floor:</small>
+                                        <span class="info-value">2</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="info-label d-block">Building:</small>
+                                        <span class="info-value">SBC Tower</span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="legal_name" required class="data-input form-control" data-field="legal_name" placeholder=" " />
-                                    <label>Legal Name</label>
+            <!-- Contract Information -->
+            <div class="container-fluid px-4 py-3 bg-light border-top border-bottom">
+                <div class="row">
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <span class="badge bg-primary badge-custom">
+                            <i class="bi bi-calendar-range"></i> Contract Period
+                        </span>
+                        <span class="ms-2 info-value">01 Jan 2026 – 31 Dec 2026</span>
+                    </div>
+                    <div class="col-md-3 mb-2 mb-md-0">
+                        <span class="badge bg-info badge-custom">
+                            <i class="bi bi-rulers"></i> Area
+                        </span>
+                        <span class="ms-2 info-value">12.00 m²</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="badge bg-success badge-custom">
+                            <i class="bi bi-cash"></i> Unit Price
+                        </span>
+                        <span class="ms-2 info-value">$12.00 / m²</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="container-fluid px-4 py-4">
+                <h6 class="section-title">
+                    <i class="bi bi-list-ul me-2"></i>Invoice Items
+                </h6>
+                <div class="table-responsive">
+                    <table class="table table-invoice table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 50%;">Description</th>
+                                <th scope="col" class="text-end" style="width: 15%;">Qty</th>
+                                <th scope="col" class="text-end" style="width: 17%;">Unit Price</th>
+                                <th scope="col" class="text-end" style="width: 18%;">Amount (USD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>1. Monthly Office Rent – February 2026</strong>
+                                </td>
+                                <td class="text-end">12.00 m²</td>
+                                <td class="text-end">12.00</td>
+                                <td class="text-end fw-semibold">144.00</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>2. Common Area Service Charge (security)</strong>
+                                </td>
+                                <td class="text-end">1</td>
+                                <td class="text-end">35.00</td>
+                                <td class="text-end fw-semibold">35.00</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>3. Cleaning Service (recurring)</strong>
+                                </td>
+                                <td class="text-end">1</td>
+                                <td class="text-end">20.00</td>
+                                <td class="text-end fw-semibold">20.00</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>4. Extra Deep Cleaning – 18 Jan 2026</strong>
+                                    <div class="item-note">
+                                        <i class="bi bi-arrow-return-right"></i> (Service Request #SR-048)
+                                    </div>
+                                </td>
+                                <td class="text-end">1</td>
+                                <td class="text-end">60.00</td>
+                                <td class="text-end fw-semibold">60.00</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>5. Air-conditioner Maintenance – 25 Jan 2026</strong>
+                                    <div class="item-note">
+                                        <i class="bi bi-arrow-return-right"></i> (Service Request #SR-051)
+                                    </div>
+                                </td>
+                                <td class="text-end">1</td>
+                                <td class="text-end">45.00</td>
+                                <td class="text-end fw-semibold">45.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Totals Section -->
+            <div class="container-fluid px-4 py-4 bg-light">
+                <div class="row justify-content-end">
+                    <div class="col-lg-5 col-md-6">
+                        <div class="card totals-card">
+                            <div class="card-body">
+                                <div class="total-row d-flex justify-content-between">
+                                    <span class="info-label">Subtotal:</span>
+                                    <span class="info-value fw-semibold">$304.00</span>
+                                </div>
+                                <div class="total-row d-flex justify-content-between">
+                                    <span class="info-label">VAT (10%):</span>
+                                    <span class="info-value fw-semibold">$30.40</span>
+                                </div>
+                                <div class="grand-total-row d-flex justify-content-between">
+                                    <span>Total Amount Due:</span>
+                                    <span>$334.40 USD</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Payment Instructions -->
+            <div class="container-fluid px-4 py-4">
+                <h6 class="section-title">
+                    <i class="bi bi-credit-card me-2"></i>Payment Instructions
+                </h6>
 
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="sex"> Select Gender</label>
-                                <div class="material-input outlined">
-                                    <select name="sex" placeholder=" " class="data-input form-control" data-field="sex">
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                    </select>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="payment-method p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-bank2 fs-4 text-primary me-3"></i>
+                                <div>
+                                    <strong class="d-block">ABA Bank Account</strong>
+                                    <small class="text-muted">Bank Transfer</small>
                                 </div>
                             </div>
+                            <p class="mb-0 ms-5 ps-2">
+                                <span class="badge bg-secondary">Account:</span>
+                                <span class="ms-2">123 456 789</span><br>
+                                <small class="text-muted">META TOWER MANAGEMENT</small>
+                            </p>
+                        </div>
+                    </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="tel" name="phone_number" required class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label>Phone Number</label>
+                    <div class="col-md-6">
+                        <div class="payment-method p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-phone fs-4 text-success me-3"></i>
+                                <div>
+                                    <strong class="d-block">Mobile Payment</strong>
+                                    <small class="text-muted">Wing / ABA Pay</small>
                                 </div>
                             </div>
+                            <p class="mb-0 ms-5 ps-2">
+                                <span class="badge bg-secondary">Number:</span>
+                                <span class="ms-2">098 765 432</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <input type="text" name="email" required class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label>Email</label>
-                                </div>
-                            </div>
+                <div class="alert alert-info mt-3 d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill fs-5 me-3"></i>
+                    <div>
+                        <strong>Payment Reference:</strong><br>
+                        Please include <code class="bg-white px-2 py-1">INV-202602-00703 + Your Tenant Name</code> in the payment reference.
+                    </div>
+                </div>
+            </div>
 
+            <!-- Footer Notes -->
+            <div class="container-fluid px-4 py-3 footer-notes">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-exclamation-triangle-fill fs-5 text-warning me-3"></i>
+                    <div>
+                        <p class="mb-1 fw-semibold">Thank you for your prompt payment.</p>
+                        <p class="mb-0 small">
+                            <i class="bi bi-clock-history"></i> Late payment after due date will incur <strong>2% monthly interest</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="col-12">
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
-                                    <label>Address</label>
-                                </div>
-                            </div>
-                        </div>`
-                    ].join("");
-                },
+            <hr class="invoice-separator my-0">
 
+            <!-- Action Buttons -->
+            <div class="container-fluid px-4 py-3 text-center no-print">
+                <button class="btn btn-primary me-2" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print Invoice
+                </button>
+                <button class="btn btn-outline-secondary">
+                    <i class="bi bi-download"></i> Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
 
-                contentCreated: (me) => {
-                    const footer = me.divModal.querySelector('.modal-footer');
-                    const header = me.divModal.querySelector('.modal-header');
-
-                    const headerTitle = header.querySelector('.modal-title');
-                    const btnClose = header.querySelector('button');
-
-                    btnClose.classList.add('d-none');
-                    header.classList.add('bg-yp-custom', 'modal-header-custom');
-                    header.parentElement.classList.add('overflow-hidden');
-                    header.parentElement.style = 'border-radius: 20px !important;';
-
-                    const headerWrapper = document.createElement('div');
-                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-
-
-
-                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    headerWrapper.appendChild(headerTitle);
-
-                    header.innerHTML = '';
-                    header.appendChild(headerWrapper);
-
-
-
-
-                },
-                // configSelect: [
-                //     {
-                //         name: "nationality_id",
-                //         data: "nationality",
-                //         textField: "nationality",
-                //         valueField: "id",
-                //     },
-
-                // ],
-                prepareFormOptions: {
-                    createTitle: "Create New Tenant",
-                    modifyTitle: "Modify Tenant ",
-                    targetProp: "tenants",
-                    api: {
-                        endpoint: [main_view.base_url, "/prm/tenant/form-options",].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                },
-
-                onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
-                },
-
-
-                buttons: [
-                    {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/tenant/create",].join(""), op, btn, null).then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Tenant has been updated successfully"
-                                        );
-                                    } else {
-                                        cv_interact.success(
-                                            "New tenant has been added successfully"
-                                        );
-                                    }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                        },
-                    },
-                ],
-            });
-        dialog.show(op);
-    };
-
-    return self;
-})();
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
