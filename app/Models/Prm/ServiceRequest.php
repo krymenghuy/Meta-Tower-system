@@ -275,18 +275,6 @@ class ServiceRequest extends VSModel
         $id = $id ?? $this->id;
         $x = self::deleteBy(['id'=>$id]);
         return DV::depends($x, 'Service Request Delete failed');
-
-        // Log::info('ServiceRequest delete called', ['id' => $id]);
-        // $deleted = DB::table('service_requests')
-        //     ->where('id', $id)->delete();
-
-        // if ($deleted) {
-        //     Log::info('ServiceRequest deleted successfully', ['id' => $id]);
-        //     return DV::depends($deleted, ['action' => 'deleted']);
-        // }
-
-        // Log::error('ServiceRequest delete failed', ['id' => $id]);
-        // return DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)

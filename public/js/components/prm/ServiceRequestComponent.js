@@ -287,7 +287,7 @@ var ServiceRequestComponent = (function () {
         });
     };
 
-      mThis.changeStatus = (id, link) => {
+    mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
 

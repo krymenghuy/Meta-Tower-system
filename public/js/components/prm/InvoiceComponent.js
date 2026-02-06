@@ -5,8 +5,6 @@ var InvoiceComponent = (() => {
     mThis.title_prop = "Invoice Management";
     mThis.currency_symbol = '$';
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
-
-    // DOM elements
     mThis.btnAdd          = mThis.self.querySelector("#_btnInvoice");
     mThis.divFilter       = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elFilter_status = mThis.self.querySelector('#payment_status');
@@ -20,67 +18,56 @@ var InvoiceComponent = (() => {
         {
             title: "Invoice Num",
             className: "align-middle",
-            // data: (data, index) => `<span class="text-yp-custom">${data.invoice_number || `INV-${String(1000 + index).padStart(4, '0')}`}</span>`,
-            data:(data,index)=>{
-                const Al = 'MP';
-                const seq = String(index + 1).padStart(4, '0');
-                const displayNum = data.invoice_number || `${Al}-${seq}`;
-                return `<span class="text-yp-custom">${displayNum}</span>`;
-            }
+            data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
         },
         {
             title: "Tenant",
             className: "align-middle",
-            data: (data) => `<span class="text-yp-custom"><small>${data.tenant_name || '—'}</small></span>`,
+            data: (data) => `<span class="text-yp-custom">${data.tenant_name || '—'}</span>`,
         },
         {
             title: "Building",
             className: "align-middle",
-            data: (data) => `<span class="d-block text-yp-custom" style="max-width:90px;"><small>${data.building_name || 'N/A'}</small></span>`,
-        },
-        {
-            title: "Floor",
-            className: "align-middle",
-            data: (data) => `<span class="d-block text-yp-custom" style="max-width:75px;"><small>${data.floor_name || data.floor_id || 'N/A'}</small></span>`,
+            data: (data) => `<span class="d-block text-yp-custom" style="max-width:90px;">${data.building_name || 'N/A'}</span>`,
         },
         {
             title: "Code",
             className: "align-middle",
-            data: (data) => `<span class="text-yp-custom"><small>${data.space_code || '—'}</small></span>`,
+            data: (data) => `<span class="text-yp-custom">${data.space_code || '—'}</span>`,
         },
         {
             title: "Due Amount",
             className: "align-middle text-end",
             data: (data) => {
-                const amt = data.due_amount ? Number(data.due_amount).toLocaleString() : '—';
+                const amt = data.amount? Number(data.amount).toLocaleString() : '—';
                 return `<span class="d-block text-yp-custom fw-semibold">${mThis.currency_symbol}${amt}</span>`;
             }
         },
         {
             title: "Due Date",
             className: "align-middle",
-            data: (data) => `<span class="text-yp-custom"><small>${data.due_date || 'N/A'}</small></span>`,
+            data: (data) => `<span class="text-yp-custom">${data.due_date || 'N/A'}</span>`,
         },
         {
             title: "Type",
             className: "align-middle",
-            data: (data) => `<span class="text-yp-custom"><small>${data.invoice_type || '—'}</small></span>`,
+            data: (data) => `<span class="text-yp-custom">${data.invoice_type || '—'}</span>`,
         },
         {
             title: "Remark",
             className: "align-middle",
-            data: (data) => `<div class="text-yp-custom" style="max-width:140px;"><small class="text-wrap">${data.remarks || '—'}</small></div>`,
+            data: (data) => `<d class="text-yp-custom" style="max-width:140px;">${data.remarks || '—'}`,
         },
         {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
-                const status = (data.status || '').toLowerCase();
+                const status = data.payment_status_id || '';
                 let cls = 'text-secondary';
                 if (status === 'paid') cls = 'text-success fw-semibold';
                 else if (status === 'unpaid') cls = 'text-danger fw-semibold';
                 else if (status === 'partially paid') cls = 'text-warning fw-semibold';
-                return `<span class="${cls} text-capitalize px-2 py-1"><small>${data.status || '—'}</small></span>`;
+                return `<span class="${cls} text-capitalize px-2 py-1">${data.payment_status_id || '—'}</span>`;
             },
         },
         {
@@ -88,8 +75,8 @@ var InvoiceComponent = (() => {
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-column">
-                    <span class="text-capitalize text-yp-custom fw-semibold"><small>${data.update_user || '—'}</small></span>
-                    <small class="text-muted">${data.updated_at || '—'}</small>
+                    <span class="text-capitalize text-yp-custom fw-semibold">${data.update_user || '—'}</span>
+                    <small class="text-muted">${data.updated_at || '—'}
                 </div>`,
         },
         {
@@ -98,7 +85,7 @@ var InvoiceComponent = (() => {
             data: (data) => `
                 <div class="d-flex justify-content-center">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}"
-                       data-id="${data.id}" data-statusid="${data.status_id || ''}">
+                        data-id="${data.id}" data-statusid="${data.status_id || ''}">
                         <i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>
                     </a>
                 </div>`
@@ -169,7 +156,7 @@ var InvoiceComponent = (() => {
     };
 
     mThis.displayInvoiceDetail = (container, id) => {
-        container.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div></div>';
+        container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary " role="status"></div></div>';
 
         vsapi.call(`${main_view.base_url}/prm/invoice/details`, { id })
             .then(res => {
@@ -187,65 +174,21 @@ var InvoiceComponent = (() => {
     };
 
     mThis.renderInvoiceDetail = (container, invoice) => {
-        const invoiceNo = invoice.invoice_number || `INV-${invoice.id || 'NEW'}`;
-        const dueDate   = invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A';
         const netAmount = invoice.net_amount || invoice.due_amount || 0;
 
         const html = `
-            <div class="p-4 bg-white rounded shadow-sm">
-
-                <!-- Company Header -->
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold mb-1">META TOWER MANAGEMENT CO., LTD</h3>
-                    <p class="mb-1 text-muted">
-                        <i class="bi bi-geo-alt-fill me-1"></i> SBC Tower, Street 2004, Phnom Penh, Cambodia
-                    </p>
-                    <p class="small mb-0">
-                        <span class="me-3"><i class="bi bi-card-text me-1"></i> Tax ID: 000123456</span>
-                        <span><i class="bi bi-telephone-fill me-1"></i> +855 23 999 888</span>
-                    </p>
-                </div>
-
-                <hr class="my-4">
-
-                <!-- Invoice Title -->
-                <div class="text-center mb-4">
-                    <h4 class="fw-bold mb-2">TAX INVOICE / វិក្កយបត្រ</h4>
-                    <span class="badge bg-primary fs-6 px-4 py-2">${invoiceNo}</span>
-                </div>
-
-                <!-- Meta Info -->
-                <div class="row g-4 mb-5">
-                    <div class="col-md-6">
-                        <table class="table table-borderless table-sm mb-0">
-                            <tr><td class="fw-bold w-40">Tenant:</td><td>${invoice.tenant_name || '—'}</td></tr>
-                            <tr><td class="fw-bold">Space / Room:</td><td>${invoice.space_code || '—'}</td></tr>
-                            <tr><td class="fw-bold">Building:</td><td>${invoice.building_name || '—'}</td></tr>
-                            <tr><td class="fw-bold">Floor:</td><td>${invoice.floor_name || invoice.floor_id || '—'}</td></tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <table class="table table-borderless table-sm mb-0">
-                            <tr><td class="fw-bold w-40 text-end">Invoice Date:</td><td>${invoice.invoice_date || invoice.created_at || '—'}</td></tr>
-                            <tr><td class="fw-bold text-danger text-end">Due Date:</td><td class="text-danger">${dueDate}</td></tr>
-                            <tr><td class="fw-bold text-end">Status:</td><td>${invoice.status || '—'}</td></tr>
-                        </table>
-                    </div>
-                </div>
-
+            <div class=" bg-white rounded ">
                 <!-- Invoice Items Table -->
-                <div class="table-responsive mb-4">
+                <div class="table-responsive">
                     <table class="table table-sm table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Fee Type</th>
-                                <th>Duration</th>
-                                <th class="text-end">Amount</th>
-                                <th class="text-end">Discount</th>
-                                <th class="text-end">Net Amount</th>
-                            </tr>
-                        </thead>
                         <tbody>
+                                <tr style="background-color: #fbf8cc;">
+                                    <td><strong>Fee Type</strong></td>
+                                    <td><strong>Duration</strong></td>
+                                    <td class="text-end"><strong>Amount</strong></td>
+                                    <td class="text-end"><strong>Discount</strong></td>
+                                    <td class="text-end"><strong>Net Amount</strong></td>
+                                </tr>
                             ${(invoice.items || []).map(item => `
                                 <tr>
                                     <td>${item.fee_type || '—'}</td>
