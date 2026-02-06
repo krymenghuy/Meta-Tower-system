@@ -104,6 +104,13 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             DB::table('tenants')->where('id', $id)->update(['photo_file_name' => null]);
         }
        XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'tenants.photo_file_name']);
+        $hasActive = DB::table('contracts')
+            ->where('tenant_id', $id)
+            ->whereDate('end_date', '>=', now())
+            ->exists();
+
+        DB::table('tenants')->where('id', $id)
+            ->update(['status_id' => $hasActive ? 2 : 1]);
        return DV::depends(1, ['tenants' => $inputs, 'id' => $id]);
     }
     return DV::error('Failed to save tenant');
@@ -125,7 +132,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.address LIKE '%" . $search_value . "%')";
+            $str_search = "(t.name LIKE '%" . $search_value ."%' OR t.phone_number LIKE '%" . $search_value . "%' OR t.legal_name LIKE '%" . $search_value . "%' OR t.code LIKE '%" . $search_value . "%')";
         }
         if($status_id){
             $str_moreWhere .= ' AND t.status_id =' . $status_id;
@@ -142,7 +149,9 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
             ->selectRaw("t.id,t.name,t.sex,$date_of_birth,t.nationality_id,t.legal_name,t.code,t.photo_file_name,t.national_id,t.passport_number,t.phone_number,t.email,t.address,t.status_id,ts.name as status,bt.name as business_type,bs.code as space_code,$start_date,$end_date,$updated_at,t.update_user")
-            ->orderBy('t.id','DESC');
+            ->orderBy('t.status_id', 'asc')
+            ->orderBy('t.name', 'asc');
+            // ->orderBy('t.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

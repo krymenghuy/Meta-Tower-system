@@ -57,7 +57,13 @@ class Contract
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
             DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
-           DB::table('tenants')->where('id', $inputs['tenant_id'])->update(['status_id' => 2]);
+            $hasActive = DB::table('contracts')
+                ->where('tenant_id', $inputs['tenant_id'])
+                ->whereDate('end_date', '>=', now())
+                ->exists();
+
+            DB::table('tenants')->where('id', $inputs['tenant_id'])
+                ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
         }
         if ($id > 0) {
             return DV::depends(1, ['contracts' => $inputs, 'id' => $id]);
