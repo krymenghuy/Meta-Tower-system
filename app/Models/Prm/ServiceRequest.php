@@ -28,7 +28,7 @@ class ServiceRequest extends VSModel
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'tenant_id' => '1|number|exists=tenants.id', 
+            'tenant_id' => '1|number|exists=tenants.id',
             'service_id' => '1|number|exists=services.id',
             'space_id' => '1|number|exists=building_spaces.id',
             'service_type_id' => '1|number|exists=service_types.id',
@@ -174,7 +174,7 @@ class ServiceRequest extends VSModel
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
         $query = DB::table('service_requests as sr')
-            ->join('tenants as t', 't.id', '=', 'sr.tenant_id')     
+            ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('service_types as st', 'st.id', '=', 'sr.service_type_id')
@@ -226,8 +226,8 @@ class ServiceRequest extends VSModel
                 sr.tenant_id,
                 sr.space_id,
                 sr.service_id,
-                s.price as service_price,        
-                s.unit_type as unit_type,          
+                s.price as service_price,
+                s.unit_type as unit_type,
                 sr.service_type_id,
                 sr.request_date,
                 sr.description,
@@ -245,7 +245,7 @@ class ServiceRequest extends VSModel
     public static function getFormOptions($ss, $id)
     {
         $request_details = $id ? self::getServiceRequestDetails($id) : null;
-        
+
         // Get current tenant ID if editing
         // $currentTenantId = $request_details->tenant_id ?? null;
 
@@ -275,18 +275,6 @@ class ServiceRequest extends VSModel
         $id = $id ?? $this->id;
         $x = self::deleteBy(['id'=>$id]);
         return DV::depends($x, 'Service Request Delete failed');
-
-        // Log::info('ServiceRequest delete called', ['id' => $id]);
-        // $deleted = DB::table('service_requests')
-        //     ->where('id', $id)->delete();
-
-        // if ($deleted) {
-        //     Log::info('ServiceRequest deleted successfully', ['id' => $id]);
-        //     return DV::depends($deleted, ['action' => 'deleted']);
-        // }
-
-        // Log::error('ServiceRequest delete failed', ['id' => $id]);
-        // return DV::error('Delete failed.');
     }
 
     public function updateStatus($id, $request_status_id, $ss = null)

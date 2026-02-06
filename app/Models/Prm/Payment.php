@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
 
-class Payment 
+class Payment
 {
     protected $id = null;
     protected $userInfo = null;
@@ -29,8 +29,8 @@ class Payment
             'tenant_id' => '1|number|exists=tenants.id',
             'invoice_no' => '0|string',
             'building_id'   => '1|number|exists=buildings.id',
-            'space_id' => '0|number|exists=building_spaces.id',       
-            'payment_method_id' => '0|number|exists=payment_methods.id', 
+            'space_id' => '0|number|exists=building_spaces.id',
+            'payment_method_id' => '0|number|exists=payment_methods.id',
             'reference_no' => '0|number|0-25',
             'note' => '0|string|0-350',
             'amount' => '0|number|0-25',
@@ -44,14 +44,14 @@ class Payment
          $inputs = $res->values;
         $d = (object) $arr;
 
-        $duplicateId = self::checkDuplicatePaymentId(
-            $d->invoice_no,
-            // $d->invoice_id,
-            $id
-        );
-         if ($duplicateId) {
-            return DV::error("Cannot create payment: this invoice code is exists. ");
-        }
+        // $duplicateId = self::checkDuplicatePaymentId(
+        //     $d->invoice_no,
+        //     // $d->invoice_id,
+        //     $id
+        // );
+        // if ($duplicateId) {
+        //     return DV::error("Cannot create payment: this invoice code is exists. ");
+        // }
         $created = !$id;
 
         $id = DBX::saveData($ss,'payments',['id'=>$id],$inputs,[],1);
@@ -62,19 +62,19 @@ class Payment
         return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
-    static function checkDuplicateInvoiceId($invoice_no, $payment_id = null){
-        $query = DB::table('payments as p')
-            ->where('p.invoice_no', $invoice_no);
-            // ->where('c.floor_number', $floor)
-            // ->where('c.space_code', $space_code);
+    // static function checkDuplicateInvoiceId($invoice_no, $payment_id = null){
+    //     $query = DB::table('payments as p')
+    //         ->where('p.invoice_no', $invoice_no);
+    //         // ->where('c.floor_number', $floor)
+    //         // ->where('c.space_code', $space_code);
 
-        if (!empty($payment_id)) {
-            $query->where('c.id', '<>', $payment_id);  
-        }
+    //     if (!empty($payment_id)) {
+    //         $query->where('c.id', '<>', $payment_id);
+    //     }
 
-        $id = $query->value('id');
-        return $id ?: null;
-    }
+    //     $id = $query->value('id');
+    //     return $id ?: null;
+    // }
 
     public function getListPayment($arr, $ss = null)
     {
@@ -89,7 +89,7 @@ class Payment
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
-            $current_page = 1;  
+            $current_page = 1;
         }
         $skip_rows = ($current_page -1) * $per_page;
         $str_search = "1=1";
@@ -100,14 +100,14 @@ class Payment
             $str_search = "(t.name LIKE '%" .$search_value ."%')";
         }
         if($tenant_id){
-            $str_moreWhere .= ' AND p.tenant_id = ' . $tenant_id; 
+            $str_moreWhere .= ' AND p.tenant_id = ' . $tenant_id;
         }
         if($building_id){
             $str_moreWhere .= ' AND p.building_id = ' . $building_id;
         }
         if($status_id){
             $str_moreWhere .= ' AND p.status_id = ' . $status_id;
-        } 
+        }
         if($payment_method_id){
             $str_moreWhere .= ' AND p.payment_method_id = ' . $payment_method_id;
         }
@@ -150,7 +150,7 @@ class Payment
             'payment_methods' => GeneralSettings::options_payment_method($ss)
         ];
     }
-    
+
     public function deletePayment($id = null){
         $id = $id ?? $this->id;
         $deleted = DB::table('payments')->where('id',$id)->delete();
@@ -170,9 +170,8 @@ class Payment
             'status_id' => $status_id,
             'updated_user'=>$ss->full_name,
             'updated_at'=>getNowTime(),
-            
+
         ]);
         return DV::depends($x, ['payment status', 'updated']);
     }
 }
-        

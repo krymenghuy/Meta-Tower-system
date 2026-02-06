@@ -15,11 +15,11 @@
                 </button>
             </div>
         </div>
-    </div> 
+    </div>
 
     <div id="_summary_cards" class="mt-3 rounded-2 "></div>
     <div id="_building_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
-    
+
 </div>
 <style>
 
