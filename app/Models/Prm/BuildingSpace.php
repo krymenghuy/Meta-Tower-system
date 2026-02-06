@@ -223,7 +223,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         return (object)[
             'space_details' => $space_details,
             'buildings' =>GeneralSettings::options_building($ss),
-            'floors' =>GeneralSettings::options_floors($building_id,$ss),
+            'floors' =>GeneralSettings::options_floors($building_id),
             'space_types'=> GeneralSettings::options_space_type($ss),
             'statuses' => GeneralSettings::options_space_status($ss)
         ];
