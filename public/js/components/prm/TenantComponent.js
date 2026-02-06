@@ -217,13 +217,19 @@ var TenantComponent = new(function () {
             menus: [
 
                 {
+                    html: '<span class="ps-2">View Profile</span>',
+                    icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_profile"
+                },
+                {
                     html: '<span class="ps-2">Create Contract</span>',
-                    icon: `<i class="fa-solid fa-file-contract fs-5 text-info"></i>`,
+                    icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
                 },
-               {
-                    html: '<span class="ps-2">Edit Tenant</span>',
+                {
+                    html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_tenant"
@@ -234,6 +240,12 @@ var TenantComponent = new(function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_tenant"
                 },
+                {
+                    html: '<span class="ps-2">Service Requests</span>',
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "service_request"
+                },
          
             ],
             // adjustPosition: {
@@ -243,16 +255,25 @@ var TenantComponent = new(function () {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    
+                    case 'view_profile': {
+                        mThis.showPage('profile_view',{"tenant_id":id});
+                        break;
+                    }
+                    case 'create_contract': {
+                        mThis.createContract(id, menuLink);
+                        break;
+                    }
                     case 'edit_tenant': {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'view_profile': {
-                        mThis.ViewProfile(id, menuLink);
-                        break;
-                    }
                     case 'delete_tenant': {
                         mThis.deleteTenant(id, menuLink);
+                        break;
+                    }
+                    case 'service_request': {
+                        mThis.serviceRequest(id, menuLink);
                         break;
                     }
                     default: {
@@ -272,6 +293,16 @@ var TenantComponent = new(function () {
             }
         };
         CreateTenantDialog.show(op);
+    };
+      mThis.serviceRequest = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        CreateServiceRequestDialog.show(op);
     };
     mThis.createContract = (id, menuLink) => {
         let op = {
@@ -481,11 +512,13 @@ var TenantComponent = new(function () {
             });
             const container = mThis.cardViewContainer;
             const te_parent = container;
-            te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
+            te_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
             te_parent.classList.add("overflow-y-auto");
-            window.addEventListener('resize', () => {
-                te_parent.style.maxHeight = (window.innerHeight - 250) + 'px';
-            });
+            te_parent.classList.add("overflow-x-hidden");
+
+            window.onresize = () => {
+                te_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
+            };
     };
 
     mThis.renderView = () => {

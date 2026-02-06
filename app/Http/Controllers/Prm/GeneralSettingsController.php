@@ -70,8 +70,7 @@ class GeneralSettingsController extends Controller
     {
           $ss = XAuthService::verifyAuth($req,-1);
         if ($ss->status_code != 200) return $ss; //user not authenticated
-        $building_id = $req->building_id ? $req->building_id : $req->id;
-        return JDV::result(GeneralSettings::options_floors($building_id, $ss));
+        return JDV::result(GeneralSettings::options_floors($req->building_id));
     }
   
   
