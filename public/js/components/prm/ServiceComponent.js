@@ -267,40 +267,75 @@ var ServiceComponent =   ( () => {
             }
         });
     }
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
+    function formatStatus (item){
+        return `<span class="badge text-black" >${item.name}</span>`;
+    }
+    mThis.changeStatus = (id, link) =>{
+        const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
 
-        const inputOptions = {
+        // const inputOptions = {
+        //     title: 'Change Status',
+        //     dataLabel: "Service Status",
+        //     valueMember: "status_id",
+        //     textMember: "name",
+        //     confirmButtonText: "Save",
+        //     blankErrorMessage: "Status is not correct!",
+        //     data:[
+        //         {status_id:"1",name:"Active"},
+        //         {status_id:"2",name:"Inactive"},
+        //     ],
+        //     defaultValue: status_id
+        // };
+        // InputBox2.show(inputOptions,(selected)=>{
+        //     if(!selected) return;
+        //     if(!AuthManager.allowed(321)) return;
+
+        //     const payload = {id, status_id :selected.value};
+        //     vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
+        //         if(res.status_code ===200){
+        //             InputBox2.close();
+        //             cv_interact.success('Service Status has been updated');
+        //             mThis.ServiceListView.showPage(mThis.getFilterData());
+        //         }else{
+        //             cv_interact.error(res.error_message || 'Unable to update status');
+        //         }
+        //     });
+        // });
+
+        const options = {
             title: 'Change Status',
-            dataLabel: "Service Status",
-            valueMember: "status_id",
-            textMember: "name",
+            cssClass: '',
+            backdropClose: true,
+            // type: 'select',
+            label: 'Status',
+            valueField: 'status_id',
+            textField: formatStatus,
             confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"},
+            requireMessage: 'Select one valid status',
+            context: 'warning', // success | primary | delete | danger | error
+            data: [
+                {status_id: "1", name: "Active"},
+                {status_id: "2", name: "Inactive"},
             ],
-            defaultValue: status_id
+            defaultValue: status_id,
+            onConfirm: (value,btn,me)=>{
+                const statusId = typeof value === 'object' && value.status_id ? value.status_id : value;
+                const payload = {id: id, status_id: statusId};
+                vsapi.post(`${mThis.base_url}/prm/service/update-status`,payload,{loader:false}).then(res=>{
+                    if(res.status_code === 200){
+                        me.close();
+                        cv_interact.success('Service Status has been updated');
+                        mThis.ServiceListView.showPage(mThis.getFilterData());
+                    }else{
+                        me.setError(res.error_message || 'Unable to update status');
+                    }
+                })
+            }        
         };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
 
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
+        InputBox.show(options);
     };
     mThis.prepareFormOptions = (onFinish) => {
 

@@ -288,7 +288,7 @@ var ServiceRequestComponent = (function () {
     };
   
       function formatStatus(item){
-        return `<span class="badge text-danger bg-light" >${item.name}</span>`;
+        return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
       }
 
 
@@ -304,9 +304,9 @@ var ServiceRequestComponent = (function () {
             label: 'Status',
             valueField: 'status_id',
             textField: formatStatus,
-            comfirmButtonText: "Submit",
+            confirmButtonText: "Save",
             requiredMessage: 'Select one valid status',
-            context: 'success', // success | primary | delete | danger | error
+            context: 'warning', // success | primary | delete | danger | error
             data: [
                 {status_id: "1", name: "Pending"},
                 {status_id: "2", name: "Approved"},
@@ -314,8 +314,9 @@ var ServiceRequestComponent = (function () {
                 {status_id: "4", name: "Completed"},
             ],
             defaultValue: status_id,
-            onComfirm: (value,btn,me)=>{
-                const payload = {id, status_id: value};
+            onConfirm: (value,btn,me)=>{
+                const statusId = typeof value === 'object' && value.status_id ? value.status_id : value;
+                const payload = {id, status_id: statusId};
                 vsapi.post(`${mThis.base_url}/prm/service-request/update-status`,payload,{loader:false}).then(res=>{
                     if(res.status_code === 200){
                         me.close();

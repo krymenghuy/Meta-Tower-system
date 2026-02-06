@@ -306,17 +306,22 @@ class ServiceRequest extends VSModel
 
         $data = [
             'request_status_id' => $request_status_id,
-            'update_user' => $ss->name ?? 'System',
+            'update_user' => $ss->full_name,
             'update_uid' => $ss->uid ?? null,
-            'updated_at' => date('Ymd')
+            'updated_at' => getNowTime()
         ];
 
         // If status is completed, set completed_date
-        $statusName = DB::table('request_status')->where('id', $request_status_id)->value('name');
-        if (strtolower($statusName) === 'completed') {
-            $data['completed_date'] = (int) date('Ymd');
-        }
+        // $statusName = DB::table('request_status')->where('id', $request_status_id)->value('name');
+        // if (strtolower($statusName) === 'completed') {
+        //     $data['completed_date'] = (int) date('Ymd');
+        // }
 
+        $currentStatus = DB::table('service_requests')->where('id', $id)->value('request_status_id');
+        if ($currentStatus == $request_status_id){
+            return DV::error('It is the same status.');
+        }
+        
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);
@@ -326,7 +331,7 @@ class ServiceRequest extends VSModel
             return DV::success(['message' => 'Status updated successfully']);
         }
 
-        Log::error('ServiceRequest updateStatus failed', ['id' => $id]);
+        // Log::error('ServiceRequest updateStatus failed', ['id' => $id]);
         return DV::error('Error updating status');
     }
 }

@@ -147,7 +147,7 @@ class Service
         $currentStatus = DB::table('services')->where('id', $id)->value('status_id');
 
         if ($currentStatus == $status_id) {
-            return DV::error('It is the same current status');
+            return DV::error('It is the same current status.');
         }
         $x = DB::table('services')->where('id', $id)->update([
             'status_id' => $status_id,

@@ -126,6 +126,7 @@ return [
                 'js/components/prm/ReportComponent.js',
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
+                'js/components/prm/ChargeableComponent.js',
                 
 
 

@@ -21,5 +21,5 @@
             </div>
         </div>
     </div>
-    <div id="_service_request_list" class="table-responsive  mt-3 bg-white rounded-2 border"></div>
+    <div id="_service_request_list" class="table-responsive  mt-3 bg-gray rounded-2 border"></div>
 </div>
