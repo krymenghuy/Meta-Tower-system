@@ -2241,3 +2241,43 @@ tr {
 
 
 
+.tool-tip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tool-tip .tool-tiptext {
+    visibility: hidden;
+    opacity: 0;
+    min-width: 100px;
+    background-color: #fff;
+    color: #194075;
+    border: 1px solid #194075;
+    text-align: center;
+    border-radius: 6px;
+    white-space: nowrap;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1;
+    top: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tool-tip .tool-tiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #194075 transparent;
+}
+
+.tool-tip:hover .tool-tiptext {
+    visibility: visible;
+    opacity: 1;
+}

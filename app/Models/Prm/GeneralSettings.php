@@ -386,18 +386,17 @@ public static function options_tenant_with_active_contract($ss)
     static function options_payment_method($ss){
         return DB::table('payment_methods')->selectRaw('id,name as payment_method')->get();
     }
-        static function options_floors($building_id=null, $ss=null){
+        static function options_floors($building_id){
         //$branch_id = $ss->branch_id;
         // $building_id = $building_id ?? -  1;
-        
-        $str_building ="1=1";
-        if($building_id){
-            $str_building ="f.building_id = $building_id";
+        $str_where ="1=1";
+        if($building_id > 0){
+            $str_where .= " AND f.building_id = $building_id";
         }
-        return DB::table(table: 'floors as f')
-            ->whereRaw($str_building)
-            ->selectRaw('f.id,f.building_id,f.name')
-            ->orderBy('f.id','ASC')->get();
+        $rows = DB::table(table: 'floors as f')
+            ->whereRaw($str_where)
+            ->selectRaw('f.id,f.building_id,f.name')->get();
+        return $rows;
     }
 
 }

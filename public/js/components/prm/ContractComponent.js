@@ -627,18 +627,18 @@ const ContractDialog = (() => {
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal); 
                 
-                const isReadOnly = me.dataOptions.data.code > 0;
-                me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
+                // const isReadOnly = me.dataOptions.data.code > 0;
+                // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
                 
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if(btnClose) btnClose.classList.add('d-none');
                 
-                me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
-                me.controls.code.value = me.dataOptions.data.code;
-                me.controls.price_type.value = me.dataOptions.data.price_type;
-                me.controls.price.value = me.dataOptions.data.price;
-                me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
+                // me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
+                // me.controls.code.value = me.dataOptions.data.code;
+                // me.controls.price_type.value = me.dataOptions.data.price_type;
+                // me.controls.price.value = me.dataOptions.data.price;
+                // me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
             },
 
             buttons: [

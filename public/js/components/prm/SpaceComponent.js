@@ -412,7 +412,6 @@ var SpaceComponent = new (function () {
                                     <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                             </div>
-
                             <div>
                                 <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
                                     <span>Status</span>
@@ -623,7 +622,7 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
-                                    <select name="floor_number" placeholder=" " class="data-input form-control" data-field="floor_id">
+                                    <select name="floor_id" placeholder=" " class="data-input form-control" data-field="floor_id">
                                     </select>
                                 </div>
                             </div>
@@ -701,7 +700,7 @@ const BuildingSpaceDialog = (() => {
                         valueField: "id",
                     },
                     {
-                        name: "floor_number",
+                        name: "floor_id",
                         data: "floors",
                         textField: "name",
                         valueField: "id",
@@ -712,11 +711,14 @@ const BuildingSpaceDialog = (() => {
                             name: "building_id",
                             api: {
                                 endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                                params: (me, op) => ({
-                                    building_id: me.controls.building_id?.value ?? null,
-                                }),
+                                params: (me, op) => {
+                                    let building_id = me.controls.building_id.value;
+                                    return {
+                                        building_id: building_id,
+                                        
+                                    };
+                                },
                             },
-
                         },
 
                     },
