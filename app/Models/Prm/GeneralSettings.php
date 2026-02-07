@@ -398,5 +398,5 @@ public static function options_tenant_with_active_contract($ss)
             ->selectRaw('f.id,f.building_id,f.name')->get();
         return $rows;
     }
-
+    
 }
