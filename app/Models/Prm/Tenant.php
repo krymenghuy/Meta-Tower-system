@@ -250,4 +250,18 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         $deleted = DB::table('tenants')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
+
+    public function getLeaseHistory($id = null,$ss = null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $rows = DB::table('contracts as c')
+        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+        ->join('buildings as b', 'b.id', '=', 'bs.building_id')
+        ->where('c.tenant_id', $id)
+        ->selectRaw('c.id,c.start_date,c.end_date,c.tenant_id')
+        ->orderByDesc('c.start_date')
+        ->get();
+        return $rows;
+
+    }
 }
