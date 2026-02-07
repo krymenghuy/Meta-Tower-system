@@ -133,6 +133,8 @@ var TenantComponent = new(function () {
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
             renderItems: (items, container) => {
+                console.log(888888888,items);
+                
                 mThis.renderTenantCard(container, items);
             },
             listContainerClass: null
@@ -422,7 +424,7 @@ var TenantComponent = new(function () {
                                                     class="create-tenant-contract fw-semibold"
                                                     data-id="${d.id}" data-name="${d.name}">
                                                         <span class="tool-tip">
-                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-4"></i>
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-5"></i>
                                                             <span class="tool-tiptext fs-6">Create Contract</span>
                                                         </span>
                                                     </a>
@@ -732,7 +734,7 @@ var TenantComponent = new(function () {
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
-                                <div class="col-md-8"><small class="text-muted">Address</small><div class="fw-semibold text-primary">${data.address ?? ''}</div></div>
+                                <div class="col-md-8"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ''}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
