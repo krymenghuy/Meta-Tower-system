@@ -234,6 +234,13 @@ var TenantComponent = new(function () {
                     name: "create_contract"
                 },
                 {
+                    html: '<span class="ps-2">Renew Contract</span>',
+                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "renew_contract"
+                },
+                {
                     html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -259,7 +266,10 @@ var TenantComponent = new(function () {
                 console.log(123456,status_id);
                 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id > 1 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id == 1 ? 'block' : 'none';
+                menu.renew_contract.style.display = status_id > 1 ? 'block' : 'none';
+                menu.service_request.style.display = status_id == 2 ? 'block' : 'none';
+
 
             },
             // adjustPosition: {
@@ -276,6 +286,10 @@ var TenantComponent = new(function () {
                     }
                     case 'create_contract': {
                         mThis.createContract(id, menuLink);
+                        break;
+                    }
+                    case 'renew_contract': {
+                        mThis.renewContract(id, menuLink);
                         break;
                     }
                     case 'edit_tenant': {
@@ -327,6 +341,17 @@ var TenantComponent = new(function () {
             }
         };
         ContractDialog.show(op);
+    };
+    mThis.renewContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        // renewDialog.show(op);
+        alert('coming soon!');
     };
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
