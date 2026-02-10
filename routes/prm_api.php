@@ -70,6 +70,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/form-options', [TenantController::class, 'getFormOptions']);
     Route::post('/delete', [TenantController::class, 'delete']);
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
+    Route::post('/lease-history', [TenantController::class, 'getLeaseHistory']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
@@ -115,7 +117,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/details', [ContractController::class, 'contractDetails']);
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
-
+    Route::post('/renew', [ContractController::class, 'renewContract']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-request')->group(function () {

@@ -51,7 +51,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 align-items-center">
                     <li class="breadcrumb-item">
-                        <a href="#" class="text-decoration-none text-muted fw-medium">Tenants</a>
+                        <a href="javascript:void(0)" class="text-decoration-none text-muted fw-medium">Tenants</a>
                     </li>
                     <li class="breadcrumb-item active fw-semibold text-muted" aria-current="page">
                         Personal Information

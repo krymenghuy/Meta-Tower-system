@@ -99,12 +99,14 @@ class Contract
             $current_page = 1;  
         }
         $skip_rows = ($current_page - 1) * $per_page;
+        $today = date('Y-m-d');
+        DB::table('contracts')->where('end_date', '<', $today)->where('status_id', '<', 3)->update(['status_id' => 2]);
         $str_search = '1=1';
         $str_moreWhere = '2=2';
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(t.name LIKE '%".$search_value."%')";
+            $str_search = "(t.name LIKE '%".$search_value."%'  OR t.phone_number LIKE '%" . $search_value . "%' OR bs.code LIKE '%" . $search_value . "%' )";
         }
         if($tenant_id){
             $str_moreWhere .= ' AND c.tenant_id = ' . $tenant_id;
@@ -132,9 +134,18 @@ class Contract
             ->whereRaw($str_moreWhere)
             ->selectRaw($selectCols)
             ->orderByRaw('c.id desc');
+
+        
         $clone_query = clone $query;
         $count = $clone_query->count('c.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
+        // $today = date('Y-m-d');
+        // foreach($rows as $row){
+        //     if($row->end_date < $today){
+        //         $row->status_id = 2;
+        //         DB::table('contracts as c')->where('c.id',$row->id)->where('status_id','<',3)->update(['status_id'=>2]);
+        //     }
+        // }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -166,6 +177,99 @@ class Contract
         $deleted = DB::table('contracts')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
     }
+
+    public function renewContract($arr = [], $id = null, $ss = null)
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+
+    if (!$id) return DV::error('Contract not found');
+
+    $old = DB::table('contracts')->where('id', $id)->first();
+    if (!$old) return DV::error('Contract not found');
+    if ($old->status_id == 3) {
+        return DV::error('Terminated contract cannot be renewed');
+    }
+
+    $v_rule = [
+        'start_date' => '1|date',
+        'end_date'   => '1|date',
+        'price'      => '0|number',
+        'price_type' => '0|string|default=sqm',
+        'remarks'    => '0|string|0-255',
+    ];
+
+    $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+    if ($res->error) return DV::error($res->error);
+
+    $inputs = $res->values;
+
+    $today = date('Y-m-d');
+
+    if ($old->status_id == 1 && strtotime($inputs['start_date']) <= strtotime($old->end_date)) {
+        return DV::error('New start date must be after current end date');
+    }
+    if ($old->status_id == 2 && $inputs['start_date'] < $today) {
+        return DV::error('Renew start date must be today or later');
+    }
+
+    if ($inputs['end_date'] < $today) {
+        return DV::error('End date cannot be in the past');
+    }
+
+    if ($inputs['end_date'] <= $inputs['start_date']) {
+        return DV::error('End date must be after start date');
+    }
+
+
+    $new = [
+        'tenant_id'        => $old->tenant_id,
+        'legal_name'       => $old->legal_name,
+        'business_type_id' => $old->business_type_id,
+        'space_type_id'    => $old->space_type_id,
+        'space_id'         => $old->space_id,
+        'sqm_size'         => $old->sqm_size,
+        'price'            => $inputs['price'] ?? $old->price,
+        'price_type'       => $inputs['price_type'] ?? $old->price_type,
+        'start_date'       => $inputs['start_date'],
+        'end_date'         => $inputs['end_date'],
+        'remarks'          => $inputs['remarks'] ?? ('Renewed from contract #' . $old->id),
+        'status_id'        => 1,
+        'renew_from_id'    => $old->id,
+    ];
+
+    DB::beginTransaction();
+
+    $new_id = DBX::saveData($ss, 'contracts', ['id' => null], $new, [], 1);
+
+    if (!$new_id) {
+        DB::rollBack();
+        return DV::error('Renew failed');
+    }
+
+    DB::table('contracts')
+        ->where('id', $old->id)
+        ->update([
+            'status_id' => 2,
+            'renew_to_id' => $new_id
+        ]);
+
+    DB::table('building_spaces')
+        ->where('id', $old->space_id)
+        ->update(['status_id' => 2]);
+
+    DB::table('tenants')
+        ->where('id', $old->tenant_id)
+        ->update(['status_id' => 2]);
+
+    DB::commit();
+
+    return DV::depends(1, [
+        'new_contract_id' => $new_id
+    ]);
+}
+
+
     
 }
         

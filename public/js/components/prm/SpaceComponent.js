@@ -175,11 +175,11 @@ var SpaceComponent = new (function () {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
+        sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 290) + 'px';
+            sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
         }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
@@ -611,7 +611,7 @@ const BuildingSpaceDialog = (() => {
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="spaceType">Category</label>
                                 <div class="material-input outlined">
                                     <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
@@ -632,6 +632,13 @@ const BuildingSpaceDialog = (() => {
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
                                 </div>
                             </div>
+                            <!-- <div class="col-12 sqm-wrapper" style="display:none;"> -->
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                </div>
+                            </div>
 
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Price</label>
@@ -649,12 +656,7 @@ const BuildingSpaceDialog = (() => {
                                     <label class="d-none">Price Type</label>
                                 </div>
                             </div>
-                            <div class="col-12 sqm-wrapper" style="display:none;">
-                                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
-                                <div class="material-input outlined">
-                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                </div>
-                            </div>
+                           
 
                         </div>`
                     ].join("");
@@ -685,11 +687,11 @@ const BuildingSpaceDialog = (() => {
                     header.appendChild(headerWrapper);
 
 
-                 me.controls.price_type.onchange = (e) => {
-                        const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
-                        if (!sqmWrapper) return;
-                        sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                    };
+                //  me.controls.price_type.onchange = (e) => {
+                //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                //         if (!sqmWrapper) return;
+                //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                //     };
 
                 },
                 configSelect: [

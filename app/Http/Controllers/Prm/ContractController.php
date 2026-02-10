@@ -78,4 +78,16 @@ class ContractController extends Controller
 
         return JDV::raw($res);
     }
+        public function renewContract(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->id ?? $req->contract_id;
+        $contract = new Contract($id, $ss);
+        $res = $contract->renewContract($req->all());
+
+        return JDV::raw($res);
+    }
 }
