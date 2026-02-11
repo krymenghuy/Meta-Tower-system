@@ -731,28 +731,28 @@ const BuildingSpaceDialog = (() => {
                         textField: "building",
                         valueField: "id",
                     },
-                    // {
-                    //     name: "floor_id",
-                    //     data: "floors",
-                    //     textField: "name",
-                    //     valueField: "id",
-                    //     defaultValue: (me, op) => {
-                    //         return op?.data?.building_id ?? null;
-                    //     },
-                    //     depends: {
-                    //         name: "building_id",
-                    //         api: {
-                    //             endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                    //               params: (me, op) => ({
-                    //                 building_id: me.controls.building_id?.value ?? null,
-                    //             }),
-                    //             onResponse:(res)=>{
-                    //                 console.log('m::',res);
-                    //             }
-                    //         },
-                    //     },
+                    {
+                        name: "floor_id",
+                        data: "floors",
+                        textField: "name",
+                        valueField: "id",
+                        defaultValue: (me, op) => {
+                            return op?.data?.building_id ?? null;
+                        },
+                        depends: {
+                            name: "building_id",
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                                  params: (me, op) => ({
+                                    building_id: me.controls.building_id?.value ?? null,
+                                }),
+                                onResponse:(res)=>{
+                                    console.log('m::',res);
+                                }
+                            },
+                        },
 
-                    // },
+                    },
                     {
                         name: "space_type_id",
                         data: "space_types",
