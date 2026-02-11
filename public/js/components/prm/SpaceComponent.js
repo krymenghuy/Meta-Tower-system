@@ -271,7 +271,7 @@ var SpaceComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(6767,p);
+        // console.log(6767,p);
         
 
         return p;
@@ -284,10 +284,15 @@ var SpaceComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-
+                {
+                    html: '<span class="ps-2  " vslang="titles.Create Contract">Create Contract</span>',
+                    icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_contract"
+                },
                 {
                     html: '<span class="ps-2  " vslang="titles.Set Maintenance">Set Maintenance</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-info"></i>`,
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>`,
 
                     cssClass: "border-bottom pb-2",
                     name: "set_maintenance"
@@ -311,13 +316,23 @@ var SpaceComponent = new (function () {
             //     left: -300
             // },
 
+            onShow: (me,container) =>{
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                menu.create_contract.style.display = status_id == 2 ? 'none' : 'block';
+
+            },
+
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case 'set_maintenance': {
                         mThis.setMaintenance(id, menulink);
                         break;
                     }
-
+                    case 'create_contract': {
+                        mThis.createContract(id, menulink);
+                        break;
+                    }
                     case 'edit_space': {
                         mThis.editSpace(id, menulink);
                         break;
@@ -354,27 +369,27 @@ var SpaceComponent = new (function () {
 
         if (Array.isArray(data) && data[0]) {
             data.forEach(d => {
-                let statusColor = 'bg-secondary-custom';
-                let statusText = 'Available';
-                let btnClass = 'rounded-2 btn-create-contract';
-                let icon = '<i class="fa-solid fa-file-contract"></i>';
-                let btnText = 'Create Contract';
-                let progressWidth = '100%';
-
-                const statusId = d.status_id ?? 1;
-
-                if (statusId === 2) { // Occupied
-                    statusColor = 'bg-success';
-                    statusText = 'Occupied';
-                    btnClass = 'rounded-2 btn-view-detail';
-                    icon = '<i class="fa-solid fa-screwdriver-wrench"></i>';
-                    btnText = 'Manage Space';
-                    progressWidth = '100%';
+                const status = (d.status || "Available").toLowerCase();
+                let statusClass = "";
+                let statusColor = "#08b9d5";
+                switch (status) {
+                    case "available":
+                        statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-success";
+                        statusColor = "#0abb87";
+                        break;
+                    case "occupied":
+                        statusClass = "badge text-uppercase text-white bg-info shadow-sm rounded-4";
+                        statusColor = "#5578eb";
+                        
+                        break;
+                    default:
+                        statusClass = "badge text-uppercase text-dark bg-warning-subtle border border-warning";
+                        
+                        break;
                 }
+               
 
-                const sizeLabel = d.price_type === 'total'
-                    ? 'Whole Room'
-                    : `${d.sqm_size ?? '-'} sqm`;
+                const sizeLabel = d.sqm_size ? `${d.sqm_size} m²` : '';
 
                 const priceLabel = d.price_type === 'total'
                     ? `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /month`
@@ -383,9 +398,7 @@ var SpaceComponent = new (function () {
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
-                        <div class="p-4 d-flex flex-column gap-3">
-
-                            <!-- Header -->
+                        <div class="p-4 d-flex flex-column gap-2">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
                                     <h5 class="unit-name mb-1 text-prm-custom" style="font-weight: 700;">
@@ -394,60 +407,68 @@ var SpaceComponent = new (function () {
                                     <p class="unit-floor text-muted small mb-0">
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
                                     </p>
+                                    <p class="unit-floor text-muted small mb-0">
+                                        ${sizeLabel}
+                                    </p>
+                                   
                                 </div>
                                 <span>
                                     <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
-                                <!-- <span class="unit-status-indicator ${statusColor}"></span> -->
                             </div>
                             <div class="d-flex justify-content-between text-muted">
-                                <div class="d-flex align-items-center text-prm-custom gap-2">
-                                    <i class="fa-solid fa-ruler-combined"></i>
-                                    <span>${sizeLabel}</span>
-                                </div>
-                                <div class="d-flex align-items-center text-prm-custom gap-2">
+                                <div class="d-flex align-items-center text-muted gap-2">
                                     <i class="fa-regular fa-building"></i>
                                     <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
-                            </div>
-                            <div>
-                                <div class="d-flex justify-content-between fw-bold text-muted text-uppercase">
-                                    <span>Status</span>
-                                    <span class="${
-                                        statusId === 2 ? 'text-success' :
-                                        // statusId === 1 ? 'text-prm-custom' :
-                                        'text-secondary-custom'
-                                    }">${statusText}</span>
-                                </div>
-                                <div class="progress mt-1" style="height:6px;">
-                                    <div class="progress-bar ${statusColor}" style="width:${progressWidth};"></div>
+                                <div class="d-flex align-items-center text-muted gap-2">
+                                    <span class="${statusClass}" style="min-width:80px">${status}</span>
                                 </div>
                             </div>
+                            <div class="d-flex justify-content-between text-muted">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="w-100 d-flex flex-row justify-content-center align-items-center">
+                                        <div class="position-relative" style="width: 120px; height: 100px;">
+                                            <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                                                <path class="circle-bg" d="M18 2.0845
+                                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fff" stroke-width="4"></path>
+                                                <path class="circle" d="M18 2.0845
+                                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${statusColor}" stroke-width="4" stroke-dasharray="60, 100" stroke-linecap="round"></path>
+                                            </svg>
+                                            <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" style="font-weight: bold; text-align: center;">
+                                                <small class="text-prm-custom">${d.code ?? ''}</small>
+                                            </div>
+                                        </div>
+                                        <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
+                                            <div class="w-100">
+                                                <p class="fs-6 text-prm-custom m-0">Price</p>
+                                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                                <p class="fs-6" style="color: #2b3991;">
+                                                   ${priceLabel}
 
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mt-auto">
-                                <div class="text-prm-custom mb-2">Price: ${priceLabel}</div>
-                                <button class="${btnClass} btn btn-sm btn-prm-custom w-100 d-flex align-items-center justify-content-center gap-2"
-                                    data-id="${d.id}" data-spaceid="${d.id}" data-code="${d.code}" data-pricetype="${d.price_type}" data-price="${d.price}" data-sqmsize="${d.sqm_size}" data-spacetypeid="${d.space_type_id}" data-statusid="${statusId}" >
-                                    <span>${icon}</span>
-                                    ${btnText}
-                                </button>
                                 <div class="d-flex justify-content-between text-muted small">
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-3">Create By :</i> ${d.update_user ?? ''}</div>
+                                        <div class="text-muted">Create By :</i> ${d.update_user ?? ''}</div>
                                     </div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <div class="text-muted mt-3"><i class="fa-regular fa-clock text-prm-custom"></i> <span>${d.updated_at ?? ''}</span></div>
+                                        <div class="text-muted"><i class="fa-regular fa-clock"></i> <span>${d.updated_at ?? ''}</span></div>
                                     </div>
                                 </div>
 
                             </div>
                         </div>
-
-
-                        <input type="checkbox"
-                            class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
+                        <input type="checkbox" class="unit-checkbox position-absolute top-2 end-2 opacity-0 group-hover:opacity-100 rounded">
                     </div>
                 </div>
                 `;
@@ -467,7 +488,16 @@ var SpaceComponent = new (function () {
         div.innerHTML = html;
     };
 
-
+    mThis.createContract = (id, menulink) =>{
+        let op = {
+            id:null,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.SpaceListView.showPage(mThis.getFilterData());
+            }
+        };
+        ContractDialog.show(op);
+    }
 
     mThis.editSpace = (id, menulink) =>{
         let op = {
@@ -622,7 +652,7 @@ const BuildingSpaceDialog = (() => {
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
-                                    <select name="floor_id" placeholder=" " class="data-input form-control" data-field="floor_id">
+                                    <select name="floor_id" class="data-input form-control" data-field="floor_id">
                                     </select>
                                 </div>
                             </div>
@@ -701,29 +731,28 @@ const BuildingSpaceDialog = (() => {
                         textField: "building",
                         valueField: "id",
                     },
-                    {
-                        name: "floor_id",
-                        data: "floors",
-                        textField: "name",
-                        valueField: "id",
-                        defaultValue: (me, op) => {
-                            return op?.data?.building_id ?? null;
-                        },
-                        depends: {
-                            name: "building_id",
-                            api: {
-                                endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                                params: (me, op) => {
-                                    let building_id = me.controls.building_id.value;
-                                    return {
-                                        building_id: building_id,
-                                        
-                                    };
-                                },
-                            },
-                        },
+                    // {
+                    //     name: "floor_id",
+                    //     data: "floors",
+                    //     textField: "name",
+                    //     valueField: "id",
+                    //     defaultValue: (me, op) => {
+                    //         return op?.data?.building_id ?? null;
+                    //     },
+                    //     depends: {
+                    //         name: "building_id",
+                    //         api: {
+                    //             endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                    //               params: (me, op) => ({
+                    //                 building_id: me.controls.building_id?.value ?? null,
+                    //             }),
+                    //             onResponse:(res)=>{
+                    //                 console.log('m::',res);
+                    //             }
+                    //         },
+                    //     },
 
-                    },
+                    // },
                     {
                         name: "space_type_id",
                         data: "space_types",
