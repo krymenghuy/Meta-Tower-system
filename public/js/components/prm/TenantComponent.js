@@ -260,7 +260,7 @@ var TenantComponent = new(function () {
                 },
          
             ],
-             onShow: (me, container) => {
+            onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 console.log(123456,status_id);
