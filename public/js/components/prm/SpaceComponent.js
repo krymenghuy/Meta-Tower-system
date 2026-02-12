@@ -16,7 +16,7 @@ var SpaceComponent = new (function () {
     mThis.paginationContainer = mThis.self.querySelector("#space_container_pagination");
 
     mThis.divSummary = mThis.self.querySelector('#_space_div_summary');
-    
+
 
 
     // mThis.cols = [
@@ -170,7 +170,7 @@ var SpaceComponent = new (function () {
                 VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
             });
         });
-    
+
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         mThis.setAction(div);
 
@@ -184,7 +184,7 @@ var SpaceComponent = new (function () {
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
-       
+
 
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -549,7 +549,7 @@ var SpaceComponent = new (function () {
 
         });
     }
-   
+
     mThis.setAction = (tbl)=>{
         tbl.addEventListener('click',(e) =>{
         let btn = VSUtil.closestLimited(e.target,'.btn-create-contract');
@@ -596,11 +596,11 @@ var SpaceComponent = new (function () {
                 //     vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
                 //         const data = res.status_code == 200 ? res.data : [];
                 //         console.log(3333,data);
-                        
+
                 //         VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
                 //     });
                 // };
-                
+
                 if (typeof onFinish === 'function') onFinish();
             });
 
@@ -676,7 +676,7 @@ const BuildingSpaceDialog = (() => {
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                 </div>
                             </div>
-                             <div class="col-6">
+                            <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="spaceType">Price Type</label>
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
@@ -743,12 +743,13 @@ const BuildingSpaceDialog = (() => {
                             name: "building_id",
                             api: {
                                 endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                                  params: (me, op) => ({
-                                    building_id: me.controls.building_id?.value ?? null,
-                                }),
-                                onResponse:(res)=>{
-                                    console.log('m::',res);
-                                }
+                                params: (me, op) => {
+                                    let building_id = me.controls.building_id.value;
+                                    return {
+                                        building_id: building_id,
+
+                                    };
+                                },
                             },
                         },
 
