@@ -17,7 +17,7 @@
         
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end mt-2">
             <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAddContract">
-                <i class="fa-regular fa-building fa-lg me-2 pt-1"></i>
+                <i class="fa-regular fa-file-lines me-2"></i>
                 <span vslang="buttons.Create Contract"></span>
             </button>
             </div>
