@@ -55,7 +55,8 @@ return [
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
 
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
                 //'/assets/material-js/bootstrap.min.js',
