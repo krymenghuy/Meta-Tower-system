@@ -269,7 +269,36 @@ class Contract
     ]);
 }
 
+static function getTenantInfo($arr=[], $ss = null)
+    {
+        $d = (object) $arr;
+        $tenant_id = $d->tenant_id ?? null;
 
+        if(!$tenant_id){
+            return null;
+        }
+
+        $row = DB::table('tenants AS t')
+            // ->join('contracts AS c', 'c.tenant_id', '=', 't.id')
+            ->where('t.id', $tenant_id)
+            ->selectRaw('
+                t.id AS tenant_id,
+                t.name AS tenant_name,
+                t.sex,
+                t.legal_name,
+                t.phone_number'
+               
+            )
+            ->take(1)
+            ->get()
+            ->first();
+
+        if (!$row) {
+            return null;
+        }
+       
+        return $row;
+    }
     
 }
         
