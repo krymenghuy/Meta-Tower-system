@@ -148,7 +148,6 @@ class ServiceRequest extends VSModel
             $input['completed_date'] = (int) date('Ymd', strtotime($input['completed_date']));
         }
 
-        // Priority fallback (already in validation)
         $input['priority'] = $input['priority'] ?? 'medium';
 
         // Debug before save

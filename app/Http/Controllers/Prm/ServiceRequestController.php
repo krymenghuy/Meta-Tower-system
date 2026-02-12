@@ -41,17 +41,34 @@ class ServiceRequestController extends Controller
         return JDV::result($this->serviceRequest->getServiceRequestList($req->all(), $ss));
     }
 
-    // Get single service request details
-    public function getserviceRequestDetails(Request $req, $id = null)
+    // public function serviceRequestDetails(Request $req, $id = null)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+    //     if (!isset($req->id) || !is_numeric($req->id)) {
+    //         return JDV::error('Invalid ID');
+    //     }
+    //     return JDV::result($this->serviceRequest->getServiceRequestDetails($req->id));
+    // }
+
+    public function serviceRequestDetails(Request $req, $id = null)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        if (!isset($req->id) || !is_numeric($req->id)) {
+        $id = $id ?? $req->id;
+        if (!$id || !is_numeric($id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->serviceRequest->getServiceRequestDetails($req->id));
+        $details = ServiceRequest::getServiceRequestDetails($id);
+        if (!$details) {
+            return JDV::error('Service request not found');
+        }
+
+        return JDV::result($details);
     }
 
     // Delete service request

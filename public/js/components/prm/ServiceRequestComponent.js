@@ -15,7 +15,7 @@ var ServiceRequestComponent = (function () {
         divFilter: $("#_divFilter_service_request"),
     });
 
-   mThis.columns = [
+    mThis.columns = [
     { title: "", className: "align-middle text-capitalize" },
     {
         title: "Tenant",
@@ -37,7 +37,6 @@ var ServiceRequestComponent = (function () {
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`
     },
-    // ── New Priority column with colors ───────────────────────────────
     {
         title: "Priority",
         className: "align-middle text-center",
@@ -57,14 +56,11 @@ var ServiceRequestComponent = (function () {
             return `<span class="${cls}">${text}</span>`;
         }
     },
-    // ── Improved Price column ── show final/total price when available ──
     {
         title: "Price",
         className: "align-middle",
         data: (data) => {
             const cur = data.cur_symbol ?? '$';
-
-            // Prefer total_price if it exists and is different / calculated
             let mainPrice = data.total_price ?? data.service_price;
             let displayPrice = mainPrice
                 ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -72,7 +68,6 @@ var ServiceRequestComponent = (function () {
 
             let extraInfo = '';
 
-            // If we have duration → show small hint (optional)
             if (data.unit_type === 'hour' && data.duration_hours > 0 && data.service_price) {
                 const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
@@ -126,10 +121,10 @@ var ServiceRequestComponent = (function () {
         data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
                 <a href="javascript:void(0)"
-                   class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
-                   data-id="${data.id}"
-                   data-status-id="${data.request_status_id}"
-                   aria-haspopup="true" aria-expanded="false">
+                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
+                    data-id="${data.id}"
+                    data-status-id="${data.request_status_id}"
+                    aria-haspopup="true" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
                 </a>
             </div>`
@@ -146,7 +141,7 @@ var ServiceRequestComponent = (function () {
             columns: mThis.columns,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusId = data.request_status_id;           // consistent kebab → camel
+                tr.dataset.statusId = data.request_status_id;
                 tr.classList.add('service-request');
                 tr.setAttribute('id', `service_request_id_${data.id}`);
             }
@@ -197,15 +192,25 @@ var ServiceRequestComponent = (function () {
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
             menus: [
+                { html: '<span class="ps-2">Generate Invoice</span>', icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`, name: "generate_invoice", cssClass: "border-bottom pb-2 mb-2" },
                 { html: '<span class="ps-2">Change Status</span>', icon: `<i class="fa fa-exchange fs-5 text-info"></i>`, name: "change_status", cssClass: "border-bottom pb-2" },
                 { html: '<span class="ps-2">Modify</span>', icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`, name: "edit_request", cssClass: "border-bottom pb-2" },
                 { html: '<span class="ps-2">Delete</span>', icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`, name: "delete_request", cssClass: "border-bottom pb-2" }
             ],
             onClick: (menuLink, id, name) => {
+                if (name === 'generate_invoice')mThis.generateInvoice(id, menuLink);
                 if (name === 'change_status') mThis.changeStatus(id, menuLink);
                 if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
                 if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
+        });
+    };
+
+    mThis.generateInvoice = (id, menuLink) => {
+        CreateInvoiceServiceRequestDialog.show({
+            id: id,
+            btn: menuLink,
+            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
     };
 
@@ -239,7 +244,7 @@ var ServiceRequestComponent = (function () {
 
     mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
-        const currentStatusId = tr?.dataset.statusId || "1";   // ← FIXED: use the actual ID
+        const currentStatusId = tr?.dataset.statusId || "1";
 
         const options = {
             title: 'Change Status',
@@ -249,7 +254,7 @@ var ServiceRequestComponent = (function () {
             label: 'Status',
             valueField: 'status_id',
             textField: 'name',
-            confirmButtonText: "Submit",                    // fixed typo
+            confirmButtonText: "Submit",
             requiredMessage: 'Select one valid status',
             context: 'success',
             data: [
@@ -258,8 +263,8 @@ var ServiceRequestComponent = (function () {
                 { status_id: "3", name: "Cancelled"  },
                 { status_id: "4", name: "Completed"  },
             ],
-            defaultValue: currentStatusId,                  // ← now correctly pre-selects
-            onConfirm: (value, btn, me) => {                // fixed typo: onConfirm
+            defaultValue: currentStatusId,
+            onConfirm: (value, btn, me) => {
                 const payload = { id, status_id: value };
                 vsapi.post(`${mThis.base_url}/prm/service-request/update-status`, payload, { loader: false })
                     .then(res => {
@@ -299,99 +304,165 @@ var ServiceRequestComponent = (function () {
 })();
 
 
-const CreateServiceRequestDialog = (() => {
+const CreateInvoiceServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md",
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg",
             backdrop: "static",
             keyboard: true,
 
             createContent: () => `
-                <div class="row justify-content-center g-3">
+                <div class="row g-3">
                     <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Tenant</label>
-                        <div class="material-input outlined">
-                            <select name="tenant_id" class="data-input form-control" data-field="tenant_id"></select>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted mb-3">Service Request Details</h6>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Tenant:</small>
+                                        <div class="fw-semibold" id="info-tenant">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Room Code:</small>
+                                        <div class="fw-semibold" id="info-space">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Service:</small>
+                                        <div class="fw-semibold" id="info-service">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Category:</small>
+                                        <div class="fw-semibold" id="info-category">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Base Price:</small>
+                                        <div class="fw-semibold text-primary" id="info-price">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Priority:</small>
+                                        <div class="fw-semibold" id="info-priority">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Room / Space Code</label>
+                    <!-- Invoice Details -->
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Invoice Number</label>
                         <div class="material-input outlined">
-                            <select name="space_id" class="data-input form-control" data-field="space_id"></select>
+                            <input type="text" class="data-input form-control" data-field="invoice_number"
+                                placeholder="Auto-generated if empty" />
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Service</label>
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Invoice Date <span class="text-danger">*</span></label>
                         <div class="material-input outlined">
-                            <select name="service_id" class="data-input form-control" data-field="service_id"></select>
+                            <input type="date" class="data-input form-control" data-field="invoice_date" required />
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Category</label>
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Due Date <span class="text-danger">*</span></label>
                         <div class="material-input outlined">
-                            <select name="service_type_id" class="data-input form-control" data-field="service_type_id"></select>
+                            <input type="date" class="data-input form-control" data-field="due_date" required />
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Charge Unit</label>
-                        <div class="material-input outlined">
-                            <select name="unit_type" class="data-input form-control" data-field="unit_type">
-                                <option value="">-- Select unit --</option>
-                                <option value="hour">Price Per Hour</option>
-                                <option value="month">Price Per Month</option>
-                                <option value="time">Per Usage / Per Time</option>
-                                <option value="one_time">One-time</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-12 select-type-time" style="display:none;">
-                        <label style="padding-left:6px; color:#777;">Duration (hours)</label>
-                        <div class="material-input outlined">
-                            <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
-                                <option value="">-- Select duration --</option>
-                                <option value="0.5">30 minutes</option>
-                                <option value="1">1 hour</option>
-                                <option value="1.5">1.5 hours</option>
-                                <option value="2">2 hours</option>
-                                <option value="2.5">2.5 hours</option>
-                                <option value="3">3 hours</option>
-                                <option value="4">4 hours</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-12 mt-2 text-muted small" id="price-preview" style="display:none;">
-                        Estimated total: <strong id="calc-total">$0.00</strong>
-                    </div>
-                    <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Priority</label>
-                        <select name="priority" class="data-input form-control" data-field="priority">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Payment Status</label>
+                        <select class="data-input form-control" data-field="payment_status">
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
                         </select>
                     </div>
 
+                    <!-- Pricing Section -->
                     <div class="col-12">
-                        <label style="padding-left:6px; color:#777;">Remarks</label>
+                        <hr class="my-2">
+                        <h6 class="text-muted">Pricing Details</h6>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Quantity / Hours</label>
                         <div class="material-input outlined">
-                            <textarea class="data-input form-control" data-field="description" rows="3" placeholder="Enter details..."></textarea>
+                            <input type="number" step="0.5" min="0.5" class="data-input form-control"
+                                data-field="quantity" value="1" />
                         </div>
                     </div>
 
-                    <input type="hidden" name="status_id" data-field="status_id" value="1" />
-                </div>`,
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Unit Price</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" class="data-input form-control"
+                                data-field="unit_price" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Discount (%)</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" max="100" class="data-input form-control"
+                                data-field="discount_percent" value="0" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Tax (%)</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" class="data-input form-control"
+                                data-field="tax_percent" value="0" />
+                        </div>
+                    </div>
+
+                    <!-- Total Calculation -->
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <div class="col-6 text-muted">Subtotal:</div>
+                                    <div class="col-6 text-end fw-semibold" id="calc-subtotal">$0.00</div>
+
+                                    <div class="col-6 text-muted">Discount:</div>
+                                    <div class="col-6 text-end text-danger" id="calc-discount">-$0.00</div>
+
+                                    <div class="col-6 text-muted">Tax:</div>
+                                    <div class="col-6 text-end" id="calc-tax">$0.00</div>
+
+                                    <div class="col-12"><hr class="my-1"></div>
+
+                                    <div class="col-6 fw-bold fs-5">Total:</div>
+                                    <div class="col-6 text-end fw-bold fs-5 text-primary" id="calc-total">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label style="padding-left:6px; color:#777;">Notes / Remarks</label>
+                        <div class="material-input outlined">
+                            <textarea class="data-input form-control" data-field="notes" rows="3"
+                                placeholder="Additional information..."></textarea>
+                        </div>
+                    </div>
+
+                    <input type="hidden" data-field="service_request_id" />
+                    <input type="hidden" data-field="total_amount" />
+                    <input type="hidden" data-field="tenant_id" />
+                    <input type="hidden" data-field="space_id" />
+                    <input type="hidden" data-field="service_id" />
+                    <input type="hidden" data-field="service_type_id" />
+                </div>
+            `,
 
             contentCreated: (me) => {
+
                 // Header customization
                 const header = me.divModal.querySelector('.modal-header');
                 header.querySelector('button')?.classList.add('d-none');
@@ -400,26 +471,383 @@ const CreateServiceRequestDialog = (() => {
 
                 const title = header.querySelector('.modal-title');
                 title.classList.add('text-white', 'text-center', 'w-100');
+                title.textContent = 'Generate Invoice';
 
-                // Price preview logic
+                const today = new Date().toISOString().split('T')[0];
+                me.controls.invoice_date.value = today;
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 30);
+                me.controls.due_date.value = dueDate.toISOString().split('T')[0];
+
+                const calculateTotals = () => {
+                    const quantity = parseFloat(me.controls.quantity.value) || 0;
+                    const unitPrice = parseFloat(me.controls.unit_price.value) || 0;
+                    const discountPercent = parseFloat(me.controls.discount_percent.value) || 0;
+                    const taxPercent = parseFloat(me.controls.tax_percent.value) || 0;
+
+                    const subtotal = quantity * unitPrice;
+                    const discountAmount = subtotal * (discountPercent / 100);
+                    const afterDiscount = subtotal - discountAmount;
+                    const taxAmount = afterDiscount * (taxPercent / 100);
+                    const total = afterDiscount + taxAmount;
+
+                    me.divModal.querySelector('#calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-tax').textContent = `$${taxAmount.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
+
+                    me.controls.total_amount.value = total.toFixed(2);
+                };
+
+                ['quantity', 'unit_price', 'discount_percent', 'tax_percent'].forEach(field => {
+                    me.controls[field]?.addEventListener('input', calculateTotals);
+                });
+                const requestId = op.id;
+
+                console.log('=== LOADING INVOICE FOR ID:', requestId, '===');
+
+                if (requestId) {
+                    me.controls.service_request_id.value = requestId;
+
+                    vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: requestId })
+                        .then(res => {
+                            console.log('API Response for ID', requestId, ':', res);
+
+                            if (res.status_code === 200 && res.data && res.data.request_details) {
+                                const data = res.data.request_details;
+
+                                console.log('Request Details for ID', requestId, ':', data);
+
+                                if (data.id != requestId) {
+                                    console.error('ID MISMATCH! Expected:', requestId, 'Got:', data.id);
+                                    cv_interact.error('Data mismatch error');
+                                    return;
+                                }
+                                me.controls.tenant_id.value = data.tenant_id || '';
+                                me.controls.space_id.value = data.space_id || '';
+                                me.controls.service_id.value = data.service_id || '';
+                                me.controls.service_type_id.value = data.service_type_id || '';
+
+                                const tenant = res.data.tenants?.find(t => t.id == data.tenant_id);
+                                const space = res.data.building_spaces?.find(s => s.id == data.space_id);
+                                const service = res.data.services?.find(s => s.id == data.service_id);
+                                const serviceType = res.data.service_types?.find(st => st.id == data.service_type_id);
+
+                                me.divModal.querySelector('#info-tenant').textContent = tenant?.tenant || '-';
+                                me.divModal.querySelector('#info-space').textContent = space?.floor_id || '-';
+                                me.divModal.querySelector('#info-service').textContent = service?.service || '-';
+                                me.divModal.querySelector('#info-category').textContent = serviceType?.service_type || '-';
+                                me.divModal.querySelector('#info-priority').textContent = data.priority || '-';
+
+                                const price = data.total_price || data.service_price || 0;
+                                me.divModal.querySelector('#info-price').textContent = `$${Number(price).toFixed(2)}`;
+                                me.controls.unit_price.value = price;
+
+                                if (data.duration_hours && data.duration_hours > 0) {
+                                    me.controls.quantity.value = data.duration_hours;
+                                } else {
+                                    me.controls.quantity.value = 1;
+                                }
+
+                                calculateTotals();
+                            } else {
+                                cv_interact.error('Unable to load service request details');
+                                console.error('Invalid response:', res);
+                            }
+                        })
+                        .catch(err => {
+                            cv_interact.error('Failed to fetch service request details');
+                            console.error('Fetch error:', err);
+                        });
+                } else {
+                    console.error('No ID provided to CreateInvoiceServiceRequestDialog!');
+                    cv_interact.error('No service request ID provided');
+                }
+
+                me.onBeforeSubmit = () => {
+                    const invoiceDate = new Date(me.controls.invoice_date.value);
+                    const dueDate = new Date(me.controls.due_date.value);
+
+                    if (dueDate < invoiceDate) {
+                        cv_interact.error('Due date cannot be earlier than invoice date');
+                        return false;
+                    }
+                    return true;
+                };
+            },
+
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel',
+                    click: (me) => me.hide(false)
+                },
+                {
+                    label: '<span>Generate Invoice</span>',
+                    cssClass: 'btn-vs-save',
+                    click: (me, btn) => {
+                        const data = me.getData();
+
+                        console.log('Invoice Data to Submit:', data);
+
+                        vsapi.call(
+                            `${main_view.base_url}/prm/invoice/save`,
+                            data,
+                            btn
+                        ).then(res => {
+                            if (res.status_code === 200) {
+                                me.hide(true);
+                                cv_interact.success('Invoice generated successfully');
+                                if (me.dataOptions?.onClose) {
+                                    me.dataOptions.onClose();
+                                }
+                            } else {
+                                cv_interact.error(res.error_message || 'Failed to generate invoice');
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+
+const CreateServiceRequestDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static",
+            keyboard: true,
+
+            createContent: () => `
+                <div class="container-fluid">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="tenant_id" class="data-input form-control" data-field="tenant_id" required>
+                                    <option value="">-- Select Tenant --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space Code <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="space_id" class="data-input form-control" data-field="space_id" required>
+                                    <option value="">-- Select Room --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="service_id" class="data-input form-control" data-field="service_id" required>
+                                    <option value="">-- Select Service --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-tags me-2 text-warning"></i>Category <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="service_type_id" class="data-input form-control" data-field="service_type_id" required>
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="unit_type" class="data-input form-control" data-field="unit_type" required>
+                                    <option value="">-- Select Unit --</option>
+                                    <option value="hour">⏱️ Price Per Hour</option>
+                                    <option value="month">📅 Price Per Month</option>
+                                    <option value="time">🔄 Per Usage / Per Time</option>
+                                    <option value="one_time">✨ One-time</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 select-type-time" style="display:none;">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
+                                    <option value="">-- Select Duration --</option>
+                                    <option value="0.5">⏰ 30 minutes</option>
+                                    <option value="1">⏰ 1 hour</option>
+                                    <option value="1.5">⏰ 1.5 hours</option>
+                                    <option value="2">⏰ 2 hours</option>
+                                    <option value="2.5">⏰ 2.5 hours</option>
+                                    <option value="3">⏰ 3 hours</option>
+                                    <option value="4">⏰ 4 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
+                        <div class="col-12">
+                            <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
+                                    <div>
+                                        <small class="text-muted d-block mb-1">Estimated Total</small>
+                                        <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Base Price × Duration</small>
+                                    <span class="badge bg-primary" id="calc-breakdown">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-12">
+                            <label style="padding-left:6px; color:#777; margin-bottom: 12px;">
+                                <i class="fas fa-exclamation-circle me-2 text-danger"></i>Priority Level <span class="text-danger">*</span>
+                            </label>
+                            <div class="priority-selector">
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-3">
+                                        <input type="radio" class="btn-check" name="priority" id="priority-low" value="low">
+                                        <label class="btn btn-outline-success w-100 priority-card" for="priority-low">
+                                            <div class="priority-icon">🟢</div>
+                                            <div class="priority-title">Low</div>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <input type="radio" class="btn-check" name="priority" id="priority-medium" value="medium" checked>
+                                        <label class="btn btn-outline-warning w-100 priority-card" for="priority-medium">
+                                            <div class="priority-icon">🟡</div>
+                                            <div class="priority-title">Medium</div>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <input type="radio" class="btn-check" name="priority" id="priority-high" value="high">
+                                        <label class="btn btn-outline-danger w-100 priority-card" for="priority-high">
+                                            <div class="priority-icon">🟠</div>
+                                            <div class="priority-title">High</div>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <input type="radio" class="btn-check" name="priority" id="priority-urgent" value="urgent">
+                                        <label class="btn btn-outline-danger w-100 priority-card" for="priority-urgent">
+                                            <div class="priority-icon">🔴</div>
+                                            <div class="priority-title">Urgent</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks / Description
+                            </label>
+                            <div class="material-input outlined position-relative">
+                                <textarea class="data-input form-control"
+                                        data-field="description"
+                                        rows="4"
+                                        placeholder="Enter any additional details..."
+                                        maxlength="500"></textarea>
+                                <div class="char-counter">
+                                    <small class="text-muted">
+                                        <span id="char-count">0</span> / 500
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="status_id" data-field="status_id" value="1" />
+                </div>
+            `,
+
+            contentCreated: (me) => {
+                const header = me.divModal.querySelector('.modal-header');
+                header.querySelector('button')?.classList.add('d-none');
+                header.classList.add('bg-prm-custom', 'modal-header-custom');
+                header.parentElement.style.borderRadius = '20px';
+
+                const title = header.querySelector('.modal-title');
+                title.classList.add('text-white', 'text-center', 'w-100');
+
+                const textarea = me.divModal.querySelector('[data-field="description"]');
+                const charCount = me.divModal.querySelector('#char-count');
+                if (textarea && charCount) {
+                    textarea.addEventListener('input', () => {
+                        charCount.textContent = textarea.value.length;
+                        if (textarea.value.length > 450) {
+                            charCount.parentElement.classList.add('text-danger');
+                        } else {
+                            charCount.parentElement.classList.remove('text-danger');
+                        }
+                    });
+                }
+                const populateSelect = (sel, items, valField, txtField, placeholder = '-- Select --') => {
+                    if (!sel || !Array.isArray(items)) return;
+                    sel.innerHTML = `<option value="">${placeholder}</option>`;
+                    items.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item[valField];
+                        opt.textContent = item[txtField] || item.name || item.tenant || '—';
+                        sel.appendChild(opt);
+                    });
+                };
+
                 const updatePricePreview = () => {
                     const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === 'hour';
-                    me.divModal.querySelector('.select-type-time').style.display = showDuration ? 'block' : 'none';
+                    const durationDiv = me.divModal.querySelector('.select-type-time');
+
+                    durationDiv.style.display = showDuration ? 'block' : 'none';
 
                     if (!showDuration) {
-                        me.divModal.querySelector('#price-preview').style.display = 'none';
+                        me.divModal.querySelector('#price-preview-row').style.display = 'none';
                         return;
                     }
 
                     const hours = parseFloat(me.controls.duration_hours?.value) || 0;
                     const price = parseFloat(me.servicePrice || 0);
-                    const preview = me.divModal.querySelector('#price-preview');
+                    const preview = me.divModal.querySelector('#price-preview-row');
                     const totalEl = me.divModal.querySelector('#calc-total');
+                    const breakdownEl = me.divModal.querySelector('#calc-breakdown');
 
                     if (hours > 0 && price > 0) {
                         const total = price * hours;
                         totalEl.textContent = `$${total.toFixed(2)}`;
+                        breakdownEl.textContent = `$${price.toFixed(2)} × ${hours}h`;
                         preview.style.display = 'block';
                     } else {
                         preview.style.display = 'none';
@@ -429,7 +857,6 @@ const CreateServiceRequestDialog = (() => {
                 me.controls.service_id?.addEventListener('change', () => {
                     const serviceId = me.controls.service_id.value;
                     if (!serviceId) return;
-
                     const service = me.data?.services?.find(s => s.id == serviceId);
                     if (service) {
                         me.servicePrice = service.price;
@@ -444,13 +871,35 @@ const CreateServiceRequestDialog = (() => {
 
                 updatePricePreview();
 
+                if (me.data?.request_details?.priority) {
+                    const prio = (me.data.request_details.priority || 'medium').toLowerCase().trim();
+                    const radio = me.divModal.querySelector(`input[name="priority"][value="${prio}"]`);
+                    if (radio) radio.checked = true;
+                }
+
                 me.onBeforeSubmit = () => {
                     const data = me.getData();
-                    console.log("=== SUBMIT DATA DEBUG ===");
-                    console.log("Sent to backend:", data);
-                    console.log("unit_type:", data.unit_type);
-                    console.log("priority:", data.priority);
-                    console.log("duration_hours:", data.duration_hours);
+                    const required = {
+                        'tenant_id': 'Tenant',
+                        'space_id': 'Room/Space',
+                        'service_id': 'Service',
+                        'service_type_id': 'Category',
+                        'unit_type': 'Charge Unit'
+                    };
+
+                    for (let [field, label] of Object.entries(required)) {
+                        if (!data[field]) {
+                            cv_interact.error(`Please select ${label}`);
+                            return false;
+                        }
+                    }
+
+                    if (data.unit_type === 'hour' && !data.duration_hours) {
+                        cv_interact.error('Please select duration for hourly service');
+                        return false;
+                    }
+
+                    console.log("Data to send:", data);
                     return true;
                 };
             },
@@ -475,12 +924,12 @@ const CreateServiceRequestDialog = (() => {
             buttons: [
                 {
                     label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    cssClass: 'btn-vs-cancel btn-xl px-4',
                     click: (me) => me.hide(false)
                 },
                 {
                     label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
+                    cssClass: 'btn-vs-save btn-xl px-4',
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = me.dataOptions?.id || null;
@@ -492,7 +941,7 @@ const CreateServiceRequestDialog = (() => {
                         ).then(res => {
                             if (res.status_code === 200) {
                                 me.hide(true);
-                                cv_interact.success(data.id ? "Service request updated" : "Service request created");
+                                cv_interact.success(data.id ? "✓ Updated!" : "✓ Created!");
                             } else {
                                 cv_interact.error(res.error_message || "Save failed");
                             }
@@ -507,3 +956,6 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
+
+
+
