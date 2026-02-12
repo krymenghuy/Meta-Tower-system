@@ -31,7 +31,6 @@ class ServiceRequest extends VSModel
             'tenant_id'         => '1|number|exists=tenants.id',
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
-            'service_type_id'   => '1|number|exists=service_types.id',
             'description'       => '0|string|0-1000',
             'duration_hours'    => '0|numeric|min:0.5|nullable',
             'unit_type'         => '0|string|in:one_time,hour,month,time|nullable',
@@ -188,7 +187,6 @@ class ServiceRequest extends VSModel
         $branch_id         = $ss->branch_id ?? null;
         $search_value      = $d->search_value ?? null;
         $request_status_id = $d->request_status_id ?? null;
-        $service_type_id   = $d->service_type_id ?? null;
         $current_page      = (int) ($d->current_page ?? 1);
         $per_page          = (int) ($d->per_page ?? 10);
 
@@ -207,12 +205,10 @@ class ServiceRequest extends VSModel
                 sr.description LIKE '%{$search}%'
                 OR t.name LIKE '%{$search}%'
                 OR bs.code LIKE '%{$search}%'
-                OR st.name LIKE '%{$search}%'
             )";
         }
 
         if ($request_status_id) $where_more .= ' AND sr.request_status_id = ' . (int)$request_status_id;
-        if ($service_type_id)   $where_more .= ' AND sr.service_type_id = '   . (int)$service_type_id;
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
@@ -220,7 +216,6 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
-            ->join('service_types as st', 'st.id', '=', 'sr.service_type_id')
             ->join('request_status as rs', 'rs.id', '=', 'sr.request_status_id')
             ->whereRaw($where_search)
             ->whereRaw($where_more)
@@ -230,7 +225,6 @@ class ServiceRequest extends VSModel
                 sr.service_id, s.name as service_name,
                 s.price as service_price, s.unit_type,
                 sr.total_price, sr.duration_hours,
-                sr.service_type_id, st.name as service_type_name,
                 sr.description, sr.request_date,
                 sr.request_status_id, rs.name as status_name,
                 $updated_at, sr.update_user,
@@ -252,7 +246,7 @@ class ServiceRequest extends VSModel
             ->select([
                 'sr.id', 'sr.tenant_id', 'sr.space_id', 'sr.service_id',
                 's.price as service_price', 's.unit_type',
-                'sr.service_type_id', 'sr.request_date', 'sr.description',
+                'sr.request_date', 'sr.description',
                 'sr.request_status_id', 'sr.update_user',
                 'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
                 'sr.updated_at', 'sr.total_price', 'sr.duration_hours'
@@ -268,6 +262,7 @@ class ServiceRequest extends VSModel
             'request_details'   => $details,
             'service_types'     => GeneralSettings::options_service_types($ss),
             'tenants'           => GeneralSettings::options_tenant_with_active_contract($ss),
+            // 'tenants'           => GeneralSettings::options_tenant($ss),
             'services'          => GeneralSettings::options_service($ss),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
             'request_statuses'  => GeneralSettings::options_request_status($ss)

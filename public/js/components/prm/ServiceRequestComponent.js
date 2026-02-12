@@ -33,11 +33,6 @@ var ServiceRequestComponent = (function () {
         data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
     },
     {
-        title: "Category",
-        className: "align-middle",
-        data: (data) => `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`
-    },
-    {
         title: "Price",
         className: "align-middle",
         data: (data) => {
@@ -655,7 +650,6 @@ const CreateServiceRequestDialog = (() => {
                                     <option value="">-- Select Unit --</option>
                                     <option value="hour">⏱️ Price Per Hour</option>
                                     <option value="month">📅 Price Per Month</option>
-                                    <option value="one_time">✨ One-time</option>
                                 </select>
                             </div>
                         </div>
@@ -743,48 +737,46 @@ const CreateServiceRequestDialog = (() => {
                         }
                     });
                 }
-                const populateSelect = (sel, items, valField, txtField, placeholder = '-- Select --') => {
-                    if (!sel || !Array.isArray(items)) return;
-                    sel.innerHTML = `<option value="">${placeholder}</option>`;
-                    items.forEach(item => {
-                        const opt = document.createElement('option');
-                        opt.value = item[valField];
-                        opt.textContent = item[txtField] || item.name || item.tenant || '—';
-                        sel.appendChild(opt);
-                    });
-                };
 
                 const updatePricePreview = () => {
-                    const unit = me.controls.unit_type?.value || '';
-                    const showDuration = unit === 'hour';
-                    const durationDiv = me.divModal.querySelector('.select-type-time');
+                const unit = me.controls.unit_type?.value || '';
+                const showDuration = unit === 'hour';
+                me.divModal.querySelector('.select-type-time').style.display = showDuration ? 'block' : 'none';
 
-                    durationDiv.style.display = showDuration ? 'block' : 'none';
+                if (!showDuration) {
+                    me.divModal.querySelector('#price-preview-row').style.display = 'none';
+                    return;
+                }
 
-                    if (!showDuration) {
-                        me.divModal.querySelector('#price-preview-row').style.display = 'none';
-                        return;
-                    }
+                const hours = parseFloat(me.controls.duration_hours?.value) || 0;
+                const price = parseFloat(me.servicePrice || 0);
+                
+                // Add validation
+                if (!me.servicePrice || price <= 0) {
+                    console.warn('Service price not set or invalid');
+                    me.divModal.querySelector('#price-preview-row').style.display = 'none';
+                    return;
+                }
+                
+                const preview = me.divModal.querySelector('#price-preview-row');
+                const totalEl = me.divModal.querySelector('#calc-total');
+                const breakdownEl = me.divModal.querySelector('#calc-breakdown');
 
-                    const hours = parseFloat(me.controls.duration_hours?.value) || 0;
-                    const price = parseFloat(me.servicePrice || 0);
-                    const preview = me.divModal.querySelector('#price-preview-row');
-                    const totalEl = me.divModal.querySelector('#calc-total');
-                    const breakdownEl = me.divModal.querySelector('#calc-breakdown');
+                if (hours > 0 && price > 0) {
+                    const total = price * hours;
+                    totalEl.textContent = `$${total.toFixed(2)}`;
+                    breakdownEl.textContent = `$${price.toFixed(2)} × ${hours}h`;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            };
 
-                    if (hours > 0 && price > 0) {
-                        const total = price * hours;
-                        totalEl.textContent = `$${total.toFixed(2)}`;
-                        breakdownEl.textContent = `$${price.toFixed(2)} × ${hours}h`;
-                        preview.style.display = 'block';
-                    } else {
-                        preview.style.display = 'none';
-                    }
-                };
 
                 me.controls.service_id?.addEventListener('change', () => {
                     const serviceId = me.controls.service_id.value;
                     if (!serviceId) return;
+
                     const service = me.data?.services?.find(s => s.id == serviceId);
                     if (service) {
                         me.servicePrice = service.price;
@@ -837,11 +829,11 @@ const CreateServiceRequestDialog = (() => {
                             api:{
                                 endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
                             },
-                            textField: "space_code", valueField: "id" 
-                         }
-                       ]
+                            textField: "space_code", valueField: "id"
+                        }
+                    ]
 
-                 },
+                },
                 // { name: "space_id", },
                 { name: "service_id",    data: "services",       textField: "service",    valueField: "id" },
                 { name: "service_type_id", data: "service_types",  textField: "service_type", valueField: "id" }
@@ -892,6 +884,7 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
+
 
 
 

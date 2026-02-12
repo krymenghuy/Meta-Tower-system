@@ -275,7 +275,7 @@ public static function options_tenant_with_active_contract($ss)
 {
     return DB::table('tenants as t')
         ->join('contracts as c', 'c.tenant_id', '=', 't.id')
-        ->where('c.status_id', '=', 2)  // Only active contracts
+        // ->where('c.status_id', '=', 2)
         ->where('t.branch_id', '=', $ss->branch_id)  // Filter by branch if needed
         ->select('t.id', 't.name as tenant', 'c.id as contract_id')
         ->distinct()  // In case tenant has multiple active contracts
