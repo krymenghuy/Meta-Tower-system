@@ -14,10 +14,9 @@
            <div class="col-12 col-md-6 col-lg-2">
                 <select id="payment_status" class="data-input filter-field form-control" data-field="status_id"></select>
             </div>
-
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
-                <button type="button" class="btn btn--Options w-70 w-md-auto" id="_btnInvoice">
-                      <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
+                <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnInvoice">
+                        <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
                     <span vslang="buttons.Generate Invoice"></span>
                 </button>
             </div>
