@@ -530,7 +530,6 @@ const ContractDialog = (() => {
 
             contentCreated: (me) => {
                 DateTimePicker.initAll(me.divModal);
-
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
                 const headerTitle = header.querySelector('.modal-title');
@@ -553,6 +552,22 @@ const ContractDialog = (() => {
                 //     if (!sqmWrapper) return;
                 //     sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
                 // };
+
+                me.controls.tenant_id.onchange = (e) => {
+                    const p = {tenant_id:me.controls.tenant_id.value};
+
+                    vsapi.call([main_view.base_url, "/prm/contract/get-tenant-info"].join(""), p, null, null).then((res) => {
+                            const d = res;
+                            console.log(3333,d);
+                            
+                            if(d){
+                                me.controls.legal_name.value = d.legal_name;
+                               
+                            }
+
+                        });
+                    
+                };
             },
             
             configSelect: [
