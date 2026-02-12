@@ -32,7 +32,6 @@ class ServiceRequest extends VSModel
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
             'service_type_id'   => '1|number|exists=service_types.id',
-            'priority'          => '0|enum=low,medium,high,urgent|default=medium',
             'description'       => '0|string|0-1000',
             'duration_hours'    => '0|numeric|min:0.5|nullable',
             'unit_type'         => '0|string|in:one_time,hour,month,time|nullable',
@@ -148,14 +147,11 @@ class ServiceRequest extends VSModel
             $input['completed_date'] = (int) date('Ymd', strtotime($input['completed_date']));
         }
 
-        $input['priority'] = $input['priority'] ?? 'medium';
-
         // Debug before save
         Log::debug('Final insert data (focus on unit_type)', [
             'unit_type'      => $input['unit_type'],
             'duration_hours' => $input['duration_hours'] ?? null,
             'total_price'    => $input['total_price'] ?? null,
-            'priority'       => $input['priority'],
             'service_unit'   => $service->unit_type
         ]);
 
@@ -235,7 +231,7 @@ class ServiceRequest extends VSModel
                 s.price as service_price, s.unit_type,
                 sr.total_price, sr.duration_hours,
                 sr.service_type_id, st.name as service_type_name,
-                sr.description, sr.priority, sr.request_date,
+                sr.description, sr.request_date,
                 sr.request_status_id, rs.name as status_name,
                 $updated_at, sr.update_user,
                 sr.scheduled_date, sr.completed_date, sr.create_uid
@@ -257,7 +253,7 @@ class ServiceRequest extends VSModel
                 'sr.id', 'sr.tenant_id', 'sr.space_id', 'sr.service_id',
                 's.price as service_price', 's.unit_type',
                 'sr.service_type_id', 'sr.request_date', 'sr.description',
-                'sr.priority', 'sr.request_status_id', 'sr.update_user',
+                'sr.request_status_id', 'sr.update_user',
                 'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
                 'sr.updated_at', 'sr.total_price', 'sr.duration_hours'
             ])
@@ -271,7 +267,7 @@ class ServiceRequest extends VSModel
         return (object) [
             'request_details'   => $details,
             'service_types'     => GeneralSettings::options_service_types($ss),
-            'tenants'           => GeneralSettings::options_tenant($ss),
+            'tenants'           => GeneralSettings::options_tenant_with_active_contract($ss),
             'services'          => GeneralSettings::options_service($ss),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
             'request_statuses'  => GeneralSettings::options_request_status($ss)
@@ -314,4 +310,6 @@ class ServiceRequest extends VSModel
             ? DV::success(['message' => 'Status updated successfully'])
             : DV::error('Failed to update status');
     }
+
+    
 }

@@ -38,25 +38,6 @@ var ServiceRequestComponent = (function () {
         data: (data) => `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`
     },
     {
-        title: "Priority",
-        className: "align-middle text-center",
-        data: (data) => {
-            const prio = (data.priority || 'medium').toLowerCase();
-            let cls = '';
-            let text = prio.charAt(0).toUpperCase() + prio.slice(1);
-
-            if (prio === 'high' || prio === 'urgent') {
-                cls = 'text-danger fw-bold';
-            } else if (prio === 'medium') {
-                cls = 'text-warning fw-semibold';
-            } else if (prio === 'low') {
-                cls = 'text-success';
-            }
-
-            return `<span class="${cls}">${text}</span>`;
-        }
-    },
-    {
         title: "Price",
         className: "align-middle",
         data: (data) => {
@@ -667,19 +648,6 @@ const CreateServiceRequestDialog = (() => {
 
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
-                                <i class="fas fa-tags me-2 text-warning"></i>Category <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <select name="service_type_id" class="data-input form-control" data-field="service_type_id" required>
-                                    <option value="">-- Select Category --</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
@@ -687,12 +655,13 @@ const CreateServiceRequestDialog = (() => {
                                     <option value="">-- Select Unit --</option>
                                     <option value="hour">⏱️ Price Per Hour</option>
                                     <option value="month">📅 Price Per Month</option>
-                                    <option value="time">🔄 Per Usage / Per Time</option>
                                     <option value="one_time">✨ One-time</option>
                                 </select>
                             </div>
                         </div>
-
+                        
+                    </div>
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6 select-type-time" style="display:none;">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
@@ -729,47 +698,6 @@ const CreateServiceRequestDialog = (() => {
                             </div>
                         </div>
                     </div>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-12">
-                            <label style="padding-left:6px; color:#777; margin-bottom: 12px;">
-                                <i class="fas fa-exclamation-circle me-2 text-danger"></i>Priority Level <span class="text-danger">*</span>
-                            </label>
-                            <div class="priority-selector">
-                                <div class="row g-2">
-                                    <div class="col-6 col-md-3">
-                                        <input type="radio" class="btn-check" name="priority" id="priority-low" value="low">
-                                        <label class="btn btn-outline-success w-100 priority-card" for="priority-low">
-                                            <div class="priority-icon">🟢</div>
-                                            <div class="priority-title">Low</div>
-                                        </label>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <input type="radio" class="btn-check" name="priority" id="priority-medium" value="medium" checked>
-                                        <label class="btn btn-outline-warning w-100 priority-card" for="priority-medium">
-                                            <div class="priority-icon">🟡</div>
-                                            <div class="priority-title">Medium</div>
-                                        </label>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <input type="radio" class="btn-check" name="priority" id="priority-high" value="high">
-                                        <label class="btn btn-outline-danger w-100 priority-card" for="priority-high">
-                                            <div class="priority-icon">🟠</div>
-                                            <div class="priority-title">High</div>
-                                        </label>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <input type="radio" class="btn-check" name="priority" id="priority-urgent" value="urgent">
-                                        <label class="btn btn-outline-danger w-100 priority-card" for="priority-urgent">
-                                            <div class="priority-icon">🔴</div>
-                                            <div class="priority-title">Urgent</div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="row g-3">
                         <div class="col-12">
                             <label style="padding-left:6px; color:#777;">
@@ -871,12 +799,6 @@ const CreateServiceRequestDialog = (() => {
 
                 updatePricePreview();
 
-                if (me.data?.request_details?.priority) {
-                    const prio = (me.data.request_details.priority || 'medium').toLowerCase().trim();
-                    const radio = me.divModal.querySelector(`input[name="priority"][value="${prio}"]`);
-                    if (radio) radio.checked = true;
-                }
-
                 me.onBeforeSubmit = () => {
                     const data = me.getData();
                     const required = {
@@ -905,8 +827,22 @@ const CreateServiceRequestDialog = (() => {
             },
 
             configSelect: [
-                { name: "tenant_id",     data: "tenants",        textField: "tenant",     valueField: "id" },
-                { name: "space_id",      data: "building_spaces", textField: "floor_id",   valueField: "id" },
+                { name: "tenant_id",
+                    data: "tenants",
+                    textField: "tenant",
+                    valueField: "id",
+                    dependents: [
+                        {
+                            name: "space_id",
+                            api:{
+                                endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
+                            },
+                            textField: "space_code", valueField: "id" 
+                         }
+                       ]
+
+                 },
+                // { name: "space_id", },
                 { name: "service_id",    data: "services",       textField: "service",    valueField: "id" },
                 { name: "service_type_id", data: "service_types",  textField: "service_type", valueField: "id" }
             ],
