@@ -28,7 +28,7 @@ return [
   ],
 
   'allowed_columns' => [
-    'students' => ['id','name','code','name_kh','email','phone_number'],
+    'tenants' => ['id','name','code','name_kh','email','phone_number'],
   ],
 
   'searchable_columns' => [
