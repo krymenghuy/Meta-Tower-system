@@ -162,12 +162,12 @@
                                     <div class="dropdown choose--language">
                                             <button id="_main_btn_lang" class="btn-dropdown main-menu-button align--language" data-menu="lang">
                                                 <img src="{{ asset('assets/images/icons/khmer.png') }}" style="border-radius: 50%;height:25px;" />
-                                                <span id="_main_lang_name" class="mx-2 text-white">
+                                                <span id="_main_lang_name" class="mx-2 ">
                                                     <?php
                                                         echo Session::get('lang_name', 'Khmer');
                                                     ?>
                                                 </span>
-                                                <i class="fa-solid fa-caret-down text-white ps-2 fs-5"></i>
+                                                <i class="fa-solid fa-caret-down  ps-2 fs-5" style="color:#1a1647;"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 <span class="lang-menu-header"></span>
@@ -187,12 +187,12 @@
                                                 </div>
                                             </div>
                                     </div>
-                                    <div class="dropdown nav--notification">
-                                        <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
+                                    <div class="dropdown nav--notification  btn-1">
+                                        <button id="_main_btn_notif" class="btn-dropdown main-menu-button av--notification"
                                             data-menu="notif">
-                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#ffffff;"></i>
+                                            <i class="fa-solid fa-bell ms-2 fs-4" style="color:#1a1647;"></i>
                                             <span class="number--notification notif-count"
-                                                id="_main_notif_count">0</span>
+                                                id="_main_notif_count">3</span>
                                         </button>
                                         <div
                                             class="dropdown-menu dropdown-menu-right rounded-2 shadow-lg notification-dropdown">
@@ -203,8 +203,8 @@
                                         </div>
                                     </div>
 
-                                    <div class="dropdown app--list">
-                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#ffffff;"></i> </button>
+                                    {{-- <div class="dropdown app--list">
+                                        <button class="btn-dropdown main-menu-button " data-menu="app"> <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#1a1647;"></i> </button>
 
                                         <?php
                                             $user = XAuthService::user();
@@ -212,7 +212,7 @@
                                             $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
                                         ?>
 
-                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2"
+                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2 "
                                             style="min-width:320px; max-width:380px;left:-150px;top:60px;">
                                             <div class="row row-cols-3 g-3 text-center">
                                                 <?php foreach ($apps as $app): ?>
@@ -233,6 +233,84 @@
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
                                                             <?= $icon ?>
                                                             <div class="mt-2 text-truncate"><?= $name ?></div>
+                                                        </a>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+                                    <div class="dropdown app--list">
+                                        <button class="btn-dropdown main-menu-button" data-menu="app">
+                                            <i class="fa-brands fa-microsoft ms-2 fs-4" style="color:#1a1647;"></i>
+                                        </button>
+                                        <?php
+                                            $user = XAuthService::user();
+                                            if (!$user) return redirect('/');
+                                            $apps = collect($user->apps)->filter(fn($a) => !$a->is_mobile_app);
+                                        ?>
+
+                                        <div class="dropdown-menu dropdown-menu-end bg-white p-3 shadow-lg rounded-2"
+                                            style="min-width:320px; max-width:380px; left:-150px; top:60px;">
+                                            <div class="row row-cols-3 g-3 text-center">
+                                                <?php foreach ($apps as $app): ?>
+                                                    <?php
+                                                        $appIconMap = [
+                                                            'meta estate'           => [
+                                                                'icon'  => 'fa-building',
+                                                                'color' => '#e67e22',
+                                                                'bg'    => '#fdebd0'
+                                                            ],
+                                                            'authorization manager' => [
+                                                                'icon'  => 'fa-shield-halved',
+                                                                'color' => '#8e44ad',
+                                                                'bg'    => '#f4ecf7'
+                                                            ],
+                                                            'meta client'           => [
+                                                                'icon'  => 'fa-users',
+                                                                'color' => '#2980b9',
+                                                                'bg'    => '#d6eaf8'
+                                                            ],
+                                                        ];
+
+                                                        $name     = $app->name ?? $app->app_name ?? '';
+                                                        $nameKey  = strtolower(trim($name));
+                                                        $iconConf = $appIconMap[$nameKey] ?? null;
+                                                        $route    = '/' . ltrim($app->home_route, '/');
+                                                        if (!empty($app->icon_file_name)) {
+                                                            $icon = '
+                                                                <div class="d-flex align-items-center justify-content-center
+                                                                            bg-light rounded-circle mx-auto overflow-hidden"
+                                                                    style="width:56px; height:56px;">
+                                                                    <img src="' . $app->icon_file_name . '"
+                                                                        alt="' . htmlspecialchars($name) . '"
+                                                                        style="width:100%; height:100%; object-fit:cover;">
+                                                                </div>';
+
+                                                        } elseif ($iconConf) {
+                                                            $icon = '
+                                                                <div class="d-flex align-items-center justify-content-center
+                                                                            rounded-circle mx-auto"
+                                                                    style="width:56px; height:56px;
+                                                                            background-color:' . $iconConf['bg'] . ';">
+                                                                    <i class="fa-solid ' . $iconConf['icon'] . ' fs-3"
+                                                                    style="color:' . $iconConf['color'] . ';"></i>
+                                                                </div>';
+                                                        } else {
+                                                            $icon = '
+                                                                <div class="d-flex align-items-center justify-content-center
+                                                                            bg-light rounded-circle mx-auto"
+                                                                    style="width:56px; height:56px;">
+                                                                    <i class="fa-solid fa-layer-group fs-3"
+                                                                    style="color:#1a1647;"></i>
+                                                                </div>';
+                                                        }
+                                                    ?>
+                                                    <div class="col">
+                                                        <a href="<?= $route ?>"
+                                                        class="app-link d-block text-decoration-none text-dark small"
+                                                        data-app-key="<?= htmlspecialchars($name) ?>">
+                                                            <?= $icon ?>
+                                                            <div class="mt-2 text-truncate"><?= htmlspecialchars($name) ?></div>
                                                         </a>
                                                     </div>
                                                 <?php endforeach; ?>
@@ -269,7 +347,7 @@
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
                                             <img src="<?php echo $user->image_url; ?>" style="border-radius:50%;height:25px" />
-                                                <span class="mx-2 text-white">
+                                                <span class="mx-2">
                                                     <?php
                                                         //$user = App\Services\Umt\XAuthService::user();
                                                         echo $user ? $user->full_name : '';
