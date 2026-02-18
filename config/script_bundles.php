@@ -97,6 +97,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',

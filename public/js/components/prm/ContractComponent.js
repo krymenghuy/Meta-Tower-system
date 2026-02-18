@@ -442,8 +442,6 @@ const ContractDialog = (() => {
                 console.log(111,op);
 
                 return [
-                    
-                    
                     `<div class="row justify-content-start">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
@@ -529,30 +527,38 @@ const ContractDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.initAll(me.divModal);
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                // DateTimePicker.initAll(me.divModal);
+                // const footer = me.divModal.querySelector('.modal-footer');
+                // const header = me.divModal.querySelector('.modal-header');
+                // const headerTitle = header.querySelector('.modal-title');
+                // const btnClose = header.querySelector('button');
 
-                btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
+                // btnClose.classList.add('d-none');
+                // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                // header.parentElement.classList.add('overflow-hidden');
+                // header.parentElement.style = 'border-radius: 20px !important;';
                 
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
-                
-                // me.controls.price_type.onchange = (e) => {
-                //     const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
-                //     if (!sqmWrapper) return;
-                //     sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                // };
+                // const headerWrapper = document.createElement('div');
+                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                // headerWrapper.appendChild(headerTitle);
+                // header.innerHTML = '';
+                // header.appendChild(headerWrapper);
+                 
 
+                // //Transform input into select, if me.controls.tenant_id is an <input>, not <select> 
+                //   me.selectTenant = VSSearchInput.init(me.controls.tenant_id,{
+                //         //type:'select',
+                //         query:{
+                //            from:'tenants',
+                //            select:['id','name','code'],
+                //            searchFields:{_search_tenant:'LIKE'}
+                //         },
+                //         columns:{
+                //             name:'Name'
+                //         }
+                //  });
+ 
                 me.controls.tenant_id.onchange = (e) => {
                     const p = {tenant_id:me.controls.tenant_id.value};
 
