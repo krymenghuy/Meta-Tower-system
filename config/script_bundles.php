@@ -225,7 +225,7 @@ return [
                 '/assets/js/ImageBox.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',

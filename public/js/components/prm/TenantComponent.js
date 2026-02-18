@@ -1216,6 +1216,7 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
+
                 // DateTimePicker.init(me.controls.date_of_birth);
 
                 // const footer = me.divModal.querySelector('.modal-footer');
@@ -1234,7 +1235,6 @@ const CreateTenantDialog = (() => {
                 // headerWrapper.appendChild(headerTitle);
                 // header.innerHTML = '';
                 // header.appendChild(headerWrapper);
-
 
 
                 const div_tenant_photo = me.controls.div_tenant_photo;
