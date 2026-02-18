@@ -1,6 +1,20 @@
-.modal-content-vs-dialog .modal-content {
-    border-radius: 25px;
+/* Apply only to vs-dialog modals */
+.vs-dialog .modal-content {
+    border-radius: 25px;      
+    display: flex;            
+    flex-direction: column;   
+    overflow: hidden;         
+}
+.vs-dialog .modal-content .modal-header{
+    background-color: #1A1647;
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.vs-dialog .modal-content .modal-header .modal-title {
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: #ffffff;
 }
 .btn-vs-cancel,
 .btn-vs-save {

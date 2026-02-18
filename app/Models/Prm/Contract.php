@@ -279,7 +279,6 @@ static function getTenantInfo($arr=[], $ss = null)
         }
 
         $row = DB::table('tenants AS t')
-            // ->join('contracts AS c', 'c.tenant_id', '=', 't.id')
             ->where('t.id', $tenant_id)
             ->selectRaw('
                 t.id AS tenant_id,
