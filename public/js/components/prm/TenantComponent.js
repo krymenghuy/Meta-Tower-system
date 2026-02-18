@@ -1093,7 +1093,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+            cssClass: "modal-lg vs-dialog",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -1216,7 +1216,7 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.date_of_birth);
+                //DateTimePicker.init(me.controls.date_of_birth);
 
                 const footer = me.divModal.querySelector('.modal-footer');
                 const header = me.divModal.querySelector('.modal-header');
