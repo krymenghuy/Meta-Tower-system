@@ -365,8 +365,10 @@ const CreateServiceDialog = (() => {
                                     <select name="unit_type" class="data-input form-control" data-field="unit_type">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
+                                        <!--
                                         <option value="time">Per Usage / Per Time</option>
                                         <option value="one_time">One-time Service</option>
+                                        -->
                                     </select>
                                 </div>
                             </div>

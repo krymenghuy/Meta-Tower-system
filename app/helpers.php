@@ -177,10 +177,10 @@ function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field
     //return $prefix.$branch_id.formatNumber(1,$len);
 }
 
-function setOfficialCodeInvoice($branch_id, $code_control_table, $target_table, $key_field=[], $def_prefix="", $len=5, $onSuccess=null)
+function setOfficialCodeInvoice($branch_id, $code_control_table, $target_table, $key_field=[], $def_prefix="", $len=4, $onSuccess=null)
 {
     if (empty($key_field)) return null;
-    if (!$len) $len = 5;
+    if (!$len) $len = 4;
 
     $yy = date('y');
     $prefix = $def_prefix . $yy . '-';
