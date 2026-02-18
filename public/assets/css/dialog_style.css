@@ -159,6 +159,13 @@ Global scope for modal Animation
 /* .modal-content-vs-dialog .modal-content {
     border-radius: 25px;
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.vs-dialog .modal-content .modal-header .modal-title {
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: #ffffff;
 }
 .btn-vs-cancel,
 .btn-vs-save {
