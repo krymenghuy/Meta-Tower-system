@@ -1093,7 +1093,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-dialog",
+            cssClass: "modal-lg vs-modal ",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -1216,6 +1216,7 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
+
                 // DateTimePicker.init(me.controls.date_of_birth);
 
                 // const footer = me.divModal.querySelector('.modal-footer');
@@ -1234,7 +1235,6 @@ const CreateTenantDialog = (() => {
                 // headerWrapper.appendChild(headerTitle);
                 // header.innerHTML = '';
                 // header.appendChild(headerWrapper);
-
 
 
                 const div_tenant_photo = me.controls.div_tenant_photo;
@@ -1353,15 +1353,15 @@ const CreateTenantDialog = (() => {
             },
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;

@@ -17,7 +17,7 @@
     color: #ffffff;
     background: linear-gradient(135deg, #1A1647 0%, #3c2fa3 100%);
     border-radius: 6px;
-    margin-top: 3px;
+    margin-top: 1px;
     cursor: pointer;
     border: none;
     text-decoration: none;
@@ -58,11 +58,10 @@
 
 .btnAddNewPrm {
     position: relative;
-    overflow: visible;        /* ✅ Fix 2: must be visible not hidden */
+    overflow: visible;
     border-radius: 6px;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
-    background-color: #e1e5f2;
     color: #1a1647;
     font-weight: 600;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
@@ -72,7 +71,13 @@
     justify-content: center;
     gap: 8px;
     transition: transform 0.2s ease-in-out;
-    z-index: 1;               /* ✅ Fix 3: button needs its own stacking context */
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .btnAddNewPrm:active {
@@ -87,9 +92,9 @@
     left: 50%;
     height: 100%;
     transform: translateX(-50%);
-    z-index: -1;              /* ✅ Fix 4: use -1 not -1000 */
+    z-index: -1;
     background-repeat: no-repeat;
-    pointer-events: none;     /* ✅ Fix 5: prevent pseudo elements stealing hover */
+    pointer-events: none;
 }
 
 .btnAddNewPrm:hover:before {
@@ -456,101 +461,110 @@ a.menu-selected .kt-menu__link-text {
 } */
 
 
-
 .choose--language {
-  position: relative;
-  padding: 8px 15px;
-  border-radius: 6px;
-  border: none;
-  color: #1a1647;
-  cursor: pointer;
-  background-color: #e1e5f2;
-  transition: all 0.2s ease;
+    position: relative;
+    overflow: visible;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    color: #1a1647;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .choose--language:active {
-  transform: scale(0.96);
+    transform: scale(0.96);
 }
 
 .choose--language:before,
 .choose--language:after {
-  position: absolute;
-  content: "";
-  width: 150%;
-  left: 50%;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: -1000;
-  background-repeat: no-repeat;
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .choose--language:hover:before {
-  top: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
-    10% 10%, 18% 18%;
-  background-position: 50% 120%;
-  animation: greentopBubbles 0.6s ease;
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
 }
 
 @keyframes greentopBubbles {
-  0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
-      40% 90%, 55% 90%, 70% 90%;
-  }
-
-  50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
-      50% 50%, 65% 20%, 90% 30%;
-  }
-
-  100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
-      50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
 
 .choose--language:hover::after {
-  bottom: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
-  background-position: 50% 0%;
-  animation: greenbottomBubbles 0.6s ease;
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
 }
 
 @keyframes greenbottomBubbles {
-  0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
-      70% -10%, 70% 0%;
-  }
-
-  50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
-      105% 0%;
-  }
-
-  100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
-      110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
-
 
 /*
 .nav--notification {
@@ -567,104 +581,114 @@ a.menu-selected .kt-menu__link-text {
 
 
 .nav--notification {
-    padding: 8px 15px;
+    position: relative;
+    overflow: visible;
     border-radius: 6px;
-    border: none;
+    border: 1px solid transparent;
     width: 45px;
     height: 40px;
     padding: 0;
     color: #1a1647;
     cursor: pointer;
-    background-color: #e1e5f2;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 15px;
-    position: relative; /* ✅ ADD THIS */
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .nav--notification:active {
-  transform: scale(0.96);
+    transform: scale(0.96);
 }
 
 .nav--notification:before,
 .nav--notification:after {
-  position: absolute;
-  content: "";
-  width: 150%;
-  left: 50%;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: -1000;
-  background-repeat: no-repeat;
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .nav--notification:hover:before {
-  top: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
-    10% 10%, 18% 18%;
-  background-position: 50% 120%;
-  animation: greentopBubbles 0.6s ease;
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
 }
 
 @keyframes greentopBubbles {
-  0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
-      40% 90%, 55% 90%, 70% 90%;
-  }
-
-  50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
-      50% 50%, 65% 20%, 90% 30%;
-  }
-
-  100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
-      50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
 
 .nav--notification:hover::after {
-  bottom: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
-  background-position: 50% 0%;
-  animation: greenbottomBubbles 0.6s ease;
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
 }
 
 @keyframes greenbottomBubbles {
-  0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
-      70% -10%, 70% 0%;
-  }
-
-  50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
-      105% 0%;
-  }
-
-  100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
-      110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
 
 
@@ -687,57 +711,50 @@ a.menu-selected .kt-menu__link-text {
 
 
 
-
 .app--list {
-    background-color: #1a1647;
-    padding: 0;
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
     width: 45px;
     height: 40px;
-    border-radius: 6px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 15px;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
-
-
-    .app--list {
-        border-radius: 6px;
-        border: none;
-        width: 45px;
-        height: 40px;
-        padding: 0;
-        color: #1a1647;
-        cursor: pointer;
-        background-color: #e1e5f2;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 15px;
-        position: relative; /* ✅ ADD THIS */
-    }
-
-    .app--list:active {
+.app--list:active {
     transform: scale(0.96);
-    }
+}
 
-    .app--list:before,
-    .app--list:after {
+.app--list:before,
+.app--list:after {
     position: absolute;
     content: "";
     width: 150%;
     left: 50%;
     height: 100%;
     transform: translateX(-50%);
-    z-index: -1000;
+    z-index: -1;
     background-repeat: no-repeat;
-    }
+    pointer-events: none;
+}
 
-    .app--list:hover:before {
+.app--list:hover:before {
     top: -70%;
-    background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
@@ -746,33 +763,34 @@ a.menu-selected .kt-menu__link-text {
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
-        10% 10%, 18% 18%;
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
     background-position: 50% 120%;
     animation: greentopBubbles 0.9s ease;
-    }
+}
 
-    @keyframes greentopBubbles {
+@keyframes greentopBubbles {
     0% {
-        background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
-        40% 90%, 55% 90%, 70% 90%;
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
     }
-
     50% {
-        background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
-        50% 50%, 65% 20%, 90% 30%;
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
     }
-
     100% {
-        background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
-        50% 40%, 65% 10%, 90% 20%;
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
     }
-    }
+}
 
-    .app--list:hover::after {
+.app--list:hover::after {
     bottom: -70%;
-    background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
         radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
         radial-gradient(circle, #e1e5f2 20%, transparent 20%),
@@ -782,25 +800,26 @@ a.menu-selected .kt-menu__link-text {
     background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
     background-position: 50% 0%;
     animation: greenbottomBubbles 0.9s ease;
-    }
+}
 
-    @keyframes greenbottomBubbles {
+@keyframes greenbottomBubbles {
     0% {
-        background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
-        70% -10%, 70% 0%;
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
     }
-
     50% {
-        background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
-        105% 0%;
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
     }
-
     100% {
-        background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
-        110% 10%;
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
         background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
     }
-    }
+}
 
 
 /* add selet demo item  button  */
@@ -820,7 +839,8 @@ a.menu-selected .kt-menu__link-text {
 
 .btn-list-enhanced {
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
+    background-clip: padding-box;
     border-radius: 8px;
     width: 48px;
     height: 40px;
@@ -894,101 +914,110 @@ a.menu-selected .kt-menu__link-text {
 
 
 .user--info {
+    position: relative;
+    overflow: visible;
     padding: 8px 10px;
     border-radius: 6px;
-    border: none;
+    border: 1px solid transparent;
     color: #1a1647;
     cursor: pointer;
-    background-color: #e1e5f2;
     transition: all 0.2s ease;
     margin-left: 15px;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 .user--info:active {
-  transform: scale(0.96);
+    transform: scale(0.96);
 }
 
 .user--info:before,
 .user--info:after {
-  position: absolute;
-  content: "";
-  width: 150%;
-  left: 50%;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: -1000;
-  background-repeat: no-repeat;
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .user--info:hover:before {
-  top: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
-    10% 10%, 18% 18%;
-  background-position: 50% 120%;
-  animation: greentopBubbles 0.6s ease;
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
 }
 
 @keyframes greentopBubbles {
-  0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
-      40% 90%, 55% 90%, 70% 90%;
-  }
-
-  50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
-      50% 50%, 65% 20%, 90% 30%;
-  }
-
-  100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
-      50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
 
 .user--info:hover::after {
-  bottom: -70%;
-  background-image: radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%),
-    radial-gradient(circle, #e1e5f2 20%, transparent 20%);
-  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
-  background-position: 50% 0%;
-  animation: greenbottomBubbles 0.6s ease;
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
 }
 
 @keyframes greenbottomBubbles {
-  0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
-      70% -10%, 70% 0%;
-  }
-
-  50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
-      105% 0%;
-  }
-
-  100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
-      110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
-  }
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
-
-
-
 
 .line--loader {
     position: absolute;
@@ -2327,7 +2356,7 @@ input[data-select="_formpicker"].data-invoice::placeholder {
     margin: 0;
     list-style-type: none;
     display: flex;
-    column-gap: 3px;
+    column-gap: 1px;
 }
 
 .container-pagination > ul li a {

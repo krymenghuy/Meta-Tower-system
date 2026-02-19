@@ -81,6 +81,15 @@ return [
     ],
     'menus' => [
         'Dashboard' => 'ព័ត៌មានសង្ខេប',
+        'Tenant' => 'អ្នកជួល',
+        'Spaces' => 'បន្ទប់ / ទីតាំង',
+        'Contracts' => 'កិច្ចសន្យា',
+        'Services' => 'សេវាកម្ម',
+        'Service Request' => 'សំណើសេវាកម្ម',
+        'Invoices' => 'វិក័យប័ត្រ',
+        'Payments' => 'ការទូទាត់',
+        'Expense' => 'ចំណាយ',
+        'Buildings' => 'អគារ',
         'Home' => 'ទំព័រដើម',
         'Member' => 'សមាជិក',
         'Grave List' => 'បញ្ជីកន្លែងសព',
@@ -178,6 +187,7 @@ return [
     'buttons' => [
         'Quick Order' => 'បញ្ជាលឿន',
         'Cancel' => 'បោះបង់',
+        'Submit' => 'បញ្ជូន',
         'Add' => 'បន្ថែម',
         'OK' => 'បាទ',
         'Print' => 'បោះពុម្ព',

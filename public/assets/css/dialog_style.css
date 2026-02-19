@@ -1,12 +1,381 @@
-/* Apply only to vs-dialog modals */
-.vs-dialog .modal-content {
-    border-radius: 25px;      
-    display: flex;            
-    flex-direction: column;   
-    overflow: hidden;         
+/* =========================
+   MODAL WRAPPER
+========================= */
+.vs-modal {
+    border: none !important;
+    outline: none !important;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow:
+        0 24px 48px rgba(26, 22, 71, 0.14),
+        0 8px 20px rgba(26, 22, 71, 0.08);
 }
-.vs-dialog .modal-content .modal-header{
-    background-color: #1A1647;
+
+/* ✅ Remove Bootstrap's default border on modal-content */
+.vs-modal .modal-content {
+    border: none !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+.vs-modal .modal-header {
+    background: #e1e5f2;
+    padding: 18px 24px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vs-modal .modal-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.vs-modal .modal-title {
+    color: #1a1647 !important;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.2px;
+    text-align: center;
+    flex: 1;
+}
+
+.vs-modal .modal-header .btn-close {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    filter: none;
+    opacity: 0.4;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    margin: 0;
+}
+
+.vs-modal .modal-header .btn-close:hover {
+    opacity: 1;
+    transform: translateY(-50%) rotate(90deg);
+}
+
+/* =========================
+   BODY
+========================= */
+.vs-modal .modal-body {
+    padding: 28px 26px;
+    background: #ffffff;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.vs-modal .modal-footer {
+    background: #fafbff;
+    padding: 16px 24px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   LABELS
+========================= */
+.vs-modal label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #2b2f3a;
+    font-size: 13.5px;
+    display: block;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.vs-modal .form-control,
+.vs-modal .form-select {
+    border-radius: 12px;
+    border: 1.5px solid #e2e5ef;
+    padding: 11px 14px;
+    background: #f8f9fd;
+    font-size: 14px;
+    color: #1a1647;
+    transition: all 0.18s ease;
+    width: 100%;
+}
+
+.vs-modal .form-control:hover,
+.vs-modal .form-select:hover {
+    border-color: #c9cde0;
+    background: #fff;
+}
+
+.vs-modal .form-control:focus,
+.vs-modal .form-select:focus {
+    background: #fff;
+    border-color: #7c6af5;
+    box-shadow: 0 0 0 3.5px rgba(124, 106, 245, 0.12);
+    outline: none;
+}
+
+.vs-modal textarea.form-control {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.vs-modal .form-control::placeholder,
+.vs-modal .form-select::placeholder {
+    color: #b0b5c8;
+    font-size: 13.5px;
+}
+
+/* =========================
+   BUTTONS — BASE
+========================= */
+.vs-modal .modal-footer .btn {
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13.5px;
+    min-height: 36px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    padding: 0.45rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
+
+.vs-modal .modal-footer .btn:active {
+    transform: scale(0.96);
+}
+
+.vs-modal .modal-footer .btn:before,
+.vs-modal .modal-footer .btn:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+/* =========================
+   SUBMIT BUTTON — rainbow
+========================= */
+.vs-modal .modal-footer .btn-primary,
+.vs-modal .modal-footer .btn-submit {
+    color: #1a1647;
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.vs-modal .modal-footer .btn-primary:hover:before,
+.vs-modal .modal-footer .btn-submit:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size:
+        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
+        10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+.vs-modal .modal-footer .btn-primary:hover::after,
+.vs-modal .modal-footer .btn-submit:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size:
+        15% 15%, 20% 20%, 18% 18%, 20% 20%,
+        15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+/* =========================
+   CANCEL BUTTON — red
+========================= */
+.vs-modal .modal-footer .btn-secondary,
+.vs-modal .modal-footer .btn-cancel {
+    color: #dc3545;
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #ff4d4d, #dc3545, #ff6b6b);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.vs-modal .modal-footer .btn-secondary:hover,
+.vs-modal .modal-footer .btn-cancel:hover {
+    background-image:
+        linear-gradient(#fdf0f0, #fdf0f0),
+        linear-gradient(135deg, #ff4d4d, #dc3545, #ff6b6b);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.vs-modal .modal-footer .btn-secondary:hover:before,
+.vs-modal .modal-footer .btn-cancel:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #ffcccc 20%, transparent 30%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #ffcccc 15%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%);
+    background-size:
+        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
+        10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+.vs-modal .modal-footer .btn-secondary:hover::after,
+.vs-modal .modal-footer .btn-cancel:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #ffcccc 15%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%),
+        radial-gradient(circle, #ffcccc 20%, transparent 20%);
+    background-size:
+        15% 15%, 20% 20%, 18% 18%, 20% 20%,
+        15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+/* =========================
+   BUBBLE ANIMATIONS
+========================= */
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size:
+            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size:
+            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+.vs-modal .modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.vs-modal .modal-body::-webkit-scrollbar-track {
+    background: #f1f2f8;
+    border-radius: 10px;
+}
+
+.vs-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #c5c8db;
+    border-radius: 10px;
+}
+
+.vs-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #f56a6a;
+}
+
+/**====================================
+Global scope for modal Animation
+=======================================*/
+.modal.fade .modal-dialog {
+    transform: scale(.96) translateY(10px);
+    opacity: 0;
+    transition: all .18s ease-out;
+}
+
+.modal.fade.show .modal-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-backdrop.show {
+    opacity: .35;
+}
+
+
+
+/* .modal-content-vs-dialog .modal-content {
+    border-radius: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,7 +394,7 @@
     padding: 5px 10px;
     font-size: 14px;
     line-height: 1.5;
-    width: 100px; 
+    width: 100px;
     color: #ffffff;
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
@@ -53,4 +422,4 @@
     border-color: #163866;
     color: #fff;
     transform: scale(1.05);
-}
+} */

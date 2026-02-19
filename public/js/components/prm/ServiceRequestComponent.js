@@ -633,7 +633,7 @@ var ServiceRequestComponent = (function () {
 //             keyboard: true,
 
 //             createContent: () => `
-        
+
 //                 <div class="invoice-dialog-container">
 //                     <!-- Service Request Info Card -->
 //                     <div class="sr-info-card">
@@ -1008,7 +1008,7 @@ const CreateServiceRequestDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
 
@@ -1127,27 +1127,6 @@ const CreateServiceRequestDialog = (() => {
             `,
 
             contentCreated: (me) => {
-                const header = me.divModal.querySelector('.modal-header');
-                header.querySelector('button')?.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.style.borderRadius = '20px';
-
-                const title = header.querySelector('.modal-title');
-                title.classList.add('text-white', 'text-center', 'w-100');
-
-                const textarea = me.divModal.querySelector('[data-field="description"]');
-                const charCount = me.divModal.querySelector('#char-count');
-                if (textarea && charCount) {
-                    textarea.addEventListener('input', () => {
-                        charCount.textContent = textarea.value.length;
-                        if (textarea.value.length > 450) {
-                            charCount.parentElement.classList.add('text-danger');
-                        } else {
-                            charCount.parentElement.classList.remove('text-danger');
-                        }
-                    });
-                }
-
                 const updatePricePreview = () => {
                     const unit = me.controls?.unit_type?.value || '';
                     const showDuration = unit === 'hour';
@@ -1263,13 +1242,13 @@ const CreateServiceRequestDialog = (() => {
 
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel btn-xl px-4',
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
                     click: (me) => me.hide(false)
                 },
                 {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save btn-xl px-4',
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = me.dataOptions?.id || null;

@@ -270,38 +270,39 @@ var ServiceComponent =   ( () => {
     mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-        // console.log(123,status_id);
 
         const inputOptions = {
+            context:'success',
             title: 'Change Status',
-            dataLabel: "Service Status",
-            valueMember: "status_id",
-            textMember: "name",
+            label: "Service Status",
+            valueKey: "status_id",
+            labelKey: "name",
             confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
+            requiredMessage: 'Status is not correct!',
+            //blankErrorMessage: "Status is not correct!",
             data:[
                 {status_id:"1",name:"Active"},
                 {status_id:"2",name:"Inactive"},
             ],
-            defaultValue: status_id
+            defaultValue: status_id,
+            onConfirm:(status,btn, me)=>{
+                    //if(!AuthManager.allowed(321)) return;
+                    const payload = {id, status_id :status.id};
+                    vsapi.post(`${mThis.base_url}/prm/service/update-status`,payload,{loader:false,agent:btn}).then(res=>{
+                        if(res.status_code ===200){
+                            me.close();
+                            cv_interact.success('Service Status has been updated');
+                            mThis.ServiceListView.showPage(mThis.getFilterData());
+                        }else{
+                            me.setError(res.error_message || 'Unable to update status');
+                            c//v_interact.error(res.error_message || 'Unable to update status');
+                        }
+                    });
+            }
         };
-        InputBox2.show(inputOptions,(selected)=>{
-            if(!selected) return;
-            if(!AuthManager.allowed(321)) return;
-
-            const payload = {id, status_id :selected.value};
-            vsapi.call(`${mThis.base_url}/prm/service/update-status`,payload).then(res=>{
-                if(res.status_code ===200){
-                    InputBox2.close();
-                    cv_interact.success('Service Status has been updated');
-                    mThis.ServiceListView.showPage(mThis.getFilterData());
-                }else{
-                    cv_interact.error(res.error_message || 'Unable to update status');
-                }
-            });
-        });
-
+        InputBox.show(inputOptions);
     };
+
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
@@ -333,7 +334,7 @@ const CreateServiceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-dialog",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
@@ -424,15 +425,15 @@ const CreateServiceDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
+                        label: '<span vslang="buttons.Submit"></span>',
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;

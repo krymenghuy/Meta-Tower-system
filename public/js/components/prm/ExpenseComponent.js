@@ -53,7 +53,7 @@ var ExpenseComponent =   ( () => {
                 `;
             }
         },
-            
+
         {
             title: "Payment method",
             className: "align-middle ",
@@ -65,7 +65,7 @@ var ExpenseComponent =   ( () => {
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column" style="width:150px;" >
                     <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
-                    
+
                 </div>`;
             }
         },
@@ -133,7 +133,7 @@ var ExpenseComponent =   ( () => {
                 </div>`
         },
 
-    ]; 
+    ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -146,13 +146,13 @@ var ExpenseComponent =   ( () => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
+
+
               tr.dataset.statusid = data.status_id;
               tr.classList.add('payment');
-              tr.setAttribute('id',['payments_id',data.id].join('')); 
+              tr.setAttribute('id',['payments_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -198,7 +198,7 @@ var ExpenseComponent =   ( () => {
                 mThis.BillingListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -224,7 +224,7 @@ var ExpenseComponent =   ( () => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                
+
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -276,7 +276,7 @@ var ExpenseComponent =   ( () => {
                 mThis.BillingListView.showPage(mThis.getFilterData());
             }
         };
-        
+
         CreateBillingdialog.show(op);
     }
      mThis.deleteBilling = (id, menuLink) => {
@@ -309,7 +309,7 @@ var ExpenseComponent =   ( () => {
       mThis.changeStatus = (id, lnk) =>{
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-         
+
         // const inputOptions = {
         //     title: 'Change Status',
         //     dataLabel: "Payment Status",
@@ -324,11 +324,11 @@ var ExpenseComponent =   ( () => {
         //     ],
         //     defaultValue: status_id
         // };
-  
-        // InputBox2.show(inputOptions,(selected)=>{    
+
+        // InputBox2.show(inputOptions,(selected)=>{
         //     if(!selected) return;
         //     if(!AuthManager.allowed(321)) return;
-            
+
         //     const payload = {id, status_id :selected.value};
         //     vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
         //         if(res.status_code ===200){
@@ -341,7 +341,7 @@ var ExpenseComponent =   ( () => {
         //         }
         //     });
         // });
-  
+
         const options = {
            title:'Change Status',
            cssClass:'',
@@ -363,7 +363,7 @@ var ExpenseComponent =   ( () => {
               const payload = {id, value :selected.value};
                     vsapi.post(`${mThis.base_url}/prm/payment/update-status`,payload,{loader:false}).then(res=>{
                         if(res.status_code ===200){
-                            me.close(); 
+                            me.close();
                             cv_interact.success('Payment Status has been updated');
                             mThis.BillingListView.showPage(mThis.getFilterData());
 
@@ -395,7 +395,7 @@ var ExpenseComponent =   ( () => {
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.BillingListView.showPage(mThis.getFilterData());
-        }); 
+        });
 
     };
     return mThis;
@@ -409,14 +409,14 @@ const CreateBillingdialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
-                    
+
                     return [
-                            
-                        
+
+
                         `<div class="row justify-content-center">
 
                             <div class="col-12">
@@ -445,25 +445,25 @@ const CreateBillingdialog = (() => {
                                 <div class="material-input outlined">
                                     <select   name="payment_method_id" placeholder=" " class="data-input form-control" data-field="payment_method_id">
                                     </select>
-                                    
+
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="amount" required class="data-input form-control" data-field="amount" placeholder=" " />
                                     <label>Amount</label>
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="discount" required class="data-input form-control" data-field="discount" placeholder=" " />
                                     <label>Discount</label>
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="total" required class="data-input form-control" data-field="total_paid" placeholder=" " />
                                     <label>Total</label>
@@ -483,7 +483,7 @@ const CreateBillingdialog = (() => {
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
                                 </div>
-                            </div> 
+                            </div>
                         </div>`
                     ].join("");
                 },
@@ -504,7 +504,7 @@ const CreateBillingdialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -512,7 +512,7 @@ const CreateBillingdialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -544,8 +544,8 @@ const CreateBillingdialog = (() => {
                         textField: "building",
                         valueField: "id",
                     },
-                    
-                    
+
+
 
                 ],
                 prepareFormOptions: {
@@ -561,25 +561,25 @@ const CreateBillingdialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal); 
+                    LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
+                        label: '<span vslang="buttons.Submit"></span>',
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;

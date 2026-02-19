@@ -678,39 +678,31 @@ const InvoiceDialog = (() => {
         invoiceItems = [];
 
         const dlg = new GeneralDialog({
-            cssClass: "modal-xl",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
 
             createContent: () => `
-                <!-- Step 1: Quick Actions -->
                 <div class="card shadow-sm mb-3">
-                    <div class="card-header  text-black">
-                        <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Step 1: Quick Actions (Optional)</h6>
-                    </div>
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-6 col-md-3">
                                 <button class="btn btn-outline-primary w-100 py-3" id="btnQuickRent">
-                                    <i class="fas fa-home d-block fs-4 mb-2"></i>
                                     <span class="fw-semibold">Add Base Rent</span>
                                 </button>
                             </div>
                             <div class="col-6 col-md-3">
                                 <button class="btn btn-outline-success w-100 py-3" id="btnQuickUtilities">
-                                    <i class="fas fa-bolt d-block fs-4 mb-2"></i>
                                     <span class="fw-semibold">Add Utilities</span>
                                 </button>
                             </div>
                             <div class="col-6 col-md-3">
                                 <button class="btn btn-outline-info w-100 py-3" id="btnQuickServices">
-                                    <i class="fas fa-concierge-bell d-block fs-4 mb-2"></i>
                                     <span class="fw-semibold">Browse Services</span>
                                 </button>
                             </div>
                             <div class="col-6 col-md-3">
                                 <button class="btn btn-outline-warning w-100 py-3" id="btnQuickCustom">
-                                    <i class="fas fa-plus-circle d-block fs-4 mb-2"></i>
                                     <span class="fw-semibold">Custom Item</span>
                                 </button>
                             </div>
@@ -718,11 +710,7 @@ const InvoiceDialog = (() => {
                     </div>
                 </div>
 
-                <!-- Step 2: Basic Information -->
                 <div class="card shadow-sm mb-3">
-                    <div class="card-header  text-black">
-                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Step 2: Basic Information</h6>
-                    </div>
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-3">
@@ -737,11 +725,11 @@ const InvoiceDialog = (() => {
                             </div>
                             <div class="col-md-3">
                                 <label style="padding-left:6px; color:#777;">
-                                    <i class="fas fa-door-open me-2 text-info"></i>Building <span class="text-danger">*</span>
+                                    <i class="fas fa-building me-2 text-info"></i>Building <span class="text-danger">*</span>
                                 </label>
                                 <div class="material-input outlined">
-                                    <select name="space_id" class="data-input form-control" data-field="space_id" required>
-                                        <option value="">-- Select Building --</option>
+                                    <select name="legal_name_id" class="data-input form-control" data-field="legal_name_id" required>
+                                        <option value="">-- Select Legal Name --</option>
                                     </select>
                                 </div>
                             </div>
@@ -767,14 +755,14 @@ const InvoiceDialog = (() => {
                             </div>
                         </div>
                         <div class="row g-1">
-                             <div class="col-md-3">
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-calendar-alt text-warning me-1"></i>
                                     Invoice Date <span class="text-danger">*</span>
                                 </label>
                                 <input type="date" name="invoice_date" class="form-control data-input" required>
                             </div>
-                             <div class="col-md-3">
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">
                                     <i class="fas fa-calendar-alt text-warning me-1"></i>
                                     Due Date <span class="text-danger">*</span>
@@ -783,7 +771,7 @@ const InvoiceDialog = (() => {
                             </div>
                             <div class="col-md-3">
                                 <label style="padding-left:6px; color:#777;">
-                                    <i class="fas fa-door-open me-2 text-info"></i>Currency <span class="text-danger">*</span>
+                                   <i class="fas fa-coins me-2 text-warning"></i>Currency <span class="text-danger">*</span>
                                 </label>
                                 <div class="material-input outlined">
                                     <select name="currency_id" class="data-input form-control" data-field="currency_id" required>
@@ -799,7 +787,7 @@ const InvoiceDialog = (() => {
                 <!-- Step 3: Invoice Items -->
                 <div class="card shadow-sm mb-3">
                     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0"><i class="fas fa-list me-2"></i>Step 3: Invoice Items</h6>
+                        <h6 class="mb-0"><i class="fas fa-list me-2"></i>Invoice Items</h6>
                         <span class="badge bg-white text-success" id="items_count">0 items</span>
                     </div>
                     <div class="card-body p-0">
@@ -822,15 +810,7 @@ const InvoiceDialog = (() => {
                                         <td colspan="2" class="text-end fw-bold">Subtotal:</td>
                                         <td class="text-end fw-bold" id="invoice_subtotal">$0.00</td>
                                         <td class="text-end fw-bold text-danger" id="invoice_total_discount">$0.00</td>
-                                      <div class="col-md-3">
-                                <label style="padding-left:6px; color:#777;">
-                                    <i class="fas fa-phone-alt text-success me-1"></i> Phone Number
-                                </label>
-                                <div class="material-input outlined">
-                                    <select name="phone_id" class="data-input form-control" data-field="phone_id">
-                                        <option value="">-- Select Phone --</option>
-                                    </select>
-                                  <td class="text-end fw-bold text-info" id="invoice_total_tax">$0.00</td>
+                                    <td class="text-end fw-bold text-info" id="invoice_total_tax">$0.00</td>
                                         <td class="text-end fw-bold fs-6 text-success" id="invoice_grand_total">$0.00</td>
                                         <td></td>
                                     </tr>
@@ -854,30 +834,9 @@ const InvoiceDialog = (() => {
             `,
 
             contentCreated: (me) => {
-                // Set default due date
-                const dueDateInput = me.divModal.querySelector('[name="due_date"]');
-                if (dueDateInput) {
-                    dueDateInput.value = new Date().toISOString().split('T')[0];
-                }
-
-                // Style modal header
-                const header = me.divModal.querySelector('.modal-header');
-                if (header) {
-                    header.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    const title = header.querySelector('.modal-title');
-                    const btnClose = header.querySelector('button');
-                    if (title) {
-                        title.classList.add('text-white', 'fw-bold');
-                        title.innerHTML = `<i class="fas fa-file-invoice-dollar me-2"></i>${op.id ? 'Modify Invoice' : 'Create New Invoice'}`;
-                    }
-                    if (btnClose) btnClose.classList.add('btn-close-white');
-                }
-
-                // Initialize items table
                 const tbody = document.getElementById('invoice_items_tbody');
                 renderItemsTable(tbody);
 
-                // Quick action buttons
                 ['btnQuickRent', 'btnQuickUtilities', 'btnQuickServices', 'btnQuickCustom'].forEach(btnId => {
                     const btn = me.divModal.querySelector(`#${btnId}`);
                     if (btn) {
@@ -929,6 +888,17 @@ const InvoiceDialog = (() => {
                             },
                             textField: "tenant_phone",
                             valueField: "id"
+                        },
+                        {
+                            name: "legal_name_id",
+                            itemsLoaded: (me, items) => {
+                                me.controls.legal_name_id.value = me.detail?.legal_name_id || '';
+                            },
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info`,
+                            },
+                            textField: "tenant_legal_name",
+                            valueField: "id"
                         }
                     ]
                 },
@@ -950,12 +920,12 @@ const InvoiceDialog = (() => {
 
             buttons: [
                 {
-                    label: '<i class="fas fa-times me-2"></i>Cancel',
+                    label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: 'btn btn-secondary',
                     click: (me, btn) => me.hide(false),
                 },
                 {
-                    label: '<i class="fas fa-save me-2"></i>Save Invoice',
+                    label: '<span vslang="buttons.Submit"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         if (invoiceItems.length === 0) {

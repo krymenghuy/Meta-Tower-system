@@ -77,7 +77,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     $nid_check = $this->checkUniqueTenantByNID($national_id, $id);
         if ($nid_check) return DV::error($nid_check);
 
-   
+
     $photo = $d->photo ?? null;
     unset($inputs['photo']);
     $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
@@ -85,7 +85,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     $created = !$id;
     $id = DBX::saveData($ss, 'tenants', ['id' => $id], $inputs, [], 1);
     if ($id && $created) {
-            
+
             $prefix = 'T-';
             $res = setOfficialCode($branch_id, 'tenant_code_control', 'tenants', ['id' => $id], $prefix, 4, null);
 
@@ -192,7 +192,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
             return validateUrl($url,$def_image);
         }else return $def_image;
     }
-    
+
      static function createProfilePicture($photo_data,$file_type = null, $id = null, $ss = null){
         $id = $id ?? $id;
         $ss = $ss ?? $ss;
@@ -302,7 +302,14 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
         ->join('tenants as t', 't.id', '=', 'c.tenant_id')
         ->where('c.tenant_id', $id)
-        ->selectRaw('bs.id,bs.code as space_code, t.name as tenant_name, t.phone_number as tenant_phone, t.email as tenant_email')
+        ->selectRaw('
+                bs.id,
+                bs.code as space_code,
+                t.name as tenant_name,
+                t.legal_name as tenant_legal_name,
+                t.phone_number as tenant_phone,
+                t.email as tenant_email
+                ')
         ->get();
         return $rows;
 
