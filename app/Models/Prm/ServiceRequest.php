@@ -296,6 +296,11 @@ class ServiceRequest extends VSModel
         if (strtolower($status) === 'completed') {
             $data['completed_date'] = (int) date('Ymd');
         }
+
+        $currentStatus = DB::table('service_requests')->where('id', $id)->value('request_status_id');
+        if ($currentStatus == $request_status_id){
+            return DV::error('It is the same status.');
+        }
         
         $updated = DB::table('service_requests')
             ->where('id', $id)
