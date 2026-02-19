@@ -1,11 +1,11 @@
 "use strict";
+
 var ServiceRequestComponent = (function () {
     const mThis = {};
     mThis.title_prop = "Service Request Component";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
 
-    //Cleanly create elements for use
     const $ = sel => mThis.self.querySelector(sel);
     Object.assign(mThis, {
         elSearch: $("#_search_service_request"),
@@ -16,114 +16,96 @@ var ServiceRequestComponent = (function () {
     });
 
     mThis.columns = [
-        {
-            title: "",
-            className: "align-middle text-capitalize",
-        },
-        {
-            title: "Tenant",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Room Code",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom user-select: none; -webkit-user-select: none;">${data.space_code ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Service",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.service_name ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Category",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.service_type_name ?? ''}</span>`;
-            }
-        },
-        {
-            title: "Price",
-            className: "align-middle",
-            data: (data) => {
-                const cur_symbol = data.cur_symbol ?? '$';
-                const Price = data.service_price ? Number(data.service_price).toLocaleString() : '-';
-                const unitLabel = data.service_unit_type ? `/ ${data.service_unit_type}` : '';
-                return `<span class="fw-semibold">${cur_symbol} ${Price} <small class="text-muted">${unitLabel}</small></span>`;
-            }
-        },
-        {
-            title: "Remarks",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? 'N/A'}</span>
-                    </div>
-                `;
-            }
-        },
-        {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                const rawStatus = data.status_name || data.request_status_name || '';
-                const status_name = rawStatus.toLowerCase();
+    { title: "", className: "align-middle text-capitalize" },
+    {
+        title: "Tenant",
+        className: "align-middle",
+        data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
+    },
+    {
+        title: "Room Code",
+        className: "align-middle",
+        data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
+    },
+    {
+        title: "Service",
+        className: "align-middle",
+        data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
+    },
+    {
+        title: "Price",
+        className: "align-middle",
+        data: (data) => {
+            const cur = data.cur_symbol ?? '$';
+            let mainPrice = data.total_price ?? data.service_price;
+            let displayPrice = mainPrice
+                ? Number(mainPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : '—';
 
-                const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
+            let extraInfo = '';
 
-                const statusMap = {
-                    pending: 'bg-warning ','in progress': 'bg-warning text-dark',
-                    approved: 'bg-success',
-                    cancelled: 'bg-danger',
-                    completed: 'bg-primary',
-                };
-
-                const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
-
-                return `
-                    <span class="${cls}" data-status_id="${data.request_status_id}">
-                        <small>${rawStatus}</small>
-                    </span>
-                `;
-            },
-        },
-
-
-        {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-primary-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
-                </div>`;
+            if (data.unit_type === 'hour' && data.duration_hours > 0 && data.service_price) {
+                const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
+            } else if (data.unit_type) {
+                extraInfo = `<small class="text-muted d-block">/ ${data.unit_type}</small>`;
             }
+
+            return `
+                <span class="fw-bold fs-6">${cur} ${displayPrice}</span>
+                ${extraInfo}
+            `;
+        }
+    },
+    {
+        title: "Status",
+        className: "align-middle",
+        data: (data) => {
+            const rawStatus = data.status_name || data.request_status_name || '';
+            const status_name = rawStatus.toLowerCase().trim();
+
+            const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
+
+            const statusMap = {
+                'pending':      'bg-warning',
+                'in progress':  'bg-warning text-dark',
+                'approved':     'bg-success',
+                'cancelled':    'bg-danger',
+                'completed':    'bg-primary',
+            };
+
+            const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
+
+            return `
+                <span class="${cls}" data-status-id="${data.request_status_id}">
+                    <small>${rawStatus}</small>
+                </span>`;
         },
-        {
-            title: "Action",
-            className: 'col_action align-middle',
-            data: (data) => `
-                <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)"
-                    class="btn--Options   ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}  bg-second pointer p-4"
+    },
+    {
+        title: "Updated By",
+        className: 'align-middle',
+        data: (data) => `
+            <div class="d-flex flex-column">
+                <span class="text-capitalize text-primary-custom fw-semibold">${data.update_user ?? ''}</span>
+                <span class="text-muted small">${data.updated_at ?? ''}</span>
+            </div>`
+    },
+    {
+        title: "Action",
+        className: 'col_action align-middle',
+        data: (data) => `
+            <div class="d-flex justify-content-center align-items-end">
+                <a href="javascript:void(0)"
+                    class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'} bg-second pointer p-4"
                     data-id="${data.id}"
-                    data-statusid="${data.request_status_id}"
-                    aria-haspopup="true"
-                    aria-expanded="false"">
-                        <i class="fa-solid fa-ellipsis-vertical  fs-5 text-prm-custom"></i>
-                    </a>
-                </div>`
-        },
-
-
-    ];
+                    data-status-id="${data.request_status_id}"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fa-solid fa-ellipsis-vertical fs-5 text-prm-custom"></i>
+                </a>
+            </div>`
+    }
+];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
@@ -135,47 +117,36 @@ var ServiceRequestComponent = (function () {
             columns: mThis.columns,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusid = data.request_status_id;
+                tr.dataset.statusId = data.request_status_id;
                 tr.classList.add('service-request');
-                tr.setAttribute('id', ['service_request_id', data.id].join(''));
-            },
-            listContainerClass: null
+                tr.setAttribute('id', `service_request_id_${data.id}`);
+            }
         });
 
-        mThis.elBtnCreate.onclick = function (e) {
+        mThis.elBtnCreate.onclick = (e) => {
             e.preventDefault();
-            const op = {
+            CreateServiceRequestDialog.show({
                 id: null,
                 btn: e.target,
-                onClose: () => {
-                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                }
-            };
-            // if (!AuthManager.allowed(240)) return;
-            CreateServiceRequestDialog.show(op);
+                onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
+            });
         };
 
-        mThis.pr_tbl = mThis.ServiceRequestListView.getListContainer();
-        const sh_parent = mThis.pr_tbl.parentElement;
+        const sh_parent = mThis.ServiceRequestListView.getListContainer().parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        sh_parent.classList.add("overflow-y-auto", "overflow-x-hidden");
+
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         };
 
-        mThis.tblServiceRequest = mThis.ServiceRequestListView.getTable();
-        mThis.initDropdownMenus(mThis.tblServiceRequest);
+        mThis.initDropdownMenus(mThis.ServiceRequestListView.getTable());
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = (e) => {
-                e.preventDefault();
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-            };
+            el.onchange = () => mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
 
-        mThis.elSearch.addEventListener('keyup', (e) => {
-            e.preventDefault();
+        mThis.elSearch.addEventListener('keyup', () => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.ServiceRequestListView.showPage(mThis.getFilterData());
@@ -185,104 +156,64 @@ var ServiceRequestComponent = (function () {
         mThis.initAlready = true;
     };
 
-    mThis.getFilterData = () => {
-        let p = {
-            request_status_id: mThis.elStatus.value,
-            service_type_id: mThis.elService_type.value,
-            search_value: mThis.elSearch.value,
-        };
-
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-
-        return p;
-    };
+    mThis.getFilterData = () => ({
+        request_status_id: mThis.elStatus.value,
+        service_type_id: mThis.elService_type.value,
+        search_value: mThis.elSearch.value,
+    });
 
     mThis.initDropdownMenus = (table) => {
-        const menuOptions = {
+        new VSDropdownMenu({
             containerElement: table,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
             menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_request"
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Delete">Delete</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_request"
-                }
+                { html: '<span class="ps-2">Generate Invoice</span>', icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`, name: "generate_invoice", cssClass: "border-bottom pb-2 mb-2" },
+                { html: '<span class="ps-2">Change Status</span>', icon: `<i class="fa fa-exchange fs-5 text-info"></i>`, name: "change_status", cssClass: "border-bottom pb-2" },
+                { html: '<span class="ps-2">Modify</span>', icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`, name: "edit_request", cssClass: "border-bottom pb-2" },
+                { html: '<span class="ps-2">Delete</span>', icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`, name: "delete_request", cssClass: "border-bottom pb-2" }
             ],
-
             onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
-                    case 'edit_request': {
-                        mThis.editServiceRequest(id, menuLink);
-                        break;
-                    }
-                    case 'delete_request': {
-                        mThis.deleteRequest(id, menuLink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
+                if (name === 'generate_invoice')mThis.generateInvoice(id, menuLink);
+                if (name === 'change_status') mThis.changeStatus(id, menuLink);
+                if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
+                if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
             }
-        };
-        new VSDropdownMenu(menuOptions);
+        });
+    };
+
+    mThis.generateInvoice = (id, menuLink) => {
+        CreateInvoiceServiceRequestDialog.show({
+            id: id,
+            btn: menuLink,
+            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
+        });
     };
 
     mThis.editServiceRequest = (id, menuLink) => {
-        let op = {
+        CreateServiceRequestDialog.show({
             id: id,
             btn: menuLink,
-            onClose: () => {
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-            }
-        };
-        CreateServiceRequestDialog.show(op);
+            onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
+        });
     };
 
     mThis.deleteRequest = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-            }
-        };
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service Request?', {
             title: 'Delete Service Request',
-            context: 'delete',
             confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/service-request/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        cv_interact.success('Service request deleted successfully');
-                        mThis.ServiceRequestListView.showPage();
-                    } else {
-                        cv_interact.error(res.error_message);
-                    }
-                });
+        }, (confirmed) => {
+            if (confirmed) {
+                vsapi.call(`${main_view.base_url}/prm/service-request/delete`, { id }, false, false, false)
+                    .then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Service request deleted');
+                            mThis.ServiceRequestListView.showPage();
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
             }
         });
     };
@@ -294,7 +225,7 @@ var ServiceRequestComponent = (function () {
 
       mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
+        const currentStatusId = tr?.dataset.statusId || "1";
 
         const options = {
             title: 'Change Status',
@@ -303,237 +234,662 @@ var ServiceRequestComponent = (function () {
             // type: 'select',
             label: 'Status',
             valueField: 'status_id',
-            textField: formatStatus,
-            confirmButtonText: "Save",
+            textField: 'name',
+            confirmButtonText: "Submit",
             requiredMessage: 'Select one valid status',
-            context: 'warning', // success | primary | delete | danger | error
+            context: 'success',
             data: [
-                {status_id: "1", name: "Pending"},
-                {status_id: "2", name: "Approved"},
-                {status_id: "3", name: "Cancelled"},
-                {status_id: "4", name: "Completed"},
+                { status_id: "1", name: "Pending"    },
+                { status_id: "2", name: "Approved"   },
+                { status_id: "3", name: "Cancelled"  },
+                { status_id: "4", name: "Completed"  },
             ],
-            defaultValue: status_id,
-            onConfirm: (value,btn,me)=>{
-                const statusId = typeof value === 'object' && value.status_id ? value.status_id : value;
-                const payload = {id, status_id: statusId};
-                vsapi.post(`${mThis.base_url}/prm/service-request/update-status`,payload,{loader:false}).then(res=>{
-                    if(res.status_code === 200){
-                        me.close();
-                        cv_interact.success('Service Request Status has been updated');
-                        mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                    }else{
-                        me.setError(res.error_message || 'Unable to update status');
-                    }
-                })
+            defaultValue: currentStatusId,
+            onConfirm: (value, btn, me) => {
+                const payload = { id, status_id: value };
+                vsapi.post(`${mThis.base_url}/prm/service-request/update-status`, payload, { loader: false })
+                    .then(res => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success('Service Request Status has been updated');
+                            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                        } else {
+                            me.setError(res.error_message || 'Unable to update status');
+                        }
+                    });
             }
         };
         InputBox.show(options);
     };
 
-    mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data : {};
-                // console.log(11,d);
-
-                VSUtil.setComboItems(mThis.elStatus, d.request_statuses, 'id', 'name', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elService_type, d.service_types, 'id', 'service_type', true, 'All Service Types', null);
-                if (typeof onFinish === 'function') onFinish();
-            });
-    };
-
     mThis.show = (options) => {
         mThis.init();
-        mThis.options = options;
-
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ServiceRequestListView.showPage(mThis.getFilterData());
         });
     };
 
+    mThis.prepareFormOptions = (callback) => {
+        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`)
+            .then(res => {
+                if (res.status_code === 200) {
+                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', true, 'All Statuses');
+                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', true, 'All Service Types');
+                }
+                if (typeof callback === 'function') callback();
+            });
+    };
+
     return mThis;
 })();
+
+
+const CreateInvoiceServiceRequestDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static",
+            keyboard: true,
+
+            createContent: () => `
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted mb-3">Service Request Details</h6>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Tenant:</small>
+                                        <div class="fw-semibold" id="info-tenant">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Room Code:</small>
+                                        <div class="fw-semibold" id="info-space">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Service:</small>
+                                        <div class="fw-semibold" id="info-service">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Category:</small>
+                                        <div class="fw-semibold" id="info-category">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Base Price:</small>
+                                        <div class="fw-semibold text-primary" id="info-price">Loading...</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Priority:</small>
+                                        <div class="fw-semibold" id="info-priority">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Details -->
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Invoice Number</label>
+                        <div class="material-input outlined">
+                            <input type="text" class="data-input form-control" data-field="invoice_number"
+                                placeholder="Auto-generated if empty" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Invoice Date <span class="text-danger">*</span></label>
+                        <div class="material-input outlined">
+                            <input type="date" class="data-input form-control" data-field="invoice_date" required />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Due Date <span class="text-danger">*</span></label>
+                        <div class="material-input outlined">
+                            <input type="date" class="data-input form-control" data-field="due_date" required />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Payment Status</label>
+                        <select class="data-input form-control" data-field="payment_status">
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+
+                    <!-- Pricing Section -->
+                    <div class="col-12">
+                        <hr class="my-2">
+                        <h6 class="text-muted">Pricing Details</h6>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Quantity / Hours</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.5" min="0.5" class="data-input form-control"
+                                data-field="quantity" value="1" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Unit Price</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" class="data-input form-control"
+                                data-field="unit_price" readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Discount (%)</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" max="100" class="data-input form-control"
+                                data-field="discount_percent" value="0" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label style="padding-left:6px; color:#777;">Tax (%)</label>
+                        <div class="material-input outlined">
+                            <input type="number" step="0.01" min="0" class="data-input form-control"
+                                data-field="tax_percent" value="0" />
+                        </div>
+                    </div>
+
+                    <!-- Total Calculation -->
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <div class="col-6 text-muted">Subtotal:</div>
+                                    <div class="col-6 text-end fw-semibold" id="calc-subtotal">$0.00</div>
+
+                                    <div class="col-6 text-muted">Discount:</div>
+                                    <div class="col-6 text-end text-danger" id="calc-discount">-$0.00</div>
+
+                                    <div class="col-6 text-muted">Tax:</div>
+                                    <div class="col-6 text-end" id="calc-tax">$0.00</div>
+
+                                    <div class="col-12"><hr class="my-1"></div>
+
+                                    <div class="col-6 fw-bold fs-5">Total:</div>
+                                    <div class="col-6 text-end fw-bold fs-5 text-primary" id="calc-total">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label style="padding-left:6px; color:#777;">Notes / Remarks</label>
+                        <div class="material-input outlined">
+                            <textarea class="data-input form-control" data-field="notes" rows="3"
+                                placeholder="Additional information..."></textarea>
+                        </div>
+                    </div>
+
+                    <input type="hidden" data-field="service_request_id" />
+                    <input type="hidden" data-field="total_amount" />
+                    <input type="hidden" data-field="tenant_id" />
+                    <input type="hidden" data-field="space_id" />
+                    <input type="hidden" data-field="service_id" />
+                    <input type="hidden" data-field="service_type_id" />
+                </div>
+            `,
+
+            contentCreated: (me) => {
+
+                // Header customization
+                const header = me.divModal.querySelector('.modal-header');
+                header.querySelector('button')?.classList.add('d-none');
+                header.classList.add('bg-prm-custom', 'modal-header-custom');
+                header.parentElement.style.borderRadius = '20px';
+
+                const title = header.querySelector('.modal-title');
+                title.classList.add('text-white', 'text-center', 'w-100');
+                title.textContent = 'Generate Invoice';
+
+                const today = new Date().toISOString().split('T')[0];
+                me.controls.invoice_date.value = today;
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 30);
+                me.controls.due_date.value = dueDate.toISOString().split('T')[0];
+
+                const calculateTotals = () => {
+                    const quantity = parseFloat(me.controls.quantity.value) || 0;
+                    const unitPrice = parseFloat(me.controls.unit_price.value) || 0;
+                    const discountPercent = parseFloat(me.controls.discount_percent.value) || 0;
+                    const taxPercent = parseFloat(me.controls.tax_percent.value) || 0;
+
+                    const subtotal = quantity * unitPrice;
+                    const discountAmount = subtotal * (discountPercent / 100);
+                    const afterDiscount = subtotal - discountAmount;
+                    const taxAmount = afterDiscount * (taxPercent / 100);
+                    const total = afterDiscount + taxAmount;
+
+                    me.divModal.querySelector('#calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-tax').textContent = `$${taxAmount.toFixed(2)}`;
+                    me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
+
+                    me.controls.total_amount.value = total.toFixed(2);
+                };
+
+                ['quantity', 'unit_price', 'discount_percent', 'tax_percent'].forEach(field => {
+                    me.controls[field]?.addEventListener('input', calculateTotals);
+                });
+                const requestId = op.id;
+
+                console.log('=== LOADING INVOICE FOR ID:', requestId, '===');
+
+                if (requestId) {
+                    me.controls.service_request_id.value = requestId;
+
+                    vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: requestId })
+                        .then(res => {
+                            console.log('API Response for ID', requestId, ':', res);
+
+                            if (res.status_code === 200 && res.data && res.data.request_details) {
+                                const data = res.data.request_details;
+
+                                console.log('Request Details for ID', requestId, ':', data);
+
+                                if (data.id != requestId) {
+                                    console.error('ID MISMATCH! Expected:', requestId, 'Got:', data.id);
+                                    cv_interact.error('Data mismatch error');
+                                    return;
+                                }
+                                me.controls.tenant_id.value = data.tenant_id || '';
+                                me.controls.space_id.value = data.space_id || '';
+                                me.controls.service_id.value = data.service_id || '';
+                                me.controls.service_type_id.value = data.service_type_id || '';
+
+                                const tenant = res.data.tenants?.find(t => t.id == data.tenant_id);
+                                const space = res.data.building_spaces?.find(s => s.id == data.space_id);
+                                const service = res.data.services?.find(s => s.id == data.service_id);
+                                const serviceType = res.data.service_types?.find(st => st.id == data.service_type_id);
+
+                                me.divModal.querySelector('#info-tenant').textContent = tenant?.tenant || '-';
+                                me.divModal.querySelector('#info-space').textContent = space?.floor_id || '-';
+                                me.divModal.querySelector('#info-service').textContent = service?.service || '-';
+                                me.divModal.querySelector('#info-category').textContent = serviceType?.service_type || '-';
+                                me.divModal.querySelector('#info-priority').textContent = data.priority || '-';
+
+                                const price = data.total_price || data.service_price || 0;
+                                me.divModal.querySelector('#info-price').textContent = `$${Number(price).toFixed(2)}`;
+                                me.controls.unit_price.value = price;
+
+                                if (data.duration_hours && data.duration_hours > 0) {
+                                    me.controls.quantity.value = data.duration_hours;
+                                } else {
+                                    me.controls.quantity.value = 1;
+                                }
+
+                                calculateTotals();
+                            } else {
+                                cv_interact.error('Unable to load service request details');
+                                console.error('Invalid response:', res);
+                            }
+                        })
+                        .catch(err => {
+                            cv_interact.error('Failed to fetch service request details');
+                            console.error('Fetch error:', err);
+                        });
+                } else {
+                    console.error('No ID provided to CreateInvoiceServiceRequestDialog!');
+                    cv_interact.error('No service request ID provided');
+                }
+
+                me.onBeforeSubmit = () => {
+                    const invoiceDate = new Date(me.controls.invoice_date.value);
+                    const dueDate = new Date(me.controls.due_date.value);
+
+                    if (dueDate < invoiceDate) {
+                        cv_interact.error('Due date cannot be earlier than invoice date');
+                        return false;
+                    }
+                    return true;
+                };
+            },
+
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel',
+                    click: (me) => me.hide(false)
+                },
+                {
+                    label: '<span>Generate Invoice</span>',
+                    cssClass: 'btn-vs-save',
+                    click: (me, btn) => {
+                        const data = me.getData();
+
+                        console.log('Invoice Data to Submit:', data);
+
+                        vsapi.call(
+                            `${main_view.base_url}/prm/invoice/save`,
+                            data,
+                            btn
+                        ).then(res => {
+                            if (res.status_code === 200) {
+                                me.hide(true);
+                                cv_interact.success('Invoice generated successfully');
+                                if (me.dataOptions?.onClose) {
+                                    me.dataOptions.onClose();
+                                }
+                            } else {
+                                cv_interact.error(res.error_message || 'Failed to generate invoice');
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
 
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return [
-                        `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="name">Tenant</label>
-                                <div class="material-input outlined">
-                                    <select name="name" class="data-input form-control" data-field="tenant_id">
-                                    </select>
-                                </div>
-                            </div>
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static",
+            keyboard: true,
 
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="Code">Code</label>
-                                <div class="material-input outlined">
-                                    <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
-                                    </select>
-                                </div>
+            createContent: () => `
+                <div class="container-fluid">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="tenant_id" class="data-input form-control" data-field="tenant_id" required>
+                                    <option value="">-- Select Tenant --</option>
+                                </select>
                             </div>
+                        </div>
 
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Floor</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="floor_id">
-                                    </select>
-                                </div>
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space Code <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="space_id" class="data-input form-control" data-field="space_id" required>
+                                    <option value="">-- Select Room --</option>
+                                </select>
                             </div>
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Service</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_type">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="service_type" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <label style="padding-left:6px;" for="service_price">Price</label>
-                                <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="service_price"/>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
 
-                             <div class="col-8">
-                                <label style="padding-left:6px;" for="service_types">Charge As</label>
-                                <div class="material-input outlined">
-                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
-                                        <option value="hour">Price Per Hour</option>
-                                        <option value="month">Price Per Month</option>
-                                        <option value="time">Per Usage / Per Time</option>
-                                        <option value="one_time">One-time</option>
-                                    </select>
-                                </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="service_id" class="data-input form-control" data-field="service_id" required>
+                                    <option value="">-- Select Service --</option>
+                                </select>
                             </div>
+                        </div>
 
-                            <div class="col-12">
-                                <div class="d-none material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
-                                </div>
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="unit_type" class="data-input form-control" data-field="unit_type" required>
+                                    <option value="">-- Select Unit --</option>
+                                    <option value="hour">⏱️ Price Per Hour</option>
+                                    <option value="month">📅 Price Per Month</option>
+                                </select>
                             </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6 select-type-time" style="display:none;">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
+                                    <option value="">-- Select Duration --</option>
+                                    <option value="0.5">⏰ 30 minutes</option>
+                                    <option value="1">⏰ 1 hour</option>
+                                    <option value="1.5">⏰ 1.5 hours</option>
+                                    <option value="2">⏰ 2 hours</option>
+                                    <option value="2.5">⏰ 2.5 hours</option>
+                                    <option value="3">⏰ 3 hours</option>
+                                    <option value="4">⏰ 4 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                            <div class="col-12">
-                                <label style="padding-left:6px;">Remarks</label>
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                    <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
+                        <div class="col-12">
+                            <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-calculator fa-2x me-3 text-primary"></i>
+                                    <div>
+                                        <small class="text-muted d-block mb-1">Estimated Total</small>
+                                        <strong class="fs-4 text-primary" id="calc-total">$0.00</strong>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Base Price × Duration</small>
+                                    <span class="badge bg-primary" id="calc-breakdown">-</span>
                                 </div>
                             </div>
-                        </div>`
-                    ].join("");
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks / Description
+                            </label>
+                            <div class="material-input outlined position-relative">
+                                <textarea class="data-input form-control"
+                                        data-field="description"
+                                        rows="4"
+                                        placeholder="Enter any additional details..."
+                                        maxlength="500"></textarea>
+                                <div class="char-counter">
+                                    <small class="text-muted">
+                                        <span id="char-count">0</span> / 500
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="status_id" data-field="status_id" value="1" />
+                </div>
+            `,
+
+            contentCreated: (me) => {
+                const header = me.divModal.querySelector('.modal-header');
+                header.querySelector('button')?.classList.add('d-none');
+                header.classList.add('bg-prm-custom', 'modal-header-custom');
+                header.parentElement.style.borderRadius = '20px';
+
+                const title = header.querySelector('.modal-title');
+                title.classList.add('text-white', 'text-center', 'w-100');
+
+                const textarea = me.divModal.querySelector('[data-field="description"]');
+                const charCount = me.divModal.querySelector('#char-count');
+                if (textarea && charCount) {
+                    textarea.addEventListener('input', () => {
+                        charCount.textContent = textarea.value.length;
+                        if (textarea.value.length > 450) {
+                            charCount.parentElement.classList.add('text-danger');
+                        } else {
+                            charCount.parentElement.classList.remove('text-danger');
+                        }
+                    });
+                }
+
+                const updatePricePreview = () => {
+                const unit = me.controls.unit_type?.value || '';
+                const showDuration = unit === 'hour';
+                me.divModal.querySelector('.select-type-time').style.display = showDuration ? 'block' : 'none';
+
+                if (!showDuration) {
+                    me.divModal.querySelector('#price-preview-row').style.display = 'none';
+                    return;
+                }
+
+                const hours = parseFloat(me.controls.duration_hours?.value) || 0;
+                const price = parseFloat(me.servicePrice || 0);
+                
+                // Add validation
+                if (!me.servicePrice || price <= 0) {
+                    console.warn('Service price not set or invalid');
+                    me.divModal.querySelector('#price-preview-row').style.display = 'none';
+                    return;
+                }
+                
+                const preview = me.divModal.querySelector('#price-preview-row');
+                const totalEl = me.divModal.querySelector('#calc-total');
+                const breakdownEl = me.divModal.querySelector('#calc-breakdown');
+
+                if (hours > 0 && price > 0) {
+                    const total = price * hours;
+                    totalEl.textContent = `$${total.toFixed(2)}`;
+                    breakdownEl.textContent = `$${price.toFixed(2)} × ${hours}h`;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            };
+
+
+                me.controls.service_id?.addEventListener('change', () => {
+                    const serviceId = me.controls.service_id.value;
+                    if (!serviceId) return;
+
+                    const service = me.data?.services?.find(s => s.id == serviceId);
+                    if (service) {
+                        me.servicePrice = service.price;
+                        me.controls.unit_type.value = service.unit_type || '';
+                        updatePricePreview();
+                    }
+                });
+
+                ['unit_type', 'duration_hours'].forEach(f => {
+                    me.controls[f]?.addEventListener('change', updatePricePreview);
+                });
+
+                updatePricePreview();
+
+                me.onBeforeSubmit = () => {
+                    const data = me.getData();
+                    const required = {
+                        'tenant_id': 'Tenant',
+                        'space_id': 'Room/Space',
+                        'service_id': 'Service',
+                        'service_type_id': 'Category',
+                        'unit_type': 'Charge Unit'
+                    };
+
+                    for (let [field, label] of Object.entries(required)) {
+                        if (!data[field]) {
+                            cv_interact.error(`Please select ${label}`);
+                            return false;
+                        }
+                    }
+
+                    if (data.unit_type === 'hour' && !data.duration_hours) {
+                        cv_interact.error('Please select duration for hourly service');
+                        return false;
+                    }
+
+                    console.log("Data to send:", data);
+                    return true;
+                };
+            },
+
+            configSelect: [
+                { name: "tenant_id",
+                    data: "tenants",
+                    textField: "tenant",
+                    valueField: "id",
+                    dependents: [
+                        {
+                            name: "space_id",
+                            api:{
+                                endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
+                            },
+                            textField: "space_code", valueField: "id"
+                        }
+                    ]
+
                 },
+                // { name: "space_id", },
+                { name: "service_id",    data: "services",       textField: "service",    valueField: "id" },
+                { name: "service_type_id", data: "service_types",  textField: "service_type", valueField: "id" }
+            ],
 
-                contentCreated: (me) => {
-                    const footer = me.divModal.querySelector('.modal-footer');
-                    const header = me.divModal.querySelector('.modal-header');
-                    const headerTitle = header.querySelector('.modal-title');
-                    const btnClose = header.querySelector('button');
+            prepareFormOptions: {
+                createTitle: "Create Service Request",
+                modifyTitle: "Modify Service Request",
+                targetProp: "request_details",
+                api: {
+                    endpoint: `${main_view.base_url}/prm/service-request/form-options`,
+                    params: (op) => ({ id: op.id || null })
+                }
+            },
 
-                    btnClose.classList.add('d-none');
-                    header.classList.add('bg-prm-custom', 'modal-header-custom');
-                    header.parentElement.classList.add('overflow-hidden');
-                    header.parentElement.style = 'border-radius: 20px !important;';
-
-                    const headerWrapper = document.createElement('div');
-                    headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-
-                    headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    headerWrapper.appendChild(headerTitle);
-
-                    header.innerHTML = '';
-                    header.appendChild(headerWrapper);
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel btn-xl px-4',
+                    click: (me) => me.hide(false)
                 },
+                {
+                    label: '<span>Submit</span>',
+                    cssClass: 'btn-vs-save btn-xl px-4',
+                    click: (me, btn) => {
+                        const data = me.getData();
+                        data.id = me.dataOptions?.id || null;
 
-                configSelect: [
-                    {
-                        name: "tenant_id",
-                        data: "tenants",
-                        textField: "tenant",
-                        valueField: "id",
-                    },
-                    {
-                        name: "code",
-                        data: "building_spaces",
-                        textField: "floor_id",
-                        valueField: "id",
-                    },
+                        vsapi.call(
+                            `${main_view.base_url}/prm/service-request/save`,
+                            data,
+                            btn
+                        ).then(res => {
+                            if (res.status_code === 200) {
+                                me.hide(true);
+                                cv_interact.success(data.id ? "✓ Updated!" : "✓ Created!");
+                            } else {
+                                cv_interact.error(res.error_message || "Save failed");
+                            }
+                        });
+                    }
+                }
+            ]
+        });
 
-                    {
-                        name: "service_id",
-                        data: "services",
-                        textField: "service",
-                        valueField: "id",
-                    },
-                    {
-                        name: "service_type_id",
-                        data: "service_types",
-                        textField: "service_type",
-                        valueField: "id",
-                    },
-                ],
-
-                prepareFormOptions: {
-                    createTitle: "Create Service Request",
-                    modifyTitle: "Modify Service Request",
-                    targetProp: "request_details",
-                    api: {
-                        endpoint: [main_view.base_url, "/prm/service-request/form-options"].join(""),
-                        params: (op) => {
-                            return {id: op.id};
-                        },
-                    },
-                },
-                buttons: [
-                    {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
-                        click: (me, btn) => {
-                            const op = me.getData();
-
-                            op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/service-request/save"].join(""), op, btn, null).then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success("Service request has been updated successfully");
-                                    } else {
-                                        cv_interact.success("New service request has been added successfully");
-                                    }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                        },
-                    },
-                ],
-            });
         dialog.show(op);
     };
+
     return self;
 })();
+
+
+
+

@@ -39,8 +39,12 @@ var TenantComponent = new(function () {
             className: "align-middle",
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
-                return `<span class="d-block text-prm-custom" style="font-size:12px;">${data.name ?? ''}</span>
-                        <small class="d-block text-muted">${sexLabel}</small>`;
+                return `
+                    <div class="text-yp-custom" style="width:180px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ''}</span>
+                        <small class="d-block text-muted">${sexLabel}</small>
+                    </div>
+                `;
             }
         },
         {
@@ -117,6 +121,7 @@ var TenantComponent = new(function () {
                     <a href="javascript:void(0)"
                     class="btn-tenant-dropdown-action"
                     data-id="${data.id}"
+                    data-statusid="${data.status_id}"
                     aria-haspopup="true"
                     aria-expanded="false"
                     style="cursor: pointer; padding: 8px;">
@@ -229,6 +234,13 @@ var TenantComponent = new(function () {
                     name: "create_contract"
                 },
                 {
+                    html: '<span class="ps-2">Renew Contract</span>',
+                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "renew_contract"
+                },
+                {
                     html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -248,6 +260,18 @@ var TenantComponent = new(function () {
                 },
          
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                console.log(123456,status_id);
+                
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id == 1 ? 'block' : 'none';
+                menu.renew_contract.style.display = status_id > 1 ? 'block' : 'none';
+                menu.service_request.style.display = status_id == 2 ? 'block' : 'none';
+
+
+            },
             // adjustPosition: {
             //     top: -200,
             //     left: -300
@@ -262,6 +286,10 @@ var TenantComponent = new(function () {
                     }
                     case 'create_contract': {
                         mThis.createContract(id, menuLink);
+                        break;
+                    }
+                    case 'renew_contract': {
+                        mThis.renewContract(id, menuLink);
                         break;
                     }
                     case 'edit_tenant': {
@@ -314,6 +342,17 @@ var TenantComponent = new(function () {
         };
         ContractDialog.show(op);
     };
+    mThis.renewContract = (id, menuLink) => {
+        let op = {
+            id: null,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        // renewDialog.show(op);
+        alert('coming soon!');
+    };
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
             id: id,
@@ -347,13 +386,14 @@ var TenantComponent = new(function () {
         //     return;
         // }
         AuthManager.init().then((user) => {
-            mThis.renderCard(data, user);
+            mThis.renderCard(div, data);
         });
     };
-    mThis.renderCard = (data) => {
-        let html = `<div class="row g-3">`;
-        console.log(8888,data);
+    mThis.renderCard = (container,data) => {
         
+        console.log(8888,data);
+        container.innerHTML = "";
+        let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = (d.status || "Pending").toLowerCase();
@@ -388,7 +428,7 @@ var TenantComponent = new(function () {
                                                     <span class="${statusClass}" style="min-width:70px">${status}</span>
                                             </div>
                                         </div>
-                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                        <div class="flex-shrink-0"> <a href="javascript:void(0)" class="btn-tenant-dropdown-action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                             <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                         </a>
                                         </div>
@@ -422,7 +462,7 @@ var TenantComponent = new(function () {
                                                     class="create-tenant-contract fw-semibold"
                                                     data-id="${d.id}" data-name="${d.name}">
                                                         <span class="tool-tip">
-                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-4"></i>
+                                                            <i class="fa-solid fa-file-circle-plus text-prm-custom fs-5"></i>
                                                             <span class="tool-tiptext fs-6">Create Contract</span>
                                                         </span>
                                                     </a>
@@ -470,9 +510,16 @@ var TenantComponent = new(function () {
                     `;
             });
 
-        } 
+        } else {
+            html += `
+            <div class="col-12">
+                <div class="text-center py-5 text-muted">
+                    No tenants found
+                </div>
+            </div>`;
+        }
             html += `</div>`;
-            mThis.cardViewContainer.innerHTML = html;
+            container.innerHTML = html;
             const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
             seeProfileInfo.forEach((link) => {
                 link.addEventListener("click", (e) => {
@@ -510,8 +557,8 @@ var TenantComponent = new(function () {
                    
                 });
             });
-            const container = mThis.cardViewContainer;
-            const te_parent = container;
+            const container_te = mThis.cardViewContainer;
+            const te_parent = container_te;
             te_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
             te_parent.classList.add("overflow-y-auto");
             te_parent.classList.add("overflow-x-hidden");
@@ -727,19 +774,20 @@ var TenantComponent = new(function () {
                             <div class="row g-4 mb-5">
                                 <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
                                 <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
-                                <div class="col-md-8"><small class="text-muted">Address</small><div class="fw-semibold text-primary">${data.address ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ''}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-6"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
-                                <div class="col-md-6"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                                <div class="col-md-6"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold">${data.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
+                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${data.phone_number}</div></div>
                             </div>
                         </div>
 
@@ -754,9 +802,9 @@ var TenantComponent = new(function () {
                             <!-- Current Lease Card -->
                             <div class="d-flex position-relative mb-4">
                                 <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
-                                    <i class="fa fa-file-text text-white"></i>
-                                </div>
+                                    <div class="rounded-circle text-white shadow-lg d-flex align-items-center justify-content-center" style="background-color:#0f49bd;width: 2.5rem; height: 2.5rem;">
+                                        <i class="fa fa-file-text text-white"></i>
+                                    </div>
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <div class="card shadow-sm" style="border-left: 6px solid #0f49bd;border-radius: 14px;">
@@ -788,39 +836,39 @@ var TenantComponent = new(function () {
                             </div>
 
                             <!-- Initial Contract Card -->
-                            <div class="d-flex position-relative mb-0">
-                                <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
-                                    <i class="fa-regular fa-star"></i>
-                                </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                <div class="card border rounded-4 shadow-sm">
-                                    <div class="card-body">
-                                    <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
-                                        <div>
-                                        <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
-                                        <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
-                                        </div>
-                                        <div class="text-end">
-                                        <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
-                                        <small class="text-muted">Contract Value: $25,200</small>
+                            <!-- <div class="d-flex position-relative mb-0">
+                                    <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                                        <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+                                            <i class="fa-regular fa-star"></i>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
-                                        <i class="material-icons">celebration</i>
-                                        First lease signed. Security deposit paid in full: $2,100.
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="card border rounded-4 shadow-sm">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
+                                                    <div>
+                                                        <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
+                                                        <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
+                                                        <small class="text-muted">Contract Value: $25,200</small>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
+                                                    <i class="material-icons">celebration</i>
+                                                    First lease signed. Security deposit paid in full: $2,100.
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
+                                </div> -->
                         </div>
                 
                     </div>
                     <div class="tab-pane" id="document_tenant_list">
                         <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <p>Tenant documents content goes here...</p>
+                        <p>Tenant documents content goes here....</p>
                     </div>
                     <!-- Footer -->
                     <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
@@ -872,28 +920,29 @@ var TenantComponent = new(function () {
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${d.name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${d.sex == 'M' ? 'Male' : d.sex == 'F' ? 'Female' : ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${d.legal_name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${d.national_id ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${d.passport_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${d.phone_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${d.email ?? ''}</div></div>
-                                <div class="col-md-8"><small class="text-muted">Address</small><div class="fw-semibold text-primary">${d.address ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ''}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
                             <div class="row g-4">
-                                <div class="col-md-6"><small class="text-muted">Contact Name</small><div class="fw-semibold">${d.name}</div></div>
-                                <div class="col-md-6"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
-                                <div class="col-md-6"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${d.phone_number}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Contact Name</small><div class="fw-semibold">${d.name}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Relationship</small><div class="fw-semibold">Partner</div></div>
+                                <div class="col-md-4"><small class="text-muted">Emergency Phone</small><div class="fw-semibold">${d.phone_number}</div></div>
                             </div>
                         </div>`;
                     div.innerHTML = html;
             });
         }if(target == 'lease_tenant_history'){
             const p = {id:data.id};
-            vsapi.call([main_view.base_url, '/prm/tenant/details'].join(''),p,false,null).then(res => {
+            vsapi.call([main_view.base_url, '/prm/tenant/lease'].join(''),p,false,null).then(res => {
                 const d = res.status_code == 200 ? res.data :{};
 
                 let html ='';
@@ -942,31 +991,31 @@ var TenantComponent = new(function () {
                                 </div>
 
                                 <!-- Initial Contract Card -->
-                                <div class="d-flex position-relative mb-0">
-                                    <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
-                                    <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                    <div class="card border rounded-4 shadow-sm">
-                                        <div class="card-body">
-                                        <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
-                                            <div>
-                                            <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
-                                            <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
-                                            </div>
-                                            <div class="text-end">
-                                            <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
-                                            <small class="text-muted">Contract Value: $25,200</small>
+                                <!-- <div class="d-flex position-relative mb-0">
+                                        <div class="flex-shrink-0 text-center" style="width: 3rem; z-index: 10;">
+                                            <div class="rounded-circle bg-success text-white shadow-sm d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+                                                <i class="fa-regular fa-star"></i>
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
-                                            <i class="material-icons">celebration</i>
-                                            First lease signed. Security deposit paid in full: $2,100.
+                                        <div class="flex-grow-1 ms-3">
+                                            <div class="card border rounded-4 shadow-sm">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between flex-column flex-md-row mb-2">
+                                                    <div>
+                                                    <h5 class="card-title mb-1">Initial Contract: Jan 2021 - Jan 2022 <span class="badge bg-success rounded-4 text-uppercase">Origins</span></h5>
+                                                    <p class="text-muted mb-0">Unit 310 • 1,000 sq ft • Sunset Heights</p>
+                                                </div>
+                                                <div class="text-end">
+                                                    <p class="h5 mb-0">$2,100 <small class="text-muted">/mon</small></p>
+                                                    <small class="text-muted">Contract Value: $25,200</small>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 text-muted bg-light p-2 rounded">
+                                                <i class="material-icons">celebration</i>
+                                                First lease signed. Security deposit paid in full: $2,100.
+                                            </div>
                                         </div>
-                                        </div>
-                                    </div>
+                                    </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -983,7 +1032,7 @@ var TenantComponent = new(function () {
                 let html ='';
                     html += `<div class="tab-pane" id="document_tenant_list">
                     <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                    <p>Tenant documents content goes here...</p>
+                    <p>Tenant documents content goes here....</p>
                 </div>`;
                     div.innerHTML = html;
             });
@@ -1044,7 +1093,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+            cssClass: "modal-lg vs-dialog",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -1086,7 +1135,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <label style="color:#777777;padding-left:6px;">Date of Birth</label>
                                 <div class="material-input outlined">
-                                    <input type="date" name="date_of_birth"
+                                    <input type="text" data-type="date" name="date_of_birth"
                                         class="data-input form-control form_input"
                                         data-field="date_of_birth" />
                                 </div>
@@ -1167,25 +1216,25 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.date_of_birth);
 
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                // DateTimePicker.init(me.controls.date_of_birth);
 
-                if (btnClose) btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
+                // const footer = me.divModal.querySelector('.modal-footer');
+                // const header = me.divModal.querySelector('.modal-header');
+                // const headerTitle = header.querySelector('.modal-title');
+                // const btnClose = header.querySelector('button');
 
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
+                // if (btnClose) btnClose.classList.add('d-none');
+                // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                // header.parentElement.classList.add('overflow-hidden');
+                // header.parentElement.style = 'border-radius: 20px !important;';
 
+                // const headerWrapper = document.createElement('div');
+                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                // headerWrapper.appendChild(headerTitle);
+                // header.innerHTML = '';
+                // header.appendChild(headerWrapper);
 
 
                 const div_tenant_photo = me.controls.div_tenant_photo;

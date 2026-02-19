@@ -92,4 +92,21 @@ class TenantController extends Controller
         return JDV::raw($res);
     }
 
+     public function getLeaseHistory(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->tenant_id ?? $req->id;
+        return JDV::result($this->tenants->getLeaseHistory($id,$ss));
+    }
+    public function options_active_space(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->tenant_id ?? $req->id;
+        return JDV::result($this->tenants->getActiveSpaces($id,$ss));
+    }
+
 }

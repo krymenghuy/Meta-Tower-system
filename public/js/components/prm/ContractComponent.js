@@ -6,11 +6,11 @@ var ContractComponent = new (function () {
     mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
     mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
-    mThis.elTenant = mThis.self.querySelector('#tenant_id');
-    mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
-    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
+    // mThis.elTenant = mThis.self.querySelector('#tenant_id');
+    // mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
+    // mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
     mThis.divFilter = mThis.self.querySelector("#_divFilter_contract");
-    mThis.elFilter_status = mThis.self.querySelector("#el_status");
+    mThis.elStatus = mThis.self.querySelector("#el_contract_status_id");
     mThis.elSearch = mThis.self.querySelector("#_search_contract");
 
 
@@ -21,39 +21,92 @@ var ContractComponent = new (function () {
             className: "align-middle",
         },
        
+
+
+        // {
+        //     title: "Status",
+        //     className: "align-middle text-center",
+        //     data: (data) => {
+
+        //         const status = (data.status ?? '').toLowerCase();
+
+        //         let cls = 'badge text-dark bg-warning-subtle border border-warning';
+
+        //         if (status === 'active') {
+        //             cls = 'badge text-success bg-success-subtle border border-success';
+        //         } 
+        //         else if (status === 'expired') {
+        //             cls = 'badge text-dark bg-danger-subtle border border-danger';
+        //         } 
+        //         else if (status === 'terminated') {
+        //             cls = 'badge text-danger bg-danger-subtle border border-danger';
+        //         }
+
+        //         return `
+        //             <span class="${cls} text-capitalize d-inline-block text-center"
+        //                 style="min-width:80px"
+        //                 data-status_id="${data.status_id}">
+        //                 ${data.status ?? ''}
+        //             </span>
+        //         `;
+        //     },
+        // },
         {
             title: "Name",
             className: "align-middle text-nowrap text-capitalize",
-            data: (data, index) => `<span class="d-block text-primary-custom">${data.tenant_name}</span>
-                                    <span class="d-block text-muted">${data.code}</span>`,
-        },
-        {
-            title: " Legal Name",
-            className: "align-middle text-nowrap text-capitalize",
-            data: (data, index) => `<span class="text-primary-custom fw-medium">${data.legal_name}</span>`,
+            data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
+                    </div>
+                    `,
         },
         {
             title: "Contact Info",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block" style="font-size:12px;">${data.phone_number ?? ''}</span>
+                return `<span class="d-block">${data.phone_number ?? ''}</span>
                         <small class="d-block text-primary">${data.email}</small>`;
             }
         },
-        {
-            title: "Business / Space",
+         {
+            title: "Start Date",
             className: "align-middle text-nowrap text-capitalize",
-            data: (data) => {
-                return `<span class="d-block" style="font-size:12px;">${data.business_type ?? ''}</span>
-                        <small class="d-block text-muted">${data.space_type}</small>`;
+            data: (data, index, tr) => {
+                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
             }
         },
-        
+         {
+            title: "End Date",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data, index, tr) => {
+                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
+            }
+        },
+        //  {
+        //     title: " Legal Name",
+        //     className: "align-middle text-nowrap text-capitalize",
+        //     data: (data, index) => `<div class="text-prm-custom" style="width:150px;">
+        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.legal_name ?? ''}</span>
+        //             </div>`,
+        // },
+        {
+            title: "Business",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data) => {
+                return `<span class="text-prm-custom">${data.business_type ?? ''}</span>`;
+            }
+        },
         {
             title: "Unit",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
+            }
+        },
+        {
+            title: "Type",
+            className: "align-middle text-nowrap text-capitalize",
+            data: (data) => {
+                return `<span class="text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
@@ -67,7 +120,7 @@ var ContractComponent = new (function () {
                     return `
                         <span class="fw-semibold">
                             ${cur} ${price}
-                            <small class="text-muted">/month</small>
+                            <small class="text-muted">/mon</small>
                         </span>
                         <div class="text-muted small">Whole Room</div>
                     `;
@@ -84,161 +137,7 @@ var ContractComponent = new (function () {
                 `;
             }
         },
-        {
-            title: "Duration",
-            className: "align-middle text-nowrap text-capitalize d-flex justify-content-center align-items-center",
-            
-            data: (data) => {
-                
-                const parseDate = (dateStr) => {
-                    if (!dateStr) return null;
-                    
-                    // Handle multiple date formats
-                    // ISO format: "2026-02-02 10:28:47" or "2026-02-02"
-                    let date = new Date(dateStr);
-                    
-                    // If ISO parsing fails, try DD-Mon-YYYY format
-                    if (isNaN(date.getTime())) {
-                        const months = {
-                            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-                            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-                        };
-                        
-                        const parts = dateStr.split('-');
-                        if (parts.length === 3) {
-                            const [day, month, year] = parts;
-                            if (months.hasOwnProperty(month)) {
-                                date = new Date(year, months[month], parseInt(day));
-                            }
-                        }
-                    }
-                    
-                    return isNaN(date.getTime()) ? null : date;
-                };
-
-                // Use contract start_date and end_date
-                const start = parseDate(data.start_date);
-                const end = parseDate(data.end_date);
-                
-                if (!start || !end) {
-                    return `<small class="text-muted">Invalid date</small>`;
-                }
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                // Calculate days
-                const totalDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
-                const elapsedDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
-                const remainingDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-                
-                // Format dates for display
-                const formatDate = (date) => {
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const month = months[date.getMonth()];
-                    const year = date.getFullYear();
-                    return `${day}-${month}-${year}`;
-                };
-                
-                // Initialize variables
-                let progressClass = 'bg-success';
-                let cls = 'text-success d-inline-block';
-                let progressWidth = 0;
-                let tooltipText = '';
-                let status = '';
-                let statusText = '';
-                
-                // Calculate status based on dates
-                if (today > end) {
-                    // Contract has ended
-                    status = 'expired';
-                    statusText = 'Expired';
-                    progressClass = 'bg-danger';
-                    cls = 'text-danger d-inline-block';
-                    progressWidth = 100;
-                    const daysExpired = Math.ceil((today - end) / (1000 * 60 * 60 * 24));
-                    tooltipText = `Expired ${daysExpired} day${daysExpired !== 2 ? 's' : ''} ago`;
-                } else if (today < start) {
-                    // Contract hasn't started yet
-                    status = 'pending';
-                    statusText = 'Pending';
-                    progressClass = 'bg-secondary';
-                    cls = 'text-secondary d-inline-block';
-                    progressWidth = 0;
-                    tooltipText = 'Contract not started';
-                } else {
-                    // Contract is active
-                    status = 'active';
-                    statusText = 'Active';
-                    progressWidth = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
-                    tooltipText = `${remainingDays} day${remainingDays !== 1 ? 's' : ''} remaining`;
-                    
-                    // Set color based on remaining days
-                    if (remainingDays <= 30) {
-                        progressClass = 'bg-warning';
-                        cls = 'text-warning d-inline-block';
-                        statusText = 'Expiring Soon';
-                    } else {
-                        progressClass = 'bg-success';
-                        cls = 'text-success d-inline-block';
-                    }
-                }
-                
-                // Check if manually terminated from database (override calculated status)
-                const dbStatus = (data.status ?? '').toLowerCase();
-                if (dbStatus === 'terminated') {
-                    status = 'terminated';
-                    statusText = 'Terminated';
-                    cls = 'text-warning d-inline-block';
-                }
-
-                return `
-                    <div class="d-flex flex-column">
-                        <small class="text-muted">
-                            ${formatDate(start)} – ${formatDate(end)}
-                        </small>
-                        <div class="position-relative" style="width:95%; ">
-                            <div class="d-flex align-items-center gap-2" style="width:95%;">
-                                <div class="progress" style="height:9px; border-radius:20px; background-color:#d3d3d3; overflow:hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex:1;">
-                                    <div
-                                        class="progress-bar ${progressClass}"
-                                        role="progressbar"
-                                        style="width:${progressWidth}%; 
-                                            border-radius:20px; 
-                                            position:relative; 
-                                            background-image: repeating-linear-gradient(
-                                                45deg, 
-                                                transparent, 
-                                                transparent 10px, 
-                                                rgba(255,255,255,0.2) 10px, 
-                                                rgba(255,255,255,0.2) 20px
-                                            );"
-                                        aria-valuenow="${progressWidth}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        title="${tooltipText}">
-                                    </div>
-                                </div>
-                                <span style="font-weight:bold; 
-                                            color:#555; 
-                                            font-size:13px;
-                                            white-space:nowrap;">
-                                    ${progressWidth}%
-                                </span>
-                            </div>
-                            <div class="mt-2">
-                                <span class="${cls} text-capitalize" data-status_id="${data.status_id}">
-                                    <small>${statusText}</small>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        },
+       
         {
             title: "remark",
             className: "align-middle text-nowrap text-capitalize",
@@ -250,13 +149,51 @@ var ContractComponent = new (function () {
                 `;
             }
         },
+         {
+            title: "Status",
+            className: "align-middle text-center",
+            data: (data) => {
+
+                const status = (data.status ?? '').toLowerCase();
+
+                let cls  = 'badge rounded-5 border border-warning text-warning bg-warning-subtle';
+                let icon = 'bi-check-circle-fill';
+                let dot  = 'bg-warning';
+
+                if (status === 'active') {
+                    cls  = 'badge rounded-4 shadow-sm border border-success text-success bg-success-subtle';
+                    icon = 'fa-regular fa-circle-check';
+                    dot  = 'bg-success';
+                } 
+                else if (status === 'expired') {
+                    cls  = 'badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle';
+                    icon = 'fa-regular fa-clock';
+                    dot  = 'bg-danger';
+                } 
+                else if (status === 'terminated') {
+                    cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
+                    icon = 'fa-regular fa-circle-xmark';
+                    dot  = 'bg-warning';
+                }
+
+                return `
+                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
+                        style="min-width:110px"
+                        data-status_id="${data.status_id}">
+                        <i class="${icon}" style="font-size:13px;"></i>
+
+                        <span class="text-capitalize">${data.status ?? ''}</span>
+                    </span>
+                `;
+            },
+        },
         {
             title: "Updated By",
             className: 'align-middle text-nowrap text-capitalize',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
@@ -264,7 +201,7 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle text-capitalize',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm  rounded-2 text-nowrap">
                             <span>  
                                 <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -308,7 +245,6 @@ var ContractComponent = new (function () {
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
-        
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
@@ -364,7 +300,7 @@ var ContractComponent = new (function () {
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_contract_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
@@ -374,16 +310,37 @@ var ContractComponent = new (function () {
                     name: "edit_contract"
                 },
                 {
+                    html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
+                    icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "renew_contract"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_contract"
                 },
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                
+                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
+                menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
+                menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
+                menu.edit_contract.style.display = status_id == 2 ? 'none' : 'block';
+
+
+            },
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case 'edit_contract': {
                         mThis.editContract(id, menuLink);
+                        break;
+                    }
+                    case 'renew_contract': {
+                        mThis.renewContract(id, menuLink);
                         break;
                     }
                     case 'print_contract': {
@@ -409,7 +366,21 @@ var ContractComponent = new (function () {
         };
         ContractDialog.show(op);
     }
-    
+    mThis.renewContract = (id, menulink) => {
+        if (!id) return;
+
+        let op = {
+            id: id,
+            contract_id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        };
+
+        RenewDialog.show(op);
+    };
+        
     mThis.printContract = (id, menulink) => {
        alert('Coming Soon');
     }
@@ -418,9 +389,9 @@ var ContractComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
-                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'All Business Type', null);
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
+                // VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
+                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', true, 'All Statues', null);
+                // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'business type', null);
 
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -471,8 +442,6 @@ const ContractDialog = (() => {
                 console.log(111,op);
 
                 return [
-                    
-                    
                     `<div class="row justify-content-start">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
@@ -486,45 +455,49 @@ const ContractDialog = (() => {
                                 <input name="legal_name" class="data-input form-control" data-field="legal_name" />
                             </div>
                         </div>
-
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
-                            <div class="material-input outlined">
-                                <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="spaceType">Space Type</label>
-                            <div class="material-input outlined">
-                                <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
-                                </select>
-                            </div>
-                        </div>
-                       
-                        <div class="col-4">
-                            <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Code</label>
-                            <div class="material-input outlined">
-                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-4">
+                        <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Start Date</label>
                             <div class="material-input outlined">
                                 <input type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
                             </div>
                         </div>
 
-                        <div class="col-4">
+                        <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">End Date</label>
                             <div class="material-input outlined">
                                 <input type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
                             </div>
                         </div>
-                        
-                        <div class="col-4">
+
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
+                            <div class="material-input outlined">
+                                <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                            </div>
+                        </div>
+                       
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Unit Code</label>
+                            <div class="material-input outlined">
+                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                            <div class="material-input outlined">
+                                <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                </select>
+                            </div>
+                        </div>
+                        <!-- <div class="col-4 sqm-wrapper" style="display:none;"> -->
+                            <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
                             <div class="material-input outlined">
                             <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
@@ -534,14 +507,9 @@ const ContractDialog = (() => {
                             </div>
                         </div>
                         
-                        <div class="col-4 sqm-wrapper" style="display:none;">
-                            <label style="color:#777777;padding-left:6px;">Unit (m²)</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                            </div>
-                        </div>
                         
-                        <div class="col-4">
+                        
+                        <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Price</label>
                             <div class="material-input outlined">
                                 <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
@@ -559,29 +527,52 @@ const ContractDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.initAll(me.divModal);
+                // DateTimePicker.initAll(me.divModal);
+                // const footer = me.divModal.querySelector('.modal-footer');
+                // const header = me.divModal.querySelector('.modal-header');
+                // const headerTitle = header.querySelector('.modal-title');
+                // const btnClose = header.querySelector('button');
 
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                // btnClose.classList.add('d-none');
+                // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                // header.parentElement.classList.add('overflow-hidden');
+                // header.parentElement.style = 'border-radius: 20px !important;';
+                
+                // const headerWrapper = document.createElement('div');
+                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                // headerWrapper.appendChild(headerTitle);
+                // header.innerHTML = '';
+                // header.appendChild(headerWrapper);
+                 
 
-                btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
-                
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
-                
-                me.controls.price_type.onchange = (e) => {
-                    const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
-                    if (!sqmWrapper) return;
-                    sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                // //Transform input into select, if me.controls.tenant_id is an <input>, not <select> 
+                //   me.selectTenant = VSSearchInput.init(me.controls.tenant_id,{
+                //         //type:'select',
+                //         query:{
+                //            from:'tenants',
+                //            select:['id','name','code'],
+                //            searchFields:{_search_tenant:'LIKE'}
+                //         },
+                //         columns:{
+                //             name:'Name'
+                //         }
+                //  });
+ 
+                me.controls.tenant_id.onchange = (e) => {
+                    const p = {tenant_id:me.controls.tenant_id.value};
+
+                    vsapi.call([main_view.base_url, "/prm/contract/get-tenant-info"].join(""), p, null, null).then((res) => {
+                            const d = res;
+                            console.log(3333,d);
+                            
+                            if(d){
+                                me.controls.legal_name.value = d.legal_name;
+                               
+                            }
+
+                        });
+                    
                 };
             },
             
@@ -676,3 +667,146 @@ const ContractDialog = (() => {
     };
     return self;
 })();
+const RenewDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-md",
+            backdrop: "static",
+            keyboard: true,
+           createContent: () => {
+                return `
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="p-3 mb-3 bg-light border rounded">
+                                <h6 class="mb-3 text-secondary">Old Contract</h6>
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                        <div class="material-input outlined">
+                                            <input type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <label style="color:#777777;padding-left:6px;">End Date</label>
+                                        <div class="material-input outlined">
+                                            <input type="date" name="end_date" class="data-input form-control" data-field="end_date" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <label style="color:#777777;padding-left:6px;">Price</label>
+                                        <div class="material-input outlined">
+                                            <input type="number" name="price" class="data-input form-control" data-field="price" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="p-3 bg-white border rounded shadow-sm">
+                                <h6 class="mb-3 text-primary">Renew Contract</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                        <div class="material-input outlined">
+                                            <input type="date" name="start_date" class="data-input form-control" data-field="start_date" />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">End Date</label>
+                                        <div class="material-input outlined">
+                                            <input type="date" name="end_date" class="data-input form-control" data-field="end_date" />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Price Type</label>
+                                        <div class="material-input outlined">
+                                            <select name="price_type" class="data-input form-control" data-field="price_type">
+                                                <option value="sqm">Per Square Meter</option>
+                                                <option value="total">Whole Room</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Price</label>
+                                        <div class="material-input outlined">
+                                            <input type="number" name="price" class="data-input form-control" data-field="price" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                        <div class="material-input outlined">
+                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+
+            contentCreated: (me) => {
+                DateTimePicker.initAll(me.divModal);
+            },
+
+            prepareFormOptions: {
+                createTitle: "Renew Contract",
+                modifyTitle: "Renew Contract",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options"].join(""),
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.controls.start_date.value = data.contract_details.end_date;
+                me.controls.end_date.value = '';
+                me.controls.price.value = '';
+                me.controls.price_type.value = '';
+                me.controls.remarks.value = '';
+                // me.controls.price.value = data.contract_details.price;
+                // me.controls.price_type.value = data.contract_details.price_type;
+                // me.controls.remarks.value = data.contract_details.remarks;
+            },
+
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn-vs-cancel',
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: '<span>Renew</span>',
+                    cssClass: 'btn-vs-save',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.id = me.dataOptions.id; // existing contract id
+
+                        vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    cv_interact.success("Contract has been renewed successfully");
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                },
+            ],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+

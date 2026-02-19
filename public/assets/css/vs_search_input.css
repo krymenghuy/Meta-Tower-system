@@ -1,147 +1,294 @@
 /* =====================================================
-   VS SEARCH INPUT — ROOT WRAPPER
+   VSSearchInput — FINAL UNIFIED CSS
+   Clean, non-redundant, responsive
+   Supports:
+   ✔ input/select modes
+   ✔ loading & empty states
+   ✔ list rendering
+   ✔ column/table rendering
+   ✔ mobile responsive layout
+   ✔ dropdown polish
    ===================================================== */
+
+
+/* =====================================================
+   Wrapper
+===================================================== */
 .vs-search-wrapper {
-  position: relative;
-  width: 100%;
-  display: block;
-  isolation: isolate;
-  z-index: 10;
+    position: relative;
+    width: 100%;
 }
-.vs-search-wrapper.is-open {
-  z-index: 20;
-}
-.vs-search-wrapper.is-select {
-  cursor: pointer;
-}
+
 
 /* =====================================================
-   VS SEARCH INPUT — INPUT FIELD
-   ===================================================== */
-.vs-search-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.5em 3em 0.5em 0.75em;
-  font-size: inherit;
-  line-height: normal;
-  background: inherit;
-  color: inherit;
+   Input
+===================================================== */
+.vs-search-input,
+.vs-search-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 44px; /* icon spacing */
 }
-.vs-search-wrapper.is-select .vs-search-input {
-  cursor: pointer;
-}
+
 
 /* =====================================================
-   VS SEARCH INPUT — ICON (SVG arrow or search)
-   ===================================================== */
+   Icon (search / select arrow)
+===================================================== */
 .vs-search-icon {
-  position: absolute;
-  top: 50%;
-  right: 0.75em;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  pointer-events: none;
-  user-select: none;
-  transition: transform 0.2s ease;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: .75;
+    pointer-events: none;
 }
 
-.vs-search-icon {
-  top: 50%;
-  width: 18px;
-  height: 18px;
+/* search svg */
+.vs-search-icon .vs-search-svg {
+    width: 20px;
+    height: 20px;
 }
-/* Display arrow icon ONLY if in select mode */
-.vs-search-wrapper.is-select .vs-search-icon {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+
+/* subtle hover polish */
+.vs-search-icon:hover svg {
+    transform: scale(1.08);
+}
+
+/* hide icon when typing */
+.vs-search-icon.hidden {
+    opacity: 0;
+    transform: translateY(-50%) scale(.9);
+}
+
+/* select arrow animation */
+.vs-select-arrow {
+    transition: transform .2s ease;
+}
+
+.vs-search-icon.open .vs-select-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* =====================================================
+   Dropdown
+===================================================== */
+.vs-search-dropdown {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+
+    z-index: 10000;
+    display: none;
+
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.vs-search-wrapper.is-open .vs-search-dropdown {
+    display: block;
+}
+
+
+/* =====================================================
+   SIMPLE LIST MODE
+===================================================== */
+.vs-search-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.vs-search-item:hover,
+.vs-search-item.active {
+    background: #f3f8ff;
 }
  
-/* Rotate when dropdown is open */
-.vs-search-wrapper.is-select.is-open .vs-search-icon {
-  transform: translateY(-50%) rotate(180deg);
+  /* =====================================================
+   TABLE MODE — PROFESSIONAL CLEAN STYLE
+===================================================== */
+
+.vs-search-table {
+    display: block;
+    font-size: 14px; /* smaller = cleaner */
+    color: #222;
 }
 
-/* Optional: fade on focus */
-.vs-search-wrapper:focus-within .vs-search-icon {
-  opacity: 0.85;
-}
-/* Display search icon ONLY if not in select mode */
-.vs-search-wrapper:not(.is-select) .vs-search-icon {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%23222' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='20' y1='20' x2='15.5' y2='15.5'/%3E%3C/svg%3E");
-} 
-/* =====================================================
-   VS SEARCH INPUT — DROPDOWN CONTAINER
-   ===================================================== */
-.vs-search-dropdown {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
-  z-index: 1050;
-  max-height: 300px;
-  overflow-y: auto;
-  display: none;
-}
-.vs-search-wrapper.is-open .vs-search-dropdown {
-  display: block;
-}
-
-/* =====================================================
-   VS SEARCH INPUT — ITEM STYLING
-   ===================================================== */
-.vs-search-item {
-  padding: 0.6em 0.75em;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: background-color 0.15s ease;
-}
-.vs-search-item:hover {
-  background-color: #e9eaed;
-}
-.vs-search-item.active {
-  background-color: #cad6e4;
-}
-
-/* =====================================================
-   VS SEARCH INPUT — EMPTY STATE
-   ===================================================== */
-.vs-search-dropdown:empty {
-  display: none;
-}
-
-/* Optionally indicate dropdown ready */
-.vs-dropdown.dropdown-ready {
-  border-color: #22c55e;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
-}
-
-.vs-search-header,
-.vs-search-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-  padding: 8px 12px;
-}
-
+/* ---------- Header ---------- */
 .vs-search-header {
-  position: sticky;
-  top: 0;
-  background: #f8f9fa;
-  font-weight: 600;
-  border-bottom: 1px solid #ddd;
-  z-index: 2;
+    display: grid;
+    align-items: center;
+
+    background: #f3f4f6;
+    border-bottom: 1px solid #ddd;
+
+    font-weight: 600;
 }
 
+.vs-search-cell.header {
+    padding: 10px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #555;
+}
+
+/* subtle column separation */
+.vs-search-header .vs-search-cell + .vs-search-cell {
+    border-left: 1px solid #e6e6e6;
+}
+
+/* ---------- Rows ---------- */
+.vs-search-row {
+    display: grid;
+    align-items: center;
+
+    cursor: pointer;
+    background: #fff;
+
+    transition: background .12s ease;
+}
+
+/* softer zebra */
+.vs-search-row:nth-child(even) {
+    background: #fafafa;
+}
+
+/* hover */
+.vs-search-row:hover {
+    background: #eef3fb;
+}
+
+/* keyboard active */
+.vs-search-row.active {
+    background: #a0bce2;
+}
+
+/* ---------- Cells ---------- */
 .vs-search-cell {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    padding: 10px 14px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    border-bottom: 1px solid #eee;
+
+    font-weight: 300; /* remove bold feeling */
+}
+
+/* subtle column separation */
+.vs-search-row .vs-search-cell + .vs-search-cell {
+    border-left: 1px solid #f1f1f1;
+}
+ 
+/* =====================================================
+   Loading + Empty states
+===================================================== */
+.vs-search-empty {
+    padding: 10px 14px;
+    opacity: .65;
+}
+.vs-search-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #555;
+
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+
+    user-select: none;
+}
+
+/* spinner */
+.vs-search-loading::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+
+    border: 2px solid #d9d9d9;
+    border-top-color: #4f7cff;
+    border-radius: 50%;
+
+    animation: vs-search-spin 0.8s linear infinite;
+}
+
+@keyframes vs-search-spin {
+    to { transform: rotate(360deg); }
+}
+
+
+/* =====================================================
+   Scrollbar polish
+===================================================== */
+.vs-search-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vs-search-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,.2);
+    border-radius: 6px;
+}
+
+.vs-search-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* =====================================================
+   Mobile Responsive Mode
+===================================================== */
+@media (max-width: 640px) {
+
+    /* hide column header */
+    .vs-search-header {
+        display: none;
+    }
+
+    /* stack rows */
+    .vs-search-row {
+        grid-template-columns: 1fr !important;
+        padding: 10px;
+    }
+
+    .vs-search-cell {
+        display: block;
+        padding: 2px 0;
+    }
+
+    /* show column label */
+    .vs-search-cell::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 11px;
+        opacity: .6;
+        margin-bottom: 2px;
+    }
+}
+
+
+/* =====================================================
+   Dropdown polish
+===================================================== */
+.vs-dropdown-default {
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
 }
