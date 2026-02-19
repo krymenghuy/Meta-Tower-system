@@ -35,12 +35,12 @@ var ServiceComponent =   ( () => {
             title: "Price",
             className: "align-middle",
             data: (data) => {
-                const cur_symbol = data.cur_symbol ?? '$';
-                const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
-
+                // const cur_symbol = data.cur_symbol ?? '$';
+                // const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
+                const currency = data.currency_code ?? 'KHR';
+                const formattedPrice = VSMoney.formatAmount(data.price,currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-
-                return `<span class="fw-semibold">${cur_symbol} ${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
+                return `<span class="fw-semibold">${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
         }
         },
         {
@@ -54,7 +54,6 @@ var ServiceComponent =   ( () => {
                 `;
             }
         },
-
         {
             title: "Status",
             className: "align-middle",
@@ -267,8 +266,11 @@ var ServiceComponent =   ( () => {
             }
         });
     }
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
+    function formatStatus (item){
+        return `<span class="badge text-black" >${item.name}</span>`;
+    }
+    mThis.changeStatus = (id, link) =>{
+        const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
 
         const inputOptions = {

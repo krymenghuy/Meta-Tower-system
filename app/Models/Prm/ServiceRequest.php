@@ -310,7 +310,7 @@ class ServiceRequest extends VSModel
         if (strtolower($status) === 'completed') {
             $data['completed_date'] = (int) date('Ymd');
         }
-
+        
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);
