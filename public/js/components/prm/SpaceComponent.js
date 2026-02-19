@@ -272,7 +272,7 @@ var SpaceComponent = new (function () {
             p[f] = el.value;
         });
         // console.log(6767,p);
-        
+
 
         return p;
     };
@@ -380,14 +380,14 @@ var SpaceComponent = new (function () {
                     case "occupied":
                         statusClass = "badge text-uppercase text-white bg-info shadow-sm rounded-4";
                         statusColor = "#5578eb";
-                        
+
                         break;
                     default:
                         statusClass = "badge text-uppercase text-dark bg-warning-subtle border border-warning";
-                        
+
                         break;
                 }
-               
+
 
                 const sizeLabel = d.sqm_size ? `${d.sqm_size} m²` : '';
 
@@ -410,7 +410,7 @@ var SpaceComponent = new (function () {
                                     <p class="unit-floor text-muted small mb-0">
                                         ${sizeLabel}
                                     </p>
-                                   
+
                                 </div>
                                 <span>
                                     <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -627,7 +627,7 @@ const BuildingSpaceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-dialog",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
@@ -686,7 +686,7 @@ const BuildingSpaceDialog = (() => {
                                     <label class="d-none">Price Type</label>
                                 </div>
                             </div>
-                           
+
 
                         </div>`
                     ].join("");
@@ -694,7 +694,7 @@ const BuildingSpaceDialog = (() => {
 
 
                 contentCreated: (me) => {
-             
+
 
                 //  me.controls.price_type.onchange = (e) => {
                 //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
@@ -763,15 +763,15 @@ const BuildingSpaceDialog = (() => {
 
                 buttons: [
                     {
-                        label: '<span>Cancel</span>',
-                        cssClass: 'btn-vs-cancel',
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: '<span>Submit</span>',
-                        cssClass: 'btn-vs-save',
+                        label: '<span vslang="buttons.Submit"></span>',
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;

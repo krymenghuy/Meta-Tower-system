@@ -18,10 +18,10 @@ var ReservationComponent = new (function () {
     // Data
     mThis.buildings = [
         
-        { id: 1, name: 'Riverside Loft', location: '2nd Floor', capacity: 150 },
-        { id: 2, name: 'Garden Pavilion', location: '5th Floor', capacity: 80 },
-        { id: 3, name: 'Skyview Hall', location: '9th Floor', capacity: 200 },
-        { id: 4, name: 'Heritage Room', location: '7th Floor', capacity: 60 }
+        { id: 1, name: 'Bakheng', location: '2nd Floor', capacity: 15 },
+        { id: 2, name: 'Mekong', location: '5th Floor', capacity: 80 },
+        { id: 3, name: 'Apsara', location: '9th Floor', capacity: 20 },
+        { id: 4, name: 'Bayon', location: '7th Floor', capacity: 60 }
     ];
 
     mThis.reservations = [
@@ -126,11 +126,11 @@ var ReservationComponent = new (function () {
     mThis.setDataSummary = () => {
         let html = `
             <div class="container-fluid px-0">
-                <div class="row gy-1 mt-3">
+                <div class="row gy-1 mt-3  grid-template-columns-300px-1fr gap-1.5rem align-items-start"> 
                     <!-- Sidebar Column -->
-                    <div class="col-6 d-flex justify-content-between gap-3">
+                    <div class="col-3 d-flex flex-column gap-1.25rem position-relative " style=" height: 500px;" >
                         <!-- Buildings Filter -->
-                        <div class="room-card card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08); height: 500px; width: 48%;">
+                        <div class="room-card card" style="background: white;overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
                             <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; color: #1a1647;">
                                 <i class="fa-solid fa-location-dot me-2"></i>
                                 Meeting Rooms
@@ -139,7 +139,7 @@ var ReservationComponent = new (function () {
                         </div>
 
                         <!-- Upcoming Reservations -->
-                        <div class="room-card card" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08); height: 500px; width: 48%;">
+                        <div class="room-card card" style="background: white; overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
                             <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; color: #1a1647;">
                                 <i class="fa-solid fa-clock me-2"></i>
                                 Upcoming
@@ -149,7 +149,7 @@ var ReservationComponent = new (function () {
                     </div>
 
                     <!-- Main Content Column -->
-                    <div class="col-sm- 12 col-lg-6">
+                    <div class=" col-9 d-flex flex-column gap-3">
                         <div class="main-content" style="height: 600px; width: 100%; overflow-y: auto; padding-left: 0.5rem; align-items: flex-end;">
                             <!-- Calendar -->
                             <div class="calendar-card" style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08); min-height: 350px;">
@@ -386,6 +386,8 @@ var ReservationComponent = new (function () {
                 day.style.zIndex = '1';
             });
         });
+
+        
     };
 
     mThis.renderReservations = () => {
@@ -565,11 +567,11 @@ var ReservationComponent = new (function () {
 
 const ReservationDialog = (() => {
     const self = {};
-    let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+        // Create a NEW dialog every time — no caching
+        const dialog = new GeneralDialog({
+            cssClass: "modal-md",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -679,14 +681,14 @@ const ReservationDialog = (() => {
                     buildingSelect.appendChild(option);
                 });
 
-                // Set date if provided
-                if (me.dataOptions.date) {
-                    me.controls.date.value = me.dataOptions.date;
-                }
-
                 // Set minimum date to today
                 const today = new Date().toISOString().split('T')[0];
                 me.controls.date.min = today;
+
+                // Set clicked date — works because this is a fresh dialog every time
+                if (me.dataOptions && me.dataOptions.date) {
+                    me.controls.date.value = me.dataOptions.date;
+                }
             },
 
             prepareFormOptions: {
@@ -695,9 +697,7 @@ const ReservationDialog = (() => {
                 targetProp: "reservation_details",
             },
 
-            onPrepareForm: (me, data) => {
-                // Additional setup if needed
-            },
+            onPrepareForm: (me, data) => {},
 
             buttons: [
                 {
@@ -713,20 +713,17 @@ const ReservationDialog = (() => {
                     click: (me, btn) => {
                         const data = me.getData();
                         
-                        // Validate
                         if (!data.building_id || !data.date || !data.start_time || !data.end_time || 
                             !data.renter_name || !data.event || !data.attendees) {
                             cv_interact.error('Please fill in all required fields');
                             return;
                         }
 
-                        // Validate time range
                         if (data.start_time >= data.end_time) {
                             cv_interact.error('End time must be after start time');
                             return;
                         }
 
-                        // Check for conflicts
                         const hasConflict = ReservationComponent.checkTimeConflict(
                             parseInt(data.building_id),
                             data.date,
@@ -739,13 +736,11 @@ const ReservationDialog = (() => {
                             return;
                         }
 
-                        // Check capacity
                         const building = ReservationComponent.buildings.find(b => b.id === parseInt(data.building_id));
                         if (parseInt(data.attendees) > building.capacity) {
                             cv_interact.warning(`Warning: Number of attendees (${data.attendees}) exceeds building capacity (${building.capacity})`);
                         }
 
-                        // Create new reservation
                         const newReservation = {
                             id: Date.now(),
                             buildingId: parseInt(data.building_id),

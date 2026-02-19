@@ -72,6 +72,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
     Route::post('/lease-history', [TenantController::class, 'getLeaseHistory']);
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
+    Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
 
 });
 

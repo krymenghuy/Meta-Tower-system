@@ -35,7 +35,8 @@
 
 </div>
  <style>
-  .main-grid {
+    
+  /* .main-grid {
       display: grid;
       grid-template-columns: 350px 1fr;
       gap: 2rem;
@@ -72,7 +73,7 @@
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);
     border: 1px solid #e8dfd7;
-  }
+  } */
 
  </style>
 

@@ -272,7 +272,7 @@ var ServiceComponent =   ( () => {
     mThis.changeStatus = (id, link) =>{
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-  
+
         const inputOptions = {
             context:'success',
             title: 'Change Status',
@@ -368,8 +368,10 @@ const CreateServiceDialog = (() => {
                                     <select name="unit_type" class="data-input form-control" data-field="unit_type">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
+                                        <!--
                                         <option value="time">Per Usage / Per Time</option>
                                         <option value="one_time">One-time Service</option>
+                                        -->
                                     </select>
                                 </div>
                             </div>
@@ -392,25 +394,6 @@ const CreateServiceDialog = (() => {
 
 
                 contentCreated: (me) => {
-                    // const footer = me.divModal.querySelector('.modal-footer');
-                    // const header = me.divModal.querySelector('.modal-header');
-
-                    // const headerTitle = header.querySelector('.modal-title');
-                    // const btnClose = header.querySelector('button');
-
-                    // btnClose.classList.add('d-none');
-                    // header.classList.add('bg-prm-custom', 'modal-header-custom');
-                    // header.parentElement.classList.add('overflow-hidden');
-                    // header.parentElement.style = 'border-radius: 20px !important;';
-
-                    // const headerWrapper = document.createElement('div');
-                    // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-  
-                    // headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                    // headerWrapper.appendChild(headerTitle);
-
-                    // header.innerHTML = '';
-                    // header.appendChild(headerWrapper);
                 },
                 configSelect: [
                     {
@@ -445,7 +428,7 @@ const CreateServiceDialog = (() => {
                 buttons: [
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: 'btn btn-default',
+                        cssClass: 'btn btn-secondary',
                         click: (me, btn) => {
                             me.hide(false);
                         },

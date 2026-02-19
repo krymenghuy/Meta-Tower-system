@@ -231,7 +231,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-          
+
                 '/assets/js/xlsx/xlsx.full.min.js',
                 '/js/components/umt/FindUserDialog.js',
                 '/js/components/umt/ChangeRoleDialog.js',

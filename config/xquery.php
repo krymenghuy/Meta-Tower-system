@@ -28,7 +28,7 @@ return [
   ],
 
   'allowed_columns' => [
-    'tenants' => ['id','name','code','name_kh','email','phone_number'],
+    'tenants' => ['id','name','code','legal_name','phone_number','email'],
   ],
 
   'searchable_columns' => [
