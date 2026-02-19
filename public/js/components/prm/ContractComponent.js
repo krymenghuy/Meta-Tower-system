@@ -24,7 +24,7 @@ var ContractComponent = new (function () {
 
 
         // {
-        //     title: "Status",
+        //     transTitle: "Status",
         //     className: "align-middle text-center",
         //     data: (data) => {
 
@@ -52,7 +52,7 @@ var ContractComponent = new (function () {
         //     },
         // },
         {
-            title: "Name",
+            transTitle: "titles.Name",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
@@ -60,7 +60,7 @@ var ContractComponent = new (function () {
                     `,
         },
         {
-            title: "Contact Info",
+            transTitle: "titles.Contact Info",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
@@ -68,49 +68,49 @@ var ContractComponent = new (function () {
             }
         },
          {
-            title: "Start Date",
+            transTitle: "titles.Start Date",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
             }
         },
          {
-            title: "End Date",
+            transTitle: "titles.End Date",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
         //  {
-        //     title: " Legal Name",
+        //     transTitle: " Legal Name",
         //     className: "align-middle text-nowrap text-capitalize",
         //     data: (data, index) => `<div class="text-prm-custom" style="width:150px;">
         //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.legal_name ?? ''}</span>
         //             </div>`,
         // },
         {
-            title: "Business",
+            transTitle: "titles.Business",
             className: "align-middle text-nowrap text-capitalize",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
         {
-            title: "Unit",
+            transTitle: "titles.Unit",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
-            title: "Type",
+            transTitle: "titles.Type",
             className: "align-middle text-nowrap text-capitalize",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
-            title: "Price",
+            transTitle: "titles.Price",
             className: "align-middle text-nowrap text-capitalize",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';
@@ -139,7 +139,7 @@ var ContractComponent = new (function () {
         },
 
         {
-            title: "remark",
+            transTitle: "titles.remark",
             className: "align-middle text-nowrap text-capitalize",
             data: (data, index, tr) => {
                 return `
@@ -150,7 +150,7 @@ var ContractComponent = new (function () {
             }
         },
          {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             data: (data) => {
 
@@ -188,7 +188,7 @@ var ContractComponent = new (function () {
             },
         },
         {
-            title: "Updated By",
+            transTitle: "titles.Updated By",
             className: 'align-middle text-nowrap text-capitalize',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -547,7 +547,7 @@ const ContractDialog = (() => {
                 // DateTimePicker.initAll(me.divModal);
                 // const footer = me.divModal.querySelector('.modal-footer');
                 // const header = me.divModal.querySelector('.modal-header');
-                // const headerTitle = header.querySelector('.modal-title');
+                // const headerTitle = header.querySelector('.modal-transTitle');
                 // const btnClose = header.querySelector('button');
 
                 // btnClose.classList.add('d-none');

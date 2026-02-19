@@ -18,21 +18,21 @@ var ServiceComponent =   ( () => {
             className: "align-middle text-capitalize",
         },
         {
-            title: "Service",
+            transTitle: "titles.Service",
             className: "align-middle",
            data: (data) => {
                 return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
             }
         },
         {
-            title: "Category",
+            transTitle: "titles.Category",
             className: "align-middle",
            data: (data) => {
                 return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
             }
         },
         {
-            title: "Price",
+            transTitle: "titles.Price",
             className: "align-middle",
             data: (data) => {
                 // const cur_symbol = data.cur_symbol ?? '$';
@@ -44,7 +44,7 @@ var ServiceComponent =   ( () => {
         }
         },
         {
-            title: "Remarks",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -55,7 +55,7 @@ var ServiceComponent =   ( () => {
             }
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
@@ -71,7 +71,7 @@ var ServiceComponent =   ( () => {
             },
         },
         {
-            title: "Updated By",
+            transTitle: "titles.Updated By",
             className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
@@ -81,7 +81,7 @@ var ServiceComponent =   ( () => {
             }
         },
         {
-            title : "Action",
+            transTitle : "titles.Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
@@ -250,7 +250,7 @@ var ServiceComponent =   ( () => {
         };
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service??', {
-            title: 'Delete Service',
+            transTitle: 'Delete Service',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
@@ -275,7 +275,7 @@ var ServiceComponent =   ( () => {
 
         const inputOptions = {
             context:'success',
-            title: 'Change Status',
+            transTitle: 'Change Status',
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",

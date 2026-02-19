@@ -14,29 +14,29 @@ var InvoiceComponent = (() => {
     mThis.elSearch        = mThis.self.querySelector("#_search_invoice");
 
     mThis.cols = [
-        { title: "", className: "align-middle text-capitalize" },
+        { transTitle: "", className: "align-middle text-capitalize" },
         {
             transTitle: "titles.Invoice Num",
             className: "align-middle text-start",
             data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
         },
         {
-            title: "Tenant",
+            transTitle: "titles.Tenant",
             className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.tenant_name || '—'}</span>`,
         },
         {
-            title: "Building",
+            transTitle: "titles.Building",
             className: "align-middle",
             data: (data) => `<span class="d-block text-yp-custom" style="max-width:90px;">${data.building_name || 'N/A'}</span>`,
         },
         {
-            title: "Space Code",
+            transTitle: "titles.Space Code",
             className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.space_code || '—'}</span>`,
         },
         {
-            title: "Amount",
+            transTitle: "titles.Amount",
             className: "align-middle text-primary",
             data: (data) => {
                 const amt = data.amount ? Number(data.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00';
@@ -44,7 +44,7 @@ var InvoiceComponent = (() => {
             }
         },
         {
-            title: "Paid",
+            transTitle: "titles.Paid",
             className: "align-middle text-success",
             data: (data) => {
                 const amt = data.paid_amount ? Number(data.paid_amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00';
@@ -52,7 +52,7 @@ var InvoiceComponent = (() => {
             }
         },
         {
-            title: "Balance",
+            transTitle: "titles.Balance",
             className: "align-middle text-danger",
             // ✅ Fixed: use data.balance instead of data.amount
             data: (data) => {
@@ -61,12 +61,12 @@ var InvoiceComponent = (() => {
             }
         },
         {
-            title: "Due Date",
+            transTitle: "titles.Due Date",
             className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.due_date || 'N/A'}</span>`,
         },
         {
-            title: "Status",
+            transTitle: "titles.Status",
             className: "align-middle text-center",
             // ✅ Fixed: use payment_status_name for display, payment_status_id for logic
             data: (data) => {
@@ -79,7 +79,7 @@ var InvoiceComponent = (() => {
             },
         },
         {
-            title: "Updated By",
+            transTitle: "titles.Updated By",
             className: "align-middle",
             data: (data) => `
                 <div class="d-flex flex-column">
@@ -88,7 +88,7 @@ var InvoiceComponent = (() => {
                 </div>`,
         },
         {
-            title: "Action",
+            transTitle: "titles.Action",
             className: "col_action align-middle text-center",
             data: (data) => `
                 <div class="d-flex justify-content-center">
@@ -368,7 +368,7 @@ var InvoiceComponent = (() => {
         if (!AuthManager.allowed(242)) return;
 
         cv_interact.confirm('Are you sure you want to delete this invoice?', {
-            title: 'Delete Invoice',
+            transTitle: 'Delete Invoice',
             confirmButtonText: "Delete",
             context: 'danger'
         }, (confirmed) => {
@@ -465,7 +465,7 @@ const InvoiceDialog = (() => {
                 <td class="text-end fw-bold">$${formatCurrency(netAmount)}</td>
                 <td class="text-center">
                     <button type="button" class="btn btn-sm btn-outline-danger"
-                            onclick="InvoiceDialog.removeItem(${index})" title="Remove">
+                            onclick="InvoiceDialog.removeItem(${index})" transTitle="Remove">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>`;
@@ -643,7 +643,7 @@ const InvoiceDialog = (() => {
         if (index < 0 || index >= invoiceItems.length) return;
 
         cv_interact.confirm('Remove this item from the invoice?', {
-            title: 'Confirm Removal',
+            transTitle: 'Confirm Removal',
             confirmButtonText: 'Remove',
             context: 'warning'
         }, (confirmed) => {
