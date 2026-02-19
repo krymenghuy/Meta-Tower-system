@@ -26,6 +26,7 @@ return [
          'Please enter the details of each item'=>'សូមបញ្ចូលព័ត៌មានលំអិតនៃកញ្ចប់ទំនិញនីមួយៗ'
     ],
     'titles' => [
+        'Invoice Num'=>'ចំនួនវិក័យប័ត្រ',
         'Authorize'=>'អនុម័ត',
         'Reset'=>'ត្រឡប់វិញ',
         'Reverse'=>'ត្រឡប់ប្រតិបត្តការណ៍ទូទាត់ប្រាក់',

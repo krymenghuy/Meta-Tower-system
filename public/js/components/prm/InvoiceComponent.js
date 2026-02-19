@@ -16,7 +16,7 @@ var InvoiceComponent = (() => {
     mThis.cols = [
         { title: "", className: "align-middle text-capitalize" },
         {
-            title: "Invoice Num",
+            transTitle: "titles.Invoice Num",
             className: "align-middle text-start",
             data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
         },
