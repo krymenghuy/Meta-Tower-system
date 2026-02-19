@@ -217,8 +217,13 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
+  
+      function formatStatus(item){
+        return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
+      }
 
-    mThis.changeStatus = (id, link) => {
+
+      mThis.changeStatus = (id, link) => {
         const tr = link.closest('tr');
         const currentStatusId = tr?.dataset.statusId || "1";
 
@@ -226,7 +231,7 @@ var ServiceRequestComponent = (function () {
             title: 'Change Status',
             cssClass: '',
             backdropClose: true,
-            type: 'select',
+            // type: 'select',
             label: 'Status',
             valueField: 'status_id',
             textField: 'name',

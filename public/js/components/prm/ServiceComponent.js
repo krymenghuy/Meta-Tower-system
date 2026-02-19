@@ -266,8 +266,11 @@ var ServiceComponent =   ( () => {
             }
         });
     }
-    mThis.changeStatus = (id, lnk) =>{
-        const tr = lnk.closest('tr');
+    function formatStatus (item){
+        return `<span class="badge text-black" >${item.name}</span>`;
+    }
+    mThis.changeStatus = (id, link) =>{
+        const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
   
         const inputOptions = {

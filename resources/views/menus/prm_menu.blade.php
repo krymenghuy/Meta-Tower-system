@@ -138,6 +138,15 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Expense"></span>
                         </a>
                     </li>
+
+                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
+                        <a href="ChargeableComponent" modid="270" class="menu-item kt-menu__link">
+                            <span class="kt-menu__link-icon">
+                                <img class="icons opacity-icons" src="{{ asset('assets/images/icons/bill.png') }}" />
+                            </span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Payment Items"></span>
+                        </a>
+                    </li>
                     <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
                         <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">

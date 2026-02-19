@@ -324,6 +324,7 @@
                             @include('layouts.prm.reportComponent')
                             @include('layouts.prm.expenseComponent')
                             @include('layouts.prm.serviceRequestComponent')
+                            @include('layouts.prm.chargeableComponent')
 
 
                         </div>
