@@ -1093,7 +1093,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+            cssClass: "modal-lg vs-dialog",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -1135,7 +1135,7 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <label style="color:#777777;padding-left:6px;">Date of Birth</label>
                                 <div class="material-input outlined">
-                                    <input type="date" name="date_of_birth"
+                                    <input type="text" data-type="date" name="date_of_birth"
                                         class="data-input form-control form_input"
                                         data-field="date_of_birth" />
                                 </div>
@@ -1216,25 +1216,25 @@ const CreateTenantDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.init(me.controls.date_of_birth);
 
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                // DateTimePicker.init(me.controls.date_of_birth);
 
-                if (btnClose) btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
+                // const footer = me.divModal.querySelector('.modal-footer');
+                // const header = me.divModal.querySelector('.modal-header');
+                // const headerTitle = header.querySelector('.modal-title');
+                // const btnClose = header.querySelector('button');
 
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
+                // if (btnClose) btnClose.classList.add('d-none');
+                // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                // header.parentElement.classList.add('overflow-hidden');
+                // header.parentElement.style = 'border-radius: 20px !important;';
 
+                // const headerWrapper = document.createElement('div');
+                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                // headerWrapper.appendChild(headerTitle);
+                // header.innerHTML = '';
+                // header.appendChild(headerWrapper);
 
 
                 const div_tenant_photo = me.controls.div_tenant_photo;

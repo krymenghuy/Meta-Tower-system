@@ -212,6 +212,7 @@ class Invoice extends VSModel
             'invoice_details' => $id ? self::getInvoiceDetails($id) : null,
             'buildings'       => GeneralSettings::options_building($ss),
             'statuses'        => GeneralSettings::options_payment_status($ss),
+            'tenants' => GeneralSettings::options_tenant($ss),
         ];
     }
 

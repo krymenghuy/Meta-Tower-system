@@ -10,7 +10,6 @@ var ReservationComponent = new (function () {
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elFloor = mThis.self.querySelector('#floor_id');
     mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
-    mThis.elFilter_status = mThis.self.querySelector('#_space_status');
     mThis.elSearch = mThis.self.querySelector("#_search_space");
     let div = mThis.self.querySelector("#_space_list");
 
@@ -18,10 +17,11 @@ var ReservationComponent = new (function () {
     
     // Data
     mThis.buildings = [
-        { id: 1, name: 'Riverside Loft', location: 'Downtown', capacity: 150 },
-        { id: 2, name: 'Garden Pavilion', location: 'Westside', capacity: 80 },
-        { id: 3, name: 'Skyview Hall', location: 'Midtown', capacity: 200 },
-        { id: 4, name: 'Heritage Room', location: 'Old Quarter', capacity: 60 }
+        
+        { id: 1, name: 'Riverside Loft', location: '2nd Floor', capacity: 150 },
+        { id: 2, name: 'Garden Pavilion', location: '5th Floor', capacity: 80 },
+        { id: 3, name: 'Skyview Hall', location: '9th Floor', capacity: 200 },
+        { id: 4, name: 'Heritage Room', location: '7th Floor', capacity: 60 }
     ];
 
     mThis.reservations = [
@@ -44,16 +44,7 @@ var ReservationComponent = new (function () {
             mThis.openBookingModal();
         };
 
-        // mThis.elBuilding.addEventListener('change', (e) => {
-        //     e.preventDefault();
-        //     const p = {
-        //         building_id: e.target.value
-        //     };
-        //     vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
-        //         const data = res.status_code == 200 ? res.data : [];
-        //         VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '', "All Floor", null);
-        //     });
-        // });
+        
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => {

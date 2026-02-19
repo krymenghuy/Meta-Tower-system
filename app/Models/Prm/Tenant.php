@@ -280,4 +280,19 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         return $rows;
 
     }
+
+        public function getActiveSpaces($id = null,$ss = null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $today = date('Y-m-d');
+        $str_date = DBX::whereDate('c.end_date','>=',$today);
+        $rows = DB::table('contracts as c')
+        ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+        ->where('c.tenant_id', $id)
+        ->whereRaw($str_date)
+        ->selectRaw('bs.id,bs.code as space_code')
+        ->get();
+        return $rows;
+
+    }
 }

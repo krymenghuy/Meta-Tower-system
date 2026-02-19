@@ -55,8 +55,8 @@ return [
                 'https://cdn.vectoraclouds.com/vfc/vfc.utils.inputFormat.js',
                 'https://cdn.vectoraclouds.com/vfc/vfc.form.js',
 
-                // 'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs.v2.js',
+                // 'https://cdn.vectoraclouds.com/frontcore/components/GeneralDialog.bs5.js',
 
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
                 //'/assets/material-js/bootstrap.min.js',
@@ -97,6 +97,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -226,7 +227,7 @@ return [
                 '/assets/js/ImageBox.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
