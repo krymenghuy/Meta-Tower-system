@@ -15,7 +15,7 @@ use App\Http\Controllers\Prm\ServiceController;
 use App\Http\Controllers\Prm\InvoiceController;
 use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
-
+use App\Http\Controllers\Prm\ReservationController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -170,6 +170,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
     Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
     Route::post('/delete', [PaymentController::class, 'deletePayment']);
     Route::post('/update-status', [PaymentController::class, 'updatePaymentStatus']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservations')->group(function () {
+    Route::post('/save', [PaymentController::class, 'saveReservation']);
+    Route::post('/list-paginate', [PaymentController::class, 'getListReservation']);
+    Route::post('/details', [PaymentController::class, 'reservationDetails']);
+    Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
+    Route::post('/delete', [PaymentController::class, 'deleteReservation']);
+    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {

@@ -29,9 +29,9 @@ class Invoice extends VSModel
 
         $v_rule = [
             'tenant_id'         => '1|integer|exists:tenants,id',
-            'building_id'       => '0|integer|exists:buildings,id',
             'space_id'          => '1|integer|exists:building_spaces,id',
             'contract_id'       => '0|integer|exists:contracts,id',
+            'service_id'        => '0|number|exists=services.id',
             'due_date'          => '1|date|after_or_equal:today',
             'invoice_date'      => '0|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
@@ -146,10 +146,9 @@ class Invoice extends VSModel
         }
     }
 
-    public static function checkDuplicateSpaceId($building_id, $tenant_id, $invoice_id = null)
+    public static function checkDuplicateSpaceId( $tenant_id, $invoice_id = null)
     {
         $query = DB::table('invoices as i')
-            ->where('i.building_id', $building_id)
             ->where('i.tenant_id', $tenant_id);
 
         if ($invoice_id) {
@@ -168,17 +167,15 @@ class Invoice extends VSModel
 
         $query = DB::table('invoices as i')
             ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
+            ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
             ->leftJoin('space_types as st',     'st.id', '=', 'i.space_type_id')
             ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->leftJoin('buildings as bb',       'bb.id', '=', 'i.building_id')
             ->select([
                 'i.id',
                 'i.code',
                 'i.tenant_id',
-                'i.building_id',
-                'bb.name as building_name',
                 'i.space_id',
                 'i.amount',
                 'i.paid_amount',
@@ -189,7 +186,6 @@ class Invoice extends VSModel
                 'i.updated_at',
                 'i.update_user',
                 'i.payment_status_id',
-                'i.purpose',
                 'i.remarks',
                 'i.currency_code',
                 'i.contract_id',
@@ -205,15 +201,13 @@ class Invoice extends VSModel
                 'ct.start_date as contract_start',
                 'ct.end_date as contract_end',
                 'ct.sqm_size as contract_sqm_size',
+                's.name as service_name',
+                's.price as service_price',
             ])
             ->orderByDesc('i.id');
 
         if (!empty($d->tenant_id)) {
             $query->where('i.tenant_id', $d->tenant_id);
-        }
-
-        if (!empty($d->building_id)) {
-            $query->where('i.building_id', $d->building_id);
         }
 
         if (!empty($d->payment_status_id)) {
@@ -225,7 +219,6 @@ class Invoice extends VSModel
             $query->where(function ($q) use ($search) {
                 $q->where('i.code',      'like', $search)
                   ->orWhere('t.name',    'like', $search)
-                  ->orWhere('bb.name',   'like', $search)
                   ->orWhere('bs.code',   'like', $search);
             });
         }
@@ -240,16 +233,15 @@ class Invoice extends VSModel
     {
         $header = DB::table('invoices as i')
             ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
+            ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
             ->leftJoin('space_types as st',     'st.id', '=', 'i.space_type_id')
             ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->leftJoin('buildings as b',        'b.id',  '=', 'i.building_id')
             ->where('i.id', $id)
             ->select(
                 'i.id',
                 'i.tenant_id',
-                'i.building_id',
                 'i.space_id',
                 'i.code',
                 'i.amount',
@@ -278,6 +270,8 @@ class Invoice extends VSModel
                 'ct.start_date as contract_start_date',
                 'ct.end_date as contract_end_date',
                 'ps.name as payment_status_name',
+                's.name as service_name',
+                's.price as service_price',
             )
             ->first();
 
@@ -300,6 +294,7 @@ class Invoice extends VSModel
             'buildings'       => GeneralSettings::options_building($ss),
             'statuses'        => GeneralSettings::options_payment_status($ss),
             'tenants'         => GeneralSettings::options_tenant_with_active_contract($ss),
+            'services'        => GeneralSettings::options_service($ss),
         ];
     }
 
