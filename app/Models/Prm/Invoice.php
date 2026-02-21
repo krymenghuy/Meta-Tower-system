@@ -31,6 +31,7 @@ class Invoice extends VSModel
             'tenant_id'         => '1|integer|exists:tenants,id',
             'space_id'          => '1|integer|exists:building_spaces,id',
             'contract_id'       => '0|integer|exists:contracts,id',
+            'business_type_id' => '0|integer|exists:business_types,id',
             'service_id'        => '0|number|exists=services.id',
             'due_date'          => '1|date|after_or_equal:today',
             'invoice_date'      => '0|date',
@@ -39,6 +40,7 @@ class Invoice extends VSModel
             'remarks'           => '0|string|max:500',
             'currency_code'     => '0|string|size:3',
             'items'             => '1|array|min:1',
+
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang ?? 'en', 0, null);
@@ -168,7 +170,7 @@ class Invoice extends VSModel
         $query = DB::table('invoices as i')
             ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
             ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
-            ->leftJoin('space_types as st',     'st.id', '=', 'i.space_type_id')
+            ->leftJoin('business_types as bt', 'bt.id', '=', 'i.business_type_id')
             ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
@@ -194,7 +196,6 @@ class Invoice extends VSModel
                 't.phone_number as tenant_phone',
                 't.email as tenant_email',
                 'ps.name as payment_status_name',
-                'st.name as space_type_name',
                 'bs.code as space_code',
                 'ct.price as contract_price',
                 'ct.price_type as price_type_id',
@@ -203,6 +204,7 @@ class Invoice extends VSModel
                 'ct.sqm_size as contract_sqm_size',
                 's.name as service_name',
                 's.price as service_price',
+                'bt.name as business_type_name',
             ])
             ->orderByDesc('i.id');
 
@@ -234,10 +236,10 @@ class Invoice extends VSModel
         $header = DB::table('invoices as i')
             ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
             ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
-            ->leftJoin('space_types as st',     'st.id', '=', 'i.space_type_id')
             ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->leftJoin('business_types as bt', 'bt.id', '=', 'i.business_type_id')
             ->where('i.id', $id)
             ->select(
                 'i.id',
@@ -261,9 +263,7 @@ class Invoice extends VSModel
                 't.phone_number as tenant_phone',
                 't.email as tenant_email',
                 't.address as tenant_address',
-                'st.name as space_type_name',
                 'bs.code as space_code',
-                'b.name as building_name',
                 'ct.price as contract_price',
                 'ct.sqm_size as contract_sqm_size',
                 'ct.price_type as price_type_id',
@@ -272,6 +272,7 @@ class Invoice extends VSModel
                 'ps.name as payment_status_name',
                 's.name as service_name',
                 's.price as service_price',
+                'bt.name as business_type_name',
             )
             ->first();
 
@@ -295,6 +296,7 @@ class Invoice extends VSModel
             'statuses'        => GeneralSettings::options_payment_status($ss),
             'tenants'         => GeneralSettings::options_tenant_with_active_contract($ss),
             'services'        => GeneralSettings::options_service($ss),
+            'business_types' => GeneralSettings::options_business_type($ss),
         ];
     }
 

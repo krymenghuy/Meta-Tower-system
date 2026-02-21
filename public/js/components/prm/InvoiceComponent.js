@@ -19,8 +19,6 @@ var InvoiceComponent = (() => {
             data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>` },
         { transTitle: "titles.Tenant", className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.tenant_name || '—'}</span>` },
-        { transTitle: "titles.Building", className: "align-middle",
-            data: (data) => `<span class="d-block text-yp-custom" style="max-width:90px;">${data.building_name || 'N/A'}</span>` },
         { transTitle: "titles.Space Code", className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.space_code || '—'}</span>` },
         { transTitle: "titles.Amount", className: "align-middle text-primary",
@@ -179,7 +177,6 @@ var InvoiceComponent = (() => {
                         <table class="table table-sm table-borderless">
                             <tr><td class="text-muted fw-semibold" width="140">Invoice No:</td><td class="fw-bold text-primary">${invoice.code || '—'}</td></tr>
                             <tr><td class="text-muted fw-semibold">Tenant:</td><td>${invoice.tenant_name || '—'}</td></tr>
-                            <tr><td class="text-muted fw-semibold">Building:</td><td>${invoice.building_name || '—'}</td></tr>
                             <tr><td class="text-muted fw-semibold">Space Code:</td><td>${invoice.space_code || '—'}</td></tr>
                         </table>
                     </div>
@@ -424,32 +421,25 @@ const InvoiceDialog = (() => {
             const amountInput   = document.getElementById('new_item_amount');
 
             if (serviceSelect) {
-                // Populate dropdown using VSUtil so custom select widgets work correctly
                 VSUtil.setComboItems(
                     serviceSelect,
                     availableServices,
-                    'id',       // value field
-                    'service',  // text field — matches API field name
+                    'id',
+                    'service',
                     true,
                     '-- Select Service --'
                 );
 
-                // ✅ KEY FIX: ALWAYS overwrite description & amount when service changes
-                // Remove the "if empty" guard so switching services always resets the fields
+                // Always overwrite description & amount when service changes
                 serviceSelect.onchange = (e) => {
                     const serviceId = e.target.value;
-
-                    // If blank option selected — clear description and amount
                     if (!serviceId) {
                         if (descInput)   descInput.value   = '';
                         if (amountInput) amountInput.value = '';
                         return;
                     }
-
                     const service = availableServices.find(s => String(s.id) === String(serviceId));
                     if (!service) return;
-
-                    // ✅ Always set — no "if empty" check so switching updates both fields
                     if (descInput)   descInput.value   = service.service || service.name || '';
                     if (amountInput) amountInput.value = parseFloat(service.price || 0).toFixed(2);
                 };
@@ -470,7 +460,6 @@ const InvoiceDialog = (() => {
         }, 0);
     };
 
-    // Reads all values from DOM, validates, then pushes to invoiceItems
     const saveNewItem = (tbody) => {
         const serviceEl  = document.getElementById('new_item_service');
         const descEl     = document.getElementById('new_item_description');
@@ -534,6 +523,14 @@ const InvoiceDialog = (() => {
     const handleQuickAction = (actionType) => {
         const tbody = document.getElementById('invoice_items_tbody');
         if (!tbody) return;
+
+        // If the add-item form is currently open, close it by resetting the table
+        const existingAddRow = document.getElementById('add_item_row');
+        const formIsOpen = existingAddRow && existingAddRow.querySelector('#new_item_service');
+        if (formIsOpen) {
+            renderItemsTable(tbody);  // restores the "+ Add Item" button row
+        }
+
         const typeMap = { rent: 'rent', utilities: 'utilit', custom: null, services: null };
         const keyword = typeMap[actionType] ?? null;
         let prefillId = null;
@@ -543,7 +540,9 @@ const InvoiceDialog = (() => {
             );
             if (match) prefillId = match.id;
         }
-        showAddItemForm(tbody, prefillId);
+
+        // Delay so renderItemsTable DOM changes settle before injecting the new form
+        setTimeout(() => showAddItemForm(tbody, prefillId), 0);
     };
 
     self.show = (op) => {
@@ -551,7 +550,7 @@ const InvoiceDialog = (() => {
         availableServices = [];
 
         const dlg = new GeneralDialog({
-            cssClass: "modal-lg vs-modal",
+            cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
 
@@ -573,36 +572,30 @@ const InvoiceDialog = (() => {
                             <div class="col-md-3">
                                 <label style="padding-left:6px;color:#777;"><i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
-                                    <select name="tenant_id" class="data-input form-control" data-field="tenant_id" required><option value="">-- Select Tenant --</option></select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-building me-2 text-info"></i>Legal Name <span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <select name="legal_name_id" class="data-input form-control" data-field="legal_name_id" required><option value="">-- Select Legal Name --</option></select>
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_id" required></input>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label style="padding-left:6px;color:#777;"><i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
-                                    <select name="space_id" class="data-input form-control" data-field="space_id" required><option value="">-- Select Room / Space --</option></select>
+                                    <select name="space" class="data-input form-control" data-field="space_id" required><option value="">-- Select Room / Space --</option></select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Phone Number</label>
                                 <div class="material-input outlined">
-                                    <select name="phone_id" class="data-input form-control" data-field="phone_id"><option value="">-- Select Phone Number --</option></select>
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_id"></input>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-1 mt-1">
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Invoice Date <span class="text-danger">*</span></label>
-                                <input type="date" name="invoice_date" class="form-control data-input" required>
+                                <input type="text" data-type="date" name="invoice_date" class="form-control data-input" required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
-                                <input type="date" name="due_date" class="form-control data-input" required>
+                                <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
                             </div>
                             <div class="col-md-3">
                                 <label style="padding-left:6px;color:#777;"><i class="fas fa-coins me-2 text-warning"></i>Currency <span class="text-danger">*</span></label>
@@ -658,15 +651,46 @@ const InvoiceDialog = (() => {
             `,
 
             contentCreated: (me) => {
-                const tbody = document.getElementById('invoice_items_tbody');
-                renderItemsTable(tbody);
+                me.searchTenant = VSSearchInput.init(me.controls.tenant,{
+                    type: 'select',
+                    prefetch: true,
+                    query:{
+                        from: 'tenants',
+                        select: ['id', 'name', 'legal_name','email','phone_number'],
+                        searchFields: { name: 'LIKE', legal_name: 'like', email: '=', phone:'='}
+                    },
+                    columns:{
+                        name: "Name",
+                        // legal_name: "Legal Name",
+                        // email: "Email",
+                        phone_number: "Phone"
+                    },
+                    onSelect:(selectedTenant)=>{
+                        const p = {tenant_id: selectedTenant.id};
+                        vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, p,{}).then (res=>{
+                            console.log("123",res);
+                            const d = res.data;
+                            const tenant = d.tenant;
+                            const items = d.spaces;
 
-                ['btnQuickRent','btnQuickUtilities','btnQuickServices','btnQuickCustom'].forEach(btnId => {
-                    const btn = me.divModal.querySelector(`#${btnId}`);
-                    if (btn) btn.onclick = () => handleQuickAction(btnId.replace('btnQuick','').toLowerCase());
+                            //me.controls.phone_number.value= tenant.phone_number;
+                            me.setReadOnlyByName(true,['phone_number','email'],{phone_number:tenant.phone_number});
+                            VSUtil.setComboItems(me.controls.space, items, 'id','space_code','','select-space','' );
+
+                        });
+
+                    }
                 });
 
-                if (op.id && me.detail?.items) {
+                 me.searchTenant.reset('');
+                // invoiceItems = [];
+
+                const tbody = document.getElementById('invoice_items_tbody');
+
+                // ✅ Edit mode only: load existing items from the saved invoice
+                // Fixed bug: was "me.detail.length > 0" (undefined on object)
+                //            → now uses Array.isArray check on items array
+                if (op.id && Array.isArray(me.detail?.items) && me.detail.items.length > 0) {
                     invoiceItems = me.detail.items.map(item => ({
                         service_id:  item.service_id  || null,
                         type:        item.type         || '—',
@@ -676,24 +700,33 @@ const InvoiceDialog = (() => {
                         tax:         parseFloat(item.tax      || 0),
                         notes:       item.notes        || ''
                     }));
-                    renderItemsTable(tbody);
                 }
+
+                renderItemsTable(tbody);
+
+                ['btnQuickRent','btnQuickUtilities','btnQuickServices','btnQuickCustom'].forEach(btnId => {
+                    const btn = me.divModal.querySelector(`#${btnId}`);
+                    if (btn) btn.onclick = () => handleQuickAction(btnId.replace('btnQuick','').toLowerCase());
+                });
             },
 
-            configSelect: [
-                {
-                    name: "tenant_id", data: "tenants", textField: "tenant", valueField: "id",
-                    dependents: [
-                        { name: "space_id",      itemsLoaded: (me) => { me.controls.space_id.value      = me.detail?.space_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "space_code",        valueField: "id" },
-                        { name: "phone_id",      itemsLoaded: (me) => { me.controls.phone_id.value      = me.detail?.phone_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "tenant_phone",      valueField: "id" },
-                        { name: "legal_name_id", itemsLoaded: (me) => { me.controls.legal_name_id.value = me.detail?.legal_name_id || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "tenant_legal_name", valueField: "id" },
-                    ]
-                },
-            ],
+            // configSelect: [
+            //     {
+            //         name: "tenant_id", data: "tenants", textField: "tenant", valueField: "id",
+            //         dependents: [
+            //             { name: "space_id",      itemsLoaded: (me) => { me.controls.space_id.value      = me.detail?.space_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "space_code",        valueField: "id" },
+            //             { name: "phone_id",      itemsLoaded: (me) => { me.controls.phone_id.value      = me.detail?.phone_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "tenant_phone",      valueField: "id" },
+            //         ]
+            //     },
+            // ],
 
             onPrepareForm: (me, data) => {
-                me.detail         = data.invoice_details;
+                // ✅ Always reset invoiceItems here — this fires after the API responds.
+                // create mode: data.invoice_details is null  → invoiceItems stays []
+                // edit mode:   data.invoice_details has data → items loaded in contentCreated
+                invoiceItems      = [];
                 availableServices = data.services || [];
+                me.detail         = op.id ? (data.invoice_details || {}) : {};
             },
 
             prepareFormOptions: {

@@ -447,7 +447,7 @@ const ContractDialog = (() => {
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
                             <input name="tenant" class="data-input form-control" data-field="tenant_id">
-                       <!--       <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>-->
+                       <!--       <select name="c" class="data-input form-control" data-field="tenant_id"> </select>-->
                             </div>
                         </div>
                         <div class="col-6">
@@ -563,7 +563,7 @@ const ContractDialog = (() => {
                 // header.appendChild(headerWrapper);
 
 
-                // //Transform input into select, if me.controls.tenant_id is an <input>, not <select>
+                //Transform input into select, if me.controls.tenant_id is an <input>, not <select>
                 //   me.selectTenant = VSSearchInput.init(me.controls.tenant_id,{
                 //         //type:'select',
                 //         query:{
