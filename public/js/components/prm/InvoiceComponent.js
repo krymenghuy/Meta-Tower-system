@@ -145,70 +145,89 @@ var InvoiceComponent = (() => {
         const currency   = mThis.currency_symbol;
         const statusName = invoice.payment_status_name || '—';
         const statusCls  = statusName.toLowerCase() === 'paid'          ? 'bg-success'
-                         : statusName.toLowerCase() === 'unpaid'        ? 'bg-danger'
-                         : statusName.toLowerCase().includes('partial') ? 'bg-warning text-dark'
-                         : 'bg-secondary';
+                        : statusName.toLowerCase() === 'unpaid'        ? 'bg-danger'
+                        : statusName.toLowerCase().includes('partial') ? 'bg-warning text-dark'
+                        : 'bg-secondary';
 
         let itemsHtml = '', subtotal = 0, totalDiscount = 0, totalTax = 0;
 
         if (items.length > 0) {
             items.forEach(item => {
-                const amount = Number(item.amount || 0), discount = Number(item.discount || 0), tax = Number(item.tax || 0);
-                subtotal += amount; totalDiscount += discount; totalTax += tax;
+                const amount   = Number(item.amount   || 0);
+                const discount = Number(item.discount || 0);
+                const tax      = Number(item.tax      || 0);
+                subtotal      += amount;
+                totalDiscount += discount;
+                totalTax      += tax;
+
+                // FIX: was item.service_type || item.service which don't exist.
+                // Backend returns: ii.type (saved value) and s.name as service_name (joined fallback)
+                const typeName = item.type || item.service_name || '—';
+
                 itemsHtml += `
                     <tr>
-                        <td><div class="fw-semibold">${item.description || '—'}</div>
-                            ${item.notes ? `<small class="text-muted">${item.notes}</small>` : ''}</td>
-                        <td class="text-end">${currency}${amount.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                        <td class="text-end text-danger">-${currency}${discount.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                        <td class="text-end text-info">${currency}${tax.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                        <td class="text-end fw-bold">${currency}${(amount-discount+tax).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                        <td>
+                            <div class="fw-semibold">${item.description || '—'}</div>
+                            ${item.notes ? `<small class="text-muted">${item.notes}</small>` : ''}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">${typeName}</span>
+                        </td>
+                        <td class="text-end">${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end text-danger">-${currency}${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end text-info">${currency}${tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end fw-bold">${currency}${(amount - discount + tax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                     </tr>`;
             });
         } else {
-            itemsHtml = `<tr><td colspan="5" class="text-center text-muted">No items found</td></tr>`;
+            itemsHtml = `<tr><td colspan="6" class="text-center text-muted py-3">No items found</td></tr>`;
         }
+
         const grandTotal = subtotal - totalDiscount + totalTax;
 
         container.innerHTML = `
-            <div class="bg-white rounded p-3">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <table class="table table-sm table-borderless">
-                            <tr><td class="text-muted fw-semibold" width="140">Invoice No:</td><td class="fw-bold text-primary">${invoice.code || '—'}</td></tr>
-                            <tr><td class="text-muted fw-semibold">Tenant:</td><td>${invoice.tenant_name || '—'}</td></tr>
-                            <tr><td class="text-muted fw-semibold">Space Code:</td><td>${invoice.space_code || '—'}</td></tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-sm table-borderless">
-                            <tr><td class="text-muted fw-semibold" width="140">Invoice Date:</td><td>${invoice.invoice_date || '—'}</td></tr>
-                            <tr><td class="text-muted fw-semibold">Due Date:</td><td class="text-danger fw-semibold">${invoice.due_date || '—'}</td></tr>
-                            <tr><td class="text-muted fw-semibold">Status:</td><td><span class="badge ${statusCls}">${statusName}</span></td></tr>
-                            <tr><td class="text-muted fw-semibold">Currency:</td><td>${invoice.currency_code || '—'}</td></tr>
-                        </table>
-                    </div>
-                </div>
+            <div class="bg-white rounded p-1">
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered mb-0">
                         <thead style="background-color:#f0f4ff;">
-                            <tr><th>Description</th><th class="text-end" width="130">Amount</th><th class="text-end" width="130">Discount</th><th class="text-end" width="130">Tax</th><th class="text-end" width="130">Net Amount</th></tr>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center" width="120">Type</th>
+                                <th class="text-end"    width="130">Amount</th>
+                                <th class="text-end"    width="130">Discount</th>
+                                <th class="text-end"    width="100">Tax</th>
+                                <th class="text-end"    width="130">Net Amount</th>
+                            </tr>
                         </thead>
                         <tbody>${itemsHtml}</tbody>
                         <tfoot class="table-light">
                             <tr>
-                                <td class="text-end fw-bold">Subtotal</td>
-                                <td class="text-end fw-bold">${currency}${subtotal.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                                <td class="text-end fw-bold text-danger">-${currency}${totalDiscount.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                                <td class="text-end fw-bold text-info">${currency}${totalTax.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                                <td class="text-end fw-bold fs-6 text-success">${currency}${grandTotal.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                                <td colspan="2" class="text-end fw-bold">Subtotal</td>
+                                <td class="text-end fw-bold">
+                                    ${currency}${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold text-danger">
+                                    -${currency}${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold text-info">
+                                    ${currency}${totalTax.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold fs-6 text-success">
+                                    ${currency}${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-                ${invoice.remarks ? `<div class="mt-3 p-2 bg-light rounded"><small class="text-muted fw-semibold">Remarks:</small><p class="mb-0 small">${invoice.remarks}</p></div>` : ''}
+                ${invoice.remarks ? `
+                    <div class="mt-3 p-2 bg-light rounded">
+                        <small class="text-muted fw-semibold">Remarks:</small>
+                        <p class="mb-0 small">${invoice.remarks}</p>
+                    </div>` : ''}
                 <div class="text-end mt-3">
-                    <button class="btn btn-sm btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer me-1"></i> Print Invoice</button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Print Invoice
+                    </button>
                 </div>
             </div>`;
     };
@@ -430,7 +449,6 @@ const InvoiceDialog = (() => {
                     '-- Select Service --'
                 );
 
-                // Always overwrite description & amount when service changes
                 serviceSelect.onchange = (e) => {
                     const serviceId = e.target.value;
                     if (!serviceId) {
@@ -524,11 +542,10 @@ const InvoiceDialog = (() => {
         const tbody = document.getElementById('invoice_items_tbody');
         if (!tbody) return;
 
-        // If the add-item form is currently open, close it by resetting the table
         const existingAddRow = document.getElementById('add_item_row');
         const formIsOpen = existingAddRow && existingAddRow.querySelector('#new_item_service');
         if (formIsOpen) {
-            renderItemsTable(tbody);  // restores the "+ Add Item" button row
+            renderItemsTable(tbody);
         }
 
         const typeMap = { rent: 'rent', utilities: 'utilit', custom: null, services: null };
@@ -541,7 +558,6 @@ const InvoiceDialog = (() => {
             if (match) prefillId = match.id;
         }
 
-        // Delay so renderItemsTable DOM changes settle before injecting the new form
         setTimeout(() => showAddItemForm(tbody, prefillId), 0);
     };
 
@@ -584,15 +600,17 @@ const InvoiceDialog = (() => {
                             <div class="col-md-3">
                                 <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Phone Number</label>
                                 <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control" data-field="phone_id"></input>
+                                    <input name="phone_number" class="data-input form-control"></input>
+                                </div>
+                            </div>
+                             <div class="col-md-3">
+                                <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Email</label>
+                                <div class="material-input outlined">
+                                    <input name="email" class="data-input form-control"></input>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-1 mt-1">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Invoice Date <span class="text-danger">*</span></label>
-                                <input type="text" data-type="date" name="invoice_date" class="form-control data-input" required>
-                            </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
                                 <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
@@ -661,47 +679,25 @@ const InvoiceDialog = (() => {
                     },
                     columns:{
                         name: "Name",
-                        // legal_name: "Legal Name",
-                        // email: "Email",
                         phone_number: "Phone"
                     },
                     onSelect:(selectedTenant)=>{
+                        me._selectedTenantId = selectedTenant.id;
                         const p = {tenant_id: selectedTenant.id};
                         vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, p,{}).then (res=>{
-                            console.log("123",res);
                             const d = res.data;
                             const tenant = d.tenant;
                             const items = d.spaces;
-
-                            //me.controls.phone_number.value= tenant.phone_number;
-                            me.setReadOnlyByName(true,['phone_number','email'],{phone_number:tenant.phone_number});
+                            me.setReadOnlyByName(true,['phone_number','email'],{phone_number:tenant.phone_number, email:tenant.email});
                             VSUtil.setComboItems(me.controls.space, items, 'id','space_code','','select-space','' );
-
                         });
-
                     }
                 });
 
-                 me.searchTenant.reset('');
-                // invoiceItems = [];
+                me.searchTenant.reset('');
 
+                // Do NOT load items here — onPrepareForm fires AFTER and has the real data
                 const tbody = document.getElementById('invoice_items_tbody');
-
-                // ✅ Edit mode only: load existing items from the saved invoice
-                // Fixed bug: was "me.detail.length > 0" (undefined on object)
-                //            → now uses Array.isArray check on items array
-                if (op.id && Array.isArray(me.detail?.items) && me.detail.items.length > 0) {
-                    invoiceItems = me.detail.items.map(item => ({
-                        service_id:  item.service_id  || null,
-                        type:        item.type         || '—',
-                        description: item.description  || '',
-                        amount:      parseFloat(item.amount   || 0),
-                        discount:    parseFloat(item.discount || 0),
-                        tax:         parseFloat(item.tax      || 0),
-                        notes:       item.notes        || ''
-                    }));
-                }
-
                 renderItemsTable(tbody);
 
                 ['btnQuickRent','btnQuickUtilities','btnQuickServices','btnQuickCustom'].forEach(btnId => {
@@ -710,23 +706,28 @@ const InvoiceDialog = (() => {
                 });
             },
 
-            // configSelect: [
-            //     {
-            //         name: "tenant_id", data: "tenants", textField: "tenant", valueField: "id",
-            //         dependents: [
-            //             { name: "space_id",      itemsLoaded: (me) => { me.controls.space_id.value      = me.detail?.space_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "space_code",        valueField: "id" },
-            //             { name: "phone_id",      itemsLoaded: (me) => { me.controls.phone_id.value      = me.detail?.phone_id      || ''; }, api: { endpoint: `${main_view.base_url}/prm/tenant/options-tenant-info` }, textField: "tenant_phone",      valueField: "id" },
-            //         ]
-            //     },
-            // ],
-
             onPrepareForm: (me, data) => {
-                // ✅ Always reset invoiceItems here — this fires after the API responds.
-                // create mode: data.invoice_details is null  → invoiceItems stays []
-                // edit mode:   data.invoice_details has data → items loaded in contentCreated
-                invoiceItems      = [];
                 availableServices = data.services || [];
                 me.detail         = op.id ? (data.invoice_details || {}) : {};
+
+                if (op.id && Array.isArray(me.detail?.items) && me.detail.items.length > 0) {
+                    // Edit mode: load existing items, use type then service_name as fallback
+                    invoiceItems = me.detail.items.map(item => ({
+                        service_id:  item.service_id  || null,
+                        // FIX: use item.type first, then item.service_name (joined from backend) as fallback
+                        type:        item.type || item.service_name || '—',
+                        description: item.description  || '',
+                        amount:      parseFloat(item.amount   || 0),
+                        discount:    parseFloat(item.discount || 0),
+                        tax:         parseFloat(item.tax      || 0),
+                        notes:       item.notes        || ''
+                    }));
+                } else {
+                    invoiceItems = [];
+                }
+
+                const tbody = document.getElementById('invoice_items_tbody');
+                if (tbody) renderItemsTable(tbody);
             },
 
             prepareFormOptions: {
@@ -754,8 +755,11 @@ const InvoiceDialog = (() => {
                             return;
                         }
                         const formData = me.getData();
-                        formData.id    = me.dataOptions.id;
-                        formData.items = invoiceItems;
+
+                        formData.id        = me.dataOptions.id;
+                        formData.items     = invoiceItems;
+                        formData.tenant_id = me._selectedTenantId;
+
                         vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {

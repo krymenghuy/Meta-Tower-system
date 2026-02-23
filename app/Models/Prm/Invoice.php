@@ -31,16 +31,14 @@ class Invoice extends VSModel
             'tenant_id'         => '1|integer|exists:tenants,id',
             'space_id'          => '1|integer|exists:building_spaces,id',
             'contract_id'       => '0|integer|exists:contracts,id',
-            'business_type_id' => '0|integer|exists:business_types,id',
-            'service_id'        => '0|number|exists=services.id',
-            'due_date'          => '1|date|after_or_equal:today',
-            'invoice_date'      => '0|date',
+            'business_type_id'  => '0|integer|exists:business_types,id',
+            'service_id'        => '0|integer|exists:services,id',
+            'due_date'          => '1|date',
             'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
             'purpose'           => '0|string|max:200',
             'remarks'           => '0|string|max:500',
-            'currency_code'     => '0|string|size:3',
+            'currency_code'     => '0|string|max:10',
             'items'             => '1|array|min:1',
-
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang ?? 'en', 0, null);
@@ -50,11 +48,9 @@ class Invoice extends VSModel
 
         $inputs = $res->values;
 
-        // Pull items from original $arr (not from validated inputs)
         $items = $arr['items'] ?? [];
         unset($inputs['items']);
 
-        // Validate items manually
         if (empty($items)) {
             return DV::error('Please add at least one item.');
         }
@@ -68,7 +64,6 @@ class Invoice extends VSModel
             }
         }
 
-        // Calculate totals from items
         $subtotal = $total_disc = $total_tax = 0;
         foreach ($items as $item) {
             $subtotal   += (float)($item['amount']   ?? 0);
@@ -77,6 +72,7 @@ class Invoice extends VSModel
         }
 
         $inputs['amount']     = $subtotal - $total_disc + $total_tax;
+        $inputs['branch_id']  = $branch_id;
         $inputs['updated_at'] = now();
 
         DB::beginTransaction();
@@ -89,7 +85,6 @@ class Invoice extends VSModel
                 throw new \Exception("Failed to save invoice header.");
             }
 
-            // Generate code on create
             $codeRes = null;
             if ($created && $branch_id) {
                 $codeRes = setOfficialCodeInvoice(
@@ -107,17 +102,16 @@ class Invoice extends VSModel
                 }
             }
 
-            // Clear old items on update
             if (!$created) {
                 DB::table('invoice_items')->where('invoice_id', $invoice_id)->delete();
             }
 
-            // Insert line items
             $itemRows = [];
             foreach ($items as $item) {
                 $itemRows[] = [
                     'invoice_id'  => $invoice_id,
                     'service_id'  => $item['service_id'] ?? null,
+                    'type'        => $item['type']        ?? null,
                     'description' => trim($item['description']),
                     'amount'      => (float)($item['amount']   ?? 0),
                     'discount'    => (float)($item['discount'] ?? 0),
@@ -148,7 +142,7 @@ class Invoice extends VSModel
         }
     }
 
-    public static function checkDuplicateSpaceId( $tenant_id, $invoice_id = null)
+    public static function checkDuplicateSpaceId($tenant_id, $invoice_id = null)
     {
         $query = DB::table('invoices as i')
             ->where('i.tenant_id', $tenant_id);
@@ -168,12 +162,12 @@ class Invoice extends VSModel
         $skip         = ($current_page - 1) * $per_page;
 
         $query = DB::table('invoices as i')
-            ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
-            ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
-            ->leftJoin('business_types as bt', 'bt.id', '=', 'i.business_type_id')
-            ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
-            ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
-            ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
+            ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
+            ->leftJoin('services as s',          's.id',  '=', 'i.service_id')
+            ->leftJoin('business_types as bt',  'bt.id',  '=', 'i.business_type_id')
+            ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
+            ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
+            ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
             ->select([
                 'i.id',
                 'i.code',
@@ -183,7 +177,6 @@ class Invoice extends VSModel
                 'i.paid_amount',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.due_date',
-                'i.invoice_date',
                 'i.created_at',
                 'i.updated_at',
                 'i.update_user',
@@ -219,9 +212,9 @@ class Invoice extends VSModel
         if (!empty($d->search_value)) {
             $search = '%' . $d->search_value . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('i.code',      'like', $search)
-                  ->orWhere('t.name',    'like', $search)
-                  ->orWhere('bs.code',   'like', $search);
+                $q->where('i.code',    'like', $search)
+                  ->orWhere('t.name',  'like', $search)
+                  ->orWhere('bs.code', 'like', $search);
             });
         }
 
@@ -234,12 +227,12 @@ class Invoice extends VSModel
     public static function getInvoiceDetails($id)
     {
         $header = DB::table('invoices as i')
-            ->leftJoin('tenants as t',          't.id',  '=', 'i.tenant_id')
-            ->leftJoin('services as s',         's.id',  '=', 'i.service_id')
-            ->leftJoin('payment_statuses as ps','ps.id', '=', 'i.payment_status_id')
-            ->leftJoin('contracts as ct',       'ct.id', '=', 'i.contract_id')
-            ->leftJoin('building_spaces as bs', 'bs.id', '=', 'i.space_id')
-            ->leftJoin('business_types as bt', 'bt.id', '=', 'i.business_type_id')
+            ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
+            ->leftJoin('services as s',          's.id',  '=', 'i.service_id')
+            ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
+            ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
+            ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
+            ->leftJoin('business_types as bt',   'bt.id', '=', 'i.business_type_id')
             ->where('i.id', $id)
             ->select(
                 'i.id',
@@ -250,7 +243,6 @@ class Invoice extends VSModel
                 'i.paid_amount',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
                 'i.due_date',
-                'i.invoice_date',
                 'i.created_at',
                 'i.updated_at',
                 'i.payment_status_id',
@@ -280,9 +272,22 @@ class Invoice extends VSModel
             return null;
         }
 
-        // Attach line items
-        $header->items = DB::table('invoice_items')
-            ->where('invoice_id', $id)
+        // FIX: add leftJoin to services so service_name is returned as type fallback
+        $header->items = DB::table('invoice_items as ii')
+            ->leftJoin('services as s', 's.id', '=', 'ii.service_id')
+            ->where('ii.invoice_id', $id)
+            ->select(
+                'ii.id',
+                'ii.invoice_id',
+                'ii.service_id',
+                'ii.type',
+                'ii.description',
+                'ii.amount',
+                'ii.discount',
+                'ii.tax',
+                'ii.notes',
+                's.name as service_name',  // FIX: returned so frontend can use as fallback when type is NULL
+            )
             ->get();
 
         return $header;
@@ -296,7 +301,7 @@ class Invoice extends VSModel
             'statuses'        => GeneralSettings::options_payment_status($ss),
             'tenants'         => GeneralSettings::options_tenant_with_active_contract($ss),
             'services'        => GeneralSettings::options_service($ss),
-            'business_types' => GeneralSettings::options_business_type($ss),
+            'business_types'  => GeneralSettings::options_business_type($ss),
         ];
     }
 
