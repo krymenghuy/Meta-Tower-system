@@ -6,14 +6,11 @@ var ReservationComponent = new (function () {
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_reservation_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnSpace");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_space");
-    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
     mThis.elFloor = mThis.self.querySelector('#floor_id');
-    mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_space");
-    let div = mThis.self.querySelector("#_space_list");
+    mThis.elSearch = mThis.self.querySelector("#_search_reservation");
 
-    mThis.divSummary = mThis.self.querySelector('#_reservation_div_summary');
+    mThis.divSummary = mThis.self.querySelector('#_reservation_list');
     
     // Data
     mThis.buildings = [
@@ -123,14 +120,14 @@ var ReservationComponent = new (function () {
         });
     };
 
-    mThis.setDataSummary = () => {
+    mThis.setDataList = () => {
         let html = `
-            <div class="container-fluid px-0">
+            <div class="container-fluid">
                 <div class="row gy-1 mt-3  grid-template-columns-300px-1fr gap-1.5rem align-items-start"> 
                     <!-- Sidebar Column -->
-                    <div class="col-3 d-flex flex-column gap-1.25rem position-relative " style=" height: 500px;" >
+                    <div class="col-3 d-flex flex-column gap-1.25rem position-relative " style=" height: 900px;" >
                         <!-- Buildings Filter -->
-                        <div class="room-card card" style="background: white;overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
+                        <div class="room-card cards" style="background: white;overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
                             <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; color: #1a1647;">
                                 <i class="fa-solid fa-location-dot me-2"></i>
                                 Meeting Rooms
@@ -139,7 +136,7 @@ var ReservationComponent = new (function () {
                         </div>
 
                         <!-- Upcoming Reservations -->
-                        <div class="room-card card" style="background: white; overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
+                        <div class="room-card cards" style="background: white; overflow-y: auto; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(184, 134, 111, 0.08);">
                             <h3 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; color: #1a1647;">
                                 <i class="fa-solid fa-clock me-2"></i>
                                 Upcoming
@@ -557,7 +554,7 @@ var ReservationComponent = new (function () {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.setDataSummary();
+            mThis.setDataList();
             mThis.renderAll();
         });
     };
@@ -578,77 +575,74 @@ const ReservationDialog = (() => {
                 return `
                     <div class="row g-3">
                         <div class="col-12">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;" for="building_select">
-                                Building <span class="text-danger">*</span>
-                            </label>
+                            <label style="padding-left:6px;">Meeting Room Name</label>
                             <div class="material-input outlined">
-                                <select name="building_select" class="data-input form-control" data-field="building_id" required
-                                        style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;">
-                                    <option value="">Select a building</option>
+                                <input type="text" name="name" required class="data-input form-control" data-field="amenity_name" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;">Category</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="category" required class="data-input form-control" data-field="category" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;">Floor</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="floor" required class="data-input form-control" data-field="floor" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="padding-left:6px;">Location Detail</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="location" required class="data-input form-control" data-field="location_detail" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="padding-left:6px;">Description</label>
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;" for="access_level">Access Level</label>
+                            <div class="material-input outlined">
+                                <select name ="access_level" class="data-input form-control" data-field="access_level" placeholder=" ">
+                                    <option value="All Tenants">All Tenants</option>
+                                    <option value="Management Only">Management Only</option>
+                                    <option value="Staff Only">Staff Only</option>
+                                    <option value="Admin Only">Admin Only</option>
                                 </select>
                             </div>
                         </div>
-
+                        <div class="col-6">
+                            <label style="padding-left:6px;">Max Capacity</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;" for ="requires_booking">Requires Booking</label>
+                            <div class="material-input outlined">
+                                <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>    
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;" for="is_available">Available</label>
+                            <div class="material-input outlined">
+                                <select name="available" class="data-input form-control" data-field="is_available" placeholder=" ">
+                                    <option value="1">Available</option>
+                                    <option value="0">Unavailable</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;" for="date">
-                                Date <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="date" name="date" class="data-input form-control" data-field="date" required
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;">
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;">
-                                Start Time <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="time" class="data-input form-control" data-field="start_time" required 
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;" />
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;">
-                                End Time <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="time" class="data-input form-control" data-field="end_time" required 
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;" />
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;">
-                                Renter Name <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="text" class="data-input form-control" data-field="renter_name" 
-                                       placeholder="Enter renter name" required 
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;" />
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;">
-                                Event Type <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="text" class="data-input form-control" data-field="event" 
-                                       placeholder="e.g., Wedding, Conference, Workshop" required 
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;" />
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label style="padding-left:6px; color: #1a1647; font-weight: 500;">
-                                Expected Attendees <span class="text-danger">*</span>
-                            </label>
-                            <div class="material-input outlined">
-                                <input type="number" class="data-input form-control" data-field="attendees" 
-                                       min="1" placeholder="Number of attendees" required 
-                                       style="border: 2px solid #e8dfd7; border-radius: 8px; padding: 0.75rem;" />
+                            <div class="d-none material-input outlined">
+                                <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
+                                <label>Status ID</label>
                             </div>
                         </div>
                     </div>`;

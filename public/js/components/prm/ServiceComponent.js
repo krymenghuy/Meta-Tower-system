@@ -265,10 +265,9 @@ var ServiceComponent =   ( () => {
                 cv_interact.error(res.error_message);
             }
         });
-    }
-    function formatStatus (item){
-        return `<span class="badge text-black" >${item.name}</span>`;
-    }
+    };
+    
+    
     mThis.changeStatus = (id, link) =>{
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
@@ -297,7 +296,7 @@ var ServiceComponent =   ( () => {
                             mThis.ServiceListView.showPage(mThis.getFilterData());
                         }else{
                             me.setError(res.error_message || 'Unable to update status');
-                            c//v_interact.error(res.error_message || 'Unable to update status');
+                            //cv_interact.error(res.error_message || 'Unable to update status');
                         }
                     });
             }
@@ -375,7 +374,7 @@ const CreateServiceDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                             <div class="col-12">
+                            <div class="col-12">
                                 <div class="d-none material-input outlined">
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
