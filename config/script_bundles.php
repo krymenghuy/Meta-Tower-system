@@ -129,6 +129,7 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
+                'js/components/prm/AmenityComponent.js',
                 
 
 
@@ -163,6 +164,7 @@ return [
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
+                
 
 
             ]
@@ -231,7 +233,7 @@ return [
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-          
+
                 '/assets/js/xlsx/xlsx.full.min.js',
                 '/js/components/umt/FindUserDialog.js',
                 '/js/components/umt/ChangeRoleDialog.js',

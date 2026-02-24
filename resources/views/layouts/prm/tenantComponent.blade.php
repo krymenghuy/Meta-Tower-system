@@ -4,9 +4,9 @@
             <div class="row g-3 align-items-center">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="form-control rounded-2 pe-5 filter-field" id="_search_tenant_" placeholder="Search">
-                        <i class="fa fa-search fs-6 text-muted position-absolute"
-                            style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                        <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_tenant_" placeholder="Search">
+                        {{-- <i class="fa fa-search fs-6 text-muted position-absolute"
+                            style="right: 15px; top: 50%; transform: translateY(-50%);"></i> --}}
                     </div>
                 </div>
                  <div class="col-12 col-md-6 col-lg-2">
@@ -64,7 +64,7 @@
 
         <div class="mt-3 mb-5" style="max-height: 600px;" id="sub_view_profile">
             <div id="profile_info_tenant">
-               
+
             </div>
 
         </div>
@@ -87,7 +87,7 @@
         border: none;
         align-items: center;
         /* background-color: #fff; */
-        background: 
+        background:
         /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
         url('../assets/images/default/bg_card7.jpg');
         background-size: cover;
@@ -95,7 +95,7 @@
     }
 
     .card-body {
-    /* background: 
+    /* background:
         /* linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), */
         url('../assets/images/default/bg-card1.jpg'); */
     /* background-size: cover; */
@@ -118,7 +118,7 @@
 
     }
 
-    
+
 
 
 </style>

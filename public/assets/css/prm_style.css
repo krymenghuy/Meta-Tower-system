@@ -17,20 +17,18 @@
     color: #ffffff;
     background: linear-gradient(135deg, #1A1647 0%, #3c2fa3 100%);
     border-radius: 6px;
-    margin-top: 3px;
+    margin-top: 1px;
     cursor: pointer;
     border: none;
     text-decoration: none;
 
 } */
-.btnAddNewPrm {
+/* .btnAddNewPrm {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #1a1647;
-   /* background: linear-gradient(89deg, #3c2fa3 0%, #1a1647 100%); */
     color: #ffffff;
-    /* border-bottom: 3px solid #fff; */
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
     padding: 0.55rem 1.5rem;
     border-radius: 6px;
@@ -38,15 +36,151 @@
     cursor: pointer;
     border: none;
 
-}
+} */
 
-.btnAddNewPrm:hover {
+/* .btnAddNewPrm:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(106, 94, 94, 0.2);
+} */
+
+/*
+.btnAddNewPrm i {
+    font-size: 1.1rem;
+} */
+
+
+
+
+/* ✅ Fix 1: parent column must not clip the button */
+.col-12.col-md-3.col-lg-2 {
+    overflow: visible !important;
 }
+
+.btnAddNewPrm {
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #1a1647;
+    font-weight: 600;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    padding: 0.55rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.btnAddNewPrm:active {
+    transform: scale(0.96);
+}
+
+.btnAddNewPrm:before,
+.btnAddNewPrm:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.btnAddNewPrm:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size:
+        10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%,
+        10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size:
+            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.btnAddNewPrm:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size:
+        15% 15%, 20% 20%, 18% 18%, 20% 20%,
+        15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size:
+            0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+
+
+
 .btnAddNewPrm i {
     font-size: 1.1rem;
 }
+
+
 .form-control {
     width: 100%;
     height: calc(1.15em + 1.3rem + 2px);
@@ -319,45 +453,374 @@ a.menu-selected .kt-menu__link-text {
     background: none;
 }
 
-.choose--language {
-   background-color: #1a1647;
-   /* background: linear-gradient(135deg, #53c8ff 0%, #d491ff 100%); */
+/* .choose--language {
+   background-color: #36c1dd;
     padding: 8px 15px;
     border-radius: 6px;
     margin-left: 15px;
+} */
+
+
+.choose--language {
+    position: relative;
+    overflow: visible;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    color: #1a1647;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
+
+.choose--language:active {
+    transform: scale(0.96);
+}
+
+.choose--language:before,
+.choose--language:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.choose--language:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.choose--language:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+/*
+.nav--notification {
+    background-color: #c1e4eb;
+    width: 45px;
+    height: 40px;
+    padding: 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+} */
+
 
 .nav--notification {
-    background-color: #1a1647;
-    /* background: linear-gradient(135deg, #53c8ff 0%, #d491ff 100%); */
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
     width: 45px;
     height: 40px;
     padding: 0;
-    border-radius: 6px;
+    color: #1a1647;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 15px;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
+
+.nav--notification:active {
+    transform: scale(0.96);
+}
+
+.nav--notification:before,
+.nav--notification:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.nav--notification:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.nav--notification:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
 
 .number--notification {
-    color: #f00;
+    color: #fff;
+    background-color: #f00;
     position: absolute;
-    top: 5px;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 4px;
+    box-shadow: 0 0 0 2px #fff; /* ✅ white ring so it stands out */
 }
 
+
+
 .app--list {
-    background-color: #1a1647;
-    /* background: linear-gradient(135deg, #53c8ff 0%, #d491ff 100%); */
-    padding: 0;
+    position: relative;
+    overflow: visible;
+    border-radius: 6px;
+    border: 1px solid transparent;
     width: 45px;
     height: 40px;
-    border-radius: 6px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 15px;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
+
+.app--list:active {
+    transform: scale(0.96);
+}
+
+.app--list:before,
+.app--list:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.app--list:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.9s ease;
+}
+
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.app--list:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.9s ease;
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
 
 /* add selet demo item  button  */
 .button-select-enhanced {
@@ -376,7 +839,8 @@ a.menu-selected .kt-menu__link-text {
 
 .btn-list-enhanced {
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
+    background-clip: padding-box;
     border-radius: 8px;
     width: 48px;
     height: 40px;
@@ -445,6 +909,114 @@ a.menu-selected .kt-menu__link-text {
     padding: 8px 10px;
     border-radius: 6px;
     margin-left: 15px;
+}
+
+
+
+.user--info {
+    position: relative;
+    overflow: visible;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    color: #1a1647;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 15px;
+    z-index: 1;
+
+    background-image:
+        linear-gradient(#e1e5f2, #e1e5f2),
+        linear-gradient(135deg, #7c6af5, #e86af5, #f5a36a, #6af5c8);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.user--info:active {
+    transform: scale(0.96);
+}
+
+.user--info:before,
+.user--info:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.user--info:hover:before {
+    top: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 20%, #e1e5f2 20%, transparent 30%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+    0% {
+        background-position:
+            5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%,
+            25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    }
+    50% {
+        background-position:
+            0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%,
+            22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    }
+    100% {
+        background-position:
+            0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%,
+            22% 40%, 50% 40%, 65% 10%, 90% 20%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+}
+
+.user--info:hover::after {
+    bottom: -70%;
+    background-image:
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, #e1e5f2 15%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%),
+        radial-gradient(circle, #e1e5f2 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+    0% {
+        background-position:
+            10% -10%, 30% 10%, 55% -10%, 70% -10%,
+            85% -10%, 70% -10%, 70% 0%;
+    }
+    50% {
+        background-position:
+            0% 80%, 20% 80%, 45% 60%, 60% 100%,
+            75% 70%, 95% 60%, 105% 0%;
+    }
+    100% {
+        background-position:
+            0% 90%, 20% 90%, 45% 70%, 60% 110%,
+            75% 80%, 95% 70%, 110% 10%;
+        background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
 }
 
 .line--loader {
@@ -594,13 +1166,14 @@ a.menu-selected .kt-menu__link-text {
     margin: 6px 0;
     padding: 6px 15px;
     /* background: linear-gradient(135deg, #3b2e9f 0%, #f6d673 100%); */
-    background-color: #1a1647;
+    /* background-color: #1a1647; */
+        /* background-color: #fefefe; */
     border-radius: 6px;
-    color: #ffffff;
+    color: #0a0a0a;
 }
 
 .show--title .screen-title{
-    color:#FFFFFF;
+    color:#1a1647;;
     font-size: 1.5em ;
     font-weight: bold;
 }
@@ -1783,7 +2356,7 @@ input[data-select="_formpicker"].data-invoice::placeholder {
     margin: 0;
     list-style-type: none;
     display: flex;
-    column-gap: 3px;
+    column-gap: 1px;
 }
 
 .container-pagination > ul li a {
@@ -2028,8 +2601,8 @@ tr.row-selected td {
 }
 
 .table--white thead th {
-    color: #fff !important;
-    background-color:  #1A1647 !important;
+    color: #1A1647 !important;
+    background-color:  #e1e5f2 !important;
     font-size: 14px !important;
     padding: 10px !important;
 }

@@ -555,15 +555,15 @@ const BuildingDialog = (() => {
             },
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;

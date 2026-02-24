@@ -122,7 +122,7 @@
             "type": "vcs",
             "url": "https://github.com/vectorasoft-org/lib-script-manager.git"
         },
-        {
+          {
             "type": "vcs",
             "url": "https://github.com/vectorasoft-org/lib-xquery.git"
         }

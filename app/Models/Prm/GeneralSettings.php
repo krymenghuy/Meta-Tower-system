@@ -285,6 +285,10 @@ public static function options_tenant_with_active_contract($ss)
     static function options_service_status($ss){
         return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
     }
+    static function options_amenity_status($ss)
+    {
+        return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
+    }
     
     // public static function options_service_status($ss)
     // {
@@ -309,6 +313,10 @@ public static function options_tenant_with_active_contract($ss)
         }
         return $new_row;
     }
+
+    
+
+    
 
     static function options_task_type($ss){
         return DB::table('task_types')->selectRaw('id,title AS task_type_title')->get();

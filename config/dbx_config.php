@@ -93,7 +93,7 @@ return [
         'status_norm',
         'descriptive_name_norm',
     ],
-    
+
     'fuzzy_search'=>[
 
         /*

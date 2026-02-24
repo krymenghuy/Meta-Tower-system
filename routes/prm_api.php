@@ -16,6 +16,7 @@ use App\Http\Controllers\Prm\InvoiceController;
 use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
 use App\Http\Controllers\Prm\ReservationController;
+use App\Http\Controllers\Prm\AmenityController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -72,6 +73,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
     Route::post('/lease-history', [TenantController::class, 'getLeaseHistory']);
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
+    Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
 
 });
 
@@ -176,7 +178,25 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservations'
     Route::post('/details', [PaymentController::class, 'reservationDetails']);
     Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
     Route::post('/delete', [PaymentController::class, 'deleteReservation']);
-    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);
+    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);   
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->group(function () {
+    Route::post('/save', [AmenityController::class, 'saveAmenity']);
+    Route::post('/list-paginate', [AmenityController::class, 'getListPaginate']);
+    Route::post('/details', [AmenityController::class, 'amenityDetails']);
+    Route::post('/form-options', [AmenityController::class, 'getFormOptions']);
+    Route::post('/delete', [AmenityController::class, 'deleteAmenity']);
+    Route::post('/update-status', [AmenityController::class, 'updateAmenityStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {
+    Route::post('/save', [ReservationController::class, 'saveReservation']);
+    Route::post('/list-paginate', [ReservationController::class, 'getListPaginate']);
+    Route::post('/details', [ReservationController::class, 'reservationDetails']);
+    Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
+    Route::post('/delete', [ReservationController::class, 'deleteReservation']);
+    Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {
