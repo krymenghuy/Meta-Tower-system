@@ -12,6 +12,7 @@ class ContractController extends Controller
 {
     protected  $contracts;
 
+    
     public function __construct()
     {
         $this->contracts = new Contract();
@@ -38,7 +39,7 @@ class ContractController extends Controller
         return JDV::result($this->contracts->getListPaginate($req->all(), $ss));
     }
 
-    
+
     public function contractDetails(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
@@ -52,7 +53,7 @@ class ContractController extends Controller
 
         return JDV::result($this->contracts->contractDetails($req->id));
     }
-  
+
     public function getFormOptions(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);

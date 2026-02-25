@@ -18,27 +18,27 @@ var ServiceRequestComponent = (function () {
     mThis.columns = [
     { title: "", className: "align-middle text-capitalize" },
     {
-            title: "Request Num",
+            transTitle: "titles.Request Num",
             className: "align-middle text-start",
             data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
     },
     {
-        title: "Tenant",
+        transTitle: "titles.Tenant",
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>`
     },
     {
-        title: "Room Code",
+        transTitle: "titles.Room Code",
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
     },
     {
-        title: "Service",
+        transTitle: "titles.Service",
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
     },
     {
-        title: "Price",
+        transTitle: "titles.Price",
         className: "align-middle",
         data: (data) => {
             const cur = data.cur_symbol ?? '$';
@@ -63,13 +63,13 @@ var ServiceRequestComponent = (function () {
         }
     },
     {
-    title: "Description",
+    transTitle: "titles.Description",
     className: "align-middle",
     data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
     },
 
     {
-        title: "Status",
+        transTitle: "titles.Status",
         className: "align-middle",
         data: (data) => {
             const rawStatus = data.status_name || data.request_status_name || '';
@@ -94,7 +94,7 @@ var ServiceRequestComponent = (function () {
         },
     },
     {
-        title: "Updated By",
+        transTitle: "titles.Updated By",
         className: 'align-middle',
         data: (data) => `
             <div class="d-flex flex-column">
@@ -103,7 +103,7 @@ var ServiceRequestComponent = (function () {
             </div>`
     },
     {
-        title: "Action",
+        transTitle: "titles.Action",
         className: 'col_action align-middle',
         data: (data) => `
             <div class="d-flex justify-content-center align-items-end">
@@ -230,7 +230,7 @@ var ServiceRequestComponent = (function () {
     mThis.deleteRequest = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Service Request?', {
-            title: 'Delete Service Request',
+            transTitle: 'Delete Service Request',
             confirmButtonText: "Delete"
         }, (confirmed) => {
             if (confirmed) {
@@ -246,7 +246,7 @@ var ServiceRequestComponent = (function () {
             }
         });
     };
-  
+
       function formatStatus(item){
         return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
       }
@@ -257,7 +257,7 @@ var ServiceRequestComponent = (function () {
         const currentStatusId = tr?.dataset.statusId || "1";
 
         const options = {
-            title: 'Change Status',
+            transTitle: 'Change Status',
             cssClass: '',
             backdropClose: true,
             // type: 'select',
@@ -329,7 +329,7 @@ var ServiceRequestComponent = (function () {
 //                     <div class="col-12">
 //                         <div class="card bg-light">
 //                             <div class="card-body">
-//                                 <h6 class="card-title text-muted mb-3">Service Request Details</h6>
+//                                 <h6 class="card-transTitle text-muted mb-3">Service Request Details</h6>
 //                                 <div class="row g-2">
 //                                     <div class="col-md-6">
 //                                         <small class="text-muted">Tenant:</small>
@@ -479,9 +479,9 @@ var ServiceRequestComponent = (function () {
 //                 header.classList.add('bg-prm-custom', 'modal-header-custom');
 //                 header.parentElement.style.borderRadius = '20px';
 
-//                 const title = header.querySelector('.modal-title');
-//                 title.classList.add('text-white', 'text-center', 'w-100');
-//                 title.textContent = 'Generate Invoice';
+//                 const transTitle = header.querySelector('.modal-transTitle');
+//                 transTitle.classList.add('text-white', 'text-center', 'w-100');
+//                 transTitle.textContent = 'Generate Invoice';
 
 //                 const today = new Date().toISOString().split('T')[0];
 //                 me.controls.invoice_date.value = today;
@@ -644,19 +644,19 @@ var ServiceRequestComponent = (function () {
 //                     <div class="sr-info-card">
 //                         <div class="row g-3">
 //                             <div class="col-md-6">
-//                                 <div class="sr-info-title">Tenant</div>
+//                                 <div class="sr-info-transTitle">Tenant</div>
 //                                 <div class="sr-info-value" id="info-tenant">—</div>
 //                             </div>
 //                             <div class="col-md-6">
-//                                 <div class="sr-info-title">Room / Space</div>
+//                                 <div class="sr-info-transTitle">Room / Space</div>
 //                                 <div class="sr-info-value" id="info-space">—</div>
 //                             </div>
 //                             <div class="col-md-6">
-//                                 <div class="sr-info-title">Service</div>
+//                                 <div class="sr-info-transTitle">Service</div>
 //                                 <div class="sr-info-value" id="info-service">—</div>
 //                             </div>
 //                             <div class="col-md-6">
-//                                 <div class="sr-info-title">Service</div>
+//                                 <div class="sr-info-transTitle">Service</div>
 //                                 <div class="sr-info-value" id="info-price">—</div>
 //                             </div>
 //                         </div>
@@ -712,7 +712,7 @@ var ServiceRequestComponent = (function () {
 
 //                         <!-- Pricing Details Section -->
 //                         <hr class="section-divider">
-//                         <div class="section-title">Pricing Details</div>
+//                         <div class="section-transTitle">Pricing Details</div>
 
 //                         <div class="row g-3">
 //                             <!-- Billable Hours -->
@@ -824,8 +824,8 @@ var ServiceRequestComponent = (function () {
 //                 const closeBtn = header.querySelector('button.btn-close');
 //                 if (closeBtn) closeBtn.style.display = 'none';
 
-//                 const title = header.querySelector('.modal-title');
-//                 if (title) title.textContent = 'Create Invoice from Service Request';
+//                 const transTitle = header.querySelector('.modal-transTitle');
+//                 if (transTitle) transTitle.textContent = 'Create Invoice from Service Request';
 
 //                 // Store control references
 //                 me.controls = {

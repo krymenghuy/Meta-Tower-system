@@ -1,14 +1,23 @@
 "use strict";
 
-var InvoicesComponent = new (function () {
+var InvoicesComponent = (function () {
     const mThis = this;
     mThis.title_prop = " Invoice Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoices_component");
+    
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoices");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoices");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_invoices");
+
+    bindElements(map) {
+    const root = this.self;
+
+    Object.entries(map).forEach(([key, selector]) => {
+        this[key] = root.querySelector(selector);
+    });
+    }
 
      mThis.cols = [
 
