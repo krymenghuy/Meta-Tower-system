@@ -10,15 +10,7 @@ var InvoicesComponent = (function () {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoices");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
     mThis.elSearch = mThis.self.querySelector("#_search_invoices");
-
-    bindElements(map) {
-    const root = this.self;
-
-    Object.entries(map).forEach(([key, selector]) => {
-        this[key] = root.querySelector(selector);
-    });
-    }
-
+  
      mThis.cols = [
 
         {
@@ -552,11 +544,6 @@ const InvoicesDialog = (() => {
 
     return self;
 })();
-
-
-
-
-
 
 
 
