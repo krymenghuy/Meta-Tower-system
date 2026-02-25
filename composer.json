@@ -24,7 +24,7 @@
         "phpoffice/phpword": "^1.3",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7",
-        "vsd/dbx": "*",
+        "vsd/dbx": "dev-main",
         "vsd/localization": "*",
         "vsd/money": "*",
         "vsd/response": "*",
