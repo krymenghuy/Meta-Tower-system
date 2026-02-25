@@ -93,7 +93,6 @@ return [
         'status_norm',
         'descriptive_name_norm',
     ],
-    
     'fuzzy_search'=>[
 
         /*
@@ -125,17 +124,11 @@ return [
         |
         */
         'normalized_columns'=>[
-            'package'=>[
-                 '_search_packge'=>['qr_code','receiver_phone'],
-            ],
-            'driver'=>[
-                '_search_driver'=>['code','name','name_kh','phone_number','email'],
-            ],
-             'sender'=>[
-                '_search_sender'=>['code','name','name_kh','phone_number','email'],
+            'tenants'=>[
+                 '_search_tenant'=>['code','name','legal_name','phone_number','email'],
             ],
             'um_app_modules'=>[
-                '_search_name'=>['name','code']
+                '_search_module'=>['name','code']
             ],
         ],
         'columns'=>[

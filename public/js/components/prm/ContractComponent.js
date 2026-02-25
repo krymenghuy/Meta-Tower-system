@@ -20,7 +20,7 @@ var ContractComponent = new (function () {
             title: "",
             className: "align-middle",
         },
-       
+
 
 
         // {
@@ -34,10 +34,10 @@ var ContractComponent = new (function () {
 
         //         if (status === 'active') {
         //             cls = 'badge text-success bg-success-subtle border border-success';
-        //         } 
+        //         }
         //         else if (status === 'expired') {
         //             cls = 'badge text-dark bg-danger-subtle border border-danger';
-        //         } 
+        //         }
         //         else if (status === 'terminated') {
         //             cls = 'badge text-danger bg-danger-subtle border border-danger';
         //         }
@@ -137,7 +137,7 @@ var ContractComponent = new (function () {
                 `;
             }
         },
-       
+
         {
             title: "remark",
             className: "align-middle text-nowrap text-capitalize",
@@ -164,12 +164,12 @@ var ContractComponent = new (function () {
                     cls  = 'badge rounded-4 shadow-sm border border-success text-success bg-success-subtle';
                     icon = 'fa-regular fa-circle-check';
                     dot  = 'bg-success';
-                } 
+                }
                 else if (status === 'expired') {
                     cls  = 'badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle';
                     icon = 'fa-regular fa-clock';
                     dot  = 'bg-danger';
-                } 
+                }
                 else if (status === 'terminated') {
                     cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
                     icon = 'fa-regular fa-circle-xmark';
@@ -203,7 +203,7 @@ var ContractComponent = new (function () {
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm  rounded-2 text-nowrap">
-                            <span>  
+                            <span>
                                 <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                             </span>
                        </button>
@@ -248,7 +248,7 @@ var ContractComponent = new (function () {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        
+
         mThis.tblContract = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblContract);
 
@@ -257,7 +257,7 @@ var ContractComponent = new (function () {
             el.onchange = (e) => {
                 e.preventDefault();
                 mThis.ContractListView.showPage(mThis.getFilterData());
-                
+
                 // Re-initialize tooltips after filter
                 setTimeout(() => {
                     $('[data-bs-toggle="tooltip"]').tooltip('dispose');
@@ -272,7 +272,7 @@ var ContractComponent = new (function () {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.ContractListView.showPage(mThis.getFilterData());
-                
+
                 // Re-initialize tooltips after search
                 setTimeout(() => {
                     $('[data-bs-toggle="tooltip"]').tooltip('dispose');
@@ -325,7 +325,7 @@ var ContractComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                
+
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
@@ -380,7 +380,7 @@ var ContractComponent = new (function () {
 
         RenewDialog.show(op);
     };
-        
+
     mThis.printContract = (id, menulink) => {
        alert('Coming Soon');
     }
@@ -396,26 +396,26 @@ var ContractComponent = new (function () {
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-    
+
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ContractListView.showPage(mThis.getFilterData());
-            
+
             // Initialize tooltips after table loads
             setTimeout(() => {
                 $('[data-bs-toggle="tooltip"]').tooltip();
                 console.log('Tooltips initialized');
             }, 800);
-            
+
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
                     console.log('Auto-refreshing contracts...');
                     mThis.ContractListView.showPage(mThis.getFilterData());
-                    
+
                     // Re-initialize tooltips after refresh
                     setTimeout(() => {
                         $('[data-bs-toggle="tooltip"]').tooltip('dispose');
@@ -425,30 +425,29 @@ var ContractComponent = new (function () {
             }
         });
     };
-    
+
     return mThis;
 })();
 
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
-    
+
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
                 console.log(111,op);
 
                 return [
-                    
-                    
                     `<div class="row justify-content-start">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
-                                <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>
+                            <input name="tenant" class="data-input form-control" data-field="tenant_id">
+                       <!--       <select name="tenant_id" class="data-input form-control" data-field="tenant_id"> </select>-->
                             </div>
                         </div>
                         <div class="col-6">
@@ -477,7 +476,7 @@ const ContractDialog = (() => {
                                 <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
                             </div>
                         </div>
-                       
+
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Unit Code</label>
                             <div class="material-input outlined">
@@ -508,16 +507,16 @@ const ContractDialog = (() => {
                             </select>
                             </div>
                         </div>
-                        
-                        
-                        
+
+
+
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Price</label>
                             <div class="material-input outlined">
                                 <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                             </div>
                         </div>
-                        
+
                         <div class="col-12">
                             <label style="color:#777777;padding-left:6px;">Remarks</label>
                             <div class="material-input outlined">
@@ -529,29 +528,53 @@ const ContractDialog = (() => {
             },
 
             contentCreated: (me) => {
-                DateTimePicker.initAll(me.divModal);
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
+                me.searchTenant= VSSearchInput.init(me.controls.tenant,{
+                    type: 'select',
+                    prefetch: true,
+                    // api:
+                    query: {
+                        from: 'tenants',
+                        select: ['id', 'name', 'code', 'legal_name'],
+                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' }
+                    },
+                    // showColumnHeader: false,
+                    columns:{
+                        name: "Name",
+                        code: "Code",
+                        legal_name: "Legal Name"
+                    }
+                });
+                // DateTimePicker.initAll(me.divModal);
+                // const footer = me.divModal.querySelector('.modal-footer');
+                // const header = me.divModal.querySelector('.modal-header');
+                // const headerTitle = header.querySelector('.modal-title');
+                // const btnClose = header.querySelector('button');
 
-                btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
-                
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
-                
-                // me.controls.price_type.onchange = (e) => {
-                //     const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');             
-                //     if (!sqmWrapper) return;
-                //     sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                // };
+                // btnClose.classList.add('d-none');
+                // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                // header.parentElement.classList.add('overflow-hidden');
+                // header.parentElement.style = 'border-radius: 20px !important;';
+
+                // const headerWrapper = document.createElement('div');
+                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                // headerWrapper.appendChild(headerTitle);
+                // header.innerHTML = '';
+                // header.appendChild(headerWrapper);
+
+
+                // //Transform input into select, if me.controls.tenant_id is an <input>, not <select>
+                //   me.selectTenant = VSSearchInput.init(me.controls.tenant_id,{
+                //         //type:'select',
+                //         query:{
+                //            from:'tenants',
+                //            select:['id','name','code'],
+                //            searchFields:{_search_tenant:'LIKE'}
+                //         },
+                //         columns:{
+                //             name:'Name'
+                //         }
+                //  });
 
                 me.controls.tenant_id.onchange = (e) => {
                     const p = {tenant_id:me.controls.tenant_id.value};
@@ -559,17 +582,17 @@ const ContractDialog = (() => {
                     vsapi.call([main_view.base_url, "/prm/contract/get-tenant-info"].join(""), p, null, null).then((res) => {
                             const d = res;
                             console.log(3333,d);
-                            
+
                             if(d){
                                 me.controls.legal_name.value = d.legal_name;
-                               
+
                             }
 
                         });
-                    
+
                 };
             },
-            
+
             configSelect: [
                 {
                     name: "tenant_id",
@@ -596,7 +619,7 @@ const ContractDialog = (() => {
                     valueField: "id",
                 },
             ],
-            
+
             prepareFormOptions: {
                 createTitle: "Create Contract",
                 modifyTitle: "Modify Contract",
@@ -610,15 +633,15 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal); 
-                
+                LocaleManager.translateZone(me.divModal);
+
                 // const isReadOnly = me.dataOptions.data.code > 0;
                 // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-                
+
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if(btnClose) btnClose.classList.add('d-none');
-                
+
                 // me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
                 // me.controls.code.value = me.dataOptions.data.code;
                 // me.controls.price_type.value = me.dataOptions.data.price_type;
@@ -628,19 +651,19 @@ const ContractDialog = (() => {
 
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;
-                        
+
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);

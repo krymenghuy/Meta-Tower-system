@@ -26,7 +26,7 @@ class InvoiceController extends Controller
 
         $id = $req->id ?? $req->invoice_id;
         $invoice = new Invoice($id, $ss);
-        $res = $invoice->saveInvoice($req->all());
+        $res = $invoice->upsert($req->all());
         return JDV::raw($res);
     }
 

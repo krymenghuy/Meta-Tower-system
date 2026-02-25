@@ -13,7 +13,7 @@ var TenantComponent = new(function () {
 
     mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
     mThis.divProfileView = document.querySelector('#_ten_profile_view');
-    
+
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
     mThis.currentViewMode = 'card';
@@ -21,7 +21,7 @@ var TenantComponent = new(function () {
     this.pages = {
         tenant_list: this.divTenantListContainer,
         profile_view: this.divProfileView
-    };  
+    };
     // console.log(8989,this.pages);
     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant");
     mThis.cols = [
@@ -86,10 +86,10 @@ var TenantComponent = new(function () {
 
                 if (status === 'pending') {
                     cls = 'badge text-dark bg-warning-subtle border border-warning';
-                } 
+                }
                 else if (status === 'inactive') {
                     cls = 'badge text-dark bg-danger-subtle border border-danger';
-                } 
+                }
                 else if (status === 'active') {
                     cls = 'badge text-success bg-success-subtle border border-success';
                 }
@@ -150,7 +150,7 @@ var TenantComponent = new(function () {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase text-nowrap',
             rowCreated: (data, index, tr) => {
                 // console.log(9090,tr);
-                
+
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
@@ -198,7 +198,7 @@ var TenantComponent = new(function () {
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>{
                  mThis.renderView();
-            } 
+            }
         });
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
@@ -208,7 +208,7 @@ var TenantComponent = new(function () {
                 mThis.renderView();
             }, 250);
         };
-       
+
         mThis.initDropdownMenus(mThis.cardViewContainer);
         mThis.initAlready = true;
     };
@@ -258,13 +258,13 @@ var TenantComponent = new(function () {
                     cssClass: "border-bottom pb-2",
                     name: "service_request"
                 },
-         
+
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 console.log(123456,status_id);
-                
+
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.create_contract.style.display = status_id == 1 ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id > 1 ? 'block' : 'none';
@@ -279,7 +279,7 @@ var TenantComponent = new(function () {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    
+
                     case 'view_profile': {
                         mThis.showPage('profile_view',{"tenant_id":id});
                         break;
@@ -324,7 +324,7 @@ var TenantComponent = new(function () {
     };
       mThis.serviceRequest = (id, menuLink) => {
         let op = {
-            id: id,
+            id: null, // id
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
@@ -390,7 +390,7 @@ var TenantComponent = new(function () {
         });
     };
     mThis.renderCard = (container,data) => {
-        
+
         console.log(8888,data);
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
@@ -401,15 +401,15 @@ var TenantComponent = new(function () {
                 switch (status) {
                     case "active":
                         statusClass = "badge text-dark bg-success-subtle border border-success";
-                        
+
                         break;
                     case "inactive":
                         statusClass = "badge text-dark bg-danger-subtle border border-danger";
-                        
+
                         break;
                     default:
                         statusClass = "badge text-dark bg-warning-subtle border border-warning";
-                        
+
                         break;
                 }
                 html += `
@@ -458,7 +458,7 @@ var TenantComponent = new(function () {
                                             `
                                             : `
                                                 <div class="text-end">
-                                                    <a href="javascript:void(0)" 
+                                                    <a href="javascript:void(0)"
                                                     class="create-tenant-contract fw-semibold"
                                                     data-id="${d.id}" data-name="${d.name}">
                                                         <span class="tool-tip">
@@ -489,8 +489,8 @@ var TenantComponent = new(function () {
                                         <i class="fa-solid fa-at me-2 text-muted"></i>
                                         ${d.email || ""}
                                     </p>
-                                    
-                                    
+
+
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between rounded-bottom-2  align-items-center bg-secondary px-3 p-2 small">
@@ -502,7 +502,7 @@ var TenantComponent = new(function () {
                                 data-id="${d.id}">
                                     View Details <small><i class="fa-solid fa-chevron-right fw-6"></i></small>
                                 </a>
-                            
+
                             </div>
 
                         </div>
@@ -554,7 +554,7 @@ var TenantComponent = new(function () {
                     const tenantId = e.currentTarget.dataset.id;
                     mThis.tenant_id = tenantId;
                     ContractDialog.show(tenantId);
-                   
+
                 });
             });
             const container_te = mThis.cardViewContainer;
@@ -570,8 +570,8 @@ var TenantComponent = new(function () {
 
     mThis.renderView = () => {
         const params = mThis.getFilterData();
-        
-        
+
+
 
         if (mThis.currentViewMode === 'card') {
             mThis.cardViewContainer.classList.remove('d-none');
@@ -642,7 +642,7 @@ var TenantComponent = new(function () {
                     cls_class = 'badge text-dark bg-warning-subtle border border-warning';
                     break;
                 case 'Active':
-                    cls_class = 'badge text-dark bg-success-subtle border border-success'; 
+                    cls_class = 'badge text-dark bg-success-subtle border border-success';
                     break;
                 case 'Inactive':
                     cls_class = 'badge text-dark bg-danger-subtle border border-danger';
@@ -829,7 +829,7 @@ var TenantComponent = new(function () {
                                             Security Deposit: $2,500 held in escrow.
                                             </li>
                                         </ul>
-                                        
+
                                         </div>
                                     </div>
                                 </div>
@@ -864,7 +864,7 @@ var TenantComponent = new(function () {
                                     </div>
                                 </div> -->
                         </div>
-                
+
                     </div>
                     <div class="tab-pane" id="document_tenant_list">
                         <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
@@ -882,7 +882,7 @@ var TenantComponent = new(function () {
                 </div>
         </div>
 
-        
+
         `;
 
         mThis.profile_info_tenant.innerHTML = html;
@@ -984,7 +984,7 @@ var TenantComponent = new(function () {
                                                 Security Deposit: $2,500 held in escrow.
                                                 </li>
                                             </ul>
-                                            
+
                                             </div>
                                         </div>
                                     </div>
@@ -1019,7 +1019,7 @@ var TenantComponent = new(function () {
                                     </div>
                                 </div>
                             </div>
-                    
+
                         </div>`;
                     div.innerHTML = html;
             });
@@ -1041,7 +1041,7 @@ var TenantComponent = new(function () {
 
     mThis.setActionsProfileInfo = (divProfile) => {
         console.log(33,divProfile);
-        
+
         divProfile.addEventListener("click", (e) => {
             // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
             // if (btn) {
@@ -1065,7 +1065,7 @@ var TenantComponent = new(function () {
             // }
         });
     };
-  
+
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
             .then(res => {
@@ -1093,7 +1093,7 @@ const CreateTenantDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-dialog",
+            cssClass: "modal-lg vs-modal ",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -1135,12 +1135,12 @@ const CreateTenantDialog = (() => {
                             <div class="col-12 col-md-6">
                                 <label style="color:#777777;padding-left:6px;">Date of Birth</label>
                                 <div class="material-input outlined">
-                                    <input type="date" name="date_of_birth"
+                                    <input type="text" data-type="date" name="date_of_birth"
                                         class="data-input form-control form_input"
                                         data-field="date_of_birth" />
                                 </div>
                             </div>
-                            
+
                         </div>
                         <div class="col-12 row pb-3">
                             <div class="col-12 col-md-4">
@@ -1209,13 +1209,14 @@ const CreateTenantDialog = (() => {
                                 </textarea>
                             </div>
                         </div>
-                    
+
 
                 </div>
                 `;
             },
 
             contentCreated: (me) => {
+
                 // DateTimePicker.init(me.controls.date_of_birth);
 
                 // const footer = me.divModal.querySelector('.modal-footer');
@@ -1234,7 +1235,6 @@ const CreateTenantDialog = (() => {
                 // headerWrapper.appendChild(headerTitle);
                 // header.innerHTML = '';
                 // header.appendChild(headerWrapper);
-
 
 
                 const div_tenant_photo = me.controls.div_tenant_photo;
@@ -1309,7 +1309,7 @@ const CreateTenantDialog = (() => {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                me.tenantImageBox.setImage(res.data.image_url); 
+                                me.tenantImageBox.setImage(res.data.image_url);
                                 cv_interact.success(
                                     "Profile photo was saved!"
                                 );
@@ -1353,15 +1353,15 @@ const CreateTenantDialog = (() => {
             },
             buttons: [
                 {
-                    label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
                     click: (me, btn) => {
                         me.hide(false);
                     },
                 },
                 {
-                    label: '<span>Submit</span>',
-                    cssClass: 'btn-vs-save',
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id;

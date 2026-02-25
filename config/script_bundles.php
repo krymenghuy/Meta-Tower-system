@@ -97,6 +97,7 @@ return [
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ExpandableTableRowConfig.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 //'/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
@@ -127,6 +128,8 @@ return [
                 'js/components/prm/ReportComponent.js',
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
+                'js/components/prm/ReservationComponent.js',
+                'js/components/prm/AmenityComponent.js',
                 
 
 
@@ -161,6 +164,7 @@ return [
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
+                
 
 
             ]
@@ -225,11 +229,11 @@ return [
                 '/assets/js/ImageBox.js',
                'https://cdn.vectoraclouds.com/frontcore/components/ImageHelper.js',
                 // 'https://cdn.vectoraclouds.com/frontcore/components/ImageBox.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/FileChooser.js',
               'https://cdn.vectoraclouds.com/frontcore/components/listview/listview.v2.js',
-          
+
                 '/assets/js/xlsx/xlsx.full.min.js',
                 '/js/components/umt/FindUserDialog.js',
                 '/js/components/umt/ChangeRoleDialog.js',

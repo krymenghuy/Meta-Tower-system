@@ -31,7 +31,8 @@
         "vsd/script-manager": "dev-main",
         "vsd/storage": "*",
         "vsd/vsloquent": "dev-main",
-        "vsd/xauth": "dev-main"
+        "vsd/xauth": "dev-main",
+        "vsd/xquery": "dev-main"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -120,6 +121,10 @@
          {
             "type": "vcs",
             "url": "https://github.com/vectorasoft-org/lib-script-manager.git"
+        },
+          {
+            "type": "vcs",
+            "url": "https://github.com/vectorasoft-org/lib-xquery.git"
         }
     ]
 }
