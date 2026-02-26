@@ -473,7 +473,7 @@ const BuildingDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md",
+            cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => {
@@ -518,22 +518,6 @@ const BuildingDialog = (() => {
                 ].join("");
             },
             contentCreated: (me) => {
-                const footer = me.divModal.querySelector('.modal-footer');
-                const header = me.divModal.querySelector('.modal-header');
-                const headerTitle = header.querySelector('.modal-title');
-                const btnClose = header.querySelector('button');
-
-                btnClose.classList.add('d-none');
-                header.classList.add('bg-prm-custom', 'modal-header-custom');
-                header.parentElement.classList.add('overflow-hidden');
-                header.parentElement.style = 'border-radius: 20px !important;';
-
-                const headerWrapper = document.createElement('div');
-                headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-
-                headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                headerWrapper.appendChild(headerTitle);
-
                 header.innerHTML = '';
                 header.appendChild(headerWrapper);
             },

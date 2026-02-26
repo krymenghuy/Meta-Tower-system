@@ -213,7 +213,7 @@ var ServiceRequestComponent = (function () {
 
     mThis.generateInvoice = (id, menuLink) => {
         CreateInvoiceServiceRequestDialog.show({
-            id: id,
+            service_request_id: id,
             btn: menuLink,
             onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
@@ -314,697 +314,295 @@ var ServiceRequestComponent = (function () {
 })();
 
 
-// const CreateInvoiceServiceRequestDialog = (() => {
-//     const self = {};
-//     let dialog = null;
-
-//     self.show = (op) => {
-//         dialog = new GeneralDialog({
-//             cssClass: "modal-lg",
-//             backdrop: "static",
-//             keyboard: true,
-
-//             createContent: () => `
-//                 <div class="row g-3">
-//                     <div class="col-12">
-//                         <div class="card bg-light">
-//                             <div class="card-body">
-//                                 <h6 class="card-transTitle text-muted mb-3">Service Request Details</h6>
-//                                 <div class="row g-2">
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Tenant:</small>
-//                                         <div class="fw-semibold" id="info-tenant">Loading...</div>
-//                                     </div>
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Room Code:</small>
-//                                         <div class="fw-semibold" id="info-space">Loading...</div>
-//                                     </div>
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Service:</small>
-//                                         <div class="fw-semibold" id="info-service">Loading...</div>
-//                                     </div>
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Phone:</small>
-//                                         <div class="fw-semibold" id="info-phone">Loading...</div>
-//                                     </div>
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Base Price:</small>
-//                                         <div class="fw-semibold text-primary" id="info-price">Loading...</div>
-//                                     </div>
-//                                     <div class="col-md-6">
-//                                         <small class="text-muted">Email:</small>
-//                                         <div class="fw-semibold" id="info-email">Loading...</div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     <!-- Invoice Details -->
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Invoice Number</label>
-//                         <div class="material-input outlined">
-//                             <input type="text" class="data-input form-control" data-field="invoice_number"
-//                                 placeholder="Auto-generated if empty" />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Invoice Date <span class="text-danger">*</span></label>
-//                         <div class="material-input outlined">
-//                             <input type="date" class="data-input form-control" data-field="invoice_date" required />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Due Date <span class="text-danger">*</span></label>
-//                         <div class="material-input outlined">
-//                             <input type="date" class="data-input form-control" data-field="due_date" required />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Payment Status</label>
-//                         <select class="data-input form-control" data-field="payment_status">
-//                             <option value="unpaid">Unpaid</option>
-//                             <option value="pending">Pending</option>
-//                             <option value="paid">Paid</option>
-//                             <option value="overdue">Overdue</option>
-//                         </select>
-//                     </div>
-
-//                     <!-- Pricing Section -->
-//                     <div class="col-12">
-//                         <hr class="my-2">
-//                         <h6 class="text-muted">Pricing Details</h6>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Quantity / Hours</label>
-//                         <div class="material-input outlined">
-//                             <input type="number" step="0.5" min="0.5" class="data-input form-control"
-//                                 data-field="quantity" value="1" />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Unit Price</label>
-//                         <div class="material-input outlined">
-//                             <input type="number" step="0.01" min="0" class="data-input form-control"
-//                                 data-field="unit_price" readonly />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Discount (%)</label>
-//                         <div class="material-input outlined">
-//                             <input type="number" step="0.01" min="0" max="100" class="data-input form-control"
-//                                 data-field="discount_percent" value="0" />
-//                         </div>
-//                     </div>
-
-//                     <div class="col-md-6">
-//                         <label style="padding-left:6px; color:#777;">Tax (%)</label>
-//                         <div class="material-input outlined">
-//                             <input type="number" step="0.01" min="0" class="data-input form-control"
-//                                 data-field="tax_percent" value="0" />
-//                         </div>
-//                     </div>
-
-//                     <!-- Total Calculation -->
-//                     <div class="col-12">
-//                         <div class="card bg-light">
-//                             <div class="card-body">
-//                                 <div class="row g-2">
-//                                     <div class="col-6 text-muted">Subtotal:</div>
-//                                     <div class="col-6 text-end fw-semibold" id="calc-subtotal">$0.00</div>
-
-//                                     <div class="col-6 text-muted">Discount:</div>
-//                                     <div class="col-6 text-end text-danger" id="calc-discount">-$0.00</div>
-
-//                                     <div class="col-6 text-muted">Tax:</div>
-//                                     <div class="col-6 text-end" id="calc-tax">$0.00</div>
-
-//                                     <div class="col-12"><hr class="my-1"></div>
-
-//                                     <div class="col-6 fw-bold fs-5">Total:</div>
-//                                     <div class="col-6 text-end fw-bold fs-5 text-primary" id="calc-total">$0.00</div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     <div class="col-12">
-//                         <label style="padding-left:6px; color:#777;">Notes / Remarks</label>
-//                         <div class="material-input outlined">
-//                             <textarea class="data-input form-control" data-field="notes" rows="3"
-//                                 placeholder="Additional information..."></textarea>
-//                         </div>
-//                     </div>
-
-//                     <input type="hidden" data-field="service_request_id" />
-//                     <input type="hidden" data-field="total_amount" />
-//                     <input type="hidden" data-field="tenant_id" />
-//                     <input type="hidden" data-field="space_id" />
-//                     <input type="hidden" data-field="service_id" />
-//                     <input type="hidden" data-field="service_type_id" />
-//                 </div>
-//             `,
-
-//             contentCreated: (me) => {
-
-//                 // Header customization
-//                 const header = me.divModal.querySelector('.modal-header');
-//                 header.querySelector('button')?.classList.add('d-none');
-//                 header.classList.add('bg-prm-custom', 'modal-header-custom');
-//                 header.parentElement.style.borderRadius = '20px';
-
-//                 const transTitle = header.querySelector('.modal-transTitle');
-//                 transTitle.classList.add('text-white', 'text-center', 'w-100');
-//                 transTitle.textContent = 'Generate Invoice';
-
-//                 const today = new Date().toISOString().split('T')[0];
-//                 me.controls.invoice_date.value = today;
-//                 const dueDate = new Date();
-//                 dueDate.setDate(dueDate.getDate() + 30);
-//                 me.controls.due_date.value = dueDate.toISOString().split('T')[0];
-
-//                 const calculateTotals = () => {
-//                     const quantity = parseFloat(me.controls.quantity.value) || 0;
-//                     const unitPrice = parseFloat(me.controls.unit_price.value) || 0;
-//                     const discountPercent = parseFloat(me.controls.discount_percent.value) || 0;
-//                     const taxPercent = parseFloat(me.controls.tax_percent.value) || 0;
-
-//                     const subtotal = quantity * unitPrice;
-//                     const discountAmount = subtotal * (discountPercent / 100);
-//                     const afterDiscount = subtotal - discountAmount;
-//                     const taxAmount = afterDiscount * (taxPercent / 100);
-//                     const total = afterDiscount + taxAmount;
-
-//                     me.divModal.querySelector('#calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-discount').textContent = `-$${discountAmount.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-tax').textContent = `$${taxAmount.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
-
-//                     me.controls.total_amount.value = total.toFixed(2);
-//                 };
-
-//                 ['quantity', 'unit_price', 'discount_percent', 'tax_percent'].forEach(field => {
-//                     me.controls[field]?.addEventListener('input', calculateTotals);
-//                 });
-//                 const requestId = op.id;
-
-//                 console.log('=== LOADING INVOICE FOR ID:', requestId, '===');
-
-//                 if (requestId) {
-//                     me.controls.service_request_id.value = requestId;
-
-//                     vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: requestId })
-//                         .then(res => {
-//                             console.log('API Response for ID', requestId, ':', res);
-
-//                             if (res.status_code === 200 && res.data && res.data.request_details) {
-//                                 const data = res.data.request_details;
-
-//                                 console.log('Request Details for ID', requestId, ':', data);
-
-//                                 if (data.id != requestId) {
-//                                     console.error('ID MISMATCH! Expected:', requestId, 'Got:', data.id);
-//                                     cv_interact.error('Data mismatch error');
-//                                     return;
-//                                 }
-//                                 me.controls.tenant_id.value = data.tenant_id || '';
-//                                 me.controls.space_id.value = data.space_id || '';
-//                                 me.controls.service_id.value = data.service_id || '';
-//                                 me.controls.service_type_id.value = data.service_type_id || '';
-
-//                                 const tenant = res.data.tenants?.find(t => t.id == data.tenant_id);
-//                                 const space = res.data.building_spaces?.find(s => s.id == data.space_id);
-//                                 const service = res.data.services?.find(s => s.id == data.service_id);
-//                                 const serviceType = res.data.service_types?.find(st => st.id == data.service_type_id);
-
-//                                 me.divModal.querySelector('#info-tenant').textContent = tenant?.tenant || '-';
-//                                 me.divModal.querySelector('#info-space').textContent = space?.floor_id || '-';
-//                                 me.divModal.querySelector('#info-service').textContent = service?.service || '-';
-//                                 me.divModal.querySelector('#info-email').textContent = tenant?.tenant_email  || '-';
-//                                 me.divModal.querySelector('#info-phone').textContent = tenant?.tenant_phone  || '-';
-//                                 const price = data.total_price || data.service_price || 0;
-//                                 me.divModal.querySelector('#info-price').textContent = `$${Number(price).toFixed(2)}`;
-//                                 me.controls.unit_price.value = price;
-
-//                                 if (data.duration_hours && data.duration_hours > 0) {
-//                                     me.controls.quantity.value = data.duration_hours;
-//                                 } else {
-//                                     me.controls.quantity.value = 1;
-//                                 }
-
-//                                 calculateTotals();
-//                             } else {
-//                                 cv_interact.error('Unable to load service request details');
-//                                 console.error('Invalid response:', res);
-//                             }
-//                         })
-//                         .catch(err => {
-//                             cv_interact.error('Failed to fetch service request details');
-//                             console.error('Fetch error:', err);
-//                         });
-//                 } else {
-//                     console.error('No ID provided to CreateInvoiceServiceRequestDialog!');
-//                     cv_interact.error('No service request ID provided');
-//                 }
-
-//                 me.onBeforeSubmit = () => {
-//                     const invoiceDate = new Date(me.controls.invoice_date.value);
-//                     const dueDate = new Date(me.controls.due_date.value);
-
-//                     if (dueDate < invoiceDate) {
-//                         cv_interact.error('Due date cannot be earlier than invoice date');
-//                         return false;
-//                     }
-//                     return true;
-//                 };
-//             },
-
-//             buttons: [
-//                 {
-//                     label: '<span>Cancel</span>',
-//                     cssClass: 'btn-vs-cancel',
-//                     click: (me) => me.hide(false)
-//                 },
-//                 {
-//                     label: '<span>Generate Invoice</span>',
-//                     cssClass: 'btn-vs-save',
-//                     click: (me, btn) => {
-//                         const data = me.getData();
-
-//                         console.log('Invoice Data to Submit:', data);
-
-//                         vsapi.call(
-//                             `${main_view.base_url}/prm/invoice/save`,
-//                             data,
-//                             btn
-//                         ).then(res => {
-//                             if (res.status_code === 200) {
-//                                 me.hide(true);
-//                                 cv_interact.success('Invoice generated successfully');
-//                                 if (me.dataOptions?.onClose) {
-//                                     me.dataOptions.onClose();
-//                                 }
-//                             } else {
-//                                 cv_interact.error(res.error_message || 'Failed to generate invoice');
-//                             }
-//                         });
-//                     }
-//                 }
-//             ]
-//         });
-
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
-
-
-
-// const CreateInvoiceServiceRequestDialog = (() => {
-//     const self = {};
-//     let dialog = null;
-
-//     self.show = (op) => {
-//         dialog = new GeneralDialog({
-//             cssClass: "modal-lg invoice-modal-custom",
-//             backdrop: "static",
-//             keyboard: true,
-
-//             createContent: () => `
-
-//                 <div class="invoice-dialog-container">
-//                     <!-- Service Request Info Card -->
-//                     <div class="sr-info-card">
-//                         <div class="row g-3">
-//                             <div class="col-md-6">
-//                                 <div class="sr-info-transTitle">Tenant</div>
-//                                 <div class="sr-info-value" id="info-tenant">—</div>
-//                             </div>
-//                             <div class="col-md-6">
-//                                 <div class="sr-info-transTitle">Room / Space</div>
-//                                 <div class="sr-info-value" id="info-space">—</div>
-//                             </div>
-//                             <div class="col-md-6">
-//                                 <div class="sr-info-transTitle">Service</div>
-//                                 <div class="sr-info-value" id="info-service">—</div>
-//                             </div>
-//                             <div class="col-md-6">
-//                                 <div class="sr-info-transTitle">Service</div>
-//                                 <div class="sr-info-value" id="info-price">—</div>
-//                             </div>
-//                         </div>
-//                     </div>
-
-//                     <!-- Invoice Details Form -->
-//                     <form id="invoiceForm">
-//                         <div class="row g-3">
-//                             <!-- Invoice Number -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">Invoice Number</label>
-//                                     <input
-//                                         type="text"
-//                                         class="form-control-invoice"
-//                                         id="invoice_number"
-//                                         placeholder="Auto-generated (e.g. SR-0423-INV-01)"
-//                                     />
-//                                     <small class="form-text-muted">Will be auto-created from service request code if left empty</small>
-//                                 </div>
-//                             </div>
-
-//                             <!-- Invoice Date -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">
-//                                         Invoice Date <span class="text-danger">*</span>
-//                                     </label>
-//                                     <input
-//                                         type="date"
-//                                         class="form-control-invoice"
-//                                         id="invoice_date"
-//                                         required
-//                                     />
-//                                 </div>
-//                             </div>
-
-//                             <!-- Due Date -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">
-//                                         Due Date <span class="text-danger">*</span>
-//                                     </label>
-//                                     <input
-//                                         type="date"
-//                                         class="form-control-invoice"
-//                                         id="due_date"
-//                                         required
-//                                     />
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         <!-- Pricing Details Section -->
-//                         <hr class="section-divider">
-//                         <div class="section-transTitle">Pricing Details</div>
-
-//                         <div class="row g-3">
-//                             <!-- Billable Hours -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">Billable Hours</label>
-//                                     <input
-//                                         type="number"
-//                                         class="form-control-invoice"
-//                                         id="quantity"
-//                                         step="0.5"
-//                                         min="0.5"
-//                                         value="1"
-//                                     />
-//                                     <small class="form-text-muted" id="qty-hint">Number of units or hours</small>
-//                                 </div>
-//                             </div>
-
-//                             <!-- Unit Price -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">Unit Price</label>
-//                                     <input
-//                                         type="number"
-//                                         class="form-control-invoice"
-//                                         id="unit_price"
-//                                         step="0.01"
-//                                         readonly
-//                                     />
-//                                 </div>
-//                             </div>
-
-//                             <!-- Discount -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">Discount (%)</label>
-//                                     <input
-//                                         type="number"
-//                                         class="form-control-invoice"
-//                                         id="discount_percent"
-//                                         step="0.01"
-//                                         min="0"
-//                                         max="100"
-//                                         value="0"
-//                                     />
-//                                 </div>
-//                             </div>
-
-//                             <!-- Tax -->
-//                             <div class="col-md-6">
-//                                 <div class="form-group-custom">
-//                                     <label class="form-label-custom">Tax (%)</label>
-//                                     <input
-//                                         type="number"
-//                                         class="form-control-invoice"
-//                                         id="tax_percent"
-//                                         step="0.01"
-//                                         min="0"
-//                                         value="0"
-//                                     />
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         <!-- Totals Card -->
-//                         <div class="totals-card-invoice">
-//                             <div class="totals-row-invoice">
-//                                 <span class="totals-label-invoice">Subtotal:</span>
-//                                 <span class="totals-value-invoice" id="calc-subtotal">$85.00</span>
-//                             </div>
-//                             <div class="totals-row-invoice">
-//                                 <span class="totals-label-invoice">Discount:</span>
-//                                 <span class="totals-value-invoice discount" id="calc-discount">$0.00</span>
-//                             </div>
-//                             <div class="totals-row-invoice">
-//                                 <span class="totals-label-invoice">Tax:</span>
-//                                 <span class="totals-value-invoice" id="calc-tax">$0.00</span>
-//                             </div>
-//                             <div class="totals-row-invoice total-row">
-//                                 <span class="totals-label-invoice">Total:</span>
-//                                 <span class="totals-value-invoice" id="calc-total">$85.00</span>
-//                             </div>
-//                         </div>
-
-//                         <!-- Notes -->
-//                         <div class="form-group-custom" style="margin-top: 20px;">
-//                             <label class="form-label-custom">Notes / Remarks</label>
-//                             <textarea
-//                                 class="form-control-invoice"
-//                                 id="notes"
-//                                 rows="4"
-//                                 placeholder="Payment terms, special instructions, thank you message, bank details, etc..."
-//                             ></textarea>
-//                         </div>
-
-//                         <!-- Hidden Fields -->
-//                         <input type="hidden" id="service_request_id" />
-//                         <input type="hidden" id="tenant_id" />
-//                         <input type="hidden" id="space_id" />
-//                         <input type="hidden" id="service_id" />
-//                         <input type="hidden" id="total_amount" />
-//                     </form>
-//                 </div>
-//             `,
-
-//             contentCreated: (me) => {
-//                 // Update modal header
-//                 const header = me.divModal.querySelector('.modal-header');
-//                 const closeBtn = header.querySelector('button.btn-close');
-//                 if (closeBtn) closeBtn.style.display = 'none';
-
-//                 const transTitle = header.querySelector('.modal-transTitle');
-//                 if (transTitle) transTitle.textContent = 'Create Invoice from Service Request';
-
-//                 // Store control references
-//                 me.controls = {
-//                     invoice_number: me.divModal.querySelector('#invoice_number'),
-//                     invoice_date: me.divModal.querySelector('#invoice_date'),
-//                     due_date: me.divModal.querySelector('#due_date'),
-//                     quantity: me.divModal.querySelector('#quantity'),
-//                     unit_price: me.divModal.querySelector('#unit_price'),
-//                     discount_percent: me.divModal.querySelector('#discount_percent'),
-//                     tax_percent: me.divModal.querySelector('#tax_percent'),
-//                     notes: me.divModal.querySelector('#notes'),
-//                     service_request_id: me.divModal.querySelector('#service_request_id'),
-//                     tenant_id: me.divModal.querySelector('#tenant_id'),
-//                     space_id: me.divModal.querySelector('#space_id'),
-//                     service_id: me.divModal.querySelector('#service_id'),
-//                     total_amount: me.divModal.querySelector('#total_amount')
-//                 };
-
-//                 // Set default dates
-//                 const today = new Date().toISOString().split('T')[0];
-//                 me.controls.invoice_date.value = today;
-
-//                 const dueDate = new Date();
-//                 dueDate.setDate(dueDate.getDate() + 30);
-//                 me.controls.due_date.value = dueDate.toISOString().split('T')[0];
-
-//                 // Calculation function
-//                 const calculateTotals = () => {
-//                     const quantity = parseFloat(me.controls.quantity.value) || 0;
-//                     const unitPrice = parseFloat(me.controls.unit_price.value) || 0;
-//                     const discountPercent = parseFloat(me.controls.discount_percent.value) || 0;
-//                     const taxPercent = parseFloat(me.controls.tax_percent.value) || 0;
-
-//                     const subtotal = quantity * unitPrice;
-//                     const discountAmount = subtotal * (discountPercent / 100);
-//                     const afterDiscount = subtotal - discountAmount;
-//                     const taxAmount = afterDiscount * (taxPercent / 100);
-//                     const total = afterDiscount + taxAmount;
-
-//                     me.divModal.querySelector('#calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-discount').textContent = `$${discountAmount.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-tax').textContent = `$${taxAmount.toFixed(2)}`;
-//                     me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
-
-//                     me.controls.total_amount.value = total.toFixed(2);
-//                 };
-
-//                 // Attach calculation listeners
-//                 ['quantity', 'unit_price', 'discount_percent', 'tax_percent'].forEach(field => {
-//                     me.controls[field]?.addEventListener('input', calculateTotals);
-//                 });
-
-//                 // Load service request data
-//                 const requestId = op.id;
-//                 if (requestId) {
-//                     me.controls.service_request_id.value = requestId;
-
-//                     vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: requestId })
-//                         .then(res => {
-//                             if (res.status_code === 200 && res.data && res.data.request_details) {
-//                                 const data = res.data.request_details;
-
-//                                 // Populate hidden fields
-//                                 me.controls.tenant_id.value = data.tenant_id || '';
-//                                 me.controls.space_id.value = data.space_id || '';
-//                                 me.controls.service_id.value = data.service_id || '';
-
-//                                 // Find related data
-//                                 const tenant = res.data.tenants?.find(t => t.id == data.tenant_id);
-//                                 const space = res.data.building_spaces?.find(s => s.id == data.space_id);
-//                                 const service = res.data.services?.find(s => s.id == data.service_id);
-
-//                                 // Update display fields
-//                                 me.divModal.querySelector('#info-tenant').textContent = tenant?.tenant || '-';
-//                                 me.divModal.querySelector('#info-space').textContent = space?.space_code || '-';
-//                                 me.divModal.querySelector('#info-service').textContent = service?.service || '-';
-
-//                                 // Set pricing
-//                                 const price = data.total_price || data.service_price || 0;
-//                                 me.divModal.querySelector('#info-price').textContent = `$${Number(price).toFixed(2)} / hour`;
-//                                 me.controls.unit_price.value = price;
-
-//                                 // Set quantity
-//                                 if (data.duration_hours && data.duration_hours > 0) {
-//                                     me.controls.quantity.value = data.duration_hours;
-//                                     me.divModal.querySelector('#qty-hint').textContent =
-//                                         `(based on ${data.duration_hours} hour${data.duration_hours !== 1 ? 's' : ''})`;
-//                                 } else {
-//                                     me.controls.quantity.value = 1;
-//                                 }
-
-//                                 calculateTotals();
-//                             } else {
-//                                 cv_interact.error('Unable to load service request details');
-//                             }
-//                         })
-//                         .catch(err => {
-//                             cv_interact.error('Failed to fetch service request details');
-//                             console.error('Fetch error:', err);
-//                         });
-//                 } else {
-//                     cv_interact.error('No service request ID provided');
-//                 }
-
-//                 // Validation
-//                 me.onBeforeSubmit = () => {
-//                     const invoiceDate = new Date(me.controls.invoice_date.value);
-//                     const dueDate = new Date(me.controls.due_date.value);
-
-//                     if (dueDate < invoiceDate) {
-//                         cv_interact.error('Due date cannot be earlier than invoice date');
-//                         return false;
-//                     }
-//                     return true;
-//                 };
-//             },
-
-//             buttons: [
-//                 {
-//                     label: 'Cancel',
-//                     cssClass: 'btn-invoice btn-cancel-invoice',
-//                     click: (me) => me.hide(false)
-//                 },
-//                 {
-//                     label: 'Preview PDF',
-//                     cssClass: 'btn-invoice btn-preview-invoice',
-//                     click: (me) => {
-//                         cv_interact.info('Preview PDF feature - to be implemented');
-//                     }
-//                 },
-//                 {
-//                     label: 'Create Invoice',
-//                     cssClass: 'btn-invoice btn-create-invoice',
-//                     click: (me, btn) => {
-//                         if (!me.onBeforeSubmit()) return;
-
-//                         const data = {
-//                             service_request_id: me.controls.service_request_id.value,
-//                             tenant_id: me.controls.tenant_id.value,
-//                             space_id: me.controls.space_id.value,
-//                             service_id: me.controls.service_id.value,
-//                             invoice_number: me.controls.invoice_number.value,
-//                             invoice_date: me.controls.invoice_date.value,
-//                             due_date: me.controls.due_date.value,
-//                             quantity: me.controls.quantity.value,
-//                             unit_price: me.controls.unit_price.value,
-//                             discount_percent: me.controls.discount_percent.value,
-//                             tax_percent: me.controls.tax_percent.value,
-//                             total_amount: me.controls.total_amount.value,
-//                             notes: me.controls.notes.value
-//                         };
-
-//                         vsapi.call(
-//                             `${main_view.base_url}/prm/invoice/save`,
-//                             data,
-//                             btn
-//                         ).then(res => {
-//                             if (res.status_code === 200) {
-//                                 me.hide(true);
-//                                 cv_interact.success('Invoice generated successfully');
-//                                 if (op?.onClose) {
-//                                     op.onClose();
-//                                 }
-//                             } else {
-//                                 cv_interact.error(res.error_message || 'Failed to generate invoice');
-//                             }
-//                         });
-//                     }
-//                 }
-//             ]
-//         });
-
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
 
-
+const CreateInvoiceServiceRequestDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        if (!dialog) {
+            dialog = new GeneralDialog({
+                cssClass: "modal-xl vs-modal",
+                backdrop: "static",
+                keyboard: true,
+
+                createContent: () => `
+                    <div class="row g-4">
+
+                        <!-- Tenant & Service Info -->
+                        <div class="col-12">
+                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
+                                <div class="row g-3 text-start">
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Tenant:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-tenant">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Room:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-space">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Service:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-service">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Unit Type:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-unit">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Due Date, Discount, Tax -->
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
+                                    <input type="text" data-type="date" class="form-control data-input" data-field="due_date" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Discount</label>
+                                    <div class="d-flex gap-1">
+                                        <select class="form-select" id="discount_type" style="max-width:90px;">
+                                            <option value="percent">%</option>
+                                            <option value="fixed">$</option>
+                                        </select>
+                                        <input type="number" step="0.01" min="0" class="form-control" id="discount_value" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">Tax</label>
+                                    <div class="d-flex gap-1">
+                                        <select class="form-select" id="tax_type" style="max-width:90px;">
+                                            <option value="percent">%</option>
+                                            <option value="fixed">$</option>
+                                        </select>
+                                        <input type="number" step="0.01" min="0" class="form-control" id="tax_value" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Request Item Table -->
+                        <div class="col-12">
+                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
+                                <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#e1e5f2; margin:-16px -16px 16px -16px; padding:12px 20px; border-radius:6px 6px 0 0;">
+                                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Service Request Item</h6>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm align-middle table-hover mb-0">
+                                        <thead style="background-color:#f0f4ff;">
+                                            <tr>
+                                                <th>Description</th>
+                                                <th class="text-center">Type</th>
+                                                <th class="text-center">Qty/Unit</th>
+                                                <th class="text-end">Amount</th>
+                                                <th class="text-end">Discount</th>
+                                                <th class="text-end">Tax</th>
+                                                <th class="text-end">Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="items-body"></tbody>
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                                                <td class="text-end fw-bold" id="calc-subtotal">$0.00</td>
+                                                <td class="text-end fw-bold text-danger" id="calc-discount">-$0.00</td>
+                                                <td class="text-end fw-bold text-info" id="calc-tax">+$0.00</td>
+                                                <td class="text-end fw-bold fs-5 text-success" id="calc-total">$0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Remarks</label>
+                            <textarea class="form-control data-input" data-field="remarks" rows="3" placeholder="Additional notes..."></textarea>
+                        </div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" data-field="tenant_id">
+                        <input type="hidden" data-field="space_id">
+                        <input type="hidden" data-field="service_id">
+                    </div>
+                `,
+
+                contentCreated: (me) => {
+                    me.controls = {};
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+                        if (el.dataset.field) me.controls[el.dataset.field] = el;
+                    });
+
+                    // 🔥 TAX NOW CALCULATED ON ORIGINAL AMOUNT (BEFORE DISCOUNT)
+                    const calculateAndUpdate = () => {
+                        if (!me._serviceRequestData) return;
+
+                        const subtotal = parseFloat(me._subtotal || 0);
+                        const discType = document.getElementById('discount_type')?.value || 'percent';
+                        const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                        const taxType  = document.getElementById('tax_type')?.value || 'percent';
+                        const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
+
+                        const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                        const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE
+                        const netAmount = subtotal - discount + tax;
+
+                        // Footer
+                        document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                        document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
+                        document.getElementById('calc-tax').textContent      = `+$${tax.toFixed(2)}`;
+                        document.getElementById('calc-total').textContent    = `$${netAmount.toFixed(2)}`;
+
+                        // Table row
+                        document.getElementById('item-discount').textContent = `-$${discount.toFixed(2)}`;
+                        document.getElementById('item-tax').textContent      = `+$${tax.toFixed(2)}`;
+                        document.getElementById('item-net').textContent      = `$${netAmount.toFixed(2)}`;
+                    };
+
+                    ['discount_value', 'tax_value'].forEach(id => {
+                        document.getElementById(id)?.addEventListener('input', calculateAndUpdate);
+                    });
+                    ['discount_type', 'tax_type'].forEach(id => {
+                        document.getElementById(id)?.addEventListener('change', calculateAndUpdate);
+                    });
+
+                    me.loadServiceData = (op) => loadServiceRequestData(me, op);
+                    me.calculateAndUpdate = calculateAndUpdate;
+                },
+                buttons: [
+                    { label: 'Cancel', cssClass: 'btn btn-secondary', click: me => me.hide(false) },
+                    {
+                        label: 'Generate Invoice',
+                        cssClass: 'btn btn-primary',
+                        click: (me, btn) => {
+                            if (!me._serviceRequestData) return cv_interact.error('No service request data loaded');
+
+                            const formData = me.getData();
+                             console.log("12345",formData);
+                            const discType = document.getElementById('discount_type')?.value || 'percent';
+                            const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                            const taxType  = document.getElementById('tax_type')?.value || 'percent';
+                            const taxVal   = parseFloat(document.getElementById('tax_value')?.value || 0);
+
+                            const subtotal = me._serviceRequestData.amount;
+                            const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                            const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
+
+                            formData.items = [{
+                                service_id: me._serviceRequestData.service_id,
+                                description: me._serviceRequestData.description,
+                                type: 'Service',
+                                unit_type: me._serviceRequestData.unit_type,
+                                quantity: me._serviceRequestData.quantity,
+                                amount: subtotal,
+                                discount_type: discType,
+                                discount_value: discVal,
+                                discount: discount,
+                                tax_type: taxType,
+                                tax_value: taxVal,
+                                tax: tax
+                            }];
+
+                            formData.tenant_id = me._serviceRequestData.tenant_id;
+                            formData.space_id  = me._serviceRequestData.space_id;
+                            vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
+                                .then(res => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true);
+                                        cv_interact.success('Invoice generated successfully!');
+                                        if (op.onClose) op.onClose();
+                                    } else {
+                                        cv_interact.error(res.error_message || 'Failed to generate invoice');
+                                    }
+                                })
+                                .catch(() => cv_interact.error('Network error'));
+                        }
+                    }
+                ]
+            });
+        }
+
+        dialog.show(op);
+
+        setTimeout(() => {
+            if (dialog.loadServiceData) dialog.loadServiceData(op);
+        }, 150);
+    };
+
+    const loadServiceRequestData = (me, op) => {
+        // console.log("12345",op);
+
+        if (!op?.service_request_id) return;
+
+        me._serviceRequestData = null;
+        me._subtotal = 0;
+
+        document.getElementById('info-tenant').textContent = '-';
+        document.getElementById('info-space').textContent  = '-';
+        document.getElementById('info-service').textContent = '-';
+        document.getElementById('info-unit').textContent   = '-';
+        document.getElementById('items-body').innerHTML = '';
+
+        vsapi.call(`${main_view.base_url}/prm/service-request/form-options`, { id: op.service_request_id })
+            .then(res => {
+                if (res.status_code !== 200) return cv_interact.error('Failed to load data');
+
+                const data = res.data.request_details || {};
+                const tenants = res.data.tenants || [];
+                const service = res.data.services?.find(s => s.id == data.service_id) || {};
+
+                let tenantName = '-';
+                if (data.tenant_id) {
+                    const tenantObj = tenants.find(t => String(t.id) === String(data.tenant_id));
+                    tenantName = tenantObj ? tenantObj.tenant : '-';
+                }
+
+                document.getElementById('info-tenant').textContent = tenantName;
+                document.getElementById('info-space').textContent  = data.code || '-';
+                document.getElementById('info-service').textContent = service.service || '-';
+                document.getElementById('info-unit').textContent   = data.unit_type || '-';
+
+                me._serviceRequestData = {
+                    tenant_id: data.tenant_id,
+                    space_id: data.space_id,
+                    service_id: data.service_id,
+                    description: data.description || service.service || 'Service Request',
+                    unit_type: data.unit_type || '',
+                    quantity: parseFloat(data.quantity || 1),
+                    amount: parseFloat(data.total_price || data.service_price || 0)
+                };
+
+                me.controls.tenant_id.value = data.tenant_id || '';
+                me.controls.space_id.value  = data.space_id || '';
+                me.controls.service_id.value = data.service_id || '';
+
+                me._subtotal = me._serviceRequestData.amount;
+
+                const qtyDisplay = me._serviceRequestData.quantity !== 1
+                    ? `${me._serviceRequestData.quantity} ${me._serviceRequestData.unit_type || ''}`.trim()
+                    : me._serviceRequestData.unit_type || '—';
+
+                document.getElementById('items-body').innerHTML = `
+                    <tr>
+                        <td>${me._serviceRequestData.description || '-'}</td>
+                        <td class="text-center">Service</td>
+                        <td class="text-center"><span class="badge-unit">${qtyDisplay}</span></td>
+                        <td class="text-end">$${me._serviceRequestData.amount.toFixed(2)}</td>
+                        <td class="text-end text-danger" id="item-discount">-$0.00</td>
+                        <td class="text-end text-info" id="item-tax">$0.00</td>
+                        <td class="text-end fw-bold" id="item-net">$${me._serviceRequestData.amount.toFixed(2)}</td>
+                    </tr>`;
+
+                if (typeof me.calculateAndUpdate === 'function') me.calculateAndUpdate();
+            })
+            .catch(() => cv_interact.error('Network error loading data'));
+    };
+
+    return self;
+})();
 
 
 const CreateServiceRequestDialog = (() => {
@@ -1236,6 +834,7 @@ const CreateServiceRequestDialog = (() => {
             },
 
             prepareFormOptions: {
+                generateInvoice: "Generate Invoice",
                 createTitle: "Create Service Request",
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",

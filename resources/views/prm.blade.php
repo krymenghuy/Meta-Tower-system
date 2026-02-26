@@ -403,6 +403,7 @@
                             @include('layouts.prm.expenseComponent')
                             @include('layouts.prm.serviceRequestComponent')
                             @include('layouts.prm.reservationComponent')
+                            @include('layouts.prm.amenityComponent')
 
 
                         </div>
