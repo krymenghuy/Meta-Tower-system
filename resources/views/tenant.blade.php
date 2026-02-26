@@ -229,8 +229,8 @@
                                                         $route = '/'.ltrim($app->home_route, '/');
                                                     ?>
                                                     <div class="col">
-                                                        <a href="<?= $route ?>" 
-                                                        class="app-link d-block text-decoration-none text-dark small" 
+                                                        <a href="<?= $route ?>"
+                                                        class="app-link d-block text-decoration-none text-dark small"
                                                         data-app-key="<?= htmlspecialchars($name) ?>">
                                                             <?= $icon ?>
                                                             <div class="mt-2 text-truncate"><?= $name ?></div>
@@ -315,15 +315,16 @@
                             @include('layouts.tenant.buildingServiceComponent')
                             @include('layouts.tenant.announcementComponent')
 
-                            
 
-                            
 
-                            
+
+
+
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </body>

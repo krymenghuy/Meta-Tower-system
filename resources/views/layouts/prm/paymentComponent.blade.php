@@ -20,7 +20,7 @@
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btn btn--Options w-70 w-md-auto" id="_btnPayment">
                       <i class="fa-solid fa-money-check-dollar mr-2"></i>
-                    <span vslang="buttons. Payment"></span>
+                    <span vslang="buttons.Payment"></span>
                 </button>
             </div>
         </div>
