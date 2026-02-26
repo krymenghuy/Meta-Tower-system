@@ -2,7 +2,7 @@
 
 var ServiceRequestComponent = (function () {
     const mThis = {};
-    mThis.title_prop = "Service Request Component";
+    mThis.title_prop = "Service Request";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_request_component");
 
@@ -180,24 +180,24 @@ var ServiceRequestComponent = (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2">Generate Invoice</span>',
+                    html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
                     icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
                     name: "generate_invoice",
                     cssClass: "border-bottom pb-2 mb-2"
                 },
                 {
-                    html: '<span class="ps-2">Change Status</span>',
+                    html: '<span class="ps-2 " vslang="title.Change Status"></span>',
                     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
                     name: "change_status",
                     cssClass: "border-bottom pb-2"
                 },
                 {
-                    html: '<span class="ps-2">Modify</span>',
+                    html: '<span class="ps-2" vslang="title.Modify" ></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     name: "edit_request",
                     cssClass: "border-bottom pb-2" },
                 {
-                    html: '<span class="ps-2">Delete</span>',
+                    html: '<span class="ps-2" vslang="title.Delete"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     name: "delete_request",
                     cssClass: "border-bottom pb-2" }
@@ -215,6 +215,7 @@ var ServiceRequestComponent = (function () {
         CreateInvoiceServiceRequestDialog.show({
             service_request_id: id,
             btn: menuLink,
+
             onClose: () => mThis.ServiceRequestListView.showPage(mThis.getFilterData())
         });
     };
@@ -436,7 +437,6 @@ const CreateInvoiceServiceRequestDialog = (() => {
                         if (el.dataset.field) me.controls[el.dataset.field] = el;
                     });
 
-                    // 🔥 TAX NOW CALCULATED ON ORIGINAL AMOUNT (BEFORE DISCOUNT)
                     const calculateAndUpdate = () => {
                         if (!me._serviceRequestData) return;
 
@@ -481,7 +481,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             if (!me._serviceRequestData) return cv_interact.error('No service request data loaded');
 
                             const formData = me.getData();
-                             console.log("12345",formData);
+                            console.log("1234222",formData);
                             const discType = document.getElementById('discount_type')?.value || 'percent';
                             const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
                             const taxType  = document.getElementById('tax_type')?.value || 'percent';
@@ -492,6 +492,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             const tax      = taxType === 'percent' ? subtotal * (taxVal / 100) : taxVal;   // ← CHANGED HERE TOO
 
                             formData.items = [{
+
                                 service_id: me._serviceRequestData.service_id,
                                 description: me._serviceRequestData.description,
                                 type: 'Service',
@@ -533,8 +534,6 @@ const CreateInvoiceServiceRequestDialog = (() => {
     };
 
     const loadServiceRequestData = (me, op) => {
-        // console.log("12345",op);
-
         if (!op?.service_request_id) return;
 
         me._serviceRequestData = null;
@@ -551,17 +550,10 @@ const CreateInvoiceServiceRequestDialog = (() => {
                 if (res.status_code !== 200) return cv_interact.error('Failed to load data');
 
                 const data = res.data.request_details || {};
-                const tenants = res.data.tenants || [];
+                // console.log("1111",data);
                 const service = res.data.services?.find(s => s.id == data.service_id) || {};
-
-                let tenantName = '-';
-                if (data.tenant_id) {
-                    const tenantObj = tenants.find(t => String(t.id) === String(data.tenant_id));
-                    tenantName = tenantObj ? tenantObj.tenant : '-';
-                }
-
-                document.getElementById('info-tenant').textContent = tenantName;
-                document.getElementById('info-space').textContent  = data.code || '-';
+                document.getElementById('info-tenant').textContent = data.tenant_name || '-';
+                document.getElementById('info-space').textContent  = data.space_code || '-';
                 document.getElementById('info-service').textContent = service.service || '-';
                 document.getElementById('info-unit').textContent   = data.unit_type || '-';
 
@@ -574,6 +566,8 @@ const CreateInvoiceServiceRequestDialog = (() => {
                     quantity: parseFloat(data.quantity || 1),
                     amount: parseFloat(data.total_price || data.service_price || 0)
                 };
+
+
 
                 me.controls.tenant_id.value = data.tenant_id || '';
                 me.controls.space_id.value  = data.space_id || '';
@@ -864,7 +858,7 @@ const CreateServiceRequestDialog = (() => {
                         ).then(res => {
                             if (res.status_code === 200) {
                                 me.hide(true);
-                                cv_interact.success(data.id ? "✓ Updated!" : "✓ Created!");
+                                cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
                             } else {
                                 cv_interact.error(res.error_message || "Save failed");
                             }

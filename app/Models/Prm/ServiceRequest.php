@@ -255,7 +255,9 @@ class ServiceRequest extends VSModel
     public static function getServiceRequestDetails($id)
     {
         return DB::table('service_requests as sr')
+            ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->where('sr.id', $id)
             ->select([
                 'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id',
@@ -263,7 +265,9 @@ class ServiceRequest extends VSModel
                 'sr.request_date', 'sr.description',
                 'sr.request_status_id', 'sr.update_user',
                 'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
-                'sr.updated_at', 'sr.total_price', 'sr.duration_hours'
+                'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
+                'bs.code as space_code',
+                't.name as tenant_name'
             ])
             ->first();
     }
@@ -315,7 +319,7 @@ class ServiceRequest extends VSModel
         if ($currentStatus == $request_status_id){
             return DV::error('It is the same status.');
         }
-        
+
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);

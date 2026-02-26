@@ -304,6 +304,12 @@ var ContractComponent = new (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2 " vslang="titles.Generate Invoice"></span>',
+                    icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "generate_invoice"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -330,11 +336,16 @@ var ContractComponent = new (function () {
                 menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
                 menu.edit_contract.style.display = status_id == 2 ? 'none' : 'block';
+                menu.generate_invoice.style.display = status_id ==2 ? 'none': 'block';
 
 
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case 'generate_invoice':{
+                        mThis.generateInvoice(id,menuLink);
+                        break;
+                    }
                     case 'edit_contract': {
                         mThis.editContract(id, menuLink);
                         break;
@@ -354,6 +365,15 @@ var ContractComponent = new (function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
+    }
+    mThis.CreateInvoiceServiceRequestDialog =(id,menulink) =>{
+        let op ={
+            id: id,
+            btn: menulink,
+            onCLose:() =>{
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        }
     }
 
     mThis.editContract = (id, menulink) => {
