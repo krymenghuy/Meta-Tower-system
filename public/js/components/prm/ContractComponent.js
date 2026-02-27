@@ -450,8 +450,6 @@ var ContractComponent = new (function () {
     return mThis;
 })();
 
-
-
 const CreateInvoiceContractDialog = (() => {
     const self = {};
     let dialog = null;
@@ -649,7 +647,6 @@ const CreateInvoiceContractDialog = (() => {
                             const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
 
                             const itemType = me._contractData.space_type || 'Rent';
-
                             const description = me._contractData.description ||
                                                 `Monthly Rent - ${me._contractData.space_code || 'Unit'} (${me._contractData.period || 'Contract Period'})`;
 
@@ -736,13 +733,12 @@ const CreateInvoiceContractDialog = (() => {
                 document.getElementById('info-tenant').textContent     = data.tenant_name   || '-';
                 document.getElementById('info-space').textContent      = data.space_code    || '-';
                 document.getElementById('info-business').textContent   = data.business_type || '-';
-                document.getElementById('info-type').textContent       = data.space_type    || '-';   // ← display uses space_type
+                document.getElementById('info-type').textContent       = data.space_type    || '-';
                 document.getElementById('info-start-date').textContent = start;
                 document.getElementById('info-end-date').textContent   = end;
                 document.getElementById('info-price').textContent      = data.price ? `$${Number(data.price).toFixed(2)}` : '-';
                 document.getElementById('info-email').textContent      = data.email || '-';
                 const description = `Monthly Rent - ${data.space_code || 'Unit'} (${period})`;
-
                 me._contractData = {
                     id: data.id,
                     tenant_id: data.tenant_id,
@@ -753,7 +749,6 @@ const CreateInvoiceContractDialog = (() => {
                     period: period,
                     space_code: data.space_code || 'Unit'
                 };
-
                 if (me.controls) {
                     if (me.controls.tenant_id)  me.controls.tenant_id.value  = data.tenant_id || '';
                     if (me.controls.space_id)   me.controls.space_id.value   = data.space_id  || '';
@@ -762,7 +757,6 @@ const CreateInvoiceContractDialog = (() => {
                 }
 
                 me._subtotal = me._contractData.price;
-
                 document.getElementById('items-body').innerHTML = `
                     <tr>
                         <td>${description}</td>
@@ -783,7 +777,6 @@ const CreateInvoiceContractDialog = (() => {
 
     return self;
 })();
-
 
 
 const ContractDialog = (() => {
