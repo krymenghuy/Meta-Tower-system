@@ -53,7 +53,6 @@ class Invoice extends VSModel
     if (empty($items)) {
         return DV::error('Please add at least one item.');
     }
-
     // Validate each item
     foreach ($items as $index => $item) {
         if (empty(trim($item['description'] ?? ''))) {
@@ -88,31 +87,34 @@ class Invoice extends VSModel
 
     try {
         $created    = !$id;
-        $invoice_id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
 
-        if (!$invoice_id) {
+        if (!$id) {
             throw new \Exception("Failed to save invoice header.");
         }
 
         $codeRes = null;
-        if ($created && $branch_id) {
-            $codeRes = setOfficialCodeInvoice(
+        if ($created && $id) {
+            $prefix = 'I-';
+            $codeRes = setOfficialCode(
+
                 $branch_id,
                 'invoice_code_control',
                 'invoices',
-                ['id' => $invoice_id],
-                'I',
+                ['id' => $id],
+                $prefix,
                 5,
                 null
             );
+            \Log::info(json_encode($codeRes));
 
             if (!$codeRes || !isset($codeRes->status) || $codeRes->status !== 'OK') {
-                \Log::warning("Invoice code generation failed for id: {$invoice_id}");
+                \Log::warning("Invoice code generation failed for id: {$id}");
             }
         }
 
         if (!$created) {
-            DB::table('invoice_items')->where('invoice_id', $invoice_id)->delete();
+            DB::table('invoice_items')->where('invoice_id', $id)->delete();
         }
 
         $itemRows = [];
@@ -137,7 +139,7 @@ class Invoice extends VSModel
             $grandTotal += $netAmount;  // ← Accumulate here
 
             $itemRows[] = [
-                'invoice_id'      => $invoice_id,
+                'invoice_id'      => $id,
                 'service_id'      => $item['service_id'] ?? null,
                 'type'            => $item['type']       ?? null,
                 'description'     => trim($item['description']),
@@ -155,10 +157,9 @@ class Invoice extends VSModel
         }
 
         DB::table('invoice_items')->insert($itemRows);
-
         // Update invoice header with correct grand total
         DB::table('invoices')
-            ->where('id', $invoice_id)
+            ->where('id', $id)
             ->update([
                 'amount'     => $grandTotal,   // ← Now using the real calculated value
                 'updated_at' => now(),
@@ -166,12 +167,14 @@ class Invoice extends VSModel
 
         DB::commit();
 
-        $return_data = ['id' => $invoice_id];
-        if (isset($codeRes->code)) {
-            $return_data['code'] = $codeRes->code;
-        }
+        // $return_data = ['id' => $id];
+        // if (isset($codeRes->code)) {
+        //     $return_data['code'] = $codeRes->code;
+        // }
+        return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
 
-        return DV::depends(1, $return_data);
+        // return DV::depends(1, $return_data);
+
 
     } catch (\Exception $e) {
         DB::rollBack();
@@ -236,6 +239,7 @@ class Invoice extends VSModel
                 'ct.sqm_size as contract_sqm_size',
                 's.name as service_name',
                 's.price as service_price',
+                's.unit_type as service_unit_type',
                 'bt.name as business_type_name',
             ])
             ->orderByDesc('i.id');
@@ -303,6 +307,7 @@ class Invoice extends VSModel
                 'ps.name as payment_status_name',
                 's.name as service_name',
                 's.price as service_price',
+                's.unit_type as service_unit_type',
                 'bt.name as business_type_name',
             )
             ->first();
@@ -330,6 +335,7 @@ class Invoice extends VSModel
                 'ii.tax_value',
                 'ii.notes',
                 's.name as service_name',
+                's.unit_type as service_unit_type',
             )
             ->get();
 

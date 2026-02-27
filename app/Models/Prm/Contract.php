@@ -96,7 +96,7 @@ class Contract
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
-            $current_page = 1;  
+            $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $today = date('Y-m-d');
@@ -135,7 +135,7 @@ class Contract
             ->selectRaw($selectCols)
             ->orderByRaw('c.id desc');
 
-        
+
         $clone_query = clone $query;
         $count = $clone_query->count('c.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
@@ -150,14 +150,36 @@ class Contract
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    
+
     public static function contractDetails($id)
-{
-    return DB::table('contracts as c')
-       ->where('c.id', $id)
-        ->selectRaw('c.id,c.tenant_id,c.legal_name,c.space_id,c.status_id,c.business_type_id,c.space_type_id,c.sqm_size,c.price,c.price_type,c.start_date,c.end_date,c.remarks')
-        ->first();
-}
+        {
+            return DB::table('contracts as c')
+                ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+                ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+                ->join('business_types as bt', 'bt.id', '=', 'c.business_type_id')
+                ->join('space_types as st', 'st.id', '=', 'c.space_type_id')
+                ->where('c.id', $id)
+                ->selectRaw('
+                            c.id,
+                            c.tenant_id,
+                            c.legal_name,
+                            c.space_id,
+                            c.status_id,
+                            c.business_type_id,
+                            c.space_type_id,
+                            c.sqm_size,
+                            c.price,
+                            c.price_type,
+                            c.start_date,
+                            c.end_date,
+                            c.remarks,
+                            bs.code as space_code,
+                            t.name as tenant_name,
+                            bt.name as business_name,
+                            st.name as space_name
+                            ')
+                ->first();
+        }
 
     public static function getFormOptions($id,$ss)
     {
@@ -286,7 +308,7 @@ static function getTenantInfo($arr=[], $ss = null)
                 t.sex,
                 t.legal_name,
                 t.phone_number'
-               
+
             )
             ->take(1)
             ->get()
@@ -295,9 +317,8 @@ static function getTenantInfo($arr=[], $ss = null)
         if (!$row) {
             return null;
         }
-       
+
         return $row;
     }
-    
+
 }
-        
