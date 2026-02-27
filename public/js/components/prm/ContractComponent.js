@@ -368,14 +368,15 @@ var ContractComponent = new (function () {
     }
 
     mThis.generateInvoice = (id, menuLink) => {
-    CreateInvoiceContractDialog.show({
-        contract_invoice_id: id,
-        btn: menuLink,
-        onClose: () => {
-            mThis.ContractListView.showPage(mThis.getFilterData());
-        }
-    });
-};
+        let op = {
+            contract_invoice_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        };
+        CreateInvoiceContractDialog.show(op);
+    };
 
     mThis.editContract = (id, menulink) => {
         let op = {
@@ -392,7 +393,7 @@ var ContractComponent = new (function () {
 
         let op = {
             id: id,
-            contract_invoice_id: id,
+            contract_id: id,
             btn: menulink,
             onClose: () => {
                 mThis.ContractListView.showPage(mThis.getFilterData());
