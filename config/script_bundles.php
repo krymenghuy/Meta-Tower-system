@@ -75,6 +75,11 @@ return [
                 //'/assets/js/datatables.bundle.min.js',/** to be removed soon */
                 '/assets/js/browsercontrol.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
+
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsEngine.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsValidator.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/ui/ItemsView.js',
+
             ],
             'no-minify' => [
                 '/assets/js/crypto-js.js',
@@ -129,8 +134,12 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
+<<<<<<<<< Temporary merge branch 1
                 'js/components/prm/AmenityComponent.js',
 
+=========
+
+>>>>>>>>> Temporary merge branch 2
 
 
             ]

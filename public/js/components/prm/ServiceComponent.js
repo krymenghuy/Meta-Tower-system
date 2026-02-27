@@ -49,7 +49,7 @@ var ServiceComponent =   ( () => {
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? 'N/A'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '...'}</span>
                     </div>
                 `;
             }
@@ -275,6 +275,7 @@ var ServiceComponent =   ( () => {
         const inputOptions = {
             context:'success',
             transTitle: 'Change Status',
+            title:'Change Service Status',
             label: "Service Status",
             valueKey: "status_id",
             labelKey: "name",

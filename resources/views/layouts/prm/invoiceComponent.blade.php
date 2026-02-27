@@ -3,8 +3,7 @@
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="position-relative w-100">
-                <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_invoice" placeholder="Search">
-                <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_invoice" placeholder="Search">
             </div>
          </div>
 
@@ -18,6 +17,10 @@
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnInvoice">
                         <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
                     <span vslang="buttons.Generate Invoice"></span>
+                </button>
+                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnInvoice_test">
+                        <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
+                    <span vslang="buttons.Test Invoice"></span>
                 </button>
             </div>
 
