@@ -224,7 +224,7 @@ var ContractComponent = new (function () {
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
                 tr.classList.add('contract');
-                tr.setAttribute('id', ['contract_id', data.id].join(''));
+                tr.setAttribute('id', ['contract_invoice_id', data.id].join(''));
             },
             listContainerClass: null
         });
@@ -366,15 +366,16 @@ var ContractComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
-    mThis.CreateInvoiceServiceRequestDialog =(id,menulink) =>{
-        let op ={
-            id: id,
-            btn: menulink,
-            onCLose:() =>{
-                mThis.ContractListView.showPage(mThis.getFilterData());
-            }
+
+    mThis.generateInvoice = (id, menuLink) => {
+    CreateInvoiceContractDialog.show({
+        contract_invoice_id: id,
+        btn: menuLink,
+        onClose: () => {
+            mThis.ContractListView.showPage(mThis.getFilterData());
         }
-    }
+    });
+};
 
     mThis.editContract = (id, menulink) => {
         let op = {
@@ -391,7 +392,7 @@ var ContractComponent = new (function () {
 
         let op = {
             id: id,
-            contract_id: id,
+            contract_invoice_id: id,
             btn: menulink,
             onClose: () => {
                 mThis.ContractListView.showPage(mThis.getFilterData());
@@ -448,6 +449,342 @@ var ContractComponent = new (function () {
 
     return mThis;
 })();
+
+
+
+const CreateInvoiceContractDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        if (!dialog) {
+            dialog = new GeneralDialog({
+                cssClass: "modal-xl vs-modal",
+                backdrop: "static",
+                keyboard: true,
+
+                createContent: () => `
+                    <div class="row g-4">
+                        <!-- Tenant & Contract Info -->
+                        <div class="col-12">
+                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
+                                <div class="row g-3 text-start">
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Tenant:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-tenant">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Room/Unit:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-space">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Business:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-business">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Type:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-type">-</span>
+                                    </div>
+                                </div>
+                                <div class="row g-3 text-start mt-2">
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Start Date:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-start-date">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">End Date:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-end-date">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Monthly Price:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-price">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="text-muted fw-medium">Email:</span><br>
+                                        <span class="fw-semibold fs-6" id="info-email">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Date, Discount, Tax -->
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Invoice Date <span class="text-danger">*</span></label>
+                                    <input type="text" data-type="date" class="form-control data-input" data-field="due_date" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Discount</label>
+                                    <div class="d-flex gap-1">
+                                        <select class="form-select" id="discount_type" style="max-width:90px;">
+                                            <option value="percent">%</option>
+                                            <option value="fixed">$</option>
+                                        </select>
+                                        <input type="number" step="0.01" min="0" class="form-control" id="discount_value" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Tax</label>
+                                    <div class="d-flex gap-1">
+                                        <select class="form-select" id="tax_type" style="max-width:90px;">
+                                            <option value="percent">%</option>
+                                            <option value="fixed">$</option>
+                                        </select>
+                                        <input type="number" step="0.01" min="0" class="form-control" id="tax_value" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Item Table -->
+                        <div class="col-12">
+                            <div class="border border-info border-2 rounded-3 p-3 bg-white">
+                                <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#e1e5f2; margin:-16px -16px 16px -16px; padding:12px 20px; border-radius:6px 6px 0 0;">
+                                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Invoice Item (Contract)</h6>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm align-middle table-hover mb-0">
+                                        <thead style="background-color:#f0f4ff;">
+                                            <tr>
+                                                <th>Description</th>
+                                                <th class="text-center">Type</th>
+                                                <th class="text-end">Amount</th>
+                                                <th class="text-end">Discount</th>
+                                                <th class="text-end">Tax</th>
+                                                <th class="text-end">Net Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="items-body"></tbody>
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <td colspan="2" class="text-end fw-bold">Subtotal</td>
+                                                <td class="text-end fw-bold" id="calc-subtotal">$0.00</td>
+                                                <td class="text-end fw-bold text-danger" id="calc-discount">-$0.00</td>
+                                                <td class="text-end fw-bold text-info" id="calc-tax">+$0.00</td>
+                                                <td class="text-end fw-bold fs-5 text-success" id="calc-total">$0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Remarks</label>
+                            <textarea class="form-control data-input" data-field="remarks" rows="3" placeholder="Invoice note..."></textarea>
+                        </div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" data-field="tenant_id">
+                        <input type="hidden" data-field="space_id">
+                        <input type="hidden" data-field="contract_invoice_id">
+                    </div>
+                `,
+
+                contentCreated: (me) => {
+                    me.controls = {};
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+                        if (el.dataset.field) me.controls[el.dataset.field] = el;
+                    });
+
+                    const calculateAndUpdate = () => {
+                        if (!me._subtotal) return;
+
+                        const subtotal = parseFloat(me._subtotal);
+                        const discType = document.getElementById('discount_type')?.value || 'percent';
+                        const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                        const taxType  = document.getElementById('tax_type')?.value  || 'percent';
+                        const taxVal   = parseFloat(document.getElementById('tax_value')?.value  || 0);
+
+                        const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                        const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
+                        const net      = subtotal - discount + tax;
+
+                        document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                        document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
+                        document.getElementById('calc-tax').textContent      = `+$${tax.toFixed(2)}`;
+                        document.getElementById('calc-total').textContent    = `$${net.toFixed(2)}`;
+
+                        const itemDiscountEl = document.getElementById('item-discount');
+                        const itemTaxEl      = document.getElementById('item-tax');
+                        const itemNetEl      = document.getElementById('item-net');
+
+                        if (itemDiscountEl) itemDiscountEl.textContent = `-$${discount.toFixed(2)}`;
+                        if (itemTaxEl)      itemTaxEl.textContent      = `+$${tax.toFixed(2)}`;
+                        if (itemNetEl)      itemNetEl.textContent      = `$${net.toFixed(2)}`;
+                    };
+
+                    ['discount_value', 'tax_value'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.addEventListener('input', calculateAndUpdate);
+                    });
+                    ['discount_type', 'tax_type'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.addEventListener('change', calculateAndUpdate);
+                    });
+
+                    me.loadContractData = (op) => loadContractData(me, op);
+                    me.calculateAndUpdate = calculateAndUpdate;
+                },
+
+                buttons: [
+                    { label: 'Cancel', cssClass: 'btn btn-secondary', click: me => me.hide(false) },
+                    {
+                        label: 'Generate Invoice',
+                        cssClass: 'btn btn-primary',
+                        click: (me, btn) => {
+                            if (!me._contractData) return cv_interact.error('No contract data loaded');
+
+                            const formData = me.getData() || {};
+
+                            const discType = document.getElementById('discount_type')?.value || 'percent';
+                            const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                            const taxType  = document.getElementById('tax_type')?.value  || 'percent';
+                            const taxVal   = parseFloat(document.getElementById('tax_value')?.value  || 0);
+
+                            const subtotal = me._subtotal || 0;
+                            const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                            const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
+
+                            const itemType = me._contractData.space_type || 'Rent';
+
+                            const description = me._contractData.description ||
+                                                `Monthly Rent - ${me._contractData.space_code || 'Unit'} (${me._contractData.period || 'Contract Period'})`;
+
+                            formData.items = [{
+                                description: description,
+                                type: itemType,
+                                amount: subtotal,
+                                discount_type: discType,
+                                discount_value: discVal,
+                                discount: discount,
+                                tax_type: taxType,
+                                tax_value: taxVal,
+                                tax: tax,
+                                contract_invoice_id: me._contractData.id
+                            }];
+
+                            formData.tenant_id    = me._contractData.tenant_id;
+                            formData.space_id     = me._contractData.space_id;
+                            formData.contract_invoice_id = op.contract_invoice_id || op.id;
+                            formData.due_date = formData.due_date || new Date().toISOString().split('T')[0];
+
+                            console.log("Invoice payload:", formData);
+
+                            vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
+                                .then(res => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true);
+                                        cv_interact.success('Contract invoice generated!');
+                                        if (op.onClose) op.onClose();
+                                    } else {
+                                        cv_interact.error(res.error_message || 'Failed to generate invoice');
+                                    }
+                                })
+                                .catch(() => cv_interact.error('Network error'));
+                        }
+                    }
+                ]
+            });
+        }
+
+        dialog.show(op);
+
+        setTimeout(() => {
+            if (dialog.loadContractData) dialog.loadContractData(op);
+        }, 150);
+    };
+
+    const loadContractData = (me, op) => {
+        if (!op?.contract_invoice_id) {
+            console.warn("No contract ID passed");
+            return;
+        }
+
+        me._contractData = null;
+        me._subtotal = 0;
+
+        // Reset UI
+        ['info-tenant','info-space','info-business','info-type','info-start-date','info-end-date','info-price','info-email']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '-';
+            });
+        document.getElementById('items-body').innerHTML = '';
+
+        vsapi.call(`${main_view.base_url}/prm/contract/list-paginate`, { id: op.contract_invoice_id })
+            .then(res => {
+                console.log("[Contract Invoice] Full response:", res);
+
+                if (res.status_code !== 200 || !res.data?.data?.length) {
+                    cv_interact.error('No contract found');
+                    console.warn("No data found in paginate response");
+                    return;
+                }
+
+                const data = res.data.data[0] || {};
+
+                console.log("[Contract Invoice] Selected contract:", data);
+
+                const start  = data.start_date  || '-';
+                const end    = data.end_date    || '-';
+                const period = (start !== '-' && end !== '-') ? `${start} → ${end}` : '-';
+
+                // Fill UI
+                document.getElementById('info-tenant').textContent     = data.tenant_name   || '-';
+                document.getElementById('info-space').textContent      = data.space_code    || '-';
+                document.getElementById('info-business').textContent   = data.business_type || '-';
+                document.getElementById('info-type').textContent       = data.space_type    || '-';   // ← display uses space_type
+                document.getElementById('info-start-date').textContent = start;
+                document.getElementById('info-end-date').textContent   = end;
+                document.getElementById('info-price').textContent      = data.price ? `$${Number(data.price).toFixed(2)}` : '-';
+                document.getElementById('info-email').textContent      = data.email || '-';
+                const description = `Monthly Rent - ${data.space_code || 'Unit'} (${period})`;
+
+                me._contractData = {
+                    id: data.id,
+                    tenant_id: data.tenant_id,
+                    space_id: data.space_id,
+                    price: parseFloat(data.price || 0),
+                    description: description,
+                    space_type: data.space_type || 'Rent',
+                    period: period,
+                    space_code: data.space_code || 'Unit'
+                };
+
+                if (me.controls) {
+                    if (me.controls.tenant_id)  me.controls.tenant_id.value  = data.tenant_id || '';
+                    if (me.controls.space_id)   me.controls.space_id.value   = data.space_id  || '';
+                    if (me.controls.contract_invoice_id)
+                        me.controls.contract_invoice_id.value = data.id || op.contract_invoice_id;
+                }
+
+                me._subtotal = me._contractData.price;
+
+                document.getElementById('items-body').innerHTML = `
+                    <tr>
+                        <td>${description}</td>
+                        <td class="text-center">${me._contractData.space_type}</td>   <!-- shows space_type -->
+                        <td class="text-end">$${me._subtotal.toFixed(2)}</td>
+                        <td class="text-end text-danger" id="item-discount">-$0.00</td>
+                        <td class="text-end text-info" id="item-tax">+$0.00</td>
+                        <td class="text-end fw-bold" id="item-net">$${me._subtotal.toFixed(2)}</td>
+                    </tr>`;
+
+                if (me.calculateAndUpdate) me.calculateAndUpdate();
+            })
+            .catch(err => {
+                console.error("[Contract Invoice] API failed:", err);
+                cv_interact.error('Failed to load contract data');
+            });
+    };
+
+    return self;
+})();
+
+
 
 const ContractDialog = (() => {
     const self = {};
@@ -811,6 +1148,7 @@ const RenewDialog = (() => {
                 // me.controls.price.value = data.contract_details.price;
                 // me.controls.price_type.value = data.contract_details.price_type;
                 // me.controls.remarks.value = data.contract_details.remarks;
+                me.detail = data.contract_details;
             },
 
             buttons: [

@@ -550,7 +550,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                 if (res.status_code !== 200) return cv_interact.error('Failed to load data');
 
                 const data = res.data.request_details || {};
-                // console.log("1111",data);
+                console.log("1111",data);
                 const service = res.data.services?.find(s => s.id == data.service_id) || {};
                 document.getElementById('info-tenant').textContent = data.tenant_name || '-';
                 document.getElementById('info-space').textContent  = data.space_code || '-';
