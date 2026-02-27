@@ -5,7 +5,17 @@ var InvoicesComponent = (function () {
     mThis.title_prop = " Invoice Management";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoices_component");
-    
+   
+    // const root = mThis.self;
+    // Object.assign(mThis, {
+    //     btnAddTest:  root.querySelector("#_btnInvoice_test"),
+    //     btnAdd:      root.querySelector("#_btnInvoices"),
+    //     divFilter:   root.querySelector("#_divFilter_invoices"),
+    //     elLeaveType: root.querySelector("#el_leave_type"),
+    //     elSearch:    root.querySelector("#_search_invoices"),
+    // });
+
+     mThis.btnAddTest = mThis.self.querySelector("#_btnInvoice_test");
     mThis.btnAdd = mThis.self.querySelector("#_btnInvoices");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_invoices");
     mThis.elLeaveType = mThis.self.querySelector("#el_leave_type");
@@ -137,6 +147,7 @@ var InvoicesComponent = (function () {
             listContainerClass: null
         });
 
+        
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
@@ -149,8 +160,7 @@ var InvoicesComponent = (function () {
             // if (!AuthManager.allowed(240)) return;
             InvoicesDialog.show(op);
         };
-
-
+ 
         mThis.pr_tbl = mThis.InvoicesListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
@@ -544,6 +554,5 @@ const InvoicesDialog = (() => {
 
     return self;
 })();
-
 
 

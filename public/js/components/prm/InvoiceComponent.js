@@ -6,6 +6,7 @@ var InvoiceComponent = (() => {
     mThis.currency_symbol = '$';
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
     mThis.btnAdd          = mThis.self.querySelector("#_btnInvoice");
+     mThis.btnAddTest          = mThis.self.querySelector("#_btnInvoice_test");
     mThis.divFilter       = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elFilter_status = mThis.self.querySelector('#payment_status');
     mThis.elBuilding      = mThis.self.querySelector('#building_id');
@@ -91,6 +92,13 @@ var InvoiceComponent = (() => {
             InvoiceDialog.show({ id: null, btn: e.target,
                 onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData()) });
         };
+
+        mThis.btnAddTest.onclick = (e) => {
+            e.preventDefault();
+            InvoiceDialogTest.show({ id: null, btn: e.target,
+                onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData()) });
+        };
+
 
         const pr_tbl    = mThis.InvoiceListView.getListContainer();
         const sh_parent = pr_tbl.parentElement;
@@ -821,4 +829,208 @@ const InvoiceDialog = (() => {
     };
 
     return self;
+})();
+
+
+
+// INVOICE DIALOG TEST
+
+const InvoiceDialogTest = (() => {
+
+  let dlg = null;
+
+  const self = {};
+
+  self.show = (op = {}) => {
+
+    dlg = dlg || new GeneralDialog({
+
+      cssClass: "modal-xl",
+
+      createContent: () => `
+        <div class="container-fluid">
+
+          <div class="row g-3 mb-3">
+
+            <div class="col-md-4">
+              <label>Customer</label>
+              <input name="customer_name" class="form-control data-input"/>
+            </div>
+
+            <div class="col-md-4">
+              <label>Phone</label>
+              <input name="customer_phone" class="form-control data-input"/>
+            </div>
+
+            <div class="col-md-4">
+              <label>Currency</label>
+              <select name="currency_code" class="form-select data-input">
+                <option value="USD">USD</option>
+                <option value="KHR">KHR</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div name="divItemsView"></div>
+
+          <div class="mt-4 d-flex justify-content-end">
+            <div name ="div_invoice_summary"></div>
+          </div>
+
+        </div>
+      `,
+
+      contentCreated: (me) => {
+
+        me.itemsView = new ItemsView(
+          me.controls.divItemsView,
+          {
+
+            columns: [
+
+              {
+                name: "item_id",
+                transTitle: "Product",
+                displayType: "select"
+              },
+              {
+                name: "remarks",
+                transTitle: "Remarks",
+                dataType: "string"
+              },
+              {
+                name: "qty",
+                transTitle: "Qty",
+                dataType: "number",
+                defaultValue: 1,
+                isNumeric: true
+              },
+              {
+                name: "price",
+                transTitle: "Unit Price",
+                dataType: "number",
+                defaultValue: 0,
+                isNumeric: true
+              },
+              {
+                name: "discount",
+                transTitle: "titles.Disc",
+                isDiscount: true,
+                discountType: ["percent", "amount"],
+                defaultDiscountType: "percent",
+                discountBeforeTax: true
+              },
+              {
+                name: "tax_rate",
+                transTitle: "Tax %",
+                dataType: "number",
+                defaultValue: 10,
+                isNumeric: true
+              },
+              {
+                name: "total",
+                title: "Line Total",
+                readOnly: true,
+                dataType: "number",
+                isNumeric: true
+              }
+
+            ],
+
+            calc: {
+              mode: "auto",
+              qtyField: "qty",
+              priceField: "price",
+              totalField: "total",
+              taxField: "tax_rate",
+              currencyPrecision: 2
+            },
+
+            totalSummary: {
+              container: me.controls.div_invoice_summary,
+              showTax: true,
+              allowDiscount: true,
+              discountBeforeTax: true,
+              discountTypeDefault: "percent",
+              currency: "USD"
+            },
+
+            validateColumns: {
+              item_id: "positive",
+              qty: "positive",
+              price: "positive"
+            },
+
+            onItemChange: (rowId, item, fieldName, td, tr) => {
+
+              if (fieldName === "item_id") {
+
+                let remarkText = "";
+
+                switch (Number(item.item_id)) {
+                  case 1: remarkText = "Standard quality"; break;
+                  case 2: remarkText = "Premium grade"; break;
+                  case 3: remarkText = "Special promotion"; break;
+                }
+
+                me.itemsView.setCellHTML(
+                  tr,
+                  "remarks",
+                  `<span class="badge bg-info">${remarkText}</span>`,
+                  { value: remarkText }
+                );
+              }
+
+            }
+
+          }
+        );
+
+        me.itemsView.setSelectOptions("item_id", [
+          { value: 1, label: "Product A" },
+          { value: 2, label: "Product B" },
+          { value: 3, label: "Product C" }
+        ]);
+
+        me.saveData = () => {
+
+          const header = me.getData();
+          const items = me.itemsView.getItems();
+          const totals = me.itemsView.getCurrentTotals?.() || {};
+
+          return {
+            ...header,
+            items,
+            ...totals
+          };
+        };
+      },
+
+      buttons: [
+
+        {
+          label: "Cancel",
+          cssClass: "btn btn-secondary",
+          click: (me) => me.hide(false)
+        },
+
+        {
+          label: "Save",
+          cssClass: "btn btn-primary",
+          click: (me) => {
+            console.log("items:", me.itemsView.getItems());
+            me.hide(true);
+          }
+        }
+
+      ]
+
+    });
+
+    dlg.show(op);
+  };
+
+  return self;
+
 })();
