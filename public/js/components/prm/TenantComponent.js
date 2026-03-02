@@ -40,7 +40,7 @@ var TenantComponent = new(function () {
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `
-                    <div class="text-yp-custom" style="width:180px;">
+                    <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ''}</span>
                         <small class="d-block text-muted">${sexLabel}</small>
                     </div>
