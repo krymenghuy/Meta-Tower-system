@@ -93,6 +93,52 @@ return [
         'status_norm',
         'descriptive_name_norm',
     ],
+
+    'audit' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Enable / Disable Audit System Globally
+        |--------------------------------------------------------------------------
+        */
+        'enabled' => true,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit Table Suffix
+        |--------------------------------------------------------------------------
+        | Example:
+        |   package -> package_audit
+        */
+        'table_suffix' => '_audit',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Queue Name
+        |--------------------------------------------------------------------------
+        | Set null to use default queue
+        */
+        'queue' => 'audit',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Bulk Insert Chunk Size
+        |--------------------------------------------------------------------------
+        */
+        'chunk_size' => 300,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Retry Attempts
+        |--------------------------------------------------------------------------
+        */
+        'tries' => 3,
+
+    ],
+    'default_date_format'=>'d-M-Y',
+    'default_time_format'=>'d-M-Y h:i',
+
+    
     'fuzzy_search'=>[
 
         /*
@@ -124,11 +170,14 @@ return [
         |
         */
         'normalized_columns'=>[
-            'tenants'=>[
-                 '_search_tenant'=>['code','name','legal_name','phone_number','email'],
+            'students'=>[
+                '_search_student'=>['code','name','name_kh','phone_number'],
+            ],
+            'student_groups'=>[
+                '_search_group'=>['descriptive_name','name'],
             ],
             'um_app_modules'=>[
-                '_search_module'=>['name','code']
+                '_search_name'=>['name','code']
             ],
         ],
         'columns'=>[
@@ -275,5 +324,47 @@ return [
         'enabled' => true,
         'channel' => 'stack',
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | DBX Error Exposure Level
+    |--------------------------------------------------------------------------
+    | Controls how much internal detail is exposed in validation
+    | and runtime errors.
+    |
+    | business   = User-safe, no internal details
+    | technical  = Developer-focused, includes debug information
+    */
+    'error_exposure_level' =>  'business', //env('APP_DEBUG') ? 'technical' : 'business',
+
+     /*
+    |--------------------------------------------------------------------------
+    | DBX Field Display Aliases
+    |--------------------------------------------------------------------------
+    | Used for smart friendly field name resolution in validation messages.
+    */
+
+    'validate_field_aliases' => [
+        'sex' => 'Gender',
+        'dob' => 'Date of Birth',
+        'qr_code' => 'QR Code',
+        'descriptive_name' => 'Group Label'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Uppercase Words
+    |--------------------------------------------------------------------------
+    | Words that should remain uppercase when converting snake_case.
+    */
+
+    'validate_upper_words' => [
+        'id' => 'ID',
+        'qr' => 'QR',
+        'ip' => 'IP',
+        'api' => 'API',
+        'url' => 'URL',
+    ],
+
+
 
 ];
