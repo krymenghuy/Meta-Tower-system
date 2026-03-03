@@ -53,7 +53,7 @@ var ContractComponent = new (function () {
         // },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
                     </div>
@@ -61,7 +61,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Contact Info",
-            className: "align-middle text-nowrap",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
                         <small class="d-block text-primary">${data.email}</small>`;
@@ -69,14 +69,14 @@ var ContractComponent = new (function () {
         },
          {
             transTitle: "titles.Start Date",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
             }
         },
          {
             transTitle: "titles.End Date",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
@@ -90,28 +90,28 @@ var ContractComponent = new (function () {
         // },
         {
             transTitle: "titles.Business",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Unit",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Type",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Price",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';
                 const price = data.price ? Number(data.price).toLocaleString() : '-';
@@ -140,10 +140,10 @@ var ContractComponent = new (function () {
 
         {
             transTitle: "titles.remark",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:120px;">
+                    <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -151,7 +151,7 @@ var ContractComponent = new (function () {
         },
          {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data) => {
 
                 const status = (data.status ?? '').toLowerCase();
@@ -189,7 +189,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Updated By",
-            className: 'align-middle text-nowrap text-capitalize',
+            className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
@@ -198,7 +198,7 @@ var ContractComponent = new (function () {
             }
         },
         {
-            className: 'col_action align-middle text-capitalize',
+            className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
