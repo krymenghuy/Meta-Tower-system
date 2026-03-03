@@ -234,6 +234,12 @@ var TenantComponent = new(function () {
                     name: "create_contract"
                 },
                 {
+                    html: '<span class="ps-2">Upload Documents</span>',
+                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "upload_documents"
+                },
+                {
                     html: '<span class="ps-2">Renew Contract</span>',
                     icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
 
