@@ -261,10 +261,10 @@ var SpaceComponent = new (function () {
 
     mThis.getFilterData = () => {
         let p = {
+            search_value: mThis.elSearch.value,
             status_id: mThis.elFilter_status.value,
             building_id: mThis.elBuilding.value,
             floor_id: mThis.elFloor.value,
-            search_value: mThis.elSearch.value,
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -352,24 +352,22 @@ var SpaceComponent = new (function () {
     }
      mThis.renderSpaceCard = (div,data) => {
         data = data ?? [];
-        if(!AuthManager)
-        {
-            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
-            return;
-        }
+        // if(!AuthManager)
+        // {
+        //     console.error('Authentication Management does not seems to work properly. You may need to refresh page');
+        //     return;
+        // }
 
         AuthManager.init().then(user => {
-           mThis.renderSpace(data,user)
+           mThis.renderSpace(div,data)
         });
     }
 
-    mThis.renderSpace = (data) => {
+    mThis.renderSpace = (container, data) => {
         console.log(9090,data);
-        
+        container.innerHTML = "";
         let html = `<div class="row g-3">`;
-        let cmt = 0;
-
-        if (Array.isArray(data) && data[0]) {
+        if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = (d.status || "Available").toLowerCase();
                 let statusClass = "";
@@ -474,10 +472,9 @@ var SpaceComponent = new (function () {
                     </div>
                 </div>
                 `;
-                cmt++;
             });
         }
-        if (cmt === 0) {
+        else {
             html += `
             <div class="col-12">
                 <div class="bg-white rounded-3 p-4 text-center">
@@ -487,7 +484,7 @@ var SpaceComponent = new (function () {
         }
 
         html += `</div>`;
-        div.innerHTML = html;
+        container.innerHTML = html;
     };
 
     mThis.createContract = (id, menulink) =>{

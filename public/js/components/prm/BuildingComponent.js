@@ -266,8 +266,8 @@ var BuildingComponent = ( () => {
             const data = res.status_code === 200 ? res.data : [];
             console.log(444,data);
 
-            html = `<div class="d-none rounded-3 p-2 bg-white">
-                <button data-id="${id}" class="btn-add-floor btnAddNewPrm" type="button">
+            html = `<div class="rounded-3 p-2 bg-white">
+                <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
                 </button>
             </div>
@@ -293,34 +293,33 @@ var BuildingComponent = ( () => {
 
             btnNewFloor.addEventListener('click',e => {
                 e.preventDefault();
-                let id = btnNewFloor.dataset.id;
+                let building_id = btnNewFloor.dataset.buildingid;
                 let op = {
                     id: null,
-                    id: id,
+                    building_id: building_id,
                     onClose: (me,d,cancel) => {
-                        mThis.renderLevelList(tbody,d.levels);
+                        mThis.renderFloorList(tbody,building_id);
                     }
                 };
 
                 // if(!AuthManager.allowed(264)) return;
-                alert('soon');
-                floorDialog.show(op);
+                CreateFloorDialog.show(op);
             });
 
-            mThis.renderLevelList(tbody, data);
+            mThis.renderFloorList(tbody, data);
         });
     }
-    mThis.renderLevelList = (tbody, data) => {
+    mThis.renderFloorList = (tbody, data) => {
         let html = null;
         if(!data) data = [];
 
         (data || []).map(level => {
         console.log(66,level);
 
-            let shortcut = level.name ? `(${level.name ?? ''})` : '';
+            let shortcut = level.floor_name ? `(${level.floor_name ?? ''})` : '';
             html = [html,`<tr>
                 <td>
-                    <span class="fw-semibold d-block">${level.name ?? ''}</span>
+                    <span class="fw-semibold d-block">${level.floor_name ?? ''}</span>
                     <span class="d-block text-muted">
                         <small>${shortcut ?? ''}</small>
                     </span>
@@ -355,6 +354,7 @@ var BuildingComponent = ( () => {
         tbody.innerHTML = html;
 
     }
+
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
@@ -572,3 +572,96 @@ const BuildingDialog = (() => {
 
     return self;
 })();
+const CreateFloorDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row justify-content-center">
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Floor Name</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
+
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;">Description</label>
+                            <div class="material-input outlined">
+                                <textarea type="text" name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+
+                            </div>
+                        </div>
+                       
+                    </div>`
+                ].join("");
+            },
+            contentCreated: (me) => {
+                header.innerHTML = '';
+                header.appendChild(headerWrapper);
+            },
+            prepareFormOptions: {
+                createTitle: "Create Floor",
+                modifyTitle: "Modify Floor",
+                targetProp: "floor_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+            },
+            onPrepareForm: (me, data) => {
+                const header = me.divModal.querySelector('.modal-header');
+                const btnClose = header.querySelector('button');
+                if(btnClose) btnClose.classList.add('d-none');
+            },
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.id = me.dataOptions.id;
+                        vsapi.call([main_view.base_url, "/prm/building/save",].join(""), op, btn, null).then((res) => {
+                            if (res.status_code === 200) {
+                                me.hide(true, op);
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Floor has been updated successfully");
+                                } else {
+                                    cv_interact.success("New floor has been added successfully");
+                                }
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    },
+                },
+            ],
+        });
+        dialog.show(op);
+    };
+
+    return self;
+})();
+

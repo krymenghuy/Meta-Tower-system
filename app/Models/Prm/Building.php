@@ -44,7 +44,7 @@ class Building //extends Model
         $inputs = $res->values;
         $isCreate = !$id || $id == 0;
 
-// 1 or 2  datascope  subid is binary
+        // 1 or 2  datascope  subid is binary
 
 
         $id = DBX::saveData($ss, 'buildings', ['id' => $id], $inputs, [], 1);
@@ -122,15 +122,16 @@ class Building //extends Model
     public function getListFloor($id,$ss=null){
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $updated_at = DBX::formatTime('f.updated_at','updated_at');
+        $updated_at = DBX::formatTime('bf.updated_at','updated_at');
       
-        $cols = 'f.id,f.name,f.floor_no,f.building_id,f.description,f.status_id,f.update_user,'.$updated_at.' ';
-        $rows = DB::table('floors as f')
-            ->join('buildings as b','b.id','=','f.building_id')
-            ->where('f.building_id', $id)
+        $cols = 'bf.id,bf.building_id,b.name as building_name,bf.floor_id,f.name as floor_name,f.floor_number as floor_no,bf.description,bf.status_id,bf.update_user,'.$updated_at.' ';
+        $rows = DB::table('building_floors as bf')
+            ->join('buildings as b','b.id','=','bf.building_id')
+            ->join('floors as f','f.id','=','bf.floor_id')
+            ->where('bf.building_id', $id)
             ->selectRaw($cols)
             // ->where('f.branch_id',$branch_id)
-            ->orderByRaw('f.id ASC')->get();
+            ->orderByRaw('bf.id ASC')->get();
            foreach ($rows as $row) {
             $row->total_space = DB::table('building_spaces')
                 ->where('floor_id', $row->id)
