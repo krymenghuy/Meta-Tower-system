@@ -172,14 +172,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
     Route::post('/delete', [PaymentController::class, 'deletePayment']);
     Route::post('/update-status', [PaymentController::class, 'updatePaymentStatus']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservations')->group(function () {
-    Route::post('/save', [PaymentController::class, 'saveReservation']);
-    Route::post('/list-paginate', [PaymentController::class, 'getListReservation']);
-    Route::post('/details', [PaymentController::class, 'reservationDetails']);
-    Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
-    Route::post('/delete', [PaymentController::class, 'deleteReservation']);
-    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);   
-});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->group(function () {
     Route::post('/save', [AmenityController::class, 'saveAmenity']);

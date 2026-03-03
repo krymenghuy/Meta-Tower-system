@@ -289,6 +289,16 @@ public static function options_tenant_with_active_contract($ss)
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
+    static function options_amenity($ss)
+    {
+        return DB::table('amenities')->selectRaw('id,name AS amenity, category')->get(); 
+    }
+    
+
+    static function options_reservation_status($ss)
+    {
+        return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
+    }
     
     // public static function options_service_status($ss)
     // {

@@ -407,7 +407,7 @@ var ContractComponent = new (function () {
             // Initialize tooltips after table loads
             setTimeout(() => {
                 $('[data-bs-toggle="tooltip"]').tooltip();
-                console.log('Tooltips initialized');
+                // console.log('Tooltips initialized');
             }, 800);
 
             // Auto-refresh every hour to update contract statuses
