@@ -821,12 +821,12 @@ const InvoiceDialog = (() => {
 
                         vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
                             .then(res => {
-                                   console.log('=== FULL INVOICE SAVE RESPONSE ===', res);
+                                //    console.log('=== FULL INVOICE SAVE RESPONSE ===', res);
 
                                 if (res.status_code === 200) {
                                     invoiceItems = [];
                                     me.hide(true, formData);
-                                    cv_interact.success(formData.id ? 'Updated' : 'Created');
+                                    cv_interact.success(formData.id ? 'Updated' : ' Created Invoice');
                                 } else {
                                     cv_interact.error(res.error_message || 'Save failed');
                                 }

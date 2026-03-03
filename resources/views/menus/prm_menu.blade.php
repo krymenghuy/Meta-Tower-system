@@ -72,7 +72,7 @@ function v_display($mod_id, $module_ids = null)
                         <a href="TenantComponent" modid="239" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/member.png') }}" /></span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Tenant"></span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Tenants"></span>
                         </a>
                     </li>
 
@@ -92,14 +92,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color" vslang="menus.Contracts"></span>
                         </a>
                     </li>
-                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
-                        <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
-                            <span class="kt-menu__link-icon">
-                                <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
-                            </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
-                        </a>
-                    </li>
+                    
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(218); ?>>
                         <a href="ServiceRequestComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -156,7 +149,7 @@ function v_display($mod_id, $module_ids = null)
                         </a>
                     </li> -->
                     <li class="kt-menu__section mb-2">
-                        <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
+                        <h4 class="kt-menu__section-text " vslang="menus.System Settings"></h4>
                         <i class="kt-menu__section-icon flaticon-more-v2"></i>
                     </li>
                     <li class="kt-menu__item d-none" aria-haspopup="true" <?php v_display(209); ?>>
@@ -173,7 +166,32 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-icon">
                                 <img class="icons" src="{{ asset('assets/images/icons/setting.png') }}" />
                             </span>
-                            <span class="kt-menu__link-text " vslang="menus.General Settings"></span>
+                            <span class="kt-menu__link-text " vslang="menus.Pricing"></span>
+                            <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                        </a>
+                        <div class="kt-menu__submenu">
+                            <span class="kt-menu__arrow"></span>
+                            <ul class="kt-menu__subnav">
+                                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(210); ?>>
+                                    <a href="ServiceComponent" modid="270" class="menu-item kt-menu__link">
+                                        <span class="kt-menu__link-icon">
+                                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
+                                        </span>
+                                        <span class="kt-menu__link-text font-color " vslang="menus.Services Price"></span>
+                                    </a>
+                                </li>
+                           
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
+                        <?php v_display(null, [210, 211, 212, 213, 214]); ?>>
+                        <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+                            <span class="kt-menu__link-icon">
+                                <img class="icons" src="{{ asset('assets/images/icons/setting.png') }}" />
+                            </span>
+                            <span class="kt-menu__link-text " vslang="menus.Settings"></span>
                             <i class="kt-menu__ver-arrow la la-angle-right"></i>
                         </a>
                         <div class="kt-menu__submenu">
