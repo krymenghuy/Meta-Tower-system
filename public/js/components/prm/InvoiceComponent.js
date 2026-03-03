@@ -6,6 +6,7 @@ var InvoiceComponent = (() => {
     mThis.currency_symbol = '$';
     mThis.self = main_view.VSAppContent.querySelector("#_main_invoice_component");
     mThis.btnAdd          = mThis.self.querySelector("#_btnInvoice");
+    mThis.btnAddTest          = mThis.self.querySelector("#_btnInvoice_test");
     mThis.divFilter       = mThis.self.querySelector("#_divFilter_invoice");
     mThis.elFilter_status = mThis.self.querySelector('#payment_status');
     mThis.elBuilding      = mThis.self.querySelector('#building_id');
@@ -91,7 +92,6 @@ var InvoiceComponent = (() => {
             InvoiceDialog.show({ id: null, btn: e.target,
                 onClose: () => mThis.InvoiceListView.showPage(mThis.getFilterData()) });
         };
-
         const pr_tbl    = mThis.InvoiceListView.getListContainer();
         const sh_parent = pr_tbl.parentElement;
         sh_parent.style.height = `${window.innerHeight - 200}px`;
@@ -147,7 +147,10 @@ var InvoiceComponent = (() => {
 
     let itemsHtml = '', subtotal = 0, totalDiscount = 0, totalTax = 0;
 
-    if (items.length > 0) {
+    if (items.length <=0 ) {
+        itemsHtml = `<tr><td colspan="8" class="text-center text-muted py-3">No items found</td></tr>`;
+        return;
+    }
         items.forEach(item => {
             const amount   = Number(item.amount   || 0);
             const discount = Number(item.discount || 0);
@@ -177,9 +180,7 @@ var InvoiceComponent = (() => {
                     <td class="text-end fw-bold">${currency}${(amount - discount + tax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                 </tr>`;
         });
-    } else {
-        itemsHtml = `<tr><td colspan="8" class="text-center text-muted py-3">No items found</td></tr>`;
-    }
+
 
     const grandTotal = subtotal - totalDiscount + totalTax;
 
@@ -305,397 +306,178 @@ var InvoiceComponent = (() => {
 })();
 
 
-const InvoiceDialog = (() => {
-    const self = {};
-    let invoiceItems      = [];
-    let availableServices = [];
-    let dlg = null;
 
-    self.show = (op) => {
+
+const InvoiceDialog = (() => {
+    let dlg = null;
+    let availableItem = [];
+
+    const self = {};
+    self.show = (op = {}) => {
         dlg = dlg || new GeneralDialog({
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
 
             createContent: () => `
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-6 col-md-3"><button class="btn btn-outline-primary w-100 py-3"  id="btnQuickRent"><span class="fw-semibold">Add Base Rent</span></button></div>
-                            <div class="col-6 col-md-3"><button class="btn btn-outline-success w-100 py-3" id="btnQuickUtilities"><span class="fw-semibold">Add Utilities</span></button></div>
-                            <div class="col-6 col-md-3"><button class="btn btn-outline-info w-100 py-3"    id="btnQuickServices"><span class="fw-semibold">Browse Services</span></button></div>
-                            <div class="col-6 col-md-3"><button class="btn btn-outline-warning w-100 py-3" id="btnQuickCustom"><span class="fw-semibold">Custom Item</span></button></div>
+                <div class="container-fluid">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label style="padding-left:6px;color:#777;"><i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span></label>
+                            <div class="material-input outlined">
+                                <input name="tenant" class="data-input form-control" data-field="tenant_id" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="padding-left:6px;color:#777;"><i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span></label>
+                            <div class="material-input outlined">
+                                <select name="space" class="data-input form-control" data-field="space_id" required>
+                                    <option value="">-- Select Room / Space --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Phone Number</label>
+                            <div class="material-input outlined">
+                                <input name="phone_number" class="data-input form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="padding-left:6px;color:#777;"><i class="fas fa-envelope text-success me-1"></i>Email</label>
+                            <div class="material-input outlined">
+                                <input name="email" class="data-input form-control">
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
+                            <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label style="padding-left:6px;color:#777;"><i class="fas fa-coins me-2 text-warning"></i>Currency <span class="text-danger">*</span></label>
+                            <div class="material-input outlined">
+                                <select name="currency_id" class="data-input form-control" data-field="currency_id" required>
+                                    <option value="">-- Select Currency --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_id" required></input>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <select name="space" class="data-input form-control" data-field="space_id" required><option value="">-- Select Room / Space --</option></select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-phone-alt text-success me-1"></i>Phone Number</label>
-                                <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control"></input>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-envelope text-success me-1"></i>Email</label>
-                                <div class="material-input outlined">
-                                    <input name="email" class="data-input form-control"></input>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
-                                <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label style="padding-left:6px;color:#777;"><i class="fas fa-coins me-2 text-warning"></i>Currency <span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <select name="currency_id" class="data-input form-control" data-field="currency_id" required><option value="">-- Select Currency --</option></select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <div name="divItemsView"></div>
 
-                <div class="card shadow-sm mb-3">
-                    <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#e1e5f2">
-                        <h6 class="mb-0"><i class="fas fa-list me-2"></i>Invoice Items</h6>
-                        <span class="badge bg-white text-primary" id="items_count">0 items</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Description</th>
-                                        <th class="text-center">Type</th>
-                                        <th class="text-center">Qty / Unit</th>
-                                        <th class="text-end">Amount</th>
-                                        <th class="text-end" >Discount</th>
-                                        <th class="text-end">Tax</th>
-                                        <th class="text-end">Net Amount</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody name="invoice_items_tbody"></tbody>
-                                <tfoot class="table-light">
-                                    <tr>
-                                        <td colspan="3" class="text-end fw-bold">Subtotal:</td>
-                                        <td class="text-end fw-bold"                   id="invoice_subtotal">$0.00</td>
-                                        <td class="text-end fw-bold text-danger"       id="invoice_total_discount">$0.00</td>
-                                        <td class="text-end fw-bold text-info"         id="invoice_total_tax">$0.00</td>
-                                        <td class="text-end fw-bold fs-6 text-success" id="invoice_grand_total">$0.00</td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <label class="form-label fw-semibold"><i class="fas fa-sticky-note text-secondary me-1"></i>Additional Notes (Optional)</label>
-                        <textarea name="remarks" class="form-control data-input" rows="3" placeholder="Enter any additional notes or terms..."></textarea>
+                    <div class="mt-4 d-flex justify-content-end">
+                        <div name="div_invoice_summary"></div>
                     </div>
                 </div>
             `,
 
             contentCreated: (me) => {
-                me.controls = {};
-
-                const inputs = me.divModal.querySelectorAll('.data-input, input, select, textarea');
-                inputs.forEach(el => {
+                me.controls = me.controls || {};
+                const allInputs = me.divModal.querySelectorAll('.data-input, input, select, textarea');
+                allInputs.forEach(el => {
                     const key = el.dataset.field || el.name;
                     if (key) me.controls[key] = el;
                 });
+                me.controls.divItemsView = me.divModal.querySelector('[name="divItemsView"]');
+                me.controls.div_invoice_summary = me.divModal.querySelector('[name="div_invoice_summary"]');
+                me.itemsView = new ItemsView(
+                    me.controls.divItemsView,
+                    {
+                        columns: [
+                            { name: "item_id",   transTitle: "titles.Product",    displayType: "select" },
+                            { name: "remarks",   transTitle: "titles.Remarks",     dataType: "string" },
+                            { name: "qty",       transTitle: "titles.Qty",         dataType: "number", defaultValue: 1,  isNumeric: true },
+                            { name: "price",     transTitle: "titles.Unit Price",  dataType: "number", defaultValue: 0,  isNumeric: true },
+                            {
+                                name: "discount", transTitle: "titles.Disc",
+                                isDiscount: true,
+                                discountType: ["percent", "amount"],
+                                defaultDiscountType: "percent",
+                                discountBeforeTax: true
+                            },
+                            { name: "tax_rate",  transTitle: "titles.Tax %",       dataType: "number", defaultValue: 0,  isNumeric: true },
+                            { name: "total",     transTitle: "titles.Line Total",  dataType: "number", readOnly: true,   isNumeric: true },
+                        ],
+                        calc: {
+                            mode: "auto",
+                            qtyField: "qty",
+                            priceField: "price",
+                            totalField: "total",
+                            taxField: "tax_rate",
+                            currencyPrecision: 2
+                        },
+                        totalSummary: {
+                            container: me.controls.div_invoice_summary,
+                            showTax: true,
+                            allowDiscount: true,
+                            discountBeforeTax: true,
+                            discountTypeDefault: "percent",
+                            currency: "USD"
+                        },
+                        validateColumns: {
+                            item_id: "positive",
+                            qty: "positive",
+                            price: "positive"
+                        },
 
-                me.controls.tenant               = me.divModal.querySelector('input[name="tenant"]');
-                me.controls.space                = me.divModal.querySelector('select[name="space"]');
-                me.controls.phone_number         = me.divModal.querySelector('input[name="phone_number"]');
-                me.controls.email                = me.divModal.querySelector('input[name="email"]');
-                me.controls.due_date             = me.divModal.querySelector('input[name="due_date"]');
-                me.controls.currency_id          = me.divModal.querySelector('select[name="currency_id"]');
-                me.controls.remarks              = me.divModal.querySelector('textarea[name="remarks"]');
-                me.controls.invoice_items_tbody  = me.divModal.querySelector('tbody[name="invoice_items_tbody"]');
-
-                const formatNumber = (num) =>
-                    Number(num || 0).toFixed(2).replace(/\.?0+$/, '');
-
-                const formatCurrency = (num) =>
-                    Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-                const updateTotals = () => {
-                    let subtotal = 0, totalDiscount = 0, totalTax = 0;
-                    invoiceItems.forEach(item => {
-                        subtotal      += parseFloat(item.amount   || 0);
-                        totalDiscount += parseFloat(item.discount || 0);
-                        totalTax      += parseFloat(item.tax      || 0);
-                    });
-                    const grandTotal = subtotal - totalDiscount + totalTax;
-
-                    const set = (id, val) => {
-                        const el = document.getElementById(id);
-                        if (el) el.textContent = val;
-                    };
-
-                    set('invoice_subtotal',       `$${formatCurrency(subtotal)}`);
-                    set('invoice_total_discount', `$${formatCurrency(totalDiscount)}`);
-                    set('invoice_total_tax',      `$${formatCurrency(totalTax)}`);
-                    set('invoice_grand_total',    `$${formatCurrency(grandTotal)}`);
-                    set('items_count',            `${invoiceItems.length} item${invoiceItems.length !== 1 ? 's' : ''}`);
-                };
-
-                me.renderItemsTable = (tbody) => {
-                    if (!tbody) return;
-                    tbody.innerHTML = '';
-
-                    invoiceItems.forEach((item, index) => {
-                        const net = (parseFloat(item.amount || 0) - parseFloat(item.discount || 0) + parseFloat(item.tax || 0)).toFixed(2);
-                        const row = tbody.insertRow();
-                        row.className = 'invoice-item-row';
-                        row.innerHTML = `
-                            <td>
-                                <div class="fw-semibold">${item.description || '—'}</div>
-                                ${item.notes ? `<small class="text-muted">${item.notes}</small>` : ''}
-                            </td>
-                            <td class="text-center"><span class="badge bg-light text-dark border">${item.type || '—'}</span></td>
-                            <td class="text-center"><span class="badge bg-light text-dark border">${item.unit_type || '—'}</span></td>
-                            <td class="text-end">$${formatCurrency(item.amount)}</td>
-                            <td class="text-end text-danger">
-                                -$${formatCurrency(item.discount || 0)}
-                                <small class="d-block text-muted">
-                                    ${item.discount_type === 'percent' ? `(${formatNumber(item.discount_value)}%)` : `($${formatCurrency(item.discount_value)})`}
-                                </small>
-                            </td>
-                            <td class="text-end text-info">
-                                +$${formatCurrency(item.tax || 0)}
-                                <small class="d-block text-muted">
-                                    ${item.tax_type === 'percent' ? `(${formatNumber(item.tax_value)}%)` : `($${formatCurrency(item.tax_value)})`}
-                                </small>
-                            </td>
-                            <td class="text-end fw-bold">$${formatCurrency(net)}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn p-0 text-danger" onclick="InvoiceDialog.removeItem(${index})">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>`;
-                    });
-
-                    const addRow = tbody.insertRow();
-                    addRow.id = 'add_item_row';
-                    addRow.className = 'table-active';
-                    addRow.innerHTML = `
-                        <td colspan="8" class="p-0">
-                            <button type="button" class="btn btn-link w-100 py-2" id="btnShowAddItemForm">
-                                <i class="fas fa-plus-circle me-2"></i><span class="fw-semibold">Add Item</span>
-                            </button>
-                        </td>`;
-
-                    document.getElementById('btnShowAddItemForm')?.addEventListener('click', () => showAddItemForm(tbody));
-
-                    updateTotals();
-                };
-                const showAddItemForm = (tbody, prefillServiceId = null) => {
-                    const addRow = document.getElementById('add_item_row');
-                    if (!addRow) return;
-
-                    addRow.innerHTML = `
-                        <td colspan="8" class="p-3 bg-light">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">
-                                        <i class="fas fa-concierge-bell text-primary me-1"></i>
-                                        Service <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-select" id="new_item_service">
-                                        <option value="">-- Select Service --</option>
-                                        ${availableServices.map(s => `<option value="${s.id}">${s.service || s.name || s.service_type || '—'}</option>`).join('')}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">
-                                        <i class="fas fa-file-alt text-info me-1"></i>
-                                        Description <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="text" class="form-control" id="new_item_description" placeholder="Enter description">
-                                </div>
-                                 <div class="col-md-3">
-                                    <label class="form-label fw-semibold">
-                                        <i class="fas fa-dollar-sign text-success me-1"></i>
-                                        Qty Unit <span class="text-danger">*</span>
-                                    </label>
-                                    <input type=text" class="form-control" id="new_item_unit_type" placeholder="e.g. 1 month, per hour">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">
-                                        <i class="fas fa-dollar-sign text-success me-1"></i>
-                                        Amount <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="number" class="form-control" id="new_item_amount" step="0.01" min="0" placeholder="0.00">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Discount</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="new_item_discount_type" style="max-width:120px;">
-                                            <option value="fixed">$</option>
-                                            <option value="percent">%</option>
-                                        </select>
-                                        <input type="number" class="form-control" id="new_item_discount_value" step="0.01" min="0" placeholder="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Tax</label>
-                                    <div class="d-flex gap-1">
-                                        <select class="form-select" id="new_item_tax_type" style="max-width:120px;">
-                                            <option value="fixed">$</option>
-                                            <option value="percent">%</option>
-                                        </select>
-                                        <input type="number" class="form-control" id="new_item_tax_value" step="0.01" min="0" placeholder="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Notes</label>
-                                    <input type="text" class="form-control" id="new_item_notes" placeholder="Optional">
-                                </div>
-                                <div class="col-12 text-end mt-3">
-                                    <button type="button" class="btn btn-sm btn-secondary me-2" id="btnCancelAddItem">Cancel</button>
-                                    <button type="button" class="btn btn-sm btn-primary" id="btnSaveNewItem">Add Item</button>
-                                </div>
-                            </div>
-                        </td>`;
-                    const serviceSelect = document.getElementById('new_item_service');
-                    const descInput     = document.getElementById('new_item_description');
-                    const amountInput   = document.getElementById('new_item_amount');
-                    const unitInput          = document.getElementById('new_item_unit_type');
-
-                    if (serviceSelect) {
-                        serviceSelect.addEventListener('change', () => {
-                            const serviceId = serviceSelect.value.trim();
-                            if (!serviceId) {
-                                if (descInput)   descInput.value   = '';
-                                if (amountInput) amountInput.value = '';
-                                if(unitInput) unitInput.value      = '';
-                                return;
+                        onItemChange: (rowId, item, fieldName, td, tr) => {
+                            if (fieldName === "item_id") {
+                                const service = availableItem.find(s => String(s.id) === String(item.item_id));
+                                if (service) {
+                                    me.itemsView.setCellValue(tr, "price", Number(service.price) || 0);
+                                    me.itemsView.setCellValue(tr, "qty", 1);
+                                    const remarkText = service.service || service.name || '—';
+                                    me.itemsView.setCellValue(tr, "remarks", remarkText);
+                                }
                             }
-
-                            const selectedService = availableServices.find(s => String(s.id) === serviceId);
-                            if (!selectedService) return;
-                            if (descInput) {
-                                descInput.value = selectedService.service || '';
-                            }
-                            if (amountInput) {
-                                amountInput.value = selectedService.price || 0;
-                            }
-                            if (unitInput) {
-                                unitInput.value = selectedService.unit_type || 0;
-                            }
-
-                        });
-                        if (prefillServiceId) {
-                            serviceSelect.value = prefillServiceId;
-                            serviceSelect.dispatchEvent(new Event('change'));
                         }
                     }
-                    document.getElementById('btnCancelAddItem')?.addEventListener('click', () => {
-                        me.renderItemsTable(tbody);
-                    });
+                );
+                me.populateServiceDropdown = function(retries = 3) {
+                    console.log('🔄 populateServiceDropdown called - Services:', availableItem.length);
 
-                    document.getElementById('btnSaveNewItem')?.addEventListener('click', () => {
-                        saveNewItem(tbody);
-                    });
+                    if (!availableItem || availableItem.length === 0) return;
+
+                    const options = availableItem.map(s => ({
+                        value: s.id,
+                        text: s.service || s.name || s.service_type || `Service #${s.id}`
+                    }));
+
+                    const iv = me.itemsView;
+                    if (typeof iv.setColumnOptions === 'function') {
+                        iv.setColumnOptions('item_id', options);
+                        console.log('✅ Used setColumnOptions');
+                    } else if (typeof iv.setSelectOptions === 'function') {
+                        iv.setSelectOptions('item_id', options);
+                        console.log('✅ Used setSelectOptions');
+                    } else if (typeof iv.setOptionsForColumn === 'function') {
+                        iv.setOptionsForColumn('item_id', options);
+                        console.log('✅ Used setOptionsForColumn');
+                    } else {
+                        console.warn('⚠️ Using direct DOM fallback');
+                        setTimeout(() => {
+                            const selects = me.controls.divItemsView.querySelectorAll('select');
+                            if (selects.length > 0) {
+                                selects.forEach(select => {
+                                    select.innerHTML = '<option value="">-- Select Service --</option>';
+                                    options.forEach(opt => {
+                                        const o = new Option(opt.text, opt.value);
+                                        select.add(o);
+                                    });
+                                });
+                                console.log('✅ Dropdown populated via direct DOM!');
+                            } else if (retries > 0) {
+                                me.populateServiceDropdown(retries - 1);
+                            }
+                        }, 350);
+                    }
                 };
 
+                // Call populate after table is rendered
+                setTimeout(() => me.populateServiceDropdown(), 400);
 
-
-                const saveNewItem = (tbody) => {
-                    const els = {
-                        service:    document.getElementById('new_item_service'),
-                        desc:       document.getElementById('new_item_description'),
-                        amount:     document.getElementById('new_item_amount'),
-                        discType:   document.getElementById('new_item_discount_type'),
-                        discVal:    document.getElementById('new_item_discount_value'),
-                        taxType:    document.getElementById('new_item_tax_type'),
-                        taxVal:     document.getElementById('new_item_tax_value'),
-                        notes:      document.getElementById('new_item_notes'),
-                        unit_type:  document.getElementById('new_item_unit_type'),
-                    };
-
-                    if (!els.service?.value) return cv_interact.error('Please select a service'), els.service?.focus();
-                    if (!els.desc?.value?.trim()) return cv_interact.error('Description is required'), els.desc?.focus();
-
-                    const amt = parseFloat(els.amount?.value || 0);
-                    if (isNaN(amt) || amt <= 0) return cv_interact.error('Valid amount > 0 required'), els.amount?.focus();
-
-                    const discType = els.discType?.value || 'fixed';
-                    const discVal  = parseFloat(els.discVal?.value || 0);
-                    const taxType  = els.taxType?.value  || 'fixed';
-                    const taxVal   = parseFloat(els.taxVal?.value  || 0);
-                    const notes    = els.notes?.value?.trim() || '';
-                    const unitType = (els.unit_type?.value || '').trim();
-
-                    if (discVal < 0 || (discType === 'percent' && discVal > 100)) return cv_interact.error('Invalid discount'), els.discVal?.focus();
-                    if (taxVal  < 0 || (taxType  === 'percent' && taxVal  > 100)) return cv_interact.error('Invalid tax'), els.taxVal?.focus();
-
-                    const discAmt = discType === 'percent' ? amt * (discVal / 100) : discVal;
-                    const taxAmt  = taxType  === 'percent' ? amt * (taxVal  / 100) : taxVal;
-
-                    if (discAmt > amt && !confirm('Discount > amount. Continue?')) return;
-
-                    const service = availableServices.find(s => String(s.id) === els.service.value) || {};
-                    const typeName = service.service_type || service.service || service.name || '—';
-
-                    invoiceItems.push({
-                        service_id:     parseInt(els.service.value, 10),
-                        type:           typeName,
-                        description:    els.desc.value.trim(),
-                        amount:         amt,
-                        discount_type:  discType,
-                        discount_value: discVal,
-                        discount:       discAmt,
-                        tax_type:       taxType,
-                        tax_value:      taxVal,
-                        tax:            taxAmt,
-                        unit_type:      unitType,
-                        notes
-                    });
-
-                    me.renderItemsTable(tbody);
-                    cv_interact.success('Item added');
-                };
-
-                self.removeItem = (index) => {
-                    if (index < 0 || index >= invoiceItems.length) return;
-                    cv_interact.confirm('Remove this item?', {
-                        transTitle: 'Confirm Removal',
-                        confirmButtonText: 'Remove',
-                        context: 'warning'
-                    }, confirmed => {
-                        if (!confirmed) return;
-                        invoiceItems.splice(index, 1);
-                        me.renderItemsTable(me.controls.invoice_items_tbody);
-                        cv_interact.success('Item removed');
-                    });
-                };
-                const tbody = me.controls.invoice_items_tbody;
-                if (tbody) me.renderItemsTable(tbody);
-
-                // Tenant search
+                // === Tenant search ===
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
@@ -711,7 +493,8 @@ const InvoiceDialog = (() => {
                             .then(res => {
                                 const d = res.data || {};
                                 me.controls.phone_number.value = d.tenant?.phone_number || '';
-                                me.controls.email.value        = d.tenant?.email || '';
+                                me.controls.email.value = d.tenant?.email || '';
+                                me._selectedTenantId = tenant.id;
                                 VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
                             });
                     }
@@ -719,80 +502,45 @@ const InvoiceDialog = (() => {
 
                 me.searchTenant.reset('');
 
-                // Quick buttons logic
-                const quickConfig = {
-                    rent:      { keywords: ['rent', 'rental', 'base rent', 'monthly rent', 'lease'] },
-                    utilities: { keywords: ['utility', 'utilities', 'electric', 'water', 'internet', 'power', 'gas'] },
-                    services:  { },
-                    custom:    { }
-                };
-
-                ['btnQuickRent', 'btnQuickUtilities', 'btnQuickServices', 'btnQuickCustom'].forEach(id => {
-                    const btn = me.divModal.querySelector(`#${id}`);
-                    if (btn) {
-                        btn.onclick = () => {
-                            const type = id.replace('btnQuick', '').toLowerCase();
-                            const cfg = quickConfig[type] || {};
-
-                            me.renderItemsTable(me.controls.invoice_items_tbody); // reset form if open
-
-                            let prefillId = null;
-                            if (cfg.keywords) {
-                                const kw = cfg.keywords.map(k => k.toLowerCase());
-                                const match = availableServices.find(s => {
-                                    const txt = [s.service, s.name, s.service_type, s.type_name].join(' ').toLowerCase();
-                                    return kw.some(k => txt.includes(k));
-                                });
-                                if (match) prefillId = match.id;
-                            }
-
-                            showAddItemForm(me.controls.invoice_items_tbody, prefillId);
-
-                            if (!prefillId && (type === 'rent' || type === 'utilities')) {
-                                setTimeout(() => cv_interact.info(`No matching ${type} service found.`), 400);
-                            }
-                        };
+                // === Save data helper ===
+                me.saveData = () => {
+                    const header = me.getData();
+                    const items = me.itemsView.getItems();
+                    const totals = me.itemsView.getCurrentTotals?.() || {};
+                    if (me._selectedTenantId) {
+                        header.tenant_id = me._selectedTenantId;
                     }
-                });
+                    const mappedItem =items.map(item =>{
+                        const qty = parseFloat(item.qty ?? 1);
+                        const price = parseFloat(item.price ?? 0);
+                        const amount = qty * price;
+                        return {
+                            ...item,
+                            description : item.remarks || item.description || '',
+                            amount      : amount,
+                            service_id  : item.item_id || null,
+                        }
+                    })
+                    return { ...header, items:mappedItem, ...totals };
+                };
             },
 
             onPrepareForm: (me, data) => {
-                availableServices = data.services || [];
+                availableItem = data.services || [];
                 me.detail = op.id ? (data.invoice_details || {}) : {};
 
-                if (op.id && Array.isArray(me.detail?.items)) {
-                    invoiceItems = me.detail.items.map(item => {
-                        const a = parseFloat(item.amount || 0);
-                        const d = parseFloat(item.discount || 0);
-                        const t = parseFloat(item.tax || 0);
-                        return {
-                            service_id:     item.service_id,
-                            type:           item.type || item.service_name || '—',
-                            description:    item.description || '',
-                            amount:         a,
-                            discount_type:  item.discount_type || 'fixed',
-                            discount_value: item.discount_type === 'percent' && a > 0 ? (d / a * 100) : d,
-                            discount:       d,
-                            tax_type:       item.tax_type || 'fixed',
-                            tax_value:      item.tax_type === 'percent' && a > 0 ? (t / a * 100) : t,
-                            tax:            t,
-                            notes:          item.notes || '',
-                            unit_type:      item.unit_type || item.unitType || ''
-                        };
-                    });
-                } else {
-                    invoiceItems = [];
-                }
+                console.log("📦 Services received from API:", availableItem.length);
 
-                if (me.controls?.invoice_items_tbody) {
-                    me.renderItemsTable(me.controls.invoice_items_tbody);
-                }
+                // Re-populate dropdown after data is ready
+                setTimeout(() => {
+                    if (me.populateServiceDropdown) me.populateServiceDropdown();
+                }, 300);
             },
 
             prepareFormOptions: {
                 createTitle: "Create Invoice",
                 modifyTitle: "Modify Invoice",
-                targetProp:  "invoice_details",
+                targetProp: "invoice_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/invoice/form-options`,
                     params: op => ({ id: op.id })
@@ -802,31 +550,22 @@ const InvoiceDialog = (() => {
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: 'btn btn-secondary',
-                    click: (me) => {
-                        invoiceItems = [];
-                        me.hide(false);
-                    }
+                    cssClass: "btn btn-secondary",
+                    click: (me) => me.hide(false)
                 },
                 {
                     label: '<span vslang="buttons.Submit"></span>',
-                    cssClass: 'btn btn-primary',
+                    cssClass: "btn btn-primary",
                     click: (me, btn) => {
-                        if (!invoiceItems.length) return cv_interact.error('Add at least one item');
-
-                        const formData = me.getData();
-                        formData.id        = me.dataOptions.id;
-                        formData.items     = invoiceItems;
-                        formData.tenant_id = me._selectedTenantId;
-
+                        const formData = me.saveData();
+                        if (!formData.items || formData.items.length === 0) {
+                            return cv_interact.error('Add at least one item');
+                        }
                         vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
                             .then(res => {
-                                //    console.log('=== FULL INVOICE SAVE RESPONSE ===', res);
-
                                 if (res.status_code === 200) {
-                                    invoiceItems = [];
-                                    me.hide(true, formData);
-                                    cv_interact.success(formData.id ? 'Updated' : ' Created Invoice');
+                                    cv_interact.success(formData.id ? 'Updated' : 'Created Invoice');
+                                    me.hide(true);
                                 } else {
                                     cv_interact.error(res.error_message || 'Save failed');
                                 }

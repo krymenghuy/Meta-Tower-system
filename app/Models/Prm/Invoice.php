@@ -55,9 +55,6 @@ class Invoice extends VSModel
     }
     // Validate each item
     foreach ($items as $index => $item) {
-        if (empty(trim($item['description'] ?? ''))) {
-            return DV::error("Item #" . ($index + 1) . ": description is required.");
-        }
         if (!isset($item['amount']) || (float)$item['amount'] < 0.01) {
             return DV::error("Item #" . ($index + 1) . ": amount must be at least 0.01.");
         }
@@ -140,7 +137,7 @@ class Invoice extends VSModel
 
             $itemRows[] = [
                 'invoice_id'      => $id,
-                'service_id'      => $item['service_id'] ?? null,
+                // 'service_id'      => $item['service_id'] ?? null,
                 'type'            => $item['type']       ?? null,
                 'description'     => trim($item['description']),
                 'amount'          => $baseAmount,
@@ -166,15 +163,7 @@ class Invoice extends VSModel
             ]);
 
         DB::commit();
-
-        // $return_data = ['id' => $id];
-        // if (isset($codeRes->code)) {
-        //     $return_data['code'] = $codeRes->code;
-        // }
         return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
-
-        // return DV::depends(1, $return_data);
-
 
     } catch (\Exception $e) {
         DB::rollBack();
