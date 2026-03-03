@@ -136,7 +136,7 @@ var SpaceComponent = new (function () {
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-                rowCreated:(data,index,tr)=>{
+            rowCreated:(data,index,tr)=>{
             },
            processResponse: (res) => {
                 return res.data;
@@ -364,6 +364,8 @@ var SpaceComponent = new (function () {
     }
 
     mThis.renderSpace = (data) => {
+        console.log(9090,data);
+        
         let html = `<div class="row g-3">`;
         let cmt = 0;
 
@@ -413,7 +415,7 @@ var SpaceComponent = new (function () {
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -712,7 +714,6 @@ const BuildingSpaceDialog = (() => {
                     },
                     {
                         name: "floor_id",
-                        data: "floors",
                         textField: "name",
                         valueField: "id",
                         defaultValue: (me, op) => {

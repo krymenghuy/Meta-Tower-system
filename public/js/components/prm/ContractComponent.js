@@ -53,7 +53,7 @@ var ContractComponent = new (function () {
         // },
         {
             transTitle: "titles.Name",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
                     </div>
@@ -61,7 +61,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Contact Info",
-            className: "align-middle text-nowrap",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="d-block">${data.phone_number ?? ''}</span>
                         <small class="d-block text-primary">${data.email}</small>`;
@@ -69,14 +69,14 @@ var ContractComponent = new (function () {
         },
          {
             transTitle: "titles.Start Date",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
             }
         },
          {
             transTitle: "titles.End Date",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
@@ -90,28 +90,28 @@ var ContractComponent = new (function () {
         // },
         {
             transTitle: "titles.Business",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Unit",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Type",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 return `<span class="text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Price",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';
                 const price = data.price ? Number(data.price).toLocaleString() : '-';
@@ -140,10 +140,10 @@ var ContractComponent = new (function () {
 
         {
             transTitle: "titles.remark",
-            className: "align-middle text-nowrap text-capitalize",
+            className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-yp-custom" style="width:120px;">
+                    <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -151,7 +151,7 @@ var ContractComponent = new (function () {
         },
          {
             transTitle: "titles.Status",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data) => {
 
                 const status = (data.status ?? '').toLowerCase();
@@ -189,7 +189,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Updated By",
-            className: 'align-middle text-nowrap text-capitalize',
+            className: 'align-middle',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
@@ -198,7 +198,7 @@ var ContractComponent = new (function () {
             }
         },
         {
-            className: 'col_action align-middle text-capitalize',
+            className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -797,27 +797,26 @@ const ContractDialog = (() => {
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
-                            <input name="tenant" class="data-input form-control" data-field="tenant_id">
-                       <!--       <select name="c" class="data-input form-control" data-field="tenant_id"> </select>-->
+                                <input name="tenant" class="data-input form-control" data-field="tenant_id">
                             </div>
                         </div>
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
                             <div class="material-input outlined">
-                                <input name="legal_name" class="data-input form-control" data-field="legal_name" />
+                                <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" />
                             </div>
                         </div>
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Start Date</label>
                             <div class="material-input outlined">
-                                <input type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
                             </div>
                         </div>
 
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">End Date</label>
                             <div class="material-input outlined">
-                                <input type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
+                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
                             </div>
                         </div>
 
@@ -886,62 +885,20 @@ const ContractDialog = (() => {
                     query: {
                         from: 'tenants',
                         select: ['id', 'name', 'code', 'legal_name'],
-                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' }
+                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' },
+                        orderBy:[['id','desc']]
                     },
                     // showColumnHeader: false,
                     columns:{
-                        name: "Name",
                         code: "Code",
-                        legal_name: "Legal Name"
+                        name: "Name",
+                        // legal_name: "Legal Name"
+                    },
+                    onSelect: (item) => {
+                        console.log(123,item);
+                        me.controls.legal_name.value = item.legal_name || '';
                     }
                 });
-                // DateTimePicker.initAll(me.divModal);
-                // const footer = me.divModal.querySelector('.modal-footer');
-                // const header = me.divModal.querySelector('.modal-header');
-                // const headerTitle = header.querySelector('.modal-transTitle');
-                // const btnClose = header.querySelector('button');
-
-                // btnClose.classList.add('d-none');
-                // header.classList.add('bg-prm-custom', 'modal-header-custom');
-                // header.parentElement.classList.add('overflow-hidden');
-                // header.parentElement.style = 'border-radius: 20px !important;';
-
-                // const headerWrapper = document.createElement('div');
-                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                // headerWrapper.appendChild(headerTitle);
-                // header.innerHTML = '';
-                // header.appendChild(headerWrapper);
-
-
-                //Transform input into select, if me.controls.tenant_id is an <input>, not <select>
-                //   me.selectTenant = VSSearchInput.init(me.controls.tenant_id,{
-                //         //type:'select',
-                //         query:{
-                //            from:'tenants',
-                //            select:['id','name','code'],
-                //            searchFields:{_search_tenant:'LIKE'}
-                //         },
-                //         columns:{
-                //             name:'Name'
-                //         }
-                //  });
-
-                me.controls.tenant_id.onchange = (e) => {
-                    const p = {tenant_id:me.controls.tenant_id.value};
-
-                    vsapi.call([main_view.base_url, "/prm/contract/get-tenant-info"].join(""), p, null, null).then((res) => {
-                            const d = res;
-                            console.log(3333,d);
-
-                            if(d){
-                                me.controls.legal_name.value = d.legal_name;
-
-                            }
-
-                        });
-
-                };
             },
 
             configSelect: [

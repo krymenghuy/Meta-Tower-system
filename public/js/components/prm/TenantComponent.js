@@ -40,7 +40,7 @@ var TenantComponent = new(function () {
             data: (data) => {
                 const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
                 return `
-                    <div class="text-yp-custom" style="width:180px;">
+                    <div class="text-prm-custom" style="width:120px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ''}</span>
                         <small class="d-block text-muted">${sexLabel}</small>
                     </div>
@@ -232,6 +232,12 @@ var TenantComponent = new(function () {
                     icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "create_contract"
+                },
+                {
+                    html: '<span class="ps-2">Upload Documents</span>',
+                    icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "upload_documents"
                 },
                 {
                     html: '<span class="ps-2">Renew Contract</span>',

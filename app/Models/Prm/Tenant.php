@@ -59,7 +59,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
     $address_char = ['@',',','.','#'];
     $legal_name_char = ['@',',','.','#'];
 
-    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char,'passport_number' => $email_char, 'legal_name' => $legal_name_char],$ss->lang ?? 'en',0,null);
+    $res = DBX::validateObject($arr,$v_rule,1,['photo'=>GeneralSettings::$image_chars,'email' => $email_char, 'address' => $address_char,'passport_number' => $email_char, 'legal_name' => $legal_name_char],$ss->lang,0,null);
     if ($res->error) {
         return DV::error($res->error);
     }

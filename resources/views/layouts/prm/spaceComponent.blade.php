@@ -25,14 +25,14 @@
             </div>
         </div>
     </div> 
- <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3">
+ <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3 d-none">
     
 </div>
 
 
 
 
-    <div id="_space_list" class="px-3 pb-2"></div>
+    <div id="_space_list" class="p-3"></div>
     <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div>
 
 </div>

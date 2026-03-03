@@ -168,6 +168,7 @@ return [
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
+                
 
 
 

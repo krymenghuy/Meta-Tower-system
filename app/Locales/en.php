@@ -2,18 +2,24 @@
         return [
             'name'=>'English',
             'code'=>'en',
-            'validation'=>[ 
-                'national id is required'=>'National ID is required',  
-                'first name is required'=>'First Name is required and less then 50 characters', 
-                'last name is required'=>'Last name is required and less than 50 characters',
-                 'date of birth is required'=>'Date of birth is required. Date format `?` is expected',
-                'phone number is required'=>'Phone number is required.Date format ? is expected',
-                'value cannot be empty'=>'First Name is required and less than 50 characters',
-                'sex is not correct'=>'Sex is must be Male or Female',
-                'number between'=>'number must be between ? and ?',
-                'text length must be between'=>'text length must be between ? and ?',
-                'Start date should be earlier than first payment date'=>'Start date should be earlier than first payment date',
-                'Please enter the details of each item'=>'Please enter the details of each item' 
+            'validation'=>[
+                    'required' => 'Please enter ??.',
+                    'numeric' => 'Please enter a valid number for ??.',
+                    'positive' => '?? must be greater than zero.',
+                    'between_length' => 'Please enter between ?? and ?? characters for ??.',
+                    'between_value' => '?? must be between ?? and ??.',
+                    'exists' => 'The selected ?? is invalid.',
+                    'date' => 'Please enter a valid date.',
+                    'date_format' => 'Please enter a valid date in ?? format.',
+                    'time' => 'Please enter a valid time.',
+                    'timestamp' => 'Please enter a valid date and time.',
+                    'email' => 'Please enter a valid email address.',
+                    'phone' => 'Please enter a valid phone number.',
+                    'in' => 'Please select a valid ??.',
+                    'json' => '?? format is invalid.',
+                    'file_type' => 'This file type is not supported.',
+                    'file_size_between' => 'File size must be between ??KB and ??KB.',
+                    'default' => 'Invalid ??.'
             ],
             'titles'=>[
                 'dashboard' => 'Dashboard - Meta Tower'
