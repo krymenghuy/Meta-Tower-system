@@ -134,12 +134,7 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
-<<<<<<<<< Temporary merge branch 1
                 'js/components/prm/AmenityComponent.js',
-
-=========
-
->>>>>>>>> Temporary merge branch 2
 
 
             ]

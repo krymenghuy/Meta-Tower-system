@@ -18,10 +18,6 @@
                         <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
                     <span vslang="buttons.Generate Invoice"></span>
                 </button>
-                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnInvoice_test">
-                        <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
-                    <span vslang="buttons.Test Invoice"></span>
-                </button>
             </div>
 
         </div>
