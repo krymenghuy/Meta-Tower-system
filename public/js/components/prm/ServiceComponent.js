@@ -6,7 +6,6 @@ var ServiceComponent =   ( () => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_service_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnService");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_service");
-    mThis.elFilter_status = mThis.self.querySelector('#_service_status');
     mThis.elFilter_type = mThis.self.querySelector('#_service_type_id');
     mThis.elSearch = mThis.self.querySelector("#_search_service");
 
@@ -20,14 +19,14 @@ var ServiceComponent =   ( () => {
         {
             transTitle: "titles.Service",
             className: "align-middle",
-           data: (data) => {
+            data: (data) => {
                 return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Category",
             className: "align-middle",
-           data: (data) => {
+            data: (data) => {
                 return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
             }
         },
@@ -37,10 +36,10 @@ var ServiceComponent =   ( () => {
             data: (data) => {
                 // const cur_symbol = data.cur_symbol ?? '$';
                 // const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
-                const currency = data.currency_code ?? 'KHR';
+                const currency = data.currency_code ?? 'USD';
                 const formattedPrice = VSMoney.formatAmount(data.price,currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-                return `<span class="fw-semibold">${formattedPrice} <small class="text-muted">${unitLabel}</small></span>`;
+                return `<span class="fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
         }
         },
         {
@@ -53,22 +52,6 @@ var ServiceComponent =   ( () => {
                     </div>
                 `;
             }
-        },
-        {
-            transTitle: "titles.Status",
-            className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
-
-                if (status == 'inactive') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
-                } else if (status == 'active') {
-                    cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
-                }
-
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
-            },
         },
         {
             transTitle: "titles.Updated By",
@@ -86,7 +69,7 @@ var ServiceComponent =   ( () => {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                       <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
         },
@@ -162,7 +145,6 @@ var ServiceComponent =   ( () => {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status.value,
             service_type_id: mThis.elFilter_type.value,
             search_value: mThis.elSearch.value,
         };
@@ -181,15 +163,7 @@ var ServiceComponent =   ( () => {
             containerElement: table,
             actionButtonClass: "btn_leave_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_status"
-                },
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -206,11 +180,6 @@ var ServiceComponent =   ( () => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case 'edit_service': {
                         mThis.editService(id, menuLink);
                         break;
@@ -219,7 +188,6 @@ var ServiceComponent =   ( () => {
                         mThis.deleteService(id, menuLink);
                         break;
                     }
-
                     default: {
                         break;
                     }
@@ -266,51 +234,13 @@ var ServiceComponent =   ( () => {
             }
         });
     };
-    
-    
-    mThis.changeStatus = (id, link) =>{
-        const tr = link.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-
-        const inputOptions = {
-            context:'success',
-            transTitle: 'Change Status',
-            title:'Change Service Status',
-            label: "Service Status",
-            valueKey: "status_id",
-            labelKey: "name",
-            confirmButtonText: "Save",
-            requiredMessage: 'Status is not correct!',
-            //blankErrorMessage: "Status is not correct!",
-            data:[
-                {status_id:"1",name:"Active"},
-                {status_id:"2",name:"Inactive"},
-            ],
-            defaultValue: status_id,
-            onConfirm:(status,btn, me)=>{
-                    //if(!AuthManager.allowed(321)) return;
-                    const payload = {id, status_id :status.id};
-                    vsapi.post(`${mThis.base_url}/prm/service/update-status`,payload,{loader:false,agent:btn}).then(res=>{
-                        if(res.status_code ===200){
-                            me.close();
-                            cv_interact.success('Service Status has been updated');
-                            mThis.ServiceListView.showPage(mThis.getFilterData());
-                        }else{
-                            me.setError(res.error_message || 'Unable to update status');
-                            //cv_interact.error(res.error_message || 'Unable to update status');
-                        }
-                    });
-            }
-        };
-        InputBox.show(inputOptions);
-    };
 
     mThis.prepareFormOptions = (onFinish) => {
 
         vsapi.call(`${main_view.base_url}/prm/service/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'service_status', true, 'Statuses', null);
+
                 VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -339,7 +269,7 @@ const CreateServiceDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
@@ -350,16 +280,16 @@ const CreateServiceDialog = (() => {
                                 </div>
                            </div>
                            <div class="col-12">
-                                <label style="padding-left:6px;">Service</label>
+                                <label style="padding-left:6px;">Service<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                                 </div>
                             </div>
 
                             <div class="col-4">
-                                <label style="padding-left:6px;">Price</label>
+                                <label style="padding-left:6px;">Price<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder=" " />
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="0" />
                                 </div>
                             </div>
                             <div class="col-8">
@@ -368,22 +298,16 @@ const CreateServiceDialog = (() => {
                                     <select name="unit_type" class="data-input form-control" data-field="unit_type">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
-                                        <!--
-                                        <option value="time">Per Usage / Per Time</option>
-                                        <option value="one_time">One-time Service</option>
-                                        -->
+                                        <option value="one_time">One Time Charge</option>
+                                        <option value="kwh">Price Per Kwh</option>
+                                        <option value="m3">Price Per M3</option>
+                                        <option value="sqm">Price Per Sqm</option>
                                     </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="d-none material-input outlined">
-                                    <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                    <label>Status ID</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <label style="padding-left:6px;">Remarks</label>
+                                <label style="padding-left:6px;">Remarks<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                 </div>
