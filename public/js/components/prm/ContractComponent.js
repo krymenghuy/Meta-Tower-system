@@ -20,41 +20,10 @@ var ContractComponent = new (function () {
             title: "",
             className: "align-middle",
         },
-
-
-
-        // {
-        //     transTitle: "Status",
-        //     className: "align-middle text-center",
-        //     data: (data) => {
-
-        //         const status = (data.status ?? '').toLowerCase();
-
-        //         let cls = 'badge text-dark bg-warning-subtle border border-warning';
-
-        //         if (status === 'active') {
-        //             cls = 'badge text-success bg-success-subtle border border-success';
-        //         }
-        //         else if (status === 'expired') {
-        //             cls = 'badge text-dark bg-danger-subtle border border-danger';
-        //         }
-        //         else if (status === 'terminated') {
-        //             cls = 'badge text-danger bg-danger-subtle border border-danger';
-        //         }
-
-        //         return `
-        //             <span class="${cls} text-capitalize d-inline-block text-center"
-        //                 style="min-width:80px"
-        //                 data-status_id="${data.status_id}">
-        //                 ${data.status ?? ''}
-        //             </span>
-        //         `;
-        //     },
-        // },
         {
             transTitle: "titles.Name",
             className: "align-middle",
-            data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
+            data: (data, index) => `<div class="text-prm-custom">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
                     </div>
                     `,
@@ -81,13 +50,6 @@ var ContractComponent = new (function () {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
-        //  {
-        //     transTitle: " Legal Name",
-        //     className: "align-middle text-nowrap text-capitalize",
-        //     data: (data, index) => `<div class="text-prm-custom" style="width:150px;">
-        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.legal_name ?? ''}</span>
-        //             </div>`,
-        // },
         {
             transTitle: "titles.Business",
             className: "align-middle",
@@ -143,7 +105,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom" style="width:120px;">
+                    <div class="text-prm-custom">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -332,7 +294,6 @@ var ContractComponent = new (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
 
-                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
                 menu.edit_contract.style.display = status_id == 2 ? 'none' : 'block';
@@ -790,14 +751,12 @@ const ContractDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
-                console.log(111,op);
-
                 return [
                     `<div class="row justify-content-start">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id">
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name">
                             </div>
                         </div>
                         <div class="col-6">
@@ -896,7 +855,10 @@ const ContractDialog = (() => {
                     },
                     onSelect: (item) => {
                         console.log(123,item);
+                        me.tenant_id = item.id;
                         me.controls.legal_name.value = item.legal_name || '';
+                        me.tenant_id = item.id || '';
+
                     }
                 });
             },
@@ -927,7 +889,6 @@ const ContractDialog = (() => {
                     valueField: "id",
                 },
             ],
-
             prepareFormOptions: {
                 createTitle: "Create Contract",
                 modifyTitle: "Modify Contract",
@@ -942,10 +903,11 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+                //LocaleManager.translateZone(me.divModal);
+                me.tenant_id =data.contract_details.tenant_id;
 
                 // const isReadOnly = me.dataOptions.data.code > 0;
                 // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if(btnClose) btnClose.classList.add('d-none');
@@ -970,8 +932,10 @@ const ContractDialog = (() => {
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
+                        op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
-
+                        op.tenant_id = me.tenant_id;
+                        console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);

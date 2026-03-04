@@ -825,6 +825,8 @@ const CreateServiceRequestDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 me.detail = data.request_details;
+                console.log('111111',data);
+
             },
 
             prepareFormOptions: {
