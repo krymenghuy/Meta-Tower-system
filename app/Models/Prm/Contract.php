@@ -212,6 +212,7 @@ class Contract
     if ($old->status_id == 3) {
         return DV::error('Terminated contract cannot be renewed');
     }
+    
 
     $v_rule = [
         'start_date' => '1|date',

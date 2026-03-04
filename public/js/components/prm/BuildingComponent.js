@@ -297,8 +297,8 @@ var BuildingComponent = ( () => {
                 let op = {
                     id: null,
                     building_id: building_id,
-                    onClose: (me,d,cancel) => {
-                        mThis.renderFloorList(tbody,building_id);
+                    onClose: () => {
+                        mThis.renderFloorList(displayFloorNumber.parentElement,btnNewFloor.dataset.buildingid);
                     }
                 };
 
@@ -546,7 +546,7 @@ const BuildingDialog = (() => {
                     },
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
@@ -581,84 +581,81 @@ const CreateFloorDialog = (() => {
             cssClass: "modal-md vs-modal",
             backdrop: "static",
             keyboard: true,
-            createContent: () => {
-                return [
-                    `<div class="row justify-content-center">
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Floor Name</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-
-                            </div>
+            createContent: () => `
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <label style="color:#777;padding-left:6px;">Floor Name</label>
+                        <div class="material-input outlined">
+                            <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                         </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
-
-                            </div>
+                    </div>
+                    <div class="col-6">
+                        <label style="color:#777;padding-left:6px;">Floor Number</label>
+                        <div class="material-input outlined">
+                            <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
                         </div>
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Description</label>
-                            <div class="material-input outlined">
-                                <textarea type="text" name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
-
-                            </div>
+                    </div>
+                    <div class="col-12">
+                        <label style="color:#777;padding-left:6px;">Description</label>
+                        <div class="material-input outlined">
+                            <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
                         </div>
-                       
-                    </div>`
-                ].join("");
-            },
+                    </div>
+                </div>
+            `,
             contentCreated: (me) => {
-                header.innerHTML = '';
-                header.appendChild(headerWrapper);
+                // Remove header modification if headerWrapper undefined
+                const header = me.divModal.querySelector('.modal-header');
+                if (header) {
+                    // header.innerHTML = ''; // optional
+                }
             },
             prepareFormOptions: {
                 createTitle: "Create Floor",
                 modifyTitle: "Modify Floor",
                 targetProp: "floor_details",
                 api: {
-                    endpoint: [main_view.base_url, "/prm/building/form-options",].join(""),
-                    params: (op) => {
-                        return { id: op.id };
-                    },
+                    endpoint: main_view.base_url + "/prm/building/form-options",
+                    params: (op) => ({ id: op.id }),
                 },
             },
-            onPrepareForm: (me, data) => {
+            onPrepareForm: (me) => {
                 const header = me.divModal.querySelector('.modal-header');
-                const btnClose = header.querySelector('button');
-                if(btnClose) btnClose.classList.add('d-none');
+                if (header) {
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
+                }
             },
             buttons: [
                 {
-                    label: '<span vslang="buttons.Cancel"></span>',
+                    label: 'Cancel',
                     cssClass: 'btn btn-secondary',
-                    click: (me, btn) => {
-                        me.hide(false);
-                    },
+                    click: (me) => me.hide(false),
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: 'Save',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
-                        op.id = me.dataOptions.id;
-                        vsapi.call([main_view.base_url, "/prm/building/save",].join(""), op, btn, null).then((res) => {
+                        op.building_id = me.dataOptions.building_id;
+                        op.id = me.dataOptions?.id || 0;
+                        console.log(444,op);
+
+                        vsapi.call(main_view.base_url + "/prm/building/add-floor", op, btn)
+                        .then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
-                                if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Floor has been updated successfully");
-                                } else {
-                                    cv_interact.success("New floor has been added successfully");
-                                }
+                                const msg = op.id > 0 ? "Floor has been updated successfully" : "New floor has been added successfully";
+                                cv_interact.success(msg);
                             } else {
-                                cv_interact.error(res.error_message);
+                                cv_interact.error(res.error_message || "Failed to save floor");
                             }
                         });
                     },
                 },
             ],
         });
+
         dialog.show(op);
     };
 

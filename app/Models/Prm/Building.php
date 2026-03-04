@@ -13,7 +13,8 @@ class Building //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'buildings';
-    public function __construct($id = null, $userInfo = null){
+    public function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->userInfo = $userInfo;
 
@@ -27,16 +28,16 @@ class Building //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
 
         $v_rule = [
-            'name'       => '1|string|0-255',
-            'total_floor'=> '1|number',
-            'address'    => '0|string|0-250',
+            'name' => '1|string|0-255',
+            'total_floor' => '1|number',
+            'address' => '0|string|0-250',
             'total_area' => '0|number',
-            'total_space'=> '0|number',
-            'occupancy'  => '0|number',
+            'total_space' => '0|number',
+            'occupancy' => '0|number',
         ];
 
-        $allowSign = ['$', '#', '@', '!', '.', '-',',', '_', '=', '?'];
-        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign,'address'=> $allowSign], $ss->lang, false);
+        $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['name' => $allowSign, 'address' => $allowSign], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -56,7 +57,7 @@ class Building //extends Model
         return DV::error($isCreate ? 'Create failed.' : 'Update failed.');
     }
 
-     public function getListBuilding($arr, $ss = null)
+    public function getListBuilding($arr, $ss = null)
     {
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
@@ -71,23 +72,23 @@ class Building //extends Model
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = DBX::whereLowerCase('b.name',"%$search_value%",'like');
+            $str_search = DBX::whereLowerCase('b.name', "%$search_value%", 'like');
         }
 
-        $updated_at = DBX::formatTime('b.updated_at','updated_at');
+        $updated_at = DBX::formatTime('b.updated_at', 'updated_at');
         $query = DB::table('buildings as b')
             // ->join('um_branches as um', 'um.id', '=', 'b.campus_id')
-             ->whereRaw($str_search)
-            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space, '.$updated_at.', b.update_user')
+            ->whereRaw($str_search)
+            ->selectRaw('b.id, b.name,b.address, b.total_floor, b.total_area, b.total_space, ' . $updated_at . ', b.update_user')
             ->orderBy('b.id', 'asc');
 
         $clone_query = clone $query;
         $count = $clone_query->count('b.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
- public static function buildingDetails($id)
+    public static function buildingDetails($id)
     {
         $row = DB::table('buildings as b')
             ->where('b.id', $id)
@@ -97,14 +98,15 @@ class Building //extends Model
         return $row;
     }
 
-    public function getFormOptions($id){
+    public function getFormOptions($id)
+    {
         $building_details = self::buildingDetails($id) ?? null;
-        return (object)[
+        return (object) [
             'building_details' => $building_details,
         ];
     }
 
-     public function deleteBuilding($id = null)
+    public function deleteBuilding($id = null)
     {
         $id = $id ?? $this->id;
         $check_space = DB::table('building_spaces')->where('building_id', $id)->exists();
@@ -119,24 +121,110 @@ class Building //extends Model
     }
 
 
-    public function getListFloor($id,$ss=null){
+    public function getListFloor($id, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $updated_at = DBX::formatTime('bf.updated_at','updated_at');
-      
-        $cols = 'bf.id,bf.building_id,b.name as building_name,bf.floor_id,f.name as floor_name,f.floor_number as floor_no,bf.description,bf.status_id,bf.update_user,'.$updated_at.' ';
+        $updated_at = DBX::formatTime('bf.updated_at', 'updated_at');
+
+        $cols = 'bf.id,bf.building_id,b.name as building_name,bf.floor_id,f.name as floor_name,f.floor_number as floor_no,bf.description,bf.status_id,bf.update_user,' . $updated_at . ' ';
         $rows = DB::table('building_floors as bf')
-            ->join('buildings as b','b.id','=','bf.building_id')
-            ->join('floors as f','f.id','=','bf.floor_id')
+            ->join('buildings as b', 'b.id', '=', 'bf.building_id')
+            ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $id)
             ->selectRaw($cols)
             // ->where('f.branch_id',$branch_id)
             ->orderByRaw('bf.id ASC')->get();
-           foreach ($rows as $row) {
+        foreach ($rows as $row) {
             $row->total_space = DB::table('building_spaces')
                 ->where('floor_id', $row->id)
                 ->count();
         }
         return $rows;
+    }
+    public function addFloor($arr = [], $building_id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+
+        $v_rule = [
+            'id' => '0|number',
+            'name' => '1|string|1-250',
+            'floor_number' => '1|number',
+            'building_id' => '1|number',
+            'description' => '0|string|0-250',
+        ];
+
+        $allowSign = ['$', '#', '@', '!', '.', '-', ',', '_', '=', '?'];
+        $res = DBX::validateObject($arr, $v_rule, true, ['description' => $allowSign], $ss->lang, false);
+
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $d = (object) $inputs;
+        $floor_id = $d->id ?? 0;
+
+        $building = DB::table('buildings')
+            ->where('id', $d->building_id)
+            ->first();
+
+        if (!$building) {
+            return DV::error("Building not found.");
+        }
+
+        if ($d->floor_number > $building->total_floor) {
+            return DV::error("Floor number cannot exceed total floors ({$building->total_floor}).");
+        }
+
+        $expectedName = "Floor " . $d->floor_number;
+
+        if ($d->name !== $expectedName) {
+            return DV::error("Floor name must be '{$expectedName}'.");
+        }
+
+        $existingFloor = DB::table('building_floors as bf')
+            ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+            ->where('bf.building_id', $d->building_id)
+            ->where('f.floor_number', $d->floor_number)
+            ->when($floor_id > 0, function ($q) use ($floor_id) {
+                $q->where('f.id', '<>', $floor_id);
+            })
+            ->first();
+
+        if ($existingFloor) {
+            return DV::error("Floor number '{$d->floor_number}' already exists in this building.");
+        }
+
+        $floor_data = [
+            'name' => $expectedName,
+            'floor_number' => $d->floor_number,
+        ];
+
+        $floor_id = DBX::saveData($ss, 'floors', ['id' => $floor_id], $floor_data, [], 1);
+
+        if (!$floor_id) {
+            return DV::error($floor_id ? 'Update failed.' : 'Create failed.');
+        }
+
+        DBX::saveData(
+            $ss,
+            'building_floors',
+            ['floor_id' => $floor_id, 'building_id' => $d->building_id],
+            [
+                'floor_id' => $floor_id,
+                'building_id' => $d->building_id,
+                'description' => $d->description ?? null,
+            ],
+            [],
+            1
+        );
+
+        return DV::depends(1, [
+            'floor_id' => $floor_id,
+            'building_id' => $d->building_id,
+            'description' => $d->description ?? null,
+            'floor_data' => $floor_data
+        ]);
     }
 }
