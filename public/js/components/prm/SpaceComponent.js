@@ -177,12 +177,12 @@ var SpaceComponent = new (function () {
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
-        }
+        // sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        // sh_parent.classList.add("overflow-y-auto");
+        // // sh_parent.classList.add("overflow-x-hidden");
+        // window.onresize = () => {
+        //     sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        // }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
@@ -299,13 +299,13 @@ var SpaceComponent = new (function () {
                 },
                 {
 
-                    html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete "></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_space"
@@ -419,7 +419,7 @@ var SpaceComponent = new (function () {
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -506,6 +506,10 @@ var SpaceComponent = new (function () {
     mThis.editSpace = (id, menulink) => {
         let op = {
             id: id,
+            data: {
+                building_id: menulink?.dataset?.buildingid ?? null,
+                floor_id: menulink?.dataset?.floorid ?? null,
+            },
             btn: menulink,
             onClose: () => {
                 ;
@@ -537,7 +541,7 @@ var SpaceComponent = new (function () {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Space?', {
-            title: 'Delete Space',
+            title: 'Delete ',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
@@ -715,7 +719,7 @@ const BuildingSpaceDialog = (() => {
                         textField: "name",
                         valueField: "id",
                         defaultValue: (me, op) => {
-                            return op?.data?.building_id ?? null;
+                            return op?.data?.floor_id ?? null;
                         },
                         depends: {
                             name: "building_id",
