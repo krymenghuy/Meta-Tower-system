@@ -98,11 +98,31 @@ class Building //extends Model
         return $row;
     }
 
-    public function getFormOptions($id)
+    public function getFormOptions($id, $building_id = null)
     {
         $building_details = self::buildingDetails($id) ?? null;
+        $floor_details = null;
+
+        if ($building_id && is_numeric($building_id)) {
+            $max_floor_no = DB::table('building_floors as bf')
+                ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+                ->where('bf.building_id', $building_id)
+                ->max('f.floor_number');
+
+            $next_floor_no = ((int) $max_floor_no) + 1;
+            if ($next_floor_no <= 0) {
+                $next_floor_no = 1;
+            }
+
+            $floor_details = (object) [
+                'floor_number' => $next_floor_no,
+                'name' => "Floor {$next_floor_no}",
+            ];
+        }
+
         return (object) [
             'building_details' => $building_details,
+            'floor_details' => $floor_details,
         ];
     }
 
@@ -146,10 +166,14 @@ class Building //extends Model
     {
         $ss = $ss ?? $this->userInfo;
 
+        if ((!isset($arr['building_id']) || !$arr['building_id']) && $building_id) {
+            $arr['building_id'] = $building_id;
+        }
+
         $v_rule = [
             'id' => '0|number',
-            'name' => '1|string|1-250',
-            'floor_number' => '1|number',
+            'name' => '0|string|1-250',
+            'floor_number' => '0|number',
             'building_id' => '1|number',
             'description' => '0|string|0-250',
         ];
@@ -164,6 +188,7 @@ class Building //extends Model
         $inputs = $res->values;
         $d = (object) $inputs;
         $floor_id = $d->id ?? 0;
+        $isCreate = $floor_id <= 0;
 
         $building = DB::table('buildings')
             ->where('id', $d->building_id)
@@ -173,35 +198,74 @@ class Building //extends Model
             return DV::error("Building not found.");
         }
 
-        if ($d->floor_number > $building->total_floor) {
+        $floor_number = isset($d->floor_number) && is_numeric($d->floor_number)
+            ? (int) $d->floor_number
+            : 0;
+
+        if ($isCreate && $floor_number <= 0) {
+            $max_floor_no = DB::table('building_floors as bf')
+                ->join('floors as f', 'f.id', '=', 'bf.floor_id')
+                ->where('bf.building_id', $d->building_id)
+                ->max('f.floor_number');
+
+            $floor_number = ((int) $max_floor_no) + 1;
+            if ($floor_number <= 0) {
+                $floor_number = 1;
+            }
+        }
+
+        if ($floor_number <= 0) {
+            return DV::error("Floor number is required.");
+        }
+
+        if ($floor_number > $building->total_floor) {
             return DV::error("Floor number cannot exceed total floors ({$building->total_floor}).");
         }
 
-        $expectedName = "Floor " . $d->floor_number;
+        $expectedName = "Floor " . $floor_number;
+        $name = $d->name ?? null;
+        $name = is_string($name) ? trim($name) : $name;
 
-        if ($d->name !== $expectedName) {
+        if ($isCreate && !$name) {
+            $name = $expectedName;
+        }
+
+        if ($name !== $expectedName) {
             return DV::error("Floor name must be '{$expectedName}'.");
         }
 
         $existingFloor = DB::table('building_floors as bf')
             ->join('floors as f', 'f.id', '=', 'bf.floor_id')
             ->where('bf.building_id', $d->building_id)
-            ->where('f.floor_number', $d->floor_number)
+            ->where('f.floor_number', $floor_number)
             ->when($floor_id > 0, function ($q) use ($floor_id) {
                 $q->where('f.id', '<>', $floor_id);
             })
             ->first();
 
         if ($existingFloor) {
-            return DV::error("Floor number '{$d->floor_number}' already exists in this building.");
+            return DV::error("Floor number '{$floor_number}' already exists in this building.");
         }
 
         $floor_data = [
             'name' => $expectedName,
-            'floor_number' => $d->floor_number,
+            'floor_number' => $floor_number,
         ];
 
-        $floor_id = DBX::saveData($ss, 'floors', ['id' => $floor_id], $floor_data, [], 1);
+        // Reuse a single master floor per floor_number to prevent duplicate rows in floors table.
+        $masterFloor = DB::table('floors')
+            ->where('floor_number', $floor_number)
+            ->first();
+
+        if ($masterFloor) {
+            $floor_id = $masterFloor->id;
+
+            if (($masterFloor->name ?? '') !== $expectedName) {
+                DBX::saveData($ss, 'floors', ['id' => $floor_id], ['name' => $expectedName], [], 1);
+            }
+        } else {
+            $floor_id = DBX::saveData($ss, 'floors', ['id' => 0], $floor_data, [], 1);
+        }
 
         if (!$floor_id) {
             return DV::error($floor_id ? 'Update failed.' : 'Create failed.');

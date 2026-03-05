@@ -67,7 +67,7 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
         self::createBuildingSpaceCode(
             $branch_id,
             $d->building_id,
-            $floor->floor_no,
+            $floor->floor_number,
             $id
         );
     }
