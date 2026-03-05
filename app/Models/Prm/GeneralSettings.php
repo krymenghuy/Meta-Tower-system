@@ -435,8 +435,18 @@ class GeneralSettings //extends Model
     static function options_building_space($ss)
     {
         return DB::table('building_spaces')
-            ->selectRaw('id,code as floor_id ')
-            ->selectRaw('id as building_id')
+            ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
+            ->selectRaw('
+                building_spaces.id,
+                building_spaces.code,
+                building_spaces.code as floor_id,
+                building_spaces.building_id,
+                building_spaces.space_type_id,
+                st.name as space_type,
+                building_spaces.sqm_size,
+                building_spaces.price_type,
+                building_spaces.price
+            ')
             ->get();
     }
 
