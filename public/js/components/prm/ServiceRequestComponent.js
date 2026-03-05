@@ -599,6 +599,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
 })();
 
 
+
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
@@ -636,6 +637,18 @@ const CreateServiceRequestDialog = (() => {
                     </div>
 
                     <div class="row g-3 mb-3">
+                        <!-- Service Type (new) -->
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Type <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="service_type_id" class="data-input form-control" data-field="service_type_id" required>
+                                    <option value="">-- Select Service Type --</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
@@ -646,7 +659,9 @@ const CreateServiceRequestDialog = (() => {
                                 </select>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
@@ -656,12 +671,11 @@ const CreateServiceRequestDialog = (() => {
                                     <option value="">-- Select Unit --</option>
                                     <option value="hour">⏱️ Price Per Hour</option>
                                     <option value="month">📅 Price Per Month</option>
+                                    <option value="month">📅 Price Per One Time </option>
                                 </select>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row g-3 mb-3">
                         <div class="col-md-6 select-type-time" style="display:none;">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
@@ -669,13 +683,13 @@ const CreateServiceRequestDialog = (() => {
                             <div class="material-input outlined">
                                 <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
                                     <option value="">-- Select Duration --</option>
-                                    <option value="0.5">⏰ 30 minutes</option>
-                                    <option value="1">⏰ 1 hour</option>
-                                    <option value="1.5">⏰ 1.5 hours</option>
-                                    <option value="2">⏰ 2 hours</option>
-                                    <option value="2.5">⏰ 2.5 hours</option>
-                                    <option value="3">⏰ 3 hours</option>
-                                    <option value="4">⏰ 4 hours</option>
+                                    <option value="0.5">30 minutes</option>
+                                    <option value="1">1 hour</option>
+                                    <option value="1.5">1.5 hours</option>
+                                    <option value="2">2 hours</option>
+                                    <option value="2.5">2.5 hours</option>
+                                    <option value="3">3 hours</option>
+                                    <option value="4">4 hours</option>
                                 </select>
                             </div>
                         </div>
@@ -702,7 +716,7 @@ const CreateServiceRequestDialog = (() => {
                     <div class="row g-3">
                         <div class="col-12">
                             <label style="padding-left:6px; color:#777;">
-                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks / Description
+                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
                             </label>
                             <div class="material-input outlined position-relative">
                                 <textarea class="data-input form-control"
@@ -728,7 +742,7 @@ const CreateServiceRequestDialog = (() => {
                     const unit = me.controls?.unit_type?.value || '';
                     const showDuration = unit === 'hour';
                     const durationRow = me.divModal.querySelector('.select-type-time');
-                    const previewRow = me.divModal.querySelector('#price-preview-row');
+                    const previewRow  = me.divModal.querySelector('#price-preview-row');
 
                     if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
 
@@ -737,65 +751,17 @@ const CreateServiceRequestDialog = (() => {
                         return;
                     }
 
-                    const hours = parseFloat(me.controls?.duration_hours?.value || '0') || 0;
+                    const hours = parseFloat(me.controls?.duration_hours?.value || 0);
                     const price = parseFloat(me.servicePrice || 0);
-
-                    if (price <= 0 || !me.servicePrice) {
-                        if (previewRow) previewRow.style.display = 'none';
-                        return;
-                    }
 
                     if (hours > 0 && price > 0) {
                         const total = price * hours;
                         me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
                         me.divModal.querySelector('#calc-breakdown').textContent = `$${price.toFixed(2)} × ${hours}h`;
                         if (previewRow) previewRow.style.display = 'block';
-                    } else {
-                        if (previewRow) previewRow.style.display = 'none';
+                    } else if (previewRow) {
+                        previewRow.style.display = 'none';
                     }
-                };
-
-                me.controls?.service_id?.addEventListener('change', () => {
-                    const serviceId = me.controls.service_id.value;
-                    if (!serviceId) return;
-
-                    const service = me.data?.services?.find(s => String(s.id) === String(serviceId));
-                    if (service) {
-                        me.servicePrice = service.price;
-                        me.controls.unit_type.value = service.unit_type || '';
-                        updatePricePreview();
-                    }
-                });
-
-                ['unit_type', 'duration_hours'].forEach(f => {
-                    me.controls?.[f]?.addEventListener('change', updatePricePreview);
-                });
-
-                updatePricePreview();
-
-                me.onBeforeSubmit = () => {
-                    const data = me.getData();
-                    const required = {
-                        tenant_id: 'Tenant',
-                        space_id: 'Room/Space',
-                        service_id: 'Service',
-                        unit_type: 'Charge Unit'
-                    };
-
-                    for (const [field, label] of Object.entries(required)) {
-                        if (!data[field]) {
-                            cv_interact.error(`Please select ${label}`);
-                            return false;
-                        }
-                    }
-
-                    if (data.unit_type === 'hour' && !data.duration_hours) {
-                        cv_interact.error('Please select duration for hourly service');
-                        return false;
-                    }
-
-                    console.log('[SUBMIT] Data to send:', data);
-                    return true;
                 };
             },
 
@@ -809,7 +775,7 @@ const CreateServiceRequestDialog = (() => {
                         {
                             name: "space_id",
                             itemsLoaded: (me, items) => {
-                                me.controls.space_id.value = me.detail?.space_id;
+                                me.controls.space_id.value = me.detail?.space_id || '';
                             },
                             api: {
                                 endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
@@ -819,18 +785,43 @@ const CreateServiceRequestDialog = (() => {
                         }
                     ]
                 },
-                { name: "service_id", data: "services", textField: "service", valueField: "id" },
-                { name: "service_type_id", data: "service_types", textField: "service_type", valueField: "id" }
+                {
+                    name: "service_type_id",
+                    data: "service_types",
+                    textField: "service_type",
+                    valueField: "id"
+                },
+                // {
+                //     name: "service_id",
+                //     data: "services",
+                //     textField: "service",
+                //     valueField: "id"
+                // }
+                 {
+                        name: "service_id",
+                        textField: "name",
+                        valueField: "id",
+                        defaultValue: (me, op) => {
+                            return op?.data?.service_type_id ?? null;
+                        },
+                        depends: {
+                            name: "service_type_id",
+                            api: {
+                                endpoint: `${main_view.base_url}prm/settings/options-service`,
+                                params: (me, op) => {
+                                    let service_type_id = me.controls.service_type_id.value;
+                                    return {
+                                        service_type_id: service_type_id,
+
+                                    };
+                                },
+                            },
+                        },
+
+                    },
             ],
 
-            onPrepareForm: (me, data) => {
-                me.detail = data.request_details;
-                console.log('111111',data);
-
-            },
-
             prepareFormOptions: {
-                generateInvoice: "Generate Invoice",
                 createTitle: "Create Service Request",
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",
@@ -838,6 +829,10 @@ const CreateServiceRequestDialog = (() => {
                     endpoint: `${main_view.base_url}/prm/service-request/form-options`,
                     params: (op) => ({ id: op.id || null })
                 }
+            },
+
+            onPrepareForm: (me, data) => {
+                me.detail = data.request_details;
             },
 
             buttons: [
@@ -853,81 +848,28 @@ const CreateServiceRequestDialog = (() => {
                         const data = me.getData();
                         data.id = me.dataOptions?.id || null;
 
-                        vsapi.call(
-                            `${main_view.base_url}/prm/service-request/save`,
-                            data,
-                            btn
-                        ).then(res => {
-                            if (res.status_code === 200) {
-                                me.hide(true);
-                                cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
-                            } else {
-                                cv_interact.error(res.error_message || "Save failed");
-                            }
-                        });
+                        vsapi.call(`${main_view.base_url}/prm/service-request/save`, data, btn)
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    me.hide(true);
+                                    cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
+                                    if (op?.onClose) op.onClose();
+                                } else {
+                                    cv_interact.error(res.error_message || "Save failed");
+                                }
+                            });
                     }
                 }
             ]
         });
-        const originalShow = dialog.show;
-        dialog.show = function(innerOp) {
-            originalShow.call(this, innerOp);
 
-            setTimeout(() => {
-                if (!innerOp?.id) return;
-                const select = this.controls?.duration_hours;
-                if (!select) {
-                    return;
-                }
-
-                let target = String(this.detail?.duration_hours ?? '').trim();
-                if (!target) return;
-
-                const candidates = [
-                    target,
-                    target.replace(/0+$/, ''),
-                    parseFloat(target).toFixed(1),       // → "2.5"
-                    parseFloat(target).toString(),       // clean string
-                    target.replace('.', ',')             // some locales use comma
-                ];
-                let success = false;
-                for (let val of candidates) {
-                    select.value = val;
-                    select.dispatchEvent(new Event('change', { bubbles: true }));
-                    select.dispatchEvent(new Event('input', { bubbles: true }));
-                    if (select.value === val || select.value !== "") {;
-                        success = true;
-                        break;
-                    }
-                }
-
-
-                if (window.jQuery && jQuery.fn?.select2) {
-                    const $sel = jQuery(select);
-                    if ($sel.hasClass('select2-hidden-accessible') || $sel.data('select2')) {
-                        $sel.val(target).trigger('change');
-                        $sel.val(candidates[1]).trigger('change');
-                        success = true;
-                    }
-                }
-
-                // Final check
-                setTimeout(() => {
-                    const finalVal = select.value;
-                    const finalText = select.options[select.selectedIndex]?.text?.trim() || '(none)';
-                    if (finalVal) {
-                        updatePricePreview();
-                    } else {
-                        console.warn("[DURATION] Still empty – likely third-party library issue");
-                    }
-                }, 900);
-
-            }, 700); // 700 ms delay – adjust between 500–1200 if needed
-        };
         dialog.show(op);
     };
 
     return self;
 })();
+
+
+
 
 

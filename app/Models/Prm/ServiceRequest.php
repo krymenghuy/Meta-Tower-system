@@ -78,10 +78,9 @@ class ServiceRequest extends VSModel
         }
 
         $unitTypeMap = [
-            // 'one_time' => 0,
+            'one_time' => 0,
             'hour'     => 1,
             'month'    => 2,
-            // 'time'     => 3,
         ];
 
         $unit_string = $arr['unit_type'] ?? $service->unit_type ?? null;
@@ -272,16 +271,18 @@ class ServiceRequest extends VSModel
             ->first();
     }
 
-    public static function getFormOptions($ss, $id)
+    public function getFormOptions($arr = [],$ss=null)
     {
+        $ss = $ss ? $ss : $this->userInfo;
+        $d = (object)$arr;
+        $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
-
+        $service_type_id = $d->service_type_id ?? null;
         return (object) [
             'request_details'   => $details,
-            'service_types'     => GeneralSettings::options_service_types($ss),
+            'service_types'     => GeneralSettings::options_service_type_request($ss),
             'tenants'           => GeneralSettings::options_tenant_with_active_contract($ss),
-            // 'tenants'           => GeneralSettings::options_tenant($ss),
-            'services'          => GeneralSettings::options_service($ss),
+            'services'          => GeneralSettings::options_service($service_type_id),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
             'request_statuses'  => GeneralSettings::options_request_status($ss)
         ];

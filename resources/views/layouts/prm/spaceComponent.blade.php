@@ -6,7 +6,7 @@
                     <input type="text" class="form-control rounded-2 pe-5 filter-field " id="_search_space" placeholder="Search">
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
-           
+
             </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
@@ -24,9 +24,9 @@
                 </button>
             </div>
         </div>
-    </div> 
- <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3 d-none">
-    
+    </div>
+ <div id="_space_div_summary" class="container-fluid bg-white rounded-2 shadow my-3 p-3">
+
 </div>
 
 

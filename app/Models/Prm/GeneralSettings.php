@@ -102,9 +102,7 @@ class GeneralSettings //extends Model
     static function options_exit_form($ss){
         return DB::table('forms as f')->selectRaw('id,name')->get();
     }
-    // static function options_service_types($ss){
-    //     return DB:: table('service_types')->selectRaw('id,name,code')->get();
-    // }
+
     static function options_pmt_status($ss=null){
        return [
         (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
@@ -289,7 +287,7 @@ public static function options_tenant_with_active_contract($ss)
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
-    
+
     // public static function options_service_status($ss)
     // {
     //     return DB::table('service_statuses')
@@ -314,9 +312,9 @@ public static function options_tenant_with_active_contract($ss)
         return $new_row;
     }
 
-    
 
-    
+
+
 
     static function options_task_type($ss){
         return DB::table('task_types')->selectRaw('id,title AS task_type_title')->get();
@@ -355,9 +353,7 @@ public static function options_tenant_with_active_contract($ss)
      static function options_tenant_status($ss){
         return  DB::table('tenant_statuses')->selectRaw('id,name')->get();
      }
-      static function options_service($ss){
-        return  DB::table('services')->selectRaw('id,name AS service, price, unit_type')->get();
-     }
+
      static function options_legal($ss){
         return  DB::table('tenants')->selectRaw('id,legal_name')->get();
      }
@@ -376,9 +372,42 @@ public static function options_tenant_with_active_contract($ss)
     static function options_request_status($ss){
         return DB::table('request_status')->selectRaw('id,name')->get();
     }
+
     static function options_service_types($ss){
-        return DB::table('service_types')->selectRaw('id,name as service_type')->get();
+        return DB::table('service_types')
+            ->selectRaw('id, name as service_type')
+            ->get();
     }
+
+    static function options_service_type_request($ss){
+        return DB::table('service_types')
+            ->selectRaw('id, name as service_type')
+
+            ->where('id', [1,4])
+            // ->whereIn('id', [1, 4])
+            ->orderBy('id')
+            ->get();
+    }
+    // static function options_service($service_type_id){
+    //     return  DB::table('services')
+    //         ->selectRaw('id,name AS service, price, unit_type, service_type_id')
+    //         ->where($service_type_id)
+    //         ->orderBy('name')
+    //         ->get();
+    // }
+         static function options_service($service_type_id = null){
+        //$branch_id = $ss->branch_id;
+         $service_type_id = $service_type_id ?? -1;
+        $str_where ="1=1";
+        if($service_type_id > 0){
+            $str_where = 's.service_type_id = ' . $service_type_id;
+        }
+        $rows = DB::table(table: 'services as s')
+            ->whereRaw($str_where)
+            ->selectRaw('s.id,s.name as service_name, s.price, s.unit_type, s.service_type_id')->get();
+        return $rows;
+    }
+
 
     static function options_contracts($ss){
         return DB::table('contracts')->selectRaw('id,name as contract')->get();
@@ -406,5 +435,5 @@ public static function options_tenant_with_active_contract($ss)
             ->selectRaw('f.id,f.id as floor_id,f.building_id,f.name')->get();
         return $rows;
     }
-    
+
 }
