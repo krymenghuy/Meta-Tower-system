@@ -55,7 +55,7 @@ class BuildingController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->buildings->getFormOptions($req->id));
+        return JDV::result($this->buildings->getFormOptions($req->id, $req->building_id));
     }
     public function deleteBuilding(Request $req)
     {

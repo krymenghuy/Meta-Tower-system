@@ -419,7 +419,7 @@ var SpaceComponent = new (function () {
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -506,6 +506,10 @@ var SpaceComponent = new (function () {
     mThis.editSpace = (id, menulink) => {
         let op = {
             id: id,
+            data: {
+                building_id: menulink?.dataset?.buildingid ?? null,
+                floor_id: menulink?.dataset?.floorid ?? null,
+            },
             btn: menulink,
             onClose: () => {
                 ;
@@ -715,7 +719,7 @@ const BuildingSpaceDialog = (() => {
                         textField: "name",
                         valueField: "id",
                         defaultValue: (me, op) => {
-                            return op?.data?.building_id ?? null;
+                            return op?.data?.floor_id ?? null;
                         },
                         depends: {
                             name: "building_id",

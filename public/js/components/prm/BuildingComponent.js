@@ -197,6 +197,7 @@ var BuildingComponent = ( () => {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated:(data,index,tr)=>{
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.totalfloor = data.total_floor ?? 0;
                 tr.classList.add('building');
                 tr.setAttribute('id',['building_id',data.id].join(''));
             },
@@ -240,8 +241,9 @@ var BuildingComponent = ( () => {
             // showExpandSignal: false,
             onOpen: (container, detail_tr, parent_tr) => {
                 const id = parent_tr.dataset.id;
+                const totalFloor = parseInt(parent_tr.dataset.totalfloor || '0', 10);
                 if (id > 0) {
-                    mThis.displayFloorNumber(container,id);
+                    mThis.displayFloorNumber(container, id, totalFloor);
                 }
             }
         });
@@ -255,7 +257,7 @@ var BuildingComponent = ( () => {
 
         mThis.initAlready = true;
     };
-    mThis.displayFloorNumber = (container, id) => {
+    mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
         let html = null;
         container.innerHTML = '';
         console.log(444,id);
@@ -265,12 +267,17 @@ var BuildingComponent = ( () => {
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
             console.log(444,data);
+            const maxFloorNo = (data || []).reduce((max, level) => {
+                const floorNo = parseInt(level.floor_no || '0', 10);
+                return floorNo > max ? floorNo : max;
+            }, 0);
+            const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `<div class="rounded-3 p-2 bg-white">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-white">
                 <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
                 </button>
-            </div>
+            </div>` : ''}
             <div class="table-responsive p-1">
             <table class="table table-sm table-hover align-middle tbl_list_floor">
             <thead class="table-light text-nowrap">
@@ -291,20 +298,23 @@ var BuildingComponent = ( () => {
             const tbody = container.querySelector('table.tbl_list_floor > tbody');
             const btnNewFloor = container.querySelector('.btn-add-floor');
 
-            btnNewFloor.addEventListener('click',e => {
-                e.preventDefault();
-                let building_id = btnNewFloor.dataset.buildingid;
-                let op = {
-                    id: null,
-                    building_id: building_id,
-                    onClose: () => {
-                        mThis.renderFloorList(displayFloorNumber.parentElement,btnNewFloor.dataset.buildingid);
-                    }
-                };
+            if (btnNewFloor) {
+                btnNewFloor.addEventListener('click',e => {
+                    e.preventDefault();
+                    let building_id = btnNewFloor.dataset.buildingid;
+                    let op = {
+                        id: null,
+                        building_id: building_id,
+                        onClose: (success) => {
+                            if (!success) return;
+                            mThis.displayFloorNumber(container, btnNewFloor.dataset.buildingid, totalFloor);
+                        }
+                    };
 
-                // if(!AuthManager.allowed(264)) return;
-                CreateFloorDialog.show(op);
-            });
+                    // if(!AuthManager.allowed(264)) return;
+                    CreateFloorDialog.show(op);
+                });
+            }
 
             mThis.renderFloorList(tbody, data);
         });
@@ -616,7 +626,7 @@ const CreateFloorDialog = (() => {
                 targetProp: "floor_details",
                 api: {
                     endpoint: main_view.base_url + "/prm/building/form-options",
-                    params: (op) => ({ id: op.id }),
+                    params: (op) => ({ id: op.id, building_id: op.building_id }),
                 },
             },
            onPrepareForm: (me) => {
@@ -628,8 +638,17 @@ const CreateFloorDialog = (() => {
 
                 const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
                 const floorName = me.divModal.querySelector('[data-field="name"]');
+                const isCreate = !(me.dataOptions?.id > 0);
 
                 if (floorNumber && floorName) {
+                    if (isCreate) {
+                        floorNumber.setAttribute('disabled', 'disabled');
+                        floorName.setAttribute('disabled', 'disabled');
+                    } else {
+                        floorNumber.removeAttribute('disabled');
+                        floorName.removeAttribute('disabled');
+                    }
+
                     floorNumber.addEventListener('input', function () {
                         const num = this.value;
                         floorName.value = num ? `Floor ${num}` : '';
@@ -654,6 +673,9 @@ const CreateFloorDialog = (() => {
                         vsapi.call(main_view.base_url + "/prm/building/add-floor", op, btn)
                         .then((res) => {
                             if (res.status_code === 200) {
+                                if (typeof me.dataOptions?.onClose === 'function') {
+                                    me.dataOptions.onClose(true, res.data);
+                                }
                                 me.hide(true, op);
                                 const msg = op.id > 0 ? "Floor has been updated successfully" : "New floor has been added successfully";
                                 cv_interact.success(msg);
