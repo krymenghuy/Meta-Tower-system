@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
 
 use App\Http\Controllers\Prm\TenantController;
+use App\Http\Controllers\Prm\TenantDocumentController;
 use App\Http\Controllers\Prm\BuildingController;
 use App\Http\Controllers\Prm\BuildingSpaceController;
 use App\Http\Controllers\Prm\ContractController;
@@ -189,6 +190,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
     Route::post('/delete', [ReservationController::class, 'deleteReservation']);
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('tenant-document')->group(function(){
+    Route::post('/save', [TenantDocumentController::class, 'saveTenantDocument']);
+    Route::post('/list-paginate', [TenantDocumentController::class, 'getListPaginate']);
+    Route::post('/details', [TenantDocumentController::class, 'getDetails']);
+    Route::post('/delete', [TenantDocumentController::class, 'deleteTenantDocument']);
+    Route::post('/form-options', [TenantDocumentController::class, 'getFormOptions']);
+    Route::post('/download', [TenantDocumentController::class, 'downloadDocument']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {

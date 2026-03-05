@@ -350,13 +350,7 @@ const CreateReservationDialog = (() => {
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-6">
-                                    <label style="padding-left:6px;" for="amenity">Category</label>
-                                    <div class="material-input outlined">
-                                        <select name="category_id" class="data-input form-control" data-field="amenity_category_id">
-                                        </select>
-                                    </div>
-                            </div>
+                            
                             <div class="col-6">
                                 <label style="padding-left:6px;" for="amenity">Amenity</label>
                                 <div class="material-input outlined">

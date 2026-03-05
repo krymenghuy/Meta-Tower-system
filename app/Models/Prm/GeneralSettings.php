@@ -282,6 +282,10 @@ public static function options_tenant_with_active_contract($ss)
         ->orderBy('t.name')
         ->get();
 }
+
+    static function options_document_type($ss){
+        return DB::table('document_types')->selectRaw('id,name as document_type')->get();
+    }
     static function options_service_status($ss){
         return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
     }
@@ -291,7 +295,7 @@ public static function options_tenant_with_active_contract($ss)
     }
     static function options_amenity($ss)
     {
-        return DB::table('amenities')->selectRaw('id,name AS amenity, category')->get(); 
+        return DB::table('amenities')->selectRaw('id,name AS amenity')->get(); 
     }
     
 

@@ -6,6 +6,7 @@ var TenantComponent = new(function () {
     this.defaultPage = 'tenant_list';
     mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
+    mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
     mThis.elStatus = mThis.self.querySelector('#_el_tenant_status');
@@ -234,10 +235,10 @@ var TenantComponent = new(function () {
                     name: "create_contract"
                 },
                 {
-                    html: '<span class="ps-2">Upload Documents</span>',
+                    html: '<span class="ps-2">Upload Document</span>',
                     icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "upload_documents"
+                    name: "upload_document"
                 },
                 {
                     html: '<span class="ps-2">Renew Contract</span>',
@@ -275,6 +276,7 @@ var TenantComponent = new(function () {
                 menu.create_contract.style.display = status_id == 1 ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id > 1 ? 'block' : 'none';
                 menu.service_request.style.display = status_id == 2 ? 'block' : 'none';
+                menu.upload_document.style.display = status_id == 1 ? 'block' : 'none';
 
 
             },
@@ -292,6 +294,10 @@ var TenantComponent = new(function () {
                     }
                     case 'create_contract': {
                         mThis.createContract(id, menuLink);
+                        break;
+                    }
+                    case 'upload_document': {
+                        mThis.uploadDocument(id, menuLink);
                         break;
                     }
                     case 'renew_contract': {
@@ -347,6 +353,19 @@ var TenantComponent = new(function () {
             }
         };
         ContractDialog.show(op);
+    };
+    mThis.uploadDocument = (id, menuLink) => {
+        let op = {
+            id: null,
+            tenant_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.renderView();
+            }
+        };
+        console.log(111,op);
+        
+        TenantDocumentDialog.show(op);
     };
     mThis.renewContract = (id, menuLink) => {
         let op = {
@@ -554,6 +573,7 @@ var TenantComponent = new(function () {
                     // }
                 });
             });
+
             const createContract = mThis.cardViewContainer.querySelectorAll(".create-tenant-contract");
             createContract.forEach((link) => {
                 link.addEventListener("click", (e) => {
@@ -1032,7 +1052,7 @@ var TenantComponent = new(function () {
         }
         if(target == 'document_tenant_list'){
             const p = {id:data.id};
-            vsapi.call([main_view.base_url, '/prm/tenant/details'].join(''),p,false,null).then(res => {
+            vsapi.call([main_view.base_url, '/prm/tenant-document/details'].join(''),p,false,null).then(res => {
                 const d = res.status_code == 200 ? res.data :{};
 
                 let html ='';
@@ -1218,7 +1238,8 @@ const CreateTenantDialog = (() => {
 
 
                 </div>
-                `;
+                `;   
+
             },
 
             contentCreated: (me) => {
@@ -1331,6 +1352,8 @@ const CreateTenantDialog = (() => {
                         textField: "nationality",
                         valueField: "id", // "id" is the country_id
                     },
+
+                    
             ],
             prepareFormOptions: {
                 createTitle: "Create New Tenant",
@@ -1390,6 +1413,141 @@ const CreateTenantDialog = (() => {
         });
         dialog.show(op);
     };
+    return self;
+})();
+
+const TenantDocumentDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op = {}) => {
+
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+
+            createContent: () => {
+                return `
+                <div class="document-form row justify-content-start">
+                        <div class="col-6">
+                            <label style="padding-left:6px;" >Document Type</label>
+                            <div class="material-input outlined">
+                                <select name="tenant_document" class="data-input form-control" data-field="document_type_id">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="padding-left:6px;" >Description</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label style="color:#777777;padding-left:6px;"for="tenant_document">File</label>
+                            <div class="material-input outlined">
+                                <input type="file" name="documents" class="data-input form-control" data-field="file_name"/>
+                            </div>
+                        </div>
+                </div>
+                `;
+            },
+
+            contentCreated: (me) => {
+                me.tenantId       = op.tenantId || 0;
+                me.uploadInput    = me.divModal.querySelector('input[name="documents"]');
+                me.uploadArea     = me.divModal.querySelector('.upload-area');
+                me.previewContainer = me.divModal.querySelector('.documents-preview');
+                me.tenantNameEl   = me.divModal.querySelector('#tenant-name-display');
+
+                if (op.tenantName) {
+                    me.tenantNameEl.textContent = op.tenantName;
+                }
+
+                me.uploadArea.addEventListener('click', () => {
+                    me.uploadInput.click();
+                });
+
+               
+
+                me.uploadArea.addEventListener('drop', e => {
+                    const files = e.dataTransfer?.files;
+                    if (files && files.length) {
+                        handleFiles(files);
+                    }
+                });
+
+                me.uploadInput.addEventListener('change', e => {
+                    if (e.target.files && e.target.files.length) {
+                        handleFiles(e.target.files);
+                    }
+                    e.target.value = '';
+                });
+
+                
+
+                me.previewContainer.addEventListener('click', e => {
+                    if (e.target.classList.contains('remove-file')) {
+                        const item = e.target.closest('.document-item');
+                        if (item) item.remove();
+                    }
+                });
+
+                
+            },
+             configSelect: [
+                    {
+                        name: "document_type",
+                        data: "document_types",
+                        textField: "document_type",
+                        valueField: "id", 
+                    },
+
+            ],
+
+            prepareFormOptions: {
+                createTitle: "Upload Documents",
+                modifyTitle: "Upload Documents",
+                targetProp: "document_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/tenant-document/form-options"].join(""),
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Close"></span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me) =>  me.hide(false),
+                },
+                {
+                    label: '<span vslang="buttons.Save"></span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me,btn) =>{
+                        const op = me.getData();
+                        // op.id = me.dataOptions.id;
+                        op.tenant_id = me.dataOptions.tenant_id;
+                        console.log(11,op);
+                        
+
+                        vsapi.call([main_view.base_url, "/prm/tenant-document/save"].join(""), op, btn, null)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    cv_interact.success("Upload document has been saved successfully");
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                }
+            ]
+        });
+
+        dialog.show(op);
+    };
+
     return self;
 })();
 
