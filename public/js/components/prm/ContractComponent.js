@@ -20,41 +20,10 @@ var ContractComponent = new (function () {
             title: "",
             className: "align-middle",
         },
-
-
-
-        // {
-        //     transTitle: "Status",
-        //     className: "align-middle text-center",
-        //     data: (data) => {
-
-        //         const status = (data.status ?? '').toLowerCase();
-
-        //         let cls = 'badge text-dark bg-warning-subtle border border-warning';
-
-        //         if (status === 'active') {
-        //             cls = 'badge text-success bg-success-subtle border border-success';
-        //         }
-        //         else if (status === 'expired') {
-        //             cls = 'badge text-dark bg-danger-subtle border border-danger';
-        //         }
-        //         else if (status === 'terminated') {
-        //             cls = 'badge text-danger bg-danger-subtle border border-danger';
-        //         }
-
-        //         return `
-        //             <span class="${cls} text-capitalize d-inline-block text-center"
-        //                 style="min-width:80px"
-        //                 data-status_id="${data.status_id}">
-        //                 ${data.status ?? ''}
-        //             </span>
-        //         `;
-        //     },
-        // },
         {
             transTitle: "titles.Name",
             className: "align-middle",
-            data: (data, index) => `<div class="text-prm-custom" style="width:180px;">
+            data: (data, index) => `<div class="text-prm-custom">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
                     </div>
                     `,
@@ -81,13 +50,6 @@ var ContractComponent = new (function () {
                 return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
-        //  {
-        //     transTitle: " Legal Name",
-        //     className: "align-middle text-nowrap text-capitalize",
-        //     data: (data, index) => `<div class="text-prm-custom" style="width:150px;">
-        //                 <span class="text-wrap text-break" style ="word-break:break-word;">${data.legal_name ?? ''}</span>
-        //             </div>`,
-        // },
         {
             transTitle: "titles.Business",
             className: "align-middle",
@@ -143,7 +105,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-prm-custom" style="width:120px;">
+                    <div class="text-prm-custom">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
@@ -332,7 +294,6 @@ var ContractComponent = new (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
 
-                // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
                 menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
                 menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
                 menu.edit_contract.style.display = status_id == 2 ? 'none' : 'block';
@@ -368,14 +329,15 @@ var ContractComponent = new (function () {
     }
 
     mThis.generateInvoice = (id, menuLink) => {
-    CreateInvoiceContractDialog.show({
-        contract_invoice_id: id,
-        btn: menuLink,
-        onClose: () => {
-            mThis.ContractListView.showPage(mThis.getFilterData());
-        }
-    });
-};
+        let op = {
+            contract_invoice_id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.ContractListView.showPage(mThis.getFilterData());
+            }
+        };
+        CreateInvoiceContractDialog.show(op);
+    };
 
     mThis.editContract = (id, menulink) => {
         let op = {
@@ -392,7 +354,7 @@ var ContractComponent = new (function () {
 
         let op = {
             id: id,
-            contract_invoice_id: id,
+            contract_id: id,
             btn: menulink,
             onClose: () => {
                 mThis.ContractListView.showPage(mThis.getFilterData());
@@ -449,8 +411,6 @@ var ContractComponent = new (function () {
 
     return mThis;
 })();
-
-
 
 const CreateInvoiceContractDialog = (() => {
     const self = {};
@@ -649,7 +609,6 @@ const CreateInvoiceContractDialog = (() => {
                             const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
 
                             const itemType = me._contractData.space_type || 'Rent';
-
                             const description = me._contractData.description ||
                                                 `Monthly Rent - ${me._contractData.space_code || 'Unit'} (${me._contractData.period || 'Contract Period'})`;
 
@@ -736,13 +695,12 @@ const CreateInvoiceContractDialog = (() => {
                 document.getElementById('info-tenant').textContent     = data.tenant_name   || '-';
                 document.getElementById('info-space').textContent      = data.space_code    || '-';
                 document.getElementById('info-business').textContent   = data.business_type || '-';
-                document.getElementById('info-type').textContent       = data.space_type    || '-';   // ← display uses space_type
+                document.getElementById('info-type').textContent       = data.space_type    || '-';
                 document.getElementById('info-start-date').textContent = start;
                 document.getElementById('info-end-date').textContent   = end;
                 document.getElementById('info-price').textContent      = data.price ? `$${Number(data.price).toFixed(2)}` : '-';
                 document.getElementById('info-email').textContent      = data.email || '-';
                 const description = `Monthly Rent - ${data.space_code || 'Unit'} (${period})`;
-
                 me._contractData = {
                     id: data.id,
                     tenant_id: data.tenant_id,
@@ -753,7 +711,6 @@ const CreateInvoiceContractDialog = (() => {
                     period: period,
                     space_code: data.space_code || 'Unit'
                 };
-
                 if (me.controls) {
                     if (me.controls.tenant_id)  me.controls.tenant_id.value  = data.tenant_id || '';
                     if (me.controls.space_id)   me.controls.space_id.value   = data.space_id  || '';
@@ -762,7 +719,6 @@ const CreateInvoiceContractDialog = (() => {
                 }
 
                 me._subtotal = me._contractData.price;
-
                 document.getElementById('items-body').innerHTML = `
                     <tr>
                         <td>${description}</td>
@@ -785,7 +741,6 @@ const CreateInvoiceContractDialog = (() => {
 })();
 
 
-
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
@@ -803,7 +758,7 @@ const ContractDialog = (() => {
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id">
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name">
                             </div>
                         </div>
                         <div class="col-6">
@@ -902,6 +857,7 @@ const ContractDialog = (() => {
                     },
                     onSelect: (item) => {
                         console.log(123,item);
+                        me.tenant_id = item.id;
                         me.controls.legal_name.value = item.legal_name || '';
                     }
                 });
@@ -947,7 +903,8 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
+                //LocaleManager.translateZone(me.divModal);
+                me.tenant_id =data.contract_details.tenant_id;
 
                 // const isReadOnly = me.dataOptions.data.code > 0;
                 // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
@@ -976,6 +933,7 @@ const ContractDialog = (() => {
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
+                        op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
 
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {

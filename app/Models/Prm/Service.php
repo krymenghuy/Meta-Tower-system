@@ -28,7 +28,6 @@ class Service
             'price' => '0|price',
             'unit_type' => '0|string|0-50',
             'description' => '0|string|0-350',
-            'status_id' => '0|number|default=1',
         ];
 
         $unit_type_char = ['@','.','-','_'];
@@ -81,7 +80,6 @@ class Service
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
         $search_value = $d->search_value ?? null;
-        $status_id = $d->status_id ?? null;
         $service_type_id = $d->service_type_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -97,9 +95,6 @@ class Service
             $search_value = escape_like_str($search_value);
             $str_search = "(s.name LIKE '%" . $search_value ."%' OR s.price LIKE '%" . $search_value . "%' OR s.description LIKE '%" . $search_value . "%')";
         }
-        if($status_id){
-            $str_moreWhere .= ' AND s.status_id =' . $status_id;
-        }
         if($service_type_id){
             $str_moreWhere .= ' AND s.service_type_id =' . $service_type_id ;
         }
@@ -107,10 +102,9 @@ class Service
         $updated_at = DBX::formatTime("s.updated_at", 'updated_at');
         $query = DB::table('services as s')
             ->join('service_types as st','st.id','=','s.service_type_id')
-            ->join('service_statuses as ss', 'ss.id', '=', 's.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.description,s.status_id,ss.name as status,$updated_at,s.update_user")->orderBy('s.id','DESC');
+            ->selectRaw("s.id,s.name,s.service_type_id,st.name as service_type,s.unit_type,s.price,s.description,$updated_at,s.update_user")->orderBy('s.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -121,7 +115,7 @@ class Service
     public static function serviceDetails($id,$ss = null){
         return DB::table('services as s')
             ->where('s.id',$id)
-            ->selectRaw('s.id,s.name,s.service_type_id,s.unit_type,s.price,s.description,s.status_id')
+            ->selectRaw('s.id,s.name,s.service_type_id,s.unit_type,s.price,s.description')
             ->first();
     }
 
@@ -138,23 +132,5 @@ class Service
         $id = $id ?? $this->id;
         $deleted = DB::table('services')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
-    }
-
-    function updateServiceStatus($status_id, $id = null, $ss = null)
-    {
-
-        $ss = $ss ? $ss : $this->userInfo;
-        $currentStatus = DB::table('services')->where('id', $id)->value('status_id');
-
-        if ($currentStatus == $status_id) {
-            return DV::error('It is the same current status.');
-        }
-        $x = DB::table('services')->where('id', $id)->update([
-            'status_id' => $status_id,
-            'update_user'=>$ss->full_name,
-            'updated_at'=>getNowTime(),
-
-        ]);
-        return DV::depends($x, ['service status', 'updated']);
     }
 }

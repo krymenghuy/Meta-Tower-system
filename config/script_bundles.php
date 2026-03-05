@@ -75,6 +75,11 @@ return [
                 //'/assets/js/datatables.bundle.min.js',/** to be removed soon */
                 '/assets/js/browsercontrol.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
+
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsEngine.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsValidator.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/ui/ItemsView.js',
+
             ],
             'no-minify' => [
                 '/assets/js/crypto-js.js',
@@ -86,6 +91,9 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
@@ -129,7 +137,7 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
-                'js/components/prm/AmenityComponent.js',
+
 
 
             ]
@@ -140,6 +148,9 @@ return [
             'single_file' => 1,
             'output_file' => '/dist/js/bhr.components.js',
             'files' => [
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInput.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/VSSearchInputHelper.js',
+
                 'https://cdn.vectoraclouds.com/frontcore/components/InputBox.v2.js',
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 'https://cdn.vectoraclouds.com/frontcore/vsroute/vsroute.js',
@@ -163,8 +174,6 @@ return [
                 '/js/components/tenant/InvoicesComponent.js',
                 '/js/components/tenant/BuildingServiceComponent.js',
                 '/js/components/tenant/AnnouncementComponent.js',
-                
-
 
 
             ]

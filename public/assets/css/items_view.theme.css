@@ -1,0 +1,242 @@
+/* ============================================================
+   File: items_view/style/items_view.theme.css
+   Purpose: Theme styles (visual design layer)
+   Safe to customize
+   ============================================================ */
+
+/* ---------------------------
+   CSS Variables (Easy override)
+---------------------------- */
+:root {
+  --iv-border-color: #e5e7eb;
+  --iv-header-bg: #f8fafc;
+  --iv-row-hover-bg: #f1f5f9;
+  --iv-edit-bg: #fefefe;
+  --iv-accent: #2563eb;
+  --iv-danger: #dc2626;
+  --iv-text-muted: #6b7280;
+  --iv-radius: 6px;
+  --iv-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ---------------------------
+   Table Frame
+---------------------------- */
+.iv-wrapper {
+  border: 1px solid var(--iv-border-color);
+  border-radius: var(--iv-radius);
+  box-shadow: var(--iv-shadow);
+  background: #fff;
+  overflow: hidden;
+  
+}
+
+/* ---------------------------
+   Header
+---------------------------- */
+.iv-table thead {
+  background: var(--iv-header-bg);
+}
+
+.iv-table thead th {
+  border-bottom: 1px solid var(--iv-border-color);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--iv-text-muted);
+  font-weight: 600;
+}
+
+/* Numeric header alignment */
+.iv-table thead th.iv-th-num {
+  text-align: right;
+  padding-right: 14px;
+}
+
+/* ---------------------------
+   Body Rows
+---------------------------- */
+.iv-table tbody tr {
+  border-bottom: 1px solid var(--iv-border-color);
+  transition: background 0.15s ease;
+}
+
+.iv-table tbody tr:hover {
+  background: var(--iv-row-hover-bg);
+}
+
+.iv-table tbody tr[data-editing="1"] {
+  background: var(--iv-edit-bg);
+}
+
+/* ---------------------------
+   Inputs (Unified height)
+---------------------------- */
+.iv-wrapper .td-input,
+.iv-wrapper .iv-input {
+  height: 38px;
+  line-height: 38px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.iv-wrapper .td-input:focus,
+.iv-wrapper .iv-input:focus {
+  border-color: var(--iv-accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ---------------------------
+   Native Select Arrow
+---------------------------- */
+.iv-wrapper select.td-input {
+  appearance: none;
+  background-position: right 12px center;
+  background-size: 10px;
+  padding-right: 34px;
+}
+
+/* ---------------------------
+   Choices.js Alignment (Scoped)
+---------------------------- */
+.iv-wrapper .choices {
+  margin-bottom: 0;
+  width: 100%;
+  font-size: 14px;
+}
+
+.iv-wrapper .choices__inner {
+  min-height: 38px !important;
+  height: 38px !important;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: #fff;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.iv-wrapper .is-focused .choices__inner {
+  border-color: var(--iv-accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Remove internal vertical misalignment */
+.iv-wrapper .choices__list--single {
+  padding: 0;
+}
+
+.iv-wrapper .choices__item--selectable {
+  line-height: 20px;
+}
+
+/* Smaller dropdown arrow */
+.iv-wrapper .choices[data-type*="select-one"]::after {
+  width: 7px;
+  height: 7px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) rotate(135deg);
+  border-width: 2px 2px 0 0;
+}
+
+/* ---------------------------
+   Numeric Columns
+---------------------------- */
+.iv-table td.iv-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 14px;
+}
+
+/* ---------------------------
+   Amount Column Enhancement
+---------------------------- */
+.iv-table td.item-total {
+  font-weight: 600;
+  color: #111827;
+}
+
+.iv-table tbody tr:hover td.item-total {
+  color: var(--iv-accent);
+}
+
+/* ---------------------------
+   Buttons
+---------------------------- */
+.iv-btn-primary {
+  background: var(--iv-accent) !important;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.iv-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.iv-btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* ---------------------------
+   Delete Icon
+---------------------------- */
+.btn-item-delete {
+  color: var(--iv-text-muted);
+  transition: color 0.2s ease, transform 0.1s ease;
+  font-size: 16px;
+}
+
+.btn-item-delete:hover {
+  color: var(--iv-danger);
+  transform: scale(1.15);
+}
+
+/* ---------------------------
+   Numero Column
+---------------------------- */
+.iv-numero {
+  font-weight: 500;
+  color: var(--iv-text-muted);
+}
+
+/* ---------------------------
+   Empty Row
+---------------------------- */
+.empty-row td {
+  color: var(--iv-text-muted);
+  background: #fafafa;
+  text-align: center;
+}
+
+/* ---------------------------
+   Responsive
+---------------------------- */
+@media (max-width: 768px) {
+  .iv-table th,
+  .iv-table td {
+    padding: 6px 6px;
+    font-size: 13px;
+  }
+
+  .iv-wrapper .td-input,
+  .iv-wrapper .iv-input,
+  .iv-wrapper .choices__inner {
+    height: 34px;
+  }
+
+  .iv-btn-primary {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
