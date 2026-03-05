@@ -53,7 +53,7 @@ public function saveBuildingSpace($arr = [], $id = null, $ss = null)
     }
 
     $floor = DB::table('floors')
-        ->select('floor_no')
+        ->select('floor_number')
         ->where('id', $d->floor_id)
         ->first();
 
@@ -191,7 +191,7 @@ function createBuildingSpaceCode($branch_id, $building_id, $floor_number, $space
         $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,ss.name as status,bs.update_user,'.$updated_at.'';
         $query = DB::table('building_spaces as bs')
             ->join('buildings as b','b.id','=','bs.building_id')
-            ->join('floors as f','f.id','=','bs.floor_id')
+            ->join('floors as f','f.floor_number','=','bs.floor_id')
             ->join('space_types as st','st.id','=','bs.space_type_id')
             ->join('space_statuses as ss','ss.id','=','bs.status_id')
             ->whereRaw($str_search)

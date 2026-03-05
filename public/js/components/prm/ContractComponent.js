@@ -751,8 +751,6 @@ const ContractDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
-                console.log(111,op);
-
                 return [
                     `<div class="row justify-content-start">
                         <div class="col-6">
@@ -859,6 +857,8 @@ const ContractDialog = (() => {
                         console.log(123,item);
                         me.tenant_id = item.id;
                         me.controls.legal_name.value = item.legal_name || '';
+                        me.tenant_id = item.id || '';
+
                     }
                 });
             },
@@ -889,7 +889,6 @@ const ContractDialog = (() => {
                     valueField: "id",
                 },
             ],
-
             prepareFormOptions: {
                 createTitle: "Create Contract",
                 modifyTitle: "Modify Contract",
@@ -903,12 +902,12 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
                 //LocaleManager.translateZone(me.divModal);
                 me.tenant_id =data.contract_details.tenant_id;
 
                 // const isReadOnly = me.dataOptions.data.code > 0;
                 // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if(btnClose) btnClose.classList.add('d-none');
@@ -935,7 +934,8 @@ const ContractDialog = (() => {
                         const op = me.getData();
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
-
+                        op.tenant_id = me.tenant_id;
+                        console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
