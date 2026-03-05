@@ -140,6 +140,14 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Reservation"></span>
                         </a>
                     </li>
+                    <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
+                        <a href="VendorComponent" modid="244" class="menu-item kt-menu__link">
+                            <span class="kt-menu__link-icon">
+                                <img class="icons opacity-icons" src="{{ asset('assets/images/icons/building.svg') }}" />
+                            </span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Vendors"></span>
+                        </a>
+                    </li>
                     <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(207); ?>>
                         <a href="ReportComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
@@ -177,7 +185,7 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-icon">
                                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/service.png') }}" />
                                         </span>
-                                        <span class="kt-menu__link-text font-color " vslang="menus.Services Price"></span>
+                                        <span class="kt-menu__link-text font-color " vslang="menus.Services"></span>
                                     </a>
                                 </li>
                            
@@ -213,6 +221,7 @@ function v_display($mod_id, $module_ids = null)
                                         <span class="kt-menu__link-text font-color " vslang="menus.Buildings"></span>
                                     </a>
                                 </li>
+                                
                                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                                     <a href="AmenityComponent" modid="270" class="menu-item kt-menu__link">
                                         <span class="kt-menu__link-icon">
