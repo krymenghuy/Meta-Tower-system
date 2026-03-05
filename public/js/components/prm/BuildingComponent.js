@@ -584,15 +584,15 @@ const CreateFloorDialog = (() => {
             createContent: () => `
                 <div class="row justify-content-center">
                     <div class="col-6">
-                        <label style="color:#777;padding-left:6px;">Floor Name</label>
-                        <div class="material-input outlined">
-                            <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                        </div>
-                    </div>
-                    <div class="col-6">
                         <label style="color:#777;padding-left:6px;">Floor Number</label>
                         <div class="material-input outlined">
                             <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label style="color:#777;padding-left:6px;">Floor Name</label>
+                        <div class="material-input outlined">
+                            <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                         </div>
                     </div>
                     <div class="col-12">
@@ -619,11 +619,21 @@ const CreateFloorDialog = (() => {
                     params: (op) => ({ id: op.id }),
                 },
             },
-            onPrepareForm: (me) => {
+           onPrepareForm: (me) => {
                 const header = me.divModal.querySelector('.modal-header');
                 if (header) {
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
+                }
+
+                const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
+                const floorName = me.divModal.querySelector('[data-field="name"]');
+
+                if (floorNumber && floorName) {
+                    floorNumber.addEventListener('input', function () {
+                        const num = this.value;
+                        floorName.value = num ? `Floor ${num}` : '';
+                    });
                 }
             },
             buttons: [
