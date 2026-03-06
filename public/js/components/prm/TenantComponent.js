@@ -1421,7 +1421,6 @@ const TenantDocumentDialog = (() => {
     let dialog = null;
 
     self.show = (op = {}) => {
-
         dialog = dialog || new GeneralDialog({
             cssClass: "modal-md vs-modal",
             backdrop: "static",
@@ -1430,84 +1429,59 @@ const TenantDocumentDialog = (() => {
             createContent: () => {
                 return `
                 <div class="document-form row justify-content-start">
-                        <div class="col-6">
-                            <label style="padding-left:6px;" >Document Type</label>
-                            <div class="material-input outlined">
-                                <select name="tenant_document" class="data-input form-control" data-field="document_type_id">
-                                </select>
-                            </div>
+                    <div class="col-6">
+                        <label style="padding-left:6px;">Document Type</label>
+                        <div class="material-input outlined">
+                            <select name="tenant_document" class="data-input form-control" data-field="document_type_id"></select>
                         </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;" >Description</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
-                            </div>
+                    </div>
+                    <div class="col-6">
+                        <label style="padding-left:6px;">Description</label>
+                        <div class="material-input outlined">
+                            <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
                         </div>
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;"for="tenant_document">File</label>
-                            <div class="material-input outlined">
-                                <input type="file" name="documents" class="data-input form-control" data-field="file_name"/>
-                            </div>
+                    </div>
+                    <div class="col-12">
+                        <label style="color:#777777;padding-left:6px;" for="tenant_document">File</label>
+                        <div class="material-input outlined">
+                            <input type="file" name="documents" class="data-input form-control" data-field="file_name"/>
                         </div>
-                </div>
-                `;
+                    </div>
+                </div>`;
             },
 
             contentCreated: (me) => {
-                me.tenantId       = op.tenantId || 0;
-                me.uploadInput    = me.divModal.querySelector('input[name="documents"]');
-                me.uploadArea     = me.divModal.querySelector('.upload-area');
-                me.previewContainer = me.divModal.querySelector('.documents-preview');
-                me.tenantNameEl   = me.divModal.querySelector('#tenant-name-display');
+                me.uploadInput = me.divModal.querySelector('input[name="documents"]');
+                me.fileBase64 = null; // Store base64 data here
 
-                if (op.tenantName) {
-                    me.tenantNameEl.textContent = op.tenantName;
-                }
-
-                me.uploadArea.addEventListener('click', () => {
-                    me.uploadInput.click();
-                });
-
-               
-
-                me.uploadArea.addEventListener('drop', e => {
-                    const files = e.dataTransfer?.files;
-                    if (files && files.length) {
-                        handleFiles(files);
-                    }
-                });
-
+                // Listen for file selection
                 me.uploadInput.addEventListener('change', e => {
-                    if (e.target.files && e.target.files.length) {
-                        handleFiles(e.target.files);
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            me.fileBase64 = event.target.result.split(',')[1];
+                            
+                            me.ext =event.target.result.split(';')[0].split(':')[1];
+                            me.ext = me.ext.split('/')[1];
+                            
+                            
+                        };
+                        reader.readAsDataURL(file);
                     }
-                    e.target.value = '';
                 });
-
-                
-
-                me.previewContainer.addEventListener('click', e => {
-                    if (e.target.classList.contains('remove-file')) {
-                        const item = e.target.closest('.document-item');
-                        if (item) item.remove();
-                    }
-                });
-
-                
             },
-             configSelect: [
-                    {
-                        name: "document_type",
-                        data: "document_types",
-                        textField: "document_type",
-                        valueField: "id", 
-                    },
 
-            ],
+            configSelect: [{
+                name: "document_type",
+                data: "document_types",
+                textField: "document_type",
+                valueField: "id", 
+            }],
 
             prepareFormOptions: {
                 createTitle: "Upload Documents",
-                modifyTitle: "Upload Documents",
+                modifyTitle: "Modify Documents",
                 targetProp: "document_details",
                 api: {
                     endpoint: [main_view.base_url, "/prm/tenant-document/form-options"].join(""),
@@ -1519,23 +1493,25 @@ const TenantDocumentDialog = (() => {
                 {
                     label: '<span vslang="buttons.Close"></span>',
                     cssClass: 'btn btn-secondary',
-                    click: (me) =>  me.hide(false),
+                    click: (me) => me.hide(false),
                 },
                 {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
-                    click: (me,btn) =>{
-                        const op = me.getData();
-                        // op.id = me.dataOptions.id;
-                        op.tenant_id = me.dataOptions.tenant_id;
-                        console.log(11,op);
+                    click: (me, btn) => {
+                        const data = me.getData(); 
+                        data.tenant_id = me.dataOptions.tenant_id;
+                        data.file_name = me.fileBase64; // Add the Base64 data
+                        data.ext = me.ext;
+                        console.log(123,data);
                         
+                      
 
-                        vsapi.call([main_view.base_url, "/prm/tenant-document/save"].join(""), op, btn, null)
+                        vsapi.call([main_view.base_url, "/prm/tenant-document/save"].join(""), data, btn, null)
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    cv_interact.success("Upload document has been saved successfully");
+                                    me.hide(true, data);
+                                    cv_interact.success("Document saved successfully");
                                 } else {
                                     cv_interact.error(res.error_message);
                                 }
@@ -1550,7 +1526,6 @@ const TenantDocumentDialog = (() => {
 
     return self;
 })();
-
 
 
 

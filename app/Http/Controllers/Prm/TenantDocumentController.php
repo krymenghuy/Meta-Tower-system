@@ -13,18 +13,26 @@ class TenantDocumentController extends Controller{
     {
         $this->tenant_documents = new TenantDocument();
     }
+    // public function saveTenantDocument(Request $req)
+    // {
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if ($ss->status_code !== 200) {
+    //         return JDV::raw($ss);
+    //     }
+
+    //     $id = $req->id ?? $req->tenant_document_id ;
+    //     $tenant_document = new TenantDocument($id, $ss);
+    //     $res = $tenant_document->saveTenantDocument($req->all());
+
+    //     return JDV::raw($res);
+    // }
     public function saveTenantDocument(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        $id = $req->id ?? $req->tenant_document_id ;
-        $tenant_document = new TenantDocument($id, $ss);
-        $res = $tenant_document->saveTenantDocument($req->all());
-
-        return JDV::raw($res);
+        return $this->tenant_documents->saveTenantDocument($req->all(), $ss);
     }
     public function getListPaginate(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
