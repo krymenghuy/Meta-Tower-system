@@ -1,18 +1,18 @@
 "use strict";
-var PaymentComponent = new (function () {
+var ReceiptComponent = new (function () {
     const mThis = this;
-    mThis.title_prop = "Payment Management";
+    mThis.title_prop = "Receipts";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_payment_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnPayment");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_receipt_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnReceipt");
     mThis.elTenant = mThis.self.querySelector('#tenant_id');
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elInvoice = mThis.self.querySelector('#invoice_id');
     mThis.elSpace = mThis.self.querySelector('#space_id');
     mThis.elPaymentMethod = mThis.self.querySelector('#payment_method_id');
-    mThis.elFilter_status = mThis.self.querySelector('#payment_status');
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_payment");
-    mThis.elSearch = mThis.self.querySelector("#_search_payment");
+    mThis.elFilter_status = mThis.self.querySelector('#receipt_status');
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_receipt");
+    mThis.elSearch = mThis.self.querySelector("#_search_receipt");
 
 
     mThis.cols = [
@@ -134,96 +134,14 @@ var PaymentComponent = new (function () {
         },
 
     ]; 
-        mThis.renderSummaryCards = (summaryData) => {
-        if (!mThis.divSummaryCards) return;
+       
 
-        const cards = [
-            {
-                title: "TOTAL MANAGED AREA",
-                value: summaryData.total_area || "4,900",
-                unit: "sqm",
-                change: summaryData.area_change || "+12%",
-                changePositive: true,
-                subtitle: "Square meters total"
-            },
-            {
-                title: "ACTIVE TENANTS",
-                value: summaryData.active_tenants || "248",
-                unit: "",
-                change: summaryData.tenants_change || "+5.4%",
-                changePositive: true,
-                subtitle: "Across all properties"
-            },
-            {
-                title: "AVG. OCCUPANCY",
-                value: summaryData.avg_occupancy || "68",
-                unit: "%",
-                change: summaryData.occupancy_change || "-21%",
-                changePositive: false,
-                subtitle: "Global average"
-            },
-            {
-                title: "REVENUE MTD",
-                value: summaryData.revenue_mtd || "$142k",
-                unit: "",
-                change: summaryData.revenue_change || "+18%",
-                changePositive: true,
-                subtitle: "Month to date"
-            }
-        ];
-
-        const cardsHTML = cards.map(card => `
-            <div class="col-12 col-sm-6 col-md-2">
-                <div class="card border-0 h-100">
-                    <div class="card-body border border-gray rounded-3">
-                        <p class="text-muted text-uppercase small mb-2" style="font-size: 0.75rem; font-weight: 600;">
-                            ${card.title}
-                        </p>
-                        <div class="d-flex align-items-end justify-content-between">
-                            <div>
-                                <h3 class="mb-0 fw-bold">
-                                    ${card.value}<span class="fs-5">${card.unit}</span>
-                                </h3>
-                                <p class="text-muted small mb-0 mt-1" style="font-size: 0.8rem;">
-                                    ${card.subtitle}
-                                </p>
-                            </div>
-                            <div>
-                                <span class="badge ${card.changePositive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} fw-semibold">
-                                    ${card.change}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        mThis.divSummaryCards.innerHTML = `
-            <div class="row g-3 mb-4 ">
-                ${cardsHTML}
-            </div>
-        `;
-    };
-
-    mThis.fetchSummaryData = () => {
-        vsapi.call(`${main_view.base_url}/prm/building/summary`, null, null, null)
-            .then(res => {
-                if (res.status_code == 200) {
-                    mThis.renderSummaryCards(res.data);
-                }
-            })
-            .catch(err => {
-                
-                mThis.renderSummaryCards({});
-            });
-    };
-
+  
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PaymentListView = new ListView('_payment_list', {
-            fetchApi: `${main_view.base_url}/prm/payments/list-paginate`,
+        mThis.PaymentListView = new ListView('_receipt_list', {
+            fetchApi: `${main_view.base_url}/prm/payment/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,

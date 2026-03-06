@@ -112,11 +112,11 @@ function v_display($mod_id, $module_ids = null)
                     </li>
 
                     <li class="kt-menu__item" aria-haspopup="true" <?php v_display(205); ?>>
-                        <a href="PaymentComponent" modid="270" class="menu-item kt-menu__link">
+                        <a href="ReceiptComponent" modid="270" class="menu-item kt-menu__link">
                             <span class="kt-menu__link-icon">
                                 <img class="icons opacity-icons" src="{{ asset('assets/images/icons/payment.svg') }}" />
                             </span>
-                            <span class="kt-menu__link-text font-color " vslang="menus.Payments"></span>
+                            <span class="kt-menu__link-text font-color " vslang="menus.Receipts"></span>
                         </a>
                     </li>
                     <li class="kt-menu__section mb-2">

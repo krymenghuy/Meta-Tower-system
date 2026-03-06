@@ -482,6 +482,10 @@ class GeneralSettings //extends Model
     {
         return DB::table('service_types')->selectRaw('id,name as service_type')->get();
     }
+     static function options_vendor_types($ss)
+    {
+        return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
+    }
 
     static function options_contracts($ss)
     {
