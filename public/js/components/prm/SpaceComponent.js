@@ -136,12 +136,12 @@ var SpaceComponent = new (function () {
             apiCluster: main_view.apiCluster,
             paginationContainer: mThis.paginationContainer,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            rowCreated:(data,index,tr)=>{
+            rowCreated: (data, index, tr) => {
             },
-           processResponse: (res) => {
+            processResponse: (res) => {
                 return res.data;
             },
-            renderItems: (data,list_container) => {
+            renderItems: (data, list_container) => {
                 mThis.renderSpaceCard(list_container, data);
             },
             listContainerClass: null
@@ -158,29 +158,31 @@ var SpaceComponent = new (function () {
             };
             BuildingSpaceDialog.show(op);
         };
-        mThis.elBuilding.addEventListener('change',(e)=>{
-            e.preventDefault();
-            mThis.SpaceListView.showPage(mThis.getFilterData());
+        // mThis.elBuilding.addEventListener('change',(e)=>{
+        //     e.preventDefault();
+        //     mThis.SpaceListView.showPage(mThis.getFilterData());
 
-            const p = {
-                building_id: e.target.value
-            }
-            vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
-                const data = res.status_code == 200 ? res.data : [];
-                VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
-            });
-        });
+        //     const p = {
+        //         building_id: e.target.value
+        //     }
+        //     console.log(5555,p);
+
+        //     vsapi.call([main_view.base_url, '/prm/settings/options-floors'].join(''), p, null, false).then((res) => {
+        //         const data = res.status_code == 200 ? res.data : [];
+        //         VSUtil.setComboItems(mThis.elFloor, data, 'id', 'name', '',"All Floor", null);
+        //     });
+        // });
 
         mThis.pr_tbl = mThis.SpaceListView.getListContainer();
         mThis.setAction(div);
 
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
-        window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
-        }
+        // sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        // sh_parent.classList.add("overflow-y-auto");
+        // // sh_parent.classList.add("overflow-x-hidden");
+        // window.onresize = () => {
+        //     sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        // }
         mThis.tblBuildingSpace = mThis.SpaceListView.getTable();
         mThis.initDropdownMenus(mThis.tblBuildingSpace);
 
@@ -215,7 +217,7 @@ var SpaceComponent = new (function () {
 
         let html = `<div class="row g-2">`;
 
-            html += `<div class="col-12 col-sm-6 col-lg-2">
+        html += `<div class="col-12 col-sm-6 col-lg-2">
                 <div class="metric-card-sm" style="border-left:6px solid #5867dd;">
                     <div class="metric-head-sm">
                         <span class="metric-dot bg-primary"></span>
@@ -258,13 +260,12 @@ var SpaceComponent = new (function () {
         html += `</div>`;
         mThis.divSummary.innerHTML = html;
     };
-
     mThis.getFilterData = () => {
         let p = {
+            search_value: mThis.elSearch.value,
             status_id: mThis.elFilter_status.value,
             building_id: mThis.elBuilding.value,
             floor_id: mThis.elFloor.value,
-            search_value: mThis.elSearch.value,
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -276,7 +277,6 @@ var SpaceComponent = new (function () {
 
         return p;
     };
-
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -299,13 +299,13 @@ var SpaceComponent = new (function () {
                 },
                 {
 
-                    html: '<span class="ps-2 " vslang="titles.Modify Space "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete "></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_space"
@@ -316,7 +316,7 @@ var SpaceComponent = new (function () {
             //     left: -300
             // },
 
-            onShow: (me,container) =>{
+            onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 menu.create_contract.style.display = status_id == 2 ? 'none' : 'block';
@@ -350,26 +350,23 @@ var SpaceComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
-     mThis.renderSpaceCard = (div,data) => {
+    mThis.renderSpaceCard = (div, data) => {
         data = data ?? [];
-        if(!AuthManager)
-        {
-            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
-            return;
-        }
+        // if(!AuthManager)
+        // {
+        //     console.error('Authentication Management does not seems to work properly. You may need to refresh page');
+        //     return;
+        // }
 
         AuthManager.init().then(user => {
-           mThis.renderSpace(data,user)
+            mThis.renderSpace(div, data)
         });
     }
-
-    mThis.renderSpace = (data) => {
-        console.log(9090,data);
-        
+    mThis.renderSpace = (container, data) => {
+        console.log(9090, data);
+        container.innerHTML = "";
         let html = `<div class="row g-3">`;
-        let cmt = 0;
-
-        if (Array.isArray(data) && data[0]) {
+        if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = (d.status || "Available").toLowerCase();
                 let statusClass = "";
@@ -389,14 +386,21 @@ var SpaceComponent = new (function () {
 
                         break;
                 }
+                const symbol = d.cur_symbol || '$';
+                const size = Number(d.sqm_size || 0);
+                const price = Number(d.price || 0);
 
+                const sizeLabel = size ? `${size} m²` : '';
 
-                const sizeLabel = d.sqm_size ? `${d.sqm_size} m²` : '';
+                const pricePerMonth = d.price_type === 'total'
+                    ? price
+                    : price * size;
 
                 const priceLabel = d.price_type === 'total'
-                    ? `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /month`
-                    : `${d.cur_symbol || '$'} ${Number(d.price || 0).toLocaleString()} /sqm`;
+                    ? `${symbol} ${price.toLocaleString()} /month`
+                    : `${symbol} ${price.toLocaleString()} /m²`;
 
+                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()} /month`;
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -410,12 +414,12 @@ var SpaceComponent = new (function () {
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
                                     </p>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${sizeLabel}
+                                        ${sizeLabel} (${d.price_type === 'total' ? 'Monthly' : priceLabel})
                                     </p>
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
@@ -450,7 +454,7 @@ var SpaceComponent = new (function () {
                                                 <p class="fs-6 text-prm-custom m-0">Price</p>
                                                 <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                                 <p class="fs-6" style="color: #2b3991;">
-                                                   ${priceLabel}
+                                                   ${priceLabelPerMonth}
 
                                                 </p>
                                             </div>
@@ -474,10 +478,9 @@ var SpaceComponent = new (function () {
                     </div>
                 </div>
                 `;
-                cmt++;
             });
         }
-        if (cmt === 0) {
+        else {
             html += `
             <div class="col-12">
                 <div class="bg-white rounded-3 p-4 text-center">
@@ -487,43 +490,48 @@ var SpaceComponent = new (function () {
         }
 
         html += `</div>`;
-        div.innerHTML = html;
+        container.innerHTML = html;
     };
-
-    mThis.createContract = (id, menulink) =>{
+    mThis.createContract = (id, menulink) => {
         let op = {
-            id:null,
-            btn:menulink,
-            onClose:()=>{;
+            id: null,
+            btn: menulink,
+            onClose: () => {
+                ;
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
         ContractDialog.show(op);
     }
-
-    mThis.editSpace = (id, menulink) =>{
+    mThis.editSpace = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
+            id: id,
+            data: {
+                building_id: menulink?.dataset?.buildingid ?? null,
+                floor_id: menulink?.dataset?.floorid ?? null,
+            },
+            btn: menulink,
+            onClose: () => {
+                ;
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
 
         BuildingSpaceDialog.show(op);
     }
-     mThis.setMaintenance = (id, menulink) =>{
+    mThis.setMaintenance = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                ;
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
 
-       alert('coming soon....')
+        alert('coming soon....')
     }
-     mThis.deleteSpace = (id, menulink) => {
+    mThis.deleteSpace = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -533,7 +541,7 @@ var SpaceComponent = new (function () {
         };
         // if (!AuthManager.allowed(242)) return;
         cv_interact.confirm('Delete this Space?', {
-            title: 'Delete Space',
+            title: 'Delete ',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
@@ -552,41 +560,36 @@ var SpaceComponent = new (function () {
         });
     }
 
-    mThis.setAction = (tbl)=>{
-        tbl.addEventListener('click',(e) =>{
-        let btn = VSUtil.closestLimited(e.target,'.btn-create-contract');
-        if(btn){
-           e.preventDefault();
-            const op = {
-                id: null,
-                data:{
-                    space_type_id:btn.dataset.spacetypeid,
-                    code:btn.dataset.spaceid,
-                    price_type:btn.dataset.pricetype,
-                    price:btn.dataset.price,
-                    sqm_size:btn.dataset.sqmsize,
-                },
-                btn: e.target,
-                onClose: () => {
-                    mThis.SpaceListView.showPage(mThis.getFilterData());
-                }
-            };
-            ContractDialog.show(op);
-        }
+    mThis.setAction = (tbl) => {
+        tbl.addEventListener('click', (e) => {
+            let btn = VSUtil.closestLimited(e.target, '.btn-create-contract');
+            if (btn) {
+                e.preventDefault();
+                const op = {
+                    id: null,
+                    data: {
+                        space_type_id: btn.dataset.spacetypeid,
+                        code: btn.dataset.spaceid,
+                        price_type: btn.dataset.pricetype,
+                        price: btn.dataset.price,
+                        sqm_size: btn.dataset.sqmsize,
+                    },
+                    btn: e.target,
+                    onClose: () => {
+                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                    }
+                };
+                ContractDialog.show(op);
+            }
         })
     }
-
-
-
-
-
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'Statuses', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building',true,'All Building',null);
-                // VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name',true,'All FLoor',null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
                 VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
 
                 // mThis.elBuilding.onchange = function (e) {
@@ -607,13 +610,12 @@ var SpaceComponent = new (function () {
             });
 
     };
-
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-              mThis.setDataSummary();
+            mThis.setDataSummary();
             mThis.SpaceListView.showPage(mThis.getFilterData());
         });
 
@@ -632,7 +634,7 @@ const BuildingSpaceDialog = (() => {
                 cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
@@ -698,11 +700,11 @@ const BuildingSpaceDialog = (() => {
                 contentCreated: (me) => {
 
 
-                //  me.controls.price_type.onchange = (e) => {
-                //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
-                //         if (!sqmWrapper) return;
-                //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
-                //     };
+                    //  me.controls.price_type.onchange = (e) => {
+                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                    //         if (!sqmWrapper) return;
+                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    //     };
 
                 },
                 configSelect: [
@@ -717,7 +719,7 @@ const BuildingSpaceDialog = (() => {
                         textField: "name",
                         valueField: "id",
                         defaultValue: (me, op) => {
-                            return op?.data?.building_id ?? null;
+                            return op?.data?.floor_id ?? null;
                         },
                         depends: {
                             name: "building_id",
@@ -759,7 +761,7 @@ const BuildingSpaceDialog = (() => {
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
+                    if (btnClose) btnClose.classList.add('d-none');
                 },
 
                 buttons: [
@@ -776,7 +778,7 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(9090,op);
+                            console.log(9090, op);
 
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {

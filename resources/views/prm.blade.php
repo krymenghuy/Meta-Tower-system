@@ -396,6 +396,7 @@
                             @include('layouts.prm.contractComponent')
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')
+                            @include('layouts.prm.vendorComponent')
                             @include('layouts.prm.invoiceComponent')
                             @include('layouts.prm.accessControlComponent')
                             @include('layouts.prm.settingComponent')

@@ -11,31 +11,35 @@ use Illuminate\Http\Request;
 class BuildingController extends Controller
 {
     protected $buildings;
-    public function __construct(){
+    public function __construct()
+    {
         $this->buildings = new Building();
     }
 
-     public function saveBuilding(Request $req){
+    public function saveBuilding(Request $req)
+    {
         $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !==200){
+        if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
         $id = $req->building_id ?? $req->id;
         $building = new Building();
-        $save = $building->saveBuilding($req->all(),$id,$ss);
+        $save = $building->saveBuilding($req->all(), $id, $ss);
         return JDV::raw($save);
 
     }
 
-    public function getListBuilding(Request $req){
+    public function getListBuilding(Request $req)
+    {
         $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !==200){
+        if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->buildings->getListBuilding($req->all(),$ss));
+        return JDV::result($this->buildings->getListBuilding($req->all(), $ss));
     }
 
-    public function buildingDetails(Request $req){
+    public function buildingDetails(Request $req)
+    {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
@@ -45,15 +49,15 @@ class BuildingController extends Controller
         }
         return JDV::result($this->buildings->buildingDetails($req->id));
     }
-     public function getFormOptions(Request $req)
+    public function getFormOptions(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->buildings->getFormOptions($req->id));
+        return JDV::result($this->buildings->getFormOptions($req->id, $req->building_id));
     }
-      public function deleteBuilding(Request $req)
+    public function deleteBuilding(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -65,10 +69,23 @@ class BuildingController extends Controller
         $res = $this->buildings->deleteBuilding($req->id);
         return JDV::raw($res);
     }
-  public function getListFloor(Request $req)
+    public function addFloor(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200) return $ss;
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $id = $req->building_id ?? $req->id;
+        $building = new Building();
+        $save = $building->addFloor($req->all(), $id, $ss);
+        return JDV::raw($save);
+
+    }
+    public function getListFloor(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code != 200)
+            return $ss;
 
         $building_id = $req->building_id ?? $req->id;
         if (!$building_id) {
@@ -80,6 +97,6 @@ class BuildingController extends Controller
         return JDV::result($list);
     }
 
- 
-    
+
+
 }

@@ -365,7 +365,103 @@ var ContractComponent = new (function () {
     };
 
     mThis.printContract = (id, menulink) => {
-       alert('Coming Soon');
+        if (!id) return;
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            cv_interact.error('Unable to open print window. Please allow popups and try again.');
+            return;
+        }
+
+        const escapeHtml = (value) => {
+            const str = String(value ?? '');
+            return str
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        };
+
+        const formatMoney = (amount) => {
+            const n = Number(amount || 0);
+            return Number.isNaN(n) ? '0.00' : n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
+
+        vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null)
+            .then((res) => {
+                if (res.status_code !== 200 || !res.data) {
+                    printWindow.close();
+                    cv_interact.error(res.error_message || 'Unable to load contract data for print.');
+                    return;
+                }
+
+                const d = res.data;
+                const unitPriceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per Square Meter';
+                const html = `<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Contract #${escapeHtml(d.id)}</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #222; margin: 24px; }
+        .header { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 12px; }
+        .title { font-size: 22px; font-weight: 700; margin: 0; }
+        .sub { color: #555; margin-top: 4px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-top: 16px; }
+        .row b { display: inline-block; min-width: 120px; }
+        .section { margin-top: 20px; }
+        .box { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+        .remarks { min-height: 90px; white-space: pre-wrap; }
+        .sign { margin-top: 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .line { margin-top: 48px; border-top: 1px solid #666; padding-top: 8px; color: #444; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <p class="title">Contract Agreement</p>
+        <div class="sub">Contract ID: #${escapeHtml(d.id)}</div>
+    </div>
+
+    <div class="grid">
+        <div class="row"><b>Tenant</b> ${escapeHtml(d.tenant_name)}</div>
+        <div class="row"><b>Legal Name</b> ${escapeHtml(d.legal_name)}</div>
+        <div class="row"><b>Unit Code</b> ${escapeHtml(d.space_code)}</div>
+        <div class="row"><b>Business Type</b> ${escapeHtml(d.business_name)}</div>
+        <div class="row"><b>Unit Type</b> ${escapeHtml(d.space_name)}</div>
+        <div class="row"><b>Size (m2)</b> ${escapeHtml(d.sqm_size)}</div>
+        <div class="row"><b>Start Date</b> ${escapeHtml(d.start_date)}</div>
+        <div class="row"><b>End Date</b> ${escapeHtml(d.end_date)}</div>
+        <div class="row"><b>Unit Price</b> ${escapeHtml(unitPriceLabel)}</div>
+        <div class="row"><b>Price</b> $${formatMoney(d.price)}</div>
+    </div>
+
+    <div class="section">
+        <div class="box">
+            <b>Remarks</b>
+            <div class="remarks">${escapeHtml(d.remarks || '-')}</div>
+        </div>
+    </div>
+
+    <div class="sign">
+        <div class="line">Landlord Signature</div>
+        <div class="line">Tenant Signature</div>
+    </div>
+</body>
+</html>`;
+
+                printWindow.document.open();
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                }, 300);
+            })
+            .catch(() => {
+                printWindow.close();
+                cv_interact.error('Failed to prepare contract print.');
+            });
     }
 
     mThis.prepareFormOptions = (onFinish) => {
@@ -751,8 +847,6 @@ const ContractDialog = (() => {
             backdrop: "static",
             keyboard: true,
             createContent: () => {
-                console.log(111,op);
-
                 return [
                     `<div class="row justify-content-start">
                         <div class="col-6">
@@ -859,6 +953,8 @@ const ContractDialog = (() => {
                         console.log(123,item);
                         me.tenant_id = item.id;
                         me.controls.legal_name.value = item.legal_name || '';
+                        me.tenant_id = item.id || '';
+
                     }
                 });
             },
@@ -885,11 +981,10 @@ const ContractDialog = (() => {
                 {
                     name: "code",
                     data: "building_spaces",
-                    textField: "floor_id",
+                    textField: "code",
                     valueField: "id",
                 },
             ],
-
             prepareFormOptions: {
                 createTitle: "Create Contract",
                 modifyTitle: "Modify Contract",
@@ -903,12 +998,31 @@ const ContractDialog = (() => {
             },
 
             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
                 //LocaleManager.translateZone(me.divModal);
-                me.tenant_id =data.contract_details.tenant_id;
+                me.tenant_id = data?.contract_details?.tenant_id ?? null;
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const applyUnitData = (spaceId) => {
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (!selected) return;
+                    if (me.controls.space_type_id) me.controls.space_type_id.value = selected.space_type_id ?? '';
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
+                    if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
+                    if (me.controls.price) me.controls.price.value = selected.price ?? '';
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+                    if (unitSelect.value) {
+                        applyUnitData(unitSelect.value);
+                    }
+                }
 
                 // const isReadOnly = me.dataOptions.data.code > 0;
                 // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-
                 const header = me.divModal.querySelector('.modal-header');
                 const btnClose = header.querySelector('button');
                 if(btnClose) btnClose.classList.add('d-none');
@@ -935,7 +1049,8 @@ const ContractDialog = (() => {
                         const op = me.getData();
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
-
+                        op.tenant_id = me.tenant_id;
+                        console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
                                 me.hide(true, op);
