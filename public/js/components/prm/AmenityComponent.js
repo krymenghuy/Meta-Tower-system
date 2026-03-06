@@ -8,7 +8,6 @@ var AmenityComponent = (() => {
     mThis.btnAdd = mThis.self.querySelector("#_btnAmenity");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
     mThis.elFilter_status = mThis.self.querySelector('#_amenity_status');
-    mThis.elFilter_category = mThis.self.querySelector('#_amenity_category');
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
 
     mThis.cols = [
@@ -22,11 +21,7 @@ var AmenityComponent = (() => {
             data: (data) => `<span class="text-primary-custom">${data.name ?? ''}</span>`
         },
         
-        {
-            title: "Category",
-            className: "align-middle",
-            data: (data) => `<span class="text-primary-custom">${data.category ?? ''}</span>`
-        },
+        
         {
             title: "Floor",
             className: "align-middle",
@@ -40,23 +35,23 @@ var AmenityComponent = (() => {
         //             <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? ''}</span>
         //         </div>`
         // },
-        {
-            title: "Location",
-            className: "align-middle",
-            data: (data) => `
-                <div class="text-primary-custom" style="width:150px;">
-                    <span class="text-wrap text-break" style="word-break:break-word;">${data.location_detail ?? '-'}</span>
-                </div>`
-        },
-        {
-            title: "Access Level",
-            className: "align-middle",
-            data: (data) => {
-                const accessLabel = data.access_level ?? `${data.access_level}`;
-                return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
-            }
+        // {
+        //     title: "Location",
+        //     className: "align-middle",
+        //     data: (data) => `
+        //         <div class="text-primary-custom" style="width:150px;">
+        //             <span class="text-wrap text-break" style="word-break:break-word;">${data.location_detail ?? '-'}</span>
+        //         </div>`
+        // },
+        // {
+        //     title: "Access Level",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         const accessLabel = data.access_level ?? `${data.access_level}`;
+        //         return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
+        //     }
                  
-        },
+        // },
         {
             title: "Max Capacity",
             className: "align-middle text-center",
@@ -183,7 +178,6 @@ var AmenityComponent = (() => {
     mThis.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status?.value,
-            category: mThis.elFilter_category?.value,
             access_level: mThis.elFilter_access_level?.value,
             requires_booking: mThis.elFilter_requires_booking?.value,
             is_available: mThis.elFilter_is_available?.value,
@@ -362,12 +356,7 @@ const AmenityDialog = (() => {
                                 <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
                             </div>
                         </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;">Category</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="category" required class="data-input form-control" data-field="category" placeholder=" " />
-                            </div>
-                        </div>
+                       
                         <div class="col-6">
                             <label style="padding-left:6px;">Floor</label>
                             <div class="material-input outlined">

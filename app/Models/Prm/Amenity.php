@@ -28,7 +28,6 @@ class Amenity extends VSModel
             'id' => '0|number',
             'name' => '1|string|0-100|text= Amenity name must be provided',
             'description' => '0|string',
-            'category' => '1|string|0-50|text= Category must be provided',
             'floor' => '0|string|0-50',
             'location_detail' => '0|string|0-150',
             'access_level' => '0|string|0-50|default=All Tenants|text= Access level must be provided',
@@ -99,7 +98,7 @@ class Amenity extends VSModel
             ->join('amenity_statuses as as', 'as.id', '=', 'a.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("a.name,a.description,a.id,a.category,a.floor,a.location_detail,a.access_level,a.requires_booking,a.max_capacity,a.is_available,a.status_id,as.name as status,$updated_at,a.update_user")
+            ->selectRaw("a.name,a.description,a.id,a.floor,a.location_detail,a.access_level,a.requires_booking,a.max_capacity,a.is_available,a.status_id,as.name as status,$updated_at,a.update_user")
             ->orderBy('a.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('a.id');
@@ -110,7 +109,7 @@ class Amenity extends VSModel
     public static function amenityDetails($id,$ss = null){
         return DB::table('amenities as a')
             ->where('a.id',$id)
-            ->selectRaw('a.id,a.name,a.floor,a.location_detail,a.access_level,a.requires_booking,a.max_capacity,a.is_available,a.description,a.category,a.status_id')
+            ->selectRaw('a.id,a.name,a.floor,a.location_detail,a.access_level,a.requires_booking,a.max_capacity,a.is_available,a.description,a.status_id')
             ->first();
     }
 
