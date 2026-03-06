@@ -33,11 +33,12 @@ class ServiceRequest extends VSModel
             'tenant_id'         => '1|number|exists=tenants.id',
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
+            'service_type_id' => '1|number|exists=service_types.id',
             'description'       => '0|string|0-1000',
             'duration_hours'    => '0|numeric|min:0.5|nullable',
             'code'              => '0|string|0-100',
             'unit_type'         => '0|string|in:one_time,hour,month,time|nullable',
-            'request_status_id' => '0|number|default=1|exists=request_status.id',
+            'request_status_id' => '0|number|exists=request_status.id',
             'request_date'      => '0|date',
             'scheduled_date'    => '0|date',
             'completed_date'    => '0|date',
@@ -78,7 +79,7 @@ class ServiceRequest extends VSModel
         }
 
         $unitTypeMap = [
-            // 'one_time' => 0,
+            'one_time' => 0,
             'hour'     => 1,
             'month'    => 2,
             // 'time'     => 3,
@@ -201,6 +202,7 @@ class ServiceRequest extends VSModel
         $branch_id         = $ss->branch_id ?? null;
         $search_value      = $d->search_value ?? null;
         $request_status_id = $d->request_status_id ?? null;
+        $service_type_id   = $d->service_type_id ?? null;
         $current_page      = (int) ($d->current_page ?? 1);
         $per_page          = (int) ($d->per_page ?? 10);
 
@@ -223,6 +225,9 @@ class ServiceRequest extends VSModel
         }
 
         if ($request_status_id) $where_more .= ' AND sr.request_status_id = ' . (int)$request_status_id;
+        if ($service_type_id) {
+            $where_more .= ' AND s.service_type_id = ' . (int)$service_type_id;
+        }
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
@@ -231,6 +236,7 @@ class ServiceRequest extends VSModel
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('request_status as rs', 'rs.id', '=', 'sr.request_status_id')
+            ->join('service_types as st','st.id','=','s.service_type_id')
             ->whereRaw($where_search)
             ->whereRaw($where_more)
             ->selectRaw("
@@ -242,7 +248,8 @@ class ServiceRequest extends VSModel
                 sr.description, sr.request_date,
                 sr.request_status_id, rs.name as status_name,
                 $updated_at, sr.update_user,
-                sr.scheduled_date, sr.completed_date, sr.create_uid
+                sr.scheduled_date, sr.completed_date, sr.create_uid,
+                st.name as service_type
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -271,17 +278,18 @@ class ServiceRequest extends VSModel
             ])
             ->first();
     }
-
-    public static function getFormOptions($ss, $id)
+    public function getFormOptions($arr = [],$ss=null)
     {
+        $ss = $ss ? $ss : $this->userInfo;
+        $d = (object)$arr;
+        $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
-
+        $service_type_id = $d->service_type_id ?? null;
         return (object) [
             'request_details'   => $details,
-            'service_types'     => GeneralSettings::options_service_types($ss),
+            'service_types'     => GeneralSettings::options_service_type_request($ss),
             'tenants'           => GeneralSettings::options_tenant_with_active_contract($ss),
-            // 'tenants'           => GeneralSettings::options_tenant($ss),
-            'services'          => GeneralSettings::options_service($ss),
+            'services'          => GeneralSettings::options_service_request_type($service_type_id),
             'building_spaces'   => GeneralSettings::options_building_space($ss),
             'request_statuses'  => GeneralSettings::options_request_status($ss)
         ];
@@ -294,26 +302,19 @@ class ServiceRequest extends VSModel
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-    public function updateStatus($id, $request_status_id, $ss = null)
+  public function updateStatus($id, $request_status_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
 
         if (!$id || !$request_status_id) {
             return DV::error('Missing required parameters');
         }
-
         $data = [
             'request_status_id' => (int) $request_status_id,
             'update_user'       => $ss->name ?? 'System',
             'update_uid'        => $ss->uid ?? null,
             'updated_at'        => date('Ymd')
         ];
-
-        // Auto-set completed_date if status is "completed"
-        $status = DB::table('request_status')->where('id', $request_status_id)->value('name');
-        if (strtolower($status) === 'completed') {
-            $data['completed_date'] = (int) date('Ymd');
-        }
 
         $currentStatus = DB::table('service_requests')->where('id', $id)->value('request_status_id');
         if ($currentStatus == $request_status_id){

@@ -41,31 +41,31 @@ class GeneralSettingsController extends Controller
       $rows =  GeneralSettings:: options_calendar_month(null);
       return JDV::result($rows);
     }
-   
+
 
     function options_merchant_active(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
-       if($ss->status_code !== 200) return JDV::raw($ss); 
+       if($ss->status_code !== 200) return JDV::raw($ss);
        $rows = GeneralSettings::options_merchant_active($ss);
        return JDV::result($rows);
     }
 
-    
+
     function getComboItems_warehouse(Request $req){
        $ss = UM::getUserInfoByToken($req,-1);
-       if($ss->status_code !== 200) return JDV::result([]); 
+       if($ss->status_code !== 200) return JDV::result([]);
        $rows = GeneralSettings::options_warehouse($ss);
        return JDV::result($rows);
     }
 
-   
+
     function getComboItems_pmt_status(Request $req){
      $ss = UM::getUserInfoByToken($req,-1);
-     if($ss->status_code !== 200) return JDV::result([]); 
+     if($ss->status_code !== 200) return JDV::result([]);
      $rows = GeneralSettings::options_pmt_status($ss);
      return JDV::result($rows);
    }
-  
+
     function getOptions_Floors(Request $req)
     {
           $ss = XAuthService::verifyAuth($req,-1);
@@ -74,6 +74,15 @@ class GeneralSettingsController extends Controller
 
         return JDV::result(GeneralSettings::options_floors($building_id));
     }
-  
-  
+
+     function options_service(Request $req)
+    {
+          $ss = XAuthService::verifyAuth($req,-1);
+        if ($ss->status_code != 200) return $ss; //user not authenticated
+        $service_type_id = $req->service_type_id ? $req->service_type_id : $req->id;
+
+        return JDV::result(GeneralSettings::options_service_request_type($service_type_id));
+    }
+
+
 }

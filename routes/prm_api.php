@@ -215,6 +215,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('tenant-documen
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {
     Route::post('/options-floors', [GeneralSettingsController::class, 'getOptions_floors']);
+    Route::post('/options-service', [GeneralSettingsController::class, 'options_service']);
     // Route::post('/options-program', [StudentController::class, 'getOptions_program']);
 
 });

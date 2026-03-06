@@ -87,13 +87,13 @@ class ServiceRequestController extends Controller
         return JDV::raw($result);
     }
 
-    //  GetFromOption
+ //  GetFromOption
         public function getFormOptions(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->serviceRequest->getFormOptions($ss,$req->id));
+        return JDV::result($this->serviceRequest->getFormOptions($req->all(),$ss));
     }
 
     // Update status

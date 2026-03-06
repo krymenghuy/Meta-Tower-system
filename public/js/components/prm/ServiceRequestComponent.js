@@ -33,6 +33,11 @@ var ServiceRequestComponent = (function () {
         data: (data) => `<span class="text-primary-custom user-select-none">${data.space_code ?? ''}</span>`
     },
     {
+        transTitle: "titles.Category",
+        className: "align-middle",
+        data: (data) => `<span class="text-primary-custom">${data.service_type ?? ''}</span>`
+    },
+    {
         transTitle: "titles.Service",
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom">${data.service_name ?? ''}</span>`
@@ -67,7 +72,6 @@ var ServiceRequestComponent = (function () {
     className: "align-middle",
     data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
     },
-
     {
         transTitle: "titles.Status",
         className: "align-middle",
@@ -78,11 +82,8 @@ var ServiceRequestComponent = (function () {
             const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
 
             const statusMap = {
-                'pending':      'bg-warning',
-                'in progress':  'bg-warning text-dark',
                 'approved':     'bg-success',
-                'cancelled':    'bg-danger',
-                'completed':    'bg-primary',
+                'rejected':    'bg-danger',
             };
 
             const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
@@ -93,6 +94,7 @@ var ServiceRequestComponent = (function () {
                 </span>`;
         },
     },
+
     {
         transTitle: "titles.Updated By",
         className: 'align-middle',
@@ -253,44 +255,42 @@ var ServiceRequestComponent = (function () {
       }
 
 
-      mThis.changeStatus = (id, link) => {
-        const tr = link.closest('tr');
-        const currentStatusId = tr?.dataset.statusId || "1";
+    //   mThis.changeStatus = (id, link) => {
+    //     const tr = link.closest('tr');
+    //     const currentStatusId = tr?.dataset.statusId || "1";
 
-        const options = {
-            transTitle: 'Change Status',
-            cssClass: '',
-            backdropClose: true,
-            // type: 'select',
-            label: 'Status',
-            valueField: 'status_id',
-            textField: 'name',
-            confirmButtonText: "Submit",
-            requiredMessage: 'Select one valid status',
-            context: 'success',
-            data: [
-                { status_id: "1", name: "Pending"    },
-                { status_id: "2", name: "Approved"   },
-                { status_id: "3", name: "Cancelled"  },
-                { status_id: "4", name: "Completed"  },
-            ],
-            defaultValue: currentStatusId,
-            onConfirm: (value, btn, me) => {
-                const payload = { id, status_id: value };
-                vsapi.post(`${mThis.base_url}/prm/service-request/update-status`, payload, { loader: false })
-                    .then(res => {
-                        if (res.status_code === 200) {
-                            me.close();
-                            cv_interact.success('Service Request Status has been updated');
-                            mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                        } else {
-                            me.setError(res.error_message || 'Unable to update status');
-                        }
-                    });
-            }
-        };
-        InputBox.show(options);
-    };
+    //     const options = {
+    //         transTitle: 'Change Status',
+    //         cssClass: '',
+    //         backdropClose: true,
+    //         // type: 'select',
+    //         label: 'Status',
+    //         valueField: 'status_id',
+    //         textField: 'name',
+    //         confirmButtonText: "Submit",
+    //         requiredMessage: 'Select one valid status',
+    //         context: 'success',
+    //         data: [
+    //             { status_id: "1", name: "Approved"   },
+    //             { status_id: "2", name: "Rejected"  },
+    //         ],
+    //         defaultValue: currentStatusId,
+    //         onConfirm: (value, btn, me) => {
+    //             const payload = { id, status_id: value };
+    //             vsapi.post(`${mThis.base_url}/prm/service-request/update-status`, payload, { loader: false })
+    //                 .then(res => {
+    //                     if (res.status_code === 200) {
+    //                         me.close();
+    //                         cv_interact.success('Service Request Status has been updated');
+    //                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+    //                     } else {
+    //                         me.setError(res.error_message || 'Unable to update status');
+    //                     }
+    //                 });
+    //         }
+    //     };
+    //     InputBox.show(options);
+    // };
 
     mThis.show = (options) => {
         mThis.init();
@@ -305,7 +305,7 @@ var ServiceRequestComponent = (function () {
             .then(res => {
                 if (res.status_code === 200) {
                     VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', true, 'All Statuses');
-                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', true, 'All Service Types');
+                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', true, 'All Category');
                 }
                 if (typeof callback === 'function') callback();
             });
@@ -599,6 +599,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
 })();
 
 
+
 const CreateServiceRequestDialog = (() => {
     const self = {};
     let dialog = null;
@@ -638,6 +639,17 @@ const CreateServiceRequestDialog = (() => {
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
+                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Type <span class="text-danger">*</span>
+                            </label>
+                            <div class="material-input outlined">
+                                <select name="service_type_id" class="data-input form-control" data-field="service_type_id" required>
+                                    <option value="">-- Select Service Type --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
@@ -646,7 +658,9 @@ const CreateServiceRequestDialog = (() => {
                                 </select>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
@@ -655,13 +669,11 @@ const CreateServiceRequestDialog = (() => {
                                 <select name="unit_type" class="data-input form-control" data-field="unit_type" required>
                                     <option value="">-- Select Unit --</option>
                                     <option value="hour">⏱️ Price Per Hour</option>
-                                    <option value="month">📅 Price Per Month</option>
+                                    <option value="one_time">📅 Price Per One Time</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row g-3 mb-3">
                         <div class="col-md-6 select-type-time" style="display:none;">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
@@ -669,13 +681,13 @@ const CreateServiceRequestDialog = (() => {
                             <div class="material-input outlined">
                                 <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
                                     <option value="">-- Select Duration --</option>
-                                    <option value="0.5">⏰ 30 minutes</option>
-                                    <option value="1">⏰ 1 hour</option>
-                                    <option value="1.5">⏰ 1.5 hours</option>
-                                    <option value="2">⏰ 2 hours</option>
-                                    <option value="2.5">⏰ 2.5 hours</option>
-                                    <option value="3">⏰ 3 hours</option>
-                                    <option value="4">⏰ 4 hours</option>
+                                    <option value="0.5">30 minutes</option>
+                                    <option value="1">1 hour</option>
+                                    <option value="1.5">1.5 hours</option>
+                                    <option value="2">2 hours</option>
+                                    <option value="2.5">2.5 hours</option>
+                                    <option value="3">3 hours</option>
+                                    <option value="4">4 hours</option>
                                 </select>
                             </div>
                         </div>
@@ -702,7 +714,7 @@ const CreateServiceRequestDialog = (() => {
                     <div class="row g-3">
                         <div class="col-12">
                             <label style="padding-left:6px; color:#777;">
-                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks / Description
+                                <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
                             </label>
                             <div class="material-input outlined position-relative">
                                 <textarea class="data-input form-control"
@@ -731,34 +743,25 @@ const CreateServiceRequestDialog = (() => {
                     const previewRow = me.divModal.querySelector('#price-preview-row');
 
                     if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
+                    if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
 
-                    if (!showDuration) {
-                        if (previewRow) previewRow.style.display = 'none';
-                        return;
-                    }
-
-                    const hours = parseFloat(me.controls?.duration_hours?.value || '0') || 0;
+                    const hours = parseFloat(me.controls?.duration_hours?.value || 0);
                     const price = parseFloat(me.servicePrice || 0);
-
-                    if (price <= 0 || !me.servicePrice) {
-                        if (previewRow) previewRow.style.display = 'none';
-                        return;
-                    }
 
                     if (hours > 0 && price > 0) {
                         const total = price * hours;
                         me.divModal.querySelector('#calc-total').textContent = `$${total.toFixed(2)}`;
                         me.divModal.querySelector('#calc-breakdown').textContent = `$${price.toFixed(2)} × ${hours}h`;
                         if (previewRow) previewRow.style.display = 'block';
-                    } else {
-                        if (previewRow) previewRow.style.display = 'none';
+                    } else if (previewRow) {
+                        previewRow.style.display = 'none';
                     }
                 };
 
+                // Service selected → auto fill price & unit type
                 me.controls?.service_id?.addEventListener('change', () => {
                     const serviceId = me.controls.service_id.value;
                     if (!serviceId) return;
-
                     const service = me.data?.services?.find(s => String(s.id) === String(serviceId));
                     if (service) {
                         me.servicePrice = service.price;
@@ -770,33 +773,6 @@ const CreateServiceRequestDialog = (() => {
                 ['unit_type', 'duration_hours'].forEach(f => {
                     me.controls?.[f]?.addEventListener('change', updatePricePreview);
                 });
-
-                updatePricePreview();
-
-                me.onBeforeSubmit = () => {
-                    const data = me.getData();
-                    const required = {
-                        tenant_id: 'Tenant',
-                        space_id: 'Room/Space',
-                        service_id: 'Service',
-                        unit_type: 'Charge Unit'
-                    };
-
-                    for (const [field, label] of Object.entries(required)) {
-                        if (!data[field]) {
-                            cv_interact.error(`Please select ${label}`);
-                            return false;
-                        }
-                    }
-
-                    if (data.unit_type === 'hour' && !data.duration_hours) {
-                        cv_interact.error('Please select duration for hourly service');
-                        return false;
-                    }
-
-                    console.log('[SUBMIT] Data to send:', data);
-                    return true;
-                };
             },
 
             configSelect: [
@@ -809,7 +785,7 @@ const CreateServiceRequestDialog = (() => {
                         {
                             name: "space_id",
                             itemsLoaded: (me, items) => {
-                                me.controls.space_id.value = me.detail?.space_id;
+                                me.controls.space_id.value = me.detail?.space_id || '';
                             },
                             api: {
                                 endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
@@ -819,18 +795,29 @@ const CreateServiceRequestDialog = (() => {
                         }
                     ]
                 },
-                { name: "service_id", data: "services", textField: "service", valueField: "id" },
-                { name: "service_type_id", data: "service_types", textField: "service_type", valueField: "id" }
+                {
+                    name: "service_type_id",
+                    data: "service_types",
+                    textField: "service_type",
+                    valueField: "id"
+                },
+                {
+                    name: "service_id",
+                    textField: "service_name",          // ← from your API response
+                    valueField: "id",
+                    depends: {
+                        name: "service_type_id",
+                        api: {
+                            endpoint: `${main_view.base_url}/prm/settings/options-service`,
+                            params: (me) => ({
+                                service_type_id: me.controls.service_type_id.value || null
+                            })
+                        }
+                    }
+                }
             ],
 
-            onPrepareForm: (me, data) => {
-                me.detail = data.request_details;
-                console.log('111111',data);
-
-            },
-
             prepareFormOptions: {
-                generateInvoice: "Generate Invoice",
                 createTitle: "Create Service Request",
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",
@@ -838,6 +825,12 @@ const CreateServiceRequestDialog = (() => {
                     endpoint: `${main_view.base_url}/prm/service-request/form-options`,
                     params: (op) => ({ id: op.id || null })
                 }
+            },
+
+            onPrepareForm: (me, data) => {
+                me.detail = data.request_details;
+                console.log("1111111111",data);
+
             },
 
             buttons: [
@@ -852,82 +845,27 @@ const CreateServiceRequestDialog = (() => {
                     click: (me, btn) => {
                         const data = me.getData();
                         data.id = me.dataOptions?.id || null;
-
-                        vsapi.call(
-                            `${main_view.base_url}/prm/service-request/save`,
-                            data,
-                            btn
-                        ).then(res => {
-                            if (res.status_code === 200) {
-                                me.hide(true);
-                                cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
-                            } else {
-                                cv_interact.error(res.error_message || "Save failed");
-                            }
-                        });
+                        vsapi.call(`${main_view.base_url}/prm/service-request/save`, data, btn)
+                            .then(res => {
+                                if (res.status_code === 200) {
+                                    me.hide(true);
+                                    cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
+                                    if (op?.onClose) op.onClose();
+                                } else {
+                                    cv_interact.error(res.error_message || "Save failed");
+                                }
+                            });
                     }
                 }
             ]
         });
-        const originalShow = dialog.show;
-        dialog.show = function(innerOp) {
-            originalShow.call(this, innerOp);
 
-            setTimeout(() => {
-                if (!innerOp?.id) return;
-                const select = this.controls?.duration_hours;
-                if (!select) {
-                    return;
-                }
-
-                let target = String(this.detail?.duration_hours ?? '').trim();
-                if (!target) return;
-
-                const candidates = [
-                    target,
-                    target.replace(/0+$/, ''),
-                    parseFloat(target).toFixed(1),       // → "2.5"
-                    parseFloat(target).toString(),       // clean string
-                    target.replace('.', ',')             // some locales use comma
-                ];
-                let success = false;
-                for (let val of candidates) {
-                    select.value = val;
-                    select.dispatchEvent(new Event('change', { bubbles: true }));
-                    select.dispatchEvent(new Event('input', { bubbles: true }));
-                    if (select.value === val || select.value !== "") {;
-                        success = true;
-                        break;
-                    }
-                }
-
-
-                if (window.jQuery && jQuery.fn?.select2) {
-                    const $sel = jQuery(select);
-                    if ($sel.hasClass('select2-hidden-accessible') || $sel.data('select2')) {
-                        $sel.val(target).trigger('change');
-                        $sel.val(candidates[1]).trigger('change');
-                        success = true;
-                    }
-                }
-
-                // Final check
-                setTimeout(() => {
-                    const finalVal = select.value;
-                    const finalText = select.options[select.selectedIndex]?.text?.trim() || '(none)';
-                    if (finalVal) {
-                        updatePricePreview();
-                    } else {
-                        console.warn("[DURATION] Still empty – likely third-party library issue");
-                    }
-                }, 900);
-
-            }, 700); // 700 ms delay – adjust between 500–1200 if needed
-        };
         dialog.show(op);
     };
 
     return self;
 })();
+
+
 
 
