@@ -99,6 +99,18 @@ var ContractComponent = new (function () {
                 `;
             }
         },
+        {
+            title: "DEPOSIT",
+            className: "align-middle",
+            data: (data) => {
+                const cur = data.cur_symbol ?? '$';
+                const amount = data.deposit_amount;
+                if (amount === null || amount === undefined || amount === '') {
+                    return `<span class="text-muted">-</span>`;
+                }
+                return `<span class="fw-semibold">${cur} ${Number(amount).toLocaleString()}</span>`;
+            }
+        },
 
         {
             transTitle: "titles.remark",
@@ -126,6 +138,11 @@ var ContractComponent = new (function () {
                     cls  = 'badge rounded-4 shadow-sm border border-success text-success bg-success-subtle';
                     icon = 'fa-regular fa-circle-check';
                     dot  = 'bg-success';
+                }
+                else if (status === 'pending') {
+                    cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
+                    icon = 'fa-regular fa-hourglass-half';
+                    dot  = 'bg-warning';
                 }
                 else if (status === 'expired') {
                     cls  = 'badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle';
@@ -849,6 +866,8 @@ const ContractDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row justify-content-start">
+                 <div class="p-3 mb-4 bg-light border rounded">
+                    <div class="row g-2">
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
@@ -875,57 +894,70 @@ const ContractDialog = (() => {
                             </div>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-4">
                             <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
                             <div class="material-input outlined">
                                 <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
                             </div>
                         </div>
 
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px; user-select: none;pointer-events: none;" for="Code">Unit Code</label>
+                        <div class="col-4">
+                                        <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
+                                        <div class="material-input outlined">
+                                            <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                            </select>
+                                        </div>
+                                    </div>
+                        <div class="col-4">
+                            <label style="color:#777777;padding-left:6px;">Deposit</label>
                             <div class="material-input outlined">
-                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
-                                </select>
+                                <input type="number" name="deposit_amount" class="data-input form-control" data-field="deposit_amount" placeholder=" " />
                             </div>
                         </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
-                            <div class="material-input outlined">
-                                <select  name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
-                                </select>
-                            </div>
+                                       <div class="col-12">
+                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                        <div class="material-input outlined">
+                                            <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                        </div>
+                                    </div>
                         </div>
-                        <!-- <div class="col-4 sqm-wrapper" style="display:none;"> -->
-                            <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Size (m²)</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
-                            <div class="material-input outlined">
-                            <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                <option value="sqm">Per Square Meter</option>
-                                <option value="total">Whole Room</option>
-                            </select>
-                            </div>
                         </div>
 
-
-
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Price</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                            </div>
-                        </div>
-
+</div>
                         <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Remarks</label>
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                            <div class="p-3 bg-white border rounded shadow-lg">
+                                <h6 class="mb-3 text-primary">Create Contract</h6>
+                                <div class="row g-2">
+
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                        <div class="material-input outlined">
+                                            <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                        <div class="material-input outlined">
+                                            <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                        <div class="material-input outlined">
+                                            <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                                                <option value="sqm">Per Square Meter</option>
+                                                <option value="total">Whole Room</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Price</label>
+                                        <div class="material-input outlined">
+                                            <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>`
@@ -1003,13 +1035,24 @@ const ContractDialog = (() => {
                 me.tenant_id = data?.contract_details?.tenant_id ?? null;
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const toggleUnitInputs = (isDisabled) => {
+                    ['space_type_id', 'sqm_size', 'price_type', 'price'].forEach((field) => {
+                        if (me.controls[field]) {
+                            me.controls[field].disabled = isDisabled;
+                        }
+                    });
+                };
                 const applyUnitData = (spaceId) => {
                     const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
-                    if (!selected) return;
+                    if (!selected) {
+                        toggleUnitInputs(false);
+                        return;
+                    }
                     if (me.controls.space_type_id) me.controls.space_type_id.value = selected.space_type_id ?? '';
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
+                    toggleUnitInputs(true);
                 };
 
                 if (unitSelect) {
@@ -1018,6 +1061,8 @@ const ContractDialog = (() => {
                     };
                     if (unitSelect.value) {
                         applyUnitData(unitSelect.value);
+                    } else {
+                        toggleUnitInputs(false);
                     }
                 }
 
@@ -1077,7 +1122,7 @@ const RenewDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md",
+            cssClass: "modal-md, vs-modal",
             backdrop: "static",
             keyboard: true,
            createContent: () => {
@@ -1184,12 +1229,12 @@ const RenewDialog = (() => {
             buttons: [
                 {
                     label: '<span>Cancel</span>',
-                    cssClass: 'btn-vs-cancel',
+                    cssClass: 'btn btn-secondary',
                     click: (me) => me.hide(false),
                 },
                 {
                     label: '<span>Renew</span>',
-                    cssClass: 'btn-vs-save',
+                    cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id; // existing contract id
