@@ -337,11 +337,37 @@ public static function options_tenant_with_active_contract($ss)
         ->get();
 }
     static function options_service_status($ss){
+    public static function options_tenant_with_active_contract($ss)
+    {
+        return DB::table('tenants as t')
+            ->join('contracts as c', 'c.tenant_id', '=', 't.id')
+            // ->where('c.status_id', '=', 2)
+            ->where('t.branch_id', '=', $ss->branch_id)  // Filter by branch if needed
+            ->select('t.id', 't.name as tenant', 'c.id as contract_id')
+            ->distinct()  // In case tenant has multiple active contracts
+            ->orderBy('t.name')
+            ->get();
+    }
+    static function options_service_status($ss)
+    {
         return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
     }
     static function options_amenity_status($ss)
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
+    }
+<<<<<<<<< Temporary merge branch 1
+
+=========
+    static function options_amenity($ss)
+    {
+        return DB::table('amenities')->selectRaw('id,name AS amenity')->get(); 
+    }
+    
+
+    static function options_reservation_status($ss)
+    {
+        return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
     }
     
     // public static function options_service_status($ss)
