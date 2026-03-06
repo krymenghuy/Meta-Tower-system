@@ -130,6 +130,7 @@ return [
                 'js/components/prm/SpaceComponent.js',
                 'js/components/prm/PaymentComponent.js',
                 'js/components/prm/ServiceComponent.js',
+                'js/components/prm/VendorComponent.js',
                 'js/components/prm/InvoiceComponent.js',
                 'js/components/prm/AccessControlComponent.js',
                 'js/components/prm/SettingComponent.js',

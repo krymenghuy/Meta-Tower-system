@@ -197,6 +197,7 @@ var BuildingComponent = ( () => {
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated:(data,index,tr)=>{
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.totalfloor = data.total_floor ?? 0;
                 tr.classList.add('building');
                 tr.setAttribute('id',['building_id',data.id].join(''));
             },
@@ -240,8 +241,9 @@ var BuildingComponent = ( () => {
             // showExpandSignal: false,
             onOpen: (container, detail_tr, parent_tr) => {
                 const id = parent_tr.dataset.id;
+                const totalFloor = parseInt(parent_tr.dataset.totalfloor || '0', 10);
                 if (id > 0) {
-                    mThis.displayFloorNumber(container,id);
+                    mThis.displayFloorNumber(container, id, totalFloor);
                 }
             }
         });
@@ -255,7 +257,7 @@ var BuildingComponent = ( () => {
 
         mThis.initAlready = true;
     };
-    mThis.displayFloorNumber = (container, id) => {
+    mThis.displayFloorNumber = (container, id, totalFloor = 0) => {
         let html = null;
         container.innerHTML = '';
         console.log(444,id);
@@ -265,12 +267,17 @@ var BuildingComponent = ( () => {
         },null).then(res => {
             const data = res.status_code === 200 ? res.data : [];
             console.log(444,data);
+            const maxFloorNo = (data || []).reduce((max, level) => {
+                const floorNo = parseInt(level.floor_no || '0', 10);
+                return floorNo > max ? floorNo : max;
+            }, 0);
+            const canAddFloor = (parseInt(totalFloor || '0', 10) > 0) && (maxFloorNo < parseInt(totalFloor || '0', 10));
 
-            html = `<div class="d-none rounded-3 p-2 bg-white">
-                <button data-id="${id}" class="btn-add-floor btnAddNewPrm" type="button">
+            html = `${canAddFloor ? `<div class="rounded-3 p-2 bg-white">
+                <button data-buildingid="${id}" class="btn-add-floor btnAddNewPrm" type="button">
                     <span class="">${LocaleManager.trans('Add Floor','buttons')}</span>
                 </button>
-            </div>
+            </div>` : ''}
             <div class="table-responsive p-1">
             <table class="table table-sm table-hover align-middle tbl_list_floor">
             <thead class="table-light text-nowrap">
@@ -291,36 +298,38 @@ var BuildingComponent = ( () => {
             const tbody = container.querySelector('table.tbl_list_floor > tbody');
             const btnNewFloor = container.querySelector('.btn-add-floor');
 
-            btnNewFloor.addEventListener('click',e => {
-                e.preventDefault();
-                let id = btnNewFloor.dataset.id;
-                let op = {
-                    id: null,
-                    id: id,
-                    onClose: (me,d,cancel) => {
-                        mThis.renderLevelList(tbody,d.levels);
-                    }
-                };
+            if (btnNewFloor) {
+                btnNewFloor.addEventListener('click',e => {
+                    e.preventDefault();
+                    let building_id = btnNewFloor.dataset.buildingid;
+                    let op = {
+                        id: null,
+                        building_id: building_id,
+                        onClose: (success) => {
+                            if (!success) return;
+                            mThis.displayFloorNumber(container, btnNewFloor.dataset.buildingid, totalFloor);
+                        }
+                    };
 
-                // if(!AuthManager.allowed(264)) return;
-                alert('soon');
-                floorDialog.show(op);
-            });
+                    // if(!AuthManager.allowed(264)) return;
+                    CreateFloorDialog.show(op);
+                });
+            }
 
-            mThis.renderLevelList(tbody, data);
+            mThis.renderFloorList(tbody, data);
         });
     }
-    mThis.renderLevelList = (tbody, data) => {
+    mThis.renderFloorList = (tbody, data) => {
         let html = null;
         if(!data) data = [];
 
         (data || []).map(level => {
         console.log(66,level);
 
-            let shortcut = level.name ? `(${level.name ?? ''})` : '';
+            let shortcut = level.floor_name ? `(${level.floor_name ?? ''})` : '';
             html = [html,`<tr>
                 <td>
-                    <span class="fw-semibold d-block">${level.name ?? ''}</span>
+                    <span class="fw-semibold d-block">${level.floor_name ?? ''}</span>
                     <span class="d-block text-muted">
                         <small>${shortcut ?? ''}</small>
                     </span>
@@ -355,6 +364,7 @@ var BuildingComponent = ( () => {
         tbody.innerHTML = html;
 
     }
+
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
@@ -546,7 +556,7 @@ const BuildingDialog = (() => {
                     },
                 },
                 {
-                    label: '<span vslang="buttons.Submit"></span>',
+                    label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
@@ -572,3 +582,115 @@ const BuildingDialog = (() => {
 
     return self;
 })();
+const CreateFloorDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-md vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => `
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <label style="color:#777;padding-left:6px;">Floor Number</label>
+                        <div class="material-input outlined">
+                            <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label style="color:#777;padding-left:6px;">Floor Name</label>
+                        <div class="material-input outlined">
+                            <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label style="color:#777;padding-left:6px;">Description</label>
+                        <div class="material-input outlined">
+                            <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                        </div>
+                    </div>
+                </div>
+            `,
+            contentCreated: (me) => {
+                // Remove header modification if headerWrapper undefined
+                const header = me.divModal.querySelector('.modal-header');
+                if (header) {
+                    // header.innerHTML = ''; // optional
+                }
+            },
+            prepareFormOptions: {
+                createTitle: "Create Floor",
+                modifyTitle: "Modify Floor",
+                targetProp: "floor_details",
+                api: {
+                    endpoint: main_view.base_url + "/prm/building/form-options",
+                    params: (op) => ({ id: op.id, building_id: op.building_id }),
+                },
+            },
+           onPrepareForm: (me) => {
+                const header = me.divModal.querySelector('.modal-header');
+                if (header) {
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
+                }
+
+                const floorNumber = me.divModal.querySelector('[data-field="floor_number"]');
+                const floorName = me.divModal.querySelector('[data-field="name"]');
+                const isCreate = !(me.dataOptions?.id > 0);
+
+                if (floorNumber && floorName) {
+                    if (isCreate) {
+                        floorNumber.setAttribute('disabled', 'disabled');
+                        floorName.setAttribute('disabled', 'disabled');
+                    } else {
+                        floorNumber.removeAttribute('disabled');
+                        floorName.removeAttribute('disabled');
+                    }
+
+                    floorNumber.addEventListener('input', function () {
+                        const num = this.value;
+                        floorName.value = num ? `Floor ${num}` : '';
+                    });
+                }
+            },
+            buttons: [
+                {
+                    label: 'Cancel',
+                    cssClass: 'btn btn-secondary',
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: 'Save',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.building_id = me.dataOptions.building_id;
+                        op.id = me.dataOptions?.id || 0;
+                        console.log(444,op);
+
+                        vsapi.call(main_view.base_url + "/prm/building/add-floor", op, btn)
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                if (typeof me.dataOptions?.onClose === 'function') {
+                                    me.dataOptions.onClose(true, res.data);
+                                }
+                                me.hide(true, op);
+                                const msg = op.id > 0 ? "Floor has been updated successfully" : "New floor has been added successfully";
+                                cv_interact.success(msg);
+                            } else {
+                                cv_interact.error(res.error_message || "Failed to save floor");
+                            }
+                        });
+                    },
+                },
+            ],
+        });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+

@@ -13,6 +13,8 @@ use App\Http\Controllers\Prm\BuildingController;
 use App\Http\Controllers\Prm\BuildingSpaceController;
 use App\Http\Controllers\Prm\ContractController;
 use App\Http\Controllers\Prm\ServiceController;
+use App\Http\Controllers\Prm\VendorController;
+
 use App\Http\Controllers\Prm\InvoiceController;
 use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
@@ -108,6 +110,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('zone')->group
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->group(function () {
     Route::post('/save', [BuildingController::class, 'saveBuilding']);
+    Route::post('/add-floor', [BuildingController::class, 'addFloor']);
     Route::post('/list-floor', [BuildingController::class, 'getListFloor']);
     Route::post('/list-paginate', [BuildingController::class, 'getListBuilding']);
     Route::post('/details', [BuildingController::class, 'buildingDetails']);
@@ -143,6 +146,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
     Route::post('/form-options', [ServiceController::class, 'getFormOptions']);
     Route::post('/delete', [ServiceController::class, 'deleteService']);
     Route::post('/update-status', [ServiceController::class, 'updateServiceStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->group(function () {
+    Route::post('/save', [VendorController::class, 'saveVendor']);
+    // Route::post('/list-paginate', [VendorController::class, 'getListPaginate']);
+    // Route::post('/details', [VendorController::class, 'vendorDetails']);
+    // Route::post('/form-options', [VendorController::class, 'getFormOptions']);
+    // Route::post('/delete', [VendorController::class, 'deleteVendor']);
+    //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
 
