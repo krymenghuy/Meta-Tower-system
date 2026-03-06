@@ -150,10 +150,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->group(function () {
     Route::post('/save', [VendorController::class, 'saveVendor']);
-    // Route::post('/list-paginate', [VendorController::class, 'getListPaginate']);
-    // Route::post('/details', [VendorController::class, 'vendorDetails']);
-    // Route::post('/form-options', [VendorController::class, 'getFormOptions']);
-    // Route::post('/delete', [VendorController::class, 'deleteVendor']);
+    Route::post('/list-paginate', [VendorController::class, 'getListPaginate']);
+    Route::post('/details', [VendorController::class, 'vendorDetails']);
+    Route::post('/form-options', [VendorController::class, 'getFormOptions']);
+    Route::post('/delete', [VendorController::class, 'deleteVendor']);
     //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
