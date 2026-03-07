@@ -24,7 +24,7 @@ var VendorComponent = (() => {
         //     }
         // },
         {
-            transTitle: "titles.Vendor",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
 
@@ -105,7 +105,8 @@ var VendorComponent = (() => {
             transTitle: "titles.Contact Person",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.contact_person ?? ''}</span>`;
+                return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
+                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
             }
         },
         {
