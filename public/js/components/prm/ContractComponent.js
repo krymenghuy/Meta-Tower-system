@@ -104,7 +104,7 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data) => {
                 const cur = data.cur_symbol ?? '$';
-                const amount = data.deposit_amount;
+                const amount = data.deposit ?? data.deposit_amount;
                 if (amount === null || amount === undefined || amount === '') {
                     return `<span class="text-muted">-</span>`;
                 }
@@ -180,7 +180,7 @@ var ContractComponent = new (function () {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm  rounded-2 text-nowrap">
                             <span>
                                 <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -202,6 +202,8 @@ var ContractComponent = new (function () {
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.status = data.status ?? '';
+                tr.dataset.endDate = data.end_date ?? '';
                 tr.classList.add('contract');
                 tr.setAttribute('id', ['contract_invoice_id', data.id].join(''));
             },
@@ -276,6 +278,49 @@ var ContractComponent = new (function () {
         return p;
     };
 
+    mThis.parseSafeDate = (value) => {
+        if (!value) return null;
+        const raw = String(value).trim();
+        if (!raw) return null;
+
+        const monthMap = {
+            jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+            jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+        };
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+            const [year, month, day] = raw.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
+            const [dayStr, monthStr, yearStr] = raw.split('-');
+            const month = monthMap[monthStr.toLowerCase()];
+            if (month === undefined) return null;
+            return new Date(Number(yearStr), month, Number(dayStr));
+        }
+
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+            const [day, month, year] = raw.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        const parsed = new Date(raw);
+        if (Number.isNaN(parsed.getTime())) return null;
+        return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    };
+
+    mThis.isWithinNextThreeMonths = (date) => {
+        if (!date) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const maxDate = new Date(today);
+        maxDate.setMonth(maxDate.getMonth() + 3);
+
+        return date >= today && date <= maxDate;
+    };
+
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -309,12 +354,16 @@ var ContractComponent = new (function () {
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
+                const row = container.closest('tr');
+                const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
+                const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
+                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate);
+                const showRenew = statusId !== 2 && mThis.isWithinNextThreeMonths(endDate);
+                const isActive = statusText === 'active' || statusId === 2;
 
-                menu.renew_contract.style.display = (status_id == 1 || status_id == 2) ? 'block' : 'none';
-                menu.renew_contract.style.display = status_id == 2 ? 'none' : 'block';
-                menu.edit_contract.style.display = status_id == 2 ? 'none' : 'block';
-                menu.generate_invoice.style.display = status_id ==2 ? 'none': 'block';
+                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
+                menu.edit_contract.style.display = isActive ? 'none' : 'block';
+                menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
 
 
             },
@@ -857,6 +906,46 @@ const CreateInvoiceContractDialog = (() => {
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
+    const parseDateInput = (value) => {
+        if (!value) return null;
+
+        const raw = String(value).trim();
+        if (!raw) return null;
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+            const [year, month, day] = raw.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
+            const [dayStr, monthStr, yearStr] = raw.split('-');
+            const monthMap = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+            };
+            const month = monthMap[monthStr];
+            if (month === undefined) return null;
+            return new Date(Number(yearStr), month, Number(dayStr));
+        }
+
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+            const [day, month, year] = raw.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        const parsed = new Date(raw);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    };
+    const hasAtLeastOneMonth = (startDate, endDate) => {
+        const monthsDiff =
+            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+            (endDate.getMonth() - startDate.getMonth());
+
+        if (monthsDiff > 1) return true;
+        if (monthsDiff < 1) return false;
+
+        return endDate.getDate() >= startDate.getDate();
+    };
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
@@ -911,7 +1000,7 @@ const ContractDialog = (() => {
                         <div class="col-4">
                             <label style="color:#777777;padding-left:6px;">Deposit</label>
                             <div class="material-input outlined">
-                                <input type="number" name="deposit_amount" class="data-input form-control" data-field="deposit_amount" placeholder=" " />
+                                <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                             </div>
                         </div>
                                        <div class="col-12">
@@ -932,8 +1021,8 @@ const ContractDialog = (() => {
                                     <div class="col-6">
                                         <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
                                         <div class="material-input outlined">
-                                            <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
-                                            </select>
+                                            <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -945,10 +1034,7 @@ const ContractDialog = (() => {
                                     <div class="col-6">
                                         <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
                                         <div class="material-input outlined">
-                                            <select name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
-                                                <option value="sqm">Per Square Meter</option>
-                                                <option value="total">Whole Room</option>
-                                            </select>
+                                            <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -1002,12 +1088,6 @@ const ContractDialog = (() => {
                     name: "business_type_id",
                     data: "business_types",
                     textField: "business_type",
-                    valueField: "id",
-                },
-                {
-                    name: "space_type_id",
-                    data: "space_types",
-                    textField: "space_type",
                     valueField: "id",
                 },
                 {
@@ -1095,6 +1175,16 @@ const ContractDialog = (() => {
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
+                        const startDate = parseDateInput(op.start_date);
+                        const endDate = parseDateInput(op.end_date);
+                        if (op.start_date && op.end_date && startDate && endDate && startDate >= endDate) {
+                            cv_interact.error("Start date must be before end date");
+                            return;
+                        }
+                        if (op.start_date && op.end_date && startDate && endDate && !hasAtLeastOneMonth(startDate, endDate)) {
+                            cv_interact.error("Duration between start date and end date must be at least 1 month");
+                            return;
+                        }
                         console.log(123,op);
                         vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
                             if (res.status_code === 200) {
@@ -1119,6 +1209,16 @@ const ContractDialog = (() => {
 const RenewDialog = (() => {
     const self = {};
     let dialog = null;
+    const hasAtLeastOneMonth = (startDate, endDate) => {
+        const monthsDiff =
+            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+            (endDate.getMonth() - startDate.getMonth());
+
+        if (monthsDiff > 1) return true;
+        if (monthsDiff < 1) return false;
+
+        return endDate.getDate() >= startDate.getDate();
+    };
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
@@ -1158,37 +1258,64 @@ const RenewDialog = (() => {
                             <div class="p-3 bg-white border rounded shadow-sm">
                                 <h6 class="mb-3 text-primary">Renew Contract</h6>
                                 <div class="row g-2">
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">Start Date</label>
                                         <div class="material-input outlined">
                                             <input type="date" name="start_date" class="data-input form-control" data-field="start_date" />
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">End Date</label>
                                         <div class="material-input outlined">
                                             <input type="date" name="end_date" class="data-input form-control" data-field="end_date" />
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;">Price Type</label>
+                                    <div class="col-4">
+                                        <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
                                         <div class="material-input outlined">
-                                            <select name="price_type" class="data-input form-control" data-field="price_type">
-                                                <option value="sqm">Per Square Meter</option>
-                                                <option value="total">Whole Room</option>
+                                            <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
                                             </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                        <div class="material-input outlined">
+                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-12">
+                            <div class="p-3 bg-white border rounded shadow-lg">
+                                <h6 class="mb-3 text-primary">Create Contract</h6>
+                                <div class="row g-2">
+
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                        <div class="material-input outlined">
+                                            <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                        <div class="material-input outlined">
+                                            <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                        <div class="material-input outlined">
+                                            <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <label style="color:#777777;padding-left:6px;">Price</label>
                                         <div class="material-input outlined">
-                                            <input type="number" name="price" class="data-input form-control" data-field="price" />
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
-                                        <div class="material-input outlined">
-                                            <textarea name="remarks" class="data-input form-control" data-field="remarks"></textarea>
+                                            <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
                                         </div>
                                     </div>
                                 </div>
@@ -1212,6 +1339,14 @@ const RenewDialog = (() => {
                     params: (op) => ({ id: op.id }),
                 },
             },
+            configSelect: [
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
@@ -1220,6 +1355,51 @@ const RenewDialog = (() => {
                 me.controls.price.value = '';
                 me.controls.price_type.value = '';
                 me.controls.remarks.value = '';
+
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const setUnitFields = (unitData) => {
+                    if (!unitData) return;
+                    if (me.controls.space_type_id) {
+                        me.controls.space_type_id.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
+                    }
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
+                    if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
+                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
+                };
+                const applyUnitData = (spaceId) => {
+                    if (!spaceId) return;
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (selected) {
+                        setUnitFields(selected);
+                    }
+
+                    // Refresh selected unit data from API when unit code changes.
+                    vsapi.call(`${main_view.base_url}/prm/building-space/details`, { id: spaceId }, null, null)
+                        .then((res) => {
+                            if (res.status_code !== 200 || !res.data) return;
+                            const merged = selected ? { ...selected, ...res.data } : res.data;
+                            setUnitFields(merged);
+                        })
+                        .catch(() => {});
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+
+                    const defaultSpaceId = data?.contract_details?.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    }
+                }
                 // me.controls.price.value = data.contract_details.price;
                 // me.controls.price_type.value = data.contract_details.price_type;
                 // me.controls.remarks.value = data.contract_details.remarks;
@@ -1238,6 +1418,28 @@ const RenewDialog = (() => {
                     click: (me, btn) => {
                         const op = me.getData();
                         op.id = me.dataOptions.id; // existing contract id
+                        const startDate = new Date(op.start_date);
+                        const endDate = new Date(op.end_date);
+                        if (
+                            op.start_date &&
+                            op.end_date &&
+                            !Number.isNaN(startDate.getTime()) &&
+                            !Number.isNaN(endDate.getTime()) &&
+                            startDate >= endDate
+                        ) {
+                            cv_interact.error("Start date must be before end date");
+                            return;
+                        }
+                        if (
+                            op.start_date &&
+                            op.end_date &&
+                            !Number.isNaN(startDate.getTime()) &&
+                            !Number.isNaN(endDate.getTime()) &&
+                            !hasAtLeastOneMonth(startDate, endDate)
+                        ) {
+                            cv_interact.error("Duration between start date and end date must be at least 1 month");
+                            return;
+                        }
 
                         vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
                             .then((res) => {
