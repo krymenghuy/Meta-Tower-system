@@ -24,7 +24,7 @@ var VendorComponent = (() => {
         //     }
         // },
         {
-            transTitle: "titles.Vendor",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
 
