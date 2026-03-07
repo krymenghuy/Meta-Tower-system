@@ -25,4 +25,46 @@ class VendorController extends Controller
         $res = $vendor->saveVendor($req->all());
         return JDV::raw($res);
     }
+     public function getListPaginate(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+       
+        return JDV::result($this->vendors->getListPaginate($req->all(),$ss));
+    }
+
+    public function vendorDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->vendors->vendorDetails($req->id));
+
+    }
+    public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->vendors->getFormOptions($req->id,$ss));
+    }
+    
+
+
+    public  function deleteVendor(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->vendors->deleteVendor($req->id,$ss));
+    }
+
+
 }
