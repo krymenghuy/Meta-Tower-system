@@ -39,7 +39,7 @@ class Contract
             'price_type'       => '0|string|default=sqm',
             'start_date'       => '1|date',
             'end_date'         => '1|date',
-            'deposit_amount'   => '0|number',
+            'deposit'   => '0|number',
             'deposit_remarks'  => '0|string|0-255',
             'remarks'          => '0|string|0-255',
         ];
@@ -64,7 +64,7 @@ class Contract
         }
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
-            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 3]);
             $hasActive = DB::table('contracts')
                 ->where('tenant_id', $inputs['tenant_id'])
                 ->whereDate('end_date', '>=', now())
@@ -182,7 +182,7 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.deposit_amount,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.deposit,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
@@ -229,7 +229,7 @@ class Contract
                             c.sqm_size,
                             c.price,
                             c.price_type,
-                            c.deposit_amount,
+                            c.deposit,
                             c.start_date,
                             c.end_date,
                             c.remarks,
