@@ -33,12 +33,12 @@ class ServiceRequest extends VSModel
             'tenant_id'         => '1|number|exists=tenants.id',
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
-            'service_type_id' => '1|number|exists=service_types.id',
+            'service_type_id'   => '1|number|exists=service_types.id',
+            'status_id'   => '0|number|exists=request_statuses.id',
             'description'       => '0|string|0-1000',
             'duration_hours'    => '0|numeric|min:0.5|nullable',
             'code'              => '0|string|0-100',
             'unit_type'         => '0|string|in:one_time,hour,month,time|nullable',
-            'request_status_id' => '0|number|exists=request_status.id',
             'request_date'      => '0|date',
             'scheduled_date'    => '0|date',
             'completed_date'    => '0|date',
@@ -146,7 +146,7 @@ class ServiceRequest extends VSModel
             $input['create_uid']  = $ss->uid ?? null;
             $input['create_user'] = $ss->name ?? 'System';
             $input['created_at']  = date('Y-m-d H:i:s');
-            $input['request_status_id'] = $input['request_status_id'] ?? 1;
+            $input['status_id'] = 1; // 1 = Pending
         }
 
         try {
@@ -168,11 +168,6 @@ class ServiceRequest extends VSModel
                     5,
                     null
                 );
-
-                if (!$codeRes || !isset($codeRes->status) || $codeRes->status !== 'OK') {
-                    Log::error('Failed to generate service request code', ['id' => $saved_id]);
-                    // Decide: continue or fail?
-                }
 
                 $return_data = ['id' => $saved_id];
                 if (isset($codeRes->code)) {
@@ -201,7 +196,6 @@ class ServiceRequest extends VSModel
         $d = (object) $arr;
         $branch_id         = $ss->branch_id ?? null;
         $search_value      = $d->search_value ?? null;
-        $request_status_id = $d->request_status_id ?? null;
         $service_type_id   = $d->service_type_id ?? null;
         $current_page      = (int) ($d->current_page ?? 1);
         $per_page          = (int) ($d->per_page ?? 10);
@@ -223,8 +217,6 @@ class ServiceRequest extends VSModel
                 OR bs.code LIKE '%{$search}%'
             )";
         }
-
-        if ($request_status_id) $where_more .= ' AND sr.request_status_id = ' . (int)$request_status_id;
         if ($service_type_id) {
             $where_more .= ' AND s.service_type_id = ' . (int)$service_type_id;
         }
@@ -235,8 +227,9 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
-            ->join('request_status as rs', 'rs.id', '=', 'sr.request_status_id')
             ->join('service_types as st','st.id','=','s.service_type_id')
+            // ->join('request_statuses as rs','rs.id', '=','sr.request_statuses_id')
+            ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
             ->whereRaw($where_search)
             ->whereRaw($where_more)
             ->selectRaw("
@@ -246,10 +239,10 @@ class ServiceRequest extends VSModel
                 s.price as service_price, s.unit_type,
                 sr.total_price, sr.duration_hours,
                 sr.description, sr.request_date,
-                sr.request_status_id, rs.name as status_name,
                 $updated_at, sr.update_user,
                 sr.scheduled_date, sr.completed_date, sr.create_uid,
-                st.name as service_type
+                rs.id as status_id,
+                rs.name as status_name
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -270,7 +263,7 @@ class ServiceRequest extends VSModel
                 'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id',
                 's.price as service_price', 's.unit_type',
                 'sr.request_date', 'sr.description',
-                'sr.request_status_id', 'sr.update_user',
+                'sr.update_user',
                 'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
                 'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
                 'bs.code as space_code',
@@ -302,33 +295,53 @@ class ServiceRequest extends VSModel
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-  public function updateStatus($id, $request_status_id, $ss = null)
+    function setRequestStatus($arr, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
 
-        if (!$id || !$request_status_id) {
-            return DV::error('Missing required parameters');
-        }
-        $data = [
-            'request_status_id' => (int) $request_status_id,
-            'update_user'       => $ss->name ?? 'System',
-            'update_uid'        => $ss->uid ?? null,
-            'updated_at'        => date('Ymd')
-        ];
+        // $v_rule = [
+        //     'id'        => '1|number|exists=service_requests.id',
+        //     'status_id' => '0|choice|1,2,3'  // 1 = Canceled, 2 = Pending, 3 = Accepted
+        // ];
 
-        $currentStatus = DB::table('service_requests')->where('id', $id)->value('request_status_id');
-        if ($currentStatus == $request_status_id){
-            return DV::error('It is the same status.');
-        }
+        // $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang ?? 'en', 0, null);
+        // if ($res->error) {
+        //     return DV::error($res->error);
+        // }
+
+
+        $id        = $arr['id'] ?? null;
+        $status_id = $arr['status_id'] ?? null;
+
+        $data = [
+            'status_id' => $status_id,
+            'update_user'         => $ss->full_name ?? 'System',
+            'update_uid'          => $ss->id ?? null,
+            'updated_at'          => getNowTime(),   // better than date()
+        ];
 
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);
 
-        return $updated !== false
-            ? DV::success(['message' => 'Status updated successfully'])
-            : DV::error('Failed to update status');
+        // if ($updated === 0) {
+        //     return DV::error('Service request not found or no changes made');
+        // }
+
+        // // Get real status name from DB (more reliable)
+        // $status = DB::table('request_statuses')
+        //     ->where('id', $status_id)
+        //     ->value('name');
+
+        // $status = $status ?? 'Unknown';
+
+        return DV::depends(1);
     }
 
-
 }
+
+
+
+
+
+

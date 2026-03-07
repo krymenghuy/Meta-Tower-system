@@ -96,22 +96,16 @@ class ServiceRequestController extends Controller
         return JDV::result($this->serviceRequest->getFormOptions($req->all(),$ss));
     }
 
-    // Update status
-    public function updateStatus(Request $req)
+     function setRequestStatus(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        $id = $req->id;
-        $status_id = $req->status_id;
-
-        if (!$id || !$status_id) {
-            return JDV::error('Invalid parameters');
-        }
-
-        $result = $this->serviceRequest->updateStatus($id, $status_id, $ss);
-        return JDV::raw($result);
+        return JDV::raw($this->serviceRequest->setRequestStatus($req->all(), $ss));
     }
+
+
+
 }

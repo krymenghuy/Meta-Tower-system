@@ -501,7 +501,7 @@ class GeneralSettings //extends Model
 
     static function options_request_status($ss)
     {
-        return DB::table('request_status')->selectRaw('id,name')->get();
+        return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
 
 

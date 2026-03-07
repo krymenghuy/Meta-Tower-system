@@ -68,33 +68,31 @@ var ServiceRequestComponent = (function () {
         }
     },
     {
-    transTitle: "titles.Description",
-    className: "align-middle",
-    data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
-    },
-    {
-        transTitle: "titles.Status",
+        transTitle: "titles.Description",
         className: "align-middle",
-        data: (data) => {
-            const rawStatus = data.status_name || data.request_status_name || '';
-            const status_name = rawStatus.toLowerCase().trim();
-
-            const baseCls = 'text-white px-3 py-1 rounded-3 d-inline-block';
-
-            const statusMap = {
-                'approved':     'bg-success',
-                'rejected':    'bg-danger',
-            };
-
-            const cls = `${baseCls} ${statusMap[status_name] || 'bg-secondary'}`;
-
-            return `
-                <span class="${cls}" data-status-id="${data.request_status_id}">
-                    <small>${rawStatus}</small>
-                </span>`;
-        },
+        data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
     },
 
+
+    {
+    transTitle: "titles.Status",
+    className: "align-middle",
+    data:  (row,idex,tr)=>{
+        const statusId   = parseInt(row.status_id) || 1;
+        const statusName = (row.status_name || "-").trim();
+
+        const badgeClass = mThis.getStatusClass(statusId);
+        // Only show clickable button when status is Pending (1)
+         return `
+                <button data-id = "${row.id}" data-statusid="${row.status_id}" class="btn btn-sm ${badgeClass} fw-bold status-change-btn"
+                        data-id="${row.id}"
+                        data-current-status="${statusId}"
+                        aria-expanded="false">
+                    ${statusName}
+                </button>
+            `;
+    }
+},
     {
         transTitle: "titles.Updated By",
         className: 'align-middle',
@@ -120,6 +118,20 @@ var ServiceRequestComponent = (function () {
     }
 ];
 
+    mThis.getStatusClass =(status_id)=>{
+        switch(status_id){
+            case 1: {
+                return"btn-danger";
+            }
+            case 2: {
+                return"btn-warning";
+            }
+            case 3:{
+                return"btn-success";
+            }
+        }
+    }
+
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -134,6 +146,62 @@ var ServiceRequestComponent = (function () {
                 tr.classList.add('service-request');
                 tr.setAttribute('id', `service_request_id_${data.id}`);
             }
+        });
+
+        mThis.table=  mThis.ServiceRequestListView.getTable();
+
+        mThis.table.addEventListener('click',(e)=>{
+          let btn = VSUtil.closestLimited(e.target,' .status-change-btn');
+          if(btn){
+            const def = btn.dataset.statusid;
+            const id = btn.dataset.id;
+             const data = [
+                {
+                     id:1,
+                    name: 'Canceled'
+                },
+                 {
+                     id:2,
+                    name: 'Pending'
+                },
+                 {
+                     id:3,
+                    name: 'Accepted'
+                },
+
+             ];
+                InputBox.show({
+                    type:'select',
+                    title: 'Change Status ',
+                    allowBlankValue: false,
+                    data:data,
+                    textField: 'name',
+                    valueField: 'id',
+                    defaultValue: def,
+                    requiredMessage: 'Select Correct Status',
+                    onConfirm(value, btn, me) {
+
+
+                         const p = {id:id,status_id:value.id};
+                        console.log("111111",p);
+                        vsapi.post(`${main_view.base_url}/prm/service-request/set-status`,p,{})
+                        .then(res => {
+                             if(res.status_code == 200){
+                                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                                me.close();
+                             }
+                             else{
+                                me.setError(res.error_message);
+                             }
+                        });
+
+                    }
+                });
+            return ;
+          }
+
+
+
         });
 
         mThis.elBtnCreate.onclick = (e) => {
@@ -253,44 +321,6 @@ var ServiceRequestComponent = (function () {
       function formatStatus(item){
         return `<span class="badge text-prm-custom bg-light" >${item.name}</span>`;
       }
-
-
-    //   mThis.changeStatus = (id, link) => {
-    //     const tr = link.closest('tr');
-    //     const currentStatusId = tr?.dataset.statusId || "1";
-
-    //     const options = {
-    //         transTitle: 'Change Status',
-    //         cssClass: '',
-    //         backdropClose: true,
-    //         // type: 'select',
-    //         label: 'Status',
-    //         valueField: 'status_id',
-    //         textField: 'name',
-    //         confirmButtonText: "Submit",
-    //         requiredMessage: 'Select one valid status',
-    //         context: 'success',
-    //         data: [
-    //             { status_id: "1", name: "Approved"   },
-    //             { status_id: "2", name: "Rejected"  },
-    //         ],
-    //         defaultValue: currentStatusId,
-    //         onConfirm: (value, btn, me) => {
-    //             const payload = { id, status_id: value };
-    //             vsapi.post(`${mThis.base_url}/prm/service-request/update-status`, payload, { loader: false })
-    //                 .then(res => {
-    //                     if (res.status_code === 200) {
-    //                         me.close();
-    //                         cv_interact.success('Service Request Status has been updated');
-    //                         mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-    //                     } else {
-    //                         me.setError(res.error_message || 'Unable to update status');
-    //                     }
-    //                 });
-    //         }
-    //     };
-    //     InputBox.show(options);
-    // };
 
     mThis.show = (options) => {
         mThis.init();
@@ -829,7 +859,6 @@ const CreateServiceRequestDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 me.detail = data.request_details;
-                console.log("1111111111",data);
 
             },
 
@@ -865,6 +894,69 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
+
+
+
+
+// const ActionServiceRequestDialog = (() => {
+//     let dialog = null;
+//     self.show = (op) => {
+//         dialog = dialog || new GeneralDialog({
+//             cssClass: "modal-lg vs-modal",
+//             backdrop: "static",
+//             keyboard: true,
+
+//             createContent: () => `
+
+//             `,
+
+//             contentCreated: (me) => {
+//             },
+//             btn = VSUtil.getElementByClass(e.target,'btn-allow-att-scan');
+//             if(btn)
+//             {
+//                 const status = btn.dataset.status;
+//                 const id = btn.dataset.id;
+//                 const q = btn.dataset.status == 1 ? 'Do you want to prevent students in this group from scanning their attendance?' : 'Do you want allow students in mThis group to scan their attendance?';
+//                 const btnText = btn.dataset.status == 1 ? LocaleManager.trans('Disable Now','buttons') : LocaleManager.trans('Enable Now','buttons');
+//                 const c = btn.dataset.status == 1 ? 'delete' : 'update';
+
+//                 if(!AuthManager.allowed(224)) return;
+//                 cv_interact.confirm(q,
+//                 {
+//                     context: c,
+//                     title: 'Scan Status',
+//                     confirmButtonText: btnText
+//                 },
+//                 e => {
+//                     if(e)
+//                     {
+//                         const p = {
+//                             id: id,
+//                             is_allow: status == 1 ? 0 : 1
+//                         };
+//                         vsapi.call(`${main_view.base_url}/prm/service-request/set-status`, data, btn)
+//                             .then(res => {
+//                                 if (res.status_code === 200) {
+//                                     me.hide(true);
+//                                     cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
+//                                     if (op?.onClose) op.onClose();
+//                                 } else {
+//                                     cv_interact.error(res.error_message || "Save failed");
+//                                 }
+//                             });
+//                     }
+//                 });
+//                 return;
+//             }
+//         });
+
+//         dialog.show(op);
+//     };
+
+//     return self;
+// })();
+
 
 
 
