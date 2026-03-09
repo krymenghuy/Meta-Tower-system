@@ -44,7 +44,6 @@ class BuildingSpace
 
         $inputs = $res->values;
         $d = (object) $inputs;
-
         if (!empty($d->code)) {
             $exists = DB::table('building_spaces')
                 ->where('code', $d->code)
@@ -189,11 +188,13 @@ class BuildingSpace
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
         }
         if ($status_id) {
-            $str_moreWhere .= ' AND bs.status_id = ' . $status_id;
+            if($status_id == 4){
+                $str_moreWhere .= ' AND bs.maintenance_status_id = ' . 1;
+            }else $str_moreWhere .= ' AND bs.status_id = ' . $status_id . ' AND bs.maintenance_status_id = ' . 0;
         }
 
         $updated_at = DBX::formatTime("bs.updated_at", "updated_at");
-        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,ss.name as status,bs.update_user,' . $updated_at . '';
+        $selectCols = 'bs.id,bs.building_id,b.name as building_name,bs.code,bs.floor_id,f.name as floor_number,bs.space_type_id,st.name as space_type,bs.sqm_size,bs.price,bs.price_type,bs.status_id,bs.maintenance_status_id,ss.name as status,bs.update_user,' . $updated_at . '';
         $query = DB::table('building_spaces as bs')
             ->join('buildings as b', 'b.id', '=', 'bs.building_id')
             ->join('floors as f', 'f.floor_number', '=', 'bs.floor_id')
@@ -206,6 +207,10 @@ class BuildingSpace
         $clone_query = clone $query;
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach ($rows as $row) {
+            $row->status = $row->maintenance_status_id == 1 ? 'Maintenance' : $row->status;
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 
     }

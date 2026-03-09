@@ -7,6 +7,7 @@ var VendorComponent = (() => {
     mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
     mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
+    mThis.elFilter_category = mThis.self.querySelector('#_category_id');
     mThis.elSearch = mThis.self.querySelector("#_search_vendor");
 
 
@@ -24,7 +25,7 @@ var VendorComponent = (() => {
         //     }
         // },
         {
-            transTitle: "titles.Name",
+            transTitle: "titles.Vendor Name",
             className: "align-middle",
             data: (data) => {
 
@@ -49,7 +50,7 @@ var VendorComponent = (() => {
                     bgClass = 'bg-danger-subtle text-danger';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                }else if (code === 'internet') {
+                } else if (code === 'internet') {
                     bgClass = 'bg-info-subtle text-info';
                 }
 
@@ -73,12 +74,19 @@ var VendorComponent = (() => {
                  <span class="d-block text-primary"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
+            transTitle: "titles.Type",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom"> ${data.type ?? ""}</span>`;
+            }
+        },
+        {
             transTitle: "titles.Category",
             className: "align-middle",
             data: (data) => {
 
                 const code = data.code ?? '';
-                const name = data.vendor_type ?? '';
+                const name = data.category ?? '';
 
                 let bgClass = 'bg-secondary-subtle text-secondary';
 
@@ -92,7 +100,7 @@ var VendorComponent = (() => {
                     bgClass = 'bg-danger-subtle text-danger';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                }else if (code === 'internet') {
+                } else if (code === 'internet') {
                     bgClass = 'bg-info-subtle text-info';
                 }
 
@@ -107,6 +115,13 @@ var VendorComponent = (() => {
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
                          <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
+            }
+        },
+         {
+            transTitle: "titles.Tax Number",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom"> ${data.tax_number ?? ""}</span>`;
             }
         },
         {
@@ -286,7 +301,7 @@ var VendorComponent = (() => {
             }
         };
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Vendor??', {
+        cv_interact.confirm('Delete this Vendor?', {
             transTitle: 'Delete Vendor',
             context: 'delete',
             confirmButtonText: "Delete"
@@ -295,12 +310,12 @@ var VendorComponent = (() => {
                 vsapi.call(`${main_view.base_url}/prm/vendor/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.VendorListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
-            else {
-                cv_interact.error(res.error_message);
-            }
+
         });
     };
 
@@ -308,7 +323,8 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type,d.vendor_types, 'id', 'vendor_type', true, 'All Type', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.vendor_types, 'id', 'vendor_type', true, 'All Type', null);
+                VSUtil.setComboItems(mThis.elFilter_category, d.vendor_categories, 'id', 'vendor_category', true, 'All Category', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -335,7 +351,7 @@ const CreateVendorDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -353,9 +369,25 @@ const CreateVendorDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Category</label>
+                                <label style="color:#777777;padding-left:6px;">Type</label>
                                 <div class="material-input outlined">
                                     <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
+                                </div>
+                            </div>
+                             <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Category</label>
+                                <div class="material-input outlined">
+                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id"></select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
+                                <div class="material-input outlined">
+                                    <input type="text"
+                                        name="tax_number"
+                                        class="data-input form-control"
+                                        data-field="tax_number"
+                                        placeholder=" " />
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -425,6 +457,12 @@ const CreateVendorDialog = (() => {
                         name: "vendor_type_id",
                         data: "vendor_types",
                         textField: "vendor_type",
+                        valueField: "id",
+                    },
+                    {
+                        name: "vendor_category_id",
+                        data: "vendor_categories",
+                        textField: "vendor_category",
                         valueField: "id",
                     },
 

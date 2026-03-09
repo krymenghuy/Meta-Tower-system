@@ -7,6 +7,9 @@
             <div class="col-12 col-md-6 col-lg-2 ">
                 <select type="id" id="_vendor_type_id" class="data-input filter-field form-control" data-field="vendor_type_id"></select>
             </div>
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+            </div>
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnVendor">
