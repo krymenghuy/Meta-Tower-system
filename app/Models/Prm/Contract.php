@@ -290,8 +290,8 @@ class Contract
 
     $today = date('Y-m-d');
 
-    if ($old->status_id == 1 && strtotime($inputs['start_date']) <= strtotime($old->end_date)) {
-        return DV::error('New start date must be after current end date');
+    if ($old->status_id == 1 && strtotime($inputs['start_date']) < strtotime($old->end_date)) {
+        return DV::error('New start date must be on or after current end date');
     }
     if ($old->status_id == 2 && $inputs['start_date'] < $today) {
         return DV::error('Renew start date must be today or later');

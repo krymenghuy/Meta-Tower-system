@@ -233,6 +233,15 @@ var ContractComponent = new (function () {
         mThis.tblContract = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblContract);
 
+        if (!mThis.tblContract.id) mThis.tblContract.id = '_contract_list_table';
+        new ExpandableRowConfig(mThis.tblContract.id, {
+            dontExpandByClickingOn: ['btn_contract_action'],
+            onOpen: (container, detail_tr, parent_tr) => {
+                const id = (parent_tr.getAttribute('id') || '').replace('contract_invoice_id_', '');
+                if (id && !isNaN(id)) mThis.displayContractDetail(container, id);
+            }
+        });
+
         // Filter change handler with tooltip reinitialization
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = (e) => {
@@ -319,6 +328,58 @@ var ContractComponent = new (function () {
         maxDate.setMonth(maxDate.getMonth() + 3);
 
         return date >= today && date <= maxDate;
+    };
+
+    mThis.displayContractDetail = (container, id) => {
+        container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
+        vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null)
+            .then((res) => {
+                if (res.status_code !== 200) {
+                    container.innerHTML = `<div class="alert alert-danger m-3">Failed to load contract details</div>`;
+                    return;
+                }
+                mThis.renderContractDetail(container, res.data || {}, id);
+            })
+            .catch(() => {
+                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading contract details</div>`;
+            });
+    };
+
+    mThis.renderContractDetail = (container, d, contractId) => {
+        const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
+        const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
+        const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+
+        let renewBtn = '';
+        if (contractId && typeof mThis.renewContract === 'function') {
+            renewBtn = `<button type="button" class="btn btn-sm btn-primary mt-2 btn-renew-from-detail" data-id="${contractId}">Renew Contract</button>`;
+        }
+
+        container.innerHTML = `
+            <div class="vs-expand-container expandable-row-container bg-white rounded p-3">
+                <div class="row g-2 small">
+                    <div class="col-md-4"><span class="text-muted">Tenant:</span> <span class="fw-semibold">${(d.tenant_name ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Legal Name:</span> <span>${(d.legal_name ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Unit:</span> <span class="fw-semibold">${(d.space_code ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Start Date:</span> <span>${(d.start_date ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">End Date:</span> <span>${(d.end_date ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Business:</span> <span>${(d.business_name ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Unit Type:</span> <span>${(d.space_name ?? '').trim() || '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Size (m²):</span> <span>${(d.sqm_size != null && d.sqm_size !== '') ? d.sqm_size : '—'}</span></div>
+                    <div class="col-md-4"><span class="text-muted">Price:</span> <span class="fw-semibold">${cur} ${priceVal}</span> <small class="text-muted">${priceLabel}</small></div>
+                    <div class="col-md-4"><span class="text-muted">Deposit:</span> <span>${cur} ${depositVal}</span></div>
+                </div>
+                ${(d.remarks ?? '').trim() ? `<div class="mt-2 p-2 bg-light rounded"><small class="text-muted fw-semibold">Remarks:</small><p class="mb-0 small">${String(d.remarks).trim()}</p></div>` : ''}
+                ${renewBtn}
+            </div>`;
+
+        container.querySelector('.btn-renew-from-detail')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            const id = this.getAttribute('data-id');
+            if (!id) return;
+            mThis.renewContract(id, this);
+        });
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -1222,7 +1283,7 @@ const RenewDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md, vs-modal",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
            createContent: () => {
@@ -1350,7 +1411,23 @@ const RenewDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                me.controls.start_date.value = data.contract_details.end_date;
+                // Renew Start Date shows Old Contract End Date (format as YYYY-MM-DD for date input).
+                const oldEndRaw = data.contract_details?.end_date;
+                let renewStart = '';
+                if (oldEndRaw) {
+                    const s = String(oldEndRaw).trim();
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                        renewStart = s;
+                    } else {
+                        const d = new Date(oldEndRaw);
+                        if (!Number.isNaN(d.getTime())) {
+                            renewStart = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                        } else {
+                            renewStart = oldEndRaw;
+                        }
+                    }
+                }
+                me.controls.start_date.value = renewStart || '';
                 me.controls.end_date.value = '';
                 me.controls.price.value = '';
                 me.controls.price_type.value = '';

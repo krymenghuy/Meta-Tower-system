@@ -12,7 +12,7 @@ class ContractController extends Controller
 {
     protected  $contracts;
 
-    
+
     public function __construct()
     {
         $this->contracts = new Contract();
