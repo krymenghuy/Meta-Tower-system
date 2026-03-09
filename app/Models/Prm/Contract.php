@@ -39,6 +39,8 @@ class Contract
             'price_type'       => '0|string|default=sqm',
             'start_date'       => '1|date',
             'end_date'         => '1|date',
+            'deposit'   => '0|number',
+            'deposit_remarks'  => '0|string|0-255',
             'remarks'          => '0|string|0-255',
         ];
         $legal_name_char = ['@',',','.','#'];
@@ -54,9 +56,15 @@ class Contract
             return DV::error('This space already has a contract.');
         }
         $created = !$id;
+        if ($created) {
+            // New contract is Active when start date is today/past, otherwise Pending.
+            $today = date('Y-m-d');
+            $isActiveNow = !empty($inputs['start_date']) && $inputs['start_date'] <= $today;
+            $inputs['status_id'] = $isActiveNow ? self::getActiveStatusId() : self::getPendingStatusId();
+        }
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
-            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 3]);
             $hasActive = DB::table('contracts')
                 ->where('tenant_id', $inputs['tenant_id'])
                 ->whereDate('end_date', '>=', now())
@@ -70,6 +78,42 @@ class Contract
         }
 
         return DV::error($created ? 'Create failed.' : 'Update failed.');
+    }
+
+    protected static function getPendingStatusId()
+    {
+        $pendingId = DB::table('contract_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['pending'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['pending']);
+            })
+            ->value('id');
+
+        return $pendingId ?: 1;
+    }
+
+    protected static function getActiveStatusId()
+    {
+        $activeId = DB::table('contract_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['active'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['active']);
+            })
+            ->value('id');
+
+        return $activeId ?: 1;
+    }
+
+    protected static function getExpiredStatusId()
+    {
+        $expiredId = DB::table('contract_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['expired'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['expired']);
+            })
+            ->value('id');
+
+        return $expiredId ?: 2;
     }
 
   static function checkDuplicateContract($space_id, $id = null)
@@ -100,7 +144,22 @@ class Contract
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $today = date('Y-m-d');
-        DB::table('contracts')->where('end_date', '<', $today)->where('status_id', '<', 3)->update(['status_id' => 2]);
+        $activeStatusId = self::getActiveStatusId();
+        $pendingStatusId = self::getPendingStatusId();
+        $expiredStatusId = self::getExpiredStatusId();
+
+        // Pending -> Active when contract starts.
+        DB::table('contracts')
+            ->where('status_id', $pendingStatusId)
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->update(['status_id' => $activeStatusId]);
+
+        // Active/Pending -> Expired when contract end date has passed.
+        DB::table('contracts')
+            ->whereIn('status_id', [$activeStatusId, $pendingStatusId])
+            ->whereDate('end_date', '<', $today)
+            ->update(['status_id' => $expiredStatusId]);
         $str_search = '1=1';
         $str_moreWhere = '2=2';
         if($search_value){
@@ -123,7 +182,7 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.remarks,c.update_user,'.$updated_at.'';
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.deposit,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
@@ -170,6 +229,7 @@ class Contract
                             c.sqm_size,
                             c.price,
                             c.price_type,
+                            c.deposit,
                             c.start_date,
                             c.end_date,
                             c.remarks,
@@ -184,13 +244,14 @@ class Contract
     public static function getFormOptions($id,$ss)
     {
         $contract_details = $id ? self::contractDetails($id) : null;
+        $current_space_id = $contract_details->space_id ?? null;
         return (object) [
             'contract_details' => $contract_details,
             'tenants'      => GeneralSettings::options_tenant($ss),
             'legal_names'      => GeneralSettings::options_legal($ss),
             'statuses'      => GeneralSettings::options_contract_status($ss),
             'space_types'      => GeneralSettings::options_space_type($ss),
-            'building_spaces'      => GeneralSettings::options_building_space($ss),
+            'building_spaces'      => GeneralSettings::options_building_space($ss, $current_space_id),
             'business_types'   => GeneralSettings::options_business_type($ss)
         ];
     }
@@ -212,7 +273,7 @@ class Contract
     if ($old->status_id == 3) {
         return DV::error('Terminated contract cannot be renewed');
     }
-    
+
 
     $v_rule = [
         'start_date' => '1|date',

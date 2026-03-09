@@ -392,7 +392,7 @@
                             @include('layouts.umt.roleManagementComponent')
                             @include('layouts.prm.tenantComponent')
                             @include('layouts.prm.buildingComponent')
-                            @include('layouts.prm.paymentComponent')
+                            @include('layouts.prm.receiptComponent')
                             @include('layouts.prm.contractComponent')
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')

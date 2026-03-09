@@ -285,6 +285,12 @@ var SpaceComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
+                    html: '<span class="ps-2  " vslang="titles.Create Booking">Create Booking</span>',
+                    icon: `<i class="fa-regular fa-calendar-plus fs-5 text-success"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_booking"
+                },
+                {
                     html: '<span class="ps-2  " vslang="titles.Create Contract">Create Contract</span>',
                     icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -319,7 +325,8 @@ var SpaceComponent = new (function () {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                menu.create_contract.style.display = status_id == 2 ? 'none' : 'block';
+                menu.create_contract.style.display = status_id == 3 ? 'none' : 'block';
+                menu.create_booking.style.display = status_id >= 2 ? 'none' : 'block';
 
             },
 
@@ -327,6 +334,10 @@ var SpaceComponent = new (function () {
                 switch (name) {
                     case 'set_maintenance': {
                         mThis.setMaintenance(id, menulink);
+                        break;
+                    }
+                    case 'create_booking': {
+                        mThis.createBooking(id, menulink);
                         break;
                     }
                     case 'create_contract': {
@@ -376,9 +387,13 @@ var SpaceComponent = new (function () {
                         statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-success";
                         statusColor = "#0abb87";
                         break;
+                    case "booked":
+                        statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-warning";
+                        statusColor = "#ffb822";
+                        break;
                     case "occupied":
-                        statusClass = "badge text-uppercase text-white bg-info shadow-sm rounded-4";
-                        statusColor = "#5578eb";
+                        statusClass = "badge text-uppercase text-white bg-danger shadow-sm rounded-4";
+                        statusColor = "#fd397a";
 
                         break;
                     default:
@@ -530,6 +545,18 @@ var SpaceComponent = new (function () {
         };
 
         alert('coming soon....')
+    }
+     mThis.createBooking = (id, menulink) => {
+        let op = {
+            id: null,
+            space_id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.SpaceListView.showPage(mThis.getFilterData());
+            }
+        };
+
+       CreateBookingDialog.show(op);
     }
     mThis.deleteSpace = (id, menulink) => {
         let op = {
@@ -773,7 +800,7 @@ const BuildingSpaceDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
@@ -806,3 +833,150 @@ const BuildingSpaceDialog = (() => {
     return self;
 })();
 
+const CreateBookingDialog = (() => {
+    const self = {};
+    let dialog = null;
+    
+    self.show = (op) => {
+    console.log(123,op);
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row justify-content-center">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Name</label>
+                                <div class="material-input outlined">
+                                    <input type="text" name="booker_name" class="data-input form-control" data-field="booker_name" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Phone</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Email</label>
+                                <div class="material-input outlined">
+                                    <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booking Date</label>
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="booking_date" class="data-input form-control" data-field="booking_date" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="expired_booking_date"
+                                        class="data-input form-control form_input"
+                                        data-field="expired_booking_date" />
+                                </div>
+                            </div>
+                           
+
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booking Price</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control"
+                                        data-field="remarks"
+                                        rows="3"
+                                        placeholder=" ">
+                                    </textarea>
+                                </div>
+                            </div>
+
+
+                        </div>`
+                    ].join("");
+                },
+
+
+                contentCreated: (me) => {
+
+
+                    //  me.controls.price_type.onchange = (e) => {
+                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                    //         if (!sqmWrapper) return;
+                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    //     };
+
+                },
+                configSelect: [
+
+                ],
+                prepareFormOptions: {
+                    createTitle: "Create Booking",
+                    modifyTitle: "Edit Booking",
+                    targetProp: "space_details",
+                    api: {
+                        endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    // LocaleManager.translateZone(me.divModal);
+                    // console.log(12,data);
+                    const header = me.divModal.querySelector('.modal-header');
+                    const btnClose = header.querySelector('button');
+                    if (btnClose) btnClose.classList.add('d-none');
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: 'btn btn-primary',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.space_id = me.dataOptions.space_id;
+                            console.log(9099000, op);
+
+                            vsapi.call([main_view.base_url, "/prm/building-space/create-booking",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Booking has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New booking has been created successfully"
+                                        );
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
+
+    return self;
+})();

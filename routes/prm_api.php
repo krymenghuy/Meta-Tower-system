@@ -88,6 +88,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
     Route::post('/save', [BuildingSpaceController::class, 'saveBuildingSpace']);
+    Route::post('/create-booking', [BuildingSpaceController::class, 'createBooking']);
     Route::post('/list-paginate', [BuildingSpaceController::class, 'getListPaginate']);
     Route::post('/details', [BuildingSpaceController::class, 'getDetails']);
     Route::post('/form-options', [BuildingSpaceController::class, 'getFormOptions']);
@@ -156,10 +157,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->group(function () {
     Route::post('/save', [VendorController::class, 'saveVendor']);
-    // Route::post('/list-paginate', [VendorController::class, 'getListPaginate']);
-    // Route::post('/details', [VendorController::class, 'vendorDetails']);
-    // Route::post('/form-options', [VendorController::class, 'getFormOptions']);
-    // Route::post('/delete', [VendorController::class, 'deleteVendor']);
+    Route::post('/list-paginate', [VendorController::class, 'getListPaginate']);
+    Route::post('/details', [VendorController::class, 'vendorDetails']);
+    Route::post('/form-options', [VendorController::class, 'getFormOptions']);
+    Route::post('/delete', [VendorController::class, 'deleteVendor']);
     //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
