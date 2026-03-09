@@ -40,7 +40,8 @@ var ContractComponent = new (function () {
             transTitle: "titles.Start Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
+                const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
+                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
          {
@@ -233,6 +234,16 @@ var ContractComponent = new (function () {
         mThis.tblContract = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblContract);
 
+        if (!mThis.tblContract.id) mThis.tblContract.id = '_contract_list_table';
+        new ExpandableRowConfig(mThis.tblContract.id, {
+            dontExpandByClickingOn: ['btn_contract_action'],
+            onOpen: (container, detail_tr, parent_tr) => {
+                const rawId = parent_tr.getAttribute('id') || '';
+                const id = rawId.replace(/^contract_invoice_id/, '');
+                if (id && !Number.isNaN(Number(id))) mThis.displayContractDetail(container, id);
+            }
+        });
+
         // Filter change handler with tooltip reinitialization
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = (e) => {
@@ -321,6 +332,71 @@ var ContractComponent = new (function () {
         return date >= today && date <= maxDate;
     };
 
+    mThis.displayContractDetail = (container, id) => {
+        container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
+        Promise.all([
+            vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null),
+            vsapi.call(`${main_view.base_url}/prm/contract/list-renewals`, { contract_id: id, per_page: 50 }, null, null)
+        ])
+            .then(([detailsRes, renewalsRes]) => {
+                if (detailsRes.status_code !== 200) {
+                    container.innerHTML = `<div class="alert alert-danger m-3">Failed to load contract details</div>`;
+                    return;
+                }
+                const renewals = (renewalsRes.status_code === 200 && renewalsRes.data && renewalsRes.data.data) ? renewalsRes.data.data : [];
+                mThis.renderContractDetail(container, detailsRes.data || {}, id, renewals);
+            })
+            .catch(() => {
+                container.innerHTML = `<div class="alert alert-danger m-3">Network error loading contract details</div>`;
+            });
+    };
+
+    mThis.renderContractDetail = (container, d, contractId, renewals) => {
+        const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
+        const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
+        const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+
+        const renewalsList = Array.isArray(renewals) ? renewals : [];
+        let renewalTableHtml = '';
+        if (renewalsList.length > 0) {
+            const rows = renewalsList.map((r) => `
+                <tr>
+                    <td>${(r.renewal_date ?? '').trim() || '—'}</td>
+                    <td>${(r.start_date ?? '').trim() || '—'}</td>
+                    <td>${(r.end_date ?? '').trim() || '—'}</td>
+                    <td class="text-break">${(r.remarks ?? '').trim() || 'N/A'}</td>
+                    <td><div class="d-flex flex-column"><span class="text-capitalize text-prm-custom fw-semibold">${(r.update_user ?? '').trim() || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                </tr>`).join('');
+            renewalTableHtml = `
+
+                    <h4 class="text-primary mb-2">Renewal history</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Renewal date</th>
+                                    <th>Start date</th>
+                                    <th>End date</th>
+                                    <th>Remarks</th>
+                                    <th>Updated by</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+        } else {
+            renewalTableHtml = `<div class="mt-3 pt-2 border-top"><small class="text-muted">No renewal history for this contract.</small></div>`;
+        }
+
+        container.innerHTML = `
+
+
+                 ${renewalTableHtml}`;
+
+    };
+
     mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -357,15 +433,13 @@ var ContractComponent = new (function () {
                 const row = container.closest('tr');
                 const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
                 const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
-                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate);
-                const showRenew = statusId !== 2 && mThis.isWithinNextThreeMonths(endDate);
                 const isActive = statusText === 'active' || statusId === 2;
+                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
+                const showRenew = statusId !== 2 && endDate && mThis.isWithinNextThreeMonths(endDate);
 
-                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
                 menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
-
-
+                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -1222,7 +1296,7 @@ const RenewDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md, vs-modal",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
            createContent: () => {
@@ -1350,7 +1424,23 @@ const RenewDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                me.controls.start_date.value = data.contract_details.end_date;
+                // Renew Start Date shows Old Contract End Date (format as YYYY-MM-DD for date input).
+                const oldEndRaw = data.contract_details?.end_date;
+                let renewStart = '';
+                if (oldEndRaw) {
+                    const s = String(oldEndRaw).trim();
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                        renewStart = s;
+                    } else {
+                        const d = new Date(oldEndRaw);
+                        if (!Number.isNaN(d.getTime())) {
+                            renewStart = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                        } else {
+                            renewStart = oldEndRaw;
+                        }
+                    }
+                }
+                me.controls.start_date.value = renewStart || '';
                 me.controls.end_date.value = '';
                 me.controls.price.value = '';
                 me.controls.price_type.value = '';
