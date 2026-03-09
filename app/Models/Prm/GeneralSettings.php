@@ -340,7 +340,7 @@ class GeneralSettings //extends Model
     static function options_document_type($ss){
         return DB::table('document_types')->selectRaw('id,name as document_type')->get();
     }
-   
+
     static function options_service_status($ss)
     {
         return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
@@ -351,15 +351,15 @@ class GeneralSettings //extends Model
     }
     static function options_amenity($ss)
     {
-        return DB::table('amenities')->selectRaw('id,name AS amenity')->get(); 
+        return DB::table('amenities')->selectRaw('id,name AS amenity')->get();
     }
-    
+
 
     static function options_reservation_status($ss)
     {
         return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
     }
-    
+
     // public static function options_service_status($ss)
     // {
     //     return DB::table('service_statuses')
@@ -521,7 +521,7 @@ class GeneralSettings //extends Model
             $rows = DB::table(table: 'floors as f')
             ->selectRaw('f.id,f.name')->get();
         }
-        
+
         return $rows;
     }
 
