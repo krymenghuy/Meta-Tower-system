@@ -20,7 +20,9 @@ var ServiceRequestComponent = (function () {
     {
             transTitle: "titles.Request Num",
             className: "align-middle text-start",
-            data: (data) => `<span class="text-yp-custom">${data.code || 'N/A'}</span>`,
+            data: (data) => data.code
+                ? `<span class="text-yp-custom">${data.code}</span>`
+                : `<span class="text-muted fst-italic">N/A</span>`,
     },
     {
         transTitle: "titles.Tenant",
@@ -54,7 +56,7 @@ var ServiceRequestComponent = (function () {
 
             let extraInfo = '';
 
-            if (data.unit_type === 'hour' && data.duration_hours > 0 && data.service_price) {
+            if (data.unit_type === '2' && data.duration_hours > 0 && data.service_price) {
                 const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
             } else if (data.unit_type) {
@@ -75,24 +77,36 @@ var ServiceRequestComponent = (function () {
 
 
     {
-    transTitle: "titles.Status",
-    className: "align-middle",
-    data:  (row,idex,tr)=>{
-        const statusId   = parseInt(row.status_id) || 1;
-        const statusName = (row.status_name || "-").trim();
+        transTitle: "titles.Status",
+        className: "align-middle",
+        data:  (row,index,tr)=>{
+            const statusId   = parseInt(row.status_id) || 2;
+            const statusName = (row.status_name || "-").trim();
 
-        const badgeClass = mThis.getStatusClass(statusId);
-        // Only show clickable button when status is Pending (1)
-         return `
-                <button data-id = "${row.id}" data-statusid="${row.status_id}" class="btn btn-sm ${badgeClass} fw-bold status-change-btn"
-                        data-id="${row.id}"
-                        data-current-status="${statusId}"
-                        aria-expanded="false">
-                    ${statusName}
-                </button>
-            `;
-    }
-},
+            const badgeClass = mThis.getStatusClass(statusId);
+            if (statusId ===2){
+                return `
+                    <button data-id = "${row.id}"
+                            data-statusid="${row.status_id}"
+                            class="btn btn-sm ${badgeClass} fw-bold status-change-btn"
+                            data-id="${row.id}"
+                            data-current-status="${statusId}"
+                            aria-expanded="false">
+                            ${statusName}
+                    </button>
+                `;
+            }else {
+                return `
+                    <span class="badge ${badgeClass.replace('btn-', 'bg-')} fs-6 px-3 py-2"
+                        style="cursor: not-allowed;"
+                        title="This status cannot be changed">
+                        ${statusName}
+                    </span>
+                `;
+            }
+
+        }
+    },
     {
         transTitle: "titles.Updated By",
         className: 'align-middle',
@@ -142,7 +156,7 @@ var ServiceRequestComponent = (function () {
             columns: mThis.columns,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             rowCreated: (data, index, tr) => {
-                tr.dataset.statusId = data.request_status_id;
+                tr.dataset.statusId = data.status_id;
                 tr.classList.add('service-request');
                 tr.setAttribute('id', `service_request_id_${data.id}`);
             }
@@ -151,25 +165,24 @@ var ServiceRequestComponent = (function () {
         mThis.table=  mThis.ServiceRequestListView.getTable();
 
         mThis.table.addEventListener('click',(e)=>{
-          let btn = VSUtil.closestLimited(e.target,' .status-change-btn');
-          if(btn){
-            const def = btn.dataset.statusid;
-            const id = btn.dataset.id;
-             const data = [
-                {
-                     id:1,
-                    name: 'Canceled'
-                },
-                 {
-                     id:2,
-                    name: 'Pending'
-                },
-                 {
-                     id:3,
-                    name: 'Accepted'
-                },
-
-             ];
+            let btn = VSUtil.closestLimited(e.target,' .status-change-btn');
+            if(btn){
+                const def = btn.dataset.statusid;
+                const id = btn.dataset.id;
+                const data = [
+                    {
+                        id:1,
+                        name: 'Canceled'
+                    },
+                    {
+                        id:2,
+                        name: 'Pending'
+                    },
+                    {
+                        id:3,
+                        name: 'Accepted'
+                    },
+                ];
                 InputBox.show({
                     type:'select',
                     title: 'Change Status ',
@@ -180,27 +193,23 @@ var ServiceRequestComponent = (function () {
                     defaultValue: def,
                     requiredMessage: 'Select Correct Status',
                     onConfirm(value, btn, me) {
+                            const p = {id:id,status_id:value.id};
+                            console.log("111111",p);
+                            vsapi.post(`${main_view.base_url}/prm/service-request/set-status`,p,{})
+                            .then(res => {
+                                if(res.status_code == 200){
+                                    mThis.ServiceRequestListView.showPage(mThis.getFilterData());
+                                    me.close();
+                                }
+                                else{
+                                    me.setError(res.error_message);
+                                }
+                            });
 
-
-                         const p = {id:id,status_id:value.id};
-                        console.log("111111",p);
-                        vsapi.post(`${main_view.base_url}/prm/service-request/set-status`,p,{})
-                        .then(res => {
-                             if(res.status_code == 200){
-                                mThis.ServiceRequestListView.showPage(mThis.getFilterData());
-                                me.close();
-                             }
-                             else{
-                                me.setError(res.error_message);
-                             }
-                        });
-
-                    }
-                });
-            return ;
-          }
-
-
+                        }
+                    });
+                return ;
+            }
 
         });
 
@@ -238,48 +247,52 @@ var ServiceRequestComponent = (function () {
     };
 
     mThis.getFilterData = () => ({
-        request_status_id: mThis.elStatus.value,
+        status_id: mThis.elStatus.value,
         service_type_id: mThis.elService_type.value,
         search_value: mThis.elSearch.value,
     });
 
     mThis.initDropdownMenus = (table) => {
-        new VSDropdownMenu({
-            containerElement: table,
-            actionButtonClass: "btn_leave_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
-                    icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
-                    name: "generate_invoice",
-                    cssClass: "border-bottom pb-2 mb-2"
-                },
-                {
-                    html: '<span class="ps-2 " vslang="title.Change Status"></span>',
-                    icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-                    name: "change_status",
-                    cssClass: "border-bottom pb-2"
-                },
-                {
-                    html: '<span class="ps-2" vslang="title.Modify" ></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    name: "edit_request",
-                    cssClass: "border-bottom pb-2" },
-                {
-                    html: '<span class="ps-2" vslang="title.Delete"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    name: "delete_request",
-                    cssClass: "border-bottom pb-2" }
-            ],
-            onClick: (menuLink, id, name) => {
-                if (name === 'generate_invoice')mThis.generateInvoice(id, menuLink);
-                if (name === 'change_status') mThis.changeStatus(id, menuLink);
-                if (name === 'edit_request') mThis.editServiceRequest(id, menuLink);
-                if (name === 'delete_request') mThis.deleteRequest(id, menuLink);
+    new VSDropdownMenu({
+        containerElement: table,
+        actionButtonClass: "btn_leave_action",
+        cssClass: "bg-white shadow",
+        menus: [
+            {
+                html: '<span class="ps-2" vslang="title.Generate Invoice"></span>',
+                icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
+                name: "generate_invoice",
+                cssClass: "border-bottom pb-2 mb-2"
+            },
+            {
+                html: '<span class="ps-2 " vslang="title.Modify" ></span>',
+                icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                name: "edit_request",
+                cssClass: "border-bottom pb-2"
+            },
+            {
+                html: '<span class="ps-2" vslang="title.Delete"></span>',
+                icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                name: "delete_request",
+                cssClass: "border-bottom pb-2"
             }
-        });
-    };
+        ],
+        onClick: (menuLink, id, name) => {
+            const row = document.getElementById(`service_request_id_${id}`);
+            const statusId = parseInt(row.dataset.statusId || '0', 10);
+            if (statusId !== 2) {
+                if (name === 'edit_request') {
+                    cv_interact.info('Cannot modify');
+                    return;
+                }
+            }
+            if (name === 'generate_invoice') mThis.generateInvoice(id, menuLink);
+            if (name === 'edit_request')     mThis.editServiceRequest(id, menuLink);
+            if (name === 'delete_request')   mThis.deleteRequest(id, menuLink);
+        }
+    });
+};
+
 
     mThis.generateInvoice = (id, menuLink) => {
         CreateInvoiceServiceRequestDialog.show({
@@ -596,9 +609,6 @@ const CreateInvoiceServiceRequestDialog = (() => {
                     quantity: parseFloat(data.quantity || 1),
                     amount: parseFloat(data.total_price || data.service_price || 0)
                 };
-
-
-
                 me.controls.tenant_id.value = data.tenant_id || '';
                 me.controls.space_id.value  = data.space_id || '';
                 me.controls.service_id.value = data.service_id || '';
@@ -643,6 +653,8 @@ const CreateServiceRequestDialog = (() => {
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
+
+                    <input type="text" name="code" class="data-input d-none" date-field="code">
                         <div class="col-md-6">
                             <label style="padding-left:6px; color:#777;">
                                 <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
@@ -698,8 +710,9 @@ const CreateServiceRequestDialog = (() => {
                             <div class="material-input outlined">
                                 <select name="unit_type" class="data-input form-control" data-field="unit_type" required>
                                     <option value="">-- Select Unit --</option>
-                                    <option value="hour">⏱️ Price Per Hour</option>
-                                    <option value="one_time">📅 Price Per One Time</option>
+                                     <option value="1">📅 Price Per One Time</option>
+                                    <option value="2">⏱️ Price Per Hour</option>
+
                                 </select>
                             </div>
                         </div>
@@ -768,7 +781,7 @@ const CreateServiceRequestDialog = (() => {
             contentCreated: (me) => {
                 const updatePricePreview = () => {
                     const unit = me.controls?.unit_type?.value || '';
-                    const showDuration = unit === 'hour';
+                    const showDuration = unit === '2';
                     const durationRow = me.divModal.querySelector('.select-type-time');
                     const previewRow = me.divModal.querySelector('#price-preview-row');
 
@@ -776,6 +789,7 @@ const CreateServiceRequestDialog = (() => {
                     if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
 
                     const hours = parseFloat(me.controls?.duration_hours?.value || 0);
+
                     const price = parseFloat(me.servicePrice || 0);
 
                     if (hours > 0 && price > 0) {
@@ -788,7 +802,6 @@ const CreateServiceRequestDialog = (() => {
                     }
                 };
 
-                // Service selected → auto fill price & unit type
                 me.controls?.service_id?.addEventListener('change', () => {
                     const serviceId = me.controls.service_id.value;
                     if (!serviceId) return;
@@ -803,6 +816,8 @@ const CreateServiceRequestDialog = (() => {
                 ['unit_type', 'duration_hours'].forEach(f => {
                     me.controls?.[f]?.addEventListener('change', updatePricePreview);
                 });
+
+
             },
 
             configSelect: [
@@ -833,7 +848,7 @@ const CreateServiceRequestDialog = (() => {
                 },
                 {
                     name: "service_id",
-                    textField: "service_name",          // ← from your API response
+                    textField: "service_name",
                     valueField: "id",
                     depends: {
                         name: "service_type_id",
@@ -853,13 +868,12 @@ const CreateServiceRequestDialog = (() => {
                 targetProp: "request_details",
                 api: {
                     endpoint: `${main_view.base_url}/prm/service-request/form-options`,
-                    params: (op) => ({ id: op.id || null })
+                    params: (op) => { id: op.id }
                 }
             },
 
             onPrepareForm: (me, data) => {
                 me.detail = data.request_details;
-
             },
 
             buttons: [
@@ -873,13 +887,18 @@ const CreateServiceRequestDialog = (() => {
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const data = me.getData();
-                        data.id = me.dataOptions?.id || null;
-                        vsapi.call(`${main_view.base_url}/prm/service-request/save`, data, btn)
+                        console.log('666666', data);
+                        data.id = me.dataOptions.id;
+                        data.code = me.controls.code.value;
+
+                        console.log('555555', data);
+
+                        vsapi.call(`${main_view.base_url}/prm/service-request/save`, data, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
-                                    me.hide(true);
+                                    me.hide(true, data);
                                     cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
-                                    if (op?.onClose) op.onClose();
+                                    // if (op?.onClose) op.onClose();/
                                 } else {
                                     cv_interact.error(res.error_message || "Save failed");
                                 }
@@ -894,68 +913,6 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
-
-
-
-
-// const ActionServiceRequestDialog = (() => {
-//     let dialog = null;
-//     self.show = (op) => {
-//         dialog = dialog || new GeneralDialog({
-//             cssClass: "modal-lg vs-modal",
-//             backdrop: "static",
-//             keyboard: true,
-
-//             createContent: () => `
-
-//             `,
-
-//             contentCreated: (me) => {
-//             },
-//             btn = VSUtil.getElementByClass(e.target,'btn-allow-att-scan');
-//             if(btn)
-//             {
-//                 const status = btn.dataset.status;
-//                 const id = btn.dataset.id;
-//                 const q = btn.dataset.status == 1 ? 'Do you want to prevent students in this group from scanning their attendance?' : 'Do you want allow students in mThis group to scan their attendance?';
-//                 const btnText = btn.dataset.status == 1 ? LocaleManager.trans('Disable Now','buttons') : LocaleManager.trans('Enable Now','buttons');
-//                 const c = btn.dataset.status == 1 ? 'delete' : 'update';
-
-//                 if(!AuthManager.allowed(224)) return;
-//                 cv_interact.confirm(q,
-//                 {
-//                     context: c,
-//                     title: 'Scan Status',
-//                     confirmButtonText: btnText
-//                 },
-//                 e => {
-//                     if(e)
-//                     {
-//                         const p = {
-//                             id: id,
-//                             is_allow: status == 1 ? 0 : 1
-//                         };
-//                         vsapi.call(`${main_view.base_url}/prm/service-request/set-status`, data, btn)
-//                             .then(res => {
-//                                 if (res.status_code === 200) {
-//                                     me.hide(true);
-//                                     cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
-//                                     if (op?.onClose) op.onClose();
-//                                 } else {
-//                                     cv_interact.error(res.error_message || "Save failed");
-//                                 }
-//                             });
-//                     }
-//                 });
-//                 return;
-//             }
-//         });
-
-//         dialog.show(op);
-//     };
-
-//     return self;
-// })();
 
 
 

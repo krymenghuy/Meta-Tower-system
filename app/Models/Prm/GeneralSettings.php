@@ -464,8 +464,9 @@ class GeneralSettings //extends Model
             $str_where = 's.service_type_id = ' . $service_type_id;
         }
         $rows = DB::table(table: 'services as s')
+            ->join('service_types as st','st.id','=','s.service_type_id')
             ->whereRaw($str_where)
-            ->selectRaw('s.id,s.name as service_name, s.price, s.unit_type, s.service_type_id')->get();
+            ->selectRaw('s.id,s.name as service_name, s.price, s.unit_type, s.service_type_id,st.name as service_type')->get();
         return $rows;
     }
 

@@ -364,7 +364,7 @@ var TenantComponent = new(function () {
             }
         };
         console.log(111,op);
-        
+
         TenantDocumentDialog.show(op);
     };
     mThis.renewContract = (id, menuLink) => {
@@ -1238,7 +1238,7 @@ const CreateTenantDialog = (() => {
 
 
                 </div>
-                `;   
+                `;
 
             },
 
@@ -1353,7 +1353,7 @@ const CreateTenantDialog = (() => {
                         valueField: "id", // "id" is the country_id
                     },
 
-                    
+
             ],
             prepareFormOptions: {
                 createTitle: "Create New Tenant",
@@ -1461,11 +1461,11 @@ const TenantDocumentDialog = (() => {
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             me.fileBase64 = event.target.result.split(',')[1];
-                            
+
                             me.ext =event.target.result.split(';')[0].split(':')[1];
                             me.ext = me.ext.split('/')[1];
-                            
-                            
+
+
                         };
                         reader.readAsDataURL(file);
                     }
@@ -1476,7 +1476,7 @@ const TenantDocumentDialog = (() => {
                 name: "document_type",
                 data: "document_types",
                 textField: "document_type",
-                valueField: "id", 
+                valueField: "id",
             }],
 
             prepareFormOptions: {
@@ -1499,13 +1499,13 @@ const TenantDocumentDialog = (() => {
                     label: '<span vslang="buttons.Save"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
-                        const data = me.getData(); 
+                        const data = me.getData();
                         data.tenant_id = me.dataOptions.tenant_id;
                         data.file_name = me.fileBase64; // Add the Base64 data
                         data.ext = me.ext;
                         console.log(123,data);
-                        
-                      
+
+
 
                         vsapi.call([main_view.base_url, "/prm/tenant-document/save"].join(""), data, btn, null)
                             .then((res) => {

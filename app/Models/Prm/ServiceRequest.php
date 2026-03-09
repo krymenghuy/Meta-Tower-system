@@ -28,17 +28,17 @@ class ServiceRequest extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
-        $created = !$id;
+        // $created = !$id;
+
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id',
             'service_id'        => '1|number|exists=services.id',
             'space_id'          => '1|number|exists=building_spaces.id',
             'service_type_id'   => '1|number|exists=service_types.id',
-            'status_id'   => '0|number|exists=request_statuses.id',
             'description'       => '0|string|0-1000',
-            'duration_hours'    => '0|numeric|min:0.5|nullable',
+            'duration_hours'    => '0|numeric|min:0.5|',
             'code'              => '0|string|0-100',
-            'unit_type'         => '0|string|in:one_time,hour,month,time|nullable',
+            'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
             'request_date'      => '0|date',
             'scheduled_date'    => '0|date',
             'completed_date'    => '0|date',
@@ -56,131 +56,62 @@ class ServiceRequest extends VSModel
             null
         );
 
+
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $input = $res->values;
-        if (empty($input['space_id'])) {
-            if (!empty($input['building_id'])) {
-                $input['space_id'] = $input['building_id'];
-                Log::info('Fallback: using building_id as space_id', ['building_id' => $input['building_id']]);
-            } elseif (!empty($input['floor_id'])) {
-                $input['space_id'] = $input['floor_id'];
-                Log::info('Fallback: using floor_id as space_id', ['floor_id' => $input['floor_id']]);
-            } else {
-                return DV::error('Space / Building / Floor information is required.');
-            }
+
+        if($input['unit_type']=="2" && $input['duration_hours'] == ""){
+             return DV::error('Please select value duration hour');
+
         }
-
-        $service = DB::table('services')->find($input['service_id']);
-        if (!$service) {
-            return DV::error('Invalid service selected.');
-        }
-
-        $unitTypeMap = [
-            'one_time' => 0,
-            'hour'     => 1,
-            'month'    => 2,
-            // 'time'     => 3,
-        ];
-
-        $unit_string = $arr['unit_type'] ?? $service->unit_type ?? null;
-        $unit_type_value = null;
-
-        if ($unit_string !== null && $unit_string !== '') {
-            $unit_string = trim(strtolower($unit_string));
-            if (isset($unitTypeMap[$unit_string])) {
-                $unit_type_value = $unitTypeMap[$unit_string];
-            } elseif (is_numeric($unit_string)) {
-                $tmp = (int)$unit_string;
-                if (in_array($tmp, [0, 1, 2, 3], true)) {
-                    $unit_type_value = $tmp;
-                }
-            } else {
-                Log::warning('Invalid unit_type received - using service default', [
-                    'received' => $unit_string,
-                    'service_unit_type' => $service->unit_type ?? 'missing'
-                ]);
-            }
-        }
-
-        if ($unit_type_value === null && isset($unitTypeMap[$service->unit_type])) {
-            $unit_type_value = $unitTypeMap[$service->unit_type];
-        }
-
-        $input['unit_type'] = $unit_type_value;
-
-        // Hourly service pricing
-        if ($service->unit_type === 'hour') {
-            $duration_hours = !empty($arr['duration_hours']) ? (float)$arr['duration_hours'] : null;
-            if ($duration_hours === null || $duration_hours <= 0 || !is_numeric($duration_hours)) {
-                return DV::error('Please select a valid duration for hourly services.');
-            }
-            $input['duration_hours'] = round($duration_hours, 2);
-            $input['total_price']    = round($service->price * $duration_hours, 2);
-        } else {
-            $input['duration_hours'] = null;
-            $input['total_price']    = $service->price;
-        }
-
+        $created = !$id;
+        try {
         $input['request_date'] = isset($input['request_date'])
             ? (int) date('Ymd', strtotime($input['request_date']))
             : (int) date('Ymd');
+            $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
 
-        if (isset($input['scheduled_date'])) {
-            $input['scheduled_date'] = (int) date('Ymd', strtotime($input['scheduled_date']));
-        }
-
-        if (isset($input['completed_date'])) {
-            $input['completed_date'] = (int) date('Ymd', strtotime($input['completed_date']));
-        }
-
-        // System / audit fields
-        $input['branch_id']    = $branch_id;
-        $input['update_uid']   = $ss->uid ?? null;
-        $input['update_user']  = $ss->name ?? 'System';
-        $input['updated_at']   = date('Y-m-d H:i:s');   // or use DB raw if needed
-
-        if ($created) {
-            $input['create_uid']  = $ss->uid ?? null;
-            $input['create_user'] = $ss->name ?? 'System';
-            $input['created_at']  = date('Y-m-d H:i:s');
-            $input['status_id'] = 1; // 1 = Pending
-        }
-
-        try {
-            $saved_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-
-            if (!$saved_id) {
+            if (!$save_id) {
                 return DV::error('Failed to save service request.');
             }
 
-            // Generate official code only on creation
+            // Generate code ONLY on creation
             if ($created) {
-                $prefix = 'S';
-                $codeRes = setOfficialCodeInvoice(
+                $prefix = 'S-';  // adjust prefix if needed (S- or S)
+                $codeRes = setOfficialCode(
                     $branch_id,
                     'service_request_code_control',
                     'service_requests',
-                    ['id' => $saved_id],
+                    ['id' => $save_id],
                     $prefix,
                     5,
                     null
                 );
 
-                $return_data = ['id' => $saved_id];
                 if (isset($codeRes->code)) {
                     $return_data['code'] = $codeRes->code;
+                } else {
+                    Log::warning("Code generation failed for service request ID: {$save_id}", [
+                        'response' => $codeRes ?? 'No response'
+                    ]);
+                    // Still success, but log issue
                 }
+            } else {
 
-                return DV::success($return_data + ['message' => 'Service request created successfully']);
+            Log::info('11111', $input);
+
+                // On update/modify: return existing code
+                $return_data['code'] = DB::table('service_requests')
+                    ->where('id', $id)
+                    ->value('code') ?? '123';
             }
 
-            return DV::success([
-                'id'      => $saved_id,
-                'message' => 'Service request updated successfully'
-            ]);
+            $message = $created ? 'Service request created successfully' : 'Service request updated successfully';
+
+            return DV::success($return_data + ['message' => $message]);
         }
         catch (\Exception $e) {
             Log::error('Service request save failed', [
@@ -191,12 +122,15 @@ class ServiceRequest extends VSModel
         }
     }
 
+
+
     public function getServiceRequestList($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id         = $ss->branch_id ?? null;
         $search_value      = $d->search_value ?? null;
         $service_type_id   = $d->service_type_id ?? null;
+        $status_id         = $d->status_id ?? null;
         $current_page      = (int) ($d->current_page ?? 1);
         $per_page          = (int) ($d->per_page ?? 10);
 
@@ -217,8 +151,13 @@ class ServiceRequest extends VSModel
                 OR bs.code LIKE '%{$search}%'
             )";
         }
+
         if ($service_type_id) {
             $where_more .= ' AND s.service_type_id = ' . (int)$service_type_id;
+        }
+
+        if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
+            $where_more .= ' AND sr.status_id = ' . (int)$status_id;
         }
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
@@ -227,13 +166,12 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
-            ->join('service_types as st','st.id','=','s.service_type_id')
-            // ->join('request_statuses as rs','rs.id', '=','sr.request_statuses_id')
+            ->join('service_types as st', 'st.id', '=', 's.service_type_id')
             ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
             ->whereRaw($where_search)
             ->whereRaw($where_more)
             ->selectRaw("
-                sr.id, sr.code,tenant_id, t.name as tenant_name, t.email as tenant_email, t.phone_number as tenant_phone,
+                sr.id, sr.code, sr.tenant_id, t.name as tenant_name, t.email as tenant_email, t.phone_number as tenant_phone,
                 sr.space_id, bs.code as space_code,
                 sr.service_id, s.name as service_name,
                 s.price as service_price, s.unit_type,
@@ -242,7 +180,8 @@ class ServiceRequest extends VSModel
                 $updated_at, sr.update_user,
                 sr.scheduled_date, sr.completed_date, sr.create_uid,
                 rs.id as status_id,
-                rs.name as status_name
+                rs.name as status_name,
+                st.name as service_type
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -258,26 +197,34 @@ class ServiceRequest extends VSModel
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
+            ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
+            ->join('service_types as st', 'st.id', '=', 's.service_type_id')
             ->where('sr.id', $id)
             ->select([
-                'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id',
+                'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
                 's.price as service_price', 's.unit_type',
                 'sr.request_date', 'sr.description',
                 'sr.update_user',
                 'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
                 'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
                 'bs.code as space_code',
-                't.name as tenant_name'
+                't.name as tenant_name',
+                'st.name as service_type',
+                's.name as service_name',
+                'rs.id as status_id',
+                'rs.name as status_name'  // ← added for dialog display
             ])
             ->first();
     }
-    public function getFormOptions($arr = [],$ss=null)
+
+    public function getFormOptions($arr = [], $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
         $d = (object)$arr;
         $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
         $service_type_id = $d->service_type_id ?? null;
+
         return (object) [
             'request_details'   => $details,
             'service_types'     => GeneralSettings::options_service_type_request($ss),
@@ -295,53 +242,32 @@ class ServiceRequest extends VSModel
         return DV::depends($deleted, 'Failed to delete service request');
     }
 
-    function setRequestStatus($arr, $ss = null)
+    public function setRequestStatus($arr, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
-
-        // $v_rule = [
-        //     'id'        => '1|number|exists=service_requests.id',
-        //     'status_id' => '0|choice|1,2,3'  // 1 = Canceled, 2 = Pending, 3 = Accepted
-        // ];
-
-        // $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang ?? 'en', 0, null);
-        // if ($res->error) {
-        //     return DV::error($res->error);
-        // }
-
 
         $id        = $arr['id'] ?? null;
         $status_id = $arr['status_id'] ?? null;
 
+        if (!$id || !$status_id) {
+            return DV::error('Missing required parameters');
+        }
+
         $data = [
-            'status_id' => $status_id,
-            'update_user'         => $ss->full_name ?? 'System',
-            'update_uid'          => $ss->id ?? null,
-            'updated_at'          => getNowTime(),   // better than date()
+            'status_id'   => $status_id,
+            'update_user' => $ss->full_name ?? 'System',
+            'update_uid'  => $ss->id ?? null,
+            'updated_at'  => getNowTime(),
         ];
 
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);
 
-        // if ($updated === 0) {
-        //     return DV::error('Service request not found or no changes made');
-        // }
+        if ($updated === 0) {
+            return DV::error('Service request not found or no changes made');
+        }
 
-        // // Get real status name from DB (more reliable)
-        // $status = DB::table('request_statuses')
-        //     ->where('id', $status_id)
-        //     ->value('name');
-
-        // $status = $status ?? 'Unknown';
-
-        return DV::depends(1);
+        return DV::success(['message' => 'Status updated successfully']);
     }
-
 }
-
-
-
-
-
-
