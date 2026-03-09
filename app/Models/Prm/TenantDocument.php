@@ -110,10 +110,11 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
             'description' => '0|string|0-150',
             'document_type_id' => '0|number',
             'ext' => '0|string',
-            'file_name' => '1|string',
+            'file_name' => '0|string|0-150',
+            'data' => '0|string',
         ];
 
-        $res = DBX::validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, null);
+        $res = DBX::validateObject($arr, $v_rule, true, ['data' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
             error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
@@ -121,9 +122,8 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
 
         $inputs = $res->values;
         $d = (object) $inputs;
-        $data = $d->file_name;
+        $data = $d->data;
         $ext = $d->ext;
-        $allowed_exts = [];
         $category = 'image';
         if (in_array($ext, self::$allowed_image_extensions)) {
             $category = 'image';
@@ -132,26 +132,20 @@ public function saveTenantDocument($arr = [], $ss = null,$id = null)
             $category = 'document';
          }
 
-        unset($inputs['file_name']);
-        unset($inputs['ext']);
-        $emp_document_create = !$id;
         // $res = null;
 
         // $res = XPublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         $data = preg_replace('#^data:.*;base64,#', '', $data);
-        $res =null;
         
         $res= XPublicStorage::savefile(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
         if ($res->status === "Error") {
             return DV::error($res->error_message);
         }
 
-        $inputs['file_name'] = $res->file_name;
+        // $inputs['file_name'] = $res->file_name;
 
-        if (empty($inputs['description'])) {
-            $inputs['description'] = $res->file_name;
-        }
-        $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], $inputs, [], 1);
+        $data->description = $d->description;
+        $id = DBX::saveData($ss, 'tenant_documents', ['id' => $id], (array)$data, [], 1);
         return DV::depends($id, ['tenant_documents' => $inputs, 'id' => $id]);
 
     }
