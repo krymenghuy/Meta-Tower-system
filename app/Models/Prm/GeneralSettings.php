@@ -340,7 +340,7 @@ class GeneralSettings //extends Model
     static function options_document_type($ss){
         return DB::table('document_types')->selectRaw('id,name as document_type')->get();
     }
-   
+
     static function options_service_status($ss)
     {
         return DB::table('service_statuses')->selectRaw('id,name as status_name')->get();
@@ -351,15 +351,15 @@ class GeneralSettings //extends Model
     }
     static function options_amenity($ss)
     {
-        return DB::table('amenities')->selectRaw('id,name AS amenity')->get(); 
+        return DB::table('amenities')->selectRaw('id,name AS amenity')->get();
     }
-    
+
 
     static function options_reservation_status($ss)
     {
         return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
     }
-    
+
     // public static function options_service_status($ss)
     // {
     //     return DB::table('service_statuses')
@@ -487,6 +487,14 @@ class GeneralSettings //extends Model
         return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
     }
 
+    static function options_vendor_categories($ss)
+    {
+        return DB::table('vendor_categories')->selectRaw('id,name as vendor_category')->get();
+    }
+    static function options_vendor_statuses($ss)
+    {
+        return DB::table('vendor_statuses')->selectRaw('id,name as vendor_status')->get();
+    }
     static function options_contracts($ss)
     {
         return DB::table('contracts')->selectRaw('id,name as contract')->get();
@@ -494,7 +502,11 @@ class GeneralSettings //extends Model
 
     static function options_space_status($ss)
     {
-        return DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
+        $rows = DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
+        // if($rows){
+        //     $rows[] = (object) ['id' => 4, 'space_status' => 'Maintenance'];
+        // }
+        return $rows;
     }
     static function options_payment_status($ss)
     {
@@ -521,7 +533,7 @@ class GeneralSettings //extends Model
             $rows = DB::table(table: 'floors as f')
             ->selectRaw('f.id,f.name')->get();
         }
-        
+
         return $rows;
     }
 

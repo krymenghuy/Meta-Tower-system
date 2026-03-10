@@ -12,7 +12,7 @@ class ContractController extends Controller
 {
     protected  $contracts;
 
-    
+
     public function __construct()
     {
         $this->contracts = new Contract();
@@ -36,9 +36,21 @@ class ContractController extends Controller
             return JDV::raw($ss);
         }
 
+        // Apply contract unit updates for renewals whose start date is today (when renewal changed unit).
+        Contract::applyPendingRenewalUnitChanges();
+
         return JDV::result($this->contracts->getListPaginate($req->all(), $ss));
     }
 
+    public function getListRenewals(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        return JDV::result($this->contracts->getListRenewalsPaginate($req->all(), $ss));
+    }
 
     public function contractDetails(Request $req)
     {

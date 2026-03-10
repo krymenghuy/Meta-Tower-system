@@ -63,7 +63,7 @@ class VendorController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->vendors->deleteVendor($req->id,$ss));
+        return JDV::raw($this->vendors->deleteVendor($req->id,$ss));
     }
 
 

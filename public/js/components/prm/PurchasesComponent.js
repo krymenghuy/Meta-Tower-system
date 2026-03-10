@@ -1,14 +1,14 @@
 "use strict";
-var VendorComponent = (() => {
+var PurchasesComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Vendors";
+    mThis.title_prop = "Purchases";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_vendor_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
-    mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_category_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_vendor");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_purchases_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnPurchases");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_purchases");
+    mThis.elFilter_type = mThis.self.querySelector('#_purchases _type_id');
+    mThis.elFilter_category = mThis.self.querySelector('#_purchases_category_id');
+    mThis.elSearch = mThis.self.querySelector("#_search_purchases");
 
 
     mThis.cols = [
@@ -18,14 +18,14 @@ var VendorComponent = (() => {
             className: "align-middle",
         },
         {
-            transTitle: "titles.Vattin",
+            transTitle: "titles.Purchase Number",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
             }
         },
         {
-            transTitle: "titles.Name",
+            transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
 
@@ -67,59 +67,22 @@ var VendorComponent = (() => {
             }
         },
         {
-            title: "Contact Info",
+            title: "Purchase Date",
             className: "align-middle",
             data: (data) =>
                 `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone ?? ""}</span>
                  <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
-            transTitle: "titles.Type",
+            transTitle: "titles.Amount",
             className: "align-middle",
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.type ?? ""}</span>`;
             }
         },
-        {
-            transTitle: "titles.Category",
-            className: "align-middle",
-            data: (data) => {
-
-                const code = data.code ?? '';
-                const name = data.category ?? '';
-
-                let bgClass = 'bg-secondary-subtle text-secondary';
-
-                if (code === 'equipment') {
-                    bgClass = 'bg-primary-subtle text-primary';
-                } else if (code === 'maintenance') {
-                    bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
-                } else if (code === 'utility') {
-                    bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
-
-                return `<span class="badge ${bgClass} text-uppercase fw-bold">
-                    ${name}
-                </span>`;
-            }
-        },
-        {
-            transTitle: "titles.Contact Person",
-            className: "align-middle text-nowrap",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
-            }
-        },
 
         {
-            transTitle: "titles.Address",
+            transTitle: "titles.Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -129,26 +92,6 @@ var VendorComponent = (() => {
                 `;
             }
         }, 
-        {
-            title: "Status",
-            className: "align-middle text-center",
-            data: (data) => {
-
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'badge text-dark bg-warning-subtle border border-warning';
-                if (status === 'active') {
-                    cls = 'badge text-success bg-success-subtle border border-success';
-                }
-                else if (status === 'inactive') {
-                    cls = 'badge text-dark bg-danger-subtle border border-danger';
-                }
-                return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
-                        ${data.status ?? ''}
-                    </span>
-                `;
-            },
-        },
         {
             transTitle: "titles.Updated By",
             className: 'align-middle text-nowrap',
@@ -176,7 +119,7 @@ var VendorComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.VendorListView = new ListView('_vendor_list', {
+        mThis.VendorListView = new ListView('_purchases_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -185,8 +128,8 @@ var VendorComponent = (() => {
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
-                tr.classList.add('vendor');
-                tr.setAttribute('id', ['vendor_id', data.id].join(''));
+                tr.classList.add('purchases');
+                tr.setAttribute('id', ['purchases_id', data.id].join(''));
 
             },
             listContainerClass: null
@@ -238,7 +181,7 @@ var VendorComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            vendor_type_id: mThis.elFilter_type.value,
+            // vendor_type_id: mThis.elFilter_type.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -353,7 +296,7 @@ var VendorComponent = (() => {
 
 
 
-const CreateVendorDialog = (() => {
+const CreatePurchasesDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -361,7 +304,7 @@ const CreateVendorDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {
@@ -369,19 +312,9 @@ const CreateVendorDialog = (() => {
                 <div class="vendor-form row p-1">
                         <div class="col-12 row pb-3">
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Name</label>
+                                <label style="color:#777777;padding-left:6px;">Vendor</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Type</label>
-                                <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
+                                    <select name="vendor_id" class="data-input form-control" data-field="vendor_id"></select>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
