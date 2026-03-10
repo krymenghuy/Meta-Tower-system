@@ -41,35 +41,35 @@ var ContractComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
-                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
+                return `<small class="px-2 py-1 bg-body-secondary text-nowrap text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
          {
             transTitle: "titles.End Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
+                return `<small class="px-2 py-1 bg-body-secondary text-muted text-nowrap rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
         {
             transTitle: "titles.Business",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom">${data.business_type ?? ''}</span>`;
+                return `<span class="text-nowrap text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Unit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<span class="px-2 py-1 bg-prm-custom text-white rounded font-medium">${data.space_code ?? ''}</span>`;
+                return `<span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Type",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom">${data.space_type ?? ''}</span>`;
+                return `<span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
@@ -90,7 +90,7 @@ var ContractComponent = new (function () {
                 }
 
                 return `
-                    <span class="text-primary-custom">
+                    <span class="text-nowrap text-primary-custom">
                         ${cur} ${price}
                         <small class="text-muted">/sqm</small>
                     </span>
@@ -169,7 +169,7 @@ var ContractComponent = new (function () {
         },
         {
             transTitle: "titles.Updated By",
-            className: 'align-middle',
+            className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
