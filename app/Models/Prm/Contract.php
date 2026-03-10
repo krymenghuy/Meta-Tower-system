@@ -396,14 +396,19 @@ class Contract
 
     // Renew = update existing contract (new period); do NOT insert a new row in contracts.
     // Renewal data (period, date, etc.) is stored only in contract_renewals.
+    // When unit code is changed on renew: do NOT update contract.space_id yet; it will be updated
+    // when current date equals the renewal start_date (see applyPendingRenewalUnitChanges).
+    $unitChanged = $new_space_id && (int) $old->space_id !== (int) $new_space_id;
     $updateContract = [
         'start_date' => $inputs['start_date'],
-        'space_id'   => $new_space_id ?: $old->space_id,
         'end_date'   => $inputs['end_date'],
         'price'      => $inputs['price'] ?? $old->price,
         'price_type' => $inputs['price_type'] ?? $old->price_type,
         'remarks'    => $inputs['remarks'] ?? $old->remarks,
     ];
+    if (!$unitChanged) {
+        $updateContract['space_id'] = $new_space_id ?: $old->space_id;
+    }
 
     DB::beginTransaction();
 
@@ -413,13 +418,10 @@ class Contract
         return DV::error('Renew failed');
     }
 
-    // When unit code is changed on renew: set old space to Available, new space to Occupied
-    if ($new_space_id && (int) $old->space_id !== $new_space_id) {
-        $availableId = self::getSpaceAvailableStatusId();
+    // When unit code is unchanged on renew: set new space to Occupied (contract already updated above).
+    // When unit code is changed: defer space status and contract.space_id update until renewal start_date.
+    if (!$unitChanged && $new_space_id) {
         $occupiedId = self::getSpaceOccupiedStatusId();
-        if ($availableId) {
-            DB::table('building_spaces')->where('id', $old->space_id)->update(['status_id' => $availableId]);
-        }
         if ($occupiedId) {
             DB::table('building_spaces')->where('id', $new_space_id)->update(['status_id' => $occupiedId]);
         }
@@ -452,6 +454,52 @@ class Contract
     return DV::depends(1, [
         'contract_id' => $old->id
     ]);
+}
+
+/**
+ * Apply pending renewal unit changes: for renewals whose start_date is today and whose
+ * space_id differs from the contract's current space_id, update the contract's unit code
+ * and set old space to Available, new space to Occupied.
+ * Call this daily (e.g. via scheduler) so contract unit updates when renewal starts.
+ */
+public static function applyPendingRenewalUnitChanges()
+{
+    $today = date('Y-m-d');
+    $availableId = self::getSpaceAvailableStatusId();
+    $occupiedId = self::getSpaceOccupiedStatusId();
+    if (!$occupiedId) {
+        return;
+    }
+
+    $pending = DB::table('contract_renewals as cr')
+        ->join('contracts as c', 'c.id', '=', 'cr.contract_id')
+        ->whereRaw('DATE(cr.start_date) = ?', [$today])
+        ->whereColumn('c.space_id', '!=', 'cr.space_id')
+        ->whereNotNull('cr.space_id')
+        ->select('cr.contract_id', 'cr.space_id as new_space_id', 'c.space_id as old_space_id')
+        ->get();
+
+    foreach ($pending as $row) {
+        $contractId = (int) $row->contract_id;
+        $newSpaceId = (int) $row->new_space_id;
+        $oldSpaceId = (int) $row->old_space_id;
+        if ($newSpaceId === $oldSpaceId) {
+            continue;
+        }
+        DB::beginTransaction();
+        try {
+            DB::table('contracts')->where('id', $contractId)->update(['space_id' => $newSpaceId]);
+            if ($oldSpaceId && $availableId) {
+                DB::table('building_spaces')->where('id', $oldSpaceId)->update(['status_id' => $availableId]);
+            }
+            if ($newSpaceId && $occupiedId) {
+                DB::table('building_spaces')->where('id', $newSpaceId)->update(['status_id' => $occupiedId]);
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+        }
+    }
 }
 
 static function getTenantInfo($arr=[], $ss = null)

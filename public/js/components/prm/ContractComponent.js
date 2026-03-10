@@ -358,36 +358,66 @@ var ContractComponent = new (function () {
         const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
+        const currentSpaceCode = (d.space_code ?? '').trim();
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        };
         let renewalTableHtml = '';
         if (renewalsList.length > 0) {
-            const rows = renewalsList.map((r) => `
+            const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium';
+            const rows = renewalsList.map((r) => {
+                const spaceCode = (r.space_code ?? '').trim() || '—';
+                const unitChanged = currentSpaceCode && spaceCode !== '—' && spaceCode !== currentSpaceCode;
+                const unitCell = unitChanged
+                    ? `<span class="d-inline-flex align-items-center gap-1"><span class="${unitPillClass}">${escapeHtml(spaceCode)}</span><span class="badge bg-info text-white" style="font-size:0.7rem;">New unit</span></span>`
+                    : `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
+                return `
                 <tr>
-                    <td>${(r.renewal_date ?? '').trim() || '—'}</td>
-                    <td>${(r.start_date ?? '').trim() || '—'}</td>
-                    <td>${(r.end_date ?? '').trim() || '—'}</td>
-                    <td class="text-break">${(r.remarks ?? '').trim() || 'N/A'}</td>
-                    <td><div class="d-flex flex-column"><span class="text-capitalize text-prm-custom fw-semibold">${(r.update_user ?? '').trim() || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
-                </tr>`).join('');
+                    <td class="align-middle">${(r.renewal_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${(r.start_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${(r.end_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${unitCell}</td>
+                    <td class="text-break align-middle">${(r.remarks ?? '').trim() || '—'}</td>
+                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                </tr>`;
+            }).join('');
             renewalTableHtml = `
-
-                    <h4 class="text-primary mb-2">Renewal history</h4>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Renewal date</th>
-                                    <th>Start date</th>
-                                    <th>End date</th>
-                                    <th>Remarks</th>
-                                    <th>Updated by</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
+                    <div class="card border-0 shadow-sm overflow-hidden">
+                        <div class="card-header bg-transparent border-bottom py-2 px-3 d-flex align-items-center gap-2">
+                            <h5 class="mb-0 fw-semibold text-dark">Renewal history</h5>
+                            <span class="badge bg-light text-dark border ms-auto">${renewalsList.length} ${renewalsList.length === 1 ? 'renewal' : 'renewals'}</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm mb-0 align-middle">
+                                    <thead>
+                                        <tr class="table-light">
+                                            <th class="text-nowrap border-0 py-2 px-3">Renewal date</th>
+                                            <th class="text-nowrap border-0 py-2 px-3">Start date</th>
+                                            <th class="text-nowrap border-0 py-2 px-3">End date</th>
+                                            <th class="text-nowrap border-0 py-2 px-3">Unit</th>
+                                            <th class="text-nowrap border-0 py-2 px-3">Remarks</th>
+                                            <th class="text-nowrap border-0 py-2 px-3">Updated by</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top">${rows}</tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 `;
         } else {
-            renewalTableHtml = `<div class="mt-3 pt-2 border-top"><small class="text-muted">No renewal history for this contract.</small></div>`;
+            renewalTableHtml = `
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center py-4">
+                            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-muted mb-2" style="width:48px;height:48px;"><i class="fa-solid fa-rotate-right fa-lg"></i></span>
+                            <p class="text-muted mb-0">No renewal history for this contract.</p>
+                            <small class="text-muted">Renewals will appear here when the contract is renewed.</small>
+                        </div>
+                    </div>`;
         }
 
         container.innerHTML = `

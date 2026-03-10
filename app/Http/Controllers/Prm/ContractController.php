@@ -36,6 +36,9 @@ class ContractController extends Controller
             return JDV::raw($ss);
         }
 
+        // Apply contract unit updates for renewals whose start date is today (when renewal changed unit).
+        Contract::applyPendingRenewalUnitChanges();
+
         return JDV::result($this->contracts->getListPaginate($req->all(), $ss));
     }
 

@@ -25,6 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        // Update contract unit code when current date equals renewal start date (for renewals that changed unit).
+        $schedule->command('prm:apply-renewal-unit-changes')->daily();
     }
 
     /**
