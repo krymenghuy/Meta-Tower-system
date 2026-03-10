@@ -40,7 +40,8 @@ var ContractComponent = new (function () {
             transTitle: "titles.Start Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${data.start_date ?? ''}</small>`;
+                const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
+                return `<small class="px-2 py-1 bg-body-secondary text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
          {
@@ -237,8 +238,9 @@ var ContractComponent = new (function () {
         new ExpandableRowConfig(mThis.tblContract.id, {
             dontExpandByClickingOn: ['btn_contract_action'],
             onOpen: (container, detail_tr, parent_tr) => {
-                const id = (parent_tr.getAttribute('id') || '').replace('contract_invoice_id_', '');
-                if (id && !isNaN(id)) mThis.displayContractDetail(container, id);
+                const rawId = parent_tr.getAttribute('id') || '';
+                const id = rawId.replace(/^contract_invoice_id/, '');
+                if (id && !Number.isNaN(Number(id))) mThis.displayContractDetail(container, id);
             }
         });
 
@@ -332,54 +334,67 @@ var ContractComponent = new (function () {
 
     mThis.displayContractDetail = (container, id) => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
-        vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null)
-            .then((res) => {
-                if (res.status_code !== 200) {
+        Promise.all([
+            vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null),
+            vsapi.call(`${main_view.base_url}/prm/contract/list-renewals`, { contract_id: id, per_page: 50 }, null, null)
+        ])
+            .then(([detailsRes, renewalsRes]) => {
+                if (detailsRes.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load contract details</div>`;
                     return;
                 }
-                mThis.renderContractDetail(container, res.data || {}, id);
+                const renewals = (renewalsRes.status_code === 200 && renewalsRes.data && renewalsRes.data.data) ? renewalsRes.data.data : [];
+                mThis.renderContractDetail(container, detailsRes.data || {}, id, renewals);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading contract details</div>`;
             });
     };
 
-    mThis.renderContractDetail = (container, d, contractId) => {
+    mThis.renderContractDetail = (container, d, contractId, renewals) => {
         const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
         const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
         const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
         const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
 
-        let renewBtn = '';
-        if (contractId && typeof mThis.renewContract === 'function') {
-            renewBtn = `<button type="button" class="btn btn-sm btn-primary mt-2 btn-renew-from-detail" data-id="${contractId}">Renew Contract</button>`;
+        const renewalsList = Array.isArray(renewals) ? renewals : [];
+        let renewalTableHtml = '';
+        if (renewalsList.length > 0) {
+            const rows = renewalsList.map((r) => `
+                <tr>
+                    <td>${(r.renewal_date ?? '').trim() || '—'}</td>
+                    <td>${(r.start_date ?? '').trim() || '—'}</td>
+                    <td>${(r.end_date ?? '').trim() || '—'}</td>
+                    <td class="text-break">${(r.remarks ?? '').trim() || 'N/A'}</td>
+                    <td><div class="d-flex flex-column"><span class="text-capitalize text-prm-custom fw-semibold">${(r.update_user ?? '').trim() || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
+                </tr>`).join('');
+            renewalTableHtml = `
+
+                    <h4 class="text-primary mb-2">Renewal history</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Renewal date</th>
+                                    <th>Start date</th>
+                                    <th>End date</th>
+                                    <th>Remarks</th>
+                                    <th>Updated by</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+        } else {
+            renewalTableHtml = `<div class="mt-3 pt-2 border-top"><small class="text-muted">No renewal history for this contract.</small></div>`;
         }
 
         container.innerHTML = `
-            <div class="vs-expand-container expandable-row-container bg-white rounded p-3">
-                <div class="row g-2 small">
-                    <div class="col-md-4"><span class="text-muted">Tenant:</span> <span class="fw-semibold">${(d.tenant_name ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Legal Name:</span> <span>${(d.legal_name ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Unit:</span> <span class="fw-semibold">${(d.space_code ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Start Date:</span> <span>${(d.start_date ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">End Date:</span> <span>${(d.end_date ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Business:</span> <span>${(d.business_name ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Unit Type:</span> <span>${(d.space_name ?? '').trim() || '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Size (m²):</span> <span>${(d.sqm_size != null && d.sqm_size !== '') ? d.sqm_size : '—'}</span></div>
-                    <div class="col-md-4"><span class="text-muted">Price:</span> <span class="fw-semibold">${cur} ${priceVal}</span> <small class="text-muted">${priceLabel}</small></div>
-                    <div class="col-md-4"><span class="text-muted">Deposit:</span> <span>${cur} ${depositVal}</span></div>
-                </div>
-                ${(d.remarks ?? '').trim() ? `<div class="mt-2 p-2 bg-light rounded"><small class="text-muted fw-semibold">Remarks:</small><p class="mb-0 small">${String(d.remarks).trim()}</p></div>` : ''}
-                ${renewBtn}
-            </div>`;
 
-        container.querySelector('.btn-renew-from-detail')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            const id = this.getAttribute('data-id');
-            if (!id) return;
-            mThis.renewContract(id, this);
-        });
+
+                 ${renewalTableHtml}`;
+
     };
 
     mThis.initDropdownMenus = (table) => {
@@ -418,15 +433,13 @@ var ContractComponent = new (function () {
                 const row = container.closest('tr');
                 const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
                 const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
-                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate);
-                const showRenew = statusId !== 2 && mThis.isWithinNextThreeMonths(endDate);
                 const isActive = statusText === 'active' || statusId === 2;
+                const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
+                const showRenew = statusId !== 2 && endDate && mThis.isWithinNextThreeMonths(endDate);
 
-                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
                 menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
-
-
+                menu.renew_contract.style.display = showRenew ? 'block' : 'none';
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
