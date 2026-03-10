@@ -145,7 +145,7 @@ var PurchasesComponent = (() => {
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateVendorDialog.show(op);
+            CreatePurchasesOrderDialog.show(op);
         };
 
 
@@ -296,7 +296,7 @@ var PurchasesComponent = (() => {
 
 
 
-const CreatePurchasesDialog = (() => {
+const CreatePurchasesOrderDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -411,9 +411,9 @@ const CreatePurchasesDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
-                    targetProp: "vendor_details",
+                    createTitle: "Create Purchase Order",
+                    modifyTitle: "Modify Purchase Order",
+                    targetProp: "purchase_order_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/vendor/form-options",].join(""),
                         params: (op) => {
