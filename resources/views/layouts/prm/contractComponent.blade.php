@@ -23,6 +23,6 @@
             </div>
         </div>
     </div> 
-    <div id="_contract_list" class="rounded-2 mt-3"></div>
+    <div id="_contract_list" class="table-responsive rounded-2 mt-3"></div>
 </div>
 
