@@ -138,6 +138,7 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
+                'js/components/prm/AmenityComponent.js',
 
 
 

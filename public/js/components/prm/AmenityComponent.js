@@ -393,7 +393,7 @@ const AmenityDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
 

@@ -34,13 +34,13 @@ class TenantDocumentController extends Controller{
         }
         return $this->tenant_documents->saveTenantDocument($req->all(), $ss);
     }
-    public function getListPaginate(Request $req){
+    public function getListDocument(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::row($ss);
 
         }
-         return JDV::result($this->tenant_documents->getListPaginate($req->all(),$ss));
+         return JDV::result($this->tenant_documents->getListDocument($req->all(),$ss));
     }
 
     public function getDetails(Request $req){
@@ -60,7 +60,7 @@ class TenantDocumentController extends Controller{
         }
         return JDV::result($this->tenant_documents->getFormOptions($req->id,$ss));
     }
-    public function delete(Request $req){
+    public function deleteTenantDocument(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
@@ -70,5 +70,19 @@ class TenantDocumentController extends Controller{
         }
         return JDV::raw($this->tenant_documents->deleteTenantDocument($req->id));
     }
+
+    public function downloadDocument(Request $req) {
+    $ss = XAuthService::verifyAuth($req, -1);
+    if ($ss->status_code !== 200) {
+        return JDV::raw($ss);
+    }
+
+    if (!isset($req->id) || !is_numeric($req->id)) {
+        return JDV::error('Invalid ID');
+    }
+
+    $tenant_document = new TenantDocument($req->id, $ss);
+    return JDV::raw($this->tenant_documents->downloadTenantDocument($req->id, $ss));
+}
 
 }

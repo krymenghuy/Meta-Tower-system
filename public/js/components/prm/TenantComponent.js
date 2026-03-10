@@ -4,9 +4,7 @@ var TenantComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Tenant Management";
     this.defaultPage = "tenant_list";
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_tenant_component",
-    );
+    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component",);
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
@@ -22,17 +20,13 @@ var TenantComponent = new (function () {
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
     mThis.currentViewMode = "card";
-    mThis.paginationContainer = mThis.self.querySelector(
-        "#tenant_card_container_pagination",
-    );
+    mThis.paginationContainer = mThis.self.querySelector("#tenant_card_container_pagination", );
     this.pages = {
         tenant_list: this.divTenantListContainer,
         profile_view: this.divProfileView,
     };
     // console.log(8989,this.pages);
-    mThis.profile_info_tenant = this.divProfileView.querySelector(
-        "#profile_info_tenant",
-    );
+    mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant",);
     mThis.cols = [
         {
             title: "",
@@ -927,18 +921,55 @@ var TenantComponent = new (function () {
                     </div>
                     <div class="tab-pane" id="document_tenant_list">
                         <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <p>Tenant documents content goes here....</p>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="bg-light">
+                                    <tr class=" text-uppercase ">
+                                        <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                        <th class="border-0">File Name</th>
+                                        <th class="border-0">File Type</th>
+                                        <th class="border-0">Description</th>
+                                        <th class="border-0 text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="ps-3 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted small">${data.description ?? "No description"}</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <button class="btn btn-sm text-muted p-0 ">
+                                                <i class="fa-solid fa-ellipsis fa-shake"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         
                     </div>
                     <!-- Footer -->
-                    <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
+                 <!--   <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
                         <small class="d-none text-muted">Managed by <strong>Admin: chhorng</strong></small>
                         <div>
                             <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
                             <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2 d-none" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
         </div>
@@ -1103,71 +1134,172 @@ var TenantComponent = new (function () {
                     div.innerHTML = html;
                 });
         }
-        if (target == "document_tenant_list") {
-            const p = { id: data.id };
-            vsapi
-                .call(
-                    [main_view.base_url, "/prm/tenant/document/details"].join("", ),
-                    p,
-                    false,
-                    null,
-                )
-                .then((res) => {
-                    const data = res.status_code === 200 ? res.data : {};
+        if (target === "document_tenant_list") {
+    vsapi
+        .call(
+            [main_view.base_url, "/prm/tenant/document/list"].join(""),  
+            { tenant_id: data.id },  
+            false,
+            null
+        )
+        .then((res) => {
+            const documents = res.status_code === 200 && Array.isArray(res.data) 
+                ? res.data 
+                : [];
 
-                    let html = `
-                    <div class="tab-pane" id="document_tenant_list">
+            let rows = '';
 
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h6 class="fw-bold mb-1">Identity Documents </h6>
-                            <button type="button" class="btnAddNewPrm w-15 w-md-auto" id="_btnDocument">
-                                <span vslang="buttons.Upload Document">Upload Document</span>
-                            </button>
-                        </div>
+            documents.forEach(doc => {
+                rows += `
+                    <tr class="border-bottom">
+                        <td class="ps-3 py-3">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        ${doc.document_type || doc.document_type_id || '—'}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">
+                                ${doc.file_name || '—'}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">
+                                ${doc.ext ? doc.ext.toUpperCase() : '—'}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-dark">
+                                ${doc.description || 'No description'}
+                            </span>
+                        </td>
+                       <td class="text-end py-3 px-3">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none hover-primary view-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm border-0 shadow-none delete-doc-btn" data-id="${doc.id}" title="Delete Document "aria-label="Delete Document">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
 
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead class="bg-light">
-                                    <tr class="text-muted text-uppercase ">
-                                        <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
-                                        <th class="border-0">File Name</th>
-                                        <th class="border-0">Description</th>
-                                        <th class="border-0 text-end pe-3">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-bottom">
-                                        <td class="ps-3 py-3">
-                                            <div class="d-flex align-items-center">
-                                                <div>
-                                                    <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
-                                                </div>
-                                            </div>
-                                        </td>
+            // Empty state
+            if (documents.length === 0) {
+                rows = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No documents uploaded yet.
+                        </td>
+                    </tr>`;
+            }
 
-                                        <td>
-                                            <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
-                                        </td>
+            const html = `
+                <div class="tab-pane active" id="document_tenant_list">
 
-                                        <td>
-                                            <span class="text-muted small">${data.description ?? "No description"}</span>
-                                        </td>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-light mb-0">Identity Documents</h6>
+                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
+                            <span vslang="buttons.Upload Document">Upload Document</span>
+                        </button>
+                    </div>
 
-                                        <td class="text-end pe-3">
-                                            <button class="btn btn-link text-muted p-0">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-uppercase small">
+                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                    <th class="border-0">File</th>
+                                    <th class="border-0">File Type</th>
+                                    <th class="border-0">Description</th>
+                                    <th class="border-0 text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
 
-                    </div>`;
+                </div>`;
 
-                    div.innerHTML = html;  
+            div.innerHTML = html;
+            const btnDocument = div.querySelector('#_btnDocument');
+                if (btnDocument) {
+                    btnDocument.onclick = () => {
+                        TenantDocumentDialog.show({
+                            id: null,
+                            tenant_id: data.id,
+                            onClose: () => {
+                                mThis.renderOverView(div, target, data); 
+                            }
+                        });
+                    };
+                }
+
+            div.querySelectorAll('.view-doc').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.currentTarget.dataset.id;
+
+                    const res = await vsapi.call(
+                        [main_view.base_url, "/prm/tenant/document/download"].join(""),
+                        { id: id },
+                        false,
+                        null
+                    );
+
+                    if (res.status_code === 200) {
+                        const { data_url, file_name } = res.data;
+
+                        // Create a temporary anchor and trigger download
+                        const a = document.createElement('a');
+                        a.href = data_url;
+                        a.download = file_name || 'document';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    } else {
+                        cv_interact.error(res.error_message || "Failed to download document.");
+                    }
                 });
-        }
+            });
+
+            document.querySelectorAll('.delete-doc-btn').forEach(btn => {
+                btn.addEventListener('click', async function(e) {
+                    const docId = this.dataset.id;
+
+                    const confirmed = await cv_interact.confirm(
+                        "Are you sure you want to delete this document?",
+                        { title: "Delete Document", context: "delete" }
+                    );
+
+                    if (confirmed) {
+                        const p = { id: docId };
+                        vsapi
+                            .call([main_view.base_url, "/prm/tenant/document/delete"].join(""), p, false, false)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.info("Document deleted.");
+                                    mThis.renderOverView(div, target, data);
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    }
+                });
+            });
+            
+        })
+        .catch(err => {
+            div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
+        });
+}
     };
 
     mThis.setActionsProfileInfo = (divProfile) => {
@@ -1568,9 +1700,9 @@ const TenantDocumentDialog = (() => {
                     return `
                 <div class="document-form row justify-content-start">
                     <div class="col-6">
-                        <label style="padding-left:6px;">Document Type</label>
+                        <label style="padding-left:6px;" for="document_type">Document Type</label>
                         <div class="material-input outlined">
-                            <select name="tenant_document" class="data-input form-control" data-field="document_type_id"></select>
+                            <select name="document_type" class="data-input form-control" data-field="document_type_id"></select>
                         </div>
                     </div>
                     <div class="col-6">
@@ -1579,17 +1711,21 @@ const TenantDocumentDialog = (() => {
                             <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-6">
                         <label style="padding-left:6px;"></label>
-                        <div class="material-input outlined">
-                            <button name ="btn_chooseFile"  class="btn btn-secondary btn-block mt-4" style="padding: 0.5rem 0.75rem !important;">Choose File </button>
+                        <div class="material-input outlined d-flex ">
+                            <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;">Choose File </button>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label style="padding-left:6px;"></label>
+                        <div class="material-input outlined d-flex ">
+                            <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                         </div>
                     </div>
                     
-                    
-                       
                 </div>`;
-                // <button name ="btn_chooseFile"  class="btn btn-primary btn-block mt-4" style="padding: 0.5rem 0.75rem !important;">choose </button>
+                    
                 },
 
                 contentCreated: (me) => {
@@ -1598,16 +1734,19 @@ const TenantDocumentDialog = (() => {
                     );
                     me.fileBase64 = null; // Store base64 data here
                     me.controls.btn_chooseFile.onclick = () => {
-                        FileChooser.chooseFile({
-                                accept: '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg',
-                                }, (d) => {
-                                    me.fileData = d.dataUrl;
-                                    console.log(1212,d);
-
-                                });
-
-                    }
-                    // Listen for file selection
+                        FileChooser.chooseFile(
+                            {
+                                accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
+                            },
+                            (d) => {
+                                me.fileData = d;
+                                me.controls.documents.value = d.fileName;
+                                console.log(1111,d);
+                                
+                                me.controls.documents.classList.remove('d-none');
+                            },
+                        );
+                    };
                     me.uploadInput.addEventListener("change", (e) => {
                         const file = e.target.files[0];
                         if (file) {
@@ -1624,11 +1763,46 @@ const TenantDocumentDialog = (() => {
                             reader.readAsDataURL(file);
                         }
                     });
+
+                    me.deleteTenantDocument = async (documentId) => {
+                        const confirmed = await cv_interact.confirm(
+                            "Are you sure you want to delete this document? This action cannot be undone.",
+                            {
+                                title: "Delete Document",
+                                context: "delete",
+                            }
+                        );
+
+                        if (!confirmed) return;
+
+                        const p = { id: documentId };
+
+                        vsapi
+                            .call(
+                                main_view.base_url , "/prm/tenant/document/delete",
+                                p,
+                                false,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.info("Document deleted.");
+                                    
+                                    // Use the callback we passed in
+                                    if (typeof me.loadTenantDocuments === 'function') {
+                                        me.loadTenantDocuments(); 
+                                    }
+                                    me.hide(true); 
+                                }
+                            })
+                    };
+                   
                 },
+
 
                 configSelect: [
                     {
-                        name: "document_type",
+                        name: "document_type_id",
                         data: "document_types",
                         textField: "document_type",
                         valueField: "id",
@@ -1658,9 +1832,16 @@ const TenantDocumentDialog = (() => {
                         label: '<span vslang="buttons.Save"></span>',
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
-                            
-                            const p = {tenant_id: me.dataOptions.tenant_id, ext: me.fileData.ext ,data: me.fileData.dataUrl, description: me.controls.description, document_type_id: me.controls.document_type_id};
-                            
+                            const p = {
+                                tenant_id: me.dataOptions.tenant_id,
+                                ext: me.fileData.ext,
+                                data: me.fileData.dataUrl,
+                                description: me.controls.description.value,
+                                document_type_id:
+                                    me.controls.document_type.value,
+                            };
+
+                            console.log(2222, p);
 
                             vsapi
                                 .call(

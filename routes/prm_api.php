@@ -79,7 +79,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
-    Route::post('document/list-paginate', [TenantDocumentController::class, 'getListPaginate']);
+    Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
     Route::post('document/details', [TenantDocumentController::class, 'getDetails']);
     Route::post('document/delete', [TenantDocumentController::class, 'deleteTenantDocument']);
     Route::post('document/form-options', [TenantDocumentController::class, 'getFormOptions']);
