@@ -304,7 +304,7 @@ var SpaceComponent = new (function () {
                 },
                   {
                     html: '<span class="ps-2  " vslang="titles.Finish Maintenance">Finish Maintenance</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
+                    icon: `<i class="fa-solid fa-hourglass-end fs-5 text-success-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "finish_maintenance"
                 },

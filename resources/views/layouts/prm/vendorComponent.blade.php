@@ -19,5 +19,5 @@
             </div>
         </div>
     </div>
-    <div id="_vendor_list" class="mt-3  rounded-2"></div>
+    <div id="_vendor_list" class="table-responsive mt-3  rounded-2"></div>
 </div>

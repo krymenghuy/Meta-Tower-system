@@ -503,9 +503,9 @@ class GeneralSettings //extends Model
     static function options_space_status($ss)
     {
         $rows = DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
-        if($rows){
-            $rows[] = (object) ['id' => 4, 'space_status' => 'Maintenance'];
-        }
+        // if($rows){
+        //     $rows[] = (object) ['id' => 4, 'space_status' => 'Maintenance'];
+        // }
         return $rows;
     }
     static function options_payment_status($ss)

@@ -188,9 +188,10 @@ class BuildingSpace
             $str_moreWhere .= ' AND bs.space_type_id = ' . $space_type_id;
         }
         if ($status_id) {
-            if($status_id == 4){
-                $str_moreWhere .= ' AND bs.maintenance_status_id = ' . 1;
-            }else $str_moreWhere .= ' AND bs.status_id = ' . $status_id . ' AND bs.maintenance_status_id = ' . 0;
+            // if($status_id == 4){
+            //     $str_moreWhere .= ' AND bs.maintenance_status_id = ' . 1;
+            // }else 
+            $str_moreWhere .= ' AND bs.status_id = ' . $status_id . ' AND bs.maintenance_status_id = ' . 0;
         }
 
         $updated_at = DBX::formatTime("bs.updated_at", "updated_at");
@@ -208,9 +209,9 @@ class BuildingSpace
         $count = $clone_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as $row) {
-            $row->status = $row->maintenance_status_id == 1 ? 'Maintenance' : $row->status;
-        }
+        // foreach ($rows as $row) {
+        //     $row->status = $row->maintenance_status_id == 1 ? 'Maintenance' : $row->status;
+        // }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 
     }

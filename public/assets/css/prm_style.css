@@ -2855,3 +2855,13 @@ tr {
     visibility: visible;
     opacity: 1;
 }
+ .table-responsive {
+    overflow: auto;
+    max-height: 500px;
+
+    scrollbar-gutter: stable;
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgb(26 22 71) transparent;
+}

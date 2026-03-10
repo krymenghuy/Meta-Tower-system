@@ -40,9 +40,10 @@ class Vendor //extends Model
         ];
 
         $email_char = ['@', '.', '-', '_'];
+        $tax_char = ['@', '.', '-', '_'];
         $address_char = ['@', ',', '.', '#'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'address' => $address_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char,'tax_number' => $tax_char, 'address' => $address_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
