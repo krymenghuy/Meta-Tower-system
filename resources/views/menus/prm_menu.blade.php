@@ -86,6 +86,14 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-text font-color" vslang="menus.Spaces"></span>
                     </a>
                 </li>
+                <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
+                    <a href="MaintenanceComponent" modid="244" class="menu-item kt-menu__link">
+                        <span class="kt-menu__link-icon">
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/space.svg') }}" />
+                        </span>
+                        <span class="kt-menu__link-text font-color" vslang="menus.Maintenance"></span>
+                    </a>
+                </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(203); ?>>
                     <a href="ContractComponent" modid="244" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">

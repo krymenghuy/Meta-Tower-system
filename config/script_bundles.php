@@ -128,6 +128,7 @@ return [
                 'js/components/prm/BuildingComponent.js',
                 'js/components/prm/ContractComponent.js',
                 'js/components/prm/SpaceComponent.js',
+                'js/components/prm/MaintenanceComponent.js',
                 'js/components/prm/ReceiptComponent.js',
                 'js/components/prm/ServiceComponent.js',
                 'js/components/prm/VendorComponent.js',
