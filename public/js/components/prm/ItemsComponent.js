@@ -1,0 +1,378 @@
+"use strict";
+var ItemsComponent =   ( () => {
+    const mThis = {};
+    mThis.title_prop = "Items";
+    mThis.base_url = main_view.base_url;
+    mThis.self = main_view.VSAppContent.querySelector("#_main_item_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnItem");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_item");
+    mThis.elFilter_Category = mThis.self.querySelector('#_item_category_id');
+    mThis.elSearch = mThis.self.querySelector("#_search_item");
+
+
+    mThis.cols = [
+
+        {
+            title: "",
+            className: "align-middle text-capitalize",
+        },
+        {
+            transTitle: "titles.Name",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
+            }
+        }, {
+            transTitle: "titles.Code",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Category",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
+            }
+        },
+       
+        {
+            transTitle: "titles.Updated By",
+            className: 'align-middle',
+            data: (data, index, tr) => {
+                return `<div class="d-flex flex-column">
+                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-muted">${data.updated_at ?? ''}</span>
+                </div>`;
+            }
+        },
+        {
+            transTitle : "titles.Action",
+            className: 'col_action align-middle',
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-end">
+                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
+                    </a>
+                </div>`
+        },
+
+    ];
+
+    mThis.init = () => {
+        if (mThis.initAlready) return;
+
+        mThis.ItemListView = new ListView('_item_list', {
+            fetchApi: `${main_view.base_url}/prm/item/list-paginate`,
+            perPage: 8,
+            // rememberCurrentPage: false,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+               rowCreated:(data,index,tr)=>{
+
+
+              tr.dataset.statusid = data.status_id;
+              tr.classList.add('item');
+              tr.setAttribute('id',['item_id',data.id].join(''));
+
+            },
+            listContainerClass: null
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            const op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.ItemListView.showPage(mThis.getFilterData());
+                }
+            };
+            // if (!AuthManager.allowed(240)) return;
+            CreateItemsDialog.show(op);
+        };
+
+
+        mThis.pr_tbl = mThis.ItemListView.getListContainer();
+        const sh_parent = mThis.pr_tbl.parentElement;
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
+        mThis.tblItem = mThis.ItemListView.getTable();
+
+        mThis.initDropdownMenus(mThis.tblItem);
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.ItemListView.showPage(mThis.getFilterData());
+            }
+        });
+
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.ItemListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
+
+        mThis.initAlready = true;
+    };
+
+    mThis.getFilterData = () => {
+        let p = {
+            item_category_id: mThis.elFilter_Category.value,
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    };
+
+    mThis.initDropdownMenus = (table) => {
+
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass: "btn_leave_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2 " vslang="titles.Modify Item"></span>',
+                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_item"
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Delete Item"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_item"
+                },
+            ],
+
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case 'edit_item': {
+                        mThis.editItem(id, menuLink);
+                        break;
+                    }
+                    case 'delete_item': {
+                        mThis.deleteItem(id, menuLink);
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
+
+    mThis.editItem = (id, menulink) =>{
+        let op = {
+            id:id,
+            btn:menulink,
+            onClose:()=>{;
+                mThis.ItemListView.showPage(mThis.getFilterData());
+            }
+        };
+
+        CreateItemsDialog.show(op);
+    }
+     mThis.deleteItem = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.ItemListView.showPage(mThis.getFilterData());
+            }
+        };
+        if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Item??', {
+            transTitle: 'Delete Item',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/item/delete`, op, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        mThis.ItemListView.showPage();
+                    }
+                })
+            }
+            else {
+                cv_interact.error(res.error_message);
+            }
+        });
+    };
+
+    mThis.prepareFormOptions = (onFinish) => {
+
+        vsapi.call(`${main_view.base_url}/prm/item/form-options`, null, null, null)
+            .then(res => {
+                const d = res.status_code == 200 ? res.data : {};
+
+                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'category_name', true, 'All Item Categories', null);
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
+
+    mThis.show = (options) => {
+        mThis.init();
+        mThis.options = options;
+        mThis.prepareFormOptions(()=>{
+            main_view.setContentView(mThis.self, mThis.title_prop);
+            mThis.ItemListView.showPage(mThis.getFilterData());
+        });
+
+    };
+    return mThis;
+})();
+
+const CreateItemsDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row justify-content-center">
+                            <div class="col-12">
+                                <label style="padding-left:6px;" for="service_types">Category</label>
+                                <div class="material-input outlined">
+                                    <select name="service_types" class="data-input form-control" data-field="service_type_id">
+                                    </select>
+                                </div>
+                           </div>
+                           <div class="col-12">
+                                <label style="padding-left:6px;">Service<span class="text-danger">*</span></label>
+                                <div class="material-input outlined">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <label style="padding-left:6px;">Price<span class="text-danger">*</span></label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="0" />
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <label style="padding-left:6px;" for="service_types">Charge As</label>
+                                <div class="material-input outlined">
+                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
+                                        <option value="hour">Price Per Hour</option>
+                                        <option value="month">Price Per Month</option>
+                                        <option value="one_time">One Time Charge</option>
+                                        <option value="kwh">Price Per Kwh</option>
+                                        <option value="m3">Price Per M3</option>
+                                        <option value="sqm">Price Per Sqm</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label style="padding-left:6px;">Remarks<span class="text-danger">*</span></label>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                </div>
+                            </div>
+                        </div>`
+                    ].join("");
+                },
+
+
+                contentCreated: (me) => {
+                },
+                configSelect: [
+                    {
+                        name: "service_types",
+                        data: "service_types",
+                        textField: "service_type",
+                        valueField: "id",
+                    },
+
+                ],
+                prepareFormOptions: {
+                    createTitle: "Create Item",
+                    modifyTitle: "Modify Item",
+                    targetProp: "item_details",
+                    api: {
+                        endpoint: [main_view.base_url, "/prm/item/form-options",].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    // LocaleManager.translateZone(me.divModal);
+                    // console.log(12,data);
+                    const header = me.divModal.querySelector('.modal-header');
+                    const btnClose = header.querySelector('button');
+                    if(btnClose) btnClose.classList.add('d-none');
+                },
+
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: 'btn btn-primary',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            vsapi.call([main_view.base_url, "/prm/item/save",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Item has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New item has been added successfully"
+                                        );
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
+    return self;
+})();
+
+
+
+
+

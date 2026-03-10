@@ -408,6 +408,7 @@
                             @include('layouts.prm.serviceRequestComponent')
                             @include('layouts.prm.reservationComponent')
                             @include('layouts.prm.amenityComponent')
+                            @include('layouts.prm.itemsComponent')
 
 
                         </div>
