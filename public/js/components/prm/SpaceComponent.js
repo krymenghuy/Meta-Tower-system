@@ -285,6 +285,12 @@ var SpaceComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
+                    html: '<span class="ps-2  " vslang="titles.Create Booking">Create Booking</span>',
+                    icon: `<i class="fa-regular fa-calendar-plus fs-5 text-info-emphasis"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_booking"
+                },
+                {
                     html: '<span class="ps-2  " vslang="titles.Create Contract">Create Contract</span>',
                     icon: `<i class="fa-regular fa-file-lines fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -292,20 +298,25 @@ var SpaceComponent = new (function () {
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Set Maintenance">Set Maintenance</span>',
-                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-prm-custom"></i>`,
-
+                    icon: `<i class="fa-solid fa-screwdriver-wrench fs-5 text-warning-emphasis"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_maintenance"
                 },
+                  {
+                    html: '<span class="ps-2  " vslang="titles.Finish Maintenance">Finish Maintenance</span>',
+                    icon: `<i class="fa-solid fa-hourglass-end fs-5 text-success-emphasis"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance"
+                },
                 {
 
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Space"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_space"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete "></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Space"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_space"
@@ -318,15 +329,29 @@ var SpaceComponent = new (function () {
 
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
-                const status_id = container.dataset.statusid;
-                menu.create_contract.style.display = status_id == 2 ? 'none' : 'block';
 
+                const status_id = Number(container.dataset.statusid);
+                const maintenance_status_id = Number(container.dataset.maintenanceStatusid);
+                const isMaintenance = maintenance_status_id === 1;
+                menu.create_booking.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                menu.create_contract.style.display = (!isMaintenance && (status_id === 1 || status_id === 2)) ? 'block' : 'none';
+                menu.edit_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                menu.delete_space.style.display = (!isMaintenance && status_id === 1) ? 'block' : 'none';
+                // menu.set_maintenance.style.display = (!isMaintenance && status_id === 3) ? 'block' : 'none';
             },
 
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case 'set_maintenance': {
                         mThis.setMaintenance(id, menulink);
+                        break;
+                    }
+                    case 'finish_maintenance': {
+                        mThis.finishMaintenance(id, menulink);
+                        break;
+                    }
+                    case 'create_booking': {
+                        mThis.createBooking(id, menulink);
                         break;
                     }
                     case 'create_contract': {
@@ -368,6 +393,7 @@ var SpaceComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
+              
                 const status = (d.status || "Available").toLowerCase();
                 let statusClass = "";
                 let statusColor = "#08b9d5";
@@ -376,14 +402,18 @@ var SpaceComponent = new (function () {
                         statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-success";
                         statusColor = "#0abb87";
                         break;
-                    case "occupied":
-                        statusClass = "badge text-uppercase text-white bg-info shadow-sm rounded-4";
+                    case "booked":
+                        statusClass = "badge text-uppercase text-white shadow-sm rounded-4 bg-info";
                         statusColor = "#5578eb";
+                        break;
+                    case "occupied":
+                        statusClass = "badge text-uppercase text-white bg-danger shadow-sm rounded-4";
+                        statusColor = "#fd397a";
 
                         break;
                     default:
-                        statusClass = "badge text-uppercase text-dark bg-warning-subtle border border-warning";
-
+                        statusClass = "badge text-uppercase text-white bg-warning shadow-sm rounded-4";
+                        statusColor = "#ffb822";
                         break;
                 }
                 const symbol = d.cur_symbol || '$';
@@ -398,9 +428,9 @@ var SpaceComponent = new (function () {
 
                 const priceLabel = d.price_type === 'total'
                     ? `${symbol} ${price.toLocaleString()} /month`
-                    : `${symbol} ${price.toLocaleString()} /m²`;
+                    : `${symbol} ${price.toLocaleString()}`;
 
-                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()} /month`;
+                const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()}`;
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -413,26 +443,27 @@ var SpaceComponent = new (function () {
                                     <p class="unit-floor text-muted small mb-0">
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
                                     </p>
-                                    <p class="unit-floor text-muted small mb-0">
-                                        ${sizeLabel} (${d.price_type === 'total' ? 'Monthly' : priceLabel})
+                                   <p class="unit-floor text-muted small mb-0">
+                                        Charge as ( ${d.price_type === 'total' ? 'Monthly' : 'per m²'} )
                                     </p>
 
                                 </div>
                                 <span>
-                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_space_action" data-id="${d.id}" data-buildingid="${d.building_id}" data-floorid="${d.floor_id}" data-statusid="${d.status_id}" data-maintenance-statusid="${d.maintenance_status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5"></i>
                                     </a>
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center text-muted gap-2">
-                                    <i class="fa-regular fa-building"></i>
+                                    <i class="fa-regular fa-building text-primary-custom"></i>
                                     <span class="space-type">${d.space_type ?? ''}</span>
                                 </div>
                                 <div class="d-flex align-items-center text-muted gap-2">
                                     <span class="${statusClass}" style="min-width:80px">${status}</span>
                                 </div>
                             </div>
+                            
                             <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="w-100 d-flex flex-row justify-content-center align-items-center">
@@ -446,12 +477,12 @@ var SpaceComponent = new (function () {
                                                     a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${statusColor}" stroke-width="4" stroke-dasharray="60, 100" stroke-linecap="round"></path>
                                             </svg>
                                             <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" style="font-weight: bold; text-align: center;">
-                                                <small class="text-prm-custom">${d.code ?? ''}</small>
+                                                <small class="text-prm-custom">${sizeLabel}</small>
                                             </div>
                                         </div>
                                         <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
                                             <div class="w-100">
-                                                <p class="fs-6 text-prm-custom m-0">Price</p>
+                                                <p class="fs-6 text-prm-custom m-0">Total Price</p>
                                                 <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
                                                 <p class="fs-6" style="color: #2b3991;">
                                                    ${priceLabelPerMonth}
@@ -519,17 +550,29 @@ var SpaceComponent = new (function () {
 
         BuildingSpaceDialog.show(op);
     }
-    mThis.setMaintenance = (id, menulink) => {
+    // mThis.setMaintenance = (id, menulink) => {
+    //     let op = {
+    //         id: id,
+    //         btn: menulink,
+    //         onClose: () => {
+    //             ;
+    //             mThis.SpaceListView.showPage(mThis.getFilterData());
+    //         }
+    //     };
+
+    //     SetMaintenanceDialog.show(op);
+    // }
+    mThis.createBooking = (id, menulink) => {
         let op = {
-            id: id,
+            id: null,
+            space_id: id,
             btn: menulink,
             onClose: () => {
-                ;
                 mThis.SpaceListView.showPage(mThis.getFilterData());
             }
         };
 
-        alert('coming soon....')
+        CreateBookingDialog.show(op);
     }
     mThis.deleteSpace = (id, menulink) => {
         let op = {
@@ -773,7 +816,7 @@ const BuildingSpaceDialog = (() => {
                         },
                     },
                     {
-                        label: '<span vslang="buttons.Submit"></span>',
+                        label: '<span vslang="buttons.Save"></span>',
                         cssClass: 'btn btn-primary',
                         click: (me, btn) => {
                             const op = me.getData();
@@ -806,3 +849,150 @@ const BuildingSpaceDialog = (() => {
     return self;
 })();
 
+const CreateBookingDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        console.log(123, op);
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row justify-content-center">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Name</label>
+                                <div class="material-input outlined">
+                                    <input type="text" name="booker_name" class="data-input form-control" data-field="booker_name" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Phone</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="booker_phone" class="data-input form-control" data-field="booker_phone" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booker Email</label>
+                                <div class="material-input outlined">
+                                    <input type="email" name="booker_email" class="data-input form-control" data-field="booker_email" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booking Date</label>
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="booking_date" class="data-input form-control" data-field="booking_date" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label style="color:#777777;padding-left:6px;">Expired Booking Date</label>
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="expired_booking_date"
+                                        class="data-input form-control form_input"
+                                        data-field="expired_booking_date" />
+                                </div>
+                            </div>
+                           
+
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Booking Price</label>
+                                <div class="material-input outlined">
+                                    <input type="number" name="booking_fee" class="data-input form-control" data-field="booking_fee" placeholder=" " />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control"
+                                        data-field="remarks"
+                                        rows="3"
+                                        placeholder=" ">
+                                    </textarea>
+                                </div>
+                            </div>
+
+
+                        </div>`
+                    ].join("");
+                },
+
+
+                contentCreated: (me) => {
+
+
+                    //  me.controls.price_type.onchange = (e) => {
+                    //         const sqmWrapper = me.controls.sqm_size.closest('.sqm-wrapper');
+                    //         if (!sqmWrapper) return;
+                    //         sqmWrapper.style.display = e.target.value === 'sqm' ? '' : 'none';
+                    //     };
+
+                },
+                configSelect: [
+
+                ],
+                prepareFormOptions: {
+                    createTitle: "Create Booking",
+                    modifyTitle: "Edit Booking",
+                    targetProp: "space_details",
+                    api: {
+                        endpoint: [main_view.base_url, "/prm/building-space/form-options",].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+
+                onPrepareForm: (me, data) => {
+                    // LocaleManager.translateZone(me.divModal);
+                    // console.log(12,data);
+                    const header = me.divModal.querySelector('.modal-header');
+                    const btnClose = header.querySelector('button');
+                    if (btnClose) btnClose.classList.add('d-none');
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: 'btn btn-secondary',
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: 'btn btn-primary',
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.space_id = me.dataOptions.space_id;
+                            console.log(9099000, op);
+
+                            vsapi.call([main_view.base_url, "/prm/building-space/create-booking",].join(""), op, btn, null).then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    if (me.dataOptions.id > 0) {
+                                        cv_interact.success(
+                                            "Booking has been updated successfully"
+                                        );
+                                    } else {
+                                        cv_interact.success(
+                                            "New booking has been created successfully"
+                                        );
+                                    }
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        },
+                    },
+                ],
+            });
+        dialog.show(op);
+    };
+
+    return self;
+})();

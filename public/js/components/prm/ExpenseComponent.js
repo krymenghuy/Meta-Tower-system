@@ -388,7 +388,6 @@ var ExpenseComponent =   ( () => {
                 if (typeof onFinish === 'function') onFinish();
             })
     }
-
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;

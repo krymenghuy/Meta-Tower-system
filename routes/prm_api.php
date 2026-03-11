@@ -78,10 +78,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
     Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
 
+    Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
+    Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
+    Route::post('document/details', [TenantDocumentController::class, 'getDetails']);
+    Route::post('document/delete', [TenantDocumentController::class, 'deleteTenantDocument']);
+    Route::post('document/form-options', [TenantDocumentController::class, 'getFormOptions']);
+    Route::post('document/download', [TenantDocumentController::class, 'downloadDocument']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building-space')->group(function () {
     Route::post('/save', [BuildingSpaceController::class, 'saveBuildingSpace']);
+    Route::post('/create-booking', [BuildingSpaceController::class, 'createBooking']);
     Route::post('/list-paginate', [BuildingSpaceController::class, 'getListPaginate']);
     Route::post('/details', [BuildingSpaceController::class, 'getDetails']);
     Route::post('/form-options', [BuildingSpaceController::class, 'getFormOptions']);
@@ -121,6 +128,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('building')->g
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->group(function () {
     Route::post('/save', [ContractController::class, 'saveContract']);
     Route::post('/list-paginate', [ContractController::class, 'getListPaginate']);
+    Route::post('/list-renewals', [ContractController::class, 'getListRenewals']);
     Route::post('/details', [ContractController::class, 'contractDetails']);
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
@@ -205,14 +213,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
 });
 
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('tenant-document')->group(function(){
-    Route::post('/save', [TenantDocumentController::class, 'saveTenantDocument']);
-    Route::post('/list-paginate', [TenantDocumentController::class, 'getListPaginate']);
-    Route::post('/details', [TenantDocumentController::class, 'getDetails']);
-    Route::post('/delete', [TenantDocumentController::class, 'deleteTenantDocument']);
-    Route::post('/form-options', [TenantDocumentController::class, 'getFormOptions']);
-    Route::post('/download', [TenantDocumentController::class, 'downloadDocument']);
-});
+
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {
     Route::post('/options-floors', [GeneralSettingsController::class, 'getOptions_floors']);

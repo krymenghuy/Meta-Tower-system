@@ -128,9 +128,11 @@ return [
                 'js/components/prm/BuildingComponent.js',
                 'js/components/prm/ContractComponent.js',
                 'js/components/prm/SpaceComponent.js',
+                'js/components/prm/MaintenanceComponent.js',
                 'js/components/prm/ReceiptComponent.js',
                 'js/components/prm/ServiceComponent.js',
                 'js/components/prm/VendorComponent.js',
+                'js/components/prm/PurchasesComponent.js',
                 'js/components/prm/InvoiceComponent.js',
                 'js/components/prm/AccessControlComponent.js',
                 'js/components/prm/SettingComponent.js',
@@ -138,6 +140,8 @@ return [
                 'js/components/prm/ExpenseComponent.js',
                 'js/components/prm/ServiceRequestComponent.js',
                 'js/components/prm/ReservationComponent.js',
+                'js/components/prm/AmenityComponent.js',
+                'js/components/prm/ItemsComponent.js'
 
 
 

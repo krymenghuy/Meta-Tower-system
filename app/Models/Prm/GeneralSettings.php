@@ -518,7 +518,14 @@ class GeneralSettings //extends Model
         return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
     }
 
-
+    static function options_vendor_categories($ss)
+    {
+        return DB::table('vendor_categories')->selectRaw('id,name as vendor_category')->get();
+    }
+    static function options_vendor_statuses($ss)
+    {
+        return DB::table('vendor_statuses')->selectRaw('id,name as vendor_status')->get();
+    }
     static function options_contracts($ss)
     {
         return DB::table('contracts')->selectRaw('id,name as contract')->get();
@@ -526,7 +533,11 @@ class GeneralSettings //extends Model
 
     static function options_space_status($ss)
     {
-        return DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
+        $rows = DB::table('space_statuses')->selectRaw('id,name as space_status')->get();
+        // if($rows){
+        //     $rows[] = (object) ['id' => 4, 'space_status' => 'Maintenance'];
+        // }
+        return $rows;
     }
     static function options_payment_status($ss)
     {

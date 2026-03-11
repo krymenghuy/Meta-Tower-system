@@ -64,7 +64,11 @@ class Contract
         }
         $id = DBX::saveData($ss, 'contracts', ['id' => $id], $inputs, [], 1);
         if ($id) {
-            DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => 2]);
+            // Mark the unit (space) as Occupied when a contract uses it
+            $occupiedStatusId = self::getSpaceOccupiedStatusId();
+            if ($space_id && $occupiedStatusId) {
+                DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => $occupiedStatusId]);
+            }
             $hasActive = DB::table('contracts')
                 ->where('tenant_id', $inputs['tenant_id'])
                 ->whereDate('end_date', '>=', now())
@@ -114,6 +118,32 @@ class Contract
             ->value('id');
 
         return $expiredId ?: 2;
+    }
+
+    /** Get space_statuses.id for "Occupied" (used when a contract is created/uses a unit). */
+    protected static function getSpaceOccupiedStatusId()
+    {
+        $id = DB::table('space_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['occupied'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['occupied']);
+            })
+            ->value('id');
+
+        return $id;
+    }
+
+    /** Get space_statuses.id for "Available". */
+    protected static function getSpaceAvailableStatusId()
+    {
+        $id = DB::table('space_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['available'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['available']);
+            })
+            ->value('id');
+
+        return $id;
     }
 
   static function checkDuplicateContract($space_id, $id = null)
@@ -182,7 +212,8 @@ class Contract
         $start_date = DBX::formatDate("c.start_date", 'start_date' );
         $end_date = DBX::formatDate("c.end_date", 'end_date' );
         $updated_at = DBX::formatTime("c.updated_at", 'updated_at' );
-        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.deposit,c.remarks,c.update_user,'.$updated_at.'';
+        $lastRenewalDate = "(SELECT DATE_FORMAT(cr.renewal_date,'%d-%b-%Y') FROM contract_renewals cr WHERE cr.contract_id = c.id ORDER BY cr.id DESC LIMIT 1) AS last_renewal_date";
+        $selectCols = 'c.id,c.tenant_id,t.name as tenant_name,t.code,t.email,t.phone_number,c.legal_name,c.status_id,cs.name as status,'.$start_date.','.$end_date.','.$lastRenewalDate.',c.business_type_id,bt.name as business_type,c.space_type_id,st.name as space_type,c.space_id, bs.code as space_code,c.sqm_size,c.price,c.price_type,c.deposit,c.remarks,c.update_user,'.$updated_at.'';
         $query = DB::table('contracts as c')
             ->join('tenants as t', 't.id', '=', 'c.tenant_id')
             ->join('contract_statuses as cs', 'cs.id', '=', 'c.status_id')
@@ -209,6 +240,55 @@ class Contract
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+    /**
+     * Paginated list of contract_renewals (old renew contracts).
+     * Optional filters: contract_id, search_value (remarks). Optional branch_id scope.
+     */
+    public function getListRenewalsPaginate($arr, $ss = null)
+    {
+        $d = (object) $arr;
+        $contract_id = isset($d->contract_id) && is_numeric($d->contract_id) ? (int) $d->contract_id : null;
+        $search_value = $d->search_value ?? null;
+        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? (int) $d->current_page : 1;
+        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? (int) $d->per_page : 10;
+        if ($current_page < 1) {
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+
+        $str_where = '1=1';
+        if ($contract_id) {
+            $str_where .= ' AND cr.contract_id = ' . $contract_id;
+        }
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_where .= " AND (cr.remarks LIKE '%" . $search_value . "%')";
+        }
+        if ($ss && isset($ss->branch_id) && $ss->branch_id !== null && $ss->branch_id !== '') {
+            $str_where .= ' AND (cr.branch_id IS NULL OR cr.branch_id = ' . (int) $ss->branch_id . ')';
+        }
+
+        $renewal_date = DBX::formatDate('cr.renewal_date', 'renewal_date');
+        $start_date = DBX::formatDate('cr.start_date', 'start_date');
+        $end_date = DBX::formatDate('cr.end_date', 'end_date');
+        $updated_at = DBX::formatTime('cr.updated_at', 'updated_at');
+
+        $selectCols = 'cr.id, cr.contract_id, cr.space_id, ' . $renewal_date . ', ' . $start_date . ', ' . $end_date . ', cr.status, cr.remarks, cr.update_user, ' . $updated_at . ', c.tenant_id, t.name as tenant_name, bs.code as space_code';
+
+        $query = DB::table('contract_renewals as cr')
+            ->join('contracts as c', 'c.id', '=', 'cr.contract_id')
+            ->join('tenants as t', 't.id', '=', 'c.tenant_id')
+            ->join('building_spaces as bs', 'bs.id', '=', 'cr.space_id')
+            ->whereRaw($str_where)
+            ->selectRaw($selectCols)
+            ->orderByRaw('cr.id desc');
+
+        $clone_query = clone $query;
+        $count = $clone_query->count('cr.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 
     public static function contractDetails($id)
         {
@@ -281,6 +361,7 @@ class Contract
         'price'      => '0|number',
         'price_type' => '0|string|default=sqm',
         'remarks'    => '0|string|0-255',
+        'space_id'   => '0|number|exists=building_spaces.id',
     ];
 
     $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
@@ -290,8 +371,8 @@ class Contract
 
     $today = date('Y-m-d');
 
-    if ($old->status_id == 1 && strtotime($inputs['start_date']) <= strtotime($old->end_date)) {
-        return DV::error('New start date must be after current end date');
+    if ($old->status_id == 1 && strtotime($inputs['start_date']) < strtotime($old->end_date)) {
+        return DV::error('New start date must be on or after current end date');
     }
     if ($old->status_id == 2 && $inputs['start_date'] < $today) {
         return DV::error('Renew start date must be today or later');
@@ -305,52 +386,120 @@ class Contract
         return DV::error('End date must be after start date');
     }
 
+    $new_space_id = isset($inputs['space_id']) && $inputs['space_id'] ? (int) $inputs['space_id'] : (int) $old->space_id;
+    if ($new_space_id && $new_space_id != $old->space_id) {
+        $dup_id = self::checkDuplicateContract($new_space_id, $old->id);
+        if ($dup_id) {
+            return DV::error('The selected unit already has a contract.');
+        }
+    }
 
-    $new = [
-        'tenant_id'        => $old->tenant_id,
-        'legal_name'       => $old->legal_name,
-        'business_type_id' => $old->business_type_id,
-        'space_type_id'    => $old->space_type_id,
-        'space_id'         => $old->space_id,
-        'sqm_size'         => $old->sqm_size,
-        'price'            => $inputs['price'] ?? $old->price,
-        'price_type'       => $inputs['price_type'] ?? $old->price_type,
-        'start_date'       => $inputs['start_date'],
-        'end_date'         => $inputs['end_date'],
-        'remarks'          => $inputs['remarks'] ?? ('Renewed from contract #' . $old->id),
-        'status_id'        => 1,
-        'renew_from_id'    => $old->id,
+    // Renew = update existing contract (new period); do NOT insert a new row in contracts.
+    // Renewal data (period, date, etc.) is stored only in contract_renewals.
+    // When unit code is changed on renew: do NOT update contract.space_id yet; it will be updated
+    // when current date equals the renewal start_date (see applyPendingRenewalUnitChanges).
+    $unitChanged = $new_space_id && (int) $old->space_id !== (int) $new_space_id;
+    $updateContract = [
+        'start_date' => $inputs['start_date'],
+        'end_date'   => $inputs['end_date'],
+        'price'      => $inputs['price'] ?? $old->price,
+        'price_type' => $inputs['price_type'] ?? $old->price_type,
+        'remarks'    => $inputs['remarks'] ?? $old->remarks,
     ];
+    if (!$unitChanged) {
+        $updateContract['space_id'] = $new_space_id ?: $old->space_id;
+    }
 
     DB::beginTransaction();
 
-    $new_id = DBX::saveData($ss, 'contracts', ['id' => null], $new, [], 1);
-
-    if (!$new_id) {
+    $updated = DBX::saveData($ss, 'contracts', ['id' => $old->id], $updateContract, [], 1);
+    if (!$updated) {
         DB::rollBack();
         return DV::error('Renew failed');
     }
 
-    DB::table('contracts')
-        ->where('id', $old->id)
-        ->update([
-            'status_id' => 2,
-            'renew_to_id' => $new_id
-        ]);
+    // When unit code is unchanged on renew: set new space to Occupied (contract already updated above).
+    // When unit code is changed: defer space status and contract.space_id update until renewal start_date.
+    if (!$unitChanged && $new_space_id) {
+        $occupiedId = self::getSpaceOccupiedStatusId();
+        if ($occupiedId) {
+            DB::table('building_spaces')->where('id', $new_space_id)->update(['status_id' => $occupiedId]);
+        }
+    }
 
-    DB::table('building_spaces')
-        ->where('id', $old->space_id)
-        ->update(['status_id' => 2]);
-
-    DB::table('tenants')
-        ->where('id', $old->tenant_id)
-        ->update(['status_id' => 2]);
+    // Store renewal record only in contract_renewals (not in contracts table)
+    $now = getNowTime();
+    $renewalRow = [
+        'contract_id'   => $old->id,
+        'space_id'     => $new_space_id ?: $old->space_id,
+        'renewal_date' => $today,
+        'start_date'   => $inputs['start_date'],
+        'end_date'     => $inputs['end_date'],
+        'status'       => 'active',
+        'remarks'      => trim((string) ($inputs['remarks'] ?? '')),
+        'created_at'   => $now,
+        'updated_at'   => $now,
+        'create_uid'   => $ss->user_id ?? null,
+        'update_uid'   => $ss->user_id ?? null,
+        'create_user'  => $ss->full_name ?? null,
+        'update_user'  => $ss->full_name ?? null,
+    ];
+    if (isset($ss->branch_id) && $ss->branch_id !== null && $ss->branch_id !== '') {
+        $renewalRow['branch_id'] = $ss->branch_id;
+    }
+    DB::table('contract_renewals')->insert($renewalRow);
 
     DB::commit();
 
     return DV::depends(1, [
-        'new_contract_id' => $new_id
+        'contract_id' => $old->id
     ]);
+}
+
+/**
+ * Apply pending renewal unit changes: for renewals whose start_date is today and whose
+ * space_id differs from the contract's current space_id, update the contract's unit code
+ * and set old space to Available, new space to Occupied.
+ * Call this daily (e.g. via scheduler) so contract unit updates when renewal starts.
+ */
+public static function applyPendingRenewalUnitChanges()
+{
+    $today = date('Y-m-d');
+    $availableId = self::getSpaceAvailableStatusId();
+    $occupiedId = self::getSpaceOccupiedStatusId();
+    if (!$occupiedId) {
+        return;
+    }
+
+    $pending = DB::table('contract_renewals as cr')
+        ->join('contracts as c', 'c.id', '=', 'cr.contract_id')
+        ->whereRaw('DATE(cr.start_date) = ?', [$today])
+        ->whereColumn('c.space_id', '!=', 'cr.space_id')
+        ->whereNotNull('cr.space_id')
+        ->select('cr.contract_id', 'cr.space_id as new_space_id', 'c.space_id as old_space_id')
+        ->get();
+
+    foreach ($pending as $row) {
+        $contractId = (int) $row->contract_id;
+        $newSpaceId = (int) $row->new_space_id;
+        $oldSpaceId = (int) $row->old_space_id;
+        if ($newSpaceId === $oldSpaceId) {
+            continue;
+        }
+        DB::beginTransaction();
+        try {
+            DB::table('contracts')->where('id', $contractId)->update(['space_id' => $newSpaceId]);
+            if ($oldSpaceId && $availableId) {
+                DB::table('building_spaces')->where('id', $oldSpaceId)->update(['status_id' => $availableId]);
+            }
+            if ($newSpaceId && $occupiedId) {
+                DB::table('building_spaces')->where('id', $newSpaceId)->update(['status_id' => $occupiedId]);
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+        }
+    }
 }
 
 static function getTenantInfo($arr=[], $ss = null)

@@ -1,14 +1,14 @@
 "use strict";
-var VendorComponent = (() => {
+var MaintenanceComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Vendors";
+    mThis.title_prop = "Maintenance";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_vendor_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
-    mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_category_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_vendor");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_maintenance_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btn_maintenance");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_maintenance");
+    mThis.elFilter_type = mThis.self.querySelector('#_maintenance_type_id');
+    mThis.elFilter_category = mThis.self.querySelector('#_maintenance_category_id');
+    mThis.elSearch = mThis.self.querySelector("#_search_maintenance");
 
 
     mThis.cols = [
@@ -128,7 +128,7 @@ var VendorComponent = (() => {
                     </div>
                 `;
             }
-        }, 
+        },
         {
             title: "Status",
             className: "align-middle text-center",
@@ -176,7 +176,7 @@ var VendorComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.VendorListView = new ListView('_vendor_list', {
+        mThis.MaintenanceListView = new ListView('_maintenance_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -198,7 +198,7 @@ var VendorComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.VendorListView.showPage(mThis.getFilterData());
+                    mThis.MaintenanceListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
@@ -206,7 +206,7 @@ var VendorComponent = (() => {
         };
 
 
-        mThis.pr_tbl = mThis.VendorListView.getListContainer();
+        mThis.pr_tbl = mThis.MaintenanceListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -214,13 +214,13 @@ var VendorComponent = (() => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         }
-        mThis.tblVendor = mThis.VendorListView.getTable();
+        mThis.tblVendor = mThis.MaintenanceListView.getTable();
         mThis.initDropdownMenus(mThis.tblVendor);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.MaintenanceListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -228,7 +228,7 @@ var VendorComponent = (() => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.MaintenanceListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -296,7 +296,7 @@ var VendorComponent = (() => {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.MaintenanceListView.showPage(mThis.getFilterData());
             }
         };
 
@@ -307,7 +307,7 @@ var VendorComponent = (() => {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.MaintenanceListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -319,7 +319,7 @@ var VendorComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/vendor/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.VendorListView.showPage();
+                        mThis.MaintenanceListView.showPage();
                     } else {
                         cv_interact.error(res.error_message);
                     }
@@ -344,7 +344,7 @@ var VendorComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.VendorListView.showPage(mThis.getFilterData());
+            mThis.MaintenanceListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -353,189 +353,7 @@ var VendorComponent = (() => {
 
 
 
-const CreateVendorDialog = (() => {
-    const self = {};
-    let dialog = null;
 
-    self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `
-                <div class="vendor-form row p-1">
-                        <div class="col-12 row pb-3">
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Name</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Type</label>
-                                <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
-                                </div>
-                            </div>
-                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id"></select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="tax_number"
-                                        class="data-input form-control"
-                                        data-field="tax_number"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Phone Number </label>
-                                <div class="material-input outlined">
-                                    <input type="number"
-                                        name="phone"
-                                        class="data-input form-control"
-                                        data-field="phone"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Email</label>
-                                <div class="material-input outlined">
-                                    <input type="email"
-                                        name="email"
-                                        class="data-input form-control"
-                                        data-field="email"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Person</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_person"
-                                        class="data-input form-control"
-                                        data-field="contact_person"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Phone</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_phone"
-                                        class="data-input form-control"
-                                        data-field="contact_phone"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;">Address</label>
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control"
-                                        data-field="address"
-                                        rows="3"
-                                        placeholder=" ">
-                                    </textarea>
-                                </div>
-                            </div>
-                         </div>
-                        
-                        
-
-
-                </div>
-                `;
-
-                },
-
-                contentCreated: (me) => {
-                },
-                configSelect: [
-                    {
-                        name: "vendor_type_id",
-                        data: "vendor_types",
-                        textField: "vendor_type",
-                        valueField: "id",
-                    },
-                    {
-                        name: "vendor_category_id",
-                        data: "vendor_categories",
-                        textField: "vendor_category",
-                        valueField: "id",
-                    },
-
-                ],
-                prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
-                    targetProp: "vendor_details",
-                    api: {
-                        endpoint: [main_view.base_url, "/prm/vendor/form-options",].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                },
-
-                onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
-                },
-
-
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: 'btn btn-secondary',
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: '<span vslang="buttons.Save"></span>',
-                        cssClass: 'btn btn-primary',
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/vendor/save",].join(""), op, btn, null).then((res) => {
-                                if (res.status_code === 200) {
-                                    me.hide(true, op);
-                                    if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Vendor has been updated successfully"
-                                        );
-                                    } else {
-                                        cv_interact.success(
-                                            "New vendor has been added successfully"
-                                        );
-                                    }
-                                } else {
-                                    cv_interact.error(res.error_message);
-                                }
-                            });
-                        },
-                    },
-                ],
-            });
-        dialog.show(op);
-    };
-    return self;
-})();
 
 
 

@@ -1,30 +1,32 @@
 "use strict";
 
-var TenantComponent = new(function () {
+var TenantComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Tenant Management";
-    this.defaultPage = 'tenant_list';
-    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component");
+    this.defaultPage = "tenant_list";
+    mThis.self = main_view.VSAppContent.querySelector("#_main_tenant_component",);
     mThis.btnAdd = mThis.self.querySelector("#_btnAddTenant");
     mThis.btnDocument = mThis.self.querySelector("#_btnDocument");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_tenant");
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
-    mThis.elStatus = mThis.self.querySelector('#_el_tenant_status');
+    mThis.elStatus = mThis.self.querySelector("#_el_tenant_status");
     mThis.btnBack = document.querySelector("#_btn_back_tenant");
 
-    mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
-    mThis.divProfileView = document.querySelector('#_ten_profile_view');
+    mThis.divTenantListContainer = mThis.self.querySelector(
+        "#_tenant_list_container",
+    );
+    mThis.divProfileView = document.querySelector("#_ten_profile_view");
 
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
-    mThis.currentViewMode = 'card';
-    mThis.paginationContainer = mThis.self.querySelector("#tenant_card_container_pagination");
+    mThis.currentViewMode = "card";
+    mThis.paginationContainer = mThis.self.querySelector("#tenant_card_container_pagination", );
     this.pages = {
         tenant_list: this.divTenantListContainer,
-        profile_view: this.divProfileView
+        profile_view: this.divProfileView,
     };
     // console.log(8989,this.pages);
-    mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant");
+    mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant",);
     mThis.cols = [
         {
             title: "",
@@ -33,41 +35,47 @@ var TenantComponent = new(function () {
         {
             title: "photo",
             className: "align-middle",
-            data: (data) => `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+            data: (data) =>
+                `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
         },
         {
             title: "Name",
             className: "align-middle",
             data: (data) => {
-                const sexLabel = data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other';
+                const sexLabel =
+                    data.sex === "M"
+                        ? "Male"
+                        : data.sex === "F"
+                          ? "Female"
+                          : "Other";
                 return `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ''}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
                         <small class="d-block text-muted">${sexLabel}</small>
                     </div>
                 `;
-            }
+            },
         },
         {
             title: "Date of Birth",
             className: "align-middle ",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? ''}</span>`;
-            }
+                return `<span class="text-prm-custom text-nowrap">${data.date_of_birth ?? ""}</span>`;
+            },
         },
         {
             title: "National ID",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? ''}</span>`;
-            }
+                return `<span class="text-prm-custom text-nowrap">${data.national_id ?? ""}</span>`;
+            },
         },
         {
             title: "Passport",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? ''}</span>`;
-            }
+                return `<span class="text-prm-custom text-nowrap">${data.passport_number ?? ""}</span>`;
+            },
         },
         {
             title: "Contact Info",
@@ -80,26 +88,27 @@ var TenantComponent = new(function () {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
+                const status = (data.status ?? "").toLowerCase();
 
-                const status = (data.status ?? '').toLowerCase();
+                let cls =
+                    "badge text-dark bg-warning-subtle border border-warning";
 
-                let cls = 'badge text-dark bg-warning-subtle border border-warning';
-
-                if (status === 'pending') {
-                    cls = 'badge text-dark bg-warning-subtle border border-warning';
-                }
-                else if (status === 'inactive') {
-                    cls = 'badge text-dark bg-danger-subtle border border-danger';
-                }
-                else if (status === 'active') {
-                    cls = 'badge text-success bg-success-subtle border border-success';
+                if (status === "pending") {
+                    cls =
+                        "badge text-dark bg-warning-subtle border border-warning";
+                } else if (status === "inactive") {
+                    cls =
+                        "badge text-dark bg-danger-subtle border border-danger";
+                } else if (status === "active") {
+                    cls =
+                        "badge text-success bg-success-subtle border border-success";
                 }
 
                 return `
                     <span class="${cls} text-capitalize d-inline-block text-center"
                         style="min-width:70px"
                         data-status_id="${data.status_id}">
-                        ${data.status ?? ''}
+                        ${data.status ?? ""}
                     </span>
                 `;
             },
@@ -107,16 +116,16 @@ var TenantComponent = new(function () {
 
         {
             title: "Updated By",
-            className: 'align-middle',
+            className: "align-middle",
             data: (data) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><small>${data.update_user ?? ''}</small></span>
-                    <small class="text-muted">${data.updated_at ?? ''}</small>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><small>${data.update_user ?? ""}</small></span>
+                    <small class="text-muted">${data.updated_at ?? ""}</small>
                 </div>`;
-            }
+            },
         },
         {
-            className: 'col_action align-middle',
+            className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)"
@@ -128,7 +137,7 @@ var TenantComponent = new(function () {
                     style="cursor: pointer; padding: 8px;">
                         <i class="fa-solid fa-ellipsis-vertical text-prm-custom fs-5" ></i>
                     </a>
-                </div>`
+                </div>`,
         },
     ];
     mThis.init = () => {
@@ -141,21 +150,22 @@ var TenantComponent = new(function () {
             renderItems: (items, container) => {
                 mThis.renderTenantCard(container, items);
             },
-            listContainerClass: null
+            listContainerClass: null,
         });
         mThis.tenantListView = new ListView(mThis.listViewContainer, {
             fetchApi: `${main_view.base_url}/prm/tenant/list-paginate`,
             perPage: 10,
             columns: mThis.cols,
             apiCluster: main_view.apiCluster,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase text-nowrap',
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase text-nowrap",
             rowCreated: (data, index, tr) => {
                 // console.log(9090,tr);
 
                 tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
                 mThis.initDropdownMenus(tr);
-            }
+            },
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -165,41 +175,41 @@ var TenantComponent = new(function () {
                 onClose: () => {
                     mThis.renderView();
                     // mThis.tenantListView.showPage(mThis.getFilterData());
-                }
+                },
             };
             CreateTenantDialog.show(op);
         };
-         mThis.btnBack.onclick = function (e) {
+        mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            mThis.showPage('tenant_list',mThis.getFilterData());
+            mThis.showPage("tenant_list", mThis.getFilterData());
         };
-        const cardTab = document.getElementById('tenantViewCard');
-        const listTab = document.getElementById('tenantViewList');
+        const cardTab = document.getElementById("tenantViewCard");
+        const listTab = document.getElementById("tenantViewList");
         if (cardTab && listTab) {
-            cardTab.addEventListener('change', () => {
-                mThis.currentViewMode = 'card';
+            cardTab.addEventListener("change", () => {
+                mThis.currentViewMode = "card";
                 mThis.renderView();
             });
 
-            listTab.addEventListener('change', () => {
-                mThis.currentViewMode = 'list';
+            listTab.addEventListener("change", () => {
+                mThis.currentViewMode = "list";
                 mThis.renderView();
             });
         }
         mThis.pr_tbl = mThis.tenantListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = (window.innerHeight - 190) + 'px';
+        sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
         sh_parent.classList.add("overflow-y-auto");
         // sh_parent.classList.add("overflow-x-hidden");
         window.onresize = () => {
-            sh_parent.style.maxHeight = (window.innerHeight - 190) + 'px';
-        }
+            sh_parent.style.maxHeight = window.innerHeight - 190 + "px";
+        };
         mThis.tblTenant = mThis.tenantListView.getTable();
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
-            el.onchange = () =>{
-                 mThis.renderView();
-            }
+            el.onchange = () => {
+                mThis.renderView();
+            };
         });
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
@@ -214,71 +224,71 @@ var TenantComponent = new(function () {
         mThis.initAlready = true;
     };
 
-     mThis.initDropdownMenus = (listContainer) => {
+    mThis.initDropdownMenus = (listContainer) => {
         const menuOptopns = {
             containerElement: listContainer,
             actionButtonClass: "btn-tenant-dropdown-action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-
                 {
                     html: '<span class="ps-2">View Profile</span>',
                     icon: `<i class="fa-solid fa-user fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "view_profile"
+                    name: "view_profile",
                 },
                 {
                     html: '<span class="ps-2">Create Contract</span>',
                     icon: `<i class="fa-solid fa-file-contract fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "create_contract"
+                    name: "create_contract",
                 },
                 {
                     html: '<span class="ps-2">Upload Document</span>',
                     icon: `<i class="fa-solid fa-file-upload fs-5 text-muted"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "upload_document"
+                    name: "upload_document",
                 },
                 {
                     html: '<span class="ps-2">Renew Contract</span>',
                     icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
 
                     cssClass: "border-bottom pb-2",
-                    name: "renew_contract"
+                    name: "renew_contract",
                 },
                 {
                     html: '<span class="ps-2">Edit Information</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_tenant"
+                    name: "edit_tenant",
                 },
                 {
                     html: '<span class="ps-2">Delete Tenant</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_tenant"
+                    name: "delete_tenant",
                 },
                 {
                     html: '<span class="ps-2">Service Requests</span>',
                     icon: `<i class="fa-solid fa-screwdriver-wrench fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "service_request"
+                    name: "service_request",
                 },
-
             ],
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
-                console.log(123456,status_id);
+                console.log(123456, status_id);
 
                 // menu.edit_student.style.display = enroll_finalized == 1 ? 'none' : 'block';
-                menu.create_contract.style.display = status_id == 1 ? 'block' : 'none';
-                menu.renew_contract.style.display = status_id > 1 ? 'block' : 'none';
-                menu.service_request.style.display = status_id == 2 ? 'block' : 'none';
-                menu.upload_document.style.display = status_id == 1 ? 'block' : 'none';
-
-
+                menu.create_contract.style.display =
+                    status_id == 1 ? "block" : "none";
+                menu.renew_contract.style.display =
+                    status_id > 1 ? "block" : "none";
+                menu.service_request.style.display =
+                    status_id == 2 ? "block" : "none";
+                menu.upload_document.style.display =
+                    status_id == 1 ? "block" : "none";
             },
             // adjustPosition: {
             //     top: -200,
@@ -287,32 +297,31 @@ var TenantComponent = new(function () {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
-                    case 'view_profile': {
-                        mThis.showPage('profile_view',{"tenant_id":id});
+                    case "view_profile": {
+                        mThis.showPage("profile_view", { tenant_id: id });
                         break;
                     }
-                    case 'create_contract': {
+                    case "create_contract": {
                         mThis.createContract(id, menuLink);
                         break;
                     }
-                    case 'upload_document': {
+                    case "upload_document": {
                         mThis.uploadDocument(id, menuLink);
                         break;
                     }
-                    case 'renew_contract': {
+                    case "renew_contract": {
                         mThis.renewContract(id, menuLink);
                         break;
                     }
-                    case 'edit_tenant': {
+                    case "edit_tenant": {
                         mThis.editTenant(id, menuLink);
                         break;
                     }
-                    case 'delete_tenant': {
+                    case "delete_tenant": {
                         mThis.deleteTenant(id, menuLink);
                         break;
                     }
-                    case 'service_request': {
+                    case "service_request": {
                         mThis.serviceRequest(id, menuLink);
                         break;
                     }
@@ -330,17 +339,17 @@ var TenantComponent = new(function () {
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
         CreateTenantDialog.show(op);
     };
-      mThis.serviceRequest = (id, menuLink) => {
+    mThis.serviceRequest = (id, menuLink) => {
         let op = {
             id: null, // id
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
         CreateServiceRequestDialog.show(op);
     };
@@ -350,7 +359,7 @@ var TenantComponent = new(function () {
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
         ContractDialog.show(op);
     };
@@ -361,9 +370,9 @@ var TenantComponent = new(function () {
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
-        console.log(111,op);
+        console.log(111, op);
 
         TenantDocumentDialog.show(op);
     };
@@ -373,10 +382,10 @@ var TenantComponent = new(function () {
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
         // renewDialog.show(op);
-        alert('coming soon!');
+        alert("coming soon!");
     };
     mThis.deleteTenant = (id, menuLink) => {
         let op = {
@@ -384,25 +393,37 @@ var TenantComponent = new(function () {
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
-            }
+            },
         };
         // if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Tenant?', {
-            title: 'Delete Tenant',
-            context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/tenant/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.renderView();
-                        cv_interact.success('Tenant deleted');
-                    } else {
-                        cv_interact.error(res.error_message);
-                    }
-                });
-            }
-        });
+        cv_interact.confirm(
+            "Delete this Tenant?",
+            {
+                title: "Delete Tenant",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/tenant/delete`,
+                            op,
+                            false,
+                            false,
+                            false,
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                mThis.renderView();
+                                cv_interact.success("Tenant deleted");
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                }
+            },
+        );
     };
     mThis.renderTenantCard = (div, data) => {
         data = data ?? [];
@@ -414,26 +435,28 @@ var TenantComponent = new(function () {
             mThis.renderCard(div, data);
         });
     };
-    mThis.renderCard = (container,data) => {
-
-        console.log(8888,data);
+    mThis.renderCard = (container, data) => {
+        console.log(8888, data);
         container.innerHTML = "";
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
-            data.forEach(d => {
+            data.forEach((d) => {
                 const status = (d.status || "Pending").toLowerCase();
                 let statusClass = "";
                 switch (status) {
                     case "active":
-                        statusClass = "badge text-dark bg-success-subtle border border-success";
+                        statusClass =
+                            "badge text-dark bg-success-subtle border border-success";
 
                         break;
                     case "inactive":
-                        statusClass = "badge text-dark bg-danger-subtle border border-danger";
+                        statusClass =
+                            "badge text-dark bg-danger-subtle border border-danger";
 
                         break;
                     default:
-                        statusClass = "badge text-dark bg-warning-subtle border border-warning";
+                        statusClass =
+                            "badge text-dark bg-warning-subtle border border-warning";
 
                         break;
                 }
@@ -445,7 +468,7 @@ var TenantComponent = new(function () {
                                     <div class="d-flex gap-3 align-items-start">
                                         <div class="flex-shrink-0 rounded-3 shadow-sm overflow-hidden d-flex align-items-center justify-content-center"
                                             style="width:80px;height:80px;">
-                                            <img src="${d.image_url || main_view.asset_url + '/images/default/default-staff1.png'}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
+                                            <img src="${d.image_url || main_view.asset_url + "/images/default/default-staff1.png"}" alt="Profile" class="img-fluid w-100 h-100 object-fit-cover">
                                         </div>
                                         <div class="flex items-start justify-between mb-6">
                                             <span class="fw-semibold text-start mb-1 text-dark">${d.name}</span>
@@ -464,14 +487,14 @@ var TenantComponent = new(function () {
                                 <div class="row g-4 py-2 border-bottom border-gray">
                                     <div class="col-4">
                                         <div class="card bg-prm-custom text-center shadow-sm">
-                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? 'Unit'}</div>
+                                                <div class="fw-bold fs-5 text-gold-custom">${d.space_code ?? "Unit"}</div>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
                                     <div class="col-6">
                                         ${
                                             d.end_date
-                                            ? `
+                                                ? `
                                                 <div class="d-flex flex-column text-center gap-1">
                                                     <span class="text-prm-custom fw-semibold">
                                                         Lease Expiry
@@ -481,7 +504,7 @@ var TenantComponent = new(function () {
                                                     </small>
                                                 </div>
                                             `
-                                            : `
+                                                : `
                                                 <div class="text-end">
                                                     <a href="javascript:void(0)"
                                                     class="create-tenant-contract fw-semibold"
@@ -500,11 +523,11 @@ var TenantComponent = new(function () {
                                 <div class="card_container" style="max-width: 250px;">
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-hashtag me-2 text-muted"></i>
-                                        <span>${d.code ?? 'N/A'}</span>
+                                        <span>${d.code ?? "N/A"}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-regular fa-calendar me-2 text-muted"></i>
-                                        <span>${d.date_of_birth ?? 'N/A'}</span>
+                                        <span>${d.date_of_birth ?? "N/A"}</span>
                                     </p>
                                     <p class="ps-3 mb-2 text-prm-custom">
                                         <i class="fa-solid fa-phone me-2 text-muted"></i>
@@ -534,7 +557,6 @@ var TenantComponent = new(function () {
                     </div>
                     `;
             });
-
         } else {
             html += `
             <div class="col-12">
@@ -543,71 +565,71 @@ var TenantComponent = new(function () {
                 </div>
             </div>`;
         }
-            html += `</div>`;
-            container.innerHTML = html;
-            const seeProfileInfo = mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
-            seeProfileInfo.forEach((link) => {
-                link.addEventListener("click", (e) => {
-                    const tenantId = e.currentTarget.dataset.id;
-                    mThis.tenant_id = tenantId;
-                    mThis.showPage('profile_view',tenantId);
-                    //const employeeData = data.find((emp) => emp.id == employeeId);
-                    // if (employeeData) {
-                    //     let sub_content = mThis.self.querySelector("#sub_content");
-                    //     sub_content.classList.add("d-none");
-                    //     let view_see_info =
-                    //         mThis.self.querySelector("#view_see_info__");
-                    //     view_see_info.classList.remove("d-none");
+        html += `</div>`;
+        container.innerHTML = html;
+        const seeProfileInfo =
+            mThis.cardViewContainer.querySelectorAll(".see-tenant-detail");
+        seeProfileInfo.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                mThis.showPage("profile_view", tenantId);
+                //const employeeData = data.find((emp) => emp.id == employeeId);
+                // if (employeeData) {
+                //     let sub_content = mThis.self.querySelector("#sub_content");
+                //     sub_content.classList.add("d-none");
+                //     let view_see_info =
+                //         mThis.self.querySelector("#view_see_info__");
+                //     view_see_info.classList.remove("d-none");
 
-                    //     mThis.renderProfile(employeeData);
-                    //     mThis.renderCardCenter(employeeId);
-                    //     mThis.renderCardLeft(employeeId);
-                    //     mThis.renderCardRight(employeeId);
-                    //     mThis.renderCardTaxAllowance(employeeId);
-                    //     mThis.renderEmpDocuments(employeeId);
-                    // } else {
-                    //     console.error(
-                    //         "Employee data not found for ID:",
-                    //         employeeId
-                    //     );
-                    // }
-                });
+                //     mThis.renderProfile(employeeData);
+                //     mThis.renderCardCenter(employeeId);
+                //     mThis.renderCardLeft(employeeId);
+                //     mThis.renderCardRight(employeeId);
+                //     mThis.renderCardTaxAllowance(employeeId);
+                //     mThis.renderEmpDocuments(employeeId);
+                // } else {
+                //     console.error(
+                //         "Employee data not found for ID:",
+                //         employeeId
+                //     );
+                // }
             });
+        });
 
-            const createContract = mThis.cardViewContainer.querySelectorAll(".create-tenant-contract");
-            createContract.forEach((link) => {
-                link.addEventListener("click", (e) => {
-                    const tenantId = e.currentTarget.dataset.id;
-                    mThis.tenant_id = tenantId;
-                    ContractDialog.show(tenantId);
-
-                });
+        const createContract = mThis.cardViewContainer.querySelectorAll(
+            ".create-tenant-contract",
+        );
+        createContract.forEach((link) => {
+            link.addEventListener("click", (e) => {
+                const tenantId = e.currentTarget.dataset.id;
+                mThis.tenant_id = tenantId;
+                ContractDialog.show(tenantId);
             });
-            const container_te = mThis.cardViewContainer;
-            const te_parent = container_te;
-            te_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
-            te_parent.classList.add("overflow-y-auto");
-            te_parent.classList.add("overflow-x-hidden");
+        });
+        const container_te = mThis.cardViewContainer;
+        const te_parent = container_te;
+        te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        te_parent.classList.add("overflow-y-auto");
+        te_parent.classList.add("overflow-x-hidden");
 
-            window.onresize = () => {
-                te_parent.style.maxHeight = (window.innerHeight - 230) + 'px';
-            };
+        window.onresize = () => {
+            te_parent.style.maxHeight = window.innerHeight - 230 + "px";
+        };
     };
 
     mThis.renderView = () => {
         const params = mThis.getFilterData();
 
-
-
-        if (mThis.currentViewMode === 'card') {
-            mThis.cardViewContainer.classList.remove('d-none');
-            mThis.listViewContainer.classList.add('d-none');
-            mThis.paginationContainer.style.display = 'block';
+        if (mThis.currentViewMode === "card") {
+            mThis.cardViewContainer.classList.remove("d-none");
+            mThis.listViewContainer.classList.add("d-none");
+            mThis.paginationContainer.style.display = "block";
             mThis.tenantCardView.showPage(params);
         } else {
-            mThis.cardViewContainer.classList.add('d-none');
-            mThis.listViewContainer.classList.remove('d-none');
-            mThis.paginationContainer.style.display = 'none';
+            mThis.cardViewContainer.classList.add("d-none");
+            mThis.listViewContainer.classList.remove("d-none");
+            mThis.paginationContainer.style.display = "none";
             mThis.tenantListView.showPage(params);
         }
     };
@@ -617,72 +639,77 @@ var TenantComponent = new(function () {
             status_id: mThis.elStatus.value,
         };
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             p[el.dataset.field] = el.value;
         });
 
         return p;
     };
-     mThis.getPageContainer =(pageName)=>{
+    mThis.getPageContainer = (pageName) => {
         return mThis.pages[pageName];
     };
-    mThis.showPage = async (pageName, op = {})=>{
-       if(this.self.style.display !=='block'){
-         main_view.setContentView(this.self, this.title_prop);
-       }
-       switch(pageName){
-         case 'tenant_list':{
-            mThis.currentPage = 'tenant_list';
-            mThis.renderView();
-            break;
-         }
-         case 'profile_view':
-            {
-                mThis.currentPage = 'profile_view';
-                const tenant_id = (op.tenant_id || op.id || op);
-                const p = {"id": tenant_id};
-                const res = await vsapi.call([main_view.base_url, '/prm/tenant/details'].join(''),p,false,null);
+    mThis.showPage = async (pageName, op = {}) => {
+        if (this.self.style.display !== "block") {
+            main_view.setContentView(this.self, this.title_prop);
+        }
+        switch (pageName) {
+            case "tenant_list": {
+                mThis.currentPage = "tenant_list";
+                mThis.renderView();
+                break;
+            }
+            case "profile_view": {
+                mThis.currentPage = "profile_view";
+                const tenant_id = op.tenant_id || op.id || op;
+                const p = { id: tenant_id };
+                const res = await vsapi.call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                );
                 const data = res.data || {};
                 mThis.renderProfile(data);
                 break;
             }
-          default:{
-             return;
-          }
-       }
-       const targetPage = mThis.getPageContainer(pageName);
-       const siblings = Array.from(targetPage.parentElement.children);
-       // Hide all siblings smoothly
-       siblings.forEach((div) => {
-           if (div !== targetPage && div.style.display !== 'none') {
-               div.style.display = 'none';
-           }
-       });
-       targetPage.style.display = 'block';
+            default: {
+                return;
+            }
+        }
+        const targetPage = mThis.getPageContainer(pageName);
+        const siblings = Array.from(targetPage.parentElement.children);
+        // Hide all siblings smoothly
+        siblings.forEach((div) => {
+            if (div !== targetPage && div.style.display !== "none") {
+                div.style.display = "none";
+            }
+        });
+        targetPage.style.display = "block";
     };
     mThis.renderProfile = (data) => {
-        let cls_class = '';
+        let cls_class = "";
         if (data && data.status) {
             switch (data.status) {
-                case 'Pending':
-                    cls_class = 'badge text-dark bg-warning-subtle border border-warning';
+                case "Pending":
+                    cls_class =
+                        "badge text-dark bg-warning-subtle border border-warning";
                     break;
-                case 'Active':
-                    cls_class = 'badge text-dark bg-success-subtle border border-success';
+                case "Active":
+                    cls_class =
+                        "badge text-dark bg-success-subtle border border-success";
                     break;
-                case 'Inactive':
-                    cls_class = 'badge text-dark bg-danger-subtle border border-danger';
+                case "Inactive":
+                    cls_class =
+                        "badge text-dark bg-danger-subtle border border-danger";
                     break;
                 default:
-                    cls_class = 'badge text-muted bg-light';
+                    cls_class = "badge text-muted bg-light";
                     break;
             }
         }
 
-        const sizeLabel = data.price_type === 'total'
-                    ? `${data.sqm_size ?? '-'} sqm`
-                    : 'N/A';
-
+        const sizeLabel =
+            data.price_type === "total" ? `${data.sqm_size ?? "-"} sqm` : "N/A";
 
         let html = `
         <div class="row g-4">
@@ -703,13 +730,13 @@ var TenantComponent = new(function () {
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">ID</div>
-                                    <div class="fw-semibold">${data.code ?? 'N/A'}</div>
+                                    <div class="fw-semibold">${data.code ?? "N/A"}</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">Unit</div>
-                                    <div class="fw-semibold">${data.space_code ?? 'N/A'}</div>
+                                    <div class="fw-semibold">${data.space_code ?? "N/A"}</div>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -722,7 +749,7 @@ var TenantComponent = new(function () {
                             <div class="col-6">
                                 <div class="p-3 bg-light rounded">
                                     <div class="text-muted small">Price</div>
-                                    <div class="fw-semibold">${data.price ?? 'N/A'}</div>
+                                    <div class="fw-semibold">${data.price ?? "N/A"}</div>
                                 </div>
                             </div>
 
@@ -798,15 +825,15 @@ var TenantComponent = new(function () {
                         <div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ""}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
@@ -894,16 +921,55 @@ var TenantComponent = new(function () {
                     </div>
                     <div class="tab-pane" id="document_tenant_list">
                         <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                        <p>Tenant documents content goes here....</p>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="bg-light">
+                                    <tr class=" text-uppercase ">
+                                        <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                        <th class="border-0">File Name</th>
+                                        <th class="border-0">File Type</th>
+                                        <th class="border-0">Description</th>
+                                        <th class="border-0 text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="ps-3 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-bold text-dark">${data.document_type_id ?? ""}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">${data.file_name ?? ""}</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">${data.ext ?? ""}</div>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted small">${data.description ?? "No description"}</span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <button class="btn btn-sm text-muted p-0 ">
+                                                <i class="fa-solid fa-ellipsis fa-shake"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
                     </div>
                     <!-- Footer -->
-                    <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
+                 <!--   <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
                         <small class="d-none text-muted">Managed by <strong>Admin: chhorng</strong></small>
                         <div>
                             <a href="javascript:void(0)" class="btn btn-prm-custom btn-sm me-2 d-none">View Logs</a>
                             <a href="javascript:void(0)" class="btn edit_tenant_profile_info btn-prm-custom btn-sm rounded-2 d-none" data-id="${data.id}" data-status ="${data.status_id}"><i class="fa fa-edit me-1"></i> Edit Profile</a>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
         </div>
@@ -914,47 +980,57 @@ var TenantComponent = new(function () {
         mThis.profile_info_tenant.innerHTML = html;
 
         // ===== Tabs JS =====
-        const tabLinks = mThis.profile_info_tenant.querySelectorAll('#tenantTabs a');
-        const tabPanes = mThis.profile_info_tenant.querySelectorAll('.tab-pane');
+        const tabLinks =
+            mThis.profile_info_tenant.querySelectorAll("#tenantTabs a");
+        const tabPanes =
+            mThis.profile_info_tenant.querySelectorAll(".tab-pane");
 
-        tabLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        tabLinks.forEach((link) => {
+            link.addEventListener("click", (e) => {
                 e.preventDefault();
-                const target = link.getAttribute('href').replace('#','');
+                const target = link.getAttribute("href").replace("#", "");
 
                 // remove active class
-                tabLinks.forEach(l => l.classList.remove('active'));
-                tabPanes.forEach(p => p.classList.remove('active'));
+                tabLinks.forEach((l) => l.classList.remove("active"));
+                tabPanes.forEach((p) => p.classList.remove("active"));
 
-                link.classList.add('active');
-                const profile_info_tenant = mThis.profile_info_tenant.querySelector(`#${target}`);
-                profile_info_tenant.classList.add('active');
-                mThis.renderOverView(profile_info_tenant,target,data);
+                link.classList.add("active");
+                const profile_info_tenant =
+                    mThis.profile_info_tenant.querySelector(`#${target}`);
+                profile_info_tenant.classList.add("active");
+                mThis.renderOverView(profile_info_tenant, target, data);
             });
         });
 
         mThis.setActionsProfileInfo(mThis.profile_info_tenant);
     };
-    mThis.renderOverView = (div,target,data) => {
-        if(target == 'overview_tenant_detail'){
-            const p = {id:data.id};
+    mThis.renderOverView = (div, target, data) => {
+        if (target == "overview_tenant_detail") {
+            const p = { id: data.id };
 
-            vsapi.call([main_view.base_url, '/prm/tenant/details'].join(''),p,false,null).then(res => {
-                const d = res.status_code == 200 ? res.data :{};
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/details"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const d = res.status_code == 200 ? res.data : {};
 
-                let html ='';
+                    let html = "";
                     html += `<div class="tab-pane py-2 active" id="overview_tenant_detail">
                             <h5 class="fw-bold mb-2"><i class="fa fa-user me-1 text-primary"></i> Personal Information</h5>
                             <div class="row g-4 mb-5">
-                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == 'M' ? 'Male' : data.sex == 'F' ? 'Female' : ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ''}</div></div>
-                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ''}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Name</small><div class="fw-semibold">${data.name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Sex</small><div class="fw-semibold">${data.sex == "M" ? "Male" : data.sex == "F" ? "Female" : ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Date of Birth</small><div class="fw-semibold">${data.date_of_birth ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Legal Name</small><div class="fw-semibold">${data.legal_name ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">National ID</small><div class="fw-semibold">${data.national_id ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Passport Number</small><div class="fw-semibold">${data.passport_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Phone</small><div class="fw-semibold text-primary">${data.phone_number ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Email</small><div class="fw-semibold text-primary">${data.email ?? ""}</div></div>
+                                <div class="col-md-4"><small class="text-muted">Address</small><div class="fw-semibold text-prm-custom">${data.address ?? ""}</div></div>
                             </div>
 
                             <h5 class="fw-bold mb-4"><i class="fa fa-phone me-1 text-primary"></i> Emergency Contact</h5>
@@ -965,13 +1041,21 @@ var TenantComponent = new(function () {
                             </div>
                         </div>`;
                     div.innerHTML = html;
-            });
-        }if(target == 'lease_tenant_history'){
-            const p = {id:data.id};
-            vsapi.call([main_view.base_url, '/prm/tenant/lease'].join(''),p,false,null).then(res => {
-                const d = res.status_code == 200 ? res.data :{};
+                });
+        }
+        if (target == "lease_tenant_history") {
+            const p = { id: data.id };
+            vsapi
+                .call(
+                    [main_view.base_url, "/prm/tenant/lease"].join(""),
+                    p,
+                    false,
+                    null,
+                )
+                .then((res) => {
+                    const d = res.status_code == 200 ? res.data : {};
 
-                let html ='';
+                    let html = "";
                     html += `<div class="tab-pane" id="lease_tenant_history">
                                 <h5 class="fw-bold mb-2">
                                     <i class="fa fa-file-text me-1 text-primary"></i>
@@ -1048,25 +1132,178 @@ var TenantComponent = new(function () {
 
                         </div>`;
                     div.innerHTML = html;
-            });
+                });
         }
-        if(target == 'document_tenant_list'){
-            const p = {id:data.id};
-            vsapi.call([main_view.base_url, '/prm/tenant-document/details'].join(''),p,false,null).then(res => {
-                const d = res.status_code == 200 ? res.data :{};
+        if (target === "document_tenant_list") {
+    vsapi
+        .call(
+            [main_view.base_url, "/prm/tenant/document/list"].join(""),
+            { tenant_id: data.id },
+            false,
+            null
+        )
+        .then((res) => {
+            const documents = res.status_code === 200 && Array.isArray(res.data)
+                ? res.data
+                : [];
 
-                let html ='';
-                    html += `<div class="tab-pane" id="document_tenant_list">
-                    <h5 class="fw-bold mb-4"><i class="fa fa-folder me-1 text-primary"></i> Documents</h5>
-                    <p>Tenant documents content goes here....</p>
-                </div>`;
-                    div.innerHTML = html;
+            let rows = '';
+
+            documents.forEach(doc => {
+                rows += `
+                    <tr class="border-bottom">
+                        <td class="ps-3 py-3">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        ${doc.document_type || doc.document_type_id || '—'}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">
+                                ${doc.file_name || '—'}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-dark">
+                                ${doc.ext ? doc.ext.toUpperCase() : '—'}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-dark">
+                                ${doc.description || 'No description'}
+                            </span>
+                        </td>
+                       <td class="text-end py-3 px-3">
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-secondary btn-sm border-0 shadow-none hover-primary view-doc" data-id="${doc.id}" title="Download Document" aria-label="Download Document">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm border-0 shadow-none delete-doc-btn" data-id="${doc.id}" title="Delete Document "aria-label="Delete Document">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             });
-        }
-    }
+
+            // Empty state
+            if (documents.length === 0) {
+                rows = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No documents uploaded yet.
+                        </td>
+                    </tr>`;
+            }
+
+            const html = `
+                <div class="tab-pane active" id="document_tenant_list">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-light mb-0">Identity Documents</h6>
+                        <button type="button" class="fw-light btn btn-primary w-16 w-md-auto btnAddNewPrm" id="_btnDocument">
+                            <span vslang="buttons.Upload Document">Upload Document</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-uppercase small">
+                                    <th class="border-0 ps-3" style="letter-spacing: 0.05em;">Document Type</th>
+                                    <th class="border-0">File</th>
+                                    <th class="border-0">File Type</th>
+                                    <th class="border-0">Description</th>
+                                    <th class="border-0 text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>`;
+
+            div.innerHTML = html;
+            const btnDocument = div.querySelector('#_btnDocument');
+                if (btnDocument) {
+                    btnDocument.onclick = () => {
+                        TenantDocumentDialog.show({
+                            id: null,
+                            tenant_id: data.id,
+                            onClose: () => {
+                                mThis.renderOverView(div, target, data);
+                            }
+                        });
+                    };
+                }
+
+            div.querySelectorAll('.view-doc').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.currentTarget.dataset.id;
+
+                    const res = await vsapi.call(
+                        [main_view.base_url, "/prm/tenant/document/download"].join(""),
+                        { id: id },
+                        false,
+                        null
+                    );
+
+                    if (res.status_code === 200) {
+                        const { data_url, file_name } = res.data;
+
+                        // Create a temporary anchor and trigger download
+                        const a = document.createElement('a');
+                        a.href = data_url;
+                        a.download = file_name || 'document';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    } else {
+                        cv_interact.error(res.error_message || "Failed to download document.");
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-doc-btn').forEach(btn => {
+                btn.addEventListener('click', async function(e) {
+                    const docId = this.dataset.id;
+
+                    const confirmed = await cv_interact.confirm(
+                        "Are you sure you want to delete this document?",
+                        { title: "Delete Document", context: "delete" }
+                    );
+
+                    if (confirmed) {
+                        const p = { id: docId };
+                        vsapi
+                            .call([main_view.base_url, "/prm/tenant/document/delete"].join(""), p, false, false)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    cv_interact.info("Document deleted.");
+                                    mThis.renderOverView(div, target, data);
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    }
+                });
+            });
+
+        })
+        .catch(err => {
+            div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
+        });
+}
+    };
 
     mThis.setActionsProfileInfo = (divProfile) => {
-        console.log(33,divProfile);
+        console.log(33, divProfile);
 
         divProfile.addEventListener("click", (e) => {
             // let btn = VSUtil.closestLimited(e.target, ".edit_tenant_profile_info ");
@@ -1093,12 +1330,26 @@ var TenantComponent = new(function () {
     };
 
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/tenant/form-options`, null, null, null)
-            .then(res => {
-                const d = res.status_code == 200 ? res.data :{};
-                VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id','name', true, 'All Statuses', null);
+        vsapi
+            .call(
+                `${main_view.base_url}/prm/tenant/form-options`,
+                null,
+                null,
+                null,
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.statuses,
+                    "id",
+                    "name",
+                    true,
+                    "All Statuses",
+                    null,
+                );
 
-                if (typeof onFinish === 'function') onFinish();
+                if (typeof onFinish === "function") onFinish();
             });
     };
     mThis.show = (options) => {
@@ -1107,7 +1358,7 @@ var TenantComponent = new(function () {
         mThis.prepareFormOptions(() => {
             // main_view.setContentView(mThis.self, mThis.title_prop);
             // mThis.renderView();
-             mThis.showPage(mThis.defaultPage,mThis.getFilterData());
+            mThis.showPage(mThis.defaultPage, mThis.getFilterData());
         });
     };
 
@@ -1118,12 +1369,14 @@ const CreateTenantDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-lg vs-modal ",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return `
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg vs-modal ",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return `
                 <div class="tenant-form row p-1">
 
                     <!-- Profile Section -->
@@ -1239,178 +1492,193 @@ const CreateTenantDialog = (() => {
 
                 </div>
                 `;
+                },
 
-            },
+                contentCreated: (me) => {
+                    // DateTimePicker.init(me.controls.date_of_birth);
 
-            contentCreated: (me) => {
+                    // const footer = me.divModal.querySelector('.modal-footer');
+                    // const header = me.divModal.querySelector('.modal-header');
+                    // const headerTitle = header.querySelector('.modal-title');
+                    // const btnClose = header.querySelector('button');
 
-                // DateTimePicker.init(me.controls.date_of_birth);
+                    // if (btnClose) btnClose.classList.add('d-none');
+                    // header.classList.add('bg-prm-custom', 'modal-header-custom');
+                    // header.parentElement.classList.add('overflow-hidden');
+                    // header.parentElement.style = 'border-radius: 20px !important;';
 
-                // const footer = me.divModal.querySelector('.modal-footer');
-                // const header = me.divModal.querySelector('.modal-header');
-                // const headerTitle = header.querySelector('.modal-title');
-                // const btnClose = header.querySelector('button');
+                    // const headerWrapper = document.createElement('div');
+                    // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
+                    // headerTitle.classList.add('text-white', 'text-center', 'w-100');
+                    // headerWrapper.appendChild(headerTitle);
+                    // header.innerHTML = '';
+                    // header.appendChild(headerWrapper);
 
-                // if (btnClose) btnClose.classList.add('d-none');
-                // header.classList.add('bg-prm-custom', 'modal-header-custom');
-                // header.parentElement.classList.add('overflow-hidden');
-                // header.parentElement.style = 'border-radius: 20px !important;';
-
-                // const headerWrapper = document.createElement('div');
-                // headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
-                // headerTitle.classList.add('text-white', 'text-center', 'w-100');
-                // headerWrapper.appendChild(headerTitle);
-                // header.innerHTML = '';
-                // header.appendChild(headerWrapper);
-
-
-                const div_tenant_photo = me.controls.div_tenant_photo;
-                me.tenantImageBox = new ImageBox(div_tenant_photo, {
-                    defaultPhotoName: "default-skill",
-                    containerClass: "tenant-profile-container",
-                    imgClass: "data-input",
-                    dataset: {
-                        field: "photo",
-                    } /** please set field: photo so that we can use for both Edit and Create easily */,
-                    //dataset: { field: "image_url" },
-                    beforeDeleteImage: async () => {
-                        if (me.dataOptions.id > 0) {
-                            const yes = await cv_interact.confirm(
-                                "Are you sure to delete this profile photo?",
-                                { title: "Delete Photo", context: "delete" }
-                            );
-                            if (yes) {
-                                //delete member's photo from backend
-                                me.deleteProfilePhoto(me.dataOptions.id);
-                                return true;
-                            } else
-                                return false;
-                        } else {
-                            //Case of Create new member, just clear photo
-                            me.tenantImageBox.setImage(null);
-                        }
-                        return true;
-                    },
-                    //When user browse new photo and loads it in the IMG element
-                    onOpenImage: (img) => {
-                        if (me.dataOptions.id > 0) {
-                            //This is case of Editing Existing member information
-                            me.saveProfilePhoto(img, me.dataOptions.id);
-                        }
-                    },
-
-                });
-
-                me.deleteProfilePhoto = (id) => {
-                    const p = { id: id };
-                    vsapi
-                        .call(
-                            [
-                                main_view.base_url,
-                                "/prm/tenant/profile/photo/delete",
-                            ].join(""),
-                            p,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
+                    const div_tenant_photo = me.controls.div_tenant_photo;
+                    me.tenantImageBox = new ImageBox(div_tenant_photo, {
+                        defaultPhotoName: "default-skill",
+                        containerClass: "tenant-profile-container",
+                        imgClass: "data-input",
+                        dataset: {
+                            field: "photo",
+                        } /** please set field: photo so that we can use for both Edit and Create easily */,
+                        //dataset: { field: "image_url" },
+                        beforeDeleteImage: async () => {
+                            if (me.dataOptions.id > 0) {
+                                const yes = await cv_interact.confirm(
+                                    "Are you sure to delete this profile photo?",
+                                    {
+                                        title: "Delete Photo",
+                                        context: "delete",
+                                    },
+                                );
+                                if (yes) {
+                                    //delete member's photo from backend
+                                    me.deleteProfilePhoto(me.dataOptions.id);
+                                    return true;
+                                } else return false;
+                            } else {
+                                //Case of Create new member, just clear photo
                                 me.tenantImageBox.setImage(null);
-                                cv_interact.info(
-                                    "Profile photo was deleted!"
-                                );
-                            } else cv_interact.error(res.error_message);
-                        });
-                };
+                            }
+                            return true;
+                        },
+                        //When user browse new photo and loads it in the IMG element
+                        onOpenImage: (img) => {
+                            if (me.dataOptions.id > 0) {
+                                //This is case of Editing Existing member information
+                                me.saveProfilePhoto(img, me.dataOptions.id);
+                            }
+                        },
+                    });
 
-                me.saveProfilePhoto = (photo, id) => {
-                    const p = { "photo": photo, "id": id };
-                    vsapi
-                        .call(
-                            [
-                                main_view.base_url,
-                                "/prm/tenant/profile/photo/save",
-                            ].join(""),
-                            p,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                me.tenantImageBox.setImage(res.data.image_url);
-                                cv_interact.success(
-                                    "Profile photo was saved!"
-                                );
-                            } else cv_interact.error(res.error_message);
-                        });
-                };
+                    me.deleteProfilePhoto = (id) => {
+                        const p = { id: id };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/prm/tenant/profile/photo/delete",
+                                ].join(""),
+                                p,
+                                false,
+                                false,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.tenantImageBox.setImage(null);
+                                    cv_interact.info(
+                                        "Profile photo was deleted!",
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    };
 
-            },
-            configSelect: [
+                    me.saveProfilePhoto = (photo, id) => {
+                        const p = { photo: photo, id: id };
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/prm/tenant/profile/photo/save",
+                                ].join(""),
+                                p,
+                                false,
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.tenantImageBox.setImage(
+                                        res.data.image_url,
+                                    );
+                                    cv_interact.success(
+                                        "Profile photo was saved!",
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    };
+                },
+                configSelect: [
                     {
                         name: "nationality_id",
                         data: "nationalities",
                         textField: "nationality",
                         valueField: "id", // "id" is the country_id
                     },
-
-
-            ],
-            prepareFormOptions: {
-                createTitle: "Create New Tenant",
-                modifyTitle: "Modify Tenant",
-                targetProp: "tenant",
-                api: {
-                    endpoint: [main_view.base_url, "/prm/tenant/form-options"].join(""),
-                    params: (op) => {
-                        return { id: op.id };
+                ],
+                prepareFormOptions: {
+                    createTitle: "Create New Tenant",
+                    modifyTitle: "Modify Tenant",
+                    targetProp: "tenant",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/prm/tenant/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
-            },
-            onPrepareForm: (me, data) => {
-                const header = me.divModal.querySelector('.modal-header');
-                const btnClose = header.querySelector('button');
-                if (btnClose) btnClose.classList.add('d-none');
-            },
+                onPrepareForm: (me, data) => {
+                    const header = me.divModal.querySelector(".modal-header");
+                    const btnClose = header.querySelector("button");
+                    if (btnClose) btnClose.classList.add("d-none");
+                },
 
-            extendMethod: {
-                setData: (me, data) => {
-                    // console.log(data);
+                extendMethod: {
+                    setData: (me, data) => {
+                        // console.log(data);
 
-                    me.tenantImageBox.setImage(data.image_url);
-
-                }
-            },
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Cancel"></span>',
-                    cssClass: 'btn btn-secondary',
-                    click: (me, btn) => {
-                        me.hide(false);
+                        me.tenantImageBox.setImage(data.image_url);
                     },
                 },
-                {
-                    label: '<span vslang="buttons.Submit"></span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const op = me.getData();
-                        op.id = me.dataOptions.id;
-                        op.photo = me.tenantImageBox ? me.tenantImageBox.getImage() : '';
-                        vsapi.call([main_view.base_url, "/prm/tenant/create"].join(""), op, btn, null).then((res) => {
-                            if (res.status_code === 200) {
-                                me.hide(true, op);
-                                if (me.dataOptions.id > 0) {
-                                    cv_interact.success("Tenant has been updated successfully");
-                                } else {
-                                    cv_interact.success("New tenant has been added successfully");
-                                }
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Cancel"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
                     },
-                },
-            ],
-        });
+                    {
+                        label: '<span vslang="buttons.Submit"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const op = me.getData();
+                            op.id = me.dataOptions.id;
+                            op.photo = me.tenantImageBox
+                                ? me.tenantImageBox.getImage()
+                                : "";
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/prm/tenant/create",
+                                    ].join(""),
+                                    op,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, op);
+                                        if (me.dataOptions.id > 0) {
+                                            cv_interact.success(
+                                                "Tenant has been updated successfully",
+                                            );
+                                        } else {
+                                            cv_interact.success(
+                                                "New tenant has been added successfully",
+                                            );
+                                        }
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
         dialog.show(op);
     };
     return self;
@@ -1421,18 +1689,20 @@ const TenantDocumentDialog = (() => {
     let dialog = null;
 
     self.show = (op = {}) => {
-        dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md vs-modal",
-            backdrop: "static",
-            keyboard: true,
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md vs-modal",
+                backdrop: "static",
+                keyboard: true,
 
-            createContent: () => {
-                return `
+                createContent: () => {
+                    return `
                 <div class="document-form row justify-content-start">
                     <div class="col-6">
-                        <label style="padding-left:6px;">Document Type</label>
+                        <label style="padding-left:6px;" for="document_type">Document Type</label>
                         <div class="material-input outlined">
-                            <select name="tenant_document" class="data-input form-control" data-field="document_type_id"></select>
+                            <select name="document_type" class="data-input form-control" data-field="document_type_id"></select>
                         </div>
                     </div>
                     <div class="col-6">
@@ -1441,91 +1711,164 @@ const TenantDocumentDialog = (() => {
                             <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
                         </div>
                     </div>
-                    <div class="col-12">
-                        <label style="color:#777777;padding-left:6px;" for="tenant_document">File</label>
-                        <div class="material-input outlined">
-                            <input type="file" name="documents" class="data-input form-control" data-field="file_name"/>
+                    <div class="col-6">
+                        <label style="padding-left:6px;"></label>
+                        <div class="material-input outlined d-flex ">
+                            <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;">Choose File </button>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <label style="padding-left:6px;"></label>
+                        <div class="material-input outlined d-flex ">
+                            <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
+                        </div>
+                    </div>
+
                 </div>`;
-            },
-
-            contentCreated: (me) => {
-                me.uploadInput = me.divModal.querySelector('input[name="documents"]');
-                me.fileBase64 = null; // Store base64 data here
-
-                // Listen for file selection
-                me.uploadInput.addEventListener('change', e => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            me.fileBase64 = event.target.result.split(',')[1];
-
-                            me.ext =event.target.result.split(';')[0].split(':')[1];
-                            me.ext = me.ext.split('/')[1];
-
-
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            },
-
-            configSelect: [{
-                name: "document_type",
-                data: "document_types",
-                textField: "document_type",
-                valueField: "id",
-            }],
-
-            prepareFormOptions: {
-                createTitle: "Upload Documents",
-                modifyTitle: "Modify Documents",
-                targetProp: "document_details",
-                api: {
-                    endpoint: [main_view.base_url, "/prm/tenant-document/form-options"].join(""),
-                    params: (op) => ({ id: op.id }),
                 },
-            },
 
-            buttons: [
-                {
-                    label: '<span vslang="buttons.Close"></span>',
-                    cssClass: 'btn btn-secondary',
-                    click: (me) => me.hide(false),
-                },
-                {
-                    label: '<span vslang="buttons.Save"></span>',
-                    cssClass: 'btn btn-primary',
-                    click: (me, btn) => {
-                        const data = me.getData();
-                        data.tenant_id = me.dataOptions.tenant_id;
-                        data.file_name = me.fileBase64; // Add the Base64 data
-                        data.ext = me.ext;
-                        console.log(123,data);
+                contentCreated: (me) => {
+                    me.uploadInput = me.divModal.querySelector(
+                        'input[name="documents"]',
+                    );
+                    me.fileBase64 = null; // Store base64 data here
+                    me.controls.btn_chooseFile.onclick = () => {
+                        FileChooser.chooseFile(
+                            {
+                                accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
+                            },
+                            (d) => {
+                                me.fileData = d;
+                                me.controls.documents.value = d.fileName;
+                                console.log(1111,d);
 
+                                me.controls.documents.classList.remove('d-none');
+                            },
+                        );
+                    };
+                    me.uploadInput.addEventListener("change", (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                me.fileBase64 =
+                                    event.target.result.split(",")[1];
 
+                                me.ext = event.target.result
+                                    .split(";")[0]
+                                    .split(":")[1];
+                                me.ext = me.ext.split("/")[1];
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
 
-                        vsapi.call([main_view.base_url, "/prm/tenant-document/save"].join(""), data, btn, null)
+                    me.deleteTenantDocument = async (documentId) => {
+                        const confirmed = await cv_interact.confirm(
+                            "Are you sure you want to delete this document? This action cannot be undone.",
+                            {
+                                title: "Delete Document",
+                                context: "delete",
+                            }
+                        );
+
+                        if (!confirmed) return;
+
+                        const p = { id: documentId };
+
+                        vsapi
+                            .call(
+                                main_view.base_url , "/prm/tenant/document/delete",
+                                p,
+                                false,
+                                false
+                            )
                             .then((res) => {
                                 if (res.status_code === 200) {
-                                    me.hide(true, data);
-                                    cv_interact.success("Document saved successfully");
-                                } else {
-                                    cv_interact.error(res.error_message);
+                                    cv_interact.info("Document deleted.");
+
+                                    // Use the callback we passed in
+                                    if (typeof me.loadTenantDocuments === 'function') {
+                                        me.loadTenantDocuments();
+                                    }
+                                    me.hide(true);
                                 }
-                            });
+                            })
+                    };
+
+                },
+
+
+                configSelect: [
+                    {
+                        name: "document_type_id",
+                        data: "document_types",
+                        textField: "document_type",
+                        valueField: "id",
                     },
-                }
-            ]
-        });
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "Upload Documents",
+                    modifyTitle: "Modify Documents",
+                    targetProp: "document_details",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/prm/tenant/document/form-options",
+                        ].join(""),
+                        params: (op) => ({ id: op.id }),
+                    },
+                },
+
+                buttons: [
+                    {
+                        label: '<span vslang="buttons.Close"></span>',
+                        cssClass: "btn btn-secondary",
+                        click: (me) => me.hide(false),
+                    },
+                    {
+                        label: '<span vslang="buttons.Save"></span>',
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = {
+                                tenant_id: me.dataOptions.tenant_id,
+                                ext: me.fileData.ext,
+                                data: me.fileData.dataUrl,
+                                description: me.controls.description.value,
+                                document_type_id:
+                                    me.controls.document_type.value,
+                            };
+
+                            console.log(2222, p);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/prm/tenant/document/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null,
+                                )
+                                .then((res) => {
+                                    if (res.status_code === 200) {
+                                        me.hide(true, p);
+                                        cv_interact.success(
+                                            "Document saved successfully",
+                                        );
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+            });
 
         dialog.show(op);
     };
 
     return self;
 })();
-
-
-

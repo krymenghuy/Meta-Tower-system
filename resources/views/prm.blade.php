@@ -397,6 +397,9 @@
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')
                             @include('layouts.prm.vendorComponent')
+                            @include('layouts.prm.purchasesComponent')
+                            @include('layouts.prm.maintenanceComponent')
+
                             @include('layouts.prm.invoiceComponent')
                             @include('layouts.prm.accessControlComponent')
                             @include('layouts.prm.settingComponent')
@@ -405,6 +408,7 @@
                             @include('layouts.prm.serviceRequestComponent')
                             @include('layouts.prm.reservationComponent')
                             @include('layouts.prm.amenityComponent')
+                            @include('layouts.prm.itemsComponent')
 
 
                         </div>
