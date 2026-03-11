@@ -146,6 +146,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
     Route::post('/form-options', [ServiceController::class, 'getFormOptions']);
     Route::post('/delete', [ServiceController::class, 'deleteService']);
     Route::post('/update-status', [ServiceController::class, 'updateServiceStatus']);
+    Route::post('/get-service-info', [ServiceController::class, 'option_select_all_service_info']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->group(function () {

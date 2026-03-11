@@ -133,4 +133,29 @@ class Service
         $deleted = DB::table('services')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
+
+    public function getServiceInfo($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $service = DB::table('services')
+            ->where('id', $id)
+            ->select('id', 'name', 'service_type_id', 'unit_type', 'price', 'description')
+            ->first();
+        $serviceType = null;
+        if ($service && $service->service_type_id) {
+            $serviceType = DB::table('service_types')
+                ->where('id', $service->service_type_id)
+                ->select('id', 'name')
+                ->first();
+        }
+        return (object) [
+            'services'      => $service,
+            'service_types' => $serviceType
+        ];
+    }
+
+
+
+
 }

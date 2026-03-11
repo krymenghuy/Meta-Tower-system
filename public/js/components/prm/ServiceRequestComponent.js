@@ -74,8 +74,10 @@ var ServiceRequestComponent = (function () {
         className: "align-middle",
         data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
     },
-
-
+    {
+        transTitle: "titles.Schedule Date", className: "align-middle",
+        data: (data) => `<span class="text-yp-custom">${data.scheduled_date || 'N/A'}</span>`
+    },
     {
         transTitle: "titles.Status",
         className: "align-middle",
@@ -460,6 +462,12 @@ const CreateInvoiceServiceRequestDialog = (() => {
                                 </div>
                             </div>
                         </div>
+                         <div class="col-12">
+                            <div class="col-md-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
+                            <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
+                        </div>
+                        </div>
 
                         <!-- Remarks -->
                         <div class="col-12">
@@ -752,6 +760,19 @@ const CreateServiceRequestDialog = (() => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                     <div class="row g-3">
+                       <div class="col-md-3">
+                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span></label>
+                            <input type="text" data-type="date" name="scheduled_date" class="form-control data-input" >
+                        </div>
+
+                        <div class="col-6">
+                                <label style="padding-left:6px;">Start Time</label>
+                                <div class=" material-input outlined">
+                                    <input type="time" name="start_time" required class="data-input form-control form_input" data-field="start_time" />
+                                </div>
+                            </div>
                     </div>
 
                     <div class="row g-3">

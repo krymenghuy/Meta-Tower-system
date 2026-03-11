@@ -40,8 +40,9 @@ class ServiceRequest extends VSModel
             'code'              => '0|string|0-100',
             'unit_type'         => '0|choice|1,2', // 1 one_time , 2 hour
             'request_date'      => '0|date',
-            'scheduled_date'    => '0|date',
-            'completed_date'    => '0|date',
+            'scheduled_date'    => '1|date',
+            'start_time'        => '1|time',
+            'complete_date'    => '0|date',
         ];
 
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
@@ -77,8 +78,6 @@ class ServiceRequest extends VSModel
             if (!$save_id) {
                 return DV::error('Failed to save service request.');
             }
-
-            // Generate code ONLY on creation
             if ($created) {
                 $prefix = 'S-';  // adjust prefix if needed (S- or S)
                 $codeRes = setOfficialCode(
@@ -162,6 +161,8 @@ class ServiceRequest extends VSModel
 
         $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
 
+        $scheduled_date = DBX::formatTime("sr.scheduled_date");
+
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
@@ -177,11 +178,14 @@ class ServiceRequest extends VSModel
                 s.price as service_price, s.unit_type,
                 sr.total_price, sr.duration_hours,
                 sr.description, sr.request_date,
+                sr.start_time,
                 $updated_at, sr.update_user,
-                sr.scheduled_date, sr.completed_date, sr.create_uid,
+                sr.scheduled_date, sr.complete_date, sr.create_uid,
                 rs.id as status_id,
                 rs.name as status_name,
-                st.name as service_type
+                st.name as service_type,
+                $scheduled_date
+
             ")
             ->orderBy('sr.id', 'DESC');
 
@@ -205,14 +209,15 @@ class ServiceRequest extends VSModel
                 's.price as service_price', 's.unit_type',
                 'sr.request_date', 'sr.description',
                 'sr.update_user',
-                'sr.scheduled_date', 'sr.completed_date', 'sr.create_uid',
+                'sr.start_time',
+                'sr.scheduled_date', 'sr.complete_date', 'sr.create_uid',
                 'sr.updated_at', 'sr.total_price', 'sr.duration_hours',
                 'bs.code as space_code',
                 't.name as tenant_name',
                 'st.name as service_type',
                 's.name as service_name',
                 'rs.id as status_id',
-                'rs.name as status_name'  // ← added for dialog display
+                'rs.name as status_name'
             ])
             ->first();
     }
@@ -252,14 +257,12 @@ class ServiceRequest extends VSModel
         if (!$id || !$status_id) {
             return DV::error('Missing required parameters');
         }
-
         $data = [
             'status_id'   => $status_id,
             'update_user' => $ss->full_name ?? 'System',
             'update_uid'  => $ss->id ?? null,
             'updated_at'  => getNowTime(),
         ];
-
         $updated = DB::table('service_requests')
             ->where('id', $id)
             ->update($data);
@@ -267,7 +270,8 @@ class ServiceRequest extends VSModel
         if ($updated === 0) {
             return DV::error('Service request not found or no changes made');
         }
-
         return DV::success(['message' => 'Status updated successfully']);
     }
+
+
 }

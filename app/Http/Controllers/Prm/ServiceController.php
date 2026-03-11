@@ -66,16 +66,26 @@ class ServiceController extends Controller
         }
         $res = $this->services->deleteService($req->id);
         return JDV::raw($res);
-    }   
+    }
 
-    public function updateServiceStatus(Request $req){
+    public function option_select_all_service_info(Request $req)
+    {
         $ss = XAuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->id ?? null;
-        $service = new Service();
-        $res = $service->updateServiceStatus($req->status_id, $id,$ss);
-        return JDV::raw($res);
+
+        $data = $req->json()->all();
+        $id   = $data['service_id'] ?? $data['id'] ?? null;
+
+        $id = (int) $id;
+        return JDV::result(
+            $this->services->getServiceInfo($id, $ss)
+        );
     }
+
+
+
 }
+
+
