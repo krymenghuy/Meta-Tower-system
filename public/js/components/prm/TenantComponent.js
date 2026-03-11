@@ -960,7 +960,7 @@ var TenantComponent = new (function () {
                             </table>
                         </div>
 
-                        
+
                     </div>
                     <!-- Footer -->
                  <!--   <div class="  card-footer bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 ">
@@ -1137,14 +1137,14 @@ var TenantComponent = new (function () {
         if (target === "document_tenant_list") {
     vsapi
         .call(
-            [main_view.base_url, "/prm/tenant/document/list"].join(""),  
-            { tenant_id: data.id },  
+            [main_view.base_url, "/prm/tenant/document/list"].join(""),
+            { tenant_id: data.id },
             false,
             null
         )
         .then((res) => {
-            const documents = res.status_code === 200 && Array.isArray(res.data) 
-                ? res.data 
+            const documents = res.status_code === 200 && Array.isArray(res.data)
+                ? res.data
                 : [];
 
             let rows = '';
@@ -1237,7 +1237,7 @@ var TenantComponent = new (function () {
                             id: null,
                             tenant_id: data.id,
                             onClose: () => {
-                                mThis.renderOverView(div, target, data); 
+                                mThis.renderOverView(div, target, data);
                             }
                         });
                     };
@@ -1294,7 +1294,7 @@ var TenantComponent = new (function () {
                     }
                 });
             });
-            
+
         })
         .catch(err => {
             div.innerHTML = `<div class="alert alert-danger m-3">Failed to load documents: ${err.message}</div>`;
@@ -1723,9 +1723,8 @@ const TenantDocumentDialog = (() => {
                             <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
                         </div>
                     </div>
-                    
+
                 </div>`;
-                    
                 },
 
                 contentCreated: (me) => {
@@ -1742,7 +1741,7 @@ const TenantDocumentDialog = (() => {
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
                                 console.log(1111,d);
-                                
+
                                 me.controls.documents.classList.remove('d-none');
                             },
                         );
@@ -1787,16 +1786,16 @@ const TenantDocumentDialog = (() => {
                             .then((res) => {
                                 if (res.status_code === 200) {
                                     cv_interact.info("Document deleted.");
-                                    
+
                                     // Use the callback we passed in
                                     if (typeof me.loadTenantDocuments === 'function') {
-                                        me.loadTenantDocuments(); 
+                                        me.loadTenantDocuments();
                                     }
-                                    me.hide(true); 
+                                    me.hide(true);
                                 }
                             })
                     };
-                   
+
                 },
 
 

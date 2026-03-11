@@ -141,8 +141,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
     Route::post('/list',[ServiceRequestController::class, 'getServiceRequestList']);
     Route::post('/details',[ServiceRequestController::class, 'serviceRequestDetails']);
     Route::post('/delete',[ServiceRequestController::class,'delete']);
-    Route::post('/update-status',[ServiceRequestController::class,'updateStatus']);
     Route::post('/form-options',[ServiceRequestController::class,'getFormOptions']);
+    Route::post('/set-status',[ServiceRequestController::class,'setRequestStatus']);
 
 });
 
@@ -154,6 +154,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->gr
     Route::post('/form-options', [ServiceController::class, 'getFormOptions']);
     Route::post('/delete', [ServiceController::class, 'deleteService']);
     Route::post('/update-status', [ServiceController::class, 'updateServiceStatus']);
+    Route::post('/get-service-info', [ServiceController::class, 'option_select_all_service_info']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->group(function () {
@@ -193,6 +194,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
     Route::post('/delete', [PaymentController::class, 'deletePayment']);
     Route::post('/update-status', [PaymentController::class, 'updatePaymentStatus']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservations')->group(function () {
+    Route::post('/save', [PaymentController::class, 'saveReservation']);
+    Route::post('/list-paginate', [PaymentController::class, 'getListReservation']);
+    Route::post('/details', [PaymentController::class, 'reservationDetails']);
+    Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
+    Route::post('/delete', [PaymentController::class, 'deleteReservation']);
+    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->group(function () {
     Route::post('/save', [AmenityController::class, 'saveAmenity']);
@@ -216,6 +225,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function () {
     Route::post('/options-floors', [GeneralSettingsController::class, 'getOptions_floors']);
+     Route::post('/options-service', [GeneralSettingsController::class, 'options_service']);
     // Route::post('/options-program', [StudentController::class, 'getOptions_program']);
 
 });
