@@ -76,7 +76,7 @@ var ServiceRequestComponent = (function () {
     },
     {
         transTitle: "titles.Schedule Date", className: "align-middle",
-        data: (data) => `<span class="text-yp-custom">${data.scheduled_date || 'N/A'}</span>`
+        data: (data) => `<span class="text-yp-custom">${data.scheduled_date || '...'}</span>`
     },
     {
         transTitle: "titles.Status",
@@ -86,6 +86,7 @@ var ServiceRequestComponent = (function () {
             const statusName = (row.status_name || "-").trim();
 
             const badgeClass = mThis.getStatusClass(statusId);
+
             if (statusId ===2){
                 return `
                     <button data-id = "${row.id}"
@@ -150,9 +151,14 @@ var ServiceRequestComponent = (function () {
 
     mThis.init = () => {
         if (mThis.initAlready) return;
-
-        mThis.ServiceRequestListView = new ListView('_service_request_list', {
-            fetchApi: `${main_view.base_url}/prm/service-request/list`,
+        mThis.divListView = mThis.divListView || mThis.self.querySelector('#_service_request_list');
+        mThis.ServiceRequestListView = new ListView(mThis.divListView, {
+            //fetchApi: `${main_view.base_url}/prm/service-request/list`, // Old version
+            api:{
+                endpoint:`${main_view.base_url}/prm/service-request/list`, // new version
+                method:'POST',
+                cacheTTL:3000 //Cache data 3 seconds
+            },
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.columns,
