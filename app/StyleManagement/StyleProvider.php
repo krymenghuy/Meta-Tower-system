@@ -44,7 +44,7 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/SearchInput/vs_search_input_example.css',
                 'assets/css/expandable-row.theme.css',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/items_view/style/items_view.css',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/style/items_view.css',
                 'assets/css/items_view.theme.css',
             ]
             ],    

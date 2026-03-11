@@ -90,54 +90,185 @@ function newOTP($length=6)
 }
 
 
-function getAuthCode($d){
+/**
+ * Convert database date (ISO format) to any PHP date format.
+ *
+ * @param string|null $dbDate   Date from DB (e.g. 2026-02-27 or 2026-02-27 14:35:00)
+ * @param string $format        PHP date format (default: d-M-Y)
+ * @param string|null $timezone Optional timezone (e.g. 'Asia/Phnom_Penh')
+ * @return string|null
+ */
+function formatDbDate(?string $dbDate, string $format = 'd-M-Y', ?string $timezone = null): ?string
+{
+    if (empty($dbDate)) {
+        return null;
+    }
 
-    //Todo: Catch error if $d is not an object for unexpected case
-    if (!isset($d->decrypted)) $d->decrypted = 0;
-    //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
-    /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
-  //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();
-  if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
-  //else if($d->bearerToken() ==null) return null;
+    try {
+        $tz = $timezone ? new DateTimeZone($timezone) : null;
 
-  $decrypted_token = null;
-  if ($d->decrypted != 1) {
-            // get the encrypter service
-            $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
-            // decrypt
-            $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
-            /*** IMPORTANT NOTE:
-             $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character |
-            ***/
-            if (strpos($decrypted_token,'|')>0) {
-                $parts = explode('|',$decrypted_token);
-                if(isset($parts[1]))
-                   $decrypted_token = $parts[1];
-                else return null;
-            }
-  } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
+        $date = $tz
+            ? new DateTime($dbDate, $tz)
+            : new DateTime($dbDate);
 
-   if(session()->has('access_token')) {
-          if (session('access_token') === $decrypted_token){
-               $data =(object)[];
-               $data->branch_id = session('branch_id',0);
-               $data->user_id = session('user_id',0);
-               //official_id is person_id in this context, and is necessary only for Borrower's login
-               $data->official_id = session('official_id',0);
-               $data->login_name = session('login_name',0);
-               //$data->full_name = session('full_name',0);
-               $data->last_active_time = getNowTime();
-               return $data;
-          }
-      }
+        return $date->format($format);
 
-  $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
-  foreach($rows as $row) {
-      //TODO: check for last active_time compared to now() for session expiration
-      return $row;
-  }
-  return null;
+    } catch (Exception $e) {
+        // Invalid date format
+        return null;
+    }
 }
+
+function formatOfficialDate(?string $date): ?string
+{
+    if (empty($date)) {
+        return null;
+    }
+
+    $format = config('dbx_config.default_date_format', 'd-M-Y');
+
+    try {
+        return (new DateTime($date))->format($format);
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function formatOfficialTime(?string $dateTime): ?string
+{
+    if (empty($dateTime)) {
+        return null;
+    }
+
+    $format = config('dbx_config.default_time_format', 'd-M-Y H:i');
+
+    try {
+        return (new DateTime($dateTime))->format($format);
+    } catch (Exception $e) {
+        return null;
+    }
+}
+ 
+ 
+/**
+ * Format date/time fields using official formats.
+ *
+ * @param object|array &$row
+ * @param array $dateCols        Full date/datetime columns (supports "col as alias")
+ * @param array $timeOnlyCols    Time-only columns (supports "col as alias")
+ * @return void
+ */
+function setOfficialDates(&$row, array $dateCols = [], array $dateTimeCols= [], array $timeOnlyCols = []): void
+{
+    if (empty($dateCols) && empty($timeOnlyCols)) {
+        return;
+    }
+
+    $dateFormat = config('dbx_config.default_date_format', 'd-M-Y');
+    $timeFormat = config('dbx_config.default_time_only_format', 'H:i');
+    $dateTimeFormat = config('dbx_config.default_datetime_format', 'd-M-Y H:i');
+
+    // Process date columns
+    foreach ($dateCols as $definition) {
+        processOfficialColumn($row, $definition, $dateFormat);
+    }
+
+    // Process DateTime columns
+    foreach ($dateTimeCols as $definition) {
+        processOfficialColumn($row, $definition, $dateTimeFormat);
+    }
+
+    // Process time-only columns
+    foreach ($timeOnlyCols as $definition) {
+        processOfficialColumn($row, $definition, $timeFormat);
+    }
+}
+
+/**
+ * Internal processor for one column definition.
+ */
+function processOfficialColumn(&$row, string $definition, string $format): void
+{
+    // Parse alias: "col as alias"
+    $parts = preg_split('/\s+as\s+/i', trim($definition));
+    $source = trim($parts[0]);
+    $target = isset($parts[1]) ? trim($parts[1]) : $source;
+
+    $value = null;
+
+    if (is_object($row)) {
+        $value = $row->$source ?? null;
+    } elseif (is_array($row)) {
+        $value = $row[$source] ?? null;
+    }
+
+    if (!$value) {
+        return;
+    }
+
+    try {
+        $formatted = (new DateTime($value))->format($format);
+
+        if (is_object($row)) {
+            $row->$target = $formatted;
+        } else {
+            $row[$target] = $formatted;
+        }
+
+    } catch (Exception) {
+        // silently ignore invalid date
+    }
+}
+ 
+
+// function getAuthCode($d){
+
+//     //Todo: Catch error if $d is not an object for unexpected case
+//     if (!isset($d->decrypted)) $d->decrypted = 0;
+//     //if(!isset($d->is_cookie)) $d->is_cookie = 0; /** NOTE: if is_cookie = 1 => the decrypted value is split by vertial bar | for equal sign (= ) or key = value pair **/
+//     /**instead of property "access_token", we use prop name as "acc_tk_dms" **/
+//   //if (!empty($d->bearerToken())) $d->acc_tk_dms = $d->bearerToken();
+//   if(!isset($d->acc_tk_dms)) return null; //$d->access_token ='nI082mwubtCp0Tc92MRX9107tnvQfjiGd56pj8';
+//   //else if($d->bearerToken() ==null) return null;
+
+//   $decrypted_token = null;
+//   if ($d->decrypted != 1) {
+//             // get the encrypter service
+//             $encrypter = app(\Illuminate\Contracts\Encryption\Encrypter::class);
+//             // decrypt
+//             $decrypted_token = $encrypter->decrypt($d->acc_tk_dms,false); //FALSE => to avoid serialization issue in decryption
+//             /*** IMPORTANT NOTE:
+//              $result of decryption is => e3aab7a9bb6892c7ee1a1495300d667fe8823428|o1MZKGPJIHm3S6kqiG415LWEidURA75QAI2GGE => therefore, we need to split this key|value by vertical bar character |
+//             ***/
+//             if (strpos($decrypted_token,'|')>0) {
+//                 $parts = explode('|',$decrypted_token);
+//                 if(isset($parts[1]))
+//                    $decrypted_token = $parts[1];
+//                 else return null;
+//             }
+//   } else $decrypted_token = $d->acc_tk_dms;  /** In case external API called from mobile app => the $d->acc_tk_dms is decrypted already by, for example, by $senderModel->getSenderInfoByToken($request) **/
+
+//    if(session()->has('access_token')) {
+//           if (session('access_token') === $decrypted_token){
+//                $data =(object)[];
+//                $data->branch_id = session('branch_id',0);
+//                $data->user_id = session('user_id',0);
+//                //official_id is person_id in this context, and is necessary only for Borrower's login
+//                $data->official_id = session('official_id',0);
+//                $data->login_name = session('login_name',0);
+//                //$data->full_name = session('full_name',0);
+//                $data->last_active_time = getNowTime();
+//                return $data;
+//           }
+//       }
+
+//   $rows = DB::table('um_sessions AS u')->join('um_user_roles AS ur','ur.user_id','=','u.user_id')->where('u.access_token',$decrypted_token)->selectRaw('ur.role_id,u.branch_id,u.user_id, u.login_name,u.last_active_time,u.login_name')->limit(1)->get();
+//   foreach($rows as $row) {
+//       //TODO: check for last active_time compared to now() for session expiration
+//       return $row;
+//   }
+//   return null;
+// }
 
 function setOfficialCode($branch_id,$code_control_table,$target_table,$key_field=[],$def_prefix="",$len=5,Closure $onSuccess = null){
     if (!$key_field) return null;

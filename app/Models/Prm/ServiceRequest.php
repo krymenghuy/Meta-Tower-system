@@ -159,9 +159,8 @@ class ServiceRequest extends VSModel
             $where_more .= ' AND sr.status_id = ' . (int)$status_id;
         }
 
-        $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
-
-        $scheduled_date = DBX::formatTime("sr.scheduled_date");
+        // $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
+        // $scheduled_date = DBX::formatTime("sr.scheduled_date");
 
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
@@ -179,19 +178,19 @@ class ServiceRequest extends VSModel
                 sr.total_price, sr.duration_hours,
                 sr.description, sr.request_date,
                 sr.start_time,
-                $updated_at, sr.update_user,
+                sr.updated_at, sr.update_user,
                 sr.scheduled_date, sr.complete_date, sr.create_uid,
                 rs.id as status_id,
                 rs.name as status_name,
-                st.name as service_type,
-                $scheduled_date
-
+                st.name as service_type
             ")
             ->orderBy('sr.id', 'DESC');
 
         $total = (clone $query)->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
-
+        foreach($rows as $row){
+            $row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
+        }  
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
     }
 
