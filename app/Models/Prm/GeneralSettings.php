@@ -572,4 +572,24 @@ class GeneralSettings //extends Model
         return DB::table('amenity_categories')->selectRaw('id,name as amenity_category')->get();
     }
 
+    static function options_maintenance_type($ss)
+    {
+        return DB::table('maintenance_types')->selectRaw('id,name as maintenance_type')->get();
+    }
+
+    static function options_maintenance_status($ss)
+    {
+        return DB::table('maintenance_statuses')->selectRaw('id,name as maintenance_status')->get();
+    }
+
+    static function options_staff($ss)
+    {
+        $branch_id = $ss->branch_id ?? null;
+        $query = DB::table('um_users')->selectRaw('id, login_name as staff_name');
+        if ($branch_id > 0) {
+            $query->where('branch_id', $branch_id);
+        }
+        return $query->orderBy('login_name')->get();
+    }
+
 }

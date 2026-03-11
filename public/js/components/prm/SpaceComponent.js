@@ -441,7 +441,7 @@ var SpaceComponent = new (function () {
                                         Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''} ${Number(d.maintenance_status_id) === 1 ? '<span class="text-warning fw-semibold">(Under maintenance)</span>' : ''}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
                                         Charge as ( ${d.price_type === 'total' ? 'Monthly' : 'per m²'} )
@@ -550,18 +550,19 @@ var SpaceComponent = new (function () {
 
         BuildingSpaceDialog.show(op);
     }
-    // mThis.setMaintenance = (id, menulink) => {
-    //     let op = {
-    //         id: id,
-    //         btn: menulink,
-    //         onClose: () => {
-    //             ;
-    //             mThis.SpaceListView.showPage(mThis.getFilterData());
-    //         }
-    //     };
-
-    //     SetMaintenanceDialog.show(op);
-    // }
+    mThis.setMaintenance = (id, menulink) => {
+        const op = {
+            space_id: id,
+            building_id: menulink?.dataset?.buildingid || null,
+            btn: menulink,
+            onClose: () => {
+                mThis.SpaceListView.showPage(mThis.getFilterData());
+            }
+        };
+        if (typeof CreateMaintenanceDialog !== "undefined") {
+            CreateMaintenanceDialog.show(op);
+        }
+    };
     mThis.createBooking = (id, menulink) => {
         let op = {
             id: null,
