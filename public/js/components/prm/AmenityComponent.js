@@ -7,6 +7,8 @@ var AmenityComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_amenity_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAmenity");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
+    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elFloor = mThis.self.querySelector('#floor_id');
     mThis.elFilter_status = mThis.self.querySelector("#_amenity_status");
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
 
@@ -21,44 +23,48 @@ var AmenityComponent = (() => {
             data: (data) =>
                 `<span class="text-primary-custom">${data.name ?? ""}</span>`,
         },
-
         {
-            title: "Floor",
+            title: "Category",
             className: "align-middle",
             data: (data) =>
-                `<span class="text-primary-custom">${data.floor ?? "-"}</span>`,
+                `<span class="text-primary-custom">${data.category ?? ""}</span>`,
         },
-        // {
-        //     title: "Description",
-        //     className: "align-middle",
-        //     data: (data) => `
-        //         <div class="text-primary-custom" style="width:150px;">
-        //             <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? ''}</span>
-        //         </div>`
-        // },
-        // {
-        //     title: "Location",
-        //     className: "align-middle",
-        //     data: (data) => `
-        //         <div class="text-primary-custom" style="width:150px;">
-        //             <span class="text-wrap text-break" style="word-break:break-word;">${data.location_detail ?? '-'}</span>
-        //         </div>`
-        // },
-        // {
-        //     title: "Access Level",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const accessLabel = data.access_level ?? `${data.access_level}`;
-        //         return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
-        //     }
-
-        // },
+        
+        {
+            title: "Building / Floor",
+            className: "align-middle",
+            data: (data) =>
+                `
+                    <div class="text-prm-custom" style="width:120px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.building_name ?? ""}</span>
+                        <small class="d-block text-muted">${data.floor_number ?? ""}</small>
+                    </div>
+                `
+            
+        },
+        {
+            title: "Description",
+            className: "align-middle",
+            data: (data) => `
+                <div class="text-primary-custom" style="width:150px;">
+                    <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? ''}</span>
+                </div>`
+        },
         {
             title: "Max Capacity",
             className: "align-middle text-center",
             data: (data) =>
                 `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span>`,
         },
+        {
+            title: "Access Level",
+            className: "align-middle",
+            data: (data) => {
+                const accessLabel = data.access_level ?? `${data.access_level}`;
+                return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
+            }
+        },
+        
         {
             title: "Requires Booking",
             className: "align-middle text-center",
@@ -71,18 +77,7 @@ var AmenityComponent = (() => {
                     : '<span class="badge bg-secondary text-dark">Not Required</span>';
             },
         },
-        {
-            title: "Available",
-            className: "align-middle text-center",
-            data: function (data) {
-                const val = data.is_available ?? 0;
-                const isYes = val == 1;
-
-                return isYes
-                    ? '<span class="badge text-warning bg-info-subtle text-dark">Available</span>'
-                    : '<span class="badge text-warning bg-danger-subtle text-dark">Unavailable</span>';
-            },
-        },
+        
         {
             title: "Status",
             className: "align-middle text-center",
@@ -188,8 +183,9 @@ var AmenityComponent = (() => {
             status_id: mThis.elFilter_status?.value,
             access_level: mThis.elFilter_access_level?.value,
             requires_booking: mThis.elFilter_requires_booking?.value,
-            is_available: mThis.elFilter_is_available?.value,
             search_value: mThis.elSearch?.value,
+            building_id: mThis.elBuilding.value,
+            floor_id: mThis.elFloor.value,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -353,21 +349,12 @@ var AmenityComponent = (() => {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/amenity/form-options`,
-                null,
-                null,
-                null,
-            )
+                `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.amenity_statuses,
-                    "id",
-                    "name",
-                    true,
-                    "Statuses",
-                );
+                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status",true,"Statuses",null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === "function") onFinish();
             });
@@ -401,32 +388,47 @@ const AmenityDialog = (() => {
                     return [
                         `
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div class="col-6">
                             <label style="padding-left:6px;">Amenity Name</label>
                             <div class="material-input outlined">
-                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
                             </div>
                         </div>
-                       
                         <div class="col-6">
-                            <label style="padding-left:6px;">Floor</label>
+                            <label style="padding-left:6px;">Amenity Category</label>
                             <div class="material-input outlined">
-                                <input type="text" name="floor" required class="data-input form-control" data-field="floor" placeholder=" " />
+                                <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
+                                </select>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <label style="padding-left:6px;">Location Detail</label>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                             <div class="material-input outlined">
-                                <input type="text" name="location" required class="data-input form-control" data-field="location_detail" placeholder=" " />
+                                <select name="building_id" class="data-input form-control" data-field="building_id">
+                                </select>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
+                            <div class="material-input outlined">
+                                <select name="floor_id" class="data-input form-control" data-field="floor_id">
+                                </select>
+                            </div>
+                        </div>
+                        
                         <div class="col-12">
                             <label style="padding-left:6px;">Description</label>
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
+                            <label style="padding-left:6px;">Max Capacity</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-4">
                             <label style="padding-left:6px;" for="access_level">Access Level</label>
                             <div class="material-input outlined">
                                 <select name ="access_level" class="data-input form-control" data-field="access_level" placeholder=" ">
@@ -437,13 +439,8 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;">Max Capacity</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-6">
+                        
+                        <div class="col-4">
                             <label style="padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             <div class="material-input outlined">
                                 <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
@@ -452,15 +449,7 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>    
                         </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;" for="is_available">Available</label>
-                            <div class="material-input outlined">
-                                <select name="available" class="data-input form-control" data-field="is_available" placeholder=" ">
-                                    <option value="1">Available</option>
-                                    <option value="0">Unavailable</option>
-                                </select>
-                            </div>
-                        </div>
+                        
                         <div class="col-12">
                             <div class="d-none material-input outlined">
                                 <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
@@ -474,9 +463,49 @@ const AmenityDialog = (() => {
                 contentCreated: (me) => {},
                 configSelect: [
                     {
-                        name: "amenity_id",
-                        data: "amenities",
-                        textField: "amenity",
+                        name: "amenity_categories",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
+                        valueField: "id",
+                    },
+                    {
+                        name: "amenity_statuses",
+                        data: "amenity_statuses",
+                        textField: "amenity_status",
+                        valueField: "id",
+                    },
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    {
+                        name: "floor_id",
+                        textField: "name",
+                        valueField: "id",
+                        defaultValue: (me, op) => {
+                            return op?.data?.floor_id ?? null;
+                        },
+                        depends: {
+                            name: "building_id",
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                                params: (me, op) => {
+                                    let building_id = me.controls.building_id.value;
+                                    return {
+                                        building_id: building_id,
+
+                                    };
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        name: "category_id",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
                         valueField: "id",
                     },
                 ],
@@ -509,7 +538,7 @@ const AmenityDialog = (() => {
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
-                        click: (me) => {
+                        click: (me,btn) => {
                             me.hide(false);
                         },
                     },
@@ -521,7 +550,6 @@ const AmenityDialog = (() => {
 
                             const modal = me.divModal || document;
 
-                            // Collect text, number, and textarea fields
                             modal
                                 .querySelectorAll(
                                     "input[data-field], textarea[data-field]",
@@ -544,9 +572,7 @@ const AmenityDialog = (() => {
                             payload.requires_booking = Number(
                                 payload.requires_booking ?? 0,
                             );
-                            payload.is_available = Number(
-                                payload.is_available ?? 1,
-                            );
+                            
                             payload.max_capacity = Number(
                                 payload.max_capacity ?? 0,
                             );
@@ -556,8 +582,6 @@ const AmenityDialog = (() => {
                                 payload.id = me.dataOptions.id;
                             }
 
-                            // Optional debug (remove in production if not needed)
-                            console.log("Final payload being sent:", payload);
 
                             vsapi
                                 .call(
