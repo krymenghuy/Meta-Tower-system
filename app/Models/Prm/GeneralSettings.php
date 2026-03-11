@@ -117,13 +117,12 @@ class GeneralSettings //extends Model
     // static function options_service_types($ss){
     //     return DB:: table('service_types')->selectRaw('id,name,code')->get();
     // }
-    static function options_pmt_status($ss = null)
-    {
-        return [
-            (object) ['id' => -1, 'pmt_status' => '(All)', 'status' => '(All)'],
-            (object) ['id' => 0, 'pmt_status' => 'Unpaid', 'status' => 'Unpaid'],
-            (object) ['id' => 1, 'pmt_status' => 'Paid', 'status' => 'Paid']
-        ];
+    static function options_pmt_status($ss=null){
+       return [
+        (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
+        (object)['id'=>0,'pmt_status'=>'Unpaid','status'=>'Unpaid'],
+        (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
+       ];
     }
 
     static function options_calendar_month($ss = null)
@@ -330,7 +329,7 @@ class GeneralSettings //extends Model
         return DB::table('tenants as t')
             ->join('contracts as c', 'c.tenant_id', '=', 't.id')
             // ->where('c.status_id', '=', 2)
-            ->where('t.branch_id', '=', $ss->branch_id)  // Filter by branch if needed
+            ->where('t.branch_id', '=', $ss->branch_id)
             ->select('t.id', 't.name as tenant', 'c.id as contract_id')
             ->distinct()  // In case tenant has multiple active contracts
             ->orderBy('t.name')
@@ -435,8 +434,43 @@ class GeneralSettings //extends Model
     }
     static function options_service($ss)
     {
-        return DB::table('services')->selectRaw('id,name AS service, price, unit_type')->get();
+        return DB::table('services')
+        ->selectRaw('id,name AS service, price, unit_type')
+        ->get();
     }
+
+
+    static function options_service_types($ss)
+    {
+        return DB::table('service_types')
+        ->selectRaw('id,name as service_type')
+        ->get();
+    }
+
+    static function options_service_type_request($ss){
+        return DB::table('service_types')
+            ->selectRaw('id, name as service_type')
+            ->whereIn('id', [1,4])
+            // ->whereIn('id', [1, 4])
+            ->orderBy('id')
+            ->get();
+    }
+    static function options_service_request_type($service_type_id){
+        //$branch_id = $ss->branch_id;
+        $service_type_id = $service_type_id ?? -1;
+        $str_where ="1=1";
+        if($service_type_id > 0){
+            $str_where = 's.service_type_id = ' . $service_type_id;
+        }
+        $rows = DB::table(table: 'services as s')
+            ->join('service_types as st','st.id','=','s.service_type_id')
+            ->whereRaw($str_where)
+            ->selectRaw('s.id,s.name as service_name, s.price, s.unit_type, s.service_type_id,st.name as service_type')->get();
+        return $rows;
+    }
+
+
+
     static function options_legal($ss)
     {
         return DB::table('tenants')->selectRaw('id,legal_name')->get();
@@ -476,11 +510,7 @@ class GeneralSettings //extends Model
 
     static function options_request_status($ss)
     {
-        return DB::table('request_status')->selectRaw('id,name')->get();
-    }
-    static function options_service_types($ss)
-    {
-        return DB::table('service_types')->selectRaw('id,name as service_type')->get();
+        return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
      static function options_vendor_types($ss)
     {
@@ -535,6 +565,11 @@ class GeneralSettings //extends Model
         }
 
         return $rows;
+    }
+
+    static function options_amenity_category($ss)
+    {
+        return DB::table('amenity_categories')->selectRaw('id,name as amenity_category')->get();
     }
 
 }

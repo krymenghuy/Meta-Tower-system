@@ -165,7 +165,7 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
                 $start_date,$end_date,$updated_at,t.update_user
             ")
             ->orderBy('t.status_id', 'asc')
-            ->orderBy('t.name', 'asc');
+            ->orderBy('t.created_at', 'desc');
 
             // ->orderBy('t.id','DESC');
         $clone_query = clone $query;

@@ -76,9 +76,9 @@ return [
                 '/assets/js/browsercontrol.js',
                 'https://cdn.vectoraclouds.com/frontcore/components/VSMoney.js',
 
-                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsEngine.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/items_view/core/ItemsValidator.js',
-                'https://cdn.vectoraclouds.com/frontcore/components/items_view/ui/ItemsView.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/core/ItemsEngine.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/core/ItemsValidator.js',
+                'https://cdn.vectoraclouds.com/frontcore/components/items_view/v2/ui/ItemsView.js',
 
             ],
             'no-minify' => [
