@@ -20,6 +20,7 @@ use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
 use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
+use App\Http\Controllers\Prm\ItemController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -162,6 +163,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->gro
     Route::post('/details', [VendorController::class, 'vendorDetails']);
     Route::post('/form-options', [VendorController::class, 'getFormOptions']);
     Route::post('/delete', [VendorController::class, 'deleteVendor']);
+    //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('item')->group(function () {
+    Route::post('/save', [ItemController::class, 'saveItem']);
+    Route::post('/list-paginate', [ItemController::class, 'getListPaginate']);
+    Route::post('/details', [ItemController::class, 'itemDetails']);
+    Route::post('/form-options', [ItemController::class, 'getFormOptions']);
+    Route::post('/delete', [ItemController::class, 'deleteItem']);
     //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
