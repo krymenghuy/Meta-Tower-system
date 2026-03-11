@@ -537,4 +537,9 @@ class GeneralSettings //extends Model
         return $rows;
     }
 
+    static function options_amenity_category($ss)
+    {
+        return DB::table('amenity_categories')->selectRaw('id,name as amenity_category')->get();
+    }
+
 }
