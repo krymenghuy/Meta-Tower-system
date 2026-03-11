@@ -229,7 +229,6 @@ class ServiceRequest extends VSModel
         $id = $d->id ?? $this->id;
         $details = $id ? self::getServiceRequestDetails($id) : null;
         $service_type_id = $d->service_type_id ?? null;
-
         return (object) [
             'request_details'   => $details,
             'service_types'     => GeneralSettings::options_service_type_request($ss),

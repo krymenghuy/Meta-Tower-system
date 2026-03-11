@@ -84,5 +84,4 @@ class GeneralSettingsController extends Controller
         return JDV::result(GeneralSettings::options_service_request_type($service_type_id));
     }
 
-
 }

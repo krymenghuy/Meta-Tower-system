@@ -804,7 +804,7 @@ const CreateServiceRequestDialog = (() => {
                     const unit = me.controls?.unit_type?.value || '';
                     const showDuration = unit === '2';
                     const durationRow = me.divModal.querySelector('.select-type-time');
-                    const previewRow = me.divModal.querySelector('#price-preview-row');
+                    const previewRow  = me.divModal.querySelector('#price-preview-row');
 
                     if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
                     if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }

@@ -117,13 +117,12 @@ class GeneralSettings //extends Model
     // static function options_service_types($ss){
     //     return DB:: table('service_types')->selectRaw('id,name,code')->get();
     // }
-    static function options_pmt_status($ss = null)
-    {
-        return [
-            (object) ['id' => -1, 'pmt_status' => '(All)', 'status' => '(All)'],
-            (object) ['id' => 0, 'pmt_status' => 'Unpaid', 'status' => 'Unpaid'],
-            (object) ['id' => 1, 'pmt_status' => 'Paid', 'status' => 'Paid']
-        ];
+    static function options_pmt_status($ss=null){
+       return [
+        (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
+        (object)['id'=>0,'pmt_status'=>'Unpaid','status'=>'Unpaid'],
+        (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
+       ];
     }
 
     static function options_calendar_month($ss = null)
