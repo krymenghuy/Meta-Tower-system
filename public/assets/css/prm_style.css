@@ -2753,7 +2753,7 @@ tr {
     .material-input.outlined input:focus,
     .material-input.outlined select:focus,
     .material-input.outlined textarea:focus {
-      border-color: #1a1647;
+      border-color: #cccccc;
       box-shadow: 0 0 0 2px rgba(26, 22, 71, 0.1);
     }
 
@@ -2776,9 +2776,9 @@ tr {
     .material-input.outlined select:valid ~ label,
     .material-input.outlined textarea:focus ~ label,
     .material-input.outlined textarea:not(:placeholder-shown) ~ label {
-      top: -6px;
+      top: 0px;
       font-size: 12px;
-      color: #1a1647;
+      color: #cccccc;
     }
 
 

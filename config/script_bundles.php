@@ -132,7 +132,7 @@ return [
                 'js/components/prm/ReceiptComponent.js',
                 'js/components/prm/ServiceComponent.js',
                 'js/components/prm/VendorComponent.js',
-                'js/components/prm/PurchasesComponent.js',
+                'js/components/prm/PurchaseOrdersComponent.js',
                 'js/components/prm/InvoiceComponent.js',
                 'js/components/prm/AccessControlComponent.js',
                 'js/components/prm/SettingComponent.js',

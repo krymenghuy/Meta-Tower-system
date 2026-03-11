@@ -105,6 +105,7 @@
 ========================= */
 .vs-modal .form-control,
 .vs-modal .form-select {
+    height: calc(1.5em + 1.15rem + 2px);
     border-radius: 12px;
     border: 1.5px solid #e2e5ef;
     padding: 11px 14px;
@@ -400,4 +401,9 @@
     50%  { background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%; }
     100% { background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
            background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+}
+.vs-modal .choices__inner{
+    /* border-radius: 4px !important; */
+    height:44.4 !important;;
+    min-height: 44.4 !important;;
 }

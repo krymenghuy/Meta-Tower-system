@@ -235,7 +235,7 @@ var ItemsComponent = (() => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'name', true, 'All Item Categories', null);
+                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'name', true, 'All Categories', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
