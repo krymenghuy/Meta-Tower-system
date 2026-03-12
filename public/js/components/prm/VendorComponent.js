@@ -382,13 +382,17 @@ const CreateVendorDialog = (() => {
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
-                                     <label style="display:none;color:#777777;padding-left:6px;">Type</label>
+                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id">
+                                    <!-- <option value="" selected hidden></option> -->
+                                    </select>
+                                    <label style="display:none; color:#777777;padding-left:6px;">Vendor Type</label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder=""></select>
+                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="">
+                                        <!-- <option value="" selected hidden></option> -->
+                                    </select>
                                     <label style="display:none; color:#777777;padding-left:6px;">Category</label>
                                 </div>
                             </div>

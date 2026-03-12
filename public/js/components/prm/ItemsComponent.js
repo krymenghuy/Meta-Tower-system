@@ -268,20 +268,19 @@ const CreateItemsDialog = (() => {
                         `<div class="row justify-content-center">
                             
                            <div class="col-12">
-                                <label style="padding-left:6px;">Name<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label style="padding-left:6px;color:#777777;">Name<span class="text-danger">*</span></label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="padding-left:6px;" for="category_id">Category</label>
                                 <div class="material-input outlined">
                                     <select name="category_id" class="data-input form-control" data-field="category_id">
                                     </select>
+                                    <label style="display: none; padding-left:6px;color:#777777;">Category<span class="text-danger">*</span></label>
                                 </div>
                            </div>
                             <div class="col-6">
-                                <label style="padding-left:6px;" for="unit">Unit</label>
                                 <div class="material-input outlined">
                                     <select name="unit" class="data-input form-control" data-field="unit">
                                         <option value="pcs">pcs</option>
@@ -291,6 +290,8 @@ const CreateItemsDialog = (() => {
                                         <option value="kg">kg</option>
                                         <option value="meter">meter</option>
                                     </select>
+                                <label style="display: none; padding-left:6px;color:#777777;" for="unit">Unit</label>
+
                                 </div>
                             </div>
 
