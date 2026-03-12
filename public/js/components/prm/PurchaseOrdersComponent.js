@@ -1,7 +1,7 @@
 "use strict";
-var PurchasesComponent = (() => {
+var PurchaseOrdersComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Purchases";
+    mThis.title_prop = "Purchase Orders";
     mThis.base_url = main_view.base_url;
     mThis.self = main_view.VSAppContent.querySelector("#_main_purchases_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnPurchases");
@@ -18,7 +18,7 @@ var PurchasesComponent = (() => {
             className: "align-middle",
         },
         {
-            transTitle: "titles.Purchase Number",
+            transTitle: "titles.Po Number",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
@@ -28,70 +28,35 @@ var PurchasesComponent = (() => {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
-
-                const name = data.name ?? '';
-                const code = data.code ?? '';
-
-                const initials = name.split(' ')
-                    .map(w => w[0])
-                    .join('')
-                    .substring(0, 2)
-                    .toUpperCase();
-
-                let bgClass = 'bg-secondary-subtle text-secondary';
-
-                if (code === 'equipment') {
-                    bgClass = 'bg-primary-subtle text-primary';
-                } else if (code === 'maintenance') {
-                    bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
-                } else if (code === 'utility') {
-                    bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
-
-                return `
-            <div class="d-flex text-nowrap align-items-center gap-2">
-                <div class="rounded ${bgClass} d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">
-                    ${initials}
-                </div>
-                <span class="fw-semibold text-dark">
-                    ${name}
-                </span>
-            </div>
-        `;
-            }
-        },
-        {
-            title: "Purchase Date",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone ?? ""}</span>
-                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
-        },
-        {
-            transTitle: "titles.Amount",
-            className: "align-middle",
-            data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.type ?? ""}</span>`;
             }
         },
-
         {
-            transTitle: "titles.Remarks",
+            title: "Po Date",
             className: "align-middle",
-            data: (data, index, tr) => {
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone ?? ""}</span>`,
+        },
+        {
+            title: "Status",
+            className: "align-middle text-center",
+            data: (data) => {
+
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+                if (status === 'active') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+                else if (status === 'inactive') {
+                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                }
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? '...'}</span>
-                    </div>
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${data.status ?? ''}
+                    </span>
                 `;
-            }
-        }, 
+            },
+        },
         {
             transTitle: "titles.Updated By",
             className: 'align-middle text-nowrap',
@@ -116,10 +81,11 @@ var PurchasesComponent = (() => {
 
     ];
 
+
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.VendorListView = new ListView('_purchases_list', {
+        mThis.PoListView = new ListView('_purchases_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -127,9 +93,8 @@ var PurchasesComponent = (() => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
+                tr.dataset.id = data.id;
                 tr.dataset.statusid = data.status_id;
-                tr.classList.add('purchases');
-                tr.setAttribute('id', ['purchases_id', data.id].join(''));
 
             },
             listContainerClass: null
@@ -141,7 +106,7 @@ var PurchasesComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.VendorListView.showPage(mThis.getFilterData());
+                    mThis.PoListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
@@ -149,7 +114,7 @@ var PurchasesComponent = (() => {
         };
 
 
-        mThis.pr_tbl = mThis.VendorListView.getListContainer();
+        mThis.pr_tbl = mThis.PoListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -157,13 +122,13 @@ var PurchasesComponent = (() => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         }
-        mThis.tblVendor = mThis.VendorListView.getTable();
-        mThis.initDropdownMenus(mThis.tblVendor);
+        const tblPo = mThis.PoListView.getTable();
+        mThis.initDropdownMenus(tblPo);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.PoListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -171,8 +136,28 @@ var PurchasesComponent = (() => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.PoListView.showPage(mThis.getFilterData());
             }, 250);
+        });
+        mThis.Acfg = new ExpandableRowConfig(tblPo.id, {
+            dontExpandByClickingOn: [
+                'dropdown-menu',
+                "btn-po-action"
+            ],
+            onOpen: (container, detail_tr, parent_tr) => {
+                const qtr = parent_tr;
+                let op = {
+                    id: qtr.dataset.id,
+                    // block_code: qtr.dataset.blockcode,
+                    // request_type_id: qtr.dataset.request_typeid,
+                    // request_id: qtr.dataset.requestid,
+                };
+                // op[qtr.dataset.field] = qtr.dataset.toid;
+                // if(op.student_id > 0 && op.request_type_id > 0)
+                // mThis.displayApprovalActivityDetails(detail_tr, op);
+                const div_wrapper = detail_tr.querySelector(".expandable-row-container");
+                renderPoItem(op, div_wrapper);
+            },
         });
 
 
@@ -232,6 +217,68 @@ var PurchasesComponent = (() => {
         }
         new VSDropdownMenu(menuOptopns);
     }
+     const renderPoItem = (d, elBody, onFinish = null , expandableRow = true) => {
+    vsapi.call(`${main_view.base_url}/prm/vendor/list-paginate`,{
+      id: d.id
+    },null,false).then((res) => {
+        let info = {};
+        if(res.status_code === 200)
+        {
+            let data = res.data;
+            info = data;
+            //(3232,info);
+        // console.log(999888,d);
+        }
+        let html = ``;
+        const tHead = `
+          <thead>
+              <tr>
+                  <th class="text-nowrap">Code</th>
+                  <th class="text-nowrap">Item</th>
+                  <th class="text-nowrap">QTY</th>
+                  <th class="text-nowrap">Unit Price</th>
+                  <th class="text-nowrap">Total Price</th>
+                  <th class="text-nowrap">Accept QTY</th>
+              </tr>
+          </thead>
+        `;
+        let tBody = ``;
+        if(info.length > 0){
+          info.map(item => {
+            tBody += `<tr>
+                        <th class="text-nowrap">123</th>
+                        <th class="text-nowrap">Book</th>
+                        <th class="text-nowrap">ITM-10001</th>
+                        <th class="text-nowrap">10</th>
+                        <th class="text-nowrap">7</th>
+                    </tr>`
+          });
+        }else
+        tBody = ' <tr><th colspan="100%" class="text-nowrap text-center">No item</th></tr>'
+
+        tBody ='<tbody>' + tBody + '</tbody>';
+        html += '<table class = "table w-100" >' + tHead + tBody + '</table>';
+
+        elBody.innerHTML = html;
+
+        elBody.classList.add("p-3","rounded-3","table-secondary");
+        if(!expandableRow){
+          elBody.querySelectorAll("select.modal-select2").forEach(el => {
+              $(el).select2({
+                  tags: true
+              });
+          });
+          // const elGroup = mThis.elBody.querySelector('.opt_group');
+          // elGroup.onchange = (e) => {
+          //     e.preventDefault();
+          //     mThis.options.group_id = e.target.value;
+          // };
+          // ApprovalDialog.setOption(elBody,d,elBody.querySelector("#pre_price"));
+          if (typeof onFinish === "function") onFinish();
+        }
+
+    });
+  };
 
     mThis.editVendor = (id, menulink) => {
         let op = {
@@ -239,7 +286,7 @@ var PurchasesComponent = (() => {
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.PoListView.showPage(mThis.getFilterData());
             }
         };
 
@@ -250,7 +297,7 @@ var PurchasesComponent = (() => {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.PoListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -262,7 +309,7 @@ var PurchasesComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/vendor/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.VendorListView.showPage();
+                        mThis.PoListView.showPage();
                     } else {
                         cv_interact.error(res.error_message);
                     }
@@ -287,7 +334,7 @@ var PurchasesComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.VendorListView.showPage(mThis.getFilterData());
+            mThis.PoListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -304,7 +351,7 @@ const CreatePurchasesOrderDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-xl vs-modal",
                 backdrop: "static",
                 keyboard: true,
                 createContent: () => {

@@ -18,13 +18,6 @@ var VendorComponent = (() => {
             className: "align-middle",
         },
         {
-            transTitle: "titles.Vattin",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
-            }
-        },
-        {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
@@ -74,6 +67,13 @@ var VendorComponent = (() => {
                  <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
+            transTitle: "titles.Vattin",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
+            }
+        },
+        {
             transTitle: "titles.Type",
             className: "align-middle",
             data: (data) => {
@@ -114,10 +114,9 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
+                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
             }
         },
-
         {
             transTitle: "titles.Address",
             className: "align-middle",
@@ -369,85 +368,65 @@ const CreateVendorDialog = (() => {
                 <div class="vendor-form row p-1">
                         <div class="col-12 row pb-3">
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Name</label>
+                               <!-- <label style="color:#777777;padding-left:6px;">Name</label> -->
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Type</label>
-                                <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Name</label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Category</label>
                                 <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id"></select>
+                                    <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="tax_number"
-                                        class="data-input form-control"
-                                        data-field="tax_number"
-                                        placeholder=" " />
+                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
+                                     <label style="display:none;color:#777777;padding-left:6px;">Type</label>
+                                </div>
+                            </div>
+                             <div class="col-12 col-md-6">
+                                <div class="material-input outlined">
+                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder=""></select>
+                                    <label style="display:none; color:#777777;padding-left:6px;">Category</label>
+                                </div>
+                            </div>
+                           
+                            <div class="col-12 col-md-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="phone" class="data-input form-control" data-field="phone" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
+
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                
                                 <div class="material-input outlined">
-                                    <input type="number"
-                                        name="phone"
-                                        class="data-input form-control"
-                                        data-field="phone"
-                                        placeholder=" " />
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Email</label>
+                                </div>
+                                
+                            </div>
+                            <div class="col-12 col-md-6">
+                                
+                                <div class="material-input outlined">
+                                    <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Contact Person</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Email</label>
+                                
                                 <div class="material-input outlined">
-                                    <input type="email"
-                                        name="email"
-                                        class="data-input form-control"
-                                        data-field="email"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Person</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_person"
-                                        class="data-input form-control"
-                                        data-field="contact_person"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Phone</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_phone"
-                                        class="data-input form-control"
-                                        data-field="contact_phone"
-                                        placeholder=" " />
+                                    <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Contact Phone</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;">Address</label>
+                                
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control"
-                                        data-field="address"
-                                        rows="3"
-                                        placeholder=" ">
-                                    </textarea>
+                                    <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "> </textarea>
+                                    <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>
                          </div>
