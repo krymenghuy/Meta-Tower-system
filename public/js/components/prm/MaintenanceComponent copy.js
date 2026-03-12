@@ -20,48 +20,33 @@ var MaintenanceComponent = (() => {
         },
         {
             transTitle: "titles.Type unit",
-            className: "align-middle text-center",
+            className: "align-middle",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
                 const amenity = data.amenity_id && data.amenity_name ? data.amenity_name : null;
-                if (space) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
-                if (amenity) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenity}</span><span class="text-muted small">Amenity</span></div>`;
-                return `<span class="text-nowrap">—</span>`;
+                const label = space ? "Space: " + space : (amenity ? "Amenity: " + amenity : "—");
+                return `<span class="text-nowrap">${label}</span>`;
             }
         },
         {
-            transTitle: "titles.Start Date",
-            className: "align-middle text-center",
-            data: (data) => {
-                const val = data.start_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
-            }
+            transTitle: "titles.Maintenance type",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.maintenance_type_name ?? ""}</span>`
         },
         {
-            transTitle: "titles.End Date",
-            className: "align-middle text-center",
-            data: (data) => {
-                const val = data.end_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
-            }
+            transTitle: "titles.Request Date",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.request_date ?? "—"}</span>`
+        },
+        {
+            transTitle: "titles.Scheduled Date",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.scheduled_date ?? "—"}</span>`
+        },
+        {
+            transTitle: "titles.Completed Date",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.completed_date ?? "—"}</span>`
         },
         {
             transTitle: "titles.Status",
@@ -73,6 +58,19 @@ var MaintenanceComponent = (() => {
                 else if (s === "in progress") cls = "badge bg-info-subtle text-info";
                 else if (s === "cancelled") cls = "badge bg-secondary-subtle text-secondary";
                 return `<span class="badge ${cls}">${data.status_name ?? ""}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Assigned Staff",
+            className: "align-middle",
+            data: (data) => `<span class="text-nowrap">${data.assigned_staff_name ?? "—"}</span>`
+        },
+        {
+            transTitle: "titles.Cost",
+            className: "align-middle",
+            data: (data) => {
+                const cost = data.cost != null && data.cost !== "" ? Number(data.cost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+                return `<span class="text-nowrap">${cost !== "—" ? "$" + cost : cost}</span>`;
             }
         },
         {
@@ -163,8 +161,6 @@ var MaintenanceComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 { html: '<span class="ps-2" vslang="titles.Modify"></span>', icon: '<i class="fa-regular fa-edit fs-5 text-warning"></i>', cssClass: "border-bottom pb-2", name: "modify" },
-                { html: '<span class="ps-2" vslang="titles.Finish Maintenance"></span>', icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>', cssClass: "border-bottom pb-2", name: "finish_maintenance" },
-                { html: '<span class="ps-2" vslang="titles.Cancel Maintenance"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
             ],
             onClick: (menuLink, id, name) => {
@@ -173,32 +169,6 @@ var MaintenanceComponent = (() => {
                         id: parseInt(id, 10),
                         btn: menuLink,
                         onClose: () => mThis.MaintenanceListView.showPage(mThis.getFilterData())
-                    });
-                } else if (name === "finish_maintenance") {
-                    cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
-                        if (e) {
-                            vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 3 }, menuLink, null).then(res => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success("Maintenance finished.");
-                                    mThis.MaintenanceListView.showPage(mThis.getFilterData());
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed");
-                                }
-                            });
-                        }
-                    });
-                } else if (name === "cancel_maintenance") {
-                    cv_interact.confirm("Cancel this maintenance?", { transTitle: "Cancel Maintenance", context: "confirm", confirmButtonText: "Cancel" }, (e) => {
-                        if (e) {
-                            vsapi.call(`${main_view.base_url}/prm/maintenance/set-status`, { id: id, status_id: 4 }, menuLink, null).then(res => {
-                                if (res.status_code === 200) {
-                                    cv_interact.success("Maintenance cancelled.");
-                                    mThis.MaintenanceListView.showPage(mThis.getFilterData());
-                                } else {
-                                    cv_interact.error(res.error_message || "Failed");
-                                }
-                            });
-                        }
                     });
                 } else if (name === "delete") {
                     cv_interact.confirm("Delete this maintenance record?", { transTitle: "Delete Maintenance", context: "delete", confirmButtonText: "Delete" }, (e) => {
@@ -250,65 +220,107 @@ const CreateMaintenanceDialog = (() => {
 
     self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            cssClass: "modal-md vs-modal vs-modal--compact",
+            cssClass: "modal-lg vs-modal",
             backdrop: "static",
             keyboard: true,
             createContent: () => `
-                <div class="maintenance-form-sections py-1">
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-map-marker-alt"></i> Location & unit</h6>
-                        <div class="row g-2">
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Building <span class="text-danger">*</span></label>
-                                <select name="building_id" class="data-input form-control form-control-sm" data-field="building_id" required><option value="">Select building</option></select>
+                <div class="maintenance-form-sections">
+                    <section class="maintenance-form-section border rounded-3 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-map-marker-alt"></i> Location & unit
+                        </h6>
+                        <div class="d-flex flex-wrap gap-3 align-items-end">
+                            <div class="flex-grow-1" style="min-width:180px;">
+                                <label class="form-label small mb-1">Building <span class="text-danger">*</span></label>
+                                <select name="building_id" class="data-input form-control form-control-sm" data-field="building_id" required>
+                                    <option value="">Select building</option>
+                                </select>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Type unit <span class="text-danger">*</span></label>
-                                <select name="type_unit" class="data-input form-control form-control-sm" data-field="type_unit" id="_maintenance_type_unit" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
+                            <div class="flex-grow-1" style="min-width:180px;">
+                                <label class="form-label small mb-1">Type unit <span class="text-danger">*</span></label>
+                                <select name="type_unit" class="data-input form-control form-control-sm" data-field="type_unit" id="_maintenance_type_unit" required>
+                                    <option value="">Select type</option>
+                                    <option value="space">Space</option>
+                                    <option value="amenity">Amenity</option>
+                                </select>
                             </div>
-                            <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
-                                <label class="form-label small mb-0">Space</label>
-                                <select name="space_id" class="data-input form-control form-control-sm" data-field="space_id"><option value="">Select space</option></select>
+                            <div id="_maintenance_unit_space_row" style="display:none; min-width:180px;" class="flex-grow-1">
+                                <label class="form-label small mb-1">Space</label>
+                                <select name="space_id" class="data-input form-control form-control-sm" data-field="space_id">
+                                    <option value="">Select space</option>
+                                </select>
                             </div>
-                            <div id="_maintenance_unit_amenity_row" class="col-12 col-sm-6" style="display:none;">
-                                <label class="form-label small mb-0">Amenity</label>
-                                <select name="amenity_id" class="data-input form-control form-control-sm" data-field="amenity_id"><option value="">Select amenity</option></select>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-wrench"></i> Status</h6>
-                        <div class="row g-2">
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Status <span class="text-danger">*</span></label>
-                                <select name="status_id" class="data-input form-control form-control-sm" data-field="status_id" required><option value="">Select status</option></select>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time span</h6>
-                        <div class="row g-2">
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">Start date</label>
-                                <input type="text" data-type="date" name="start_date" class="form-control form-control-sm data-input" data-field="start_date" placeholder="dd-MM-yyyy">
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">Start time</label>
-                                <input type="time" name="start_time" class="form-control form-control-sm data-input" data-field="start_time" value="00:00">
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">End date</label>
-                                <input type="text" data-type="date" name="end_date" class="form-control form-control-sm data-input" data-field="end_date" placeholder="dd-MM-yyyy">
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">End time</label>
-                                <input type="time" name="end_time" class="form-control form-control-sm data-input" data-field="end_time" value="00:00">
+                            <div id="_maintenance_unit_amenity_row" style="display:none; min-width:180px;" class="flex-grow-1">
+                                <label class="form-label small mb-1">Amenity</label>
+                                <select name="amenity_id" class="data-input form-control form-control-sm" data-field="amenity_id">
+                                    <option value="">Select amenity</option>
+                                </select>
                             </div>
                         </div>
                     </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-comment"></i> Remarks</h6>
-                        <textarea name="remarks" class="data-input form-control form-control-sm" data-field="remarks" rows="2" placeholder="Additional notes..."></textarea>
+                    <section class="maintenance-form-section border rounded-3 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-wrench"></i> Type & status
+                        </h6>
+                        <div class="d-flex flex-wrap gap-3 align-items-end">
+                            <div class="flex-grow-1" style="min-width:200px;">
+                                <label class="form-label small mb-1">Maintenance type <span class="text-danger">*</span></label>
+                                <select name="maintenance_type_id" class="data-input form-control form-control-sm" data-field="maintenance_type_id" required>
+                                    <option value="">Select type</option>
+                                </select>
+                            </div>
+                            <div class="flex-grow-1" style="min-width:160px;">
+                                <label class="form-label small mb-1">Status <span class="text-danger">*</span></label>
+                                <select name="status_id" class="data-input form-control form-control-sm" data-field="status_id" required>
+                                    <option value="">Select status</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="maintenance-form-section border rounded-3 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-calendar-alt"></i> Schedule
+                        </h6>
+                        <div class="d-flex flex-wrap gap-3 align-items-end">
+                            <div style="min-width:140px;">
+                                <label class="form-label small mb-1">Request date <span class="text-danger">*</span></label>
+                                <input type="text" data-type="date" name="request_date" class="form-control form-control-sm data-input" data-field="request_date" required placeholder="dd-MM-yyyy">
+                            </div>
+                            <div style="min-width:140px;">
+                                <label class="form-label small mb-1">Scheduled date</label>
+                                <input type="text" data-type="date" name="scheduled_date" class="form-control form-control-sm data-input" data-field="scheduled_date" placeholder="dd-MM-yyyy">
+                            </div>
+                            <div style="min-width:140px;">
+                                <label class="form-label small mb-1">Completed date</label>
+                                <input type="text" data-type="date" name="completed_date" class="form-control form-control-sm data-input" data-field="completed_date" placeholder="dd-MM-yyyy">
+                            </div>
+                        </div>
+                    </section>
+                    <section class="maintenance-form-section border rounded-3 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-user-cog"></i> Assignment & cost
+                        </h6>
+                        <div class="d-flex flex-wrap gap-3 align-items-end">
+                            <div class="flex-grow-1" style="min-width:200px;">
+                                <label class="form-label small mb-1">Assigned staff</label>
+                                <select name="assigned_staff_id" class="data-input form-control form-control-sm" data-field="assigned_staff_id">
+                                    <option value="">Select staff</option>
+                                </select>
+                            </div>
+                            <div style="min-width:120px;">
+                                <label class="form-label small mb-1">Cost</label>
+                                <input type="number" step="0.01" min="0" name="cost" class="data-input form-control form-control-sm" data-field="cost" placeholder="0.00">
+                            </div>
+                        </div>
+                    </section>
+                    <section class="maintenance-form-section border rounded-3 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-2">
+                        <i class="fas fa-comment"></i> Remarks
+                        </h6>
+                        <div>
+                           
+                            <textarea name="remarks" class="data-input form-control form-control-sm" data-field="remarks" rows="2" placeholder="Additional notes..."></textarea>
+                        </div>
                     </section>
                 </div>
             `,
@@ -334,7 +346,9 @@ const CreateMaintenanceDialog = (() => {
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
                 { name: "amenity_id", data: "amenities", textField: "amenity", valueField: "id" },
-                { name: "status_id", data: "maintenance_statuses", textField: "maintenance_status", valueField: "id" }
+                { name: "maintenance_type_id", data: "maintenance_types", textField: "maintenance_type", valueField: "id" },
+                { name: "status_id", data: "maintenance_statuses", textField: "maintenance_status", valueField: "id" },
+                { name: "assigned_staff_id", data: "staff", textField: "staff_name", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
@@ -361,22 +375,12 @@ const CreateMaintenanceDialog = (() => {
                     const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
                     const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
                     if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
-                if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
                     if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";
                         spaceRow.style.display = val === "space" ? "" : "none";
                         amenityRow.style.display = val === "amenity" ? "" : "none";
-                    }
-                    if (me.detail?.start_date && me.controls?.start_date) {
-                        const s = String(me.detail.start_date).trim().split(/\s+/);
-                        me.controls.start_date.value = s[0] || "";
-                        if (me.controls.start_time) me.controls.start_time.value = (s[1] || "00:00").substring(0, 5);
-                    }
-                    if (me.detail?.end_date && me.controls?.end_date) {
-                        const e = String(me.detail.end_date).trim().split(/\s+/);
-                        me.controls.end_date.value = e[0] || "";
-                        if (me.controls.end_time) me.controls.end_time.value = (e[1] || "00:00").substring(0, 5);
                     }
                 }, 0);
             },
@@ -392,10 +396,6 @@ const CreateMaintenanceDialog = (() => {
                         if (typeUnit === "space") data.amenity_id = null;
                         else if (typeUnit === "amenity") data.space_id = null;
                         delete data.type_unit;
-                        if (data.start_date && data.start_time) data.start_date = data.start_date + " " + data.start_time;
-                        if (data.end_date && data.end_time) data.end_date = data.end_date + " " + data.end_time;
-                        delete data.start_time;
-                        delete data.end_time;
                         vsapi.call(`${main_view.base_url}/prm/maintenance/save`, data, btn, null)
                             .then(res => {
                                 if (res.status_code === 200) {
