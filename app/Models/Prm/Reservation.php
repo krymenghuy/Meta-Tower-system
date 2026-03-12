@@ -30,7 +30,6 @@ class Reservation extends VSModel
             'date'               => '1|date|text=Date is required',
             'start_time'         => '1|time|text=Start time is required',
             'end_time'           => '1|time|text=End time is required',
-            'title'              => '1|string|1-255|text=Event title is required',
             'description'        => '0|string|0-350',
             'status_id'          => '0|number|default=1',
             'requires_booking_id'=> '0|number|default=1',
@@ -38,9 +37,8 @@ class Reservation extends VSModel
             'recurrence_id'      => '0|number',
             
         ];
-        $title_char       = ['@', ',', '-', '.', '#', '&', '(', ')', ':'];
         $description_char = ['@', ',', '-', '.', '#', '&', '(', ')', ':', '_'];
-        $res = DBX::validateObject( $arr, $v_rule, 1, ['title'=>$title_char,'title_char'=>$title_char,'description'=> $description_char], $ss->lang, 0, null );
+        $res = DBX::validateObject( $arr, $v_rule, 1, ['description'=> $description_char], $ss->lang, 0, null );
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -119,23 +117,27 @@ class Reservation extends VSModel
             $str_moreWhere .= ' AND r.status_id =' . $status_id;
         }
         
-        $updated_at = DBX::formatTime("r.updated_at", 'updated_at');
+        // $updated_at = DBX::formatTime("r.updated_at", 'updated_at');
         $query = DB::table('reservations as r')
+            ->join('reservation_statuses as rs', 'rs.id', '=', 'r.status_id')
             ->Join('amenities as a', 'a.id', '=', 'r.amenity_id')
             ->Join('tenants as t', 't.id', '=', 'r.tenant_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("r.id,r.title,r.date,r.start_time,r.end_time,r.amenity_id,a.name as amenity_name,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.description,r.status_id,$updated_at,r.update_user")->orderBy('r.id','DESC');
+            ->selectRaw("r.id,r.date,r.start_time,r.end_time,r.amenity_id,a.name as amenity_name,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.description,r.status_id,rs.name as status,r.updated_at,r.update_user")->orderBy('r.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('r.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $row = setOfficialDates($row,['updated_at'],[],[]);
+        }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
 
     public static function reservationDetails($id,$ss = null){
         return DB::table('reservations as r')
             ->where('r.id',$id)
-            ->selectRaw('r.id,r.title,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,r.description')
+            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,r.description')
             ->first();
     }
 
@@ -146,7 +148,7 @@ class Reservation extends VSModel
             'reservation_details' => $reservation_details,
             'amenities'      => GeneralSettings::options_amenity($ss),
             'tenants'        => GeneralSettings::options_tenant($ss),
-            // 'reservation_statuses' => GeneralSettings::options_reservation_status($ss)
+            'reservation_statuses' => GeneralSettings::options_reservation_status($ss)
         ];
     }
 
@@ -157,18 +159,18 @@ class Reservation extends VSModel
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Delete failed.');
     }
 
-    // public function updateReservationStatus($status_id, $id, $ss)
-    // {
-    //     $ss = $ss ? $ss : $this->userInfo;
-    //     $currentStatus = DB::table('reservations')->where('id', $id)->value('status_id');
-    //     if ($currentStatus == $status_id) {
-    //         return DV::error('It is the same current status.');
-    //     }
-    //     $x = DB::table('reservations')->where('id', $id)->update([
-    //         'status_id' => $status_id,
-    //         'update_user'=>$ss->full_name,
-    //         'updated_at'=>getNowTime(),
-    //     ]);
-    //     return DV::depends($x, ['reservation status', 'updated']);
-    // }
+    public function updateReservationStatus($status_id, $id, $ss)
+    {
+        $ss = $ss ? $ss : $this->userInfo;
+        $currentStatus = DB::table('reservations')->where('id', $id)->value('status_id');
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status.');
+        }
+        $x = DB::table('reservations')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user'=>$ss->full_name,
+            'updated_at'=>getNowTime(),
+        ]);
+        return DV::depends($x, ['reservation status', 'updated']);
+    }
 }
