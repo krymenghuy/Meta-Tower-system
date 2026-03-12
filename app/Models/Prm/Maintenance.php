@@ -32,7 +32,7 @@ class Maintenance extends VSModel
             'description'          => '0|string|0-2000',
             'start_date'           => '0|date',
             'end_date'             => '0|date',
-            'status_id'            => '1|number|exists=maintenance_statuses.id',
+            'status_id'            => '0|number|exists=maintenance_statuses.id',
             'remarks'              => '0|string|0-1000',
         ];
 
@@ -69,6 +69,9 @@ class Maintenance extends VSModel
         }
         if (isset($input['amenity_id']) && (int) $input['amenity_id'] <= 0) {
             $input['amenity_id'] = null;
+        }
+        if (empty($input['status_id'])) {
+            $input['status_id'] = 1; // default: Pending
         }
 
         try {
