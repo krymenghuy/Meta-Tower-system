@@ -20,6 +20,7 @@ use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
 use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
+use App\Http\Controllers\Prm\MaintenanceController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -146,6 +147,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
 
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('maintenance')->group(function () {
+    Route::post('/save', [MaintenanceController::class, 'save']);
+    Route::post('/list-paginate', [MaintenanceController::class, 'getListPaginate']);
+    Route::post('/details', [MaintenanceController::class, 'details']);
+    Route::post('/form-options', [MaintenanceController::class, 'getFormOptions']);
+    Route::post('/delete', [MaintenanceController::class, 'delete']);
+    Route::post('/set-status', [MaintenanceController::class, 'setStatus']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->group(function () {
     Route::post('/save', [ServiceController::class, 'saveService']);
