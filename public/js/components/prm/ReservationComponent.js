@@ -75,6 +75,9 @@ var ReservationComponent =   ( () => {
                     cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
                 } else if (status == 'active') {
                     cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
+                } else if (status == "cancelled") {
+                    cls =
+                        "text-white px-3 py-1 rounded-3 bg-warning d-inline-block";
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
@@ -114,11 +117,9 @@ var ReservationComponent =   ( () => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-
-
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('reservation');
-              tr.setAttribute('id',['reservation_id',data.id].join(''));
+              tr.classList.add("reservation");
+              tr.setAttribute("id", `reservation_id${data.id}`);
 
             },
             listContainerClass: null
@@ -174,6 +175,8 @@ var ReservationComponent =   ( () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
+            // building_id: mThis.elBuilding.value,
+            // floor_id: mThis.elFloor.value,
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -293,11 +296,12 @@ var ReservationComponent =   ( () => {
             data:[
                 {status_id:"1",name:"Available"},
                 {status_id:"2",name:"Booked"},
+                {status_id: "3", name: "Cancel" },
             ],
             defaultValue: status_id,
             onConfirm:(status,btn, me)=>{
                     //if(!AuthManager.allowed(321)) return;
-                    const payload = {id, status_id :status.id};
+                    const payload = {id, status_id :status.status_id};
                     vsapi.post(`${mThis.base_url}/prm/reservation/update-status`,payload,{loader:false,agent:btn}).then(res=>{
                         if(res.status_code ===200){
                             me.close();
@@ -344,60 +348,95 @@ const CreateReservationDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            
                             <div class="col-6">
-                                <label style="padding-left:6px;" for="amenity">Amenity</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Category</label>
+                                <div class="material-input outlined">
+                                    <select name="amenity_category" class="data-input form-control" data-field="amenity_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Name</label>
                                 <div class="material-input outlined">
                                     <select name="amenity" class="data-input form-control" data-field="amenity_id">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id">
-                            <!--       <select name="c" class="data-input form-control" data-field="tenant_name"> </select>-->
+                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="padding-left:6px;">Phone Number</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Capacity</label>
                                 <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control"data-field="phone_number"></input>
+                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="padding-left:6px;">Title / Event</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Building Name</label>
                                 <div class="material-input outlined">
-                                    <input name="title" class="data-input form-control" data-field="title"></input>
+                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
+                                    </select>
                                 </div>
                             </div>
+
                             <div class="col-6">
-                                <label style="padding-left:6px;" for="date">Date</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Floor Number</label>
                                 <div class="material-input outlined">
-                                    <input type="date" name="date" required class="data-input form-control form_input" data-field="date" />
+                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;">Start Time</label>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Time</label>
                                 <div class=" material-input outlined">
                                     <input type="time" name="start_time" required class="data-input form-control form_input" data-field="start_time" />
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;">End Time</label>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">End Time</label>
                                 <div class=" material-input outlined">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" />
                                 </div>
                             </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <div class="material-input outlined">
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_id">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;    padding-left:6px;">Phone Number</label>
+                                <div class="material-input outlined">
+                                    <input name="phone_number" class="data-input form-control"data-field="phone_number"></input>
+                                </div>
+                            </div>
+                            <div class="col-6 d-none ">
+                                <label style="color:#777777;padding-left:6px;">Title / Event</label>
+                                <div class="material-input outlined">
+                                    <input name="title" class="data-input form-control" data-field="title"></input>
+                                </div>
+                            </div>
+                            
 
                             <div class="col-12">
-                                <label style="padding-left:6px;">Description</label>
+                                <label style="color:#777777;padding-left:6px;">Description</label>
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                 </div>
@@ -447,6 +486,12 @@ const CreateReservationDialog = (() => {
                         name: "category_id",
                         data: "amenities",
                         textField: "category",
+                        valueField: "id",
+                    },
+                    {
+                        name: "status_id",
+                        data: "reservation_statuses",
+                        textField: "re_status",
                         valueField: "id",
                     },
                    

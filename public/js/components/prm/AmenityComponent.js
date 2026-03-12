@@ -18,11 +18,15 @@ var AmenityComponent = (() => {
             className: "align-middle text-capitalize",
         },
         {
-            title: "Name",
+            title: "Amenity Name",
             className: "align-middle",
             data: (data) =>
-                `<span class="text-primary-custom">${data.name ?? ""}</span>`,
+                `<div class="text-prm-custom text-capitalize" style="width:120px; ">
+                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                    <small class="d-block text-muted">${data.code ?? ""}</small>
+                </div>`,
         },
+        
         {
             title: "Category",
             className: "align-middle",
@@ -31,23 +35,22 @@ var AmenityComponent = (() => {
         },
         
         {
-            title: "Building / Floor",
+            title: "Location",
             className: "align-middle",
             data: (data) =>
                 `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.building_name ?? ""}</span>
-                        <small class="d-block text-muted">${data.floor_number ?? ""}</small>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floor_number ?? ""}</span>
+                        <small class="d-block text-muted">${data.building_name ?? ""}</small>
                     </div>
                 `
-            
         },
         {
             title: "Description",
             className: "align-middle",
             data: (data) => `
                 <div class="text-primary-custom" style="width:150px;">
-                    <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? ''}</span>
+                    <span class="text-capitalize text-break" style="word-break:break-word;">${data.description ?? ''}</span>
                 </div>`
         },
         {
@@ -142,6 +145,14 @@ var AmenityComponent = (() => {
             e.preventDefault();
             const op = {
                 id: null,
+                // data: {
+                //     amenity_category_id: btn.dataset.categoryid, 
+                //     amenity_name: btn.dataset.name,             
+                //     code: btn.dataset.amenitycode,              
+                //     max_capacity: btn.dataset.capacity,         
+                //     building_id: btn.dataset.buildingid,        
+                //     floor_id: btn.dataset.floorid               
+                // },
                 btn: e.target,
                 onClose: () =>
                     mThis.AmenityListView.showPage(mThis.getFilterData()),
@@ -187,6 +198,7 @@ var AmenityComponent = (() => {
             building_id: mThis.elBuilding.value,
             floor_id: mThis.elFloor.value,
         };
+        
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -389,19 +401,6 @@ const AmenityDialog = (() => {
                         `
                     <div class="row g-3">
                         <div class="col-6">
-                            <label style="padding-left:6px;">Amenity Name</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;">Amenity Category</label>
-                            <div class="material-input outlined">
-                                <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                             <div class="material-input outlined">
                                 <select name="building_id" class="data-input form-control" data-field="building_id">
@@ -415,21 +414,40 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Amenity Category</label>
+                            <div class="material-input outlined">
+                                <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Amenity Name</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label style="color:#777777; padding-left:6px;">Amenity Code <span style="color:#bbbbbb; font-size: 0.9em; font-weight: normal;">(Optional)</span></label>
+                            <div class="material-input outlined">
+                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
+                            </div>
+                        </div> 
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;">Max Capacity</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                            </div>
+                        </div>   
                         
                         <div class="col-12">
-                            <label style="padding-left:6px;">Description</label>
+                            <label style="color:#777777;padding-left:6px;">Description</label>
                             <div class="material-input outlined">
                                 <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <label style="padding-left:6px;">Max Capacity</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <label style="padding-left:6px;" for="access_level">Access Level</label>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;" for="access_level">Access Level</label>
                             <div class="material-input outlined">
                                 <select name ="access_level" class="data-input form-control" data-field="access_level" placeholder=" ">
                                     <option value="All Tenants">All Tenants</option>
@@ -440,8 +458,8 @@ const AmenityDialog = (() => {
                             </div>
                         </div>
                         
-                        <div class="col-4">
-                            <label style="padding-left:6px;" for ="requires_booking">Requires Booking</label>
+                        <div class="col-6">
+                            <label style="color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             <div class="material-input outlined">
                                 <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
                                     <option value="0">No</option>
@@ -449,7 +467,6 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>    
                         </div>
-                        
                         <div class="col-12">
                             <div class="d-none material-input outlined">
                                 <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
@@ -608,10 +625,10 @@ const AmenityDialog = (() => {
                                         );
                                     }
                                 })
-                                .catch((err) => {
-                                    console.error("Save request failed:", err);
-                                    cv_interact.error("Network/server error");
-                                });
+                                // .catch((err) => {
+                                //     console.error("Save request failed:", err);
+                                //     cv_interact.error("Network/server error");
+                                // });
                         },
                     },
                 ],
