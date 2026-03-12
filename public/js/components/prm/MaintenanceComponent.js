@@ -67,12 +67,26 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
-                const s = (data.status_name || "").toLowerCase();
+                const now = new Date();
+                const startStr = (data.start_date || "").toString().trim();
+                const endStr = (data.end_date || "").toString().trim();
+                let displayStatus = data.status_name ?? "";
                 let cls = "badge bg-warning-subtle text-warning";
-                if (s === "completed") cls = "badge bg-success-subtle text-success";
-                else if (s === "in progress") cls = "badge bg-info-subtle text-info";
-                else if (s === "cancelled") cls = "badge bg-secondary-subtle text-secondary";
-                return `<span class="badge ${cls}">${data.status_name ?? ""}</span>`;
+                if (startStr && endStr) {
+                    const startDt = new Date(startStr.replace(/\s+/g, " "));
+                    const endDt = new Date(endStr.replace(/\s+/g, " "));
+                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime()) && now >= startDt && now <= endDt) {
+                        displayStatus = "In Progress";
+                        cls = "badge bg-info-subtle text-info";
+                    }
+                }
+                if (displayStatus && cls === "badge bg-warning-subtle text-warning") {
+                    const s = displayStatus.toLowerCase();
+                    if (s === "completed") cls = "badge bg-success-subtle text-success";
+                    else if (s === "in progress") cls = "badge bg-info-subtle text-info";
+                    else if (s === "cancelled") cls = "badge bg-secondary-subtle text-secondary";
+                }
+                return `<span class="badge ${cls}">${displayStatus || "—"}</span>`;
             }
         },
         {
@@ -277,15 +291,6 @@ const CreateMaintenanceDialog = (() => {
                         </div>
                     </section>
                     <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-wrench"></i> Status</h6>
-                        <div class="row g-2">
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Status <span class="text-danger">*</span></label>
-                                <select name="status_id" class="data-input form-control form-control-sm" data-field="status_id" required><option value="">Select status</option></select>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
                         <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time span</h6>
                         <div class="row g-2">
                             <div class="col-6 col-md-3">
@@ -333,8 +338,7 @@ const CreateMaintenanceDialog = (() => {
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
-                { name: "amenity_id", data: "amenities", textField: "amenity", valueField: "id" },
-                { name: "status_id", data: "maintenance_statuses", textField: "maintenance_status", valueField: "id" }
+                { name: "amenity_id", data: "amenities", textField: "amenity", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
