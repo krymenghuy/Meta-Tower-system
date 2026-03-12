@@ -44,7 +44,7 @@ class Amenity extends VSModel
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
-        
+
         $d->requires_booking = isset($d->requires_booking) ? (int)$d->requires_booking : 0;
 
         if(!$id) {
@@ -64,7 +64,7 @@ class Amenity extends VSModel
                 return DV::error('Update failed: Another Amenity with this name already exists');
             }
         }
-        
+
         if (!empty($d->code)) {
             $exists = DB::table('amenities')
                 ->where('code', $d->code)
@@ -94,7 +94,7 @@ class Amenity extends VSModel
                 $id
             );
         }
-         
+
         if ($id > 0) {
             return DV::depends(1, ['amenities' => $inputs, 'id' => $id]);
         }
@@ -195,7 +195,7 @@ class Amenity extends VSModel
         if($status_id){
             $str_moreWhere .= ' AND a.status_id =' . $status_id;
         }
-        
+
         // $updated_at = DBX::formatTime("a.updated_at", 'updated_at');
         $query = DB::table('amenities as a')
             ->join('amenity_statuses as as', 'as.id', '=', 'a.status_id')
@@ -211,7 +211,7 @@ class Amenity extends VSModel
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
             $row = setOfficialDates($row,['updated_at'],[],[]);
-        }  
+        }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
 
@@ -227,7 +227,7 @@ class Amenity extends VSModel
         // $d = (object) $arr;
         // $id = $d->id ?? $this->id;
         $amenity_details = $id ? self::amenityDetails($id) : null;
-        $building_id = $d->building_id ?? null;
+        $building_id = $amenity_details ? ($amenity_details->building_id ?? null) : null;
 
         return (object) [
             'amenity_details' => $amenity_details,

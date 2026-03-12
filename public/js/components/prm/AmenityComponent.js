@@ -26,14 +26,14 @@ var AmenityComponent = (() => {
                     <small class="d-block text-muted">${data.code ?? ""}</small>
                 </div>`,
         },
-        
+
         {
             title: "Category",
             className: "align-middle",
             data: (data) =>
                 `<span class="text-primary-custom">${data.category ?? ""}</span>`,
         },
-        
+
         {
             title: "Location",
             className: "align-middle",
@@ -67,7 +67,7 @@ var AmenityComponent = (() => {
                 return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
             }
         },
-        
+
         {
             title: "Requires Booking",
             className: "align-middle text-center",
@@ -80,7 +80,7 @@ var AmenityComponent = (() => {
                     : '<span class="badge bg-secondary text-dark">Not Required</span>';
             },
         },
-        
+
         {
             title: "Status",
             className: "align-middle text-center",
@@ -135,6 +135,8 @@ var AmenityComponent = (() => {
                 "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.buildingid = data.building_id ?? "";
+                tr.dataset.floorid = data.floor_id ?? "";
                 tr.classList.add("amenity");
                 tr.setAttribute("id", `amenity_id${data.id}`);
             },
@@ -146,12 +148,12 @@ var AmenityComponent = (() => {
             const op = {
                 id: null,
                 // data: {
-                //     amenity_category_id: btn.dataset.categoryid, 
-                //     amenity_name: btn.dataset.name,             
-                //     code: btn.dataset.amenitycode,              
-                //     max_capacity: btn.dataset.capacity,         
-                //     building_id: btn.dataset.buildingid,        
-                //     floor_id: btn.dataset.floorid               
+                //     amenity_category_id: btn.dataset.categoryid,
+                //     amenity_name: btn.dataset.name,
+                //     code: btn.dataset.amenitycode,
+                //     max_capacity: btn.dataset.capacity,
+                //     building_id: btn.dataset.buildingid,
+                //     floor_id: btn.dataset.floorid
                 // },
                 btn: e.target,
                 onClose: () =>
@@ -198,7 +200,7 @@ var AmenityComponent = (() => {
             building_id: mThis.elBuilding.value,
             floor_id: mThis.elFloor.value,
         };
-        
+
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -258,8 +260,15 @@ var AmenityComponent = (() => {
     };
 
     mThis.editAmenity = (id, menuLink) => {
-        const op = {
-            id,
+        const tr = menuLink?.closest("tr");
+        const buildingId = tr?.dataset?.buildingid || null;
+        const floorId = tr?.dataset?.floorid || null;
+        let op = {
+            id: id,
+            data: {
+                building_id: buildingId,
+                floor_id: floorId,
+            },
             btn: menuLink,
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
@@ -432,14 +441,14 @@ const AmenityDialog = (() => {
                             <div class="material-input outlined">
                                 <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;">Max Capacity</label>
                             <div class="material-input outlined">
                                 <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
                             </div>
-                        </div>   
-                        
+                        </div>
+
                         <div class="col-12">
                             <label style="color:#777777;padding-left:6px;">Description</label>
                             <div class="material-input outlined">
@@ -457,7 +466,7 @@ const AmenityDialog = (() => {
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="col-6">
                             <label style="color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             <div class="material-input outlined">
@@ -465,7 +474,7 @@ const AmenityDialog = (() => {
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
                                 </select>
-                            </div>    
+                            </div>
                         </div>
                         <div class="col-12">
                             <div class="d-none material-input outlined">
@@ -589,7 +598,7 @@ const AmenityDialog = (() => {
                             payload.requires_booking = Number(
                                 payload.requires_booking ?? 0,
                             );
-                            
+
                             payload.max_capacity = Number(
                                 payload.max_capacity ?? 0,
                             );
