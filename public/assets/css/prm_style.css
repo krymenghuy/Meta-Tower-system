@@ -2671,7 +2671,7 @@ tr {
  /* =================== MATERIAL INPUT =================== */
     .material-input {
       position: relative;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
       font-family: Arial, sans-serif;
     }
 
@@ -2741,7 +2741,6 @@ tr {
     .material-input.outlined select,
     .material-input.outlined textarea {
       width: 100%;
-      /* padding: 18px 12px 6px 12px; */
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -2864,4 +2863,11 @@ tr {
     /* Firefox */
     scrollbar-width: thin;
     scrollbar-color: rgb(26 22 71) transparent;
+}
+.box-size-purchase {
+    width: 150px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

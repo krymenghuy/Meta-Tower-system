@@ -490,38 +490,33 @@ const BuildingDialog = (() => {
                 return [
                     `<div class="row justify-content-center">
                         <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Building Name</label>
                             <div class="material-input outlined">
                                 <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-
+                                <label style="color:#777777;padding-left:6px;">Name</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Total Floor</label>
                             <div class="material-input outlined">
                                 <input type="text" name="total_floor" required class="data-input form-control" data-field="total_floor" placeholder=" " />
-
+                                <label style="color:#777777;padding-left:6px;">Total Floors</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Total Area</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_area" required class="data-input form-control" data-field="total_area" placeholder=" " />
-
+                                <label style="color:#777777;padding-left:6px;">Total Area</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Total Space</label>
                             <div class="material-input outlined">
                                 <input type="number" name="total_space" required class="data-input form-control" data-field="total_space" placeholder=" " />
-
+                                <label style="color:#777777;padding-left:6px;">Total Space</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Address</label>
                             <div class="material-input outlined">
                                 <textarea type="number" name="address" class="data-input form-control" data-field="address" placeholder=" "></textarea>
-
+                                <label style="color:#777777;padding-left:6px;">Address</label>
                             </div>
                         </div>
                     </div>`
@@ -594,21 +589,22 @@ const CreateFloorDialog = (() => {
             createContent: () => `
                 <div class="row justify-content-center">
                     <div class="col-6">
-                        <label style="color:#777;padding-left:6px;">Floor Number</label>
                         <div class="material-input outlined">
                             <input type="number" name="floor_number" required class="data-input form-control" data-field="floor_number" placeholder=" " />
+                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
                         </div>
                     </div>
                     <div class="col-6">
-                        <label style="color:#777;padding-left:6px;">Floor Name</label>
                         <div class="material-input outlined">
                             <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                            <label style="color:#777777;padding-left:6px;">Floor Name</label>
                         </div>
                     </div>
                     <div class="col-12">
-                        <label style="color:#777;padding-left:6px;">Description</label>
+                        
                         <div class="material-input outlined">
                             <textarea name="description" class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                            <label style="color:#777777;padding-left:6px;">Description</label>
                         </div>
                     </div>
                 </div>
