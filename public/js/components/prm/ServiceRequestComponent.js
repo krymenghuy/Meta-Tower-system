@@ -60,7 +60,7 @@ var ServiceRequestComponent = (function () {
                 const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
             } else if (data.unit_type) {
-                extraInfo = `<small class="text-muted d-block">/ ${data.unit_type}</small>`;
+                extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
             }
 
             return `

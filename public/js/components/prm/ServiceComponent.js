@@ -39,7 +39,7 @@ var ServiceComponent =   ( () => {
                 const currency = data.currency_code ?? 'USD';
                 const formattedPrice = VSMoney.formatAmount(data.price,currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-                return `<span class="fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
+                return `<span class="text-nowrap fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
         }
         },
         {

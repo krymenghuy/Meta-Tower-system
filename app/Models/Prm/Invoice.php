@@ -21,158 +21,178 @@ class Invoice extends VSModel
         $this->userInfo = $userInfo;
     }
 
+
     public function upsert($arr = [], $id = null, $ss = null)
-{
-    $id        = $id ?? $this->id;
-    $ss        = $ss ?? $this->userInfo;
-    $branch_id = $ss->branch_id ?? null;
+    {
+        $id        = $id ?? $this->id;
+        $ss        = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id ?? null;
 
-    $v_rule = [
-        'tenant_id'         => '1|integer|exists:tenants,id',
-        'space_id'          => '1|integer|exists:building_spaces,id',
-        'contract_id'       => '0|integer|exists:contracts,id',
-        'business_type_id'  => '0|integer|exists:business_types,id',
-        'service_id'        => '0|integer|exists:services,id',
-        'due_date'          => '1|date',
-        'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
-        'purpose'           => '0|string|max:200',
-        'remarks'           => '0|string|max:500',
-        'currency_code'     => '0|string|max:10',
-        'items'             => '1|array|min:1',
-    ];
+        $v_rule = [
+            'tenant_id'         => '1|integer|exists:tenants,id',
+            'space_id'          => '1|integer|exists:building_spaces,id',
+            'contract_id'       => '0|integer|exists:contracts,id',
+            'due_date'          => '1|date',
+            'payment_status_id' => '0|integer|exists:payment_statuses,id|default=2',
+            'remarks'           => '0|string|max:500',
+            'items'             => '1|array|min:1',
+        ];
 
-    $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang ?? 'en', 0, null);
-    if ($res->error) {
-        return DV::error($res->error);
-    }
+        $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
+        $res = DBX::validateObject(
+            $arr,
+            $v_rule,
+            1,
+            ['description' => $allowed_chars],
+            $ss->lang ?? 'en',
+            0,
+            null
+        );
 
-    $inputs = $res->values;
-    $items  = $arr['items'] ?? [];
-    unset($inputs['items']);
-
-    if (empty($items)) {
-        return DV::error('Please add at least one item.');
-    }
-    // Validate each item
-    foreach ($items as $index => $item) {
-        if (!isset($item['amount']) || (float)$item['amount'] < 0.01) {
-            return DV::error("Item #" . ($index + 1) . ": amount must be at least 0.01.");
+        if ($res->error) {
+            return DV::error($res->error);
         }
 
-        // Discount validation
-        $discType  = $item['discount_type'] ?? 'fixed';
-        $discValue = (float)($item['discount_value'] ?? $item['discount'] ?? 0);
-        if ($discValue < 0) {
-            return DV::error("Item #" . ($index + 1) . ": discount cannot be negative.");
-        }
-        if ($discType === 'percent' && $discValue > 100) {
-            return DV::error("Item #" . ($index + 1) . ": percentage discount cannot exceed 100%.");
+        $inputs = $res->values;
+        $items  = $arr['items'] ?? [];
+        unset($inputs['items']);
+
+        if (empty($items)) {
+            return DV::error('Please add at least one item.');
         }
 
-        // Tax validation
-        $taxType  = $item['tax_type'] ?? 'fixed';
-        $taxValue = (float)($item['tax_value'] ?? $item['tax'] ?? 0);
-        if ($taxValue < 0) {
-            return DV::error("Item #" . ($index + 1) . ": tax cannot be negative.");
-        }
-        if ($taxType === 'percent' && $taxValue > 100) {
-            return DV::error("Item #" . ($index + 1) . ": percentage tax cannot exceed 100%.");
-        }
-    }
+        DB::beginTransaction();
 
-    DB::beginTransaction();
+        try {
+            $created = !$id;
 
-    try {
-        $created    = !$id;
-        $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
-
-        if (!$id) {
-            throw new \Exception("Failed to save invoice header.");
-        }
-
-        $codeRes = null;
-        if ($created && $id) {
-            $prefix = 'I-';
-            $codeRes = setOfficialCode(
-
-                $branch_id,
-                'invoice_code_control',
-                'invoices',
-                ['id' => $id],
-                $prefix,
-                5,
-                null
-            );
-            \Log::info(json_encode($codeRes));
-
-            if (!$codeRes || !isset($codeRes->status) || $codeRes->status !== 'OK') {
-                \Log::warning("Invoice code generation failed for id: {$id}");
+            $id = DBX::saveData($ss, 'invoices', ['id' => $id], $inputs, [], 1);
+            if (!$id) {
+                throw new \Exception("Failed to save invoice header.");
             }
-        }
 
-        if (!$created) {
+            $codeRes = null;
+            if ($created && $id) {
+                $prefix = 'I-';
+                $codeRes = setOfficialCode(
+                    $branch_id,
+                    'invoice_code_control',
+                    'invoices',
+                    ['id' => $id],
+                    $prefix,
+                    5,
+                    null
+                );
+
+                if (!$codeRes || !isset($codeRes->status) || $codeRes->status !== 'OK') {
+                }
+            }
+
             DB::table('invoice_items')->where('invoice_id', $id)->delete();
-        }
 
-        $itemRows = [];
-        $grandTotal = 0;  // ← Declare here
+                        $itemRows = [];
+            foreach ($items as $item) {
+                $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
 
-        foreach ($items as $item) {
-            $baseAmount = (float)($item['amount'] ?? 0);
+                if (!in_array($itemType, ['service', 'rend','utility',])) {
+                    $itemType = 'service';
+                }
 
-            $discType   = $item['discount_type'] ?? 'fixed';
-            $discValue  = (float)($item['discount_value'] ?? $item['discount'] ?? 0);
-            $discount   = $discType === 'percent'
-                ? $baseAmount * ($discValue / 100)
-                : $discValue;
+                $itemId = $item['item_id']  ?? null;
+                $qty    = (int)($item['qty'] ?? 1);
+                $price  = (float)($item['price'] ?? 0);
+                $unitType = '-';
 
-            $taxType    = $item['tax_type'] ?? 'fixed';
-            $taxValue   = (float)($item['tax_value'] ?? $item['tax'] ?? 0);
-            $tax        = $taxType === 'percent'
-                ? $baseAmount * ($taxValue / 100)
-                : $taxValue;
+                // Auto-load price from contract when type = rend
+                if ($itemType === 'rend' && $itemId) {
+                    $contractPrice = DB::table('contracts')
+                        ->where('id', $itemId)
+                        ->value('price');
 
-            $netAmount = $baseAmount - $discount + $tax;
-            $grandTotal += $netAmount;  // ← Accumulate here
+                    if ($contractPrice !== null) {
+                        $price = (float)$contractPrice;
+                    }
+                }
+                // Auto-load price + unit_type from service
+                else if ($itemType === 'service' && $itemId) {
+                    $serviceData = DB::table('services')
+                        ->where('id', $itemId)
+                        ->select('price', 'unit_type')
+                        ->first();
 
-            $itemRows[] = [
-                'invoice_id'      => $id,
-                // 'service_id'      => $item['service_id'] ?? null,
-                'type'            => $item['type']       ?? null,
-                'description'     => trim($item['description']),
-                'amount'          => $baseAmount,
-                'discount'        => $discount,
-                'discount_type'   => $discType,
-                'discount_value'  => $discValue,
-                'tax'             => $tax,
-                'tax_type'        => $taxType,
-                'tax_value'       => $taxValue,
-                'notes'           => $item['notes'] ?? null,
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ];
-        }
+                    if ($serviceData) {
+                        $price    = (float)$serviceData->price;
+                        $unitType = $serviceData->unit_type ?? '-';
+                    }
+                }
 
-        DB::table('invoice_items')->insert($itemRows);
-        // Update invoice header with correct grand total
-        DB::table('invoices')
-            ->where('id', $id)
-            ->update([
-                'amount'     => $grandTotal,   // ← Now using the real calculated value
-                'updated_at' => now(),
+                $baseAmount = $qty * $price;
+
+                // === FIXED CALCULATION (your requested example) ===
+                $discountValue   = (float)($item['discount'] ?? $item['special_discount_value'] ?? 0);
+                $discountType    = $item['special_discount_type'] ?? 'percent';
+                $taxRate         = (float)($item['tax_rate'] ?? 0);
+
+                // Step 1: Apply discount (10% or $10)
+                if ($discountType === 'percent') {
+                    $discountAmount = $baseAmount * ($discountValue / 100);
+                } else {
+                    $discountAmount = $discountValue;
+                }
+                $afterDiscount = $baseAmount - $discountAmount;
+
+                // Step 2: Apply tax on the discounted amount (10%)
+                $taxAmount = $afterDiscount * ($taxRate / 100);
+
+                // Final net amount
+                $finalAmount = $afterDiscount + $taxAmount;
+
+                $amount = round($finalAmount, 2);
+
+                $itemRows[] = [
+                    'invoice_id'              => $id,
+                    'item_id'                 => $itemId,
+                    'type'                    => $itemType,
+                    'qty'                     => $qty,
+                    'unit_type'               => $unitType,
+                    'remarks'                 => $item['remarks'] ?? $item['description'] ?? '',
+                    'amount'                  => $amount,
+                    'discount'                => (float)($item['discount'] ?? 0),
+                    'special_discount_value'  => $discountValue,
+                    'special_discount_type'   => $discountType,
+                    'tax_rate'                => $taxRate,
+                    'created_at'              => now(),
+                    'updated_at'              => now(),
+                ];
+            }
+
+            if (!empty($itemRows)) {
+                DB::table('invoice_items')->insert($itemRows);
+            }
+
+            // Calculate and update total
+            $totalAmount = array_sum(array_column($itemRows, 'amount'));
+
+            DB::table('invoices')
+                ->where('id', $id)
+                ->update([
+                    'amount'         => $totalAmount,
+                    'amount_payable' => $totalAmount,
+                    'updated_at'     => now(),
+                ]);
+
+            DB::commit();
+
+            return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error("Invoice save failed: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
             ]);
-
-        DB::commit();
-        return DV::depends(1, ['invoices' => $inputs, 'id' => $id]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error("Invoice save failed: " . $e->getMessage(), [
-            'trace' => $e->getTraceAsString()
-        ]);
-        return DV::error('Failed to save invoice: ' . $e->getMessage());
+            return DV::error('Failed to save invoice: ' . $e->getMessage());
+        }
     }
-}
     public static function checkDuplicateSpaceId($tenant_id, $invoice_id = null)
     {
         $query = DB::table('invoices as i')
@@ -194,8 +214,6 @@ class Invoice extends VSModel
 
         $query = DB::table('invoices as i')
             ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
-            ->leftJoin('services as s',          's.id',  '=', 'i.service_id')
-            ->leftJoin('business_types as bt',  'bt.id',  '=', 'i.business_type_id')
             ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
@@ -213,7 +231,6 @@ class Invoice extends VSModel
                 'i.update_user',
                 'i.payment_status_id',
                 'i.remarks',
-                'i.currency_code',
                 'i.contract_id',
                 't.name as tenant_name',
                 't.legal_name as tenant_legal_name',
@@ -226,10 +243,6 @@ class Invoice extends VSModel
                 'ct.start_date as contract_start',
                 'ct.end_date as contract_end',
                 'ct.sqm_size as contract_sqm_size',
-                's.name as service_name',
-                's.price as service_price',
-                's.unit_type as service_unit_type',
-                'bt.name as business_type_name',
             ])
             ->orderByDesc('i.id');
 
@@ -244,9 +257,9 @@ class Invoice extends VSModel
         if (!empty($d->search_value)) {
             $search = '%' . $d->search_value . '%';
             $query->where(function ($q) use ($search) {
-                $q->where('i.code',    'like', $search)
-                  ->orWhere('t.name',  'like', $search)
-                  ->orWhere('bs.code', 'like', $search);
+                    $q->where('i.code',    'like', $search)
+                    ->orWhere('t.name',  'like', $search)
+                    ->orWhere('bs.code', 'like', $search);
             });
         }
 
@@ -260,11 +273,9 @@ class Invoice extends VSModel
     {
         $header = DB::table('invoices as i')
             ->leftJoin('tenants as t',           't.id',  '=', 'i.tenant_id')
-            ->leftJoin('services as s',          's.id',  '=', 'i.service_id')
             ->leftJoin('payment_statuses as ps', 'ps.id', '=', 'i.payment_status_id')
             ->leftJoin('contracts as ct',        'ct.id', '=', 'i.contract_id')
             ->leftJoin('building_spaces as bs',  'bs.id', '=', 'i.space_id')
-            ->leftJoin('business_types as bt',   'bt.id', '=', 'i.business_type_id')
             ->where('i.id', $id)
             ->select(
                 'i.id',
@@ -278,9 +289,7 @@ class Invoice extends VSModel
                 'i.created_at',
                 'i.updated_at',
                 'i.payment_status_id',
-                'i.purpose',
                 'i.remarks',
-                'i.currency_code',
                 'i.contract_id',
                 't.name as tenant_name',
                 't.legal_name as tenant_legal_name',
@@ -294,10 +303,6 @@ class Invoice extends VSModel
                 'ct.start_date as contract_start_date',
                 'ct.end_date as contract_end_date',
                 'ps.name as payment_status_name',
-                's.name as service_name',
-                's.price as service_price',
-                's.unit_type as service_unit_type',
-                'bt.name as business_type_name',
             )
             ->first();
 
@@ -305,32 +310,36 @@ class Invoice extends VSModel
             return null;
         }
 
-        // Attach line items with all fields
         $header->items = DB::table('invoice_items as ii')
-            ->leftJoin('services as s', 's.id', '=', 'ii.service_id')
+            ->leftJoin('services as s', function ($join) {
+                $join->on('s.id', '=', 'ii.item_id')
+                     ->where('ii.type', '=', 'service');
+            })
+            ->leftJoin('contracts as c', function ($join) {
+                $join->on('c.id', '=', 'ii.item_id')
+                     ->where('ii.type', '=', 'rend');
+            })
             ->where('ii.invoice_id', $id)
             ->select(
                 'ii.id',
                 'ii.invoice_id',
-                'ii.service_id',
+                'ii.item_id',
                 'ii.type',
-                'ii.description',
+                'ii.qty',
+                'ii.unit_type',
+                'ii.remarks',
                 'ii.amount',
                 'ii.discount',
-                'ii.discount_type',
-                'ii.discount_value',
-                'ii.tax',
-                'ii.tax_type',
-                'ii.tax_value',
-                'ii.notes',
-                's.name as service_name',
-                's.unit_type as service_unit_type',
+                'ii.special_discount_value',
+                'ii.special_discount_type',
+                'ii.tax_rate',
+                DB::raw("COALESCE(s.name, c.legal_name, '—') as item_name"),
+                DB::raw("COALESCE(s.unit_type, '—') as unit_type")
             )
             ->get();
 
         return $header;
     }
-
     public static function getFormOptions($id, $ss)
     {
         return (object) [
