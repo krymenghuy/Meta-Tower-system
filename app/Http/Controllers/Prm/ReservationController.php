@@ -102,4 +102,13 @@ class ReservationController extends Controller
 
         return JDV::raw($result);
     }
+
+    public function option_select_amenity_info(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->tenant_id ?? $req->id;
+        return JDV::result($this->tenants->getAmenityInfo($id,$ss));
+    }
 }
