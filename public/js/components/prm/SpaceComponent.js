@@ -260,6 +260,7 @@ var SpaceComponent = new (function () {
         html += `</div>`;
         mThis.divSummary.innerHTML = html;
     };
+
     mThis.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
@@ -393,7 +394,7 @@ var SpaceComponent = new (function () {
         let html = `<div class="row g-3">`;
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
-              
+
                 const status = (d.status || "Available").toLowerCase();
                 let statusClass = "";
                 let statusColor = "#08b9d5";
@@ -431,6 +432,7 @@ var SpaceComponent = new (function () {
                     : `${symbol} ${price.toLocaleString()}`;
 
                 const priceLabelPerMonth = `${symbol} ${pricePerMonth.toLocaleString()}`;
+                const isUnderMaintenance = Number(d.maintenance_status_id) === 1;
                 html += `
                 <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                     <div class="unit-card position-relative overflow-hidden h-100" style="background-image:url('${d.bg_image ?? '/assets/images/default/bg-card1.jpg'}');">
@@ -441,7 +443,7 @@ var SpaceComponent = new (function () {
                                         Unit ${d.code ?? ''}
                                     </h5>
                                     <p class="unit-floor text-muted small mb-0">
-                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''} ${Number(d.maintenance_status_id) === 1 ? '<span class="text-warning fw-semibold">(Under maintenance)</span>' : ''}
+                                        ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${isUnderMaintenance ? ' <span class="text-warning fw-semibold">(Under maintenance)</span>' : ''}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
                                         Charge as ( ${d.price_type === 'total' ? 'Monthly' : 'per m²'} )
@@ -463,7 +465,7 @@ var SpaceComponent = new (function () {
                                     <span class="${statusClass}" style="min-width:80px">${status}</span>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex justify-content-between text-muted">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="w-100 d-flex flex-row justify-content-center align-items-center">
@@ -682,56 +684,52 @@ const BuildingSpaceDialog = (() => {
                     return [
                         `<div class="row justify-content-center">
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
                                 <div class="material-input outlined">
                                     <select name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
+                                <label style="display:none; color:#777777; padding-left:6px;" for="building">Building</label>
                                 </div>
                             </div>
-
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="spaceType">Category</label>
                                 <div class="material-input outlined">
                                     <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
                                     </select>
-
+                                    <label style="display:none; color:#777777; padding-left:6px;" for="spaceType">Category</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
                                 <div class="material-input outlined">
                                     <select name="floor_id" class="data-input form-control" data-field="floor_id">
                                     </select>
+                                    <label style="display:none; color:#777777; padding-left:6px;" for="floor">Floor</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Unit Code</label>
                                 <div class="material-input outlined">
                                     <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Unit Code</label>
                                 </div>
                             </div>
                             <!-- <div class="col-12 sqm-wrapper" style="display:none;"> -->
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Size (m²)</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
                                 </div>
                             </div>
-
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Price</label>
                                 <div class="material-input outlined">
                                     <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="spaceType">Price Type</label>
                                 <div class="material-input outlined">
                                     <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
                                         <option value="sqm">Per Square Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
-                                    <label class="d-none">Price Type</label>
+                                    <label style="display:none; color:#777777; padding-left:6px;" for="price_type">Price Type</label>
                                 </div>
                             </div>
 
@@ -898,7 +896,7 @@ const CreateBookingDialog = (() => {
                                         data-field="expired_booking_date" />
                                 </div>
                             </div>
-                           
+
 
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;">Booking Price</label>
