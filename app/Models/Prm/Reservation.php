@@ -59,15 +59,16 @@ class Reservation extends VSModel
 
     }
 
-    static function checkDuplicateReservation($amenity_id, $reservation_id, $id = null)
+    static function checkDuplicateReservation($amenity_id, $date, $id = null)
     {
-        if (!$amenity_id) return null;
+        if (!$amenity_id || !$date) return null;
 
         $query = DB::table('reservations as r')
-            ->where('r.reservation_id', $reservation_id);
+            ->where('r.amenity_id', $amenity_id)
+            ->where('r.date', $date);
 
         if ($id) {
-            $query->where('c.id', '<>', $id);
+            $query->where('r.id', '<>', $id);
         }
 
         return $query->value('id');
@@ -129,7 +130,7 @@ class Reservation extends VSModel
     public static function reservationDetails($id){
         return DB::table('reservations as r')
             ->where('r.id',$id)
-            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,r.description,')
+            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,r.description')
             ->first();
     }
 
