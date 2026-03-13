@@ -23,9 +23,9 @@ var MaintenanceComponent = (() => {
             className: "align-middle text-center",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
-                const amenity = data.amenity_id && data.amenity_name ? data.amenity_name : null;
+                const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
                 if (space) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
-                if (amenity) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenity}</span><span class="text-muted small">Amenity</span></div>`;
+                if (amenityCode) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
         },
@@ -67,6 +67,13 @@ var MaintenanceComponent = (() => {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
+                const statusId = parseInt(data.status_id, 10);
+                if (statusId === 3) {
+                    return `<span class="badge bg-success-subtle text-success">Completed</span>`;
+                }
+                if (statusId === 4) {
+                    return `<span class="badge bg-secondary-subtle text-secondary">Cancelled</span>`;
+                }
                 const now = new Date();
                 const startStr = (data.start_date || "").toString().trim();
                 const endStr = (data.end_date || "").toString().trim();
@@ -75,9 +82,33 @@ var MaintenanceComponent = (() => {
                 if (startStr && endStr) {
                     const startDt = new Date(startStr.replace(/\s+/g, " "));
                     const endDt = new Date(endStr.replace(/\s+/g, " "));
-                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime()) && now >= startDt && now <= endDt) {
-                        displayStatus = "In Progress";
-                        cls = "badge bg-info-subtle text-info";
+                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime())) {
+                        const sameDay = startDt.getFullYear() === endDt.getFullYear() &&
+                            startDt.getMonth() === endDt.getMonth() &&
+                            startDt.getDate() === endDt.getDate();
+                        if (sameDay) {
+                            if (now < startDt) {
+                                displayStatus = "Pending";
+                                cls = "badge bg-warning-subtle text-warning";
+                            } else if (now > endDt) {
+                                displayStatus = "Completed";
+                                cls = "badge bg-success-subtle text-success";
+                            } else {
+                                displayStatus = "In Progress";
+                                cls = "badge bg-info-subtle text-info";
+                            }
+                        } else {
+                            if (now >= endDt) {
+                                displayStatus = "Completed";
+                                cls = "badge bg-success-subtle text-success";
+                            } else if (now >= startDt && now < endDt) {
+                                displayStatus = "In Progress";
+                                cls = "badge bg-info-subtle text-info";
+                            } else {
+                                displayStatus = "Pending";
+                                cls = "badge bg-warning-subtle text-warning";
+                            }
+                        }
                     }
                 }
                 if (displayStatus && cls === "badge bg-warning-subtle text-warning") {
@@ -291,7 +322,7 @@ const CreateMaintenanceDialog = (() => {
                         </div>
                     </section>
                     <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time span</h6>
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time stamp</h6>
                         <div class="row g-2">
                             <div class="col-6 col-md-3">
                                 <label class="form-label small mb-0">Start date</label>
@@ -338,7 +369,7 @@ const CreateMaintenanceDialog = (() => {
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
-                { name: "amenity_id", data: "amenities", textField: "amenity", valueField: "id" }
+                { name: "amenity_id", data: "amenities", textField: "code", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
@@ -356,6 +387,11 @@ const CreateMaintenanceDialog = (() => {
                     me.detail.type_unit = "space";
                     me.detail.space_id = me.dataOptions.space_id;
                     if (me.dataOptions.building_id) me.detail.building_id = me.dataOptions.building_id;
+                } else if (me.dataOptions?.amenity_id) {
+                    me.detail = me.detail || {};
+                    me.detail.type_unit = "amenity";
+                    me.detail.amenity_id = me.dataOptions.amenity_id;
+                    if (me.dataOptions.building_id) me.detail.building_id = me.dataOptions.building_id;
                 } else if (me.detail) {
                     if (me.detail.space_id) me.detail.type_unit = "space";
                     else if (me.detail.amenity_id) me.detail.type_unit = "amenity";
@@ -365,7 +401,8 @@ const CreateMaintenanceDialog = (() => {
                     const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
                     const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
                     if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
-                if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";

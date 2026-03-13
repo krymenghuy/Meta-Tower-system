@@ -82,6 +82,17 @@ class Maintenance extends VSModel
             if (!empty($input['space_id'])) {
                 DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => 1]);
             }
+            if (!empty($input['amenity_id'])) {
+                $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['under maintenance'])->value('id');
+                if ($underMaintenanceId) {
+                    DB::table('amenities')->where('id', $input['amenity_id'])->update([
+                        'status_id'   => $underMaintenanceId,
+                        'update_user' => $ss->full_name ?? 'System',
+                        'update_uid'  => $ss->id ?? null,
+                        'updated_at'  => getNowTime(),
+                    ]);
+                }
+            }
             $message = !$id ? 'Maintenance created successfully' : 'Maintenance updated successfully';
             return DV::success(['message' => $message]);
         } catch (\Exception $e) {
@@ -114,7 +125,19 @@ class Maintenance extends VSModel
             $where_more .= ' AND m.space_id = ' . (int) $space_id;
         }
         if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
-            $where_more .= ' AND m.status_id = ' . (int) $status_id;
+            $status_id = (int) $status_id;
+            if ($status_id === 4) {
+                $where_more .= ' AND m.status_id = 4';
+            } else {
+                $now = now()->format('Y-m-d H:i:s');
+                if ($status_id === 1) {
+                    $where_more .= " AND m.start_date IS NOT NULL AND m.start_date > '{$now}'";
+                } elseif ($status_id === 2) {
+                    $where_more .= " AND m.start_date IS NOT NULL AND m.end_date IS NOT NULL AND m.start_date <= '{$now}' AND m.end_date >= '{$now}'";
+                } elseif ($status_id === 3) {
+                    $where_more .= " AND m.end_date IS NOT NULL AND m.end_date < '{$now}'";
+                }
+            }
         }
 
         $updated_at = DBX::formatTime('m.updated_at', 'updated_at');
@@ -129,7 +152,7 @@ class Maintenance extends VSModel
             ->selectRaw("
                 m.id, m.building_id, b.name as building_name,
                 m.space_id, bs.code as space_code,
-                m.amenity_id, a.name as amenity_name,
+                m.amenity_id, a.name as amenity_name, a.code as amenity_code,
                 m.description, m.start_date, m.end_date,
                 m.status_id, ms.name as status_name,
                 m.remarks,
@@ -161,7 +184,7 @@ class Maintenance extends VSModel
                 'm.description', 'm.start_date', 'm.end_date',
                 'm.status_id', 'm.remarks',
                 'm.create_uid', 'm.create_user', 'm.update_uid', 'm.update_user', 'm.updated_at',
-                'b.name as building_name', 'bs.code as space_code', 'a.name as amenity_name',
+                'b.name as building_name', 'bs.code as space_code', 'a.name as amenity_name', 'a.code as amenity_code',
                 'ms.name as status_name'
             ])
             ->first();
@@ -179,11 +202,34 @@ class Maintenance extends VSModel
         $id = $d->id ?? $this->id;
         $details = $id ? self::getMaintenanceDetails($id) : null;
 
+        $include_space_id = $details->space_id ?? null;
+        $include_amenity_id = $details->amenity_id ?? null;
+
+        $building_spaces = GeneralSettings::options_building_space($ss, $include_space_id, true);
+
+        $amenities = GeneralSettings::options_amenity($ss);
+        $under_maintenance_amenity_ids = DB::table('maintenances')
+            ->whereNotNull('amenity_id')
+            ->where('amenity_id', '>', 0)
+            ->where('start_date', '<=', now()->format('Y-m-d H:i:s'))
+            ->where('end_date', '>=', now()->format('Y-m-d H:i:s'))
+            ->whereNotIn('status_id', [3, 4])
+            ->pluck('amenity_id')
+            ->unique()
+            ->values()
+            ->all();
+        $amenities = $amenities->filter(function ($a) use ($under_maintenance_amenity_ids, $include_amenity_id) {
+            if (!empty($include_amenity_id) && (int) $a->id === (int) $include_amenity_id) {
+                return true;
+            }
+            return !in_array((int) $a->id, array_map('intval', $under_maintenance_amenity_ids), true);
+        })->values();
+
         return (object) [
             'maintenance_details' => $details,
             'buildings'           => GeneralSettings::options_building($ss),
-            'building_spaces'     => GeneralSettings::options_building_space($ss),
-            'amenities'           => GeneralSettings::options_amenity($ss),
+            'building_spaces'     => $building_spaces,
+            'amenities'           => $amenities,
             'maintenance_statuses' => GeneralSettings::options_maintenance_status($ss),
         ];
     }
@@ -229,7 +275,60 @@ class Maintenance extends VSModel
             if ($space_id > 0) {
                 DB::table('building_spaces')->where('id', $space_id)->update(['maintenance_status_id' => 0]);
             }
+            $amenity_id = isset($row->amenity_id) ? (int) $row->amenity_id : 0;
+            if ($amenity_id > 0) {
+                DB::table('amenities')->where('id', $amenity_id)->update([
+                    'status_id'   => 1,
+                    'update_user' => $ss->full_name ?? 'System',
+                    'update_uid'  => $ss->id ?? null,
+                    'updated_at'  => getNowTime(),
+                ]);
+            }
         }
         return DV::success(['message' => 'Status updated successfully']);
+    }
+
+    public function finishBySpaceId($arr, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $space_id = isset($arr['space_id']) ? (int) $arr['space_id'] : 0;
+
+        if ($space_id <= 0) {
+            return DV::error('Missing required parameters');
+        }
+
+        $row = DB::table('maintenances')
+            ->where('space_id', $space_id)
+            ->whereIn('status_id', [1, 2])
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if (!$row) {
+            return DV::error('No active maintenance found for this space');
+        }
+
+        return $this->setStatus(['id' => $row->id, 'status_id' => 3], $ss);
+    }
+
+    public function finishByAmenityId($arr, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $amenity_id = isset($arr['amenity_id']) ? (int) $arr['amenity_id'] : 0;
+
+        if ($amenity_id <= 0) {
+            return DV::error('Missing required parameters');
+        }
+
+        $row = DB::table('maintenances')
+            ->where('amenity_id', $amenity_id)
+            ->whereIn('status_id', [1, 2])
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if (!$row) {
+            return DV::error('No active maintenance found for this amenity');
+        }
+
+        return $this->setStatus(['id' => $row->id, 'status_id' => 3], $ss);
     }
 }
