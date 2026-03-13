@@ -103,10 +103,10 @@ class Item //extends Model
 
 
     }
-    public function itemDetails($id)
+    public function itemDetails($item_id)
     {
         $item = DB::table('items as i')
-            ->where('i.id', $id)
+            ->where('i.id', $item_id)
             ->selectRaw("i.id, i.name, i.code, i.unit, i.category_id")
             ->first();
         return $item;
@@ -116,6 +116,7 @@ class Item //extends Model
         $item_details = $id ? self::itemDetails($id) : null;
         return (object) [
             'item_details' => $item_details,
+            'item' =>DB::table('items')->selectRaw('id as value, name as label')->get(),
             'item_categories' => DB::table('item_categories')->select('id', 'name')->get()
         ];
     }
