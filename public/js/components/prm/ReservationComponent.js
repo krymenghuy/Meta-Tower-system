@@ -17,15 +17,31 @@ var ReservationComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
+        // {
+        //     transTitle: "titles.Amenity Category",
+        //     className: "align-middle",
+        //    data: (data) => {
+        //         return `<span class="text-primary-custom">${data.amenity_category ?? ''}</span>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Amenity",
+            transTitle: "titles.Amenity Info",
             className: "align-middle",
            data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.amenity_name ?? ''}</span>
+                        <small class="d-block text-muted">${data.amenity_code ?? ''}</small>`;
             }
         },
+        // {
+        //     transTitle: "titles.Building Info",
+        //     className: "align-middle",
+        //    data: (data) => {
+        //         return `<span class="text-primary-custom">${data.building_name ?? ''}</span>
+        //                 <small class="d-block text-muted">${data.floor_number ?? ''}</small>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Tenant Name",
+            transTitle: "titles.Tenant Info",
             className: "align-middle",
            data: (data) => {
                 return `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>
@@ -33,24 +49,34 @@ var ReservationComponent =   ( () => {
             }
         },
         {
-            transTitle: "titles.Date",
+            transTitle: "titles.Schedule-Date",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.date ?? ''}</span>`;
+                return `<span class="d-block text-muted">${data.date ?? ''}</span>
+                        <small class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</small>`;
             }
+
+            // data: (data) => {
+            //     const checkinTime = new Date(1970-01-01T${data.checkin_time}).toLocaleString("en-US", {
+            //         hour: "numeric",
+            //         minute: "2-digit",
+            //         hour12: true,
+            //     });
+            //     return <span class="text-">${checkinTime}</span>;
+            // },
         },
+        // {
+        //     transTitle: "titles.Start-End Time",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</span>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Start-End Time",
+            transTitle: "titles.MAX Occupancy",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</span>`;
-            }
-        },
-        {
-            transTitle: "titles.Title",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.title ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.amenity_capacity ?? ''}</span> <span class="text-muted">PAX/Room</span>`;
             }
         },
         {
@@ -322,7 +348,7 @@ var ReservationComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/reservation/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'reservation_status', true, 'Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.reservation_statuses, 'id', 'reservation_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elAmenity, d.amenities, 'id', 'amenity', true, 'Amenities', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -357,7 +383,7 @@ const CreateReservationDialog = (() => {
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Category</label>
                                 <div class="material-input outlined">
-                                    <select name="amenity_category" class="data-input form-control" data-field="amenity_id">
+                                    <select name="amenity_category" class="data-input form-control" data-field="category_id">
                                     </select>
                                 </div>
                             </div>
@@ -368,33 +394,31 @@ const CreateReservationDialog = (() => {
                                     </select>
                                 </div>
                             </div>
+                            <!-- <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
+                                <div class="material-input outlined">
+                                    <select name="amenity" class="data-input form-control" data-field="building_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
+                                <div class="material-input outlined">
+                                    <select name="floor_id" class="data-input form-control" data-field="floor_id">
+                                    </select>
+                                </div>
+                            </div> -->
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 <div class="material-input outlined">
-                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
+                                    <select name="amenity_code" class="data-input form-control" data-field="amenity_code">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="amenity">Capacity</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Max Occupancy</label>
                                 <div class="material-input outlined">
-                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="amenity">Building Name</label>
-                                <div class="material-input outlined">
-                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="amenity">Floor Number</label>
-                                <div class="material-input outlined">
-                                    <select name="amenity" class="data-input form-control" data-field="amenity_id">
-                                    </select>
+                                    <select name="amenity_capacity" class="data-input form-control" data-field="amenity_capacity"></select>
                                 </div>
                             </div>
                             <div class="col-4">
@@ -481,19 +505,59 @@ const CreateReservationDialog = (() => {
                         textField: "amenity",
                         valueField: "id",
                     },
+                    {
+                        name: "amenity_capacity",
+                        data: "amenities",
+                        textField: "amenity_capacity",
+                        valueField: "id",
+                    },
+                    {
+                        name: "amenity_code",
+                        data: "amenities",
+                        textField: "amenity_code",
+                        valueField: "id",
+                    },
 
                     {
-                        name: "category_id",
-                        data: "amenities",
-                        textField: "category",
+                        name: "amenity_category",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
                         valueField: "id",
                     },
                     {
-                        name: "status_id",
+                        name: "reservation_statuses",
                         data: "reservation_statuses",
-                        textField: "re_status",
+                        textField: "reservation_status",
                         valueField: "id",
                     },
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    // {
+                    //     name: "floor_id",
+                    //     textField: "name",
+                    //     valueField: "id",
+                    //     defaultValue: (me, op) => {
+                    //         return op?.data?.floor_id ?? null;
+                    //     },
+                    //     depends: {
+                    //         name: "building_id",
+                    //         api: {
+                    //             endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                    //             params: (me, op) => {
+                    //                 let building_id = me.controls.building_id.value;
+                    //                 return {
+                    //                     building_id: building_id,
+
+                    //                 };
+                    //             },
+                    //         },
+                    //     },
+
+                    // },
                    
 
                 ],

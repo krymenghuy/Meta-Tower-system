@@ -1,4 +1,4 @@
-s<?php
+<?php
 
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
@@ -156,6 +156,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('maintenance')
     Route::post('/form-options', [MaintenanceController::class, 'getFormOptions']);
     Route::post('/delete', [MaintenanceController::class, 'delete']);
     Route::post('/set-status', [MaintenanceController::class, 'setStatus']);
+    Route::post('/finish-by-space', [MaintenanceController::class, 'finishBySpace']);
+    Route::post('/finish-by-amenity', [MaintenanceController::class, 'finishByAmenity']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->group(function () {
@@ -241,6 +243,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
     Route::post('/delete', [ReservationController::class, 'deleteReservation']);
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){

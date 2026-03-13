@@ -31,7 +31,7 @@ class BuildingSpace
             'building_id' => '1|number|exists=buildings.id',
             'floor_id' => '1|number|exists=floors.id',
             'space_type_id' => '1|number|exists=space_types.id',
-            'sqm_size' => '0|number',
+            'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '0|string|default=sqm',
             'status_id' => '0|number|exists=space_statuses.id|default=1',
