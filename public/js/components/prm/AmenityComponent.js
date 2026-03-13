@@ -223,6 +223,18 @@ var AmenityComponent = (() => {
                     name: "change_status",
                 },
                 {
+                    html: '<span class="ps-2" vslang="titles.Set Maintenance">Set Maintenance</span>',
+                    icon: '<i class="fa-solid fa-wrench fs-5 text-primary"></i>',
+                    cssClass: "border-bottom pb-2",
+                    name: "set_maintenance",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Finish Maintenance">Finish Maintenance</span>',
+                    icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>',
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance",
+                },
+                {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -239,6 +251,14 @@ var AmenityComponent = (() => {
                 switch (name) {
                     case "change_status": {
                         mThis.changeStatus(id, menuLink);
+                        break;
+                    }
+                    case "set_maintenance": {
+                        mThis.setMaintenance(id, menuLink);
+                        break;
+                    }
+                    case "finish_maintenance": {
+                        mThis.finishMaintenance(id, menuLink);
                         break;
                     }
                     case "edit_amenity": {
@@ -274,6 +294,55 @@ var AmenityComponent = (() => {
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
         AmenityDialog.show(op);
+    };
+
+    mThis.setMaintenance = (id, menuLink) => {
+        const tr = menuLink?.closest("tr");
+        const buildingId = tr?.dataset?.buildingid || null;
+        const op = {
+            amenity_id: id,
+            building_id: buildingId || null,
+            btn: menuLink,
+            onClose: () =>
+                mThis.AmenityListView.showPage(mThis.getFilterData()),
+        };
+        if (typeof CreateMaintenanceDialog !== "undefined") {
+            CreateMaintenanceDialog.show(op);
+        }
+    };
+
+    mThis.finishMaintenance = (id, menuLink) => {
+        cv_interact.confirm(
+            "Mark this maintenance as finished (Completed)?",
+            {
+                transTitle: "Finish Maintenance",
+                context: "confirm",
+                confirmButtonText: "Finish",
+            },
+            (e) => {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/maintenance/finish-by-amenity`,
+                            { amenity_id: id },
+                            menuLink,
+                            null,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("Maintenance finished.");
+                                mThis.AmenityListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
+                                cv_interact.error(
+                                    res.error_message || "Failed",
+                                );
+                            }
+                        });
+                }
+            },
+        );
     };
 
     mThis.deleteAmenity = (id, menuLink) => {

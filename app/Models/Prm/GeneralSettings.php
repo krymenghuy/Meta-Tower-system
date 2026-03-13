@@ -480,17 +480,26 @@ class GeneralSettings //extends Model
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
     }
 
-    static function options_building_space($ss, $include_space_id = null)
+    static function options_building_space($ss, $include_space_id = null, $exclude_under_maintenance = false)
     {
-        $rows = DB::table('building_spaces')
+        $query = DB::table('building_spaces')
             ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
             ->where(function ($q) use ($include_space_id) {
                 $q->where('building_spaces.status_id', 1); // available
                 if (!empty($include_space_id)) {
                     $q->orWhere('building_spaces.id', $include_space_id);
                 }
-            })
-            ->selectRaw('
+            });
+        if ($exclude_under_maintenance) {
+            $query->where(function ($q) use ($include_space_id) {
+                $q->where('building_spaces.maintenance_status_id', 0)
+                    ->orWhereNull('building_spaces.maintenance_status_id');
+                if (!empty($include_space_id)) {
+                    $q->orWhere('building_spaces.id', $include_space_id);
+                }
+            });
+        }
+        $rows = $query->selectRaw('
                 building_spaces.id,
                 building_spaces.code,
                 building_spaces.code as floor_id,

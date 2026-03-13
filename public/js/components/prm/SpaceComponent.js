@@ -565,6 +565,20 @@ var SpaceComponent = new (function () {
             CreateMaintenanceDialog.show(op);
         }
     };
+    mThis.finishMaintenance = (id, menulink) => {
+        cv_interact.confirm("Mark this maintenance as finished (Completed)?", { transTitle: "Finish Maintenance", context: "confirm", confirmButtonText: "Finish" }, (e) => {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/maintenance/finish-by-space`, { space_id: id }, menulink, null).then(res => {
+                    if (res.status_code === 200) {
+                        cv_interact.success("Maintenance finished.");
+                        mThis.SpaceListView.showPage(mThis.getFilterData());
+                    } else {
+                        cv_interact.error(res.error_message || "Failed");
+                    }
+                });
+            }
+        });
+    };
     mThis.createBooking = (id, menulink) => {
         let op = {
             id: null,
