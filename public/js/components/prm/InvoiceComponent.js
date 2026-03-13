@@ -374,22 +374,24 @@ const InvoiceDialog = (() => {
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
                     {
+                        currencyCode: 'USD',
                         columns: [
                             {
                                 name: "item_id",
-                                transTitle: "titles.Product",
+                                transTitle: "titles.Item",
                                 displayType: "select"
                             },
-                            {
-                                name: "unit_type",
-                                transTitle: "titles.Unit Type",
-                                dataType: "string",
-                                readOnly: true,
-                            },
+                            // {
+                            //     name: "unit_type",
+                            //     transTitle: "titles.Unit Type",
+                            //     dataType: "string",
+                            //     readOnly: true,
+                            // },
                             {
                                 name: "remarks",
                                 transTitle: "titles.Remarks",
-                                dataType: "string"
+                                dataType: "string",
+                                readOnly: true,
                             },
                             {
                                 name: "qty",
@@ -400,7 +402,7 @@ const InvoiceDialog = (() => {
                             },
                             {
                                 name: "price",
-                                transTitle: "titles.Unit Price",
+                                transTitle: "titles.Price",
                                 dataType: "number", defaultValue: 0,
                                 isNumeric: true
                             },
@@ -420,7 +422,7 @@ const InvoiceDialog = (() => {
                             },
                             {
                                 name: "total",
-                                transTitle: "titles.Line Total",
+                                transTitle: "titles.Total",
                                 dataType: "number",
                                 readOnly: true,
                                 isNumeric: true
