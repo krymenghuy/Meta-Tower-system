@@ -238,6 +238,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
     Route::post('/delete', [ReservationController::class, 'deleteReservation']);
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
 });
 
 

@@ -350,13 +350,13 @@ class GeneralSettings //extends Model
     }
     static function options_amenity($ss)
     {
-        return DB::table('amenities')->selectRaw('id,name AS amenity')->get();
+        return DB::table('amenities')->selectRaw('id,name AS amenity,code as amenity_code, max_capacity')->get();
     }
-
+    
 
     static function options_reservation_status($ss)
     {
-        return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
+        return DB::table('reservation_statuses')->selectRaw('id,name as reservation_status')->get();
     }
 
     // public static function options_service_status($ss)
@@ -468,7 +468,6 @@ class GeneralSettings //extends Model
             ->selectRaw('s.id,s.name as service_name, s.price, s.unit_type, s.service_type_id,st.name as service_type')->get();
         return $rows;
     }
-
 
 
     static function options_legal($ss)
