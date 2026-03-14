@@ -599,5 +599,12 @@ class GeneralSettings //extends Model
         }
         return $query->orderBy('login_name')->get();
     }
-
+    static function options_vendor($ss)
+    {
+        return DB::table('vendors')->where('status_id',1)->selectRaw('id,name AS vendor')->get();
+    }
+     static function options_po_status($ss)
+    {
+        return DB::table('purchase_order_statuses')->selectRaw('id,name')->get();
+    }
 }
