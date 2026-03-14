@@ -247,13 +247,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
-    Route::post('save', [PurchaseOrderController::class, 'savePurchaseOrder']);
+    Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
    //Route::post('sent', [TransferController::class, 'submitTransfer']); //To be removed soon
-    Route::post('send', [PurchaseOrderController::class, 'submitTransfer']);
-    Route::post('/delete', [PurchaseOrderController::class, 'deleteTransfer']);
-    Route::post('/details', [PurchaseOrderController::class, 'getItemDetails']);
-    Route::post('/items-by-trx', [PurchaseOrderController::class, 'getItemsByTrx']);
-    Route::post('/transfer-list', [PurchaseOrderController::class, 'getTransferList']);
+    // Route::post('send', [PurchaseOrderController::class, 'submitTransfer']);
+    // Route::post('/delete', [PurchaseOrderController::class, 'deleteTransfer']);
+    Route::post('/details', [PurchaseOrderController::class, 'purchaseOrderDetails']);
+    Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
+    Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
     Route::post('/form-options', [PurchaseOrderController::class, 'getFormOptions']);
 });
 
