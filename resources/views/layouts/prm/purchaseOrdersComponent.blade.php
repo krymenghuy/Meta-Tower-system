@@ -14,7 +14,7 @@
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnPurchases">
-                    <i class="fa-solid fa-gears"></i>
+                    <i class="fa-brands fa-first-order"></i>
                     <span vslang="buttons.Purchase Orders"></span>
                 </button>
             </div>

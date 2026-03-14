@@ -480,7 +480,7 @@ var PurchaseOrdersComponent = (() => {
                     select: ['id', 'name', 'code', 'tax_number', 'phone_number', 'address'],
                     searchFields: { name: 'LIKE', phone_number: 'LIKE' }
                 },
-                columns: { code: 'ID', name: 'Name', phone_number: 'Phone' },
+                columns: { name: 'Name', phone_number: 'Phone' },
                 showColumnHeader: true,
                 placeholder: 'Search vendor',
                 onSelect: (vendor) => {
@@ -490,11 +490,12 @@ var PurchaseOrdersComponent = (() => {
                     { vendor_id: vendor.id }, {})
                     .then(res => {
                         const d = res.data || {};
-                        const v = d.vendor || {};
+                        const v = d.vendor || {}; 
 
                         me.controls.vendor.value = v.name || '';
                         me.controls.phone_number.value = v.phone_number || '';
                         me.controls.address.value = v.address || '';
+                         me._selectedVendorId = vendor.id;
                     });
                 }
             });
