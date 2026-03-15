@@ -8,6 +8,13 @@
             </div>
          </div>
 
+            <div class="col-12 col-md-auto col-lg-auto">
+                <button type="button" class="btn btn-outline-secondary rounded-2 filter-field" id="_btnFilter_expense" title="Filter">
+                    <i class="fa fa-filter me-1"></i>
+                    <span vslang="buttons.Filter">Filter</span>
+                </button>
+            </div>
+
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btn btn--Options w-60 w-md-auto" id="_btnExpense">
                     <i class="fa-solid fa-receipt mr-2"></i>
