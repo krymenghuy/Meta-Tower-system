@@ -258,4 +258,16 @@ class Amenity extends VSModel
         return DV::depends($x, ['amenity status', 'updated']);
     }
 
+    // public function getAmenityInfo($id = null,$ss = null){
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $amenity = DB::table('amenities')
+    //     ->where('id',$id)
+    //     ->select('id','name','code','capacity')->first();
+    //     $spaces = $this->getActiveSpaces($id,$ss);
+    //     return (object)[
+    //         'amenity'=>$amenity,
+    //     ];
+    // }
+
 }

@@ -348,10 +348,18 @@ class GeneralSettings //extends Model
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
+    // static function options_amenity($ss)
+    // {
+    //     return DB::table('amenities')->selectRaw('id,name AS amenity,code as amenity_code, max_capacity')->get();
+    // }
+
     static function options_amenity($ss)
-    {
-        return DB::table('amenities')->selectRaw('id,name AS amenity,code as amenity_code, max_capacity')->get();
-    }
+{
+    return DB::table('amenities')
+        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity')
+        ->orderBy('name')           // good for UX — alphabetical order
+        ->get();
+}
     
 
     static function options_reservation_status($ss)
