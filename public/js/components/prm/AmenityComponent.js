@@ -15,11 +15,11 @@ var AmenityComponent = (() => {
     mThis.cols = [
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-nowrap text-capitalize",
         },
         {
-            title: "Amenity Name",
-            className: "align-middle",
+            title: "Name",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:120px; ">
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
@@ -29,14 +29,14 @@ var AmenityComponent = (() => {
 
         {
             title: "Category",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<span class="text-primary-custom">${data.category ?? ""}</span>`,
         },
 
         {
             title: "Location",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `
                     <div class="text-prm-custom" style="width:120px;">
@@ -47,7 +47,7 @@ var AmenityComponent = (() => {
         },
         {
             title: "Description",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `
                 <div class="text-primary-custom" style="width:150px;">
                     <span class="text-capitalize text-break" style="word-break:break-word;">${data.description ?? ''}</span>
@@ -55,13 +55,13 @@ var AmenityComponent = (() => {
         },
         {
             title: "Max Capacity",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) =>
                 `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span>`,
         },
         {
             title: "Access Level",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => {
                 const accessLabel = data.access_level ?? `${data.access_level}`;
                 return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
@@ -70,7 +70,7 @@ var AmenityComponent = (() => {
 
         {
             title: "Requires Booking",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: function (data) {
                 const val = data.requires_booking ?? "";
                 const isRequired = val == 1;
@@ -83,7 +83,7 @@ var AmenityComponent = (() => {
 
         {
             title: "Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
                 let cls = "text-info";
@@ -104,7 +104,7 @@ var AmenityComponent = (() => {
         },
         {
             title: "Updated By",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold">${data.update_user ?? ""}</span>
@@ -113,7 +113,7 @@ var AmenityComponent = (() => {
         },
         {
             title: "Action",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
