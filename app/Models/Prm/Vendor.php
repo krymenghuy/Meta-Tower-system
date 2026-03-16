@@ -29,11 +29,11 @@ class Vendor //extends Model
 
         $v_rule = [
             'name' => '1|string|1-150',
-            'phone_number' => '0|string|0-50',
+            'phone_number' => '1|string|0-50',
             'email' => '0|string|0-100',
-            'address' => '0|string|0-255',
-            'contact_person' => '0|string|0-100',
-            'contact_phone' => '0|number|0-25',
+            'address' => '1|string|0-255',
+            'contact_person' => '1|string|0-100',
+            'contact_phone' => '1|number|0-25',
             'vendor_type_id' => '1|number|exists=vendor_types.id',
             'category_id' => '1|number|exists=vendor_categories.id',
             'tax_number' => '0|string|0-30',
@@ -43,7 +43,7 @@ class Vendor //extends Model
         $tax_char = ['@', '.', '-', '_'];
         $address_char = ['@', ',', '.', '#'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char,'tax_number' => $tax_char, 'address' => $address_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'address' => $address_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
@@ -73,8 +73,9 @@ class Vendor //extends Model
     {
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
-        $vendor_type_id = $d->vendor_type_id ?? null;
-        $vendor_category_id = $d->vendor_category_id ?? null;
+        $type_id = $d->vendor_type_id ?? null;
+        $category_id = $d->category_id ?? null;
+        $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page) || !is_numeric($per_page)) {
@@ -88,11 +89,14 @@ class Vendor //extends Model
             $search_value = escape_like_str($search_value);
             $str_search = "(v.name Like '%" . $search_value . "%' OR v.phone_number Like '%" . $search_value . "%' OR v.contact_person Like '%" . $search_value . "%')";
         }
-        if ($vendor_type_id) {
-            $str_moreWhere .= ' AND v.vendor_type_id =' . $vendor_type_id;
+        if ($type_id) {
+            $str_moreWhere .= ' AND v.vendor_type_id =' . $type_id;
         }
-        if ($vendor_category_id) {
-            $str_moreWhere .= ' AND v.category_id =' . $vendor_category_id;
+        if ($status_id) {
+            $str_moreWhere .= ' AND v.status_id =' . $status_id;
+        }
+         if ($category_id) {
+            $str_moreWhere .= ' AND v.category_id =' . $category_id;
         }
         $updated_at = DBX::formatTime('v.updated_at', 'updated_at');
 
@@ -103,7 +107,7 @@ class Vendor //extends Model
             ->join('vendor_statuses as s', 's.id', 'v.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone, vt.name as type,vc.code,vc.name as category,v.tax_number,s.name as status,v.update_user,$updated_at")
+            ->selectRaw("v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone,v.status_id, vt.name as type,vc.code,vc.name as category,v.tax_number,s.name as status,v.update_user,$updated_at")
             ->orderBy('v.id', 'desc');
         $clone_query = clone $query;
         $count = $clone_query->count('v.id');
@@ -124,9 +128,9 @@ class Vendor //extends Model
         $vendor_details = $id ? self::vendorDetails($id, $ss) : null;
         return (object) [
             'vendor_details' => $vendor_details,
-            'vendor_types' => GeneralSettings::options_vendor_types($ss),
-            'vendor_categories' => GeneralSettings::options_vendor_categories($ss),
-            'vendor_statuses' => GeneralSettings::options_vendor_statuses($ss),
+            'types' => GeneralSettings::options_vendor_types($ss),
+            'categories' => GeneralSettings::options_vendor_categories($ss),
+            'statuses' => GeneralSettings::options_vendor_statuses($ss),
         ];
     }
 
@@ -145,18 +149,32 @@ class Vendor //extends Model
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
-    public function getVendorInfo($id = null,$ss = null){
+    public function getVendorInfo($id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $vendor = DB::table('vendors')
-        ->where('id',$id)
-        ->select('id','name','code','tax_number','address','phone_number')->first();
+            ->where('id', $id)
+            ->select('id', 'name', 'code', 'tax_number', 'address', 'phone_number')->first();
         // $spaces = $this->getActiveSpaces($id,$ss);
-        return (object)[
-            'vendor'=>$vendor,
+        return (object) [
+            'vendor' => $vendor,
             // 'spaces'=>$spaces
         ];
     }
-
+    function updateVendorStatus($status_id, $id = null, $ss = null)
+    {
+        $ss = $ss ? $ss : $this->userInfo;
+        $currentStatus = DB::table('vendors')->where('id', $id)->value('status_id');
+        if ($currentStatus == $status_id) {
+            return DV::error('It is the same current status.');
+        }
+        $x = DB::table('vendors')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user' => $ss->full_name,
+            'updated_at' => getNowTime(),
+        ]);
+        return DV::depends($x, ['Vendor status', 'updated']);
+    }
 
 }

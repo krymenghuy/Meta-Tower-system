@@ -127,7 +127,7 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        $fullCode = 'R-' . $roomNumber;
+        $fullCode = 'AMN-' . $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
@@ -181,7 +181,7 @@ class Amenity extends VSModel
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(a.code LIKE '%" . $search_value . "%' OR a.floor_id LIKE '%" . $search_value . "%' OR a.name LIKE '%" . $search_value . "%' OR a.description LIKE '%" . $search_value . "%' OR a.category LIKE '%" . $search_value . "%')";
+            $str_search = "(a.code LIKE '%" . $search_value . "%' OR a.name LIKE '%" . $search_value . "%')";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND a.building_id = ' . $building_id;
@@ -222,8 +222,9 @@ class Amenity extends VSModel
             ->first();
     }
 
-    public static function getFormOptions($id, $ss = null){
-        $ss = $ss ? $ss : $this->userInfo;
+    public function getFormOptions($id, $ss = null){
+        $ss = $ss ?? $this->userInfo;
+
         // $d = (object) $arr;
         // $id = $d->id ?? $this->id;
         $amenity_details = $id ? self::amenityDetails($id) : null;
