@@ -16,84 +16,22 @@ var ExpenseComponent =   ( () => {
 
 
     mThis.cols = [
-
         {
-            title: "",
-            className: "align-middle text-capitalize",
-        },
-        {
-            title: "PMT Number",
-            className: "align-middle ",
+            title: "Bill Number",
+            className: "align-middle",
             data: (data) => `<span class="text-yp-custom">${data.payment_no ?? ''}</span>`,
         },
         {
             title: "Payment Date",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom" >${data.payment_date ?? ''}</span>`,
-        },
-        {
-            title: "inv number",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.invoice_no ?? ''}</span>`,
-        },
-        {
-            title: "Tenant Name",
             className: "align-middle",
-            data: (data) => `<span class="text-primary-custom" >${data.tenant_name}</span>`,
+            data: (data) => `<span class="text-yp-custom">${data.payment_date ?? ''}</span>`,
         },
         {
-            title: "space code",
-            className: "align-middle ",
-            data: (data, index, tr) => {
-                return `
-                    <div class="text-yp-custom align-middle" >
-                        <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.space_code ?? ''}</span></span>
-                        <span class="text-muted" >${data.building_name ?? ''}</span>
-                    </div>
-                `;
-            }
-        },
-
-        {
-            title: "Payment method",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.payment_method}</span>`,
+            title: "Payee",
+            className: "align-middle",
+            data: (data) => `<span class="text-yp-custom">${data.tenant_name ?? ''}</span>`,
         },
         {
-            title: "Reference No",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column" style="width:150px;" >
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
-
-                </div>`;
-            }
-        },
-        {
-            title: "note",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.note ?? ''}</span>`,
-        },
-        {
-            title: "amount",
-            className: "align-middle ",
-           data: (data) => {
-                return `<span class="text-yp-custom">${data.amount ?? ''}</span>`;
-            }
-        },
-        {
-            title: "discount",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.discount ?? ''}</span>`,
-        },
-
-        {
-            title: "Total Paid",
-            className: "align-middle ",
-            data: (data) => `<span class="text-yp-custom">${data.total_paid ?? ''}</span>`,
-        },
-
-       {
             title: "Status",
             className: "align-middle",
             data: (data) => {
@@ -111,19 +49,13 @@ var ExpenseComponent =   ( () => {
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
             },
         },
-
-       {
-            title: "Updated By",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.updated_user ?? ''}</span></span>
-                    <span class="text-muted">${data.updated_at ?? ''}</span>
-                </div>`;
-            }
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data) => `<span class="text-yp-custom">${data.total_paid ?? ''}</span>`,
         },
         {
-            title : "Action",
+            title: "Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
@@ -132,7 +64,6 @@ var ExpenseComponent =   ( () => {
                     </a>
                 </div>`
         },
-
     ];
 
     mThis.init = () => {
