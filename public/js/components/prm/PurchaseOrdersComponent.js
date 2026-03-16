@@ -1,4 +1,5 @@
 "use strict";
+
 var PurchaseOrdersComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Purchase Orders";
@@ -6,71 +7,71 @@ var PurchaseOrdersComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_purchases_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnPurchases");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_purchases");
-    mThis.elFilter_type = mThis.self.querySelector('#_purchases _type_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_purchases_category_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_purchases");
+    mThis.elFilter_vendor = mThis.self.querySelector('#_po_vendor_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
+    mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
 
-    mThis.itemColumns = [
-      {
-          "name": "item_id",
-          "title": "Item",
-          "dataType": "string",
-          "displayType": "select",
-          "width": "250px",
-          "valueField":"value",
-          "textField":"label",
-          // "formatter":(data,col,td)=>{
-          //     return ['<span class="d-block p-1 border-primary rounded-3 w-100 h-100">',data.text,'</span>'].join('');
-          // }
-      },
-      {
-          "name": "qty",
-          "title": "QTY",
-          // "width": "100px",
-          "dataType": "number",
-          "displayType": "input",
-      },
-      {
-      "name": "unit_price",
-      "title": "Unit Price",
-      "currencySymbol": "$",
-      "width": "100px",
-      "dataType": "decimal",
-      "displayType": "input",
-      "visible":false
-    },
-    {
-      "name": "total",
-      "title": "Total Price",
-      "currencySymbol": "$",
-      "dataType": "decimal",
-      "width": "150px",
-      "displayType": "input", 
-      "isNumeric":true,
-      "readOnly": true
-    },
-      // {
-      //     "name": "accepted_qty",
-      //     "title": "Accepted",
-      //     "width": "80px",
-      //     "dataType": "number",
-      //     "displayType": "input",
-      // },
-    //   {
-    //       "name": "uom",
-    //       "title": "UOM",
-    //       "dataType": "string",
-    //       "displayType": "input",
-    //       "readOnly": true,
-    //   },
-      // {
-      //     "name": "receipt_comment",
-      //     "title": "Remarks",
-      //     "dataType": "string"
-      //     //"readOnly": false
-      // }
-  ];
+//     mThis.itemColumns = [
+//       {
+//           "name": "item_id",
+//           "transTitle": "Item",
+//           "dataType": "string",
+//           "displayType": "select",
+//         //   "width": "250px",
+//         //   "valueField":"value",
+//         //   "textField":"label",
+//           // "formatter":(data,col,td)=>{
+//           //     return ['<span class="d-block p-1 border-primary rounded-3 w-100 h-100">',data.text,'</span>'].join('');
+//           // }
+//       },
+//       {
+//           "name": "qty",
+//           "title": "QTY",
+//           "width": "100px",
+//           "dataType": "number",
+//           "displayType": "input",
+//       },
+//       {
+//       "name": "unit_price",
+//       "title": "Unit Price",
+//       "currencySymbol": "$",
+//       "width": "100px",
+//       "dataType": "decimal",
+//       "displayType": "input",
+//       "visible":false
+//     },
+//     {
+//       "name": "total",
+//       "title": "Total Price",
+//       "currencySymbol": "$",
+//       "dataType": "decimal",
+//       "width": "150px",
+//       "displayType": "input", 
+//       "isNumeric":true,
+//       "readOnly": true
+//     },
+//       // {
+//       //     "name": "accepted_qty",
+//       //     "title": "Accepted",
+//       //     "width": "80px",
+//       //     "dataType": "number",
+//       //     "displayType": "input",
+//       // },
+//     //   {
+//     //       "name": "uom",
+//     //       "title": "UOM",
+//     //       "dataType": "string",
+//     //       "displayType": "input",
+//     //       "readOnly": true,
+//     //   },
+//       // {
+//       //     "name": "receipt_comment",
+//       //     "title": "Remarks",
+//       //     "dataType": "string"
+//       //     //"readOnly": false
+//       // }
+//   ];
     mThis.cols = [
 
         {
@@ -81,37 +82,51 @@ var PurchaseOrdersComponent = (() => {
             transTitle: "titles.Po Number",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-nowrap text-prm-custom">Po-2026-100001</span>`;
+                return `<span class="text-nowrap text-prm-custom">${data.po_number ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Vendor",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom">Chhorng</span>`;
+                return `<span class="d-block text-prm-custom">${data.vendor_name}</span>`;
             }
         },
         {
             title: "Po Date",
             className: "align-middle",
             data: (data) =>
-                `<span class="text-prm-custom text-nowrap">12-12-2026</span>`,
+                `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
         },
         {
             title: "Status",
             className: "align-middle text-center",
             data: (data) => {
 
-                const status = (data.status ?? '').toLowerCase();
-                let cls = 'badge text-dark bg-warning-subtle border border-warning';
-                if (status === 'active') {
+                const status_id = data.status_id;
+                let cls = 'badge text-warning bg-warning-subtle border border-warning';
+
+                if (status_id == 1) {
+                    cls = 'badge text-warning bg-warning-subtle border border-warning';
+                }
+                else if (status_id == 2) {
                     cls = 'badge text-success bg-success-subtle border border-success';
                 }
-                else if (status === 'inactive') {
-                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                else if (status_id == 3) {
+                    cls = 'badge text-primary bg-primary-subtle border border-primary';
                 }
+                else if (status_id == 4) {
+                    cls = 'badge text-info bg-info-subtle border border-info';
+                }
+                else if (status_id == 5) {
+                    cls = 'badge text-dark bg-secondary-subtle border border-secondary';
+                }
+                else if (status_id == 6) {
+                    cls = 'badge text-danger bg-danger-subtle border border-danger';
+                }
+
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
                         ${data.status ?? ''}
                     </span>
                 `;
@@ -122,7 +137,7 @@ var PurchaseOrdersComponent = (() => {
             className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ''}</span></span>
                     <span class="text-muted">${data.updated_at ?? ''}</span>
                 </div>`;
             }
@@ -146,7 +161,7 @@ var PurchaseOrdersComponent = (() => {
         if (mThis.initAlready) return;
 
         mThis.PoListView = new ListView('_purchases_list', {
-            fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
+            fetchApi: `${main_view.base_url}/prm/purchase/order/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
             apiCluster: main_view.apiCluster,
@@ -226,7 +241,8 @@ var PurchaseOrdersComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            // vendor_type_id: mThis.elFilter_type.value,
+            vendor_id: mThis.elFilter_vendor.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -278,7 +294,7 @@ var PurchaseOrdersComponent = (() => {
         new VSDropdownMenu(menuOptopns);
     }
      const renderPoItem = (d, elBody, onFinish = null , expandableRow = true) => {
-    vsapi.call(`${main_view.base_url}/prm/vendor/list-paginate`,{
+    vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`,{
       id: d.id
     },null,false).then((res) => {
         let info = {};
@@ -287,7 +303,7 @@ var PurchaseOrdersComponent = (() => {
             let data = res.data;
             info = data;
             //(3232,info);
-        // console.log(999888,d);
+        console.log(7777,info);
         }
         let html = ``;
         const tHead = `
@@ -296,9 +312,9 @@ var PurchaseOrdersComponent = (() => {
                   <th class="text-nowrap">Code</th>
                   <th class="text-nowrap">Item</th>
                   <th class="text-nowrap">QTY</th>
+                  <th class="text-nowrap">Unit</th>
                   <th class="text-nowrap">Unit Price</th>
                   <th class="text-nowrap">Total Price</th>
-                  <th class="text-nowrap">Accept QTY</th>
               </tr>
           </thead>
         `;
@@ -306,11 +322,12 @@ var PurchaseOrdersComponent = (() => {
         if(info.length > 0){
           info.map(item => {
             tBody += `<tr>
-                        <th class="text-nowrap">123</th>
-                        <th class="text-nowrap">Book</th>
-                        <th class="text-nowrap">ITM-10001</th>
-                        <th class="text-nowrap">10</th>
-                        <th class="text-nowrap">7</th>
+                        <th class="text-nowrap">${item.code}</th>
+                        <th class="text-nowrap">${item.item_name}</th>
+                        <th class="text-nowrap">${item.qty}</th>
+                        <th class="text-nowrap">${item.unit}</th>
+                        <th class="text-nowrap">${item.unit_price}</th>
+                        <th class="text-nowrap">${item.total_price}</th>
                     </tr>`
           });
         }else
@@ -391,35 +408,45 @@ var PurchaseOrdersComponent = (() => {
                     <div class="d-flex align-items-center mb-2">
                         <span class="fw-bold" style="min-width:90px;">Vendor</span>
                         <span class="mx-2 fw-bold">:</span>
-                        <div class="w-50"><select name="vendor_id" class="data-input form-control" data-field="vendor_id">
-                            <option>Select vendor...</option>
-                            <option>Logistics</option>
-                            <option>Modern Office</option>
-                            <option>BlueChip</option>
-                        </select></div>
+                        <input 
+                            name="vendor"
+                            class="data-input form-control flex-grow-1"
+                            data-field="vendor_id"
+                            placeholder="">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">Phone</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input type="text"
+                            name="phone_number"
+                            class="data-input form-control flex-grow-1"
+                            data-field="phone_number"
+                            placeholder="">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">Address</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input type="text"
+                            name="address"
+                            class="data-input form-control flex-grow-1"
+                            data-field="address"
+                            placeholder="">
                     </div>
                     
-                    <div class="d-flex mb-1">
-                        <span class="fw-bold" style="width:90px;">Vattin</span>
-                        <span class="mx-2 fw-bold">:</span>
-                        <span>L001-1001818</span>
-                    </div>
-                    <div class="d-flex">
-                        <span class="fw-bold" style="width:90px;">Phone</span>
-                        <span class="mx-2 fw-bold">:</span>
-                        <span>0965809080</span>
-                    </div>
-                    <div class="d-flex">
-                        <span class="fw-bold" style="width:90px;">Address</span>
-                        <span class="mx-2 fw-bold">:</span>
-                        <span>Kampong Cham, Phnom Penh, Cambodia</span>
-                    </div>
 
                 </div>
                 <div class="col-md-5">
                 </div>
                 <div class="col-md-3 mt-3 mt-md-0">
                     <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">PO Date</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input data-type="date"
+                            name="po_date"
+                            class="data-input form-control flex-grow-1"
+                            data-field="po_date">
+                    </div>
+                    <div class="d-flex align-items-center">
                         <span class="fw-bold" style="min-width:90px;">PO Number</span>
                         <span class="mx-2 fw-bold">:</span>
                         <input type="text"
@@ -427,15 +454,6 @@ var PurchaseOrdersComponent = (() => {
                             class="data-input form-control flex-grow-1"
                             data-field="po_number"
                             placeholder="">
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <span class="fw-bold" style="min-width:90px;">PO Date</span>
-                        <span class="mx-2 fw-bold">:</span>
-                        <input type="date"
-                            name="po_date"
-                            class="data-input form-control flex-grow-1"
-                            data-field="po_date">
                     </div>
                 </div>
                 <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
@@ -446,77 +464,89 @@ var PurchaseOrdersComponent = (() => {
         `;
         },
         configSelect:[
-          {
-             name:"warehouse",
-             data:"warehouses",
-             textField:"warehouse_name",
-             valueField:"id",
-             defaultValue:(me, d)=>{ return me.dataOptions.warehouse_id ?? 1; }
-          }
-          
+            // {
+            //     name: "vendor_id",
+            //     data: "vendors",
+            //     textField: "vendor_id",
+            //     valueField: "id",
+            // },
         ],
         contentCreated:(me)=>{
-         
-          // const op = {id: me.dataOptions?.id, owner_id: me.dataOptions?.owner_id};
-          // op.owner_id = me.dataOptions?.owner_id;
-          // vsapi.call(`${main_view.base_url}/dms/shop/transfer/form-options`,op,false).then(res =>{
-          //   if(res.status_code ==200){
-          //     const data = res.data ?? [];
-          //     let product_id =null;
-          //     if(data.transfer){
-          //       const items = data.transfer.items
-          //       items.forEach(item => {
-          //         product_id = item.item_id;
-          //       });
-          //       me.purchaseItemsView.setSelectOptions('item_id',data.products,product_id);
+           me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                type: 'select',
+                prefetch: true,
+                query: {
+                    from: 'vendors',
+                    select: ['id', 'name', 'code', 'tax_number', 'phone_number', 'address'],
+                    searchFields: { name: 'LIKE', phone_number: 'LIKE' }
+                },
+                columns: { name: 'Name', phone_number: 'Phone' },
+                showColumnHeader: true,
+                placeholder: 'Search vendor',
+                onSelect: (vendor) => {
+                    me._selectedVendorId = vendor.id;
 
-          //     }else
-          //     me.purchaseItemsView.setSelectOptions('item_id',data.products,null);
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, 
+                    { vendor_id: vendor.id }, {})
+                    .then(res => {
+                        const d = res.data || {};
+                        const v = d.vendor || {}; 
 
-          //   }
-          // });
-          me.purchaseItemsView = new ItemsView('purchase_item_list', {
-            tableClass:'table',
-            columns: mThis.itemColumns,
-            //validateColumns: { "name": "positive", "qty": "positive","uom":"string", "price": "positive" },
-            showColumnHeaders: true,
-            showAddLineButton: true,
-            "onItemChange":async(row_id, item, col_name, td, tr) => {
-              // me.purchaseItemsView.setCellValue(tr,'uom','bottle1');
-              const p = {item_id : item.item_id || item.id, merchant_id : me.dataOptions.merchant_id || me.dataOptions.owner_id};
-              const res = await vsapi.call(`${main_view.base_url}/prm//vendor/details`, p,false);
-              const d = res.data ?? {};
-              me.current_item = d;
-              console.log(3,d);
-              tr.dataset.sku = d.default_sku;
-              tr.dataset.code = d.code;
-              me.setTotal(col_name, tr,d);
-            },
-            "keyup": (e, col_name, td) => {
-                const tr = td.parentNode;
-                const item = me.purchaseItemsView.getDataRow(tr,['sku','code']);
-                me.setTotal(col_name, tr,item);
-            },
-            // "onInputChange": (el, col_name, td)=> {
-            //     const tr = td.parentNode;
-            //     // me.setTotal(col_name, tr);
-            // }
-          });
-          
-          me.clear = ()=>{
-            for(const name in me.fields){
-              const el = me.fields[name];
-              const tag = el.tagName ;
-  
-              if(['SELECT','INPUT','TEXTAREA'].indexOf(tag) >= 0){
-                el.value = '';
-              }
-              else{
-                el.textContent = '';
-              }
-            }
-            me.purchaseItemsView.setData(null);
-          };
+                        me.controls.vendor.value = v.name || '';
+                        me.controls.phone_number.value = v.phone_number || '';
+                        me.controls.address.value = v.address || '';
+                         me._selectedVendorId = vendor.id;
+                    });
+                }
+            });
+
+            me.searchVendor.reset('');  
+            me.purchaseItemsView = new ItemsView('purchase_item_list', {
+                columns: [
+                    { name:"item_id", transTitle:"titles.Item", displayType:"select" },
+                    { name:"qty", transTitle:"titles.Qty", dataType:"number", defaultValue:1, isNumeric:true },
+                    { name:"unit", transTitle:"titles.Unit", displayType:"select" },
+                    { name:"unit_price", transTitle:"titles.UnitPrice", dataType:"number", defaultValue:0, isNumeric:true },
+                    { name:"total_price", transTitle:"titles.TotalPrice", readOnly:true, dataType:"number", isNumeric:true }
+                ],
+                calc:{ mode:"auto", qtyField:"qty", priceField:"unit_price", totalField:"total_price", currencyPrecision:2 },
+                totalSummary:{ container:"#sum", showTax:false, allowDiscount:false, currency:"USD" },
+                validateColumns: {item_id: "positive",qty: "positive",unit: "positive",unit_price: "positive"},
+                tableClass:'table',
+                showColumnHeaders: true,
+                showAddLineButton: true,
+                addLineButtonText: 'Add Item',
+                onItemChange:async(row_id, item, col_name, td, tr) => {
+                const p = {item_id : item.item_id || item.id, vendor_id : me.dataOptions.vendor_id || me.dataOptions.owner_id};
+                const res = await vsapi.call(`${main_view.base_url}/prm/item/details`, p,false);
+                const d = res.data ?? {};
+                me.current_item = d;
+                tr.dataset.code = d.code;
+                },
+                "keyup": (e, col_name, td) => {
+                    const tr = td.parentNode;
+                    const item = me.purchaseItemsView.getDataRow(tr,'code');
+                },
+            });
+            me.purchaseItemsView.setSelectOptions("unit", [
+                    { value: 1, label: "pcs" },
+                    { value: 2, label: "kg" },
+                    { value: 3, label: "box" },
+                    { value: 4, label: "meter" },
+                ],'',{value:'id', label:'Select unit'});
+            me.clear = ()=>{
+                for(const name in me.fields){
+                const el = me.fields[name];
+                const tag = el.tagName ;
+                if(['SELECT','INPUT','TEXTAREA'].indexOf(tag) >= 0){
+                    el.value = '';
+                }
+                else{
+                    el.textContent = '';
+                }
+                }
+                me.purchaseItemsView.setData(null);
+            };
           
         },
         buttons:[
@@ -533,14 +563,18 @@ var PurchaseOrdersComponent = (() => {
              cssClass:"btn btn-primary",
              click:(me) =>{
                   let p = me.getData();
-                  p.items = me.purchaseItemsView.getItems(null,['sku','code']);
-                  p.merchant_id = me.dataOptions.owner_id;
-                  console.log(2,JSON.stringify(p,null,2));
-                  vsapi.call(`${main_view.base_url}/dms/shop/transfer/save`,p,false).then(res =>{
+                  p.items = me.purchaseItemsView.getItems();
+
+                //   p.items = me.purchaseItemsView.getItems(null,['item_id','qty','unit','unit_price','total_price']);
+                  p.vendor_id =me._selectedVendorId;
+                  console.log(4444,me._selectedVendorId);
+
+                //   console.log(2,JSON.stringify(p,null,2));
+                  vsapi.call(`${main_view.base_url}/prm/purchase/order/save`,p,false).then(res =>{
                       if(res.status_code ==200){
-                        cv_interact.success('Created transfer success!'); 
+                        cv_interact.success('Created Purchase Order success!'); 
                         me.hide(true);
-                        StockInListView.showPage(getFilterData());
+                        PoListView.showPage(getFilterData());
                       }else cv_interact.warning(res.error_message); 
                   });
              }
@@ -550,49 +584,8 @@ var PurchaseOrdersComponent = (() => {
            //LocaleManager.translateZone(me.divModal); //This translation is done automatically
            const title = me.divModal.querySelector('.modal-title');
            title.innerHTML = `<h2 class="text-prm-custom text-start fw-bold">PURCHASE ORDER</h2>`;
-          me.controls.merchant_name.textContent = data.merchant.name;
-          
-          me.purchaseItemsView.setSelectOptions('item_id',data.products,null);
-
-          me.setTotal = (col_name, tr,item) => {
-            //if(!tr) return;
-            let d = me.purchaseItemsView.getDataRow(tr);
-            const index = tr.querySelector('td.item-numero').textContent-1;
-            //cause_cols contains list of columns, when values of these columns change => it will cause the Line Total to change as (line_total = price * qty - discount) 
-            let cause_cols = { 'item_id': 1, 'qty': 1, 'price': 1};
-            //let cause_cols = {'name':1,'qty':1,'price':1,'discount':1,'uom':'bag'}; //In case: we allow user to change UOM per item, when they receive stock
-            // let p = { "item_id": d.item_id ,"owner_id": me.dataOptions?.owner_id};
-            // vsapi.call(`${main_view.base_url}/dms/inventory/item/details`, p).then(res => {
-            //     if (res.status_code === 200) {
-            //         let item = Sanitizer.sanitizeObject(res.data);
-                    // console.log(2222,item);
-                    if(!item) item ={};
-                    if(item.name) if(!item.uom) cv_interact.warning([item.name,' does not have valid UOM'].join(''));  
-                    me.purchaseItemsView.setCellValue(tr, 'uom', item.uom);
-                    // me.purchaseItemsView.setCellValue(tr, 'price', item.price ?? 0);
-                    if(col_name ==='item_id') me.purchaseItemsView.setCellValue(tr, 'price', item.price ?? 0);
-                    d.sku = item.default_sku
-                    d.code = item.code
-
-                    //*** update to override "price" directly from API
-                    //d.price = parseFloat(item.cost);
-    
-                    //NOTE: instead of using If, we use array $cause_cols. NOTE that "price" here is the cost per unit UOM
-                    if (cause_cols[col_name]) {
-                        d.qty = parseFloat(d.qty);
-                        //d.price = parseFloat(d.price);
-                        let total = (d.qty * d.price);
-                        // d.discount = parseFloat(d.discount);
-                        // let discount_amt = total * d.discount / 100;
-                        let net_total = total;
-                        d.line_total = net_total;
-                        me.purchaseItemsView.setCellValue(tr, 'line_total', net_total);
-                    }
-
-                // }
-            // });
-          }
-
+           //   me.controls.merchant_name.textContent = data.merchant.name;
+          me.purchaseItemsView.setSelectOptions('item_id',data.item,null);
           if(me.dataOptions.id){
             me.purchaseItemsView.setData(data.transfer.items,['sku','code']);
           }else
@@ -601,9 +594,9 @@ var PurchaseOrdersComponent = (() => {
        prepareFormOptions:{
           modifyTitle: LocaleManager.trans("Edit Purchase Order","titles"),
           createTitle: LocaleManager.trans("Create Purchase Order","titles"),
-          targetProp:"transfer",
+          targetProp:"item_details",
           api:{
-            endpoint:`${main_view.base_url}/prm/vendor/form-options`,
+            endpoint:`${main_view.base_url}/prm/item/form-options`,
             params:(dataOptions)=>{
               return {id: dataOptions?.id, owner_id: dataOptions?.owner_id};
             }
@@ -614,11 +607,11 @@ var PurchaseOrdersComponent = (() => {
     PurchaseOrderDialog.show(op);
   };
     mThis.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.vendor_types, 'id', 'vendor_type', true, 'All Type', null);
-                VSUtil.setComboItems(mThis.elFilter_category, d.vendor_categories, 'id', 'vendor_category', true, 'All Category', null);
+                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', true, 'All Vendor', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', true, 'All Statuses', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }

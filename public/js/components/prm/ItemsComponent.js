@@ -20,11 +20,11 @@ var ItemsComponent = (() => {
             transTitle: "titles.Code",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.code ?? ''}</span>`;
+                return `<span class="text-prm-custom">${data.code ?? ''}</span>`;
             }
         },
         {
-            transTitle: "titles.Item",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
@@ -34,7 +34,7 @@ var ItemsComponent = (() => {
 
         {
             transTitle: "titles.Unit",
-            className: "align-middle",
+            className: "align-middle text-capitalize",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.unit ?? ''}</span>`;
             }
@@ -270,7 +270,7 @@ const CreateItemsDialog = (() => {
                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="padding-left:6px;color:#777777;">Name<span class="text-danger">*</span></label>
+                                    <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
                             <div class="col-6">

@@ -63,7 +63,7 @@ var VendorComponent = (() => {
             title: "Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone ?? ""}</span>
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
                  <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
         },
         {
@@ -399,7 +399,7 @@ const CreateVendorDialog = (() => {
                            
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="phone" class="data-input form-control" data-field="phone" placeholder=" " />
+                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Phone Number </label>
 
                                 </div>

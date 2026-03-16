@@ -29,7 +29,7 @@ class Vendor //extends Model
 
         $v_rule = [
             'name' => '1|string|1-150',
-            'phone' => '0|string|0-50',
+            'phone_number' => '0|string|0-50',
             'email' => '0|string|0-100',
             'address' => '0|string|0-255',
             'contact_person' => '0|string|0-100',
@@ -86,7 +86,7 @@ class Vendor //extends Model
         if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(v.name Like '%" . $search_value . "%' OR v.phone Like '%" . $search_value . "%' OR v.contact_person Like '%" . $search_value . "%')";
+            $str_search = "(v.name Like '%" . $search_value . "%' OR v.phone_number Like '%" . $search_value . "%' OR v.contact_person Like '%" . $search_value . "%')";
         }
         if ($vendor_type_id) {
             $str_moreWhere .= ' AND v.vendor_type_id =' . $vendor_type_id;
@@ -103,7 +103,7 @@ class Vendor //extends Model
             ->join('vendor_statuses as s', 's.id', 'v.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("v.id, v.name, v.phone, v.email, v.address, v.contact_person,v.contact_phone, vt.name as type,vc.code,vc.name as category,v.tax_number,s.name as status,v.update_user,$updated_at")
+            ->selectRaw("v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone, vt.name as type,vc.code,vc.name as category,v.tax_number,s.name as status,v.update_user,$updated_at")
             ->orderBy('v.id', 'desc');
         $clone_query = clone $query;
         $count = $clone_query->count('v.id');
@@ -116,7 +116,7 @@ class Vendor //extends Model
     {
         return DB::table('vendors as v')
             ->where('v.id', $id)
-            ->selectRaw('v.id, v.name, v.phone, v.email, v.address, v.contact_person,v.contact_phone,v.vendor_type_id,v.category_id,v.tax_number,v.status_id')
+            ->selectRaw('v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone,v.vendor_type_id,v.category_id,v.tax_number,v.status_id')
             ->first();
     }
     public static function getFormOptions($id = null, $ss = null)
@@ -145,4 +145,18 @@ class Vendor //extends Model
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
     }
+    public function getVendorInfo($id = null,$ss = null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $vendor = DB::table('vendors')
+        ->where('id',$id)
+        ->select('id','name','code','tax_number','address','phone_number')->first();
+        // $spaces = $this->getActiveSpaces($id,$ss);
+        return (object)[
+            'vendor'=>$vendor,
+            // 'spaces'=>$spaces
+        ];
+    }
+
+
 }
