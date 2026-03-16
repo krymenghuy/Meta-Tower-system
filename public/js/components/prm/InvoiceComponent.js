@@ -1,5 +1,6 @@
 "use strict";
 
+
 var InvoiceComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
@@ -407,32 +408,31 @@ const InvoiceDialog = (() => {
                                 type: "select",
                                 required: true,
                                 textField: 'space_code',
-                                valueField: 'id',
+                                valueField: 'space_id',
                                 data:'spaces'
                             },
                             {
                                 name: "monthly",
                                 label: "Month",
-                                type: "text"
+                                valueField: 'month',
+                                textField: 'month',
+                                data: 'months'
                             },
                             {
                                 name: "start_date",
                                 label: "Start Date",
-                                type: "date"
+                                type: 'text',
                             },
                             {
                                 name: "end_date",
                                 label: "End Date",
-                                type: "date"
+                                type: 'text',
                             },
                             {
                                 name: "price",
                                 label: "Price",
-                                type: "number",
-                                textField: 'price',
-                                valueField: 'id',
-                                data:'spaces',
-                                required: true
+                                type: 'money',
+                                // required: true
                             },
                             {
                                 name: "remark",
@@ -446,10 +446,10 @@ const InvoiceDialog = (() => {
                         onConfirm(data, btn, me) {
                             console.log("Rent confirmed data:", data);
 
-                            if (!data.space_id || !data.price) {
-                                cv_interact.error("Room/Space and Price are required");
-                                return;
-                            }
+                            // if (!data.space_id || !data.price) {
+                            //     cv_interact.error("Room/Space and Price are required");
+                            //     return;
+                            // }
 
                             const selectedSpace = spaces.find(s => String(s.id) === String(data.space_id));
                             const roomCode = selectedSpace ? selectedSpace.space_code : String(data.space_id);
@@ -463,7 +463,7 @@ const InvoiceDialog = (() => {
                             });
 
                             cv_interact.success("Rent item added");
-                            ibMe.close();
+                            me.close();
                         }
                     });
                 };
@@ -589,7 +589,7 @@ const InvoiceDialog = (() => {
                     }
                 };
 
-               me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
                     query: {
@@ -600,7 +600,8 @@ const InvoiceDialog = (() => {
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
                         me._selectedTenantId = tenant.id;
-                        vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
+                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-contract`, { tenant_id: tenant.id }, {})
+                        // vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                             .then(res => {
                                  const d = res.data || {};
                                 me.controls.phone_number.value = d.tenant?.phone_number || '';
@@ -608,11 +609,12 @@ const InvoiceDialog = (() => {
                                 me._selectedTenantId = tenant.id;
 
                                 //  Store spaces directly for use in rent popup
-                                me._tenantSpaces = d || [];
+                                // me._tenantSpaces = d.space || [];
+                                 me._tenantSpaces = d || [];
 
 
-                                VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
-                                console.log('Full response:', res);
+                                VSUtil.setComboItems(me.controls.space, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room / Space --','');
+                                console.log('Full response:', d.spaces);
                             });
                     }
                 });

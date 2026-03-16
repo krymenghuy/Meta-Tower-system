@@ -442,7 +442,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
-                                    <input type="text" data-type="date" class="form-control data-input" data-field="due_date" required>
+                                    <input type="text"  data-type="date" class="form-control data-input" data-field="due_date" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold">Discount</label>

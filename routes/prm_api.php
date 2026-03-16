@@ -79,7 +79,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
     Route::post('/lease-history', [TenantController::class, 'getLeaseHistory']);
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
-    Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
+    // Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
+    Route::post('/option-tenant-with-contract', [TenantController::class, 'getTenantOptionsWithSpacesAndMonths']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
     Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
@@ -137,6 +138,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/delete', [ContractController::class, 'deleteContract']);
     Route::post('/renew', [ContractController::class, 'renewContract']);
     Route::post('/get-tenant-info', [ContractController::class, 'getTenantInfo']);
+    Route::post('/month', [ContractController::class, 'getContractMonths']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-request')->group(function () {

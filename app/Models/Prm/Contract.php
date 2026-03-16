@@ -456,12 +456,6 @@ class Contract
     ]);
 }
 
-/**
- * Apply pending renewal unit changes: for renewals whose start_date is today and whose
- * space_id differs from the contract's current space_id, update the contract's unit code
- * and set old space to Available, new space to Occupied.
- * Call this daily (e.g. via scheduler) so contract unit updates when renewal starts.
- */
 public static function applyPendingRenewalUnitChanges()
 {
     $today = date('Y-m-d');
@@ -528,8 +522,61 @@ static function getTenantInfo($arr=[], $ss = null)
         if (!$row) {
             return null;
         }
-
         return $row;
     }
 
+
+    static function generateContractMonths($contract_id, $start_date = null, $end_date = null, $ss = null)
+    {
+        if (!$start_date || !$end_date) {
+            $contract = DB::table('contracts')
+                        ->where('id', $contract_id)
+                        ->select('start_date', 'end_date')
+                        ->first();
+
+        if (!$contract) return [];
+
+            $start_date = $contract->start_date;
+            $end_date   = $contract->end_date;
+        }
+
+        $start = \Carbon\Carbon::parse($start_date);
+        $end   = \Carbon\Carbon::parse($end_date);
+
+        $current = $start->copy()->startOfMonth();
+        $month_num = 1;
+        $months = [];
+
+        while ($current->lte($end)) {
+
+            $monthName = $current->format('M-Y');
+
+            $monthStart = $current->copy()->startOfMonth();
+            $monthEnd   = $current->copy()->endOfMonth();
+
+            // First month: if contract starts in the middle of the month
+            if ($current->format('Y-m') === $start->format('Y-m') && $start->day > 1) {
+                $monthStart = $start->copy();
+            }
+
+            // Last month: cut off at contract end date
+            if ($monthEnd->gt($end)) {
+                $monthEnd = $end->copy();
+            }
+
+            $months[] = [
+                "month"            => $monthName,
+                "start_date" => $monthStart->format('d-M-Y'),
+                "end_date"   => $monthEnd->format('d-M-Y')
+            ];
+
+            $current->addMonth();
+            $month_num++;
+        }
+        return $months;
+    }
+
+
+
 }
+

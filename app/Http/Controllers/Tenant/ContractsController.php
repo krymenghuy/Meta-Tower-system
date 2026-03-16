@@ -21,7 +21,7 @@ class ContractsController extends Controller
         $contracts = new Contracts($id, $ss);
         $res = $contracts->saveContracts($req->all(),$id);
         return JDV::raw($res);
-        
+
     }
 
     public function getListContracts(Request $req){
@@ -62,5 +62,7 @@ class ContractsController extends Controller
         return JDV::raw($res);
 
     }
+
+
 }
 
