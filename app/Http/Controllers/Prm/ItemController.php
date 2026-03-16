@@ -37,10 +37,11 @@ class ItemController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        if(!isset($req->id) || !is_numeric($req->id)){
+        $item_id = $req->id ?? $req->item_id;
+        if(!isset($item_id) || !is_numeric($item_id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->items->itemDetails($req->id));
+        return JDV::result($this->items->itemDetails($item_id));
     }
 
      public function getFormOptions(Request $req){

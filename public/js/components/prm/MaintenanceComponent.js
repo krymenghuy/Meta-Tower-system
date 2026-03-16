@@ -23,50 +23,67 @@ var MaintenanceComponent = (() => {
             className: "align-middle text-center",
             data: (data) => {
                 const space = data.space_id && data.space_code ? data.space_code : null;
-                const amenity = data.amenity_id && data.amenity_name ? data.amenity_name : null;
+                const amenityCode = data.amenity_id ? (data.amenity_code || data.amenity_name || "") : null;
                 if (space) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${space}</span><span class="text-muted small">Space</span></div>`;
-                if (amenity) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenity}</span><span class="text-muted small">Amenity</span></div>`;
+                if (amenityCode) return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${amenityCode}</span><span class="text-muted small">Amenity</span></div>`;
                 return `<span class="text-nowrap">—</span>`;
             }
         },
         {
-            transTitle: "titles.Start Date",
+            transTitle: "titles.Date",
             className: "align-middle text-center",
             data: (data) => {
-                const val = data.start_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
-            }
-        },
-        {
-            transTitle: "titles.End Date",
-            className: "align-middle text-center",
-            data: (data) => {
-                const val = data.end_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
+                const to12h = (hhmm) => {
+                    if (!hhmm) return "";
+                    const [h, m] = String(hhmm).trim().split(":").map(Number);
+                    const hour = isNaN(h) ? 0 : h % 24;
+                    const min = isNaN(m) ? 0 : m;
+                    const ampm = hour < 12 ? "AM" : "PM";
+                    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                };
+                const formatDate = (val) => {
+                    if (!val) return { dateStr: "—", timePart: "", time12: "" };
+                    const s = String(val).trim().split(/\s+/);
+                    const datePart = s[0] || "";
+                    const timePart = (s[1] || "00:00").substring(0, 5);
+                    const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
+                    let dateStr = datePart;
+                    if (!isNaN(parsed.getTime())) {
+                        dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
+                    }
+                    return { dateStr, timePart, time12: to12h(timePart) };
+                };
+                const start = formatDate(data.start_date);
+                const end = formatDate(data.end_date);
+                const sameDate = start.dateStr !== "—" && end.dateStr !== "—" && start.dateStr === end.dateStr;
+                const dateLine = sameDate
+                    ? `<div class="date-cell-date fw-medium text-prm-custom">${start.dateStr}</div>`
+                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom"><span>${start.dateStr}</span><i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i><span>${end.dateStr}</span></div>`;
+                const timeLine = sameDate && (start.time12 || end.time12)
+                    ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
+                        <span>${start.time12 || "—"}</span>
+                        <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
+                        <span>${end.time12 || "—"}</span>
+                    </div>`
+                    : "";
+                return `<div class="d-flex flex-column align-items-center date-cell py-1">
+                    ${dateLine}
+                    ${timeLine}
+                </div>`;
             }
         },
         {
             transTitle: "titles.Status",
             className: "align-middle",
             data: (data) => {
+                const statusId = parseInt(data.status_id, 10);
+                if (statusId === 3) {
+                    return `<span class="badge bg-success-subtle text-success">Completed</span>`;
+                }
+                if (statusId === 4) {
+                    return `<span class="badge bg-secondary-subtle text-secondary">Cancelled</span>`;
+                }
                 const now = new Date();
                 const startStr = (data.start_date || "").toString().trim();
                 const endStr = (data.end_date || "").toString().trim();
@@ -75,9 +92,33 @@ var MaintenanceComponent = (() => {
                 if (startStr && endStr) {
                     const startDt = new Date(startStr.replace(/\s+/g, " "));
                     const endDt = new Date(endStr.replace(/\s+/g, " "));
-                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime()) && now >= startDt && now <= endDt) {
-                        displayStatus = "In Progress";
-                        cls = "badge bg-info-subtle text-info";
+                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime())) {
+                        const sameDay = startDt.getFullYear() === endDt.getFullYear() &&
+                            startDt.getMonth() === endDt.getMonth() &&
+                            startDt.getDate() === endDt.getDate();
+                        if (sameDay) {
+                            if (now < startDt) {
+                                displayStatus = "Pending";
+                                cls = "badge bg-warning-subtle text-warning";
+                            } else if (now > endDt) {
+                                displayStatus = "Completed";
+                                cls = "badge bg-success-subtle text-success";
+                            } else {
+                                displayStatus = "In Progress";
+                                cls = "badge bg-info-subtle text-info";
+                            }
+                        } else {
+                            if (now >= endDt) {
+                                displayStatus = "Completed";
+                                cls = "badge bg-success-subtle text-success";
+                            } else if (now >= startDt && now < endDt) {
+                                displayStatus = "In Progress";
+                                cls = "badge bg-info-subtle text-info";
+                            } else {
+                                displayStatus = "Pending";
+                                cls = "badge bg-warning-subtle text-warning";
+                            }
+                        }
                     }
                 }
                 if (displayStatus && cls === "badge bg-warning-subtle text-warning") {
@@ -291,7 +332,7 @@ const CreateMaintenanceDialog = (() => {
                         </div>
                     </section>
                     <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time span</h6>
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time stamp</h6>
                         <div class="row g-2">
                             <div class="col-6 col-md-3">
                                 <label class="form-label small mb-0">Start date</label>
@@ -338,7 +379,7 @@ const CreateMaintenanceDialog = (() => {
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
-                { name: "amenity_id", data: "amenities", textField: "amenity", valueField: "id" }
+                { name: "amenity_id", data: "amenities", textField: "code", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
@@ -356,6 +397,11 @@ const CreateMaintenanceDialog = (() => {
                     me.detail.type_unit = "space";
                     me.detail.space_id = me.dataOptions.space_id;
                     if (me.dataOptions.building_id) me.detail.building_id = me.dataOptions.building_id;
+                } else if (me.dataOptions?.amenity_id) {
+                    me.detail = me.detail || {};
+                    me.detail.type_unit = "amenity";
+                    me.detail.amenity_id = me.dataOptions.amenity_id;
+                    if (me.dataOptions.building_id) me.detail.building_id = me.dataOptions.building_id;
                 } else if (me.detail) {
                     if (me.detail.space_id) me.detail.type_unit = "space";
                     else if (me.detail.amenity_id) me.detail.type_unit = "amenity";
@@ -365,7 +411,8 @@ const CreateMaintenanceDialog = (() => {
                     const spaceRow = me.divModal?.querySelector("#_maintenance_unit_space_row");
                     const amenityRow = me.divModal?.querySelector("#_maintenance_unit_amenity_row");
                     if (typeUnit && me.detail?.type_unit) typeUnit.value = me.detail.type_unit;
-                if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.space_id && me.controls?.space_id) me.controls.space_id.value = me.detail.space_id;
+                    if (me.detail?.amenity_id && me.controls?.amenity_id) me.controls.amenity_id.value = me.detail.amenity_id;
                     if (me.detail?.building_id && me.controls?.building_id) me.controls.building_id.value = me.detail.building_id;
                     if (spaceRow && amenityRow) {
                         const val = typeUnit?.value || "";

@@ -2871,3 +2871,7 @@ tr {
     align-items: center;
     justify-content: center;
 }
+.iv-btn-primary {
+    margin-top: 10px;
+    border: none;
+}

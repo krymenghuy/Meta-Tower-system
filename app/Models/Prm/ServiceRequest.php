@@ -190,7 +190,7 @@ class ServiceRequest extends VSModel
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
             $row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
-        }  
+        }
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
     }
 
