@@ -452,6 +452,12 @@ var ContractComponent = new (function () {
                     name: "renew_contract"
                 },
                 {
+                    html: '<span class="ps-2 " vslang="titles.Terminate Contract"></span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "terminate_contract"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -470,6 +476,10 @@ var ContractComponent = new (function () {
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
                 menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
                 menu.renew_contract.style.display = showRenew ? 'block' : 'none';
+                if (menu.terminate_contract) {
+                    // show terminate only when status is active
+                    menu.terminate_contract.style.display = isActive ? 'block' : 'none';
+                }
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -483,6 +493,10 @@ var ContractComponent = new (function () {
                     }
                     case 'renew_contract': {
                         mThis.renewContract(id, menuLink);
+                        break;
+                    }
+                    case 'terminate_contract': {
+                        mThis.terminateContract(id, menuLink);
                         break;
                     }
                     case 'print_contract': {
@@ -532,6 +546,44 @@ var ContractComponent = new (function () {
         };
 
         RenewDialog.show(op);
+    };
+
+    mThis.terminateContract = (id, menuLink) => {
+        if (!id) return;
+
+        const op = {
+            id: id,
+            btn: menuLink,
+        };
+
+        cv_interact.confirm(
+            "Terminate this contract?",
+            {
+                title: "Terminate Contract",
+                context: "delete",
+                confirmButtonText: "Terminate",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi
+                    .call(
+                        [main_view.base_url, "/prm/contract/terminate"].join(""),
+                        op,
+                        menuLink,
+                        null,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Contract has been terminated.");
+                            if (mThis.ContractListView) {
+                                mThis.ContractListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message || "Failed to terminate contract.");
+                        }
+                    });
+            },
+        );
     };
 
     mThis.printContract = (id, menulink) => {
@@ -1102,7 +1154,7 @@ const ContractDialog = (() => {
                                         </div>
                                     </div>
                         <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">Deposit</label>
+                            <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             <div class="material-input outlined">
                                 <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                             </div>
@@ -1215,8 +1267,33 @@ const ContractDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                //LocaleManager.translateZone(me.divModal);
-                me.tenant_id = data?.contract_details?.tenant_id ?? null;
+                // Preselect tenant when coming from TenantComponent (create-from-tenant)
+                if (!me.dataOptions.id && me.dataOptions.tenant_id) {
+                    me.tenant_id = me.dataOptions.tenant_id;
+                    vsapi
+                        .call(
+                            [main_view.base_url, "/prm/tenant/details"].join(""),
+                            { id: me.dataOptions.tenant_id },
+                            false,
+                            null,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200 && res.data) {
+                                const t = res.data;
+                                const tenantInput =
+                                    me.divModal.querySelector('input[name="tenant"]');
+                                if (tenantInput) {
+                                    tenantInput.value = t.name || "";
+                                }
+                                if (me.controls.legal_name) {
+                                    me.controls.legal_name.value = t.legal_name || "";
+                                }
+                            }
+                        })
+                        .catch(() => {});
+                } else {
+                    me.tenant_id = data?.contract_details?.tenant_id ?? null;
+                }
                 const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
                 const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
                 const toggleUnitInputs = (isDisabled) => {
@@ -1284,6 +1361,15 @@ const ContractDialog = (() => {
                     label: '<span vslang="buttons.Submit"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
+                        // front-end validation: deposit is required
+                        const depositCtrl = me.controls?.deposit;
+                        const depositVal = depositCtrl ? String(depositCtrl.value || "").trim() : "";
+                        if (!depositVal) {
+                            cv_interact.error("Deposit is required.");
+                            if (depositCtrl) depositCtrl.focus();
+                            return;
+                        }
+
                         const op = me.getData();
                         if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
                             op.space_type_id = me._createContractSpaceTypeId;
@@ -1346,7 +1432,7 @@ const RenewDialog = (() => {
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="p-3 mb-3 bg-light border rounded">
-                                <h6 class="mb-3 text-secondary">Old Contract</h6>
+                                <h6 class="mb-3 text-secondary-custom">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">Start Date</label>
@@ -1375,11 +1461,11 @@ const RenewDialog = (() => {
                                 <h6 class="mb-3 text-primary">Renew Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">Start Date</label>
-                                        <div class="material-input outlined">
-                                            <input type="date" name="start_date" class="data-input form-control" data-field="start_date" />
-                                        </div>
-                                    </div>
+                                       <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                       <div class="material-input outlined">
+                                           <input type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                       </div>
+                                   </div>
                                     <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">End Date</label>
                                         <div class="material-input outlined">

@@ -446,7 +446,7 @@ var SpaceComponent = new (function () {
                                         ${d.floor_number ?? '-'} • ${d.building_name ?? ''}${isUnderMaintenance ? ' <span class="text-warning fw-semibold">(Under maintenance)</span>' : ''}
                                     </p>
                                    <p class="unit-floor text-muted small mb-0">
-                                        Charge as ( ${d.price_type === 'total' ? 'Monthly' : 'per m²'} )
+                                        Charge as ( ${d.price_type === 'total' ? `${symbol} ${price.toLocaleString()}/month` : `${symbol} ${price.toLocaleString()}/ m²`} )
                                     </p>
 
                                 </div>
@@ -739,7 +739,8 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select   name="price_type" placeholder=" " class="data-input form-control" data-field="price_type">
+                                    <select name="price_type" required placeholder=" " class="data-input form-control" data-field="price_type">
+                                        <option value="">Select price type</option>
                                         <option value="sqm">Per Square Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
@@ -834,8 +835,10 @@ const BuildingSpaceDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            console.log(9090, op);
-
+                            if (!op.price_type) {
+                                cv_interact.error("Please select Price Type");
+                                return;
+                            }
                             vsapi.call([main_view.base_url, "/prm/building-space/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
