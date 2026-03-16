@@ -93,4 +93,13 @@ class AmenityController extends Controller
         $res = $amenity->updateAmenityStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
     }
+
+     public function option_select_all_amenity_info(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->amenity_id ?? $req->id;
+        return JDV::result($this->amenities->getAmenityInfo($id,$ss));
+    }
 }

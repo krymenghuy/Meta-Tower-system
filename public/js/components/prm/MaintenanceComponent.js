@@ -140,7 +140,12 @@ var MaintenanceComponent = (() => {
             className: "col_action align-middle",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_maintenance_action" data-id="${data.id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)"
+                       class="btn--Options btn_dropdown_maintenance_action"
+                       data-id="${data.id}"
+                       data-statusid="${data.status_id}"
+                       aria-haspopup="true"
+                       aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
@@ -222,6 +227,23 @@ var MaintenanceComponent = (() => {
                 { html: '<span class="ps-2" vslang="titles.Cancel Maintenance"></span>', icon: '<i class="fa-solid fa-times-circle fs-5 text-secondary"></i>', cssClass: "border-bottom pb-2", name: "cancel_maintenance" },
                 { html: '<span class="ps-2" vslang="titles.Delete"></span>', icon: '<i class="fa-regular fa-trash-can fs-5 text-danger"></i>', cssClass: "border-bottom pb-2", name: "delete" }
             ],
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const statusId = Number(
+                    container.dataset.statusid ||
+                    container.closest("tr")?.dataset?.statusid ||
+                    0
+                );
+
+                const hideForCompleted = statusId === 3;
+
+                if (menu.cancel_maintenance) {
+                    menu.cancel_maintenance.style.display = hideForCompleted ? "none" : "block";
+                }
+                if (menu.delete) {
+                    menu.delete.style.display = hideForCompleted ? "none" : "block";
+                }
+            },
             onClick: (menuLink, id, name) => {
                 if (name === "modify") {
                     CreateMaintenanceDialog.show({
@@ -419,6 +441,10 @@ const CreateMaintenanceDialog = (() => {
                         spaceRow.style.display = val === "space" ? "" : "none";
                         amenityRow.style.display = val === "amenity" ? "" : "none";
                     }
+                    const fromSpace = !!me.dataOptions?.space_id;
+                    [me.controls?.building_id, me.controls?.type_unit, me.controls?.space_id].forEach(el => {
+                        if (el) el.disabled = fromSpace;
+                    });
                     if (me.detail?.start_date && me.controls?.start_date) {
                         const s = String(me.detail.start_date).trim().split(/\s+/);
                         me.controls.start_date.value = s[0] || "";
@@ -437,9 +463,72 @@ const CreateMaintenanceDialog = (() => {
                     label: '<span vslang="buttons.Submit"></span>',
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
+                        // basic front-end validation: all fields required except remarks
+                        const buildingId = me.controls?.building_id?.value || "";
+                        const typeUnitVal = me.controls?.type_unit?.value || "";
+                        const spaceId = me.controls?.space_id?.value || "";
+                        const amenityId = me.controls?.amenity_id?.value || "";
+                        const startDate = me.controls?.start_date?.value || "";
+                        const startTime = me.controls?.start_time?.value || "";
+                        const endDate = me.controls?.end_date?.value || "";
+                        const endTime = me.controls?.end_time?.value || "";
+
+                        if (!buildingId.trim()) {
+                            cv_interact.error("Building is required.");
+                            me.controls?.building_id?.focus();
+                            return;
+                        }
+
+                        if (!typeUnitVal.trim()) {
+                            cv_interact.error("Type unit is required.");
+                            me.controls?.type_unit?.focus();
+                            return;
+                        }
+
+                        if (typeUnitVal === "space" && !spaceId.trim()) {
+                            cv_interact.error("Space is required.");
+                            me.controls?.space_id?.focus();
+                            return;
+                        }
+
+                        if (typeUnitVal === "amenity" && !amenityId.trim()) {
+                            cv_interact.error("Amenity is required.");
+                            me.controls?.amenity_id?.focus();
+                            return;
+                        }
+
+                        if (!startDate.trim()) {
+                            cv_interact.error("Start date is required.");
+                            me.controls?.start_date?.focus();
+                            return;
+                        }
+
+                        if (!startTime.trim()) {
+                            cv_interact.error("Start time is required.");
+                            me.controls?.start_time?.focus();
+                            return;
+                        }
+
+                        if (!endDate.trim()) {
+                            cv_interact.error("End date is required.");
+                            me.controls?.end_date?.focus();
+                            return;
+                        }
+
+                        if (!endTime.trim()) {
+                            cv_interact.error("End time is required.");
+                            me.controls?.end_time?.focus();
+                            return;
+                        }
+
                         const data = me.getData();
                         data.id = me.dataOptions.id;
-                        const typeUnit = me.controls?.type_unit?.value || "";
+                        if (me.dataOptions?.space_id) {
+                            data.space_id = me.dataOptions.space_id;
+                            data.type_unit = "space";
+                            if (me.dataOptions.building_id) data.building_id = me.dataOptions.building_id;
+                        }
+                        const typeUnit = data.type_unit || me.controls?.type_unit?.value || "";
                         if (typeUnit === "space") data.amenity_id = null;
                         else if (typeUnit === "amenity") data.space_id = null;
                         delete data.type_unit;

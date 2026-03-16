@@ -52,9 +52,20 @@ var ReservationComponent =   ( () => {
             transTitle: "titles.Schedule-Date",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-muted">${data.date ?? ''}</span>
-                        <small class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</small>`;
-            }
+                    const to12h = (hhmm) => {
+                        if (!hhmm) return "";
+                        const [h, m] = String(hhmm).trim().split(":").map(Number);
+                        const hour = isNaN(h) ? 0 : h % 24;
+                        const min = isNaN(m) ? 0 : m;
+                        const ampm = hour < 12 ? "AM" : "PM";
+                        const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                        return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                    };
+                    const start12 = to12h((data.start_time ?? '').substring(0, 5));
+                    const end12   = to12h((data.end_time   ?? '').substring(0, 5));
+                    return `<span class="d-block text-muted">${data.date ?? ''}</span>
+                            <small class="text-primary-custom">${start12} - ${end12}</small>`;
+                }
 
             // data: (data) => {
             //     const checkinTime = new Date(1970-01-01T${data.checkin_time}).toLocaleString("en-US", {
@@ -73,7 +84,7 @@ var ReservationComponent =   ( () => {
         //     }
         // },
         {
-            transTitle: "titles.MAX Occupancy",
+            transTitle: "titles.MAX Capacity",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.amenity_capacity ?? ''}</span> <span class="text-muted">PAX/Room</span>`;
@@ -368,9 +379,23 @@ const CreateReservationDialog = (() => {
                 cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
+                                <input name="tenant" class=" d-none data-input form-control" data-field="tenant_id">
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <div class="material-input outlined">
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;    padding-left:6px;">Phone Number</label>
+                                <div class="material-input outlined">
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number"></input>
+                                </div>
+                            </div>
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Category</label>
                                 <div class="material-input outlined">
@@ -385,37 +410,22 @@ const CreateReservationDialog = (() => {
                                     </select>
                                 </div>
                             </div>
-                            <!-- <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="building">Building</label>
-                                <div class="material-input outlined">
-                                    <select name="amenity" class="data-input form-control" data-field="building_id">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;">Floor Number</label>
-                                <div class="material-input outlined">
-                                    <select name="floor_id" class="data-input form-control" data-field="floor_id">
-                                    </select>
-                                </div>
-                            </div> -->
                             <div class="col-6">
                                 <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 <div class="material-input outlined">
-                                    <select name="amenity_code" class="data-input form-control" data-field="amenity_code">
-                                    </select>
+                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_code" readonly />
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="amenity">Max Occupancy</label>
-                                <div class="material-input outlined">
-                                    <select name="amenity_capacity" class="data-input form-control" data-field="amenity_capacity"></select>
+                                <label style="color:#777777;padding-left:6px; " for="amenity">Max Occupancy</label>
+                                <div class="material-input outlined " >
+                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_capacity" readonly />
                                 </div>
                             </div>
                             <div class="col-4">
                                 <label style="color:#777777;padding-left:6px;">Start Date</label>
                                 <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                    <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="date" />
                                 </div>
                             </div>
                             <div class="col-4">
@@ -430,25 +440,13 @@ const CreateReservationDialog = (() => {
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" />
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
-                                <div class="material-input outlined">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_id">
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <label style="color:#777777;    padding-left:6px;">Phone Number</label>
-                                <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control"data-field="phone_number"></input>
-                                </div>
-                            </div>
+                            
                             <div class="col-6 d-none ">
                                 <label style="color:#777777;padding-left:6px;">Title / Event</label>
                                 <div class="material-input outlined">
                                     <input name="title" class="data-input form-control" data-field="title"></input>
                                 </div>
                             </div>
-                            
 
                             <div class="col-12">
                                 <label style="color:#777777;padding-left:6px;">Description</label>
@@ -460,35 +458,32 @@ const CreateReservationDialog = (() => {
                     ].join("");
                 },
 
-
                 contentCreated: (me) => {
-                        me.searchTenant= VSSearchInput.init(me.controls.tenant,{
+                    me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                         type: 'select',
                         prefetch: true,
-                        // api:
                         query: {
                             from: 'tenants',
                             select: ['id', 'name','phone_number'],
-                            searchFields: { name: 'LIKE',phone_number:'LIKE' }
+                            searchFields: { name: 'LIKE', phone_number:'LIKE' }
                         },
-                        // showColumnHeader: false,
-                        columns:{
-                            name: "Name",
-                            phone_number: "Phone Number",
-                        },
-
+                        columns: {
+                            name: "Name",phone_number: "Phone", },
                         onSelect: (tenant) => {
+                            console.log(1111, tenant);
+                            
                             me._selectedTenantId = tenant.id;
                             vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                                 .then(res => {
                                     const d = res.data || {};
                                     me.controls.phone_number.value = d.tenant?.phone_number || '';
-                                    // me.controls.email.value        = d.tenant?.email || '';
-                                    // VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
+                                    me._selectedTenantId = tenant.id;
                                 });
                         }
                     });
+                    me.searchTenant.reset('');
                 },
+
                 configSelect: [
                     {
                         name: "amenity_id",
@@ -496,19 +491,6 @@ const CreateReservationDialog = (() => {
                         textField: "amenity",
                         valueField: "id",
                     },
-                    {
-                        name: "amenity_capacity",
-                        data: "amenities",
-                        textField: "amenity_capacity",
-                        valueField: "id",
-                    },
-                    {
-                        name: "amenity_code",
-                        data: "amenities",
-                        textField: "amenity_code",
-                        valueField: "id",
-                    },
-
                     {
                         name: "amenity_category",
                         data: "amenity_categories",
@@ -521,43 +503,14 @@ const CreateReservationDialog = (() => {
                         textField: "reservation_status",
                         valueField: "id",
                     },
-                    {
-                        name: "building_id",
-                        data: "buildings",
-                        textField: "building",
-                        valueField: "id",
-                    },
-                    // {
-                    //     name: "floor_id",
-                    //     textField: "name",
-                    //     valueField: "id",
-                    //     defaultValue: (me, op) => {
-                    //         return op?.data?.floor_id ?? null;
-                    //     },
-                    //     depends: {
-                    //         name: "building_id",
-                    //         api: {
-                    //             endpoint: `${main_view.base_url}/prm/settings/options-floors`,
-                    //             params: (me, op) => {
-                    //                 let building_id = me.controls.building_id.value;
-                    //                 return {
-                    //                     building_id: building_id,
-
-                    //                 };
-                    //             },
-                    //         },
-                    //     },
-
-                    // },
-                   
-
                 ],
+
                 prepareFormOptions: {
                     createTitle: "Create Reservation",
                     modifyTitle: "Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/reservation/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/reservation/form-options"].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -565,19 +518,49 @@ const CreateReservationDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if (btnClose) btnClose.classList.add('d-none');
-                    const detail = data.reservation_details;
-                    if (detail) {
-                        if (detail.tenant_id != null) me._selectedTenantId = detail.tenant_id;
-                        else me._selectedTenantId = undefined;
-                        if (detail.date != null) detail.start_date = detail.date;
-                    } else {
-                        me._selectedTenantId = undefined;
+
+                    // Amenity auto-fill logic
+                    const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
+
+                    if (amenitySelect) {
+                        const applyAmenityData = (amenityId) => {
+                            if (!amenityId) {
+                                
+                                if (codeInput)     codeInput.value = '';
+                                if (capacityInput) capacityInput.value = '';
+                                return;
+                            }
+
+                            const amenities = Array.isArray(data?.amenities) ? data.amenities : [];
+                            const selected = amenities.find(item => String(item.id) === String(amenityId));
+
+                            const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
+                            const capacityInput = me.divModal.querySelector('[data-field="amenity_capacity"]');
+
+                            if (codeInput) {
+                                codeInput.value = selected?.amenity_code ?? '';
+                            }
+                            if (capacityInput) {
+                                capacityInput.value = selected?.max_capacity ?? '';
+                            }
+                        };
+
+                        amenitySelect.onchange = (e) => {
+                            applyAmenityData(e.target.value);
+                        };
+
+                        // Pre-fill when editing
+                        const initialId = data?.reservation_details?.amenity_id ?? '';
+                        if (initialId) {
+                            amenitySelect.value = initialId;
+                            applyAmenityData(initialId);
+                        }
                     }
                 },
-
 
                 buttons: [
                     {
@@ -597,17 +580,13 @@ const CreateReservationDialog = (() => {
                                 op.tenant_id = me._selectedTenantId;
                             }
                             op.date = op.start_date || op.date;
-                            vsapi.call([main_view.base_url, "/prm/reservation/save",].join(""), op, btn, null).then((res) => {
+                            vsapi.call([main_view.base_url, "/prm/reservation/save"].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Reservation has been updated successfully"
-                                        );
+                                        cv_interact.success("Reservation has been updated successfully");
                                     } else {
-                                        cv_interact.success(
-                                            "New reservation has been added successfully"
-                                        );
+                                        cv_interact.success("New reservation has been added successfully");
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -621,8 +600,3 @@ const CreateReservationDialog = (() => {
     };
     return self;
 })();
-
-
-
-
-
