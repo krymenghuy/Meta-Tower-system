@@ -1226,13 +1226,22 @@ const ContractDialog = (() => {
                         }
                     });
                 };
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
                 const applyUnitData = (spaceId) => {
                     const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
                     if (!selected) {
+                        me._createContractSpaceTypeId = null;
                         toggleUnitInputs(false);
                         return;
                     }
-                    if (me.controls.space_type_id) me.controls.space_type_id.value = selected.space_type_id ?? '';
+                    me._createContractSpaceTypeId = selected.space_type_id ?? null;
+                    if (me.controls.space_type_id) {
+                        me.controls.space_type_id.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
+                    }
                     if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
                     if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
                     if (me.controls.price) me.controls.price.value = selected.price ?? '';
@@ -1276,6 +1285,9 @@ const ContractDialog = (() => {
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const op = me.getData();
+                        if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
+                            op.space_type_id = me._createContractSpaceTypeId;
+                        }
                         op.tenant_id = me.tenant_id;
                         op.id = me.dataOptions.id;
                         op.tenant_id = me.tenant_id;
