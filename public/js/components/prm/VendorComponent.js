@@ -7,7 +7,8 @@ var VendorComponent = (() => {
     mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
     mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_category_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_vendor_status_id');
+    mThis.elFilter_category = mThis.self.querySelector('#_vendor_category_id');
     mThis.elSearch = mThis.self.querySelector("#_search_vendor");
 
 
@@ -237,7 +238,9 @@ var VendorComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            vendor_type_id: mThis.elFilter_type.value,
+            type_id: mThis.elFilter_type.value,
+            category_id: mThis.elFilter_category.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -257,6 +260,12 @@ var VendorComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_vendor_status"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Modify Vendor"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -272,6 +281,10 @@ var VendorComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case 'change_vendor_status': {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
                     case 'modify_vendor': {
                         mThis.editVendor(id, menuLink);
                         break;
@@ -288,7 +301,51 @@ var VendorComponent = (() => {
         }
         new VSDropdownMenu(menuOptopns);
     }
-
+      mThis.changeStatus = (id, link) => {
+        const tr = link.closest("tr");
+        const status_id = tr?.dataset.statusid || "";
+        console.log(123,status_id);
+        
+        const inputOptions = {
+            context: "success",
+            title: "Change Status",
+            label: "Vendor Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: "Save",
+            requiredMessage: "Please select a status",
+            data: [
+                { status_id: "1", name: "Active" },
+                { status_id: "2", name: "Inactive" },
+            ],
+            defaultValue: status_id,
+            onConfirm: (status, btn, me) => {
+                const payload = { id, status_id: status.status_id };
+                vsapi
+                    .post(
+                        `${mThis.base_url}/prm/vendor/update-status`,
+                        payload,
+                        { loader: false, agent: btn },
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success(
+                                "Vendor status has been updated",
+                            );
+                            mThis.VendorListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            me.setError(
+                                res.error_message || "Unable to update status",
+                            );
+                        }
+                    });
+            },
+        };
+        InputBox.show(inputOptions);
+    };
     mThis.editVendor = (id, menulink) => {
         let op = {
             id: id,
@@ -332,8 +389,9 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.vendor_types, 'id', 'vendor_type', true, 'All Type', null);
-                VSUtil.setComboItems(mThis.elFilter_category, d.vendor_categories, 'id', 'vendor_category', true, 'All Category', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', true, 'All Type', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', true, 'All Category', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }

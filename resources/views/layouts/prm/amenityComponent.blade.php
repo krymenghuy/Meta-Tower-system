@@ -4,23 +4,25 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_amenity" placeholder="Search">
             </div>
-            <div class="col-12 col-md-6 col-lg-2 ">
-                <select type="id" id="_amenity_status" class="data-input filter-field form-control" data-field="status_id"></select>
-            </div>
             <div class="col-12 col-md-6 col-lg-2">
                 <select id="building_id" class="data-input filter-field form-control" data-field="building_id"></select>
             </div>
-            <div class="col-12 col-md-6 col-lg-2">
+            <div class="col-12 d-none col-md-6 col-lg-2">
                 <select id="floor_id" class="data-input filter-field form-control" data-field="floor_id"></select>
             </div>
-        
+            <div class="col-12 col-md-6 col-lg-2">
+                <select id="amenity_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+            </div>
+             <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_amenity_status" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnAmenity">
-                    <i class="fa-solid fa-gears"></i>
+                    <i class="fa-brands fa-buffer"></i>
                     <span vslang="buttons.Create Amenity"></span>
                 </button>
             </div>
         </div>
     </div>
-    <div id="_amenity_list" class="mt-3  rounded-2"></div>
+    <div id="_amenity_list" class="table-responsive mt-3  rounded-2"></div>
 </div>
