@@ -506,13 +506,13 @@ const CreateVendorDialog = (() => {
                 configSelect: [
                     {
                         name: "vendor_type_id",
-                        data: "vendor_types",
+                        data: "types",
                         textField: "vendor_type",
                         valueField: "id",
                     },
                     {
                         name: "vendor_category_id",
-                        data: "vendor_categories",
+                        data: "categories",
                         textField: "vendor_category",
                         valueField: "id",
                     },
