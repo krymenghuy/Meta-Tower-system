@@ -81,7 +81,7 @@ class ReservationController extends Controller
 
         $res = $this->reservation->deleteReservation($id);
 
-        return JDV::raw($result);
+        return JDV::raw($res);
     }
 
     public function updateReservationStatus(Request $request)

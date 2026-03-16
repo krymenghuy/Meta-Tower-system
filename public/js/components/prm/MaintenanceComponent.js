@@ -30,37 +30,47 @@ var MaintenanceComponent = (() => {
             }
         },
         {
-            transTitle: "titles.Start Date",
+            transTitle: "titles.Date",
             className: "align-middle text-center",
             data: (data) => {
-                const val = data.start_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
-            }
-        },
-        {
-            transTitle: "titles.End Date",
-            className: "align-middle text-center",
-            data: (data) => {
-                const val = data.end_date;
-                if (!val) return "<span class=\"text-nowrap\">—</span>";
-                const s = String(val).trim().split(/\s+/);
-                const datePart = s[0] || "";
-                const timePart = (s[1] || "00:00").substring(0, 5);
-                const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
-                let dateStr = datePart;
-                if (!isNaN(parsed.getTime())) {
-                    dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
-                }
-                return `<div class="d-flex flex-column align-items-center"><span class="text-nowrap">${dateStr}</span><span class="text-muted small">${timePart}</span></div>`;
+                const to12h = (hhmm) => {
+                    if (!hhmm) return "";
+                    const [h, m] = String(hhmm).trim().split(":").map(Number);
+                    const hour = isNaN(h) ? 0 : h % 24;
+                    const min = isNaN(m) ? 0 : m;
+                    const ampm = hour < 12 ? "AM" : "PM";
+                    const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                };
+                const formatDate = (val) => {
+                    if (!val) return { dateStr: "—", timePart: "", time12: "" };
+                    const s = String(val).trim().split(/\s+/);
+                    const datePart = s[0] || "";
+                    const timePart = (s[1] || "00:00").substring(0, 5);
+                    const parsed = new Date(datePart + (s[1] ? " " + s[1] : ""));
+                    let dateStr = datePart;
+                    if (!isNaN(parsed.getTime())) {
+                        dateStr = parsed.getFullYear() + "-" + String(parsed.getMonth() + 1).padStart(2, "0") + "-" + String(parsed.getDate()).padStart(2, "0");
+                    }
+                    return { dateStr, timePart, time12: to12h(timePart) };
+                };
+                const start = formatDate(data.start_date);
+                const end = formatDate(data.end_date);
+                const sameDate = start.dateStr !== "—" && end.dateStr !== "—" && start.dateStr === end.dateStr;
+                const dateLine = sameDate
+                    ? `<div class="date-cell-date fw-medium text-prm-custom">${start.dateStr}</div>`
+                    : `<div class="d-flex align-items-center justify-content-center gap-1 flex-wrap date-cell-date fw-medium text-prm-custom"><span>${start.dateStr}</span><i class="fa-solid fa-arrow-right fa-xs text-muted" style="opacity:0.8"></i><span>${end.dateStr}</span></div>`;
+                const timeLine = sameDate && (start.time12 || end.time12)
+                    ? `<div class="d-flex align-items-center justify-content-center gap-1 mt-1 py-1 px-2 rounded small text-muted bg-light" style="font-size:0.8rem;">
+                        <span>${start.time12 || "—"}</span>
+                        <i class="fa-solid fa-arrow-right fa-xs" style="opacity:0.7"></i>
+                        <span>${end.time12 || "—"}</span>
+                    </div>`
+                    : "";
+                return `<div class="d-flex flex-column align-items-center date-cell py-1">
+                    ${dateLine}
+                    ${timeLine}
+                </div>`;
             }
         },
         {

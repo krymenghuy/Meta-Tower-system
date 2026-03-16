@@ -267,41 +267,32 @@ var ReservationComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editReservation = (id, menulink) =>{
-        let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.ReservationListView.showPage(mThis.getFilterData());
-            }
-        };
-
-        CreateReservationDialog.show(op);
-    }
-     mThis.deleteReservation = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
+    mThis.editReservation = (id, menulink) => {
+        const op = {
+            id: parseInt(id, 10),
+            btn: menulink,
             onClose: () => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             }
         };
+        CreateReservationDialog.show(op);
+    };
+    mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Reservation??', {
+        cv_interact.confirm('Delete this reservation?', {
             transTitle: 'Delete Reservation',
             context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/reservation/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.ReservationListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
+            confirmButtonText: 'Delete'
+        }, (e) => {
+            if (!e) return;
+            vsapi.call(`${main_view.base_url}/prm/reservation/delete`, { id: id }, false, false, false).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Reservation deleted.');
+                    mThis.ReservationListView.showPage(mThis.getFilterData());
+                } else {
+                    cv_interact.error(res.error_message || 'Delete failed');
+                }
+            });
         });
     };
     
@@ -574,11 +565,17 @@ const CreateReservationDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
+                    if (btnClose) btnClose.classList.add('d-none');
+                    const detail = data.reservation_details;
+                    if (detail) {
+                        if (detail.tenant_id != null) me._selectedTenantId = detail.tenant_id;
+                        else me._selectedTenantId = undefined;
+                        if (detail.date != null) detail.start_date = detail.date;
+                    } else {
+                        me._selectedTenantId = undefined;
+                    }
                 },
 
 
@@ -596,6 +593,10 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
+                            if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
+                                op.tenant_id = me._selectedTenantId;
+                            }
+                            op.date = op.start_date || op.date;
                             vsapi.call([main_view.base_url, "/prm/reservation/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
