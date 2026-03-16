@@ -346,10 +346,19 @@ const InvoiceDialog = (() => {
                             </div>
                         </div>
                     </div>
-                    <div class="row g-3">
+                    <div class="row g-3 mb-3 d-flex justify-content-between align-items-end">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span>
+                            </label>
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
+                        </div>
+
+                        <div class="col-md-auto">
+                            <div class="d-flex gap-2">
+                                <button name="btnRend"    class="btn btn-primary" type="button">Rend</button>
+                                <button name="btnUtility" class="btn btn-primary" type="button">Utility</button>
+                            </div>
                         </div>
                     </div>
 
@@ -371,6 +380,94 @@ const InvoiceDialog = (() => {
                 me.controls.divItemsView = me.divModal.querySelector('[name="divItemsView"]');
                 me.controls.div_invoice_summary = me.divModal.querySelector('[name="div_invoice_summary"]');
 
+
+                me.controls.btnRend.onclick = () => {
+                    if (!me._selectedTenantId) {
+                        return cv_interact.error("Please select Tenant first");
+                    }
+
+                    const spaces = me._tenantSpaces || [];
+
+                    if (spaces.length === 0) {
+                        return cv_interact.error("No rooms/spaces available for this tenant");
+                    }
+
+                    // ✅ Force rebuild every time since spaces change per tenant
+                    InputBox.resetInstance("rentPopUp");
+
+                    InputBox.show({
+
+                        groupData:spaces,
+                        title: "Rent",
+                        instanceKey: "rentPopUp",
+                        fields: [
+                            {
+                                name: "space_id",
+                                label: "Unit Code / Room",
+                                type: "select",
+                                required: true,
+                                textField: 'space_code',
+                                valueField: 'id',
+                                data:'spaces'
+                            },
+                            {
+                                name: "monthly",
+                                label: "Month",
+                                type: "text"
+                            },
+                            {
+                                name: "start_date",
+                                label: "Start Date",
+                                type: "date"
+                            },
+                            {
+                                name: "end_date",
+                                label: "End Date",
+                                type: "date"
+                            },
+                            {
+                                name: "price",
+                                label: "Price",
+                                type: "number",
+                                textField: 'price',
+                                valueField: 'id',
+                                data:'spaces',
+                                required: true
+                            },
+                            {
+                                name: "remark",
+                                label: "Remark",
+                                type: "textarea",
+                                colSpan: 2
+                            }
+                        ],
+                        columns: 2,
+
+                        onConfirm(data, btn, me) {
+                            console.log("Rent confirmed data:", data);
+
+                            if (!data.space_id || !data.price) {
+                                cv_interact.error("Room/Space and Price are required");
+                                return;
+                            }
+
+                            const selectedSpace = spaces.find(s => String(s.id) === String(data.space_id));
+                            const roomCode = selectedSpace ? selectedSpace.space_code : String(data.space_id);
+
+                            me.itemsView.addItem({
+                                item_id: null,
+                                price: Number(data.price) || 0,
+                                qty: 1,
+                                remarks: `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
+                                unit_type: roomCode
+                            });
+
+                            cv_interact.success("Rent item added");
+                            ibMe.close();
+                        }
+                    });
+                };
+
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
                     {
@@ -381,12 +478,6 @@ const InvoiceDialog = (() => {
                                 transTitle: "titles.Item",
                                 displayType: "select"
                             },
-                            // {
-                            //     name: "unit_type",
-                            //     transTitle: "titles.Unit Type",
-                            //     dataType: "string",
-                            //     readOnly: true,
-                            // },
                             {
                                 name: "remarks",
                                 transTitle: "titles.Remarks",
@@ -498,7 +589,7 @@ const InvoiceDialog = (() => {
                     }
                 };
 
-                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+               me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
                     query: {
@@ -511,11 +602,17 @@ const InvoiceDialog = (() => {
                         me._selectedTenantId = tenant.id;
                         vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                             .then(res => {
-                                const d = res.data || {};
+                                 const d = res.data || {};
                                 me.controls.phone_number.value = d.tenant?.phone_number || '';
                                 me.controls.email.value = d.tenant?.email || '';
                                 me._selectedTenantId = tenant.id;
+
+                                //  Store spaces directly for use in rent popup
+                                me._tenantSpaces = d || [];
+
+
                                 VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
+                                console.log('Full response:', res);
                             });
                     }
                 });
@@ -544,7 +641,6 @@ const InvoiceDialog = (() => {
                             unit_type: item.unit_type || '—',
                             service_id: item.item_id || null,
 
-                            // Send discount fields to backend
                             discount: discountValue,
                             special_discount_value: discountValue,
                             special_discount_type: discountType,
@@ -579,7 +675,7 @@ const InvoiceDialog = (() => {
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false)
+                    click: (me) => { me.itemsView.setData(null); me.hide(false) }
                 },
                 {
                     label: '<span vslang="buttons.Submit"></span>',

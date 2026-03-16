@@ -291,7 +291,14 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
         ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
         ->where('c.tenant_id', $id)
         ->whereRaw($str_date)
-        ->selectRaw('bs.id,bs.code as space_code')
+        ->selectRaw('
+                bs.id,
+                bs.code as space_code,
+                c.price,
+                c.sqm_size,
+                c.start_date,
+                c.end_date
+                ')
         ->get();
         return $rows;
 
