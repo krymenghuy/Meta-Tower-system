@@ -161,7 +161,6 @@ class ServiceRequest extends VSModel
 
         // $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
         // $scheduled_date = DBX::formatTime("sr.scheduled_date");
-
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
@@ -189,7 +188,7 @@ class ServiceRequest extends VSModel
         $total = (clone $query)->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
+            $row = setOfficialDates($row,['complete_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
         }  
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
     }

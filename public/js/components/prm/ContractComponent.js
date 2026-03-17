@@ -1088,9 +1088,9 @@ const ContractDialog = (() => {
                         </div>
 
                         <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
+                          
                             <div class="material-input outlined">
-                                <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                                <select placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                             </div>
                         </div>
 
