@@ -259,7 +259,7 @@ class GeneralSettings //extends Model
         $rows = DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
         $new_row = [];
         $new_row[] = (object) [
-            'nationality' => 'Select Nationality',
+            // 'nationality' => 'Select Nationality',
             'id' => '',
 
         ];

@@ -10,7 +10,7 @@
                     </div>
                 </div>
                  <div class="col-12 col-md-6 col-lg-2">
-                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-1 rounded" role="group">
