@@ -91,6 +91,23 @@ class ContractController extends Controller
 
         return JDV::raw($res);
     }
+
+    public function terminateContract(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+
+        $res = $this->contracts->terminateContract($req->id, $ss);
+
+        return JDV::raw($res);
+    }
+
         public function renewContract(Request $req)
     {
         $ss = XAuthService::verifyAuth($req, -1);

@@ -136,6 +136,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
     Route::post('/renew', [ContractController::class, 'renewContract']);
+    Route::post('/terminate', [ContractController::class, 'terminateContract']);
     Route::post('/get-tenant-info', [ContractController::class, 'getTenantInfo']);
 });
 
