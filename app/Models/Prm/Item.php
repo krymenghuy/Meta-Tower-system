@@ -31,7 +31,7 @@ class Item //extends Model
         $v_rule = [
             'name' => '1|string|1-150',
             'category_id' => '1|number|exists=item_categories.id',
-            'unit' => '0|string|0-30'
+            'unit' => '1|string|0-30'
         ];
 
         $res = DBX::validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
