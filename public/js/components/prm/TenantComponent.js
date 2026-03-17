@@ -356,6 +356,7 @@ var TenantComponent = new (function () {
     mThis.createContract = (id, menuLink) => {
         let op = {
             id: null,
+            tenant_id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
@@ -604,7 +605,15 @@ var TenantComponent = new (function () {
             link.addEventListener("click", (e) => {
                 const tenantId = e.currentTarget.dataset.id;
                 mThis.tenant_id = tenantId;
-                ContractDialog.show(tenantId);
+                const op = {
+                    id: null,
+                    tenant_id: tenantId,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.renderView();
+                    },
+                };
+                ContractDialog.show(op);
             });
         });
         const container_te = mThis.cardViewContainer;

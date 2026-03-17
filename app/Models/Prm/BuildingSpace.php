@@ -29,8 +29,8 @@ class BuildingSpace
 
         $v_rule = [
             'building_id' => '1|number|exists=buildings.id',
-            'floor_id' => '1|number|exists=floors.id',
             'space_type_id' => '1|number|exists=space_types.id',
+            'floor_id' => '1|number|exists=floors.id',
             'sqm_size' => '1|number',
             'price' => '1|number',
             'price_type' => '0|string|default=sqm',
@@ -190,7 +190,7 @@ class BuildingSpace
         if ($status_id) {
             // if($status_id == 4){
             //     $str_moreWhere .= ' AND bs.maintenance_status_id = ' . 1;
-            // }else 
+            // }else
             $str_moreWhere .= ' AND bs.status_id = ' . $status_id . ' AND bs.maintenance_status_id = ' . 0;
         }
 

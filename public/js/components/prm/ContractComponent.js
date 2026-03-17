@@ -552,8 +552,13 @@ var ContractComponent = new (function() {
                     name: "renew_contract"
                 },
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Print Contract"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Terminate Contract"></span>',
+                    icon: `<i class="fa-regular fa-circle-xmark fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "terminate_contract"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "print_contract"
@@ -647,6 +652,44 @@ var ContractComponent = new (function() {
         };
 
         RenewDialog.show(op);
+    };
+
+    mThis.terminateContract = (id, menuLink) => {
+        if (!id) return;
+
+        const op = {
+            id: id,
+            btn: menuLink,
+        };
+
+        cv_interact.confirm(
+            "Terminate this contract?",
+            {
+                title: "Terminate Contract",
+                context: "delete",
+                confirmButtonText: "Terminate",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi
+                    .call(
+                        [main_view.base_url, "/prm/contract/terminate"].join(""),
+                        op,
+                        menuLink,
+                        null,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Contract has been terminated.");
+                            if (mThis.ContractListView) {
+                                mThis.ContractListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message || "Failed to terminate contract.");
+                        }
+                    });
+            },
+        );
     };
 
     mThis.printContract = (id, menulink) => {
@@ -1366,7 +1409,7 @@ const ContractDialog = (() => {
                                         </div>
                                     </div>
                         <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">Deposit</label>
+                            <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             <div class="material-input outlined">
                                 <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
                             </div>
@@ -1677,7 +1720,7 @@ const RenewDialog = (() => {
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="p-3 mb-3 bg-light border rounded">
-                                <h6 class="mb-3 text-secondary">Old Contract</h6>
+                                <h6 class="mb-3 text-secondary-custom">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">Start Date</label>
@@ -1706,11 +1749,11 @@ const RenewDialog = (() => {
                                 <h6 class="mb-3 text-primary">Renew Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">Start Date</label>
-                                        <div class="material-input outlined">
-                                            <input type="date" name="start_date" class="data-input form-control" data-field="start_date" />
-                                        </div>
-                                    </div>
+                                       <label style="color:#777777;padding-left:6px;">Start Date</label>
+                                       <div class="material-input outlined">
+                                           <input type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                       </div>
+                                   </div>
                                     <div class="col-4">
                                         <label style="color:#777777;padding-left:6px;">End Date</label>
                                         <div class="material-input outlined">

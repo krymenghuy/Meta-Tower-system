@@ -45,6 +45,20 @@ class Reservation extends VSModel
         $inputs = $res->values;
         $d = (object) $inputs;
 
+        $today   = date('Y-m-d');
+        $nowTime = time();
+
+        if ($inputs['date'] < $today) {
+            return DV::error('Start date cannot be in the past.');
+        }
+
+        if ($inputs['date'] === $today) {
+            $inputTime = strtotime($inputs['date'] . ' ' . $inputs['start_time']);
+            if ($inputTime < $nowTime) {
+                return DV::error('Start time cannot be in the past.');
+            }
+        }
+
         if($d->amenity_id && $d->date && $d->start_time && $d->end_time && $d->tenant_id){
             $id = $id ?? self::checkDuplicateReservation($d->amenity_id, $d->date, $id);
         }
@@ -112,7 +126,6 @@ class Reservation extends VSModel
             ->join('reservation_statuses as rs', 'rs.id', '=', 'r.status_id')
             ->Join('amenities as a', 'a.id', '=', 'r.amenity_id')
             ->join('amenity_categories as ac', 'ac.id', '=', 'a.category_id')
-            // ->join('buildings as b', 'b.id', '=', 'a.building_id')
             ->Join('tenants as t', 't.id', '=', 'r.tenant_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
@@ -122,15 +135,18 @@ class Reservation extends VSModel
         $count = $clone_query->count('r.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at'],[],['start_time','end_time']);
+            $row = setOfficialDates($row,['updated_at','date'],[],['start_time','end_time']);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
 
     public static function reservationDetails($id){
         return DB::table('reservations as r')
+            ->Join('amenities as a', 'a.id', '=', 'r.amenity_id')
+            ->join('amenity_categories as ac', 'ac.id', '=', 'a.category_id')
+            ->Join('tenants as t', 't.id', '=', 'r.tenant_id')
             ->where('r.id',$id)
-            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,r.description')
+            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.description,a.name as amenity_name,a.code as amenity_code,a.category_id,ac.name as amenity_category,a.max_capacity as amenity_capacity')
             ->first();
     }
 
@@ -171,15 +187,14 @@ class Reservation extends VSModel
         return DV::depends($x, ['reservation status', 'updated']);
     }
 
-    public function getAmenityInfo($id = null,$ss = null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $amenity = DB::table('amenities')
-        ->where('id',$id)
-        ->select('id','name','code','capacity')->first();
-        $spaces = $this->getActiveSpaces($id,$ss);
-        return (object)[
-            'amenity'=>$amenity,
-        ];
-    }
+    public static function options_amenity($ss)
+{
+    return DB::table('amenities')
+        ->select('id', 'amenity', 'code', 'max_capacity')   // ← important
+        ->where('active', 1) // add your conditions
+        ->orderBy('amenity')
+        ->get();
+}
+
+    
 }

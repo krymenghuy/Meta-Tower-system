@@ -383,90 +383,125 @@ const InvoiceDialog = (() => {
 
 
                 me.controls.btnRend.onclick = () => {
-                    if (!me._selectedTenantId) {
-                        return cv_interact.error("Please select Tenant first");
-                    }
+                if (!me._selectedTenantId) {
+                    return cv_interact.error("Please select Tenant first");
+                }
 
-                    const spaces = me._tenantSpaces || [];
+                const spaces = me._tenantSpaces || [];
+                const months = me._tenantMonths || [];
 
-                    if (spaces.length === 0) {
-                        return cv_interact.error("No rooms/spaces available for this tenant");
-                    }
+                if (spaces.length === 0) {
+                    return cv_interact.error("No rooms/spaces available for this tenant");
+                }
 
-                    // ✅ Force rebuild every time since spaces change per tenant
-                    InputBox.resetInstance("rentPopUp");
+                InputBox.resetInstance("rentPopUp");
 
-                    InputBox.show({
-
-                        groupData:spaces,
-                        title: "Rent",
-                        instanceKey: "rentPopUp",
-                        fields: [
-                            {
-                                name: "space_id",
-                                label: "Unit Code / Room",
-                                type: "select",
-                                required: true,
-                                textField: 'space_code',
-                                valueField: 'space_id',
-                                data:'spaces'
-                            },
-                            {
-                                name: "monthly",
-                                label: "Month",
-                                valueField: 'month',
-                                textField: 'month',
-                                data: 'months'
-                            },
-                            {
-                                name: "start_date",
-                                label: "Start Date",
-                                type: 'text',
-                            },
-                            {
-                                name: "end_date",
-                                label: "End Date",
-                                type: 'text',
-                            },
-                            {
-                                name: "price",
-                                label: "Price",
-                                type: 'money',
-                                // required: true
-                            },
-                            {
-                                name: "remark",
-                                label: "Remark",
-                                type: "textarea",
-                                colSpan: 2
-                            }
-                        ],
-                        columns: 2,
-
-                        onConfirm(data, btn, me) {
-                            console.log("Rent confirmed data:", data);
-
-                            // if (!data.space_id || !data.price) {
-                            //     cv_interact.error("Room/Space and Price are required");
-                            //     return;
-                            // }
-
-                            const selectedSpace = spaces.find(s => String(s.id) === String(data.space_id));
-                            const roomCode = selectedSpace ? selectedSpace.space_code : String(data.space_id);
-
-                            me.itemsView.addItem({
-                                item_id: null,
-                                price: Number(data.price) || 0,
-                                qty: 1,
-                                remarks: `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
-                                unit_type: roomCode
-                            });
-
-                            cv_interact.success("Rent item added");
-                            me.close();
+                InputBox.show({
+                    groupData: { spaces, months },
+                    title: "Rent",
+                    instanceKey: "rentPopUp",
+                    fields: [
+                        {
+                            name: "contract_id",
+                            label: "Unit Code / Room",
+                            type: "select",
+                            required: true,
+                            textField: 'space_code',
+                            valueField: 'contract_id',
+                            data: 'spaces'
+                        },
+                        {
+                            name: "monthly",
+                            label: "Month (auto)",
+                            valueField: 'month',
+                            textField: 'month',
+                            data: 'months'
+                        },
+                        {
+                            name: "start_date",
+                            label: "Start Date (auto)",
+                            type: 'text'
+                        },
+                        {
+                            name: "end_date",
+                            label: "End Date (auto)",
+                            type: 'text'
+                        },
+                        {
+                            name: "price",
+                            label: "Price (auto)",
+                            type: 'money'
+                        },
+                        {
+                            name: "remark",
+                            label: "Remark",
+                            type: "textarea",
+                            colSpan: 2
                         }
-                    });
-                };
+                    ],
+                    columns: 2,
+                    onOpen(popup) {
+                        // Find contract dropdown using name attribute (same style as your code)
+                        const contractSelect = document.querySelector('select[name="contract_id"]');
+
+                        if (!contractSelect) {
+                            console.warn("Cannot find contract select element");
+                            return;
+                        }
+
+                        contractSelect.addEventListener('change', (e) => {
+                            const contractId = e.target.value;
+                            if (!contractId) return;
+
+                            const matchedSpace = spaces.find(s => String(s.contract_id) === contractId);
+                            if (!matchedSpace) return;
+
+                            const matchedMonth = months.find(m => String(m.contract_id) === contractId) || months[0];
+                            if (!matchedMonth) return;
+
+                            const updateField = (fieldName, value) => {
+                                const input = document.querySelector(`[name="${fieldName}"]`);
+                                if (input) {
+                                    input.value = value || '';
+                                    // Trigger change so component knows
+                                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                    console.log(`Auto updated ${fieldName} → ${value}`);
+                                }
+                            };
+
+                            updateField("price", matchedSpace.price || "0.00");
+                            updateField("start_date", matchedMonth.start_date || "");
+                            updateField("end_date", matchedMonth.end_date || "");
+                            updateField("monthly", matchedMonth.month || "");
+                        });
+                    },
+
+                    onConfirm(data, btn, popup) {
+                        console.log("Confirmed data:", data);
+
+                        const roomCode = spaces.find(s => String(s.contract_id) === String(data.contract_id))?.space_code || '—';
+
+                        me.itemsView.addRow({
+                            item_id: null,
+                            price: Number(data.price) || 0,
+                            qty: 1,
+                            remarks: `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
+                            unit_type: roomCode,
+                            contract_id: data.contract_id,
+                            monthly: data.monthly,
+                            start_date: data.start_date,
+                            end_date: data.end_date,
+                            space_code: roomCode,
+                            space_price: data.price
+                        });
+
+                        cv_interact.success("Rent item added");
+                        popup.close();
+                    }
+                });
+            };
+
 
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
@@ -609,12 +644,16 @@ const InvoiceDialog = (() => {
                                 me._selectedTenantId = tenant.id;
 
                                 //  Store spaces directly for use in rent popup
-                                // me._tenantSpaces = d.space || [];
-                                 me._tenantSpaces = d || [];
+                                me._tenantData   = d;
+                                me._tenantSpaces = d.spaces || [];
+                                me._tenantMonths = d.months || [];
 
 
                                 VSUtil.setComboItems(me.controls.space, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room / Space --','');
-                                console.log('Full response:', d.spaces);
+
+
+                                console.log('Space', d.spaces);
+                                 console.log('Full response11111:', res);
                             });
                     }
                 });
