@@ -647,10 +647,10 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
@@ -706,9 +706,8 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
                                     </select>
-                                    <label style="display:none; color:#777777; padding-left:6px;" for="spaceType">Category</label>
                                 </div>
                             </div>
                             <div class="col-6">

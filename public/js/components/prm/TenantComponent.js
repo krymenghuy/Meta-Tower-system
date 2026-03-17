@@ -1353,9 +1353,9 @@ var TenantComponent = new (function () {
                     d.statuses,
                     "id",
                     "name",
-                    true,
+                    '',
                     "All Statuses",
-                    null,
+                    '',
                 );
 
                 if (typeof onFinish === "function") onFinish();
@@ -1408,7 +1408,7 @@ const CreateTenantDialog = (() => {
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="sex" class="data-input form-control" data-field="sex">
+                                    <select data-style="material" name="sex" class="data-input form-control" data-field="sex" placeholder="Gender">
                                         <option value="M">Male</option>
                                         <option value="F">Female</option>
                                     </select>
@@ -1431,8 +1431,7 @@ const CreateTenantDialog = (() => {
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="material-input outlined">
-                                    <select name="nationality_id" class="data-input form-control" data-field="nationality_id"></select>
-                                    <label style="display:none; color:#777777; padding-left:6px;">Nationality</label>
+                                    <select data-style="material" name="nationality_id" class="data-input form-control" data-field="nationality_id" placeholder="Nationality"></select>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">

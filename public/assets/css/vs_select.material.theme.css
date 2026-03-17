@@ -25,7 +25,7 @@
 
   --vs-ms-color-text: #2b2b2b;
   --vs-ms-color-label: #888;
-  --vs-ms-color-label-focus: #1976d2;
+  --vs-ms-color-label-focus: #777777;
 
   --vs-ms-bg: #fff;
 }
@@ -127,7 +127,7 @@
 }
 
 .vs-material-select.choices.is-focused .vs-material-select-label {
-  color: var(--vs-ms-color-label-focus);
+  color: var(--vs-ms-color-label-focus) !important;
 }
 
 
