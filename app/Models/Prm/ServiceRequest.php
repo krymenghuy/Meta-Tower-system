@@ -188,15 +188,16 @@ class ServiceRequest extends VSModel
         $total = (clone $query)->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
- 
+
             $row = setOfficialDates($row,['complete_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
- 
+
             //$row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
- 
+
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
     }
+    }
 
-    public static function getServiceRequestDetails($id)
+    public function getServiceRequestDetails($id)
     {
         return DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
@@ -205,7 +206,7 @@ class ServiceRequest extends VSModel
             ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id') // leftJoin for safety
             ->join('service_types as st', 'st.id', '=', 's.service_type_id')
             ->where('sr.id', $id)
-            ->select([
+            ->select(
                 'sr.id', 'sr.code', 'sr.tenant_id', 'sr.space_id', 'sr.service_id', 's.service_type_id',
                 's.price as service_price', 's.unit_type',
                 'sr.request_date', 'sr.description',
@@ -219,9 +220,10 @@ class ServiceRequest extends VSModel
                 's.name as service_name',
                 'rs.id as status_id',
                 'rs.name as status_name'
-            ])
+            )
             ->first();
     }
+
 
     public function getFormOptions($arr = [], $ss = null)
     {

@@ -37,6 +37,7 @@ var ServiceComponent =   ( () => {
                 // const cur_symbol = data.cur_symbol ?? '$';
                 // const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
                 const currency = data.currency_code ?? 'USD';
+                // const currency =  'KHR';
                 const formattedPrice = VSMoney.formatAmount(data.price,currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
                 return `<span class="text-nowrap fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;

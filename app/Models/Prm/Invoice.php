@@ -90,9 +90,15 @@ class Invoice extends VSModel
 
             DB::table('invoice_items')->where('invoice_id', $id)->delete();
 
-                        $itemRows = [];
+            $itemRows = [];
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
+
+                \Log::info('Received discount from frontend', [
+                    'item' => $item,
+                    'discount_sent' => $item['discount'] ?? 'NOT SENT',
+                    'special_sent'  => $item['special_discount_value'] ?? 'NOT SENT'
+                ]);
 
                 if (!in_array($itemType, ['service', 'rend','utility',])) {
                     $itemType = 'service';
@@ -159,7 +165,9 @@ class Invoice extends VSModel
                     'amount'                  => $amount,
                     'discount'                => (float)($item['discount'] ?? 0),
                     'special_discount_value'  => $discountValue,
-                    'special_discount_type'   => $discountType,
+                    'special_discount_type'   => in_array($item['special_discount_type'] ?? '', ['amount', 'percent'])
+                                                    ? $item['special_discount_type']
+                                                    : 'percent',
                     'tax_rate'                => $taxRate,
                     'created_at'              => now(),
                     'updated_at'              => now(),

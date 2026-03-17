@@ -387,8 +387,8 @@ var ServiceRequestComponent = (function () {
         vsapi.call(`${main_view.base_url}/prm/service-request/form-options`)
             .then(res => {
                 if (res.status_code === 200) {
-                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', true, 'All Statuses');
-                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', true, 'All Category');
+                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', '', 'All Statuses', '');
+                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', '', 'All Category', '');
                 }
                 if (typeof callback === 'function') callback();
             });
@@ -442,7 +442,7 @@ const CreateInvoiceServiceRequestDialog = (() => {
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
-                                    <input type="text" data-type="date" class="form-control data-input" data-field="due_date" required>
+                                    <input type="text"  data-type="date" class="form-control data-input" data-field="due_date" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label fw-semibold">Discount</label>

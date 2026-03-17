@@ -282,31 +282,153 @@ function checkUniqueTenantByPhone($phone_number, $id = null)
 
     }
 
-        public function getActiveSpaces($id = null,$ss = null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $today = date('Y-m-d');
-        $str_date = DBX::whereDate('c.end_date','>=',$today);
-        $rows = DB::table('contracts as c')
+    //     public function getActiveSpaces($id = null,$ss = null){
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $today = date('Y-m-d');
+    //     $str_date = DBX::whereDate('c.end_date','>=',$today);
+    //     $rows = DB::table('contracts as c')
+    //     ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+    //     ->where('c.tenant_id', $id)
+    //     ->whereRaw($str_date)
+    //     ->selectRaw('
+    //             bs.id,
+    //             bs.code as space_code,
+    //             c.price
+    //             ')
+    //     ->get();
+    //     return $rows;
+
+    // }
+    // public function getTenantInfo($id = null,$ss = null){
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $tenant = DB::table('tenants')
+    //     ->where('id',$id)
+    //     ->select('id','name','legal_name','email','phone_number')->first();
+    //     $spaces = $this->getActiveSpaces($id,$ss);
+    //     return (object)[
+    //         'tenant'=>$tenant,
+    //         'spaces'=>$spaces
+    //     ];
+    // }
+
+    // public function getTenantWithSpacesAndMonths($id = null, $ss = null)
+    // {
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+
+    //     $tenant = DB::table('tenants')
+    //         ->where('id', $id)
+    //         ->select(
+    //             'id',
+    //             'name',
+    //             'legal_name',
+    //             'email',
+    //             'phone_number',
+    //         )
+    //         ->first();
+
+    //     $spaces = DB::table('contracts as c')
+    //         ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
+    //         ->where('c.tenant_id', $id)
+    //         ->select(
+    //             'c.id as contract_id',
+    //             'bs.id as space_id',
+    //             'bs.code as space_code',
+    //             'c.price',
+    //             'c.sqm_size',
+    //             'c.start_date',
+    //             'c.end_date'
+    //         )
+    //         ->orderByDesc('c.start_date')
+    //         ->get()
+    //         ->map(function ($contract) use ($ss) {
+    //             $months = Contract::generateContractMonths(
+    //                 null,
+    //                 $contract->start_date,
+    //                 $contract->end_date,
+    //                 $ss
+    //             );
+
+    //             return (object) [
+    //                 'contract_id'  => $contract->contract_id,
+    //                 'space_id'     => $contract->space_id,
+    //                 'space_code'   => $contract->space_code,
+    //                 'price'        => $contract->price,
+    //                 'sqm_size'     => $contract->sqm_size,
+    //                 'start_date'   => $contract->start_date,
+    //                 'end_date'     => $contract->end_date,
+    //                 'months'       => $months,
+    //             ];
+    //         })
+    //         ->values();
+
+    //     return (object) [
+    //         'tenant' => $tenant,
+    //         'spaces' => $spaces
+    //     ];
+    // }
+    public function getTenantWithSpacesAndMonths($id = null, $ss = null)
+{
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+
+    $tenant = DB::table('tenants')
+        ->where('id', $id)
+        ->select('id', 'name', 'legal_name', 'email', 'phone_number')
+        ->first();
+
+    $allMonths = [];
+
+    $spaces = DB::table('contracts as c')
         ->join('building_spaces as bs', 'bs.id', '=', 'c.space_id')
         ->where('c.tenant_id', $id)
-        ->whereRaw($str_date)
-        ->selectRaw('bs.id,bs.code as space_code')
-        ->get();
-        return $rows;
+        ->select(
+            'c.id as contract_id',
+            'bs.id as space_id',
+            'bs.code as space_code',
+            'c.price',
+            'c.sqm_size',
+            'c.start_date',
+            'c.end_date'
+        )
+        ->orderByDesc('c.start_date')
+        ->get()
+        ->map(function ($contract) use ($ss, &$allMonths) {
+            $months = Contract::generateContractMonths(
+                null,
+                $contract->start_date,
+                $contract->end_date,
+                $ss
+            );
+            foreach ($months as $month) {
+                $allMonths[] = array_merge($month, [
+                    'contract_id' => $contract->contract_id,
+                    'space_id'    => $contract->space_id,
+                    'space_code'  => $contract->space_code,
+                ]);
+            }
 
-    }
-    public function getTenantInfo($id = null,$ss = null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $tenant = DB::table('tenants')
-        ->where('id',$id)
-        ->select('id','name','legal_name','email','phone_number')->first();
-        $spaces = $this->getActiveSpaces($id,$ss);
-        return (object)[
-            'tenant'=>$tenant,
-            'spaces'=>$spaces
-        ];
-    }
+            return (object) [
+                'contract_id' => $contract->contract_id,
+                'space_id'    => $contract->space_id,
+                'space_code'  => $contract->space_code,
+                'price'       => $contract->price,
+                'sqm_size'    => $contract->sqm_size,
+                'start_date'  => $contract->start_date,
+                'end_date'    => $contract->end_date,
+            ];
+        })
+        ->values();
+
+    return (object) [
+        'tenant' => $tenant,
+        'spaces' => $spaces,
+        'months' => $allMonths,
+    ];
+}
+
+
 
 }

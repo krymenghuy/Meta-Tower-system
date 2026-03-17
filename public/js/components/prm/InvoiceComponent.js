@@ -1,5 +1,6 @@
 "use strict";
 
+
 var InvoiceComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Invoice Management";
@@ -346,10 +347,19 @@ const InvoiceDialog = (() => {
                             </div>
                         </div>
                     </div>
-                    <div class="row g-3">
+                    <div class="row g-3 mb-3 d-flex justify-content-between align-items-end">
                         <div class="col-md-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span>
+                            </label>
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
+                        </div>
+
+                        <div class="col-md-auto">
+                            <div class="d-flex gap-2">
+                                <button name="btnRend"    class="btn btn-primary" type="button">Rend</button>
+                                <button name="btnUtility" class="btn btn-primary" type="button">Utility</button>
+                            </div>
                         </div>
                     </div>
 
@@ -371,25 +381,143 @@ const InvoiceDialog = (() => {
                 me.controls.divItemsView = me.divModal.querySelector('[name="divItemsView"]');
                 me.controls.div_invoice_summary = me.divModal.querySelector('[name="div_invoice_summary"]');
 
+
+                me.controls.btnRend.onclick = () => {
+                if (!me._selectedTenantId) {
+                    return cv_interact.error("Please select Tenant first");
+                }
+
+                const spaces = me._tenantSpaces || [];
+                const months = me._tenantMonths || [];
+
+                if (spaces.length === 0) {
+                    return cv_interact.error("No rooms/spaces available for this tenant");
+                }
+
+                InputBox.resetInstance("rentPopUp");
+
+                InputBox.show({
+                    groupData: { spaces, months },
+                    title: "Rent",
+                    instanceKey: "rentPopUp",
+                    fields: [
+                        {
+                            name: "contract_id",
+                            label: "Unit Code / Room",
+                            type: "select",
+                            required: true,
+                            textField: 'space_code',
+                            valueField: 'contract_id',
+                            data: 'spaces'
+                        },
+                        {
+                            name: "monthly",
+                            label: "Month ",
+                            valueField: 'month',
+                            textField: 'month',
+                            data: 'months'
+                        },
+                        {
+                            name: "start_date",
+                            label: "Start Date ",
+                            type: 'text'
+                        },
+                        {
+                            name: "end_date",
+                            label: "End Date ",
+                            type: 'text'
+                        },
+                        {
+                            name: "price",
+                            label: "Price ",
+                            type: 'money'
+                        },
+                        {
+                            name: "remark",
+                            label: "Remark",
+                            type: "textarea",
+                            colSpan: 2
+                        }
+                    ],
+                    columns: 2,
+                    onOpen(popup) {
+                        // Find contract dropdown using name attribute (same style as your code)
+                        const contractSelect = document.querySelector('select[name="contract_id"]');
+
+                        if (!contractSelect) {
+                            console.warn("Cannot find contract select element");
+                            return;
+                        }
+
+                        contractSelect.addEventListener('change', (e) => {
+                            const contractId = e.target.value;
+                            if (!contractId) return;
+
+                            const matchedSpace = spaces.find(s => String(s.contract_id) === contractId);
+                            if (!matchedSpace) return;
+
+                            const matchedMonth = months.find(m => String(m.contract_id) === contractId) || months[0];
+                            if (!matchedMonth) return;
+
+                            const updateField = (fieldName, value) => {
+                                const input = document.querySelector(`[name="${fieldName}"]`);
+                                if (input) {
+                                    input.value = value || '';
+                                    // Trigger change so component knows
+                                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                    console.log(`Auto updated ${fieldName} → ${value}`);
+                                }
+                            };
+
+                            updateField("price", matchedSpace.price || "0.00");
+                            updateField("start_date", matchedMonth.start_date || "");
+                            updateField("end_date", matchedMonth.end_date || "");
+                            updateField("monthly", matchedMonth.month || "");
+                        });
+                    },
+
+                    onConfirm(data, btn, popup) {
+                        console.log("Confirmed data:", data);
+
+                        const roomCode = spaces.find(s => String(s.contract_id) === String(data.contract_id))?.space_code || '—';
+
+                        me.itemsView.addRow({
+                            item_id: null,
+                            price: Number(data.price) || 0,
+                            qty: 1,
+                            remarks: `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
+                            unit_type: roomCode,
+                            contract_id: data.contract_id,
+                            monthly: data.monthly,
+                            start_date: data.start_date,
+                            end_date: data.end_date,
+                            space_code: roomCode,
+                            space_price: data.price
+                        });
+
+                        cv_interact.success("Rent item added");
+                        popup.close();
+                    }
+                });
+            };
+
+
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
                     {
+                        currencyCode: 'USD',
                         columns: [
                             {
                                 name: "item_id",
-                                transTitle: "titles.Product",
+                                transTitle: "titles.Item",
                                 displayType: "select"
-                            },
-                            {
-                                name: "unit_type",
-                                transTitle: "titles.Unit Type",
-                                dataType: "string",
-                                readOnly: true,
                             },
                             {
                                 name: "remarks",
                                 transTitle: "titles.Remarks",
-                                dataType: "string"
+                                dataType: "string",
+                                readOnly: true,
                             },
                             {
                                 name: "qty",
@@ -400,7 +528,7 @@ const InvoiceDialog = (() => {
                             },
                             {
                                 name: "price",
-                                transTitle: "titles.Unit Price",
+                                transTitle: "titles.Price",
                                 dataType: "number", defaultValue: 0,
                                 isNumeric: true
                             },
@@ -420,7 +548,7 @@ const InvoiceDialog = (() => {
                             },
                             {
                                 name: "total",
-                                transTitle: "titles.Line Total",
+                                transTitle: "titles.Total",
                                 dataType: "number",
                                 readOnly: true,
                                 isNumeric: true
@@ -507,13 +635,25 @@ const InvoiceDialog = (() => {
                     columns: { name: "Name", phone_number: "Phone" },
                     onSelect: (tenant) => {
                         me._selectedTenantId = tenant.id;
-                        vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
+                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-contract`, { tenant_id: tenant.id }, {})
+                        // vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                             .then(res => {
-                                const d = res.data || {};
+                                 const d = res.data || {};
                                 me.controls.phone_number.value = d.tenant?.phone_number || '';
                                 me.controls.email.value = d.tenant?.email || '';
                                 me._selectedTenantId = tenant.id;
-                                VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
+
+                                //  Store spaces directly for use in rent popup
+                                me._tenantData   = d;
+                                me._tenantSpaces = d.spaces || [];
+                                me._tenantMonths = d.months || [];
+
+
+                                VSUtil.setComboItems(me.controls.space, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room / Space --','');
+
+
+                                console.log('Space', d.spaces);
+                                 console.log('Full response11111:', res);
                             });
                     }
                 });
@@ -542,7 +682,6 @@ const InvoiceDialog = (() => {
                             unit_type: item.unit_type || '—',
                             service_id: item.item_id || null,
 
-                            // Send discount fields to backend
                             discount: discountValue,
                             special_discount_value: discountValue,
                             special_discount_type: discountType,
@@ -577,7 +716,7 @@ const InvoiceDialog = (() => {
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: "btn btn-secondary",
-                    click: (me) => me.hide(false)
+                    click: (me) => { me.itemsView.setData(null); me.hide(false) }
                 },
                 {
                     label: '<span vslang="buttons.Submit"></span>',

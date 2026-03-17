@@ -64,9 +64,7 @@ class ServiceRequestController extends Controller
             return JDV::error('Invalid ID');
         }
         $details = ServiceRequest::getServiceRequestDetails($id);
-        if (!$details) {
-            return JDV::error('Service request not found');
-        }
+       
 
         return JDV::result($details);
     }

@@ -125,4 +125,19 @@ class ContractController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
         return JDV::raw(Contract::getTenantInfo($req->all(),$ss));
     }
+    public function getContractMonths(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $data = $req->json()->all();
+        $contract_id = $data['contract_id'] ?? $data['id'] ?? $req->input('contract_id') ?? $req->input('id') ?? null;
+        $months = Contract::generateContractMonths((int) $contract_id);
+
+        return JDV::result(['months' => $months]);
+    }
+
+
 }

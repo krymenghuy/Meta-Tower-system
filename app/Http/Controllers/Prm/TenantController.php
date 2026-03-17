@@ -109,13 +109,30 @@ class TenantController extends Controller
         return JDV::result($this->tenants->getActiveSpaces($id,$ss));
     }
 
-        public function option_select_all_tenant_info(Request $req){
-        $ss = XAuthService::verifyAuth($req, -1);
-        if($ss->status_code !== 200){
+    //     public function option_select_all_tenant_info(Request $req){
+    //     $ss = XAuthService::verifyAuth($req, -1);
+    //     if($ss->status_code !== 200){
+    //         return JDV::raw($ss);
+    //     }
+    //      $id = $req->tenant_id ?? $req->id;
+    //     return JDV::result($this->tenants->getTenantInfo($id,$ss));
+    // }
+
+   public function getTenantOptionsWithSpacesAndMonths(Request $request)
+    {
+        $ss = XAuthService::verifyAuth($request, -1);
+        if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-         $id = $req->tenant_id ?? $req->id;
-        return JDV::result($this->tenants->getTenantInfo($id,$ss));
+
+        $tenant_id = $request->input('tenant_id')
+                ?? $request->json('tenant_id')
+                ?? $request->input('id')
+                ?? null;
+
+        $tenantModel = new Tenant($tenant_id, $ss);
+        $result = $tenantModel->getTenantWithSpacesAndMonths();
+        return JDV::result($result);
     }
 
 }
