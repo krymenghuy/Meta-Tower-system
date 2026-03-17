@@ -17,7 +17,7 @@ var ServiceComponent =   ( () => {
             className: "align-middle text-capitalize",
         },
         {
-            transTitle: "titles.Service",
+            transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
@@ -39,7 +39,7 @@ var ServiceComponent =   ( () => {
                 const currency = data.currency_code ?? 'USD';
                 const formattedPrice = VSMoney.formatAmount(data.price,currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
-                return `<span class="fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
+                return `<span class="text-nowrap fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
         }
         },
         {
@@ -68,7 +68,7 @@ var ServiceComponent =   ( () => {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? 'd-none' : 'btn_service_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
@@ -161,17 +161,17 @@ var ServiceComponent =   ( () => {
 
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_leave_action",
+            actionButtonClass: "btn_service_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Service"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_service"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Service"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_service"
@@ -272,28 +272,26 @@ const CreateServiceDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_types">Category</label>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
+                                    <label style="padding-left:6px;color:#777777;">Name<span class="text-danger">*</span></label>
+                                </div>
+                            </div>
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <select name="service_types" class="data-input form-control" data-field="service_type_id">
                                     </select>
+                                    <label style="display:none;padding-left:6px;color:#777777;">Category<span class="text-danger">*</span></label>
                                 </div>
                            </div>
-                           <div class="col-12">
-                                <label style="padding-left:6px;">Service<span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                                </div>
-                            </div>
-
-                            <div class="col-4">
-                                <label style="padding-left:6px;">Price<span class="text-danger">*</span></label>
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="0" />
+                                    <label style="padding-left:6px;color:#777777;">Price<span class="text-danger">*</span></label>
                                 </div>
                             </div>
-                            <div class="col-8">
-                                <label style="padding-left:6px;" for="service_types">Charge As</label>
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <select name="unit_type" class="data-input form-control" data-field="unit_type">
                                         <option value="hour">Price Per Hour</option>
@@ -303,13 +301,16 @@ const CreateServiceDialog = (() => {
                                         <option value="m3">Price Per M3</option>
                                         <option value="sqm">Price Per Sqm</option>
                                     </select>
+                                    <label style="display:none;padding-left:6px;color:#777777;" for="service_types">Charge As</label>
+
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <label style="padding-left:6px;">Remarks<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                    <label style="padding-left:6px;color:#777777;">Remarks</label>
+
                                 </div>
                             </div>
                         </div>`

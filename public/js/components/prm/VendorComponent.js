@@ -7,7 +7,8 @@ var VendorComponent = (() => {
     mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
     mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_category_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_vendor_status_id');
+    mThis.elFilter_category = mThis.self.querySelector('#_vendor_category_id');
     mThis.elSearch = mThis.self.querySelector("#_search_vendor");
 
 
@@ -16,13 +17,6 @@ var VendorComponent = (() => {
         {
             title: "",
             className: "align-middle",
-        },
-        {
-            transTitle: "titles.Vattin",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
-            }
         },
         {
             transTitle: "titles.Name",
@@ -70,8 +64,15 @@ var VendorComponent = (() => {
             title: "Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone ?? ""}</span>
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
                  <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+        },
+        {
+            transTitle: "titles.Vattin",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
+            }
         },
         {
             transTitle: "titles.Type",
@@ -114,10 +115,9 @@ var VendorComponent = (() => {
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
+                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
             }
         },
-
         {
             transTitle: "titles.Address",
             className: "align-middle",
@@ -238,7 +238,9 @@ var VendorComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            vendor_type_id: mThis.elFilter_type.value,
+            type_id: mThis.elFilter_type.value,
+            category_id: mThis.elFilter_category.value,
+            status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -258,6 +260,12 @@ var VendorComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_vendor_status"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Modify Vendor"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -273,6 +281,10 @@ var VendorComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case 'change_vendor_status': {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
                     case 'modify_vendor': {
                         mThis.editVendor(id, menuLink);
                         break;
@@ -289,7 +301,51 @@ var VendorComponent = (() => {
         }
         new VSDropdownMenu(menuOptopns);
     }
-
+      mThis.changeStatus = (id, link) => {
+        const tr = link.closest("tr");
+        const status_id = tr?.dataset.statusid || "";
+        console.log(123,status_id);
+        
+        const inputOptions = {
+            context: "success",
+            title: "Change Status",
+            label: "Vendor Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: "Save",
+            requiredMessage: "Please select a status",
+            data: [
+                { status_id: "1", name: "Active" },
+                { status_id: "2", name: "Inactive" },
+            ],
+            defaultValue: status_id,
+            onConfirm: (status, btn, me) => {
+                const payload = { id, status_id: status.status_id };
+                vsapi
+                    .post(
+                        `${mThis.base_url}/prm/vendor/update-status`,
+                        payload,
+                        { loader: false, agent: btn },
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success(
+                                "Vendor status has been updated",
+                            );
+                            mThis.VendorListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            me.setError(
+                                res.error_message || "Unable to update status",
+                            );
+                        }
+                    });
+            },
+        };
+        InputBox.show(inputOptions);
+    };
     mThis.editVendor = (id, menulink) => {
         let op = {
             id: id,
@@ -333,8 +389,9 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.vendor_types, 'id', 'vendor_type', true, 'All Type', null);
-                VSUtil.setComboItems(mThis.elFilter_category, d.vendor_categories, 'id', 'vendor_category', true, 'All Category', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', true, 'All Type', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', true, 'All Category', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -369,85 +426,69 @@ const CreateVendorDialog = (() => {
                 <div class="vendor-form row p-1">
                         <div class="col-12 row pb-3">
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Name</label>
+                               <!-- <label style="color:#777777;padding-left:6px;">Name</label> -->
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Type</label>
-                                <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id"></select>
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Name</label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Category</label>
                                 <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id"></select>
+                                    <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="tax_number"
-                                        class="data-input form-control"
-                                        data-field="tax_number"
-                                        placeholder=" " />
+                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id">
+                                    <!-- <option value="" selected hidden></option> -->
+                                    </select>
+                                    <label style="display:none; color:#777777;padding-left:6px;">Vendor Type</label>
+                                </div>
+                            </div>
+                             <div class="col-12 col-md-6">
+                                <div class="material-input outlined">
+                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="">
+                                        <!-- <option value="" selected hidden></option> -->
+                                    </select>
+                                    <label style="display:none; color:#777777;padding-left:6px;">Category</label>
+                                </div>
+                            </div>
+                           
+                            <div class="col-12 col-md-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
+
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                
                                 <div class="material-input outlined">
-                                    <input type="number"
-                                        name="phone"
-                                        class="data-input form-control"
-                                        data-field="phone"
-                                        placeholder=" " />
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Email</label>
+                                </div>
+                                
+                            </div>
+                            <div class="col-12 col-md-6">
+                                
+                                <div class="material-input outlined">
+                                    <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Contact Person</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Email</label>
+                                
                                 <div class="material-input outlined">
-                                    <input type="email"
-                                        name="email"
-                                        class="data-input form-control"
-                                        data-field="email"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Person</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_person"
-                                        class="data-input form-control"
-                                        data-field="contact_person"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Contact Phone</label>
-                                <div class="material-input outlined">
-                                    <input type="text"
-                                        name="contact_phone"
-                                        class="data-input form-control"
-                                        data-field="contact_phone"
-                                        placeholder=" " />
+                                    <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Contact Phone</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label style="color:#777777;padding-left:6px;">Address</label>
+                                
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control"
-                                        data-field="address"
-                                        rows="3"
-                                        placeholder=" ">
-                                    </textarea>
+                                    <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "> </textarea>
+                                    <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>
                          </div>
@@ -465,13 +506,13 @@ const CreateVendorDialog = (() => {
                 configSelect: [
                     {
                         name: "vendor_type_id",
-                        data: "vendor_types",
+                        data: "types",
                         textField: "vendor_type",
                         valueField: "id",
                     },
                     {
                         name: "vendor_category_id",
-                        data: "vendor_categories",
+                        data: "categories",
                         textField: "vendor_category",
                         valueField: "id",
                     },

@@ -7,106 +7,88 @@ var AmenityComponent = (() => {
     mThis.self = main_view.VSAppContent.querySelector("#_main_amenity_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAmenity");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
+    mThis.elBuilding = mThis.self.querySelector('#building_id');
+    mThis.elFloor = mThis.self.querySelector('#floor_id');
+    mThis.elFilter_category = mThis.self.querySelector("#amenity_category_id");
     mThis.elFilter_status = mThis.self.querySelector("#_amenity_status");
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
 
     mThis.cols = [
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-nowrap text-capitalize",
         },
         {
             title: "Name",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom">${data.name ?? ""}</span>`,
+                `<div class="text-prm-custom text-capitalize" style="width:120px; ">
+                    <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
+                    <small class="d-block text-muted">${data.code ?? ""}</small>
+                </div>`,
         },
 
         {
-            title: "Floor",
-            className: "align-middle",
+            title: "Category",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom">${data.floor ?? "-"}</span>`,
+                `<span class="badge text-primary-emphasis bg-dark-subtle px-3 py-2" style="min-width:120px">${data.category ?? ""}</span>`,
         },
-        // {
-        //     title: "Description",
-        //     className: "align-middle",
-        //     data: (data) => `
-        //         <div class="text-primary-custom" style="width:150px;">
-        //             <span class="text-wrap text-break" style="word-break:break-word;">${data.description ?? ''}</span>
-        //         </div>`
-        // },
-        // {
-        //     title: "Location",
-        //     className: "align-middle",
-        //     data: (data) => `
-        //         <div class="text-primary-custom" style="width:150px;">
-        //             <span class="text-wrap text-break" style="word-break:break-word;">${data.location_detail ?? '-'}</span>
-        //         </div>`
-        // },
-        // {
-        //     title: "Access Level",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         const accessLabel = data.access_level ?? `${data.access_level}`;
-        //         return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
-        //     }
 
-        // },
         {
-            title: "Max Capacity",
-            className: "align-middle text-center",
+            title: "Location",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+                `
+                    <div class="text-prm-custom" style="width:120px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floor_number ?? ""}</span>
+                        <small class="d-block text-muted">${data.building_name ?? ""}</small>
+                    </div>
+                `
+        },
+        
+        {
+            title: "Capacity",
+            className: "align-middle text-nowrap text-center",
             data: (data) =>
                 `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span>`,
         },
         {
-            title: "Requires Booking",
-            className: "align-middle text-center",
+            title: "Booking",
+            className: "align-middle text-nowrap text-center",
             data: function (data) {
                 const val = data.requires_booking ?? "";
                 const isRequired = val == 1;
 
                 return isRequired
-                    ? '<span class="badge bg-warning-subtle text-dark">Required</span>'
-                    : '<span class="badge bg-secondary text-dark">Not Required</span>';
-            },
-        },
-        {
-            title: "Available",
-            className: "align-middle text-center",
-            data: function (data) {
-                const val = data.is_available ?? 0;
-                const isYes = val == 1;
-
-                return isYes
-                    ? '<span class="badge text-warning bg-info-subtle text-dark">Available</span>'
-                    : '<span class="badge text-warning bg-danger-subtle text-dark">Unavailable</span>';
+                    ? '<span class=" text-success"><i class="fa-regular fa-circle-check"></i> Yes</span>'
+                    : '<span class=" text-muted"><i class="fa-regular fa-circle-xmark"></i> No</span>';
             },
         },
         {
             title: "Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
                 let cls = "text-info";
 
                 if (status == "inactive") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-danger d-inline-block";
+                        "badge text-danger bg-danger-subtle border border-danger";
                 } else if (status == "active") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-success d-inline-block";
-                } else if (status == "under maintenance") {
+                        "badge text-success bg-success-subtle border border-success";
+                } else if (status == "maintenance") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-warning d-inline-block";
+                        "badge text-warning bg-warning-subtle border border-warning";
                 }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
+                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
             },
         },
         {
             title: "Updated By",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold">${data.update_user ?? ""}</span>
@@ -115,7 +97,7 @@ var AmenityComponent = (() => {
         },
         {
             title: "Action",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -137,6 +119,8 @@ var AmenityComponent = (() => {
                 "table table--white rounded-2 overflow-hidden header-uppercase",
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
+                tr.dataset.buildingid = data.building_id ?? "";
+                tr.dataset.floorid = data.floor_id ?? "";
                 tr.classList.add("amenity");
                 tr.setAttribute("id", `amenity_id${data.id}`);
             },
@@ -147,6 +131,14 @@ var AmenityComponent = (() => {
             e.preventDefault();
             const op = {
                 id: null,
+                // data: {
+                //     amenity_category_id: btn.dataset.categoryid,
+                //     amenity_name: btn.dataset.name,
+                //     code: btn.dataset.amenitycode,
+                //     max_capacity: btn.dataset.capacity,
+                //     building_id: btn.dataset.buildingid,
+                //     floor_id: btn.dataset.floorid
+                // },
                 btn: e.target,
                 onClose: () =>
                     mThis.AmenityListView.showPage(mThis.getFilterData()),
@@ -185,12 +177,13 @@ var AmenityComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status?.value,
-            access_level: mThis.elFilter_access_level?.value,
-            requires_booking: mThis.elFilter_requires_booking?.value,
-            is_available: mThis.elFilter_is_available?.value,
-            search_value: mThis.elSearch?.value,
+            status_id: mThis.elFilter_status.value,
+            category_id: mThis.elFilter_category.value,
+            search_value: mThis.elSearch.value,
+            building_id: mThis.elBuilding.value,
+            floor_id: mThis.elFloor.value,
         };
+
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
@@ -213,6 +206,18 @@ var AmenityComponent = (() => {
                     name: "change_status",
                 },
                 {
+                    html: '<span class="ps-2" vslang="titles.Set Maintenance">Set Maintenance</span>',
+                    icon: '<i class="fa-solid fa-wrench fs-5 text-primary"></i>',
+                    cssClass: "border-bottom pb-2",
+                    name: "set_maintenance",
+                },
+                {
+                    html: '<span class="ps-2" vslang="titles.Finish Maintenance">Finish Maintenance</span>',
+                    icon: '<i class="fa-solid fa-flag-checkered fs-5 text-success"></i>',
+                    cssClass: "border-bottom pb-2",
+                    name: "finish_maintenance",
+                },
+                {
                     html: '<span class="ps-2" vslang="titles.Modify">Modify</span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -229,6 +234,14 @@ var AmenityComponent = (() => {
                 switch (name) {
                     case "change_status": {
                         mThis.changeStatus(id, menuLink);
+                        break;
+                    }
+                    case "set_maintenance": {
+                        mThis.setMaintenance(id, menuLink);
+                        break;
+                    }
+                    case "finish_maintenance": {
+                        mThis.finishMaintenance(id, menuLink);
                         break;
                     }
                     case "edit_amenity": {
@@ -250,13 +263,69 @@ var AmenityComponent = (() => {
     };
 
     mThis.editAmenity = (id, menuLink) => {
-        const op = {
-            id,
+        const tr = menuLink?.closest("tr");
+        const buildingId = tr?.dataset?.buildingid || null;
+        const floorId = tr?.dataset?.floorid || null;
+        let op = {
+            id: id,
+            data: {
+                building_id: buildingId,
+                floor_id: floorId,
+            },
             btn: menuLink,
             onClose: () =>
                 mThis.AmenityListView.showPage(mThis.getFilterData()),
         };
         AmenityDialog.show(op);
+    };
+
+    mThis.setMaintenance = (id, menuLink) => {
+        const tr = menuLink?.closest("tr");
+        const buildingId = tr?.dataset?.buildingid || null;
+        const op = {
+            amenity_id: id,
+            building_id: buildingId || null,
+            btn: menuLink,
+            onClose: () =>
+                mThis.AmenityListView.showPage(mThis.getFilterData()),
+        };
+        if (typeof CreateMaintenanceDialog !== "undefined") {
+            CreateMaintenanceDialog.show(op);
+        }
+    };
+
+    mThis.finishMaintenance = (id, menuLink) => {
+        cv_interact.confirm(
+            "Mark this maintenance as finished (Completed)?",
+            {
+                transTitle: "Finish Maintenance",
+                context: "confirm",
+                confirmButtonText: "Finish",
+            },
+            (e) => {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/prm/maintenance/finish-by-amenity`,
+                            { amenity_id: id },
+                            menuLink,
+                            null,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success("Maintenance finished.");
+                                mThis.AmenityListView.showPage(
+                                    mThis.getFilterData(),
+                                );
+                            } else {
+                                cv_interact.error(
+                                    res.error_message || "Failed",
+                                );
+                            }
+                        });
+                }
+            },
+        );
     };
 
     mThis.deleteAmenity = (id, menuLink) => {
@@ -319,7 +388,7 @@ var AmenityComponent = (() => {
             data: [
                 { status_id: "1", name: "Active" },
                 { status_id: "2", name: "Inactive" },
-                { status_id: "3", name: "Under Maintenance" },
+                { status_id: "3", name: "Maintenance" },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -353,21 +422,13 @@ var AmenityComponent = (() => {
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/prm/amenity/form-options`,
-                null,
-                null,
-                null,
-            )
+                `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.amenity_statuses,
-                    "id",
-                    "name",
-                    true,
-                    "Statuses",
-                );
+                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status",true,"Statuses",null);
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
+                VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', true, 'All Categories', null);
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === "function") onFinish();
             });
@@ -393,7 +454,7 @@ const AmenityDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
 
@@ -401,72 +462,62 @@ const AmenityDialog = (() => {
                     return [
                         `
                     <div class="row g-3">
-                        <div class="col-12">
-                            <label style="padding-left:6px;">Amenity Name</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
-                            </div>
-                        </div>
-                       
                         <div class="col-6">
-                            <label style="padding-left:6px;">Floor</label>
                             <div class="material-input outlined">
-                                <input type="text" name="floor" required class="data-input form-control" data-field="floor" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label style="padding-left:6px;">Location Detail</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="location" required class="data-input form-control" data-field="location_detail" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label style="padding-left:6px;">Description</label>
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Name</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="padding-left:6px;" for="access_level">Access Level</label>
                             <div class="material-input outlined">
-                                <select name ="access_level" class="data-input form-control" data-field="access_level" placeholder=" ">
-                                    <option value="All Tenants">All Tenants</option>
-                                    <option value="Management Only">Management Only</option>
-                                    <option value="Staff Only">Staff Only</option>
-                                    <option value="Admin Only">Admin Only</option>
+                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
+                                <label style="color:#777777; padding-left:6px;">Code (Optional)</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="material-input outlined">
+                                <select name="building_id" class="data-input form-control" data-field="building_id">
                                 </select>
+                                <label style="display:none;color:#777777;padding-left:6px;" for="building">Building</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="padding-left:6px;">Max Capacity</label>
                             <div class="material-input outlined">
-                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                                <select name="floor_id" class="data-input form-control" data-field="floor_id">
+                                </select>
+                                <label style="display:none;color:#777777;padding-left:6px;">Floor Number</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="padding-left:6px;" for ="requires_booking">Requires Booking</label>
+                            <div class="material-input outlined">
+                                <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
+                                </select>
+                                <label style="display:none;color:#777777;padding-left:6px;">Category</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
                             <div class="material-input outlined">
                                 <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
                                 </select>
-                            </div>    
-                        </div>
-                        <div class="col-6">
-                            <label style="padding-left:6px;" for="is_available">Available</label>
-                            <div class="material-input outlined">
-                                <select name="available" class="data-input form-control" data-field="is_available" placeholder=" ">
-                                    <option value="1">Available</option>
-                                    <option value="0">Unavailable</option>
-                                </select>
+                                <label style="display:none;color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="d-none material-input outlined">
-                                <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                <label>Status ID</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Capacity</label>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                 <label style="color:#777777;padding-left:6px;">Description</label>
+                            </div>
+                        </div>
+                        
+                        
                     </div>`,
                     ].join("");
                 },
@@ -474,9 +525,49 @@ const AmenityDialog = (() => {
                 contentCreated: (me) => {},
                 configSelect: [
                     {
-                        name: "amenity_id",
-                        data: "amenities",
-                        textField: "amenity",
+                        name: "amenity_categories",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
+                        valueField: "id",
+                    },
+                    {
+                        name: "amenity_statuses",
+                        data: "amenity_statuses",
+                        textField: "amenity_status",
+                        valueField: "id",
+                    },
+                    {
+                        name: "building_id",
+                        data: "buildings",
+                        textField: "building",
+                        valueField: "id",
+                    },
+                    {
+                        name: "floor_id",
+                        textField: "name",
+                        valueField: "id",
+                        defaultValue: (me, op) => {
+                            return op?.data?.floor_id ?? null;
+                        },
+                        depends: {
+                            name: "building_id",
+                            api: {
+                                endpoint: `${main_view.base_url}/prm/settings/options-floors`,
+                                params: (me, op) => {
+                                    let building_id = me.controls.building_id.value;
+                                    return {
+                                        building_id: building_id,
+
+                                    };
+                                },
+                            },
+                        },
+
+                    },
+                    {
+                        name: "category_id",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
                         valueField: "id",
                     },
                 ],
@@ -509,7 +600,7 @@ const AmenityDialog = (() => {
                     {
                         label: '<span vslang="buttons.Cancel"></span>',
                         cssClass: "btn btn-secondary",
-                        click: (me) => {
+                        click: (me,btn) => {
                             me.hide(false);
                         },
                     },
@@ -521,7 +612,6 @@ const AmenityDialog = (() => {
 
                             const modal = me.divModal || document;
 
-                            // Collect text, number, and textarea fields
                             modal
                                 .querySelectorAll(
                                     "input[data-field], textarea[data-field]",
@@ -544,9 +634,7 @@ const AmenityDialog = (() => {
                             payload.requires_booking = Number(
                                 payload.requires_booking ?? 0,
                             );
-                            payload.is_available = Number(
-                                payload.is_available ?? 1,
-                            );
+
                             payload.max_capacity = Number(
                                 payload.max_capacity ?? 0,
                             );
@@ -556,8 +644,6 @@ const AmenityDialog = (() => {
                                 payload.id = me.dataOptions.id;
                             }
 
-                            // Optional debug (remove in production if not needed)
-                            console.log("Final payload being sent:", payload);
 
                             vsapi
                                 .call(
@@ -584,10 +670,10 @@ const AmenityDialog = (() => {
                                         );
                                     }
                                 })
-                                .catch((err) => {
-                                    console.error("Save request failed:", err);
-                                    cv_interact.error("Network/server error");
-                                });
+                                // .catch((err) => {
+                                //     console.error("Save request failed:", err);
+                                //     cv_interact.error("Network/server error");
+                                // });
                         },
                     },
                 ],

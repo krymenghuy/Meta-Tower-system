@@ -1539,7 +1539,7 @@ a.menu-selected .kt-menu__link-text {
     max-width: 200px;
     max-height: 200px;
     height: 150px;
-    
+
 }
 
 .modal-body .container-image-student img {
@@ -2671,7 +2671,7 @@ tr {
  /* =================== MATERIAL INPUT =================== */
     .material-input {
       position: relative;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
       font-family: Arial, sans-serif;
     }
 
@@ -2741,7 +2741,6 @@ tr {
     .material-input.outlined select,
     .material-input.outlined textarea {
       width: 100%;
-      /* padding: 18px 12px 6px 12px; */
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -2753,7 +2752,7 @@ tr {
     .material-input.outlined input:focus,
     .material-input.outlined select:focus,
     .material-input.outlined textarea:focus {
-      border-color: #1a1647;
+      border-color: #cccccc;
       box-shadow: 0 0 0 2px rgba(26, 22, 71, 0.1);
     }
 
@@ -2776,9 +2775,9 @@ tr {
     .material-input.outlined select:valid ~ label,
     .material-input.outlined textarea:focus ~ label,
     .material-input.outlined textarea:not(:placeholder-shown) ~ label {
-      top: -6px;
+      top: 0px;
       font-size: 12px;
-      color: #1a1647;
+      color: #cccccc;
     }
 
 
@@ -2864,4 +2863,15 @@ tr {
     /* Firefox */
     scrollbar-width: thin;
     scrollbar-color: rgb(26 22 71) transparent;
+}
+.box-size-purchase {
+    width: 150px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.iv-btn-primary {
+    margin-top: 10px;
+    border: none;
 }

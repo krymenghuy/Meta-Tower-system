@@ -397,7 +397,7 @@
                             @include('layouts.prm.spaceComponent')
                             @include('layouts.prm.serviceComponent')
                             @include('layouts.prm.vendorComponent')
-                            @include('layouts.prm.purchasesComponent')
+                            @include('layouts.prm.purchaseOrdersComponent')
                             @include('layouts.prm.maintenanceComponent')
 
                             @include('layouts.prm.invoiceComponent')

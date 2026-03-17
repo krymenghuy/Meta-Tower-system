@@ -134,11 +134,11 @@ function v_display($mod_id, $module_ids = null)
                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
-                    <a href="PurchasesComponent" modid="244" class="menu-item kt-menu__link">
+                    <a href="PurchaseOrdersComponent" modid="244" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/cart.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color " vslang="menus.Purchases"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Purchase Orders"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>

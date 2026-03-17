@@ -356,6 +356,7 @@ var TenantComponent = new (function () {
     mThis.createContract = (id, menuLink) => {
         let op = {
             id: null,
+            tenant_id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.renderView();
@@ -604,7 +605,15 @@ var TenantComponent = new (function () {
             link.addEventListener("click", (e) => {
                 const tenantId = e.currentTarget.dataset.id;
                 mThis.tenant_id = tenantId;
-                ContractDialog.show(tenantId);
+                const op = {
+                    id: null,
+                    tenant_id: tenantId,
+                    btn: e.currentTarget,
+                    onClose: () => {
+                        mThis.renderView();
+                    },
+                };
+                ContractDialog.show(op);
             });
         });
         const container_te = mThis.cardViewContainer;
@@ -1380,112 +1389,81 @@ const CreateTenantDialog = (() => {
                 <div class="tenant-form row p-1">
 
                     <!-- Profile Section -->
-                        <div class="col-md-4 text-center d-flex flex-column justify-content-center">
+                        <div class="col-md-4 pb-3 text-center d-flex flex-column justify-content-center">
                             <div class="tenant-photo-wrapper border border-prm-custom rounded-3 d-flex align-items-center justify-content-center mx-auto"
                                 style="width: 210px; height: 140px; cursor: pointer; background-color: #f8f8f8;">
                                 <div name="div_tenant_photo"
                                     class="w-100 h-100">
                                 </div>
                             </div>
-                            <small class="text-muted d-block mt-2">Profile Photo</small>
+                           <!-- <small class="text-muted d-block mt-2">Profile Photo</small> -->
                         </div>
                         <div class="col-md-8 row pb-3">
                             <div class="col-12 ">
-                                <label style="color:#777777;padding-left:6px;">Full Name</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="name"
-                                        class="data-input form-control"
-                                        data-field="name"
-                                        placeholder=" " />
+                                    <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Full Name</label>
                                 </div>
+
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Gender</label>
                                 <div class="material-input outlined">
-                                    <select name="sex"
-                                        class="data-input form-control"
-                                        data-field="sex">
+                                    <select name="sex" class="data-input form-control" data-field="sex">
                                         <option value="M">Male</option>
                                         <option value="F">Female</option>
                                     </select>
+                                <label style="display:none;color:#777777;padding-left:6px;">Gender</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label style="color:#777777;padding-left:6px;">Date of Birth</label>
                                 <div class="material-input outlined">
-                                    <input type="text" data-type="date" name="date_of_birth"
-                                        class="data-input form-control form_input"
-                                        data-field="date_of_birth" />
+                                    <input type="text" data-type="date" name="date_of_birth" class="data-input form-control form_input" data-field="date_of_birth" />
+                                    <label style="color:#777777; padding-left:6px;">Date of Birth</label>
                                 </div>
                             </div>
-
                         </div>
                         <div class="col-12 row pb-3">
                             <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">Legal Name</label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="legal_name"
-                                        class="data-input form-control"
-                                        data-field="legal_name"
-                                        placeholder=" " />
+                                    <input type="text" name="legal_name" class="data-input form-control" data-field="legal_name" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Legal Name</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">Nationality</label>
                                 <div class="material-input outlined">
                                     <select name="nationality_id" class="data-input form-control" data-field="nationality_id"></select>
+                                    <label style="display:none; color:#777777; padding-left:6px;">Nationality</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">National ID </label>
                                 <div class="material-input outlined">
-                                    <input type="number"
-                                        name="national_id"
-                                        class="data-input form-control"
-                                        data-field="national_id"
-                                        placeholder=" " />
+                                    <input type="number" name="national_id" class="data-input form-control" data-field="national_id" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">National ID</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">Passport Number </label>
                                 <div class="material-input outlined">
-                                    <input type="text"
-                                        name="passport_number"
-                                        class="data-input form-control"
-                                        data-field="passport_number"
-                                        placeholder=" " />
+                                    <input type="text" name="passport_number" class="data-input form-control" data-field="passport_number" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Passport Number</label>
+                                </div>
+
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="material-input outlined">
+                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">Phone Number </label>
                                 <div class="material-input outlined">
-                                    <input type="number"
-                                        name="phone_number"
-                                        class="data-input form-control"
-                                        data-field="phone_number"
-                                        placeholder=" " />
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <label style="color:#777777;padding-left:6px;">Email</label>
-                                <div class="material-input outlined">
-                                    <input type="email"
-                                        name="email"
-                                        class="data-input form-control"
-                                        data-field="email"
-                                        placeholder=" " />
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Email</label>
                                 </div>
                             </div>
                         <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Address</label>
                             <div class="material-input outlined">
-                                <textarea class="data-input form-control"
-                                    data-field="address"
-                                    rows="3"
-                                    placeholder=" ">
-                                </textarea>
+                                <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "></textarea>
+                                <label style="color:#777777;padding-left:6px;">Address</label>
                             </div>
                         </div>
 
@@ -1699,28 +1677,28 @@ const TenantDocumentDialog = (() => {
                 createContent: () => {
                     return `
                 <div class="document-form row justify-content-start">
-                    <div class="col-6">
-                        <label style="padding-left:6px;" for="document_type">Document Type</label>
+                    <div class="col-8">
                         <div class="material-input outlined">
                             <select name="document_type" class="data-input form-control" data-field="document_type_id"></select>
+                            <label style="display:none;color:#777777;padding-left:6px;" for="document_type">Document Type</label>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <label style="padding-left:6px;">Description</label>
-                        <div class="material-input outlined">
-                            <input type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " />
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <label style="padding-left:6px;"></label>
+                    <div class="col-4">
                         <div class="material-input outlined d-flex ">
                             <button name ="btn_chooseFile"  class="btn btn-secondary btn-block" style="padding: 0.5rem 0.75rem !important;">Choose File </button>
+                            <label style="display:none;color:#777777;padding-left:6px;">File</label>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <label style="padding-left:6px;"></label>
+                    <div class="col-12">
                         <div class="material-input outlined d-flex ">
                             <input type="text" name="documents" class="d-none form-control " accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" />
+                            <label style="display:none;color:#777777;padding-left:6px;">File</label>
+                        </div>
+                    </div>
+                     <div class="col-12">
+                        <div class="material-input outlined">
+                            <textarea type="text" name="description" required class="data-input form-control" data-field="description" placeholder=" " /></textarea>
+                            <label style="color:#777777;padding-left:6px;">Description</label>
                         </div>
                     </div>
 
@@ -1740,8 +1718,6 @@ const TenantDocumentDialog = (() => {
                             (d) => {
                                 me.fileData = d;
                                 me.controls.documents.value = d.fileName;
-                                console.log(1111,d);
-
                                 me.controls.documents.classList.remove('d-none');
                             },
                         );

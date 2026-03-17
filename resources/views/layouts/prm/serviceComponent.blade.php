@@ -1,7 +1,7 @@
 <div id="_main_service_component" class="mobile-padding p-3" style="display:none;">
      <div id="_divFilter_service" class="rounded-2 p-3 bg-white shadow-sm">
         <div class="row g-3 align-items-center">
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-3">
                 <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_service" placeholder="Search by service name">
          </div>
             <div class="col-12 col-md-6 col-lg-2 ">
@@ -10,7 +10,7 @@
 
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end" style="overflow:visible;">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnService">
-                    <i class="fa-solid fa-gears"></i>
+                    <i class="fa-solid fa-kiwi-bird"></i>
                     <span vslang="buttons.Create Service"></span>
                 </button>
             </div>

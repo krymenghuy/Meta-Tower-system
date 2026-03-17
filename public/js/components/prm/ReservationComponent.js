@@ -17,15 +17,31 @@ var ReservationComponent =   ( () => {
             title: "",
             className: "align-middle text-capitalize",
         },
+        // {
+        //     transTitle: "titles.Amenity Category",
+        //     className: "align-middle",
+        //    data: (data) => {
+        //         return `<span class="text-primary-custom">${data.amenity_category ?? ''}</span>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Amenity",
+            transTitle: "titles.Amenity Info",
             className: "align-middle",
            data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_name ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.amenity_name ?? ''}</span>
+                        <small class="d-block text-muted">${data.amenity_code ?? ''}</small>`;
             }
         },
+        // {
+        //     transTitle: "titles.Building Info",
+        //     className: "align-middle",
+        //    data: (data) => {
+        //         return `<span class="text-primary-custom">${data.building_name ?? ''}</span>
+        //                 <small class="d-block text-muted">${data.floor_number ?? ''}</small>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Tenant Name",
+            transTitle: "titles.Tenant Info",
             className: "align-middle",
            data: (data) => {
                 return `<span class="text-primary-custom">${data.tenant_name ?? ''}</span>
@@ -33,24 +49,45 @@ var ReservationComponent =   ( () => {
             }
         },
         {
-            transTitle: "titles.Date",
+            transTitle: "titles.Schedule-Date",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.date ?? ''}</span>`;
-            }
+                    const to12h = (hhmm) => {
+                        if (!hhmm) return "";
+                        const [h, m] = String(hhmm).trim().split(":").map(Number);
+                        const hour = isNaN(h) ? 0 : h % 24;
+                        const min = isNaN(m) ? 0 : m;
+                        const ampm = hour < 12 ? "AM" : "PM";
+                        const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                        return `${h12}:${String(min).padStart(2, "0")} ${ampm}`;
+                    };
+                    const start12 = to12h((data.start_time ?? '').substring(0, 5));
+                    const end12   = to12h((data.end_time   ?? '').substring(0, 5));
+                    return `<span class="d-block text-muted">${data.date ?? ''}</span>
+                            <small class="text-primary-custom">${start12} - ${end12}</small>`;
+                }
+
+            // data: (data) => {
+            //     const checkinTime = new Date(1970-01-01T${data.checkin_time}).toLocaleString("en-US", {
+            //         hour: "numeric",
+            //         minute: "2-digit",
+            //         hour12: true,
+            //     });
+            //     return <span class="text-">${checkinTime}</span>;
+            // },
         },
+        // {
+        //     transTitle: "titles.Start-End Time",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</span>`;
+        //     }
+        // },
         {
-            transTitle: "titles.Start-End Time",
+            transTitle: "titles.MAX Capacity",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</span>`;
-            }
-        },
-        {
-            transTitle: "titles.Title",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.title ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.amenity_capacity ?? ''}</span> <span class="text-muted">PAX/Room</span>`;
             }
         },
         {
@@ -75,6 +112,9 @@ var ReservationComponent =   ( () => {
                     cls = 'text-white px-3 py-1 rounded-3 bg-danger d-inline-block';
                 } else if (status == 'active') {
                     cls = 'text-white px-3 py-1 rounded-3 bg-success d-inline-block';
+                } else if (status == "cancelled") {
+                    cls =
+                        "text-white px-3 py-1 rounded-3 bg-warning d-inline-block";
                 }
 
                 return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
@@ -114,11 +154,9 @@ var ReservationComponent =   ( () => {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-
-
               tr.dataset.statusid = data.status_id;
-              tr.classList.add('reservation');
-              tr.setAttribute('id',['reservation_id',data.id].join(''));
+              tr.classList.add("reservation");
+              tr.setAttribute("id", `reservation_id${data.id}`);
 
             },
             listContainerClass: null
@@ -174,6 +212,8 @@ var ReservationComponent =   ( () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
+            // building_id: mThis.elBuilding.value,
+            // floor_id: mThis.elFloor.value,
         };
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -238,41 +278,32 @@ var ReservationComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editReservation = (id, menulink) =>{
-        let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
-                mThis.ReservationListView.showPage(mThis.getFilterData());
-            }
-        };
-
-        CreateReservationDialog.show(op);
-    }
-     mThis.deleteReservation = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
+    mThis.editReservation = (id, menulink) => {
+        const op = {
+            id: parseInt(id, 10),
+            btn: menulink,
             onClose: () => {
                 mThis.ReservationListView.showPage(mThis.getFilterData());
             }
         };
+        CreateReservationDialog.show(op);
+    };
+    mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Reservation??', {
+        cv_interact.confirm('Delete this reservation?', {
             transTitle: 'Delete Reservation',
             context: 'delete',
-            confirmButtonText: "Delete"
-        }, function (e) {
-            if (e) {
-                vsapi.call(`${main_view.base_url}/prm/reservation/delete`, op, false, false, false).then(res => {
-                    if (res.status_code == 200) {
-                        mThis.ReservationListView.showPage();
-                    }
-                })
-            }
-            else {
-                cv_interact.error(res.error_message);
-            }
+            confirmButtonText: 'Delete'
+        }, (e) => {
+            if (!e) return;
+            vsapi.call(`${main_view.base_url}/prm/reservation/delete`, { id: id }, false, false, false).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Reservation deleted.');
+                    mThis.ReservationListView.showPage(mThis.getFilterData());
+                } else {
+                    cv_interact.error(res.error_message || 'Delete failed');
+                }
+            });
         });
     };
     
@@ -293,11 +324,12 @@ var ReservationComponent =   ( () => {
             data:[
                 {status_id:"1",name:"Available"},
                 {status_id:"2",name:"Booked"},
+                {status_id: "3", name: "Cancel" },
             ],
             defaultValue: status_id,
             onConfirm:(status,btn, me)=>{
                     //if(!AuthManager.allowed(321)) return;
-                    const payload = {id, status_id :status.id};
+                    const payload = {id, status_id :status.status_id};
                     vsapi.post(`${mThis.base_url}/prm/reservation/update-status`,payload,{loader:false,agent:btn}).then(res=>{
                         if(res.status_code ===200){
                             me.close();
@@ -318,7 +350,7 @@ var ReservationComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/reservation/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'reservation_status', true, 'Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.reservation_statuses, 'id', 'reservation_status', true, 'Statuses', null);
                 VSUtil.setComboItems(mThis.elAmenity, d.amenities, 'id', 'amenity', true, 'Amenities', null);
                 if (typeof onFinish === 'function') onFinish();
             })
@@ -344,60 +376,80 @@ const CreateReservationDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-md vs-modal",
+                cssClass: "modal-lg vs-modal",
                 backdrop: "static",
                 keyboard: true,
-               createContent: () => {
+                createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            
+                                <input name="tenant" class=" d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
-                                <label style="padding-left:6px;" for="amenity">Amenity</label>
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <div class="material-input outlined">
+                                    <input name="tenant" class="data-input form-control" data-field="tenant_name">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;    padding-left:6px;">Phone Number</label>
+                                <div class="material-input outlined">
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number"></input>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Category</label>
+                                <div class="material-input outlined">
+                                    <select name="amenity_category" class="data-input form-control" data-field="category_id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Name</label>
                                 <div class="material-input outlined">
                                     <select name="amenity" class="data-input form-control" data-field="amenity_id">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <label style="color:#777777;padding-left:6px;" for="amenity">Amenity Code</label>
                                 <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_id">
-                            <!--       <select name="c" class="data-input form-control" data-field="tenant_name"> </select>-->
+                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_code" readonly />
                                 </div>
                             </div>
                             <div class="col-6">
-                                <label style="padding-left:6px;">Phone Number</label>
-                                <div class="material-input outlined">
-                                    <input name="phone_number" class="data-input form-control"data-field="phone_number"></input>
+                                <label style="color:#777777;padding-left:6px; " for="amenity">Max Occupancy</label>
+                                <div class="material-input outlined " >
+                                    <input style="cursor: not-allowed;" type="text" class="data-input form-control" data-field="amenity_capacity" readonly />
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;">Title / Event</label>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Date</label>
                                 <div class="material-input outlined">
-                                    <input name="title" class="data-input form-control" data-field="title"></input>
+                                    <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="date" />
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;" for="date">Date</label>
-                                <div class="material-input outlined">
-                                    <input type="date" name="date" required class="data-input form-control form_input" data-field="date" />
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;">Start Time</label>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">Start Time</label>
                                 <div class=" material-input outlined">
                                     <input type="time" name="start_time" required class="data-input form-control form_input" data-field="start_time" />
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <label style="padding-left:6px;">End Time</label>
+                            <div class="col-4">
+                                <label style="color:#777777;padding-left:6px;">End Time</label>
                                 <div class=" material-input outlined">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" />
                                 </div>
                             </div>
+                            
+                            <div class="col-6 d-none ">
+                                <label style="color:#777777;padding-left:6px;">Title / Event</label>
+                                <div class="material-input outlined">
+                                    <input name="title" class="data-input form-control" data-field="title"></input>
+                                </div>
+                            </div>
 
                             <div class="col-12">
-                                <label style="padding-left:6px;">Description</label>
+                                <label style="color:#777777;padding-left:6px;">Description</label>
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                 </div>
@@ -406,35 +458,32 @@ const CreateReservationDialog = (() => {
                     ].join("");
                 },
 
-
                 contentCreated: (me) => {
-                        me.searchTenant= VSSearchInput.init(me.controls.tenant,{
+                    me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                         type: 'select',
                         prefetch: true,
-                        // api:
                         query: {
                             from: 'tenants',
                             select: ['id', 'name','phone_number'],
-                            searchFields: { name: 'LIKE',phone_number:'LIKE' }
+                            searchFields: { name: 'LIKE', phone_number:'LIKE' }
                         },
-                        // showColumnHeader: false,
-                        columns:{
-                            name: "Name",
-                            phone_number: "Phone Number",
-                        },
-
+                        columns: {
+                            name: "Name",phone_number: "Phone", },
                         onSelect: (tenant) => {
+                            console.log(1111, tenant);
+                            
                             me._selectedTenantId = tenant.id;
                             vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                                 .then(res => {
                                     const d = res.data || {};
                                     me.controls.phone_number.value = d.tenant?.phone_number || '';
-                                    // me.controls.email.value        = d.tenant?.email || '';
-                                    // VSUtil.setComboItems(me.controls.space, d.spaces || [], 'id', 'space_code', '', '-- Select Room / Space --');
+                                    me._selectedTenantId = tenant.id;
                                 });
                         }
                     });
+                    me.searchTenant.reset('');
                 },
+
                 configSelect: [
                     {
                         name: "amenity_id",
@@ -442,22 +491,26 @@ const CreateReservationDialog = (() => {
                         textField: "amenity",
                         valueField: "id",
                     },
-
                     {
-                        name: "category_id",
-                        data: "amenities",
-                        textField: "category",
+                        name: "amenity_category",
+                        data: "amenity_categories",
+                        textField: "amenity_category",
                         valueField: "id",
                     },
-                   
-
+                    {
+                        name: "reservation_statuses",
+                        data: "reservation_statuses",
+                        textField: "reservation_status",
+                        valueField: "id",
+                    },
                 ],
+
                 prepareFormOptions: {
                     createTitle: "Create Reservation",
                     modifyTitle: "Modify Reservation",
                     targetProp: "reservation_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/reservation/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/reservation/form-options"].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -465,13 +518,49 @@ const CreateReservationDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    // LocaleManager.translateZone(me.divModal);
-                    // console.log(12,data);
+                    LocaleManager.translateZone(me.divModal);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
-                },
+                    if (btnClose) btnClose.classList.add('d-none');
 
+                    // Amenity auto-fill logic
+                    const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
+
+                    if (amenitySelect) {
+                        const applyAmenityData = (amenityId) => {
+                            if (!amenityId) {
+                                
+                                if (codeInput)     codeInput.value = '';
+                                if (capacityInput) capacityInput.value = '';
+                                return;
+                            }
+
+                            const amenities = Array.isArray(data?.amenities) ? data.amenities : [];
+                            const selected = amenities.find(item => String(item.id) === String(amenityId));
+
+                            const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
+                            const capacityInput = me.divModal.querySelector('[data-field="amenity_capacity"]');
+
+                            if (codeInput) {
+                                codeInput.value = selected?.amenity_code ?? '';
+                            }
+                            if (capacityInput) {
+                                capacityInput.value = selected?.max_capacity ?? '';
+                            }
+                        };
+
+                        amenitySelect.onchange = (e) => {
+                            applyAmenityData(e.target.value);
+                        };
+
+                        // Pre-fill when editing
+                        const initialId = data?.reservation_details?.amenity_id ?? '';
+                        if (initialId) {
+                            amenitySelect.value = initialId;
+                            applyAmenityData(initialId);
+                        }
+                    }
+                },
 
                 buttons: [
                     {
@@ -487,17 +576,17 @@ const CreateReservationDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/reservation/save",].join(""), op, btn, null).then((res) => {
+                            if (me._selectedTenantId != null && me._selectedTenantId !== undefined) {
+                                op.tenant_id = me._selectedTenantId;
+                            }
+                            op.date = op.start_date || op.date;
+                            vsapi.call([main_view.base_url, "/prm/reservation/save"].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
-                                        cv_interact.success(
-                                            "Reservation has been updated successfully"
-                                        );
+                                        cv_interact.success("Reservation has been updated successfully");
                                     } else {
-                                        cv_interact.success(
-                                            "New reservation has been added successfully"
-                                        );
+                                        cv_interact.success("New reservation has been added successfully");
                                     }
                                 } else {
                                     cv_interact.error(res.error_message);
@@ -511,8 +600,3 @@ const CreateReservationDialog = (() => {
     };
     return self;
 })();
-
-
-
-
-

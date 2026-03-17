@@ -1,5 +1,5 @@
 "use strict";
-var ItemsComponent =   ( () => {
+var ItemsComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Items";
     mThis.base_url = main_view.base_url;
@@ -17,26 +17,35 @@ var ItemsComponent =   ( () => {
             className: "align-middle text-capitalize",
         },
         {
+            transTitle: "titles.Code",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-prm-custom">${data.code ?? ''}</span>`;
+            }
+        },
+        {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
             }
-        }, {
-            transTitle: "titles.Code",
-            className: "align-middle",
+        },
+
+
+        {
+            transTitle: "titles.Unit",
+            className: "align-middle text-capitalize",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.name ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.unit ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Category",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-primary-custom">${data.service_type ?? ''}</span>`;
+                return `<span class="text-primary-custom">${data.category_name ?? ''}</span>`;
             }
         },
-       
         {
             transTitle: "titles.Updated By",
             className: 'align-middle',
@@ -48,7 +57,7 @@ var ItemsComponent =   ( () => {
             }
         },
         {
-            transTitle : "titles.Action",
+            transTitle: "titles.Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
@@ -70,12 +79,12 @@ var ItemsComponent =   ( () => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
+            rowCreated: (data, index, tr) => {
 
 
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('item');
-              tr.setAttribute('id',['item_id',data.id].join(''));
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('item');
+                tr.setAttribute('id', ['item_id', data.id].join(''));
 
             },
             listContainerClass: null
@@ -181,18 +190,19 @@ var ItemsComponent =   ( () => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editItem = (id, menulink) =>{
+    mThis.editItem = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                ;
                 mThis.ItemListView.showPage(mThis.getFilterData());
             }
         };
 
         CreateItemsDialog.show(op);
     }
-     mThis.deleteItem = (id, menuLink) => {
+    mThis.deleteItem = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -225,7 +235,7 @@ var ItemsComponent =   ( () => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'category_name', true, 'All Item Categories', null);
+                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'name', true, 'All Categories', null);
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -233,7 +243,7 @@ var ItemsComponent =   ( () => {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ItemListView.showPage(mThis.getFilterData());
         });
@@ -256,46 +266,36 @@ const CreateItemsDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            <div class="col-12">
-                                <label style="padding-left:6px;" for="service_types">Category</label>
-                                <div class="material-input outlined">
-                                    <select name="service_types" class="data-input form-control" data-field="service_type_id">
-                                    </select>
-                                </div>
-                           </div>
+                            
                            <div class="col-12">
-                                <label style="padding-left:6px;">Service<span class="text-danger">*</span></label>
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
+                                    <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
-
-                            <div class="col-4">
-                                <label style="padding-left:6px;">Price<span class="text-danger">*</span></label>
+                            <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="0" />
-                                </div>
-                            </div>
-                            <div class="col-8">
-                                <label style="padding-left:6px;" for="service_types">Charge As</label>
-                                <div class="material-input outlined">
-                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
-                                        <option value="hour">Price Per Hour</option>
-                                        <option value="month">Price Per Month</option>
-                                        <option value="one_time">One Time Charge</option>
-                                        <option value="kwh">Price Per Kwh</option>
-                                        <option value="m3">Price Per M3</option>
-                                        <option value="sqm">Price Per Sqm</option>
+                                    <select name="category_id" class="data-input form-control" data-field="category_id">
                                     </select>
+                                    <label style="display: none; padding-left:6px;color:#777777;">Category<span class="text-danger">*</span></label>
+                                </div>
+                           </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select name="unit" class="data-input form-control" data-field="unit">
+                                        <option value="pcs">pcs</option>
+                                        <option value="box">box</option>
+                                        <option value="set">set</option>
+                                        <option value="liter">liter</option>
+                                        <option value="kg">kg</option>
+                                        <option value="meter">meter</option>
+                                    </select>
+                                <label style="display: none; padding-left:6px;color:#777777;" for="unit">Unit</label>
+
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <label style="padding-left:6px;">Remarks<span class="text-danger">*</span></label>
-                                <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                                </div>
-                            </div>
+                           
                         </div>`
                     ].join("");
                 },
@@ -305,9 +305,9 @@ const CreateItemsDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "service_types",
-                        data: "service_types",
-                        textField: "service_type",
+                        name: "category_id",
+                        data: "item_categories",
+                        textField: "name",
                         valueField: "id",
                     },
 
@@ -329,7 +329,7 @@ const CreateItemsDialog = (() => {
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
+                    if (btnClose) btnClose.classList.add('d-none');
                 },
 
 

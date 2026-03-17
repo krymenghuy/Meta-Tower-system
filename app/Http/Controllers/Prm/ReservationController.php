@@ -81,7 +81,7 @@ class ReservationController extends Controller
 
         $res = $this->reservation->deleteReservation($id);
 
-        return JDV::raw($result);
+        return JDV::raw($res);
     }
 
     public function updateReservationStatus(Request $request)
@@ -101,5 +101,14 @@ class ReservationController extends Controller
         $result = $this->reservation->updateReservationStatus($status_id, $id, $ss);
 
         return JDV::raw($result);
+    }
+
+    public function option_select_amenity_info(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->tenant_id ?? $req->id;
+        return JDV::result($this->tenants->getAmenityInfo($id,$ss));
     }
 }

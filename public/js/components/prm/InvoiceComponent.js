@@ -142,95 +142,95 @@ var InvoiceComponent = (() => {
 
 
     mThis.renderInvoiceDetail = (container, invoice) => {
-    const items      = invoice.items || [];
-    const currency   = mThis.currency_symbol;
+        const items      = invoice.items || [];
+        const currency   = mThis.currency_symbol;
 
-    let itemsHtml = '', subtotal = 0, totalDiscount = 0, totalTax = 0;
+        let itemsHtml = '', subtotal = 0, totalDiscount = 0, totalTax = 0;
 
-    if (items.length <=0 ) {
-        itemsHtml = `<tr><td colspan="8" class="text-center text-muted py-3">No items found</td></tr>`;
-        return;
-    }
-        items.forEach(item => {
-            const amount   = Number(item.amount   || 0);
-            const discount = Number(item.discount || 0);
-            const tax      = Number(item.tax      || 0);
-            subtotal      += amount;
-            totalDiscount += discount;
-            totalTax      += tax;
+        if (items.length <= 0) {
+            itemsHtml = `<tr><td colspan="8" class="text-center text-muted py-3">No items found</td></tr>`;
+        } else {
+            items.forEach(item => {
+                const amount   = Number(item.amount   || 0);
+                const discount = Number(item.discount || item.special_discount_value || 0);
+                const taxRate  = Number(item.tax_rate || 0);
+                const tax      = (amount - discount) * (taxRate / 100);
 
-            const typeName = item.type || item.service_name || '—';
-            const unitType = item.service_unit_type || '—';
+                subtotal      += amount;
+                totalDiscount += discount;
+                totalTax      += tax;
 
-            itemsHtml += `
-                <tr>
-                    <td>
-                        <div class="fw-semibold">${item.description || '—'}</div>
-                        ${item.notes ? `<small class="text-muted">${item.notes}</small>` : ''}
-                    </td>
-                    <td class="text-center">
-                        <span class="badge bg-light text-dark border">${typeName}</span>
-                    </td>
-                    <td class="text-center">
-                        <span class="badge bg-light text-dark border">${unitType}</span>
-                    </td>
-                    <td class="text-end">${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    <td class="text-end text-danger">-${currency}${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    <td class="text-end text-info">${currency}${tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    <td class="text-end fw-bold">${currency}${(amount - discount + tax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                </tr>`;
-        });
+                const typeName = item.type || item.item_name || '—';
+                const unitType = item.unit_type || '—';
 
+                itemsHtml += `
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">${item.item_name || item.description || '—'}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">${typeName}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">${unitType}</span>
+                        </td>
+                        <td class="text-end">${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end text-danger">-${currency}${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end text-info">${currency}${tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-end fw-bold">${currency}${(amount - discount + tax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                    </tr>`;
+            });
+        }
 
-    const grandTotal = subtotal - totalDiscount + totalTax;
+        const grandTotal = subtotal - totalDiscount + totalTax;
 
-    container.innerHTML = `
-        <div class="bg-white rounded p-1">
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered mb-0">
-                    <thead style="background-color:#f0f4ff;">
-                        <tr>
-                            <th>Description</th>
-                            <th class="text-center" >Type</th>
-                            <th class="text-center" >Qty/Unit</th>
-                            <th class="text-end"    >Amount</th>
-                            <th class="text-end"    >Discount</th>
-                            <th class="text-end"    >Tax</th>
-                            <th class="text-end"    >Net Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>${itemsHtml}</tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <td colspan="3" class="text-end fw-bold">Subtotal</td>
-                            <td class="text-end fw-bold">
-                                ${currency}${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </td>
-                            <td class="text-end fw-bold text-danger">
-                                -${currency}${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </td>
-                            <td class="text-end fw-bold text-info">
-                                ${currency}${totalTax.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </td>
-                            <td class="text-end fw-bold fs-6 text-success">
-                                ${currency}${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            ${invoice.remarks ? `
-                <div class="mt-3 p-2 bg-light rounded">
-                    <small class="text-muted fw-semibold">Remarks:</small>
-                    <p class="mb-0 small">${invoice.remarks}</p>
-                </div>` : ''}
-            <div class="text-end mt-3">
-                <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-                    <i class="bi bi-printer me-1"></i> Print Invoice
-                </button>
-            </div>
-        </div>`;
-};
+        container.innerHTML = `
+            <div class="bg-white rounded p-1">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead style="background-color:#f0f4ff;">
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center" >Type</th>
+                                <th class="text-center" >Unit</th>
+                                <th class="text-end"    >Amount</th>
+                                <th class="text-end"    >Discount</th>
+                                <th class="text-end"    >Tax</th>
+                                <th class="text-end"    >Net Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Subtotal</td>
+                                <td class="text-end fw-bold">
+                                    ${currency}${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold text-danger">
+                                    -${currency}${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold text-info">
+                                    ${currency}${totalTax.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td class="text-end fw-bold fs-6 text-success">
+                                    ${currency}${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                ${invoice.remarks ? `
+                    <div class="mt-3 p-2 bg-light rounded">
+                        <small class="text-muted fw-semibold">Remarks:</small>
+                        <p class="mb-0 small">${invoice.remarks}</p>
+                    </div>` : ''}
+                <div class="text-end mt-3">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i> Print Invoice
+                    </button>
+                </div>
+            </div>`;
+    };
 
     mThis.getFilterData = () => {
         const params = {
@@ -306,8 +306,6 @@ var InvoiceComponent = (() => {
 })();
 
 
-
-
 const InvoiceDialog = (() => {
     let dlg = null;
     let availableItem = [];
@@ -318,7 +316,6 @@ const InvoiceDialog = (() => {
             cssClass: "modal-xl vs-modal",
             backdrop: "static",
             keyboard: true,
-
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3">
@@ -354,14 +351,6 @@ const InvoiceDialog = (() => {
                             <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Due Date <span class="text-danger">*</span></label>
                             <input type="text" data-type="date" name="due_date" class="form-control data-input" required>
                         </div>
-                        <div class="col-md-3">
-                            <label style="padding-left:6px;color:#777;"><i class="fas fa-coins me-2 text-warning"></i>Currency <span class="text-danger">*</span></label>
-                            <div class="material-input outlined">
-                                <select name="currency_id" class="data-input form-control" data-field="currency_id" required>
-                                    <option value="">-- Select Currency --</option>
-                                </select>
-                            </div>
-                        </div>
                     </div>
 
                     <div name="divItemsView"></div>
@@ -381,14 +370,40 @@ const InvoiceDialog = (() => {
                 });
                 me.controls.divItemsView = me.divModal.querySelector('[name="divItemsView"]');
                 me.controls.div_invoice_summary = me.divModal.querySelector('[name="div_invoice_summary"]');
+
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
                     {
                         columns: [
-                            { name: "item_id",   transTitle: "titles.Product",    displayType: "select" },
-                            { name: "remarks",   transTitle: "titles.Remarks",     dataType: "string" },
-                            { name: "qty",       transTitle: "titles.Qty",         dataType: "number", defaultValue: 1,  isNumeric: true },
-                            { name: "price",     transTitle: "titles.Unit Price",  dataType: "number", defaultValue: 0,  isNumeric: true },
+                            {
+                                name: "item_id",
+                                transTitle: "titles.Product",
+                                displayType: "select"
+                            },
+                            {
+                                name: "unit_type",
+                                transTitle: "titles.Unit Type",
+                                dataType: "string",
+                                readOnly: true,
+                            },
+                            {
+                                name: "remarks",
+                                transTitle: "titles.Remarks",
+                                dataType: "string"
+                            },
+                            {
+                                name: "qty",
+                                transTitle: "titles.Qty",
+                                dataType: "number",
+                                defaultValue: 1,
+                                isNumeric: true
+                            },
+                            {
+                                name: "price",
+                                transTitle: "titles.Unit Price",
+                                dataType: "number", defaultValue: 0,
+                                isNumeric: true
+                            },
                             {
                                 name: "discount", transTitle: "titles.Disc",
                                 isDiscount: true,
@@ -396,8 +411,20 @@ const InvoiceDialog = (() => {
                                 defaultDiscountType: "percent",
                                 discountBeforeTax: true
                             },
-                            { name: "tax_rate",  transTitle: "titles.Tax %",       dataType: "number", defaultValue: 0,  isNumeric: true },
-                            { name: "total",     transTitle: "titles.Line Total",  dataType: "number", readOnly: true,   isNumeric: true },
+                            {
+                                name: "tax_rate",
+                                transTitle: "titles.Tax %",
+                                dataType: "number",
+                                defaultValue: 0,
+                                isNumeric: true
+                            },
+                            {
+                                name: "total",
+                                transTitle: "titles.Line Total",
+                                dataType: "number",
+                                readOnly: true,
+                                isNumeric: true
+                            },
                         ],
                         calc: {
                             mode: "auto",
@@ -423,20 +450,20 @@ const InvoiceDialog = (() => {
 
                         onItemChange: (rowId, item, fieldName, td, tr) => {
                             if (fieldName === "item_id") {
-                                const service = availableItem.find(s => String(s.id) === String(item.item_id));
-                                if (service) {
-                                    me.itemsView.setCellValue(tr, "price", Number(service.price) || 0);
+                                const selected = availableItem.find(s => String(s.id) === String(item.item_id));
+                                if (selected) {
+                                    me.itemsView.setCellValue(tr, "price", Number(selected.price) || 0);
+                                    me.itemsView.setCellValue(tr, "unit_type", selected.unit_type || '—');
                                     me.itemsView.setCellValue(tr, "qty", 1);
-                                    const remarkText = service.service || service.name || '—';
+                                    const remarkText = selected.service || selected.name || selected.legal_name || '—';
                                     me.itemsView.setCellValue(tr, "remarks", remarkText);
                                 }
                             }
                         }
                     }
                 );
-                me.populateServiceDropdown = function(retries = 3) {
-                    console.log('🔄 populateServiceDropdown called - Services:', availableItem.length);
 
+                me.populateItemDropdown = function(retries = 3) {
                     if (!availableItem || availableItem.length === 0) return;
 
                     const options = availableItem.map(s => ({
@@ -447,15 +474,11 @@ const InvoiceDialog = (() => {
                     const iv = me.itemsView;
                     if (typeof iv.setColumnOptions === 'function') {
                         iv.setColumnOptions('item_id', options);
-                        console.log('✅ Used setColumnOptions');
                     } else if (typeof iv.setSelectOptions === 'function') {
                         iv.setSelectOptions('item_id', options);
-                        console.log('✅ Used setSelectOptions');
                     } else if (typeof iv.setOptionsForColumn === 'function') {
                         iv.setOptionsForColumn('item_id', options);
-                        console.log('✅ Used setOptionsForColumn');
                     } else {
-                        console.warn('⚠️ Using direct DOM fallback');
                         setTimeout(() => {
                             const selects = me.controls.divItemsView.querySelectorAll('select');
                             if (selects.length > 0) {
@@ -466,18 +489,13 @@ const InvoiceDialog = (() => {
                                         select.add(o);
                                     });
                                 });
-                                console.log('✅ Dropdown populated via direct DOM!');
                             } else if (retries > 0) {
-                                me.populateServiceDropdown(retries - 1);
+                                me.populateItemDropdown(retries - 1);
                             }
                         }, 350);
                     }
                 };
 
-                // Call populate after table is rendered
-                setTimeout(() => me.populateServiceDropdown(), 400);
-
-                // === Tenant search ===
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
@@ -510,18 +528,28 @@ const InvoiceDialog = (() => {
                     if (me._selectedTenantId) {
                         header.tenant_id = me._selectedTenantId;
                     }
-                    const mappedItem =items.map(item =>{
+                    const mappedItem = items.map(item => {
                         const qty = parseFloat(item.qty ?? 1);
                         const price = parseFloat(item.price ?? 0);
                         const amount = qty * price;
+                        const discountValue = parseFloat(item.discount || 0);
+                        const discountType = item.discount_type || 'percent';
+
                         return {
                             ...item,
-                            description : item.remarks || item.description || '',
-                            amount      : amount,
-                            service_id  : item.item_id || null,
-                        }
-                    })
-                    return { ...header, items:mappedItem, ...totals };
+                            description: item.remarks || item.description || '',
+                            amount: amount,
+                            unit_type: item.unit_type || '—',
+                            service_id: item.item_id || null,
+
+                            // Send discount fields to backend
+                            discount: discountValue,
+                            special_discount_value: discountValue,
+                            special_discount_type: discountType,
+                            tax_rate: parseFloat(item.tax_rate || 0)
+                        };
+                    });
+                    return { ...header, items: mappedItem, ...totals };
                 };
             },
 
@@ -529,14 +557,12 @@ const InvoiceDialog = (() => {
                 availableItem = data.services || [];
                 me.detail = op.id ? (data.invoice_details || {}) : {};
 
-                console.log("📦 Services received from API:", availableItem.length);
+                console.log("111112", availableItem);
 
-                // Re-populate dropdown after data is ready
                 setTimeout(() => {
-                    if (me.populateServiceDropdown) me.populateServiceDropdown();
+                    if (me.populateItemDropdown) me.populateItemDropdown();
                 }, 300);
             },
-
             prepareFormOptions: {
                 createTitle: "Create Invoice",
                 modifyTitle: "Modify Invoice",

@@ -1,8 +1,9 @@
-s<?php
+<?php
 
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Auth\AuthController;
 
+use App\Http\Controllers\Prm\PurchaseOrderController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prm\GeneralSettingsController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
 use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
+use App\Http\Controllers\Prm\ItemController;
+use App\Http\Controllers\Prm\MaintenanceController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -146,6 +149,16 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service-reque
 
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('maintenance')->group(function () {
+    Route::post('/save', [MaintenanceController::class, 'save']);
+    Route::post('/list-paginate', [MaintenanceController::class, 'getListPaginate']);
+    Route::post('/details', [MaintenanceController::class, 'details']);
+    Route::post('/form-options', [MaintenanceController::class, 'getFormOptions']);
+    Route::post('/delete', [MaintenanceController::class, 'delete']);
+    Route::post('/set-status', [MaintenanceController::class, 'setStatus']);
+    Route::post('/finish-by-space', [MaintenanceController::class, 'finishBySpace']);
+    Route::post('/finish-by-amenity', [MaintenanceController::class, 'finishByAmenity']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('service')->group(function () {
     Route::post('/save', [ServiceController::class, 'saveService']);
@@ -163,6 +176,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->gro
     Route::post('/details', [VendorController::class, 'vendorDetails']);
     Route::post('/form-options', [VendorController::class, 'getFormOptions']);
     Route::post('/delete', [VendorController::class, 'deleteVendor']);
+    Route::post('/options-vendor-info', [VendorController::class, 'option_select_all_vendor_info']);
+
+     Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('item')->group(function () {
+    Route::post('/save', [ItemController::class, 'saveItem']);
+    Route::post('/list-paginate', [ItemController::class, 'getListPaginate']);
+    Route::post('/details', [ItemController::class, 'itemDetails']);
+    Route::post('/form-options', [ItemController::class, 'getFormOptions']);
+    Route::post('/delete', [ItemController::class, 'deleteItem']);
     //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
@@ -210,6 +234,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->gr
     Route::post('/form-options', [AmenityController::class, 'getFormOptions']);
     Route::post('/delete', [AmenityController::class, 'deleteAmenity']);
     Route::post('/update-status', [AmenityController::class, 'updateAmenityStatus']);
+    Route::post('/options-amenity-info', [AmenityController::class, 'option_select_all_amenity_info']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')->group(function () {
@@ -219,6 +244,18 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
     Route::post('/form-options', [ReservationController::class, 'getFormOptions']);
     Route::post('/delete', [ReservationController::class, 'deleteReservation']);
     Route::post('/update-status', [ReservationController::class, 'updateReservationStatus']);
+    Route::post('/get-amenity-info', [ReservationController::class, 'getAmenityInfo']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
+    Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
+   //Route::post('sent', [TransferController::class, 'submitTransfer']); //To be removed soon
+    // Route::post('send', [PurchaseOrderController::class, 'submitTransfer']);
+    // Route::post('/delete', [PurchaseOrderController::class, 'deleteTransfer']);
+    Route::post('/details', [PurchaseOrderController::class, 'purchaseOrderDetails']);
+    Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
+    Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
+    Route::post('/form-options', [PurchaseOrderController::class, 'getFormOptions']);
 });
 
 

@@ -188,8 +188,11 @@ class ServiceRequest extends VSModel
         $total = (clone $query)->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
+ 
             $row = setOfficialDates($row,['complete_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
-        }  
+ 
+            //$row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
+ 
         return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
     }
 

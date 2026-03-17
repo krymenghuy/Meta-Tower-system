@@ -60,7 +60,7 @@ var ServiceRequestComponent = (function () {
                 const base = Number(data.service_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 extraInfo = `<small class="text-muted d-block">$${base} × ${data.duration_hours}h</small>`;
             } else if (data.unit_type) {
-                extraInfo = `<small class="text-muted d-block">/ ${data.unit_type}</small>`;
+                extraInfo = `<small class="text-nowrap text-muted d-block">/ ${data.unit_type}</small>`;
             }
 
             return `
@@ -75,8 +75,40 @@ var ServiceRequestComponent = (function () {
         data: (data) => `<span class="text-primary-custom">${data.description ?? ''}</span>`
     },
     {
-        transTitle: "titles.Schedule Date", className: "align-middle",
-        data: (data) => `<span class="text-yp-custom">${data.scheduled_date || '...'}</span>`
+        transTitle: "titles.Schedule Date", className: "align-middle text-center",
+        data: (data) => {
+            const rawDate = (data.scheduled_date || '').toString().trim();
+            const rawTime = (data.start_time || '').toString().trim();
+
+            let datePart = rawDate;
+            let timePart = rawTime.substring(0, 5);
+
+            // Try to normalise date to YYYY-MM-DD if it's a valid date string.
+            if (rawDate) {
+                const d = new Date(rawDate);
+                if (!Number.isNaN(d.getTime())) {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    datePart = `${y}-${m}-${day}`;
+                }
+            }
+
+            if (!datePart && !timePart) {
+                return '<span class="text-yp-custom">...</span>';
+            }
+
+            if (!timePart) {
+                return `<span class="text-yp-custom">${datePart}</span>`;
+            }
+
+            return `
+                <div class="d-flex flex-column align-items-center">
+                    <span class="text-yp-custom text-nowrap">${datePart}</span>
+                    <span class="text-muted small text-nowrap">${timePart}</span>
+                </div>
+            `;
+        }
     },
     {
         transTitle: "titles.Status",
@@ -770,7 +802,7 @@ const CreateServiceRequestDialog = (() => {
                      <div class="row g-3">
                        <div class="col-md-3">
                             <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span></label>
-                            <input type="text" data-type="date" name="scheduled_date" class="form-control data-input" >
+                            <input type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" placeholder="YYYY-MM-DD">
                         </div>
 
                         <div class="col-6">
@@ -901,6 +933,23 @@ const CreateServiceRequestDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 me.detail = data.request_details;
+                if (me.detail) {
+                    const raw = (me.detail.scheduled_date || '').toString().trim();
+                    if (raw) {
+                        const d = new Date(raw);
+                        if (!Number.isNaN(d.getTime())) {
+                            const y = d.getFullYear();
+                            const m = String(d.getMonth() + 1).padStart(2, '0');
+                            const day = String(d.getDate()).padStart(2, '0');
+                            if (me.controls.scheduled_date) me.controls.scheduled_date.value = `${y}-${m}-${day}`;
+                        }
+                    }
+                    const timeRaw = (me.detail.start_time || '').toString().trim();
+                    if (timeRaw && me.controls.start_time) {
+                        const t = timeRaw.substring(0, 5);
+                        me.controls.start_time.value = t;
+                    }
+                }
             },
 
             buttons: [

@@ -61,7 +61,7 @@ class AmenityController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->amenities->getFormOptions($req->id,$ss));
+        return JDV::result($this->amenities->getFormOptions($req->all(),$ss));
     }
 
     public function deleteAmenity(Request $req)
@@ -92,5 +92,14 @@ class AmenityController extends Controller
         $amenity = new Amenity();
         $res = $amenity->updateAmenityStatus($req->status_id, $id,$ss);
         return JDV::raw($res);
+    }
+
+     public function option_select_all_amenity_info(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !== 200){
+            return JDV::raw($ss);
+        }
+         $id = $req->amenity_id ?? $req->id;
+        return JDV::result($this->amenities->getAmenityInfo($id,$ss));
     }
 }

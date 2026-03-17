@@ -348,15 +348,23 @@ class GeneralSettings //extends Model
     {
         return DB::table('amenity_statuses')->selectRaw('id,name as amenity_status')->get();
     }
-    static function options_amenity($ss)
-    {
-        return DB::table('amenities')->selectRaw('id,name AS amenity')->get();
-    }
+    // static function options_amenity($ss)
+    // {
+    //     return DB::table('amenities')->selectRaw('id,name AS amenity,code as amenity_code, max_capacity')->get();
+    // }
 
+    static function options_amenity($ss)
+{
+    return DB::table('amenities')
+        ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity')
+        ->orderBy('name')           // good for UX — alphabetical order
+        ->get();
+}
+    
 
     static function options_reservation_status($ss)
     {
-        return DB::table('reservation_statuses')->selectRaw('id,name as re_status')->get();
+        return DB::table('reservation_statuses')->selectRaw('id,name as reservation_status')->get();
     }
 
     // public static function options_service_status($ss)
@@ -470,7 +478,6 @@ class GeneralSettings //extends Model
     }
 
 
-
     static function options_legal($ss)
     {
         return DB::table('tenants')->selectRaw('id,legal_name')->get();
@@ -481,17 +488,26 @@ class GeneralSettings //extends Model
         return DB::table('business_types')->selectRaw('id,name AS business_type')->get();
     }
 
-    static function options_building_space($ss, $include_space_id = null)
+    static function options_building_space($ss, $include_space_id = null, $exclude_under_maintenance = false)
     {
-        $rows = DB::table('building_spaces')
+        $query = DB::table('building_spaces')
             ->join('space_types as st', 'st.id', '=', 'building_spaces.space_type_id')
             ->where(function ($q) use ($include_space_id) {
                 $q->where('building_spaces.status_id', 1); // available
                 if (!empty($include_space_id)) {
                     $q->orWhere('building_spaces.id', $include_space_id);
                 }
-            })
-            ->selectRaw('
+            });
+        if ($exclude_under_maintenance) {
+            $query->where(function ($q) use ($include_space_id) {
+                $q->where('building_spaces.maintenance_status_id', 0)
+                    ->orWhereNull('building_spaces.maintenance_status_id');
+                if (!empty($include_space_id)) {
+                    $q->orWhere('building_spaces.id', $include_space_id);
+                }
+            });
+        }
+        $rows = $query->selectRaw('
                 building_spaces.id,
                 building_spaces.code,
                 building_spaces.code as floor_id,
@@ -567,4 +583,36 @@ class GeneralSettings //extends Model
         return $rows;
     }
 
+    static function options_amenity_category($ss)
+    {
+        return DB::table('amenity_categories')->selectRaw('id,name as amenity_category')->get();
+    }
+
+    static function options_maintenance_type($ss)
+    {
+        return DB::table('maintenance_types')->selectRaw('id,name as maintenance_type')->get();
+    }
+
+    static function options_maintenance_status($ss)
+    {
+        return DB::table('maintenance_statuses')->selectRaw('id,name as maintenance_status')->get();
+    }
+
+    static function options_staff($ss)
+    {
+        $branch_id = $ss->branch_id ?? null;
+        $query = DB::table('um_users')->selectRaw('id, login_name as staff_name');
+        if ($branch_id > 0) {
+            $query->where('branch_id', $branch_id);
+        }
+        return $query->orderBy('login_name')->get();
+    }
+    static function options_vendor($ss)
+    {
+        return DB::table('vendors')->where('status_id',1)->selectRaw('id,name AS vendor')->get();
+    }
+     static function options_po_status($ss)
+    {
+        return DB::table('purchase_order_statuses')->selectRaw('id,name')->get();
+    }
 }
