@@ -459,10 +459,16 @@ var ContractComponent = new (function () {
                     name: "terminate_contract"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
+                    html: '<span class="ps-0"vslang="titles.Print Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
-                    cssClass: "border-bottom pb-2",
+                    cssClass: "border-bottom px-2",
                     name: "print_contract"
+                },
+                {
+                    html: '<span class="ps-2 " vslang="titles.Delete"></span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_contract"
                 },
             ],
             onShow: (me, container) => {
@@ -471,8 +477,10 @@ var ContractComponent = new (function () {
                 const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
                 const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
                 const isActive = statusText === 'active' || statusId === 2;
+                const isPending = statusText === 'pending';
                 const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
-                const showRenew = statusId !== 2 && endDate && mThis.isWithinNextThreeMonths(endDate);
+                // show renew only when status is active and end date is within next 3 months (not for pending)
+                const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
 
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
                 menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
@@ -480,6 +488,10 @@ var ContractComponent = new (function () {
                 if (menu.terminate_contract) {
                     // show terminate only when status is active
                     menu.terminate_contract.style.display = isActive ? 'block' : 'none';
+                }
+                if (menu.delete_contract) {
+                    // show delete only when status is pending
+                    menu.delete_contract.style.display = isPending ? 'block' : 'none';
                 }
             },
             onClick: (menuLink, id, name) => {
@@ -502,6 +514,10 @@ var ContractComponent = new (function () {
                     }
                     case 'print_contract': {
                         mThis.printContract(id, menuLink);
+                        break;
+                    }
+                    case 'delete_contract': {
+                        mThis.deleteContract(id, menuLink);
                         break;
                     }
                     default: {
@@ -581,6 +597,39 @@ var ContractComponent = new (function () {
                             }
                         } else {
                             cv_interact.error(res.error_message || "Failed to terminate contract.");
+                        }
+                    });
+            },
+        );
+    };
+
+    mThis.deleteContract = (id, menuLink) => {
+        if (!id) return;
+
+        cv_interact.confirm(
+            "Delete this contract?",
+            {
+                title: "Delete Contract",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            (yes) => {
+                if (!yes) return;
+                vsapi
+                    .call(
+                        [main_view.base_url, "/prm/contract/delete"].join(""),
+                        { id },
+                        menuLink,
+                        null,
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            cv_interact.success("Contract has been deleted.");
+                            if (mThis.ContractListView) {
+                                mThis.ContractListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message || "Failed to delete contract.");
                         }
                     });
             },
