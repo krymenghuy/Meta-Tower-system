@@ -301,9 +301,9 @@ var MaintenanceComponent = (() => {
             .then(res => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
-                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", true, "All Building", null);
-                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", true, "All Status", null);
-                    VSUtil.setComboItems(mThis.elFilter_type, d.maintenance_types || [], "id", "maintenance_type", true, "All Type", null);
+                    VSUtil.setComboItems(mThis.elFilter_building, d.buildings || [], "id", "building", '', "All Building", '');
+                    VSUtil.setComboItems(mThis.elFilter_status, d.maintenance_statuses || [], "id", "maintenance_status", '', "All Status", '');
+                    VSUtil.setComboItems(mThis.elFilter_type, d.maintenance_types || [], "id", "maintenance_type", '', "All Type", '');
                 }
                 if (typeof onFinish === "function") onFinish();
             });
@@ -337,14 +337,13 @@ const CreateMaintenanceDialog = (() => {
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
                                 <div class="material-input outlined">
-                                    <select name="building_id" class="data-input form-control" data-field="building_id" placeholder=" " required><option value="">Select building</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Building <span class="text-danger">*</span></label>
+                                    <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building" required><option value="">Select building</option></select>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="material-input outlined">
-                                    <select name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder=" " required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Type unit <span class="text-danger">*</span></label>
+                                    <select data-style="material" name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder="Type unit" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
+
                                 </div>
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
