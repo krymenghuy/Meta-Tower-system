@@ -73,7 +73,8 @@ return [
 
     ],
     'default_date_format'=>'d-M-Y',
-    'default_time_format'=>'d-M-Y h:i',
+    'default_time_format'=>'h:i',
+    'default_datetime_format'=>'d-M-Y h:i',
     /*
     |--------------------------------------------------------------------------
     | Export Directory
