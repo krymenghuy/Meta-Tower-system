@@ -1,15 +1,12 @@
 "use strict";
-var VendorComponent = (() => {
+var BillingComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Vendors";
+    mThis.title_prop = "Billings";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_vendor_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnVendor");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_vendor");
-    mThis.elFilter_type = mThis.self.querySelector('#_vendor_type_id');
-    mThis.elFilter_status = mThis.self.querySelector('#_vendor_status_id');
-    mThis.elFilter_category = mThis.self.querySelector('#_vendor_category_id');
-    mThis.elSearch = mThis.self.querySelector("#_search_vendor");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_billing_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnBilling");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_billing");
+    mThis.elSearch = mThis.self.querySelector("#_search_billing");
 
 
     mThis.cols = [
@@ -164,7 +161,7 @@ var VendorComponent = (() => {
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_bill_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
                 </div>`
@@ -176,7 +173,7 @@ var VendorComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.VendorListView = new ListView('_vendor_list', {
+        mThis.BillListView = new ListView('_billing_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -198,15 +195,15 @@ var VendorComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.VendorListView.showPage(mThis.getFilterData());
+                    mThis.BillListView.showPage(mThis.getFilterData());
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateVendorDialog.show(op);
+            CreateBillingDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.VendorListView.getListContainer();
+        mThis.pr_tbl = mThis.BillListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -214,13 +211,13 @@ var VendorComponent = (() => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         }
-        mThis.tblVendor = mThis.VendorListView.getTable();
+        mThis.tblVendor = mThis.BillListView.getTable();
         mThis.initDropdownMenus(mThis.tblVendor);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -228,7 +225,7 @@ var VendorComponent = (() => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -238,9 +235,7 @@ var VendorComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            type_id: mThis.elFilter_type.value,
-            category_id: mThis.elFilter_category.value,
-            status_id: mThis.elFilter_status.value,
+           
             search_value: mThis.elSearch.value,
         };
 
@@ -256,41 +251,41 @@ var VendorComponent = (() => {
 
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_dropdown_vendor_action",
+            actionButtonClass: "btn_dropdown_bill_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
                     html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
                     icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "change_vendor_status"
+                    name: "change_bill_status"
                 },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Vendor"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Bill"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "modify_vendor"
+                    name: "modify_bill"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Vendor"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Bill"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_vendor"
+                    name: "delete_bill"
                 },
             ],
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case 'change_vendor_status': {
+                    case 'change_bill_status': {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
                     case 'modify_vendor': {
-                        mThis.editVendor(id, menuLink);
+                        mThis.editBill(id, menuLink);
                         break;
                     }
                     case 'delete_vendor': {
-                        mThis.deleteVendor(id, menuLink);
+                        mThis.deleteBill(id, menuLink);
                         break;
                     }
                     default: {
@@ -333,7 +328,7 @@ var VendorComponent = (() => {
                             cv_interact.success(
                                 "Vendor status has been updated",
                             );
-                            mThis.VendorListView.showPage(
+                            mThis.BillListView.showPage(
                                 mThis.getFilterData(),
                             );
                         } else {
@@ -346,24 +341,24 @@ var VendorComponent = (() => {
         };
         InputBox.show(inputOptions);
     };
-    mThis.editVendor = (id, menulink) => {
+    mThis.editBill = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             }
         };
 
         CreateVendorDialog.show(op);
     }
-    mThis.deleteVendor = (id, menuLink) => {
+    mThis.deleteBill = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.VendorListView.showPage(mThis.getFilterData());
+                mThis.BillListView.showPage(mThis.getFilterData());
             }
         };
         if (!AuthManager.allowed(242)) return;
@@ -375,7 +370,7 @@ var VendorComponent = (() => {
             if (e) {
                 vsapi.call(`${main_view.base_url}/prm/vendor/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.VendorListView.showPage();
+                        mThis.BillListView.showPage();
                     } else {
                         cv_interact.error(res.error_message);
                     }
@@ -389,9 +384,7 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', true, 'All Type', null);
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', true, 'All Category', null);
+               
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -401,7 +394,7 @@ var VendorComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.VendorListView.showPage(mThis.getFilterData());
+            mThis.BillListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -410,7 +403,7 @@ var VendorComponent = (() => {
 
 
 
-const CreateVendorDialog = (() => {
+const CreateBillingDialog = (() => {
     const self = {};
     let dialog = null;
 

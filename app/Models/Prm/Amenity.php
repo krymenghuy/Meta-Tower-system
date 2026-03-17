@@ -26,16 +26,15 @@ class Amenity extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|number',
             'name' => '1|string|0-100|text= Amenity name must be provided',
-            'description' => '0|string',
+            
             'building_id' => '1|number|exists=buildings.id',
             'floor_id' => '1|number|exists=floors.id',
             'category_id' => '1|number|exists=amenity_categories.id',
             'access_level' => '1|string|0-50|default=All Tenants|text= Access level must be provided',
             'requires_booking' => '1|choice|0,1',
             'max_capacity' => '0|number',
-            'status_id' => '0|number|default=1',
+            'description' => '0|string',
             'code' => '0|string|max=50',
         ];
         $description_char = ['@',',','-','.','#'];
@@ -127,7 +126,7 @@ class Amenity extends VSModel
 
         // $fullCode = $prefixLetters . '-' . $floorPrefix . '-R' . $roomNumber;
         // $fullCode = $floorPrefix . '-R-' . $roomNumber;
-        $fullCode = 'R-' . $roomNumber;
+        $fullCode = 'AMN-' . $roomNumber;
 
         DB::table('amenities')
             ->where('id', $amenity_id)
@@ -181,7 +180,7 @@ class Amenity extends VSModel
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(a.code LIKE '%" . $search_value . "%' OR a.floor_id LIKE '%" . $search_value . "%' OR a.name LIKE '%" . $search_value . "%' OR a.description LIKE '%" . $search_value . "%' OR a.category LIKE '%" . $search_value . "%')";
+            $str_search = "(a.code LIKE '%" . $search_value . "%' OR a.name LIKE '%" . $search_value . "%')";
         }
         if ($building_id) {
             $str_moreWhere .= ' AND a.building_id = ' . $building_id;
@@ -222,8 +221,9 @@ class Amenity extends VSModel
             ->first();
     }
 
-    public static function getFormOptions($id, $ss = null){
-        $ss = $ss ? $ss : $this->userInfo;
+    public function getFormOptions($id, $ss = null){
+        $ss = $ss ?? $this->userInfo;
+
         // $d = (object) $arr;
         // $id = $d->id ?? $this->id;
         $amenity_details = $id ? self::amenityDetails($id) : null;

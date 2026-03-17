@@ -387,8 +387,8 @@ var ServiceRequestComponent = (function () {
         vsapi.call(`${main_view.base_url}/prm/service-request/form-options`)
             .then(res => {
                 if (res.status_code === 200) {
-                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', true, 'All Statuses');
-                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', true, 'All Category');
+                    VSUtil.setComboItems(mThis.elStatus, res.data.request_statuses, 'id', 'name', '', 'All Statuses', '');
+                    VSUtil.setComboItems(mThis.elService_type, res.data.service_types, 'id', 'service_type', '', 'All Category', '');
                 }
                 if (typeof callback === 'function') callback();
             });

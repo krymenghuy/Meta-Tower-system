@@ -647,10 +647,10 @@ var SpaceComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/building-space/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
-                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
-                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', true, 'All Space Type', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'space_status', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
+                VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
+                VSUtil.setComboItems(mThis.elSpaceType, d.space_types, 'id', 'space_type', '', 'All Space Type', '');
 
                 // mThis.elBuilding.onchange = function (e) {
                 //     e.preventDefault();
@@ -699,23 +699,22 @@ const BuildingSpaceDialog = (() => {
                         `<div class="row justify-content-center">
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select name="building_id" class="data-input form-control" data-field="building_id">
+                                    <select data-style="material" placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
-                                <label style="display:none; color:#777777; padding-left:6px;" for="building">Building</label>
+                                
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="space_type_id" placeholder=" " class="data-input form-control" data-field="space_type_id">
+                                    <select data-style="material" name="space_type_id" placeholder="Type" class="data-input form-control" data-field="space_type_id">
                                     </select>
-                                    <label style="display:none; color:#777777; padding-left:6px;" for="spaceType">Category</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="floor_id" class="data-input form-control" data-field="floor_id">
+                                    <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor">
                                     </select>
-                                    <label style="display:none; color:#777777; padding-left:6px;" for="floor">Floor</label>
+
                                 </div>
                             </div>
                             <div class="col-6">
@@ -739,12 +738,11 @@ const BuildingSpaceDialog = (() => {
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="price_type" required placeholder=" " class="data-input form-control" data-field="price_type">
+                                    <select data-style="material" name="price_type" required placeholder="price type" class="data-input form-control" data-field="price_type">
                                         <option value="">Select price type</option>
                                         <option value="sqm">Per Square Meter</option>
                                         <option value="total">Whole Room</option>
                                     </select>
-                                    <label style="display:none; color:#777777; padding-left:6px;" for="price_type">Price Type</label>
                                 </div>
                             </div>
 

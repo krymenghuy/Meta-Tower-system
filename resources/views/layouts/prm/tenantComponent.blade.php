@@ -4,13 +4,13 @@
             <div class="row g-3 align-items-center">
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="position-relative w-100">
-                        <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_tenant_" placeholder="Search">
+                        <input type="text" class="form-control rounded-2 pe-5 filter-field input-search" id="_search_tenant_" placeholder="Search by Name or code">
                         {{-- <i class="fa fa-search fs-6 text-muted position-absolute"
                             style="right: 15px; top: 50%; transform: translateY(-50%);"></i> --}}
                     </div>
                 </div>
                  <div class="col-12 col-md-6 col-lg-2">
-                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id"></select>
+                    <select id="_el_tenant_status" class="data-input filter-field form-control" data-field="status_id" placeholder="Status"></select>
                 </div>
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="btn-group btn-group-sm gap-1 rounded" role="group">

@@ -9,17 +9,18 @@ var AmenityComponent = (() => {
     mThis.divFilter = mThis.self.querySelector("#_divFilter_amenity");
     mThis.elBuilding = mThis.self.querySelector('#building_id');
     mThis.elFloor = mThis.self.querySelector('#floor_id');
+    mThis.elFilter_category = mThis.self.querySelector("#amenity_category_id");
     mThis.elFilter_status = mThis.self.querySelector("#_amenity_status");
     mThis.elSearch = mThis.self.querySelector("#_search_amenity");
 
     mThis.cols = [
         {
             title: "",
-            className: "align-middle text-capitalize",
+            className: "align-middle text-nowrap text-capitalize",
         },
         {
-            title: "Amenity Name",
-            className: "align-middle",
+            title: "Name",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:120px; ">
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
@@ -29,14 +30,14 @@ var AmenityComponent = (() => {
 
         {
             title: "Category",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="text-primary-custom">${data.category ?? ""}</span>`,
+                `<span class="badge text-primary-emphasis bg-dark-subtle px-3 py-2" style="min-width:120px">${data.category ?? ""}</span>`,
         },
 
         {
             title: "Location",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) =>
                 `
                     <div class="text-prm-custom" style="width:120px;">
@@ -45,66 +46,49 @@ var AmenityComponent = (() => {
                     </div>
                 `
         },
+        
         {
-            title: "Description",
-            className: "align-middle",
-            data: (data) => `
-                <div class="text-primary-custom" style="width:150px;">
-                    <span class="text-capitalize text-break" style="word-break:break-word;">${data.description ?? ''}</span>
-                </div>`
-        },
-        {
-            title: "Max Capacity",
-            className: "align-middle text-center",
+            title: "Capacity",
+            className: "align-middle text-nowrap text-center",
             data: (data) =>
                 `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span>`,
         },
         {
-            title: "Access Level",
-            className: "align-middle",
-            data: (data) => {
-                const accessLabel = data.access_level ?? `${data.access_level}`;
-                return `<span class="text-primary-custom">${accessLabel ?? ''}</span>`
-            }
-        },
-
-        {
-            title: "Requires Booking",
-            className: "align-middle text-center",
+            title: "Booking",
+            className: "align-middle text-nowrap text-center",
             data: function (data) {
                 const val = data.requires_booking ?? "";
                 const isRequired = val == 1;
 
                 return isRequired
-                    ? '<span class="badge bg-warning-subtle text-dark">Required</span>'
-                    : '<span class="badge bg-secondary text-dark">Not Required</span>';
+                    ? '<span class=" text-success"><i class="fa-regular fa-circle-check"></i> Yes</span>'
+                    : '<span class=" text-muted"><i class="fa-regular fa-circle-xmark"></i> No</span>';
             },
         },
-
         {
             title: "Status",
-            className: "align-middle text-center",
+            className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
                 let cls = "text-info";
 
                 if (status == "inactive") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-danger d-inline-block";
+                        "badge text-danger bg-danger-subtle border border-danger";
                 } else if (status == "active") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-success d-inline-block";
-                } else if (status == "under maintenance") {
+                        "badge text-success bg-success-subtle border border-success";
+                } else if (status == "maintenance") {
                     cls =
-                        "text-white px-3 py-1 rounded-3 bg-warning d-inline-block";
+                        "badge text-warning bg-warning-subtle border border-warning";
                 }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
+                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
             },
         },
         {
             title: "Updated By",
-            className: "align-middle",
+            className: "align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex flex-column">
                     <span class="text-capitalize text-start text-yp-custom fw-semibold">${data.update_user ?? ""}</span>
@@ -113,7 +97,7 @@ var AmenityComponent = (() => {
         },
         {
             title: "Action",
-            className: "col_action align-middle",
+            className: "col_action align-middle text-nowrap",
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
                     <a href="javascript:void(0)" class="btn--Options ${data.action_id > 1 ? "d-none" : "btn_leave_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
@@ -193,10 +177,9 @@ var AmenityComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            status_id: mThis.elFilter_status?.value,
-            access_level: mThis.elFilter_access_level?.value,
-            requires_booking: mThis.elFilter_requires_booking?.value,
-            search_value: mThis.elSearch?.value,
+            status_id: mThis.elFilter_status.value,
+            category_id: mThis.elFilter_category.value,
+            search_value: mThis.elSearch.value,
             building_id: mThis.elBuilding.value,
             floor_id: mThis.elFloor.value,
         };
@@ -405,7 +388,7 @@ var AmenityComponent = (() => {
             data: [
                 { status_id: "1", name: "Active" },
                 { status_id: "2", name: "Inactive" },
-                { status_id: "3", name: "Under Maintenance" },
+                { status_id: "3", name: "Maintenance" },
             ],
             defaultValue: status_id,
             onConfirm: (status, btn, me) => {
@@ -445,6 +428,7 @@ var AmenityComponent = (() => {
                 VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status",true,"Statuses",null);
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', true, 'All Building', null);
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', true, 'All Floor', null);
+                VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', true, 'All Categories', null);
                 // VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Services type', null);
                 if (typeof onFinish === "function") onFinish();
             });
@@ -470,7 +454,7 @@ const AmenityDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
+                cssClass: "modal-md vs-modal",
                 backdrop: "static",
                 keyboard: true,
 
@@ -479,78 +463,61 @@ const AmenityDialog = (() => {
                         `
                     <div class="row g-3">
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="building">Building</label>
+                            <div class="material-input outlined">
+                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Name</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="material-input outlined">
+                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
+                                <label style="color:#777777; padding-left:6px;">Code (Optional)</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
                             <div class="material-input outlined">
                                 <select name="building_id" class="data-input form-control" data-field="building_id">
                                 </select>
+                                <label style="display:none;color:#777777;padding-left:6px;" for="building">Building</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Floor Number</label>
                             <div class="material-input outlined">
                                 <select name="floor_id" class="data-input form-control" data-field="floor_id">
                                 </select>
+                                <label style="display:none;color:#777777;padding-left:6px;">Floor Number</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Amenity Category</label>
                             <div class="material-input outlined">
                                 <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
                                 </select>
+                                <label style="display:none;color:#777777;padding-left:6px;">Category</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Amenity Name</label>
-                            <div class="material-input outlined">
-                                <input type="text" name="amenity" required class="data-input form-control" data-field="name" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="color:#777777; padding-left:6px;">Amenity Code <span style="color:#bbbbbb; font-size: 0.9em; font-weight: normal;">(Optional)</span></label>
-                            <div class="material-input outlined">
-                                <input type="text" name="code" class="data-input form-control" data-field="code" placeholder=" " />
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Max Capacity</label>
-                            <div class="material-input outlined">
-                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label style="color:#777777;padding-left:6px;">Description</label>
-                            <div class="material-input outlined">
-                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="access_level">Access Level</label>
-                            <div class="material-input outlined">
-                                <select name ="access_level" class="data-input form-control" data-field="access_level" placeholder=" ">
-                                    <option value="All Tenants">All Tenants</option>
-                                    <option value="Management Only">Management Only</option>
-                                    <option value="Staff Only">Staff Only</option>
-                                    <option value="Admin Only">Admin Only</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             <div class="material-input outlined">
                                 <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
                                 </select>
+                                <label style="display:none;color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="d-none material-input outlined">
-                                <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
-                                <label>Status ID</label>
+                            <div class="material-input outlined">
+                                <input type="number" name="capacity" required class="data-input form-control" data-field="max_capacity" min="0" value="0 " placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Capacity</label>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
+                                 <label style="color:#777777;padding-left:6px;">Description</label>
+                            </div>
+                        </div>
+                        
+                        
                     </div>`,
                     ].join("");
                 },

@@ -137,6 +137,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('contract')->g
     Route::post('/form-options', [ContractController::class, 'getFormOptions']);
     Route::post('/delete', [ContractController::class, 'deleteContract']);
     Route::post('/renew', [ContractController::class, 'renewContract']);
+    Route::post('/terminate', [ContractController::class, 'terminateContract']);
     Route::post('/get-tenant-info', [ContractController::class, 'getTenantInfo']);
     Route::post('/month', [ContractController::class, 'getContractMonths']);
 });
@@ -180,7 +181,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('vendor')->gro
     Route::post('/delete', [VendorController::class, 'deleteVendor']);
     Route::post('/options-vendor-info', [VendorController::class, 'option_select_all_vendor_info']);
 
-    //  Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
+     Route::post('/update-status', [VendorController::class, 'updateVendorStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('item')->group(function () {

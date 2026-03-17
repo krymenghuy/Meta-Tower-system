@@ -412,24 +412,24 @@ const InvoiceDialog = (() => {
                         },
                         {
                             name: "monthly",
-                            label: "Month (auto)",
+                            label: "Month ",
                             valueField: 'month',
                             textField: 'month',
                             data: 'months'
                         },
                         {
                             name: "start_date",
-                            label: "Start Date (auto)",
+                            label: "Start Date ",
                             type: 'text'
                         },
                         {
                             name: "end_date",
-                            label: "End Date (auto)",
+                            label: "End Date ",
                             type: 'text'
                         },
                         {
                             name: "price",
-                            label: "Price (auto)",
+                            label: "Price ",
                             type: 'money'
                         },
                         {
