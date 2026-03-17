@@ -357,7 +357,7 @@ class GeneralSettings //extends Model
 {
     return DB::table('amenities')
         ->selectRaw('id, name AS amenity, code as amenity_code, max_capacity')
-        ->orderBy('name')           // good for UX — alphabetical order
+        ->orderBy('name')           
         ->get();
 }
     
