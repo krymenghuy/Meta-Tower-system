@@ -27,7 +27,10 @@ class StyleProvider
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
                 'assets/css/choices.min.css',
-                // 'assets/css/choices.custom.css',
+                
+                 // 'assets/css/choices.custom.css',
+                 'assets/css/vs_select.material.theme.css', 
+
                 'assets/css/dialog_style.css',
                 //'assets/css/vsa_dropdown_button.css',
                 //'assets/css/vs-dropdown-menu.css',
@@ -97,6 +100,8 @@ class StyleProvider
                 'assets/css/choices.min.css',
                 // 'assets/css/choices.custom.css',
                 'assets/css/choices_style.css',
+                
+                'assets/css/vs_select.material.theme.css', 
 
                 //'assets/vendors/general/owl.carousel/dist/assets/owl.theme.default.css',
                 //'assets/vendors/general/dropzone/dist/dropzone.css',
@@ -141,10 +146,11 @@ class StyleProvider
                 'assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/demo1/style.bundle.css',
                 // 'assets/dist/css/adminlte.min.css',
+                
                 'assets/css/choices.min.css',
-                'assets/css/choices_style.css',
-
-                // 'assets/css/choices.custom.css',
+                //'assets/css/choices_style.css',
+                'assets/css/vs_select.material.theme.css', 
+            
                 'assets/css/dialog_style.css',
                 //'assets/css/vsa_dropdown_button.css',
                 //'assets/css/vs-dropdown-menu.css',
@@ -153,7 +159,7 @@ class StyleProvider
                 'https://cdn.vectoraclouds.com/frontcore/components/DateTimePicker/DateTimePicker.css',
                 //'assets/css/vs-pagination.css',
                 'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview.css',
-                    'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
+                'https://cdn.vectoraclouds.com/frontcore/components/listview/vs_listview_table.css',
                 'assets/css/sweetalert2.min.css',
                 'assets/plugins/chart.js/Chart.css',
                 'assets/css/tenant_style.css', /** Must be placed below all.min.css **/

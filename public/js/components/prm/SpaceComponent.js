@@ -699,7 +699,7 @@ const BuildingSpaceDialog = (() => {
                         `<div class="row justify-content-center">
                             <div class="col-12">
                                 <div class="material-input outlined">
-                                    <select name="building_id" class="data-input form-control" data-field="building_id">
+                                    <select placeholder="Building" name="building_id" class="data-input form-control" data-field="building_id">
                                     </select>
                                 <label style="display:none; color:#777777; padding-left:6px;" for="building">Building</label>
                                 </div>
