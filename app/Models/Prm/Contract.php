@@ -120,6 +120,18 @@ class Contract
         return $expiredId ?: 2;
     }
 
+    protected static function getTerminatedStatusId()
+    {
+        $terminatedId = DB::table('contract_statuses')
+            ->where(function ($q) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', ['terminated'])
+                    ->orWhereRaw('LOWER(TRIM(status_code)) = ?', ['terminated']);
+            })
+            ->value('id');
+
+        return $terminatedId ?: 3;
+    }
+
     /** Get space_statuses.id for "Occupied" (used when a contract is created/uses a unit). */
     protected static function getSpaceOccupiedStatusId()
     {
@@ -339,6 +351,61 @@ class Contract
         $id = $id ?? $this->id;
         $deleted = DB::table('contracts')->where('id',$id)->delete();
         return $deleted ? DV::depends($deleted,['action'=>'deleted']) : DV::error('Deleted failed.');
+    }
+
+    /**
+     * Set contract status to Terminated (only when Active). Frees the building space and updates tenant status.
+     */
+    public function terminateContract($id, $ss = null)
+    {
+        $terminatedStatusId = self::getTerminatedStatusId();
+        $activeStatusId = self::getActiveStatusId();
+
+        $contract = DB::table('contracts')->where('id', $id)->first();
+        if (!$contract) {
+            return DV::error('Contract not found');
+        }
+        if ((int) $contract->status_id === (int) $terminatedStatusId) {
+            return DV::error('Contract is already terminated');
+        }
+        if ((int) $contract->status_id !== (int) $activeStatusId) {
+            return DV::error('Only active contracts can be terminated');
+        }
+
+        DB::beginTransaction();
+        try {
+            $updated = DBX::saveData($ss, 'contracts', ['id' => $id], ['status_id' => $terminatedStatusId], [], 1);
+            if (!$updated) {
+                DB::rollBack();
+                return DV::error('Failed to terminate contract');
+            }
+
+            $space_id = $contract->space_id ?? null;
+            if ($space_id) {
+                $availableId = self::getSpaceAvailableStatusId();
+                if ($availableId) {
+                    DB::table('building_spaces')->where('id', $space_id)->update(['status_id' => $availableId]);
+                }
+            }
+
+            $tenant_id = $contract->tenant_id ?? null;
+            if ($tenant_id) {
+                $hasActive = DB::table('contracts')
+                    ->where('tenant_id', $tenant_id)
+                    ->where('id', '!=', $id)
+                    ->whereDate('end_date', '>=', now())
+                    ->where('status_id', '!=', $terminatedStatusId)
+                    ->exists();
+                DB::table('tenants')->where('id', $tenant_id)
+                    ->update(['status_id' => $hasActive ? 2 : 3]); // 2=Active, 3=Inactive
+            }
+
+            DB::commit();
+            return DV::depends(1, ['id' => $id]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return DV::error('Failed to terminate contract.');
+        }
     }
 
     public function renewContract($arr = [], $id = null, $ss = null)

@@ -332,51 +332,70 @@ const CreateMaintenanceDialog = (() => {
             keyboard: true,
             createContent: () => `
                 <div class="maintenance-form-sections py-1">
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-map-marker-alt"></i> Location & unit</h6>
-                        <div class="row g-2">
+                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-map-marker-alt"></i> Location & unit</h6>
+                        <div class="row g-3">
                             <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Building <span class="text-danger">*</span></label>
-                                <select name="building_id" class="data-input form-control form-control-sm" data-field="building_id" required><option value="">Select building</option></select>
+                                <div class="material-input outlined">
+                                    <select name="building_id" class="data-input form-control" data-field="building_id" placeholder=" " required><option value="">Select building</option></select>
+                                    <label style="color:#777777;padding-left:6px;">Building <span class="text-danger">*</span></label>
+                                </div>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <label class="form-label small mb-0">Type unit <span class="text-danger">*</span></label>
-                                <select name="type_unit" class="data-input form-control form-control-sm" data-field="type_unit" id="_maintenance_type_unit" required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
+                                <div class="material-input outlined">
+                                    <select name="type_unit" class="data-input form-control" data-field="type_unit" id="_maintenance_type_unit" placeholder=" " required><option value="">Select type</option><option value="space">Space</option><option value="amenity">Amenity</option></select>
+                                    <label style="color:#777777;padding-left:6px;">Type unit <span class="text-danger">*</span></label>
+                                </div>
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
-                                <label class="form-label small mb-0">Space</label>
-                                <select name="space_id" class="data-input form-control form-control-sm" data-field="space_id"><option value="">Select space</option></select>
+                                <div class="material-input outlined">
+                                    <select name="space_id" class="data-input form-control" data-field="space_id" placeholder=" "><option value="">Select space</option></select>
+                                    <label style="color:#777777;padding-left:6px;">Space</label>
+                                </div>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-12 col-sm-6" style="display:none;">
-                                <label class="form-label small mb-0">Amenity</label>
-                                <select name="amenity_id" class="data-input form-control form-control-sm" data-field="amenity_id"><option value="">Select amenity</option></select>
+                                <div class="material-input outlined">
+                                    <select name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder=" "><option value="">Select amenity</option></select>
+                                    <label style="color:#777777;padding-left:6px;">Amenity</label>
+                                </div>
                             </div>
                         </div>
                     </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time stamp</h6>
-                        <div class="row g-2">
+                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-calendar-alt"></i> Time stamp</h6>
+                        <div class="row g-3">
                             <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">Start date</label>
-                                <input type="text" data-type="date" name="start_date" class="form-control form-control-sm data-input" data-field="start_date" placeholder="dd-MM-yyyy">
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="start_date" class="data-input form-control" data-field="start_date" placeholder=" ">
+                                    <label style="color:#777777;padding-left:6px;">Start date</label>
+                                </div>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">Start time</label>
-                                <input type="time" name="start_time" class="form-control form-control-sm data-input" data-field="start_time" value="00:00">
+                                <div class="material-input outlined">
+                                    <input type="time" name="start_time" class="data-input form-control" data-field="start_time" value="00:00" placeholder=" ">
+                                    <label style="color:#777777;padding-left:6px;">Start time</label>
+                                </div>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">End date</label>
-                                <input type="text" data-type="date" name="end_date" class="form-control form-control-sm data-input" data-field="end_date" placeholder="dd-MM-yyyy">
+                                <div class="material-input outlined">
+                                    <input type="text" data-type="date" name="end_date" class="data-input form-control" data-field="end_date" placeholder=" ">
+                                    <label style="color:#777777;padding-left:6px;">End date</label>
+                                </div>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label small mb-0">End time</label>
-                                <input type="time" name="end_time" class="form-control form-control-sm data-input" data-field="end_time" value="00:00">
+                                <div class="material-input outlined">
+                                    <input type="time" name="end_time" class="data-input form-control" data-field="end_time" value="00:00" placeholder=" ">
+                                    <label style="color:#777777;padding-left:6px;">End time</label>
+                                </div>
                             </div>
                         </div>
                     </section>
-                    <section class="maintenance-form-section border rounded-2 p-2 mb-2 bg-light">
-                        <h6 class="text-uppercase text-muted fw-semibold small mb-2 d-flex align-items-center gap-1"><i class="fas fa-comment"></i> Remarks</h6>
-                        <textarea name="remarks" class="data-input form-control form-control-sm" data-field="remarks" rows="2" placeholder="Additional notes..."></textarea>
+                    <section class="maintenance-form-section border rounded-2 p-3 mb-3 bg-light">
+                        <h6 class="text-uppercase text-muted fw-semibold small mb-3 d-flex align-items-center gap-1"><i class="fas fa-comment"></i> Remarks</h6>
+                        <div class="material-input outlined">
+                            <textarea name="remarks" class="data-input form-control" data-field="remarks" rows="2" placeholder=" "></textarea>
+                            <label style="color:#777777;padding-left:6px;">Additional notes</label>
+                        </div>
                     </section>
                 </div>
             `,

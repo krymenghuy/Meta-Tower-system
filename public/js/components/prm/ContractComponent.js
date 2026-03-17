@@ -151,18 +151,19 @@ var ContractComponent = new (function () {
                     dot  = 'bg-danger';
                 }
                 else if (status === 'terminated') {
-                    cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
+                    cls  = 'badge rounded-5 shadow-sm border border-dark text-white bg-dark';
                     icon = 'fa-regular fa-circle-xmark';
-                    dot  = 'bg-warning';
+                    dot  = 'bg-dark';
                 }
 
+                const statusLabel = (status === 'terminated') ? 'Terminated' : (data.status ?? '');
                 return `
                     <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
                         style="min-width:110px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
 
-                        <span class="text-capitalize">${data.status ?? ''}</span>
+                        <span class="text-capitalize">${statusLabel}</span>
                     </span>
                 `;
             },
@@ -1112,96 +1113,88 @@ const ContractDialog = (() => {
                 return [
                     `<div class="row justify-content-start">
                  <div class="p-3 mb-4 bg-light border rounded">
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_name">
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
                             <div class="material-input outlined">
-                                <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" />
+                                <input name="legal_name" class="data-input form-control" disabled data-field="legal_name" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;" for="legalName">Legal Name</label>
                             </div>
                         </div>
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">Start Date</label>
                             <div class="material-input outlined">
-                                <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" />
+                                <input type="text" data-type="date" name="start_date" required class="data-input form-control form_input" data-field="start_date" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Start Date</label>
                             </div>
                         </div>
-
                         <div class="col-6">
-                            <label style="color:#777777;padding-left:6px;">End Date</label>
                             <div class="material-input outlined">
-                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" />
+                                <input type="text" data-type="date" name="end_date" class="data-input form-control form_input" data-field="end_date" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">End Date</label>
                             </div>
                         </div>
-
                         <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
                             <div class="material-input outlined">
                                 <select name="business_type_id" placeholder=" " class="data-input form-control" data-field="business_type_id"> </select>
+                                <label style="color:#777777;padding-left:6px;" for="businessType">Business Type</label>
                             </div>
                         </div>
-
                         <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
-                                        <div class="material-input outlined">
-                                            <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="material-input outlined">
+                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id"></select>
+                                <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
+                            </div>
+                        </div>
                         <div class="col-4">
-                            <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             <div class="material-input outlined">
                                 <input type="number" name="deposit" class="data-input form-control" data-field="deposit" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;">Deposit <span class="text-danger">*</span></label>
                             </div>
                         </div>
-                                       <div class="col-12">
-                                        <label style="color:#777777;padding-left:6px;">Remarks</label>
-                                        <div class="material-input outlined">
-                                            <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
-                                        </div>
-                                    </div>
-                        </div>
-                        </div>
-
-</div>
                         <div class="col-12">
-                            <div class="p-3 bg-white border rounded shadow-lg">
-                                <h6 class="mb-3 text-primary">Create Contract</h6>
-                                <div class="row g-2">
-
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
-                                        <div class="material-input outlined">
-                                            <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
-
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;">Size (m²)</label>
-                                        <div class="material-input outlined">
-                                            <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
-                                        <div class="material-input outlined">
-                                            <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;">Price</label>
-                                        <div class="material-input outlined">
-                                            <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                        </div>
-                                    </div>
+                            <div class="material-input outlined">
+                                <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                <label style="color:#777777;padding-left:6px;">Remarks</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 bg-white border rounded shadow-lg">
+                        <h6 class="mb-3 text-primary">Create Contract</h6>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Price</label>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
                     </div>`
                 ].join("");
             },
