@@ -462,6 +462,7 @@ mThis.init_vsapi = async () => {
 //end::main_view module
  
 window.addEventListener('DOMContentLoaded',async()=>{
+     VSUtil.defaultStyle = 'material';
     await main_view.init_vsapi();
     await VSMoney.init();
     main_view.init();

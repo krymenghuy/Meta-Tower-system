@@ -26,16 +26,15 @@ class Amenity extends VSModel
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|number',
             'name' => '1|string|0-100|text= Amenity name must be provided',
-            'description' => '0|string',
+            
             'building_id' => '1|number|exists=buildings.id',
             'floor_id' => '1|number|exists=floors.id',
             'category_id' => '1|number|exists=amenity_categories.id',
             'access_level' => '1|string|0-50|default=All Tenants|text= Access level must be provided',
             'requires_booking' => '1|choice|0,1',
             'max_capacity' => '0|number',
-            'status_id' => '0|number|default=1',
+            'description' => '0|string',
             'code' => '0|string|max=50',
         ];
         $description_char = ['@',',','-','.','#'];
