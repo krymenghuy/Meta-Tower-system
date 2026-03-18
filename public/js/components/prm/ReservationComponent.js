@@ -306,8 +306,8 @@ var ReservationComponent =   ( () => {
             });
         });
     };
-    
-    
+
+
     mThis.changeStatus = (id, link) =>{
         const tr = link.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
@@ -350,8 +350,8 @@ var ReservationComponent =   ( () => {
         vsapi.call(`${main_view.base_url}/prm/reservation/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.reservation_statuses, 'id', 'reservation_status', true, 'Statuses', null);
-                VSUtil.setComboItems(mThis.elAmenity, d.amenities, 'id', 'amenity', true, 'Amenities', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.reservation_statuses, 'id', 'reservation_status', '', 'Statuses', '');
+                VSUtil.setComboItems(mThis.elAmenity, d.amenities, 'id', 'amenity', '', 'Amenities', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -387,7 +387,7 @@ const CreateReservationDialog = (() => {
                                 <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                                 <div class="material-input outlined">
                                     <input name="tenant" class="data-input form-control" data-field="tenant_name">
-                                    
+
                                 </div>
                             </div>
                             <div class="col-6">
@@ -440,7 +440,7 @@ const CreateReservationDialog = (() => {
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" />
                                 </div>
                             </div>
-                            
+
                             <div class="col-6 d-none ">
                                 <label style="color:#777777;padding-left:6px;">Title / Event</label>
                                 <div class="material-input outlined">
@@ -471,7 +471,7 @@ const CreateReservationDialog = (() => {
                             name: "Name",phone_number: "Phone", },
                         onSelect: (tenant) => {
                             console.log(1111, tenant);
-                            
+
                             me._selectedTenantId = tenant.id;
                             vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                                 .then(res => {
@@ -529,7 +529,7 @@ const CreateReservationDialog = (() => {
                     if (amenitySelect) {
                         const applyAmenityData = (amenityId) => {
                             if (!amenityId) {
-                                
+
                                 if (codeInput)     codeInput.value = '';
                                 if (capacityInput) capacityInput.value = '';
                                 return;

@@ -1402,8 +1402,11 @@ const ContractDialog = (() => {
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" " />
-                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
+                                <select data-style="material" placeholder="Tenant Name" name="tenant_id" class="data-input form-control" data-field="tenant_id" required>
+                                    <option value="" disabled selected hidden>Tenant Name</option>
+                                    <!-- Tenant options rendered here -->
+                                </select>
+
                             </div>
                         </div>
                         <div class="col-6">
@@ -1427,13 +1430,13 @@ const ContractDialog = (() => {
                         <div class="col-4">
 
                             <div class="material-input outlined">
-                                <select placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
+                                <select data-style="material" placeholder="Business Type" name="business_type_id" class="data-input form-control" data-field="business_type_id"> </select>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="material-input outlined">
-                                <select name="code" placeholder=" " class="data-input form-control" data-field="space_id"></select>
-                                <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
+                                <select  data-style="material" name="code" placeholder="Unit Code" class="data-input form-control" data-field="space_id"></select>
+                                <label style="display:none; color:#777777; padding-left:6px;" for="Code">Unit Code</label>
                             </div>
                         </div>
                         <div class="col-4">
@@ -1486,34 +1489,34 @@ const ContractDialog = (() => {
                 },
 
                 contentCreated: me => {
-                    me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                        type: "select",
-                        prefetch: true,
-                        // api:
-                        query: {
-                            from: "tenants",
-                            select: ["id", "name", "code", "legal_name"],
-                            searchFields: {
-                                name: "LIKE",
-                                code: "=",
-                                legal_name: "LIKE"
-                            },
-                            orderBy: [["id", "desc"]]
-                        },
-                        // showColumnHeader: false,
-                        columns: {
-                            code: "Code",
-                            name: "Name"
-                            // legal_name: "Legal Name"
-                        },
-                        onSelect: item => {
-                            console.log(123, item);
-                            me.tenant_id = item.id;
-                            me.controls.legal_name.value =
-                                item.legal_name || "";
-                            me.tenant_id = item.id || "";
+                    // Use the tenant_id <select> (from configSelect) and fetch legal name on change.
+                    const tenantSelect = me.controls?.tenant_id;
+                    if (!tenantSelect) return;
+
+                    const loadTenant = tenantId => {
+                        const id = String(tenantId || "").trim();
+                        me.tenant_id = id || "";
+                        if (!id) {
+                            if (me.controls?.legal_name) me.controls.legal_name.value = "";
+                            return;
                         }
-                    });
+                        vsapi
+                            .call(
+                                [main_view.base_url, "/prm/tenant/details"].join(""),
+                                { id },
+                                null,
+                                null,
+                            )
+                            .then(res => {
+                                if (res.status_code === 200 && res.data && me.controls?.legal_name) {
+                                    me.controls.legal_name.value = res.data.legal_name || "";
+                                }
+                            })
+                            .catch(() => {});
+                    };
+
+                    tenantSelect.addEventListener("change", e => loadTenant(e.target.value));
+                    if (tenantSelect.value) loadTenant(tenantSelect.value);
                 },
 
                 configSelect: [
@@ -1654,9 +1657,14 @@ const ContractDialog = (() => {
                                 op.space_type_id =
                                     me._createContractSpaceTypeId;
                             }
-                            op.tenant_id = me.tenant_id;
                             op.id = me.dataOptions.id;
-                            op.tenant_id = me.tenant_id;
+                            const tenantId = op.tenant_id || me.tenant_id;
+                            if (!tenantId) {
+                                cv_interact.error("Tenant is required.");
+                                if (me.controls?.tenant_id) me.controls.tenant_id.focus();
+                                return;
+                            }
+                            op.tenant_id = tenantId;
                             const startDate = parseDateInput(op.start_date);
                             const endDate = parseDateInput(op.end_date);
                             if (
@@ -1785,9 +1793,9 @@ const RenewDialog = (() => {
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;" for="Code">Unit Code</label>
+
                                         <div class="material-input outlined">
-                                            <select name="code" placeholder=" " class="data-input form-control" data-field="space_id">
+                                            <select data-style="material" name="code" placeholder="Unit Code " class="data-input form-control" data-field="space_id">
                                             </select>
                                         </div>
                                     </div>

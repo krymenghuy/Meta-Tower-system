@@ -428,7 +428,7 @@ function getItemsByPurchaseOrder($data,$ss){
       //$branch_id = $ss->branch_id;
       //$warehouse_id = $data['warehouse_id'] ?? 1;
       $po_id = $data['po_id'] ?? $data['id'] ?? null ;
-      
+
       $rows = DB::table('purchase_order_items as pi')
             ->join('items as i','i.id','=','pi.item_id')
             // ->where('pi.status_id','>',0)
@@ -436,7 +436,7 @@ function getItemsByPurchaseOrder($data,$ss){
             ->selectRaw("pi.id,pi.qty,pi.unit,pi.remarks,pi.status_id,pi.unit_price,pi.total_price,i.code,i.id as item_id,i.name as item_name,pi.update_user,".DBX::formatDate('i.updated_at')." as updated_at")->orderByRaw("i.name ASC")->get();
       foreach($rows as $row){
           $row->status = $row->status_id == 1 ? 'Panding' : ($row->status_id == 2 ? 'Resived' : null);
-        
+
       }
       return $rows;
   }

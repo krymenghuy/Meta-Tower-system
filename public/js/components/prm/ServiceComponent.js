@@ -242,7 +242,7 @@ var ServiceComponent =   ( () => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', true, 'All Category ', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.service_types, 'id', 'service_type', '', 'All Category ', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }

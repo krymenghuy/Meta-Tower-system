@@ -128,7 +128,7 @@ var VendorComponent = (() => {
                     </div>
                 `;
             }
-        }, 
+        },
         {
             title: "Status",
             className: "align-middle text-center",
@@ -305,7 +305,7 @@ var VendorComponent = (() => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
         console.log(123,status_id);
-        
+
         const inputOptions = {
             context: "success",
             title: "Change Status",
@@ -389,9 +389,9 @@ var VendorComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/vendor/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', true, 'All Type', null);
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', true, 'All Category', null);
+                VSUtil.setComboItems(mThis.elFilter_type, d.types, 'id', 'vendor_type', '', 'All Type', '');
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'vendor_status', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'vendor_category', '', 'All Category', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -454,7 +454,7 @@ const CreateVendorDialog = (() => {
                                     <label style="display:none; color:#777777;padding-left:6px;">Category</label>
                                 </div>
                             </div>
-                           
+
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
@@ -463,37 +463,37 @@ const CreateVendorDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                
+
                                 <div class="material-input outlined">
                                     <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Email</label>
                                 </div>
-                                
+
                             </div>
                             <div class="col-12 col-md-6">
-                                
+
                                 <div class="material-input outlined">
                                     <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Contact Person</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                
+
                                 <div class="material-input outlined">
                                     <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
                                     <label style="color:#777777;padding-left:6px;">Contact Phone</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                
+
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "> </textarea>
                                     <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>
                          </div>
-                        
-                        
+
+
 
 
                 </div>
