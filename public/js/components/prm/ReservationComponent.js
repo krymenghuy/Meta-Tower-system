@@ -88,30 +88,6 @@ var ReservationComponent = (() => {
         {
             transTitle: "titles.Status",
             className: "align-middle",
-            // data: (data) => {
-            //     const now = new Date();
-
-            //     const start = new Date(`${data.date} ${data.start_time}`);
-            //     const end = new Date(`${data.date} ${data.end_time}`);
-
-            //     let statusId = 1;
-            //     let statusText = "Upcoming";
-            //     let cls = "bg-warning-subtle text-warning";
-
-            //     if (now >= start && now <= end) {
-            //         statusId = 2;
-            //         statusText = "In Progress";
-            //         cls = "bg-info-subtle text-info";
-            //     } else if (now > end) {
-            //         statusId = 3;
-            //         statusText = "Completed";
-            //         cls = "bg-success-subtle text-success";
-            //     }
-            //     return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${statusId}">
-            //     <small>${statusText}</small>
-            // </span>`;
-            // }
-
             data: (data) => {
                 // Standardize the status string
                 const status = (data.status ?? "").toLowerCase();
