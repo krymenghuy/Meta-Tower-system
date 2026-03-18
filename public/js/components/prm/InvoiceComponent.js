@@ -381,7 +381,6 @@ const InvoiceDialog = (() => {
                 me.controls.divItemsView = me.divModal.querySelector('[name="divItemsView"]');
                 me.controls.div_invoice_summary = me.divModal.querySelector('[name="div_invoice_summary"]');
 
-
                 me.controls.btnRend.onclick = () => {
                 if (!me._selectedTenantId) {
                     return cv_interact.error("Please select Tenant first");
@@ -389,118 +388,149 @@ const InvoiceDialog = (() => {
 
                 const spaces = me._tenantSpaces || [];
                 const months = me._tenantMonths || [];
+                console.log("AA33",months);
+
 
                 if (spaces.length === 0) {
                     return cv_interact.error("No rooms/spaces available for this tenant");
                 }
 
+                const selectedSpaceId = me.controls.space_id?.value || me.controls.space?.value || '';
+                const matchedContract = spaces.find(s => String(s.space_id) === String(selectedSpaceId));
+                const defaultContractId = matchedContract?.contract_id || spaces[0]?.contract_id;
+
                 InputBox.resetInstance("rentPopUp");
 
                 InputBox.show({
-                    groupData: { spaces, months },
                     title: "Rent",
                     instanceKey: "rentPopUp",
+                    columns: 2,
                     fields: [
                         {
                             name: "contract_id",
                             label: "Unit Code / Room",
-                            type: "select",
+                            type: "text",
                             required: true,
                             textField: 'space_code',
                             valueField: 'contract_id',
-                            data: 'spaces'
+                            data: spaces
                         },
                         {
-                            name: "monthly",
-                            label: "Month ",
-                            valueField: 'month',
-                            textField: 'month',
-                            data: 'months'
+                            name: "monthly",                        // ← Changed
+                            label: "Month",
+                            type: "select",
+                            valueField: 'contract_id',              // ← MUST be contract_id (unique)
+                            textField: 'month',                     // ← What user sees
+                            data: months
                         },
-                        {
-                            name: "start_date",
-                            label: "Start Date ",
-                            type: 'text'
-                        },
-                        {
-                            name: "end_date",
-                            label: "End Date ",
-                            type: 'text'
-                        },
-                        {
-                            name: "price",
-                            label: "Price ",
-                            type: 'money'
-                        },
-                        {
-                            name: "remark",
-                            label: "Remark",
-                            type: "textarea",
-                            colSpan: 2
-                        }
+                        { name: "start_date", label: "Start Date", type: 'text' },
+                        { name: "end_date",   label: "End Date",   type: 'text' },
+                        { name: "price",      label: "Price",      type: 'money' },
+                        { name: "remark",     label: "Remark",     type: "textarea", colSpan: 2 }
                     ],
-                    columns: 2,
-                    onOpen(popup) {
-                        // Find contract dropdown using name attribute (same style as your code)
-                        const contractSelect = document.querySelector('select[name="contract_id"]');
 
-                        if (!contractSelect) {
-                            console.warn("Cannot find contract select element");
-                            return;
-                        }
+                    onOpen(ibMe) {
+                        const ac = new AbortController();
 
-                        contractSelect.addEventListener('change', (e) => {
-                            const contractId = e.target.value;
+                        const fillFields = (contractId) => {
                             if (!contractId) return;
 
-                            const matchedSpace = spaces.find(s => String(s.contract_id) === contractId);
-                            if (!matchedSpace) return;
+                            const id = String(contractId).trim();
 
-                            const matchedMonth = months.find(m => String(m.contract_id) === contractId) || months[0];
-                            if (!matchedMonth) return;
+                            const matchedSpace = spaces.find(s => String(s.contract_id) === id);
+                            const matchedMonth = months.find(m => String(m.contract_id) === id);
 
-                            const updateField = (fieldName, value) => {
-                                const input = document.querySelector(`[name="${fieldName}"]`);
-                                if (input) {
-                                    input.value = value || '';
-                                    // Trigger change so component knows
-                                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                                    console.log(`Auto updated ${fieldName} → ${value}`);
-                                }
-                            };
+                            if (!matchedSpace || !matchedMonth) {
+                                console.warn("No matching data for contract_id:", id);
+                                return;
+                            }
 
-                            updateField("price", matchedSpace.price || "0.00");
-                            updateField("start_date", matchedMonth.start_date || "");
-                            updateField("end_date", matchedMonth.end_date || "");
-                            updateField("monthly", matchedMonth.month || "");
-                        });
+                            console.log("fillFields → contract_id:", id, "Month:", matchedMonth.month);
+
+                            // Auto fill all related fields
+                            ibMe.controls.price.value      = matchedSpace.price || '0.00';
+                            ibMe.controls.start_date.value = matchedMonth.start_date || '';
+                            ibMe.controls.end_date.value   = matchedMonth.end_date   || '';
+                            ibMe.controls.monthly.value    = matchedMonth.contract_id;   // ← Important: set contract_id
+
+                            // Trigger events
+                            [ibMe.controls.price, ibMe.controls.start_date,
+                            ibMe.controls.end_date, ibMe.controls.monthly]
+                                .forEach(el => {
+                                    if (el) {
+                                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                                        el.dispatchEvent(new Event('input',  { bubbles: true }));
+                                    }
+                                });
+                        };
+
+                        // Initialize when controls are ready
+                        const initialize = () => {
+                            const contractSelect = ibMe.controls?.contract_id;
+                            if (!contractSelect) {
+                                requestAnimationFrame(initialize);
+                                return;
+                            }
+
+                            // Pre-select room from main form
+                            if (defaultContractId && contractSelect.value !== String(defaultContractId)) {
+                                contractSelect.value = defaultContractId;
+                            }
+
+                            fillFields(contractSelect.value);
+
+                            // When user changes Room → update everything
+                            contractSelect.addEventListener('change', (e) => {
+                                fillFields(e.target.value);
+                            }, { signal: ac.signal });
+                        };
+
+                        requestAnimationFrame(initialize);
+
+                        // Cleanup
+                        const originalClose = ibMe.close.bind(ibMe);
+                        ibMe.close = (...args) => {
+                            ac.abort();
+                            originalClose(...args);
+                        };
                     },
 
-                    onConfirm(data, btn, popup) {
-                        console.log("Confirmed data:", data);
+                    onConfirm(data, btn, ibMe) {
+                        let contractId = data.contract_id;
+                        if (typeof contractId === 'object' && contractId !== null) {
+                            contractId = contractId.contract_id ?? contractId.value ?? contractId.id;
+                        }
+                        contractId = String(contractId ?? '').trim();
 
-                        const roomCode = spaces.find(s => String(s.contract_id) === String(data.contract_id))?.space_code || '—';
+                        const roomCode = spaces.find(s => String(s.contract_id) === contractId)?.space_code || '—';
+                        const selectedMonthObj = months.find(m => String(m.contract_id) === contractId);
 
                         me.itemsView.addRow({
-                            item_id: null,
-                            price: Number(data.price) || 0,
-                            qty: 1,
-                            remarks: `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
-                            unit_type: roomCode,
-                            contract_id: data.contract_id,
-                            monthly: data.monthly,
-                            start_date: data.start_date,
-                            end_date: data.end_date,
-                            space_code: roomCode,
+                            item_id:     null,
+                            price:       Number(data.price) || 0,
+                            qty:         1,
+                            remarks:     `Rent - ${roomCode} (${selectedMonthObj?.month || data.monthly || 'N/A'})`,
+                            unit_type:   roomCode,
+                            contract_id: contractId,
+                            monthly:     selectedMonthObj?.month || data.monthly,   // save month name for display
+                            start_date:  data.start_date,
+                            end_date:    data.end_date,
+                            space_code:  roomCode,
                             space_price: data.price
                         });
 
                         cv_interact.success("Rent item added");
-                        popup.close();
+                        ibMe.close();
                     }
                 });
             };
+
+
+
+
+
+
+
 
 
                 me.itemsView = new ItemsView(
