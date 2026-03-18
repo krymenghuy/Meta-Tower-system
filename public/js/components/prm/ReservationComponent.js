@@ -66,23 +66,7 @@ var ReservationComponent = (() => {
                 return `<span class="d-block text-muted">${data.date ?? ""}</span>
                             <small class="text-primary-custom">${start12} - ${end12}</small>`;
             },
-
-            // data: (data) => {
-            //     const checkinTime = new Date(1970-01-01T${data.checkin_time}).toLocaleString("en-US", {
-            //         hour: "numeric",
-            //         minute: "2-digit",
-            //         hour12: true,
-            //     });
-            //     return <span class="text-">${checkinTime}</span>;
-            // },
         },
-        // {
-        //     transTitle: "titles.Start-End Time",
-        //     className: "align-middle",
-        //     data: (data) => {
-        //         return `<span class="text-primary-custom">${data.start_time ?? ''} - ${data.end_time ?? ''}</span>`;
-        //     }
-        // },
         {
             transTitle: "titles.MAX Capacity",
             className: "align-middle",
@@ -104,19 +88,63 @@ var ReservationComponent = (() => {
         {
             transTitle: "titles.Status",
             className: "align-middle",
-            data: (data) => {
-                const status = (data.status ?? "").toLowerCase();
-                let cls = " bg-warning-subtle text-warning";
+            // data: (data) => {
+            //     const now = new Date();
 
-                if (status == "upcoming") {
-                    cls = " bg-warning-subtle text-warning";
-                } else if (status == "in-progress") {
-                    cls = " bg-info-subtle text-info";
-                } else if (status == "completed") {
-                    cls = "bg-success-subtle text-success";
+            //     const start = new Date(`${data.date} ${data.start_time}`);
+            //     const end = new Date(`${data.date} ${data.end_time}`);
+
+            //     let statusId = 1;
+            //     let statusText = "Upcoming";
+            //     let cls = "bg-warning-subtle text-warning";
+
+            //     if (now >= start && now <= end) {
+            //         statusId = 2;
+            //         statusText = "In Progress";
+            //         cls = "bg-info-subtle text-info";
+            //     } else if (now > end) {
+            //         statusId = 3;
+            //         statusText = "Completed";
+            //         cls = "bg-success-subtle text-success";
+            //     }
+            //     return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${statusId}">
+            //     <small>${statusText}</small>
+            // </span>`;
+            // }
+
+            data: (data) => {
+                // Standardize the status string
+                const status = (data.status ?? "").toLowerCase();
+                let cls =
+                    "badge rounded-5 border border-secondary text-secondary bg-secondary-subtle";
+                let icon = "fa-regular fa-calendar";
+                let label = "Upcoming";
+
+                if (status === "upcoming") {
+                    cls =
+                        "badge rounded-5 shadow-sm border border-info text-info bg-info-subtle";
+                    icon = "fa-regular fa-clock fa-spin";
+                    label = "Upcoming";
+                } else if (status === "in-progress") {
+                    cls =
+                        "badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle";
+                    icon = "fa-solid fa-spinner fa-spin-pulse"; 
+                    label = "In-Progress";
+                } else if (status === "completed") {
+                    cls =
+                        "badge rounded-5 shadow-sm border border-success text-success bg-success-subtle";
+                    icon = "fa-regular fa-circle-check fa-beat-fade";
+                    label = "Completed";
                 }
 
-                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
+                return `
+                    <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
+                        style="min-width:125px; font-weight: 500;"
+                        data-status_id="${data.status_id}">
+                        <i class="${icon}" style="font-size:13px;"></i>
+                        <span>${label}</span>
+                    </span>
+                `;
             },
         },
         {
@@ -234,18 +262,40 @@ var ReservationComponent = (() => {
                 //     name: "change_status"
                 // },
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Reservation"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_reservation",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Record"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_reservation",
                 },
             ],
+
+            onShow: (me, container) => {
+                const menu = me.getActiveMenus(container);
+                const status_id = Number(container.dataset.statusid);
+
+                // LOGIC:
+                // Status 1 (Upcoming): BOTH visible (Allow changes before it starts)
+                // Status 2 (Started):  BOTH hidden  (Block while in progress)
+                // Status 3 (Finished): EDIT hidden, DELETE visible (Record keeping)
+
+                if (menu.edit_reservation) {
+                    // Hide if status is 2 or 3
+                    const isBlocked = status_id === 2 || status_id === 3;
+                    menu.edit_reservation.style.display = isBlocked ? "none" : "block";
+                }
+
+                if (menu.delete_reservation) {
+                    // Hide only if status is 2
+                    const isBlocked = status_id === 2;
+                    menu.delete_reservation.style.display = isBlocked ? "none" : "block";
+                }
+            },
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -409,8 +459,8 @@ const CreateReservationDialog = (() => {
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" "></input>
-                                    <label style="color:#777777;padding-left:6px;">Tenant</label>
+                                    <input  name="tenant" class="data-input form-control" data-field="tenant_name" placeholder="Tenant Name "></input>
+                                    <label style="color:#777777;padding-left:6px; display:none;">Tenant</label>
                                 </div>
                             </div>
                             <div class="col-6">
