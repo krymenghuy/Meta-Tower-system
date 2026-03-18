@@ -47,7 +47,7 @@ var PurchaseOrdersComponent = (() => {
 //       "currencySymbol": "$",
 //       "dataType": "decimal",
 //       "width": "150px",
-//       "displayType": "input", 
+//       "displayType": "input",
 //       "isNumeric":true,
 //       "readOnly": true
 //     },
@@ -262,16 +262,16 @@ var PurchaseOrdersComponent = (() => {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify Vendor"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Purchase Order"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "modify_vendor"
+                    name: "modify_purchase_order"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Vendor"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Purchase Order"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_vendor"
+                    name: "delete_purchase_order"
                 },
             ],
 
@@ -408,7 +408,7 @@ var PurchaseOrdersComponent = (() => {
                     <div class="d-flex align-items-center mb-2">
                         <span class="fw-bold" style="min-width:90px;">Vendor</span>
                         <span class="mx-2 fw-bold">:</span>
-                        <input 
+                        <input
                             name="vendor"
                             class="data-input form-control flex-grow-1"
                             data-field="vendor_id"
@@ -432,7 +432,7 @@ var PurchaseOrdersComponent = (() => {
                             data-field="address"
                             placeholder="">
                     </div>
-                    
+
 
                 </div>
                 <div class="col-md-5">
@@ -459,7 +459,7 @@ var PurchaseOrdersComponent = (() => {
                 <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
                     <div id="purchase_item_list" class="purchase-item-list"></div>
                 </div>
-                
+
         </div>
         `;
         },
@@ -486,11 +486,11 @@ var PurchaseOrdersComponent = (() => {
                 onSelect: (vendor) => {
                     me._selectedVendorId = vendor.id;
 
-                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, 
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`,
                     { vendor_id: vendor.id }, {})
                     .then(res => {
                         const d = res.data || {};
-                        const v = d.vendor || {}; 
+                        const v = d.vendor || {};
 
                         me.controls.vendor.value = v.name || '';
                         me.controls.phone_number.value = v.phone_number || '';
@@ -500,7 +500,7 @@ var PurchaseOrdersComponent = (() => {
                 }
             });
 
-            me.searchVendor.reset('');  
+            me.searchVendor.reset('');
             me.purchaseItemsView = new ItemsView('purchase_item_list', {
                 columns: [
                     { name:"item_id", transTitle:"titles.Item", displayType:"select" },
@@ -547,7 +547,7 @@ var PurchaseOrdersComponent = (() => {
                 }
                 me.purchaseItemsView.setData(null);
             };
-          
+
         },
         buttons:[
            {
@@ -556,7 +556,7 @@ var PurchaseOrdersComponent = (() => {
              click:(me,btn)=>{
                 me.hide(false);
              }
-             
+
            },
            {
              label:"<span>Save</span>",
@@ -572,10 +572,10 @@ var PurchaseOrdersComponent = (() => {
                 //   console.log(2,JSON.stringify(p,null,2));
                   vsapi.call(`${main_view.base_url}/prm/purchase/order/save`,p,false).then(res =>{
                       if(res.status_code ==200){
-                        cv_interact.success('Created Purchase Order success!'); 
+                        cv_interact.success('Created Purchase Order success!');
                         me.hide(true);
                         PoListView.showPage(getFilterData());
-                      }else cv_interact.warning(res.error_message); 
+                      }else cv_interact.warning(res.error_message);
                   });
              }
            }
@@ -601,7 +601,7 @@ var PurchaseOrdersComponent = (() => {
               return {id: dataOptions?.id, owner_id: dataOptions?.owner_id};
             }
           }
-       } 
+       }
     });
 
     PurchaseOrderDialog.show(op);
@@ -610,8 +610,8 @@ var PurchaseOrdersComponent = (() => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', true, 'All Vendor', null);
-                VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', true, 'All Statuses', null);
+                VSUtil.setComboItems(mThis.elFilter_vendor, d.vendors, 'id', 'vendor', '', 'All Vendor', '');
+                VSUtil.setComboItems(mThis.elFilter_status, d.po_statuses, 'id', 'name', '', 'All Statuses', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -699,7 +699,7 @@ var PurchaseOrdersComponent = (() => {
 //                                 <div class="col-lg-12 p-2" style="background-color:#ebebeb;">
 //                                     <div id="purchase_item_list" class="purchase-item-list"></div>
 //                                 </div>
-                               
+
 //                         </div>
 //                         `;
 //                 },

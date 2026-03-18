@@ -288,7 +288,7 @@ var TenantComponent = new (function () {
                 menu.service_request.style.display =
                     status_id == 2 ? "block" : "none";
                 menu.upload_document.style.display =
-                    status_id == 1 ? "block" : "none";
+                    status_id == 1 || status_id == 2  ? "block" : "none";
             },
             // adjustPosition: {
             //     top: -200,

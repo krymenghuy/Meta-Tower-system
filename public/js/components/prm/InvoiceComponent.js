@@ -287,7 +287,7 @@ var InvoiceComponent = (() => {
             .then(res => {
                 if (res.status_code === 200) {
                     const d = res.data || {};
-                    VSUtil.setComboItems(mThis.elFilter_status, d.statuses,  'id', 'payment_status', true, 'All Statuses');
+                    VSUtil.setComboItems(mThis.elFilter_status, d.statuses,  'id', 'payment_status', '', 'All Statuses');
                     VSUtil.setComboItems(mThis.elBuilding,      d.buildings, 'id', 'building',        '',   'All Buildings');
                 }
                 if (typeof callback === 'function') callback();

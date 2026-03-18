@@ -235,7 +235,7 @@ var ItemsComponent = (() => {
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
 
-                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'name', true, 'All Categories', null);
+                VSUtil.setComboItems(mThis.elFilter_Category, d.item_categories, 'id', 'name', '', 'All Categories', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -266,7 +266,7 @@ const CreateItemsDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row justify-content-center">
-                            
+
                            <div class="col-12">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder=" " />
@@ -295,7 +295,7 @@ const CreateItemsDialog = (() => {
                                 </div>
                             </div>
 
-                           
+
                         </div>`
                     ].join("");
                 },
