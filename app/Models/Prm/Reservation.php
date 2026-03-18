@@ -8,6 +8,7 @@ use XPublicStorage;
 use Illuminate\Support\Facades\DB;
 use Vsd\Vsloquent\VSModel;
 use App\Models\Prm\GeneralSettings;
+use Log;
 
 class Reservation extends VSModel
 {
@@ -52,9 +53,10 @@ class Reservation extends VSModel
             return DV::error('Start date cannot be in the past.');
         }
 
+        Log::info($inputs['date'] . ' ' . $inputs['start_time']);
+
         if ($inputs['date'] === $today) {
-            $inputTime = strtotime($inputs['date'] . ' ' . $inputs['start_time']);
-            if ($inputTime < $nowTime) {
+            if ($inputs['start_time'] < $nowTime) {
                 return DV::error('Start time cannot be in the past.');
             }
         }
@@ -108,7 +110,7 @@ class Reservation extends VSModel
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "(r.name LIKE '%" . $search_value . "%' OR r.description LIKE '%" . $search_value . "%')";
+            $str_search = "(a.name LIKE '%" . $search_value . "%' OR r.description LIKE '%" . $search_value . "%')";
         }
         if($tenant_id){ 
             $str_moreWhere .= ' AND r.tenant_id =' . $tenant_id;
@@ -146,7 +148,7 @@ class Reservation extends VSModel
             ->join('amenity_categories as ac', 'ac.id', '=', 'a.category_id')
             ->Join('tenants as t', 't.id', '=', 'r.tenant_id')
             ->where('r.id',$id)
-            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.description,a.name as amenity_name,a.code as amenity_code,a.category_id,ac.name as amenity_category,a.max_capacity as amenity_capacity')
+            ->selectRaw('r.id,r.date,r.start_time,r.end_time,r.status_id,r.amenity_id,a.name as amenity_name,a.code as amenity_code,a.category_id,ac.name as amenity_category,a.max_capacity as amenity_capacity,r.tenant_id,t.name as tenant_name,t.phone_number as phone_number,r.description')
             ->first();
     }
 
@@ -190,8 +192,8 @@ class Reservation extends VSModel
     public static function options_amenity($ss)
 {
     return DB::table('amenities')
-        ->select('id', 'amenity', 'code', 'max_capacity')   // ← important
-        ->where('active', 1) // add your conditions
+        ->select('id', 'amenity', 'code', 'max_capacity')
+        ->where('active', 1) 
         ->orderBy('amenity')
         ->get();
 }
