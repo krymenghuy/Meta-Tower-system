@@ -53,7 +53,7 @@ var ReceiptComponent = new (function () {
                 `;
             }
         },
-            
+
         // {
         //     title: "Payment method",
         //     className: "align-middle ",
@@ -65,7 +65,7 @@ var ReceiptComponent = new (function () {
         //     data: (data, index, tr) => {
         //         return `<div class="d-flex flex-column" style="width:150px;" >
         //             <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.reference_no?? ''}</span></span>
-                    
+
         //         </div>`;
         //     }
         // },
@@ -133,10 +133,10 @@ var ReceiptComponent = new (function () {
                 </div>`
         },
 
-    ]; 
-       
+    ];
 
-  
+
+
     mThis.init = () => {
         if (mThis.initAlready) return;
 
@@ -148,13 +148,13 @@ var ReceiptComponent = new (function () {
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
                rowCreated:(data,index,tr)=>{
-                
-              
+
+
               tr.dataset.statusid = data.status_id;
               tr.classList.add('payment');
-              tr.setAttribute('id',['payments_id',data.id].join('')); 
+              tr.setAttribute('id',['payments_id',data.id].join(''));
 
-            }, 
+            },
             listContainerClass: null
         });
 
@@ -200,7 +200,7 @@ var ReceiptComponent = new (function () {
                 mThis.PaymentListView.showPage(mThis.getFilterData());
             }, 250);
         });
-     
+
 
         mThis.initAlready = true;
     };
@@ -284,7 +284,7 @@ var ReceiptComponent = new (function () {
                 mThis.PaymentListView.showPage(mThis.getFilterData());
             }
         };
-        
+
         CreatePaymentdialog.show(op);
     }
      mThis.deletePayment = (id, menuLink) => {
@@ -318,7 +318,7 @@ var ReceiptComponent = new (function () {
         const tr = lnk.closest('tr');
         const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         // console.log(123,status_id);
-        
+
         const inputOptions = {
             title: 'Change Status',
             dataLabel: "Payment Status",
@@ -336,7 +336,7 @@ var ReceiptComponent = new (function () {
         InputBox2.show(inputOptions,(selected)=>{
             if(!selected) return;
             if(!AuthManager.allowed(321)) return;
-            
+
             const payload = {id, status_id :selected.value};
             vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
                 if(res.status_code ===200){
@@ -356,9 +356,9 @@ var ReceiptComponent = new (function () {
         vsapi.call(`${main_view.base_url}/prm/payments/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true, 'Payment Statuses', null);
-                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', null);
-                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '','Payment Method', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status','', 'Payment Statuses', '');
+                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '','All Tenant', '');
+                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '','Payment Method', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -369,7 +369,7 @@ var ReceiptComponent = new (function () {
         mThis.prepareFormOptions(()=>{
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.PaymentListView.showPage(mThis.getFilterData());
-        }); 
+        });
 
     };
     return mThis;
@@ -387,18 +387,18 @@ const CreatePaymentdialog = (() => {
                 backdrop: "static",
                 keyboard: true,
                createContent: () => {
-                    
+
                     return [
-                            
-                        
+
+
                         `<div class="row justify-content-center">
 
-                             <div class="col-6">    
+                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="date" name="paid" required class="data-input form-control" data-field="payment_date" placeholder=" " />
                                     <label>Paid Date</label>
                                 </div>
-                            </div>    
+                            </div>
 
                             <div class="col-6">
                              <label style="color:#777777;padding-left:6px;" for="tenant_name">Tenant</label>
@@ -426,11 +426,11 @@ const CreatePaymentdialog = (() => {
                                 <div class="material-input outlined">
                                     <select   name="payment_method_id" placeholder=" " class="data-input form-control" data-field="payment_method_id">
                                     </select>
-                                    
+
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="form-group">
                                     <label for="amount" class="form-label" vslang="titles.Amount">Amount</label>
                                   <div class="input-group flex-nowrap">
@@ -439,14 +439,14 @@ const CreatePaymentdialog = (() => {
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="discount" required class="data-input form-control" data-field="discount" placeholder=" " />
                                     <label>Discount</label>
                                 </div>
                             </div>
 
-                            <div class="col-6">    
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="number" name="total" required class="data-input form-control" data-field="total_paid" placeholder=" " />
                                     <label>Total</label>
@@ -466,7 +466,7 @@ const CreatePaymentdialog = (() => {
                                     <input name="status_id" class="data-input form-control" data-field="status_id" placeholder=" " />
                                     <label>Status ID</label>
                                 </div>
-                            </div> 
+                            </div>
                         </div>`
                     ].join("");
                 },
@@ -487,7 +487,7 @@ const CreatePaymentdialog = (() => {
                     const headerWrapper = document.createElement('div');
                     headerWrapper.classList.add('d-flex', 'flex-column', 'align-items-center', 'w-100');
 
-                
+
 
                     headerTitle.classList.add('text-white', 'text-center', 'w-100');
                     headerWrapper.appendChild(headerTitle);
@@ -495,7 +495,7 @@ const CreatePaymentdialog = (() => {
                     header.innerHTML = '';
                     header.appendChild(headerWrapper);
 
-                 
+
 
 
                 },
@@ -527,8 +527,8 @@ const CreatePaymentdialog = (() => {
                         textField: "building",
                         valueField: "id",
                     },
-                    
-                    
+
+
 
                 ],
                 prepareFormOptions: {
@@ -544,14 +544,14 @@ const CreatePaymentdialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal); 
+                    LocaleManager.translateZone(me.divModal);
                     // console.log(12,data);
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if(btnClose) btnClose.classList.add('d-none');
                 },
 
-             
+
                 buttons: [
                     {
                         label: '<span>Cancel</span>',
