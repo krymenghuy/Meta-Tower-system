@@ -300,7 +300,9 @@ class PurchaseOrder //extends Model
         $count = 0;
 
         if ($po_id) {
-
+            if (!$create) {
+                DB::table('purchase_order_items')->where('po_id', $po_id)->delete();
+            }
             foreach ($items as $item) {
 
                 $item = (object) $item;
@@ -341,10 +343,10 @@ class PurchaseOrder //extends Model
             "po_id" => $po_id,
             "item_id" => $item->item_id ?? $item->id ?? null,
             "qty" => $item->qty ?? 0,
-            "unit" => $item->unit ?? null,
             "unit_price" => $item->unit_price ?? 0,
             "total_price" => ($item->qty ?? 0) * ($item->unit_price ?? 0)
         ];
+        // Omit unit from insert if purchase_order_items has no unit column; getItemsByPurchaseOrder uses i.unit for display
 
         $id = DBX::saveData(
             $ss,
@@ -430,10 +432,11 @@ function getItemsByPurchaseOrder($data,$ss){
       $po_id = $data['po_id'] ?? $data['id'] ?? null ;
 
       $rows = DB::table('purchase_order_items as pi')
-            ->join('items as i','i.id','=','pi.item_id')
-            // ->where('pi.status_id','>',0)
-            ->where('pi.po_id',$po_id)
-            ->selectRaw("pi.id,pi.qty,pi.unit,pi.remarks,pi.status_id,pi.unit_price,pi.total_price,i.code,i.id as item_id,i.name as item_name,pi.update_user,".DBX::formatDate('i.updated_at')." as updated_at")->orderByRaw("i.name ASC")->get();
+            ->join('items as i', 'i.id', '=', 'pi.item_id')
+            ->where('pi.po_id', $po_id)
+            ->selectRaw("pi.id, pi.qty, i.unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . " as updated_at")
+            ->orderByRaw("i.name ASC")
+            ->get();
       foreach($rows as $row){
           $row->status = $row->status_id == 1 ? 'Panding' : ($row->status_id == 2 ? 'Resived' : null);
 
@@ -441,7 +444,20 @@ function getItemsByPurchaseOrder($data,$ss){
       return $rows;
   }
 
-
-
-
+    /**
+     * Delete a purchase order and its line items.
+     */
+    public function deletePurchaseOrder($id, $ss = null)
+    {
+        if (!$id) {
+            return DV::error('Invalid purchase order ID.');
+        }
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        DB::table('purchase_order_items')->where('po_id', $id)->delete();
+        DB::table('purchase_orders')->where('id', $id)->delete();
+        return DV::success(['message' => 'Purchase order has been deleted.']);
+    }
 }
