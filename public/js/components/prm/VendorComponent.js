@@ -259,6 +259,13 @@ var VendorComponent = (() => {
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
+
+                {
+                    html: '<span class="ps-2 " vslang="titles.Create Expense"></span>',
+                    icon: `<i class="fa-solid fa-circle-dollar-to-slot fs-5 text-primary-emphasis"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "create_expense"
+                },
                 {
                     html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
                     icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
@@ -281,7 +288,10 @@ var VendorComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case 'change_vendor_status': {
+                    case 'create_expense': {
+                        mThis.createExpense(id, menuLink);
+                        break;
+                    }case 'change_vendor_status': {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
@@ -301,10 +311,22 @@ var VendorComponent = (() => {
         }
         new VSDropdownMenu(menuOptopns);
     }
-      mThis.changeStatus = (id, link) => {
+    mThis.createExpense = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                ;
+                mThis.VendorListView.showPage(mThis.getFilterData());
+            }
+        };
+
+        CreateExpenseDialog.show(op);
+    }
+    mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";
-        console.log(123,status_id);
+        console.log(123, status_id);
 
         const inputOptions = {
             context: "success",
