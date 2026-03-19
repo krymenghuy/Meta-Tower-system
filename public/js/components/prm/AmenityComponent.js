@@ -70,7 +70,7 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
-                let cls = "text-info";
+                let cls = " text-info ";
 
                 if (status == "inactive") {
                     cls =
@@ -84,7 +84,7 @@ var AmenityComponent = (() => {
                 }
 
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
-            },
+            }
         },
         {
             title: "Updated By",
@@ -425,7 +425,7 @@ var AmenityComponent = (() => {
                 `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","Statuses",'');
+                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","All Status",'');
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
                 VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', '', 'All Categories', '');

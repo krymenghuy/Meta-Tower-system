@@ -1,12 +1,12 @@
 "use strict";
-var BillingComponent = (() => {
+var BillComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Billings";
+    mThis.title_prop = "Bills";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_billing_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnBilling");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_billing");
-    mThis.elSearch = mThis.self.querySelector("#_search_billing");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnBill");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
+    mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
 
     mThis.cols = [
@@ -173,7 +173,7 @@ var BillingComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.BillListView = new ListView('_billing_list', {
+        mThis.BillListView = new ListView('_bill_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -199,7 +199,7 @@ var BillingComponent = (() => {
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateBillingDialog.show(op);
+            CreateBillDialog.show(op);
         };
 
 
@@ -280,11 +280,11 @@ var BillingComponent = (() => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'modify_vendor': {
+                    case 'modify_bill': {
                         mThis.editBill(id, menuLink);
                         break;
                     }
-                    case 'delete_vendor': {
+                    case 'delete_bill': {
                         mThis.deleteBill(id, menuLink);
                         break;
                     }
@@ -351,7 +351,7 @@ var BillingComponent = (() => {
             }
         };
 
-        CreateVendorDialog.show(op);
+        CreateBillDialog.show(op);
     }
     mThis.deleteBill = (id, menuLink) => {
         let op = {
@@ -403,7 +403,7 @@ var BillingComponent = (() => {
 
 
 
-const CreateBillingDialog = (() => {
+const CreateBillDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -512,9 +512,9 @@ const CreateBillingDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
-                    targetProp: "vendor_details",
+                    createTitle: "Create Bill",
+                    modifyTitle: "Modify Bill",
+                    targetProp: "bill_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/vendor/form-options",].join(""),
                         params: (op) => {

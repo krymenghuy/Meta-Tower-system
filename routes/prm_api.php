@@ -23,6 +23,7 @@ use App\Http\Controllers\Prm\ReservationController;
 use App\Http\Controllers\Prm\AmenityController;
 use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
+use App\Http\Controllers\Prm\BillController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -221,14 +222,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payments')->g
     Route::post('/delete', [PaymentController::class, 'deletePayment']);
     Route::post('/update-status', [PaymentController::class, 'updatePaymentStatus']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservations')->group(function () {
-    Route::post('/save', [PaymentController::class, 'saveReservation']);
-    Route::post('/list-paginate', [PaymentController::class, 'getListReservation']);
-    Route::post('/details', [PaymentController::class, 'reservationDetails']);
-    Route::post('/form-options', [PaymentController::class, 'getFormOptions']);
-    Route::post('/delete', [PaymentController::class, 'deleteReservation']);
-    Route::post('/update-status', [PaymentController::class, 'updateReservationStatus']);
-});
+
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('amenity')->group(function () {
     Route::post('/save', [AmenityController::class, 'saveAmenity']);
@@ -259,6 +253,15 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order
     Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
     Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
     Route::post('/form-options', [PurchaseOrderController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group(function () {
+    Route::post('/save', [BillController::class, 'saveBill']);
+    Route::post('/list-paginate', [BillController::class, 'getListBill']);
+    Route::post('/details', [BillController::class, 'billDetails']);
+    Route::post('/form-options', [BillController::class, 'getFormOptions']);
+    Route::post('/delete', [BillController::class, 'deleteReservation']);
+    Route::post('/update-status', [BillController::class, 'updateReservationStatus']);
 });
 
 
