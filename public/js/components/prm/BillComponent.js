@@ -1,12 +1,12 @@
 "use strict";
-var BillingComponent = (() => {
+var BillComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Billings";
+    mThis.title_prop = "Bills";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector("#_main_billing_component");
-    mThis.btnAdd = mThis.self.querySelector("#_btnBilling");
-    mThis.divFilter = mThis.self.querySelector("#_divFilter_billing");
-    mThis.elSearch = mThis.self.querySelector("#_search_billing");
+    mThis.self = main_view.VSAppContent.querySelector("#_main_bill_component");
+    mThis.btnAdd = mThis.self.querySelector("#_btnBill");
+    mThis.divFilter = mThis.self.querySelector("#_divFilter_bill");
+    mThis.elSearch = mThis.self.querySelector("#_search_bill");
 
 
     mThis.cols = [
@@ -15,113 +15,62 @@ var BillingComponent = (() => {
             title: "",
             className: "align-middle",
         },
+        
         {
-            transTitle: "titles.Name",
+            transTitle: "titles.Vendor Name",
             className: "align-middle",
             data: (data) => {
-
-                const name = data.name ?? '';
-                const code = data.code ?? '';
-
-                const initials = name.split(' ')
-                    .map(w => w[0])
-                    .join('')
-                    .substring(0, 2)
-                    .toUpperCase();
-
-                let bgClass = 'bg-secondary-subtle text-secondary';
-
-                if (code === 'equipment') {
-                    bgClass = 'bg-primary-subtle text-primary';
-                } else if (code === 'maintenance') {
-                    bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
-                } else if (code === 'utility') {
-                    bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
-
-                return `
-            <div class="d-flex text-nowrap align-items-center gap-2">
-                <div class="rounded ${bgClass} d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">
-                    ${initials}
-                </div>
-                <span class="fw-semibold text-dark">
-                    ${name}
-                </span>
-            </div>
-        `;
+                return `<span class="text-primary-custom">${data.vendor_name ?? ""}</span>`;
             }
         },
         {
             title: "Contact Info",
             className: "align-middle",
             data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>`
         },
         {
-            transTitle: "titles.Vattin",
+            transTitle: "titles.Bill Number",
             className: "align-middle",
             data: (data) => {
-                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
+                return `<span class="text-nowrap text-prm-custom"> ${data.bill_number ?? ""}</span>`;
             }
         },
         {
-            transTitle: "titles.Type",
+            transTitle: "titles.Bill Date",
             className: "align-middle",
             data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.type ?? ""}</span>`;
+                return `<span class="d-block text-prm-custom"> ${data.bill_date ?? ""}</span>`;
             }
         },
         {
-            transTitle: "titles.Category",
+            transTitle: "titles.Due Date",
             className: "align-middle",
             data: (data) => {
-
-                const code = data.code ?? '';
-                const name = data.category ?? '';
-
-                let bgClass = 'bg-secondary-subtle text-secondary';
-
-                if (code === 'equipment') {
-                    bgClass = 'bg-primary-subtle text-primary';
-                } else if (code === 'maintenance') {
-                    bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
-                } else if (code === 'utility') {
-                    bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
-
-                return `<span class="badge ${bgClass} text-uppercase fw-bold">
-                    ${name}
-                </span>`;
+                return `<span class="d-block text-prm-custom"> ${data.due_date ?? ""}</span>`;
             }
         },
         {
-            transTitle: "titles.Contact Person",
+            transTitle: "titles.Sub-total",
             className: "align-middle text-nowrap",
             data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
+                return `<span class="d-block text-prm-custom"> ${data.sub_total ?? ""}</span>`;
             }
         },
         {
-            transTitle: "titles.Address",
+            transTitle: "titles.Grand Total",
+            className: "align-middle text-nowrap",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom"> ${data.grand_total ?? ""}</span>`;
+            }
+        },
+        {
+            transTitle: "titles.Description",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
                     <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? '...'}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.d ?? '...'}</span>
                     </div>
                 `;
             }
@@ -173,7 +122,7 @@ var BillingComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.BillListView = new ListView('_billing_list', {
+        mThis.BillListView = new ListView('_bill_list', {
             fetchApi: `${main_view.base_url}/prm/vendor/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -199,7 +148,7 @@ var BillingComponent = (() => {
                 }
             };
             // if (!AuthManager.allowed(240)) return;
-            CreateBillingDialog.show(op);
+            CreateBillDialog.show(op);
         };
 
 
@@ -280,11 +229,11 @@ var BillingComponent = (() => {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
-                    case 'modify_vendor': {
+                    case 'modify_bill': {
                         mThis.editBill(id, menuLink);
                         break;
                     }
-                    case 'delete_vendor': {
+                    case 'delete_bill': {
                         mThis.deleteBill(id, menuLink);
                         break;
                     }
@@ -351,7 +300,7 @@ var BillingComponent = (() => {
             }
         };
 
-        CreateVendorDialog.show(op);
+        CreateBillDialog.show(op);
     }
     mThis.deleteBill = (id, menuLink) => {
         let op = {
@@ -403,7 +352,7 @@ var BillingComponent = (() => {
 
 
 
-const CreateBillingDialog = (() => {
+const CreateBillDialog = (() => {
     const self = {};
     let dialog = null;
 
@@ -418,76 +367,64 @@ const CreateBillingDialog = (() => {
                     return `
                 <div class="vendor-form row p-1">
                         <div class="col-12 row pb-3">
-                            <div class="col-12 col-md-6">
-                               <!-- <label style="color:#777777;padding-left:6px;">Name</label> -->
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <select data-style="material" name="vendor_id" class="data-input form-control" data-field="vendor_id" placeholder="Vendor Name">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" "></input>
+                                    <label style="color:#777777; padding-left:6px;">Vendor Contact</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" class="data-input form-control" data-field="name" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Name</label>
-                                </div>
-                            </div>
-                             <div class="col-12 col-md-6">
-                                <div class="material-input outlined">
-                                    <input type="text" name="tax_number" class="data-input form-control" data-field="tax_number" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Tax Number (optional)</label>
+                                    <label style="color:#777777;padding-left:6px;">Bill Number</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id">
-                                    <!-- <option value="" selected hidden></option> -->
-                                    </select>
-                                    <label style="display:none; color:#777777;padding-left:6px;">Vendor Type</label>
+                                    <input type="file" name="file_image" class="data-input form-control" data-field="file_image" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">File Image </label>
                                 </div>
                             </div>
-                             <div class="col-12 col-md-6">
+                            <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="">
-                                        <!-- <option value="" selected hidden></option> -->
-                                    </select>
-                                    <label style="display:none; color:#777777;padding-left:6px;">Category</label>
+                                    <input type="text" data-type="date" name="bill_date" required class="data-input form-control form_input" data-field="bill_date" />
+                                    <label style="color:#777777;padding-left:6px;">Bill Date</label>
                                 </div>
                             </div>
-                           
-                            <div class="col-12 col-md-6">
+                            <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="phone_number" class="data-input form-control" data-field="phone_number" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Phone Number </label>
+                                    <input type="text" data-type="date" name="due_date" required class="data-input form-control form_input" data-field="due_date" />
+                                    <label style="color:#777777;padding-left:6px;">Due Date</label>
+                                </div>
+                            </div>
+                            
 
-                                </div>
-                            </div>
                             <div class="col-12 col-md-6">
-                                
                                 <div class="material-input outlined">
                                     <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Email</label>
-                                </div>
-                                
-                            </div>
-                            <div class="col-12 col-md-6">
-                                
-                                <div class="material-input outlined">
-                                    <input type="text" name="contact_person" class="data-input form-control" data-field="contact_person" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Contact Person</label>
+                                    <label style="color:#777777;padding-left:6px;">Subtotal</label>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                
                                 <div class="material-input outlined">
-                                    <input type="text" name="contact_phone" class="data-input form-control" data-field="contact_phone" placeholder=" " />
-                                    <label style="color:#777777;padding-left:6px;">Contact Phone</label>
+                                    <input type="email" name="email" class="data-input form-control" data-field="email" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Grand Total</label>
                                 </div>
                             </div>
                             <div class="col-12">
-                                
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "> </textarea>
-                                    <label style="color:#777777;padding-left:6px;">Address</label>
+                                    <textarea name="description" class="data-input form-control" data-field="address" rows="3" placeholder="" ></textarea> 
+                                    <label style="color:#777777;padding-left:6px;">Description</label>
                                 </div>
                             </div>
                          </div>
-                        
-                        
-
 
                 </div>
                 `;
@@ -512,9 +449,9 @@ const CreateBillingDialog = (() => {
 
                 ],
                 prepareFormOptions: {
-                    createTitle: "Create Vendor",
-                    modifyTitle: "Modify Vendor",
-                    targetProp: "vendor_details",
+                    createTitle: "Add New Bill",
+                    modifyTitle: "Modify Bill",
+                    targetProp: "bill_details",
                     api: {
                         endpoint: [main_view.base_url, "/prm/vendor/form-options",].join(""),
                         params: (op) => {

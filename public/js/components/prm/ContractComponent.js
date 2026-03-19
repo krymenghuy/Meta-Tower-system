@@ -1195,7 +1195,7 @@ const ContractDialog = (() => {
                         </div>
                         <div class="col-4">
                           <div class="material-input outlined">
-                     <select data-style="material" placeholder="unit code" name="code" class="data-input form-control" data-field="space_id"> </select>
+                     <select data-style="material" placeholder="Unit Code" name="code" class="data-input form-control" data-field="space_id"> </select>
                                 </div>
                         </div>
                         <div class="col-4">
