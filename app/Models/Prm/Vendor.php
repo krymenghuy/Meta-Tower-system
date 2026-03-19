@@ -33,7 +33,7 @@ class Vendor //extends Model
             'email' => '0|string|0-100',
             'address' => '1|string|0-255',
             'contact_person' => '1|string|0-100',
-            'contact_phone' => '1|number|0-25',
+            'contact_phone' => '1|string|0-25',
             'vendor_type_id' => '1|number|exists=vendor_types.id',
             'category_id' => '1|number|exists=vendor_categories.id',
             'tax_number' => '0|string|0-30',

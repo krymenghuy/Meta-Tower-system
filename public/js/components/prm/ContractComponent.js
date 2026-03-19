@@ -479,6 +479,7 @@ var ContractComponent = new (function () {
                 const isActive = statusText === 'active' || statusId === 2;
                 const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
                 const isPending = statusText === 'pending';
+                const isTerminated = statusText === 'terminated';
                               // show renew only when status is active and end date is within next 3 months (not for pending)
                               const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
 
@@ -490,8 +491,8 @@ var ContractComponent = new (function () {
                     menu.terminate_contract.style.display = isActive ? 'block' : 'none';
                 }
                 if (menu.delete_contract) {
-                    // show delete only when status is pending
-                    menu.delete_contract.style.display = isPending ? 'block' : 'none';
+                    // show delete when status is pending or terminated
+                    menu.delete_contract.style.display = (isPending || isTerminated) ? 'block' : 'none';
                 }
             },
             onClick: (menuLink, id, name) => {

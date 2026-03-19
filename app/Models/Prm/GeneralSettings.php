@@ -609,7 +609,10 @@ class GeneralSettings //extends Model
     }
     static function options_vendor($ss)
     {
-        return DB::table('vendors')->where('status_id',1)->selectRaw('id,name AS vendor')->get();
+        return DB::table('vendors')
+            ->where('status_id', 1)
+            ->selectRaw('id, name AS vendor, phone_number')
+            ->get();
     }
      static function options_po_status($ss)
     {

@@ -71,7 +71,28 @@ class Maintenance extends VSModel
             $input['amenity_id'] = null;
         }
         if (empty($input['status_id'])) {
-            $input['status_id'] = 1; // default: Pending
+            $input['status_id'] = 1; // default: Planned
+        }
+
+        // Auto-sync status_id with time window (unless explicitly Completed/Cancelled).
+        try {
+            $sid = (int) ($input['status_id'] ?? 0);
+            if (!in_array($sid, [3, 4], true)) {
+                $now = now()->format('Y-m-d H:i:s');
+                $start = $input['start_date'] ?? null;
+                $end = $input['end_date'] ?? null;
+                if ($start && $end) {
+                    if ($start <= $now && $end >= $now) {
+                        $input['status_id'] = 2; // In Progress
+                    } elseif ($end < $now) {
+                        $input['status_id'] = 3; // Completed
+                    } elseif ($start > $now) {
+                        $input['status_id'] = 1; // Planned
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // ignore auto-sync errors
         }
 
         try {

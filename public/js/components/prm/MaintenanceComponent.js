@@ -78,56 +78,16 @@ var MaintenanceComponent = (() => {
             className: "align-middle",
             data: (data) => {
                 const statusId = parseInt(data.status_id, 10);
-                if (statusId === 3) {
-                    return `<span class="badge bg-success-subtle text-success">Completed</span>`;
-                }
-                if (statusId === 4) {
-                    return `<span class="badge bg-secondary-subtle text-secondary">Cancelled</span>`;
-                }
-                const now = new Date();
-                const startStr = (data.start_date || "").toString().trim();
-                const endStr = (data.end_date || "").toString().trim();
-                let displayStatus = data.status_name ?? "";
-                let cls = "badge bg-warning-subtle text-warning";
-                if (startStr && endStr) {
-                    const startDt = new Date(startStr.replace(/\s+/g, " "));
-                    const endDt = new Date(endStr.replace(/\s+/g, " "));
-                    if (!isNaN(startDt.getTime()) && !isNaN(endDt.getTime())) {
-                        const sameDay = startDt.getFullYear() === endDt.getFullYear() &&
-                            startDt.getMonth() === endDt.getMonth() &&
-                            startDt.getDate() === endDt.getDate();
-                        if (sameDay) {
-                            if (now < startDt) {
-                                displayStatus = "Pending";
-                                cls = "badge bg-warning-subtle text-warning";
-                            } else if (now > endDt) {
-                                displayStatus = "Completed";
-                                cls = "badge bg-success-subtle text-success";
-                            } else {
-                                displayStatus = "In Progress";
-                                cls = "badge bg-info-subtle text-info";
-                            }
-                        } else {
-                            if (now >= endDt) {
-                                displayStatus = "Completed";
-                                cls = "badge bg-success-subtle text-success";
-                            } else if (now >= startDt && now < endDt) {
-                                displayStatus = "In Progress";
-                                cls = "badge bg-info-subtle text-info";
-                            } else {
-                                displayStatus = "Pending";
-                                cls = "badge bg-warning-subtle text-warning";
-                            }
-                        }
-                    }
-                }
-                if (displayStatus && cls === "badge bg-warning-subtle text-warning") {
-                    const s = displayStatus.toLowerCase();
-                    if (s === "completed") cls = "badge bg-success-subtle text-success";
-                    else if (s === "in progress") cls = "badge bg-info-subtle text-info";
-                    else if (s === "cancelled") cls = "badge bg-secondary-subtle text-secondary";
-                }
-                return `<span class="badge ${cls}">${displayStatus || "—"}</span>`;
+                const map = {
+                    1: { text: "Planned", cls: "badge bg-warning-subtle text-warning" },
+                    2: { text: "In Progress", cls: "badge bg-info-subtle text-info" },
+                    3: { text: "Completed", cls: "badge bg-success-subtle text-success" },
+                    4: { text: "Cancelled", cls: "badge bg-secondary-subtle text-secondary" },
+                };
+                const m = map[statusId] || null;
+                const label = m?.text || data.status_name || "—";
+                const cls = m?.cls || "badge bg-light text-muted";
+                return `<span class="badge ${cls}">${label}</span>`;
             }
         },
         {
@@ -348,14 +308,14 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
                                 <div class="material-input outlined">
-                                    <select name="space_id" class="data-input form-control" data-field="space_id" placeholder=" "><option value="">Select space</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Space</label>
+                                    <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" placeholder="Select space"><option value="">Select space</option></select>
+
                                 </div>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-12 col-sm-6" style="display:none;">
-                                <div class="material-input outlined">
-                                    <select name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder=" "><option value="">Select amenity</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Amenity</label>
+                                                      <div class="material-input outlined">
+                                    <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="Select code amenity"><option value="">Select code amenity</option></select>
+
                                 </div>
                             </div>
                         </div>
@@ -419,7 +379,8 @@ const CreateMaintenanceDialog = (() => {
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
-                { name: "amenity_id", data: "amenities", textField: "code", valueField: "id" }
+                // Prefer showing amenity code (list view uses `amenity_code`).
+                { name: "amenity_id", data: "amenities", textField: "amenity_code", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
