@@ -10,19 +10,19 @@ use XAuthService;
 
 class BillController extends Controller
 {
-    protected $vendors;
+    protected $bills;
     public function __construct(){
-        $this->vendors = new Vendor();
+        $this->bills = new Bill();
     }
 
-    public function saveVendor(Request $req){
+    public function saveBill(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
         $id = $req->id ?? $req->vendor_id;
-        $vendor = new Vendor($id, $ss);
-        $res = $vendor->saveVendor($req->all());
+        $bill = new Bill($id, $ss);
+        $res = $bill->saveBill($req->all());
         return JDV::raw($res);
     }
      public function getListPaginate(Request $req){
@@ -31,10 +31,10 @@ class BillController extends Controller
             return JDV::raw($ss);
         }
        
-        return JDV::result($this->vendors->getListPaginate($req->all(),$ss));
+        return JDV::result($this->bills->getListPaginate($req->all(),$ss));
     }
 
-    public function vendorDetails(Request $req){
+    public function billDetails(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
@@ -42,7 +42,7 @@ class BillController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->vendors->vendorDetails($req->id));
+        return JDV::result($this->bills->billDetails($req->id));
 
     }
     public function getFormOptions(Request $req){
@@ -50,12 +50,10 @@ class BillController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        return JDV::result($this->vendors->getFormOptions($req->id,$ss));
+        return JDV::result($this->bills->getFormOptions($req->id,$ss));
     }
     
-
-
-    public  function deleteVendor(Request $req){
+    public  function deletebill(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
@@ -63,7 +61,7 @@ class BillController extends Controller
         if(!isset($req->id) || !is_numeric($req->id)){
             return JDV::error('Invalid ID');
         }
-        return JDV::raw($this->vendors->deleteVendor($req->id,$ss));
+        return JDV::raw($this->bills->deleteBill($req->id,$ss));
     }
      public function option_select_all_vendor_info(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
@@ -73,13 +71,13 @@ class BillController extends Controller
          $vendor_id = $req->vendor_id ?? $req->id;
         return JDV::result($this->vendors->getVendorInfo($vendor_id,$ss));
     }
-    public function updateVendorStatus(Request $req){
+    public function updateBillStatus(Request $req){
         $ss = XAuthService::verifyAuth($req,-1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-        return JDV::raw($this->vendors->updateVendorStatus($req->status_id,$id,$ss));
+        return JDV::raw($this->bills->updateBillStatus($req->status_id,$id,$ss));
 
     }
 

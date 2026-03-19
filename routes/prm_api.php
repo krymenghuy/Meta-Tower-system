@@ -258,8 +258,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/list-paginate', [BillController::class, 'getListBill']);
     Route::post('/details', [BillController::class, 'billDetails']);
     Route::post('/form-options', [BillController::class, 'getFormOptions']);
-    Route::post('/delete', [BillController::class, 'deleteReservation']);
-    Route::post('/update-status', [BillController::class, 'updateReservationStatus']);
+    Route::post('/delete', [BillController::class, 'deleteBill']);
+    Route::post('/update-status', [BillController::class, 'updateBillStatus']);
 });
 
 

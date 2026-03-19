@@ -9,12 +9,12 @@ use DBX;
 use XPublicStorage;
 
 
-class Vendor //extends Model
+class Bill //extends Model
 {
 
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'vendors';
+    protected static $img_dir = 'bills';
     public function __construct($id = null, $userInfo = null)
     {
         $this->id = $id;
@@ -22,21 +22,23 @@ class Vendor //extends Model
 
     }
 
-    public function saveVendor($arr = [], $id = null, $ss = null)
+    public function saveBill($arr = [], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'name' => '1|string|1-150',
-            'phone_number' => '1|string|0-50',
-            'email' => '0|string|0-100',
-            'address' => '1|string|0-255',
-            'contact_person' => '1|string|0-100',
-            'contact_phone' => '1|string|0-25',
-            'vendor_type_id' => '1|number|exists=vendor_types.id',
-            'category_id' => '1|number|exists=vendor_categories.id',
-            'tax_number' => '0|string|0-30',
+            'bill_number'       => '1|string|1-100',
+            'purchase_order_id' => '0|number|exists=purchase_orders.id',
+            'vendor_id'         => '1|number|exists=vendors.id',
+            'bill_date'         => '1|date',
+            'due_date'          => '1|date',
+            'file_image'        => '0|string|0-255',
+            'sub_total'         => '1|number|min=0',
+            'tax_amount'        => '1|number|min=0',
+            'grand_total'       => '1|number|min=0',
+            'status_id'         => '1|number|exists=bill_statuses.id',
+            'remark'            => '0|string|0-255',
         ];
 
         $email_char = ['@', '.', '-', '_'];
@@ -48,103 +50,108 @@ class Vendor //extends Model
             return DV::error($res->error);
 
         $inputs = $res->values;
-
-        $exist = DB::table('vendors')
-            ->whereRaw('LOWER(name)=?', [strtolower($inputs['name'])])
+        $exist = DB::table('bills')
+            ->where('vendor_id', $inputs['vendor_id'])
+            ->whereRaw('LOWER(bill_number) = ?', [strtolower($inputs['bill_number'])])
             ->when($id, function ($q) use ($id) {
+                // If editing an existing bill, ignore its own ID
                 $q->where('id', '<>', $id);
             })
             ->exists();
 
-        if ($exist)
-            return DV::error('Vendor name already exists!');
+        if ($exist) {
+            return DV::error('This Bill Number has already been recorded for this Vendor!');
+        }
 
-        $id = DBX::saveData($ss, 'vendors', ['id' => $id], $inputs, [], 1);
+        $id = DBX::saveData($ss, 'bills', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
-            return DV::depends(1, ['vendors' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['bills' => $inputs, 'id' => $id]);
         }
 
-        return DV::error('Error saving vendor!');
+        return DV::error('Error saving bill record!');
     }
 
+   public function getListPaginate($arr = [], $ss = null)
+{
+    $d = (object) $arr;
+    $search_value = $d->search_value ?? null;
+    $vendor_id    = $d->vendor_id ?? null;
+    $status_id    = $d->status_id ?? null;
+    $current_page = $d->current_page ?? 1;
+    $per_page     = $d->per_page ?? 10;
 
-    public function getListPaginate($arr = [], $ss = null)
-    {
-        $d = (object) $arr;
-        $search_value = $d->search_value ?? null;
-        $type_id = $d->vendor_type_id ?? null;
-        $category_id = $d->category_id ?? null;
-        $status_id = $d->status_id ?? null;
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page) || !is_numeric($per_page)) {
-            return null;
-        }
-        $skip_rows = ($current_page - 1) * $per_page;
-        $str_search = "1=1";
-        $str_moreWhere = "2=2";
-        if ($search_value) {
-            $skip_rows = 0;
-            $search_value = escape_like_str($search_value);
-            $str_search = "(v.name Like '%" . $search_value . "%' OR v.phone_number Like '%" . $search_value . "%' OR v.contact_person Like '%" . $search_value . "%')";
-        }
-        if ($type_id) {
-            $str_moreWhere .= ' AND v.vendor_type_id =' . $type_id;
-        }
-        if ($status_id) {
-            $str_moreWhere .= ' AND v.status_id =' . $status_id;
-        }
-         if ($category_id) {
-            $str_moreWhere .= ' AND v.category_id =' . $category_id;
-        }
-        $updated_at = DBX::formatTime('v.updated_at', 'updated_at');
-
-
-        $query = DB::table('vendors as v')
-            ->join('vendor_types as vt', 'vt.id', 'v.vendor_type_id')
-            ->join('vendor_categories as vc', 'vc.id', 'v.category_id')
-            ->join('vendor_statuses as s', 's.id', 'v.status_id')
-            ->whereRaw($str_search)
-            ->whereRaw($str_moreWhere)
-            ->selectRaw("v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone,v.status_id, vt.name as type,vc.code,vc.name as category,v.tax_number,s.name as status,v.update_user,$updated_at")
-            ->orderBy('v.id', 'desc');
-        $clone_query = clone $query;
-        $count = $clone_query->count('v.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-
-
+    if (!is_numeric($current_page) || !is_numeric($per_page)) {
+        return null;
     }
+
+    $skip_rows = ($current_page - 1) * $per_page;
+    $str_search = "1=1";
+    $str_moreWhere = "2=2";
+
+    if ($search_value) {
+        $skip_rows = 0;
+        $search_value = escape_like_str($search_value);
+        // Search by Vendor Name, Bill Number, or Grand Total
+        $str_search = "(v.name Like '%" . $search_value . "%' 
+                        OR b.bill_number Like '%" . $search_value . "%' 
+                        OR b.grand_total Like '%" . $search_value . "%')";
+    }
+
+    // Filter by specific Vendor
+    if ($vendor_id) {
+        $str_moreWhere .= ' AND b.vendor_id =' . $vendor_id;
+    }
+
+    // Filter by Bill Status (e.g., Pending, Paid)
+    if ($status_id) {
+        $str_moreWhere .= ' AND b.status_id =' . $status_id;
+    }
+
+    // $updated_at = DBX::formatTime('b.updated_at', 'updated_at');
+    $query = DB::table('bills as b')
+        ->join('vendors as v', 'v.id', 'b.vendor_id')
+        ->join('bill_statuses as s', 's.id', 'b.status_id')
+        ->whereRaw($str_search)
+        ->whereRaw($str_moreWhere)
+        ->selectRaw(" b.id,b.bill_number,b.vendor_id,v.name as vendor_name,b.bill_date,b.due_date,b.sub_total,b.tax_amount,b.grand_total,b.status_id,s.name as status,b.file_image,b.update_user,b.remark,b.updated_at")
+        ->orderBy('b.id', 'desc');
+    $clone_query = clone $query;
+    $count = $clone_query->count('b.id');
+    $rows = $query->skip($skip_rows)->take($per_page)->get();
+    foreach($rows as $row){
+            $row = setOfficialDates($row,['updated_at', 'bill_date', 'due_date'],[],[]);
+        }
+    return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+}
     public static function vendorDetails($id, $ss = null)
     {
-        return DB::table('vendors as v')
-            ->where('v.id', $id)
-            ->selectRaw('v.id, v.name, v.phone_number, v.email, v.address, v.contact_person,v.contact_phone,v.vendor_type_id,v.category_id,v.tax_number,v.status_id')
+        return DB::table('bills as b')
+            ->where('b.id', $id)
+            ->selectRaw('b.id,b.bill_number,b.purchase_order_id,b.vendor_id,b.bill_date,b.due_date,b.file_image,b.sub_total,b.tax_amount,b.grand_total,b.status_id,b.remark')
             ->first();
     }
     public static function getFormOptions($id = null, $ss = null)
     {
-        $vendor_details = $id ? self::vendorDetails($id, $ss) : null;
+        $bill_details = $id ? self::billDetails($id, $ss) : null;
         return (object) [
-            'vendor_details' => $vendor_details,
-            'types' => GeneralSettings::options_vendor_types($ss),
-            'categories' => GeneralSettings::options_vendor_categories($ss),
-            'statuses' => GeneralSettings::options_vendor_statuses($ss),
+            'bill_details' => $bill_details,
+            'vendors'      => GeneralSettings::options_vendor($ss),
+            'statuses' => GeneralSettings::options_bill_statuses($ss),
         ];
     }
 
-    public function deleteVendor($id = null, $ss = null)
+    public function deleteBill($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
-        $vendor = DB::table('vendors')->select('id', 'status_id')->where('id', $id)->first();
-        if (!$vendor) {
-            return DV::error('Vendor not found.');
+        $bill = DB::table('bills')->select('id', 'status_id')->where('id', $id)->first();
+        if (!$bill) {
+            return DV::error('Bill not found.');
         }
-        if ($vendor->status_id == 1) {
-            return DV::error('Cannot delete active vendor.');
+        if ($bill->status_id == 2) {
+            return DV::error('Cannot delete unpaid bill.');
         }
-        $deleted = DB::table('vendors')->where('id', $id)->delete();
+        $deleted = DB::table('bills')->where('id', $id)->delete();
         return $deleted
             ? DV::depends($deleted, ['action' => 'deleted'])
             : DV::error('Delete failed.');
@@ -162,19 +169,19 @@ class Vendor //extends Model
             // 'spaces'=>$spaces
         ];
     }
-    function updateVendorStatus($status_id, $id = null, $ss = null)
+    function updateBillStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
-        $currentStatus = DB::table('vendors')->where('id', $id)->value('status_id');
+        $currentStatus = DB::table('bills')->where('id', $id)->value('status_id');
         if ($currentStatus == $status_id) {
             return DV::error('It is the same current status.');
         }
-        $x = DB::table('vendors')->where('id', $id)->update([
+        $x = DB::table('bills')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user' => $ss->full_name,
             'updated_at' => getNowTime(),
         ]);
-        return DV::depends($x, ['Vendor status', 'updated']);
+        return DV::depends($x, ['Bill status', 'updated']);
     }
 
 }
