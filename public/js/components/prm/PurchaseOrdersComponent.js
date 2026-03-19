@@ -11,6 +11,7 @@ var PurchaseOrdersComponent = (() => {
     mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
     mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
+    let _currentEditPoId = null;
 
 //     mThis.itemColumns = [
 //       {
@@ -198,6 +199,7 @@ var PurchaseOrdersComponent = (() => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + "px";
         }
         const tblPo = mThis.PoListView.getTable();
+        if (!tblPo.id) tblPo.id = '_purchases_list_table';
         mThis.initDropdownMenus(tblPo);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
 
@@ -217,21 +219,12 @@ var PurchaseOrdersComponent = (() => {
         mThis.Acfg = new ExpandableRowConfig(tblPo.id, {
             dontExpandByClickingOn: [
                 'dropdown-menu',
-                "btn-po-action"
+                'btn_dropdown_vendor_action'
             ],
             onOpen: (container, detail_tr, parent_tr) => {
-                const qtr = parent_tr;
-                let op = {
-                    id: qtr.dataset.id,
-                    // block_code: qtr.dataset.blockcode,
-                    // request_type_id: qtr.dataset.request_typeid,
-                    // request_id: qtr.dataset.requestid,
-                };
-                // op[qtr.dataset.field] = qtr.dataset.toid;
-                // if(op.student_id > 0 && op.request_type_id > 0)
-                // mThis.displayApprovalActivityDetails(detail_tr, op);
-                const div_wrapper = detail_tr.querySelector(".expandable-row-container");
-                renderPoItem(op, div_wrapper);
+                const poId = parent_tr.dataset.id;
+                if (!poId) return;
+                renderPoItem({ id: poId }, container);
             },
         });
 
@@ -277,6 +270,14 @@ var PurchaseOrdersComponent = (() => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case 'modify_purchase_order': {
+                        mThis.editPurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'delete_purchase_order': {
+                        mThis.deletePurchaseOrder(id, menuLink);
+                        break;
+                    }
                     case 'modify_vendor': {
                         mThis.editVendor(id, menuLink);
                         break;
@@ -293,69 +294,73 @@ var PurchaseOrdersComponent = (() => {
         }
         new VSDropdownMenu(menuOptopns);
     }
-     const renderPoItem = (d, elBody, onFinish = null , expandableRow = true) => {
-    vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`,{
-      id: d.id
-    },null,false).then((res) => {
-        let info = {};
-        if(res.status_code === 200)
-        {
-            let data = res.data;
-            info = data;
-            //(3232,info);
-        console.log(7777,info);
+    const renderPoItem = (po, container, onFinish) => {
+        if (!container) return;
+        const poId = po.id || po.po_id;
+        if (!poId) {
+            container.innerHTML = '<div class="alert alert-warning m-3">No purchase order selected.</div>';
+            return;
         }
-        let html = ``;
-        const tHead = `
-          <thead>
-              <tr>
-                  <th class="text-nowrap">Code</th>
-                  <th class="text-nowrap">Item</th>
-                  <th class="text-nowrap">QTY</th>
-                  <th class="text-nowrap">Unit</th>
-                  <th class="text-nowrap">Unit Price</th>
-                  <th class="text-nowrap">Total Price</th>
-              </tr>
-          </thead>
-        `;
-        let tBody = ``;
-        if(info.length > 0){
-          info.map(item => {
-            tBody += `<tr>
-                        <th class="text-nowrap">${item.code}</th>
-                        <th class="text-nowrap">${item.item_name}</th>
-                        <th class="text-nowrap">${item.qty}</th>
-                        <th class="text-nowrap">${item.unit}</th>
-                        <th class="text-nowrap">${item.unit_price}</th>
-                        <th class="text-nowrap">${item.total_price}</th>
-                    </tr>`
-          });
-        }else
-        tBody = ' <tr><th colspan="100%" class="text-nowrap text-center">No item</th></tr>'
+        container.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><div class="small text-muted mt-1">Loading items...</div></div>';
+        vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { id: poId, po_id: poId }, null, false)
+            .then((res) => {
+                const raw = res.data;
+                const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                const rows = items.map(item => `
+                    <tr>
+                        <td class="text-nowrap">${item.code ?? ''}</td>
+                        <td class="text-nowrap">${item.item_name ?? ''}</td>
+                        <td class="text-nowrap">${item.qty ?? ''}</td>
+                        <td class="text-nowrap">${item.unit ?? ''}</td>
+                        <td class="text-nowrap">${item.unit_price ?? ''}</td>
+                        <td class="text-nowrap">${item.total_price ?? ''}</td>
+                    </tr>
+                `).join('');
+                const tbody = items.length
+                    ? rows
+                    : '<tr><td colspan="6" class="text-center text-muted py-3">No items</td></tr>';
+                container.innerHTML = `
+                    <div class="p-3 rounded-3 table-responsive" style="background-color:#f8f9fa;">
+                        <table class="table table-sm table-bordered mb-0 w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-nowrap">Code</th>
+                                    <th class="text-nowrap">Item</th>
+                                    <th class="text-nowrap">QTY</th>
+                                    <th class="text-nowrap">Unit</th>
+                                    <th class="text-nowrap">Unit Price</th>
+                                    <th class="text-nowrap">Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tbody}</tbody>
+                        </table>
+                    </div>
+                `;
+                if (typeof onFinish === 'function') onFinish();
+            })
+            .catch(() => {
+                container.innerHTML = '<div class="alert alert-danger m-3">Failed to load purchase order items.</div>';
+            });
+    };
 
-        tBody ='<tbody>' + tBody + '</tbody>';
-        html += '<table class = "table w-100" >' + tHead + tBody + '</table>';
-
-        elBody.innerHTML = html;
-
-        elBody.classList.add("p-3","rounded-3","table-secondary");
-        if(!expandableRow){
-          elBody.querySelectorAll("select.modal-select2").forEach(el => {
-              $(el).select2({
-                  tags: true
-              });
-          });
-          // const elGroup = mThis.elBody.querySelector('.opt_group');
-          // elGroup.onchange = (e) => {
-          //     e.preventDefault();
-          //     mThis.options.group_id = e.target.value;
-          // };
-          // ApprovalDialog.setOption(elBody,d,elBody.querySelector("#pre_price"));
-          if (typeof onFinish === "function") onFinish();
+    mThis.editPurchaseOrder = (id, menuLink) => {
+        let poId = id;
+        if (!poId && menuLink) {
+            const btn = typeof menuLink === 'object' && menuLink.target ? menuLink.target : menuLink;
+            const el = (btn && btn.closest) ? btn.closest('[data-id]') : null;
+            if (el && el.dataset && el.dataset.id) poId = el.dataset.id;
+            const row = (btn && btn.closest) ? btn.closest('tr') : null;
+            if (!poId && row && row.dataset && row.dataset.id) poId = row.dataset.id;
         }
-
-    });
-  };
+        const op = {
+            id: poId || id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PoListView.showPage(mThis.getFilterData());
+            }
+        };
+        showPurchaseOrderDialog(op);
+    };
 
     mThis.editVendor = (id, menulink) => {
         let op = {
@@ -367,8 +372,27 @@ var PurchaseOrdersComponent = (() => {
             }
         };
 
-        PurchaseOrderDialog(op);
+        showPurchaseOrderDialog(op);
     }
+    mThis.deletePurchaseOrder = (id, menuLink) => {
+        cv_interact.confirm('Delete this Purchase Order?', {
+            transTitle: 'Delete Purchase Order',
+            context: 'delete',
+            confirmButtonText: "Delete"
+        }, function (e) {
+            if (e) {
+                vsapi.call(`${main_view.base_url}/prm/purchase/order/delete`, { id: id }, false, false, false).then(res => {
+                    if (res.status_code == 200) {
+                        cv_interact.success(res.message || 'Purchase order has been deleted.');
+                        mThis.PoListView.showPage(mThis.getFilterData());
+                    } else {
+                        cv_interact.error(res.error_message || 'Failed to delete purchase order.');
+                    }
+                });
+            }
+        });
+    };
+
     mThis.deleteVendor = (id, menuLink) => {
         let op = {
             id: id,
@@ -399,8 +423,137 @@ var PurchaseOrdersComponent = (() => {
 
      //create and show RemarkDialog on demand only
   const showPurchaseOrderDialog = (op) =>{
+    const loadPurchaseOrderForEdit = (me, editPoId) => {
+        if (!me || !editPoId) return Promise.resolve(null);
+        if (!me.purchaseItemsView || typeof me.purchaseItemsView.setData !== 'function') {
+            return Promise.reject(new Error('Purchase items view is not initialized'));
+        }
+        // Always reload on open to avoid stale/empty state after hard refresh or dialog reuse.
+
+        return vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, { id: editPoId }, null, false)
+            .then(formRes => {
+                if (!formRes || formRes.status_code !== 200) {
+                    throw new Error(formRes?.error_message || 'Failed to load purchase order details');
+                }
+                const titleEl2 = me.divModal && me.divModal.querySelector('.modal-title');
+                if (titleEl2) titleEl2.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>';
+
+                const formData = formRes.data || {};
+                const poDetails = formData.po_details || {};
+                const vendors = formData.vendors || [];
+                const vendorId = poDetails.vendor_id;
+                const vendor = vendors.find(v => Number(v.id) === Number(vendorId));
+
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || vendor.code || '') : '';
+                if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
+                if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
+
+                me._selectedVendorId = vendorId;
+
+                if (vendorId && (me.controls.phone_number || me.controls.address)) {
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(r => {
+                            const v = (r.data || {}).vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => {});
+                }
+
+                // ensure item select options are ready when binding rows
+                if (me._itemOptions && me.purchaseItemsView?.setSelectOptions) {
+                    const normalizedItemOptions = (me._itemOptions || []).map(o => {
+                        const v = o?.id ?? o?.value ?? o?.item_id;
+                        const l = o?.name ?? o?.label ?? o?.item_name;
+                        return { id: v, value: v, name: l, label: l };
+                    });
+                    me.purchaseItemsView.setSelectOptions('item_id', normalizedItemOptions, null);
+                }
+
+                return vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { id: editPoId, po_id: editPoId }, null, false);
+            })
+            .then(itemsRes => {
+                if (!itemsRes || itemsRes.status_code !== 200) {
+                    throw new Error(itemsRes?.error_message || 'Failed to load purchase order items');
+                }
+                const raw = itemsRes.data;
+                const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
+
+                const rows = items.map(it => {
+                    const unitNum = Number(it.unit);
+                    const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
+                    return {
+                        item_id: it.item_id,
+                        qty: it.qty,
+                        unit: unitValue,
+                        unit_price: it.unit_price || 0,
+                        total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
+                        code: it.code || ''
+                    };
+                });
+
+                // ItemsView implementations differ; `setData()` does not always bind into the grid.
+                // Prefer rebuilding via `addRow()` when available (used elsewhere, e.g. InvoiceComponent).
+                if (typeof me.purchaseItemsView.addRow === 'function') {
+                    if (typeof me.purchaseItemsView.setData === 'function') me.purchaseItemsView.setData(null);
+                    rows.forEach(r => me.purchaseItemsView.addRow(r));
+                } else {
+                    me.purchaseItemsView.setData(rows);
+                }
+                // Remove the initial empty row if the grid auto-creates one.
+                if (typeof me.purchaseItemsView.getItems === 'function' && typeof me.purchaseItemsView.setData === 'function') {
+                    const cur = me.purchaseItemsView.getItems() || [];
+                    const cleaned = cur.filter((it) => {
+                        const itemId = String(it?.item_id ?? '').trim();
+                        const qty = Number(it?.qty ?? 0);
+                        const price = Number(it?.unit_price ?? it?.price ?? 0);
+                        return itemId !== '' || qty > 0 || price > 0;
+                    });
+                    if (cleaned.length !== cur.length) {
+                        me.purchaseItemsView.setData(cleaned);
+                    }
+                }
+                if (typeof me.purchaseItemsView.render === 'function') me.purchaseItemsView.render();
+                if (typeof me.purchaseItemsView.refresh === 'function') me.purchaseItemsView.refresh();
+                if (typeof me.purchaseItemsView.draw === 'function') me.purchaseItemsView.draw();
+                if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
+                if (!items.length) {
+                    cv_interact.warning('This purchase order has no items (items-by-po returned empty).');
+                }
+                if (me.purchaseItemsView?.getItems) {
+                    console.log('[PO] ItemsView getItems after setData', me.purchaseItemsView.getItems());
+                }
+                return items;
+            });
+    };
     PurchaseOrderDialog = PurchaseOrderDialog || new GeneralDialog({
         cssClass:"modal-xl vs-modal",
+        override: {
+            // Prevent GeneralDialog.setData() from clearing ItemsView row inputs/selects.
+            // GeneralDialog's default setData targets all `.data-input` elements; ItemsView uses similar controls.
+            setData: (dlg, data) => {
+                data = data || {};
+                const rootEl = dlg?.divModal;
+                if (!rootEl || !rootEl.querySelectorAll) return;
+
+                rootEl.querySelectorAll('.data-input').forEach((el) => {
+                    if (el.closest && el.closest('#purchase_item_list')) return;
+                    const field = el.dataset?.field || el.getAttribute('name');
+                    if (!field) return;
+                    const val = data[field] ?? '';
+                    if (el.tagName === 'SELECT') {
+                        el.value = val;
+                        el.dispatchEvent(new Event('change'));
+                    } else if (el.tagName === 'IMG') {
+                        el.setAttribute('src', val);
+                    } else {
+                        el.value = val;
+                    }
+                });
+            },
+        },
         createContent:()=>{
           return `
             <div class="row mb-4">
@@ -410,9 +563,12 @@ var PurchaseOrdersComponent = (() => {
                         <span class="mx-2 fw-bold">:</span>
                         <input
                             name="vendor"
-                            class="data-input form-control flex-grow-1"
-                            data-field="vendor_id"
+                            class="form-control flex-grow-1"
                             placeholder="">
+                        <input type="hidden"
+                            name="vendor_id"
+                            class="data-input"
+                            data-field="vendor_id">
                     </div>
                     <div class="d-flex align-items-center mb-2">
                         <span class="fw-bold" style="min-width:90px;">Phone</span>
@@ -459,6 +615,34 @@ var PurchaseOrdersComponent = (() => {
                 <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
                     <div id="purchase_item_list" class="purchase-item-list"></div>
                 </div>
+                <div class="col-lg-12 mt-3 d-flex justify-content-end">
+                    <div class="p-3 rounded-3 shadow-sm border" style="background-color:#fff; min-width:280px;">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Sub Total</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="po_subtotal_display" class="ms-2">$ 0.00</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Discount</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input type="number" name="discount_value" class="data-input form-control ms-2" data-field="discount_value" style="width:80px" value="0" min="0" step="0.01" placeholder="0">
+                            <select name="discount_type" class="data-input form-control ms-1" data-field="discount_type" style="width:60px">
+                                <option value="percent">%</option>
+                                <option value="amount">$</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Tax</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="po_tax_display" class="ms-2">$ 0.00</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Total</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="po_total_display" class="ms-2 fw-bold">$ 0.00</span>
+                        </div>
+                    </div>
+                </div>
 
         </div>
         `;
@@ -472,35 +656,57 @@ var PurchaseOrdersComponent = (() => {
             // },
         ],
         contentCreated:(me)=>{
-           me.searchVendor = VSSearchInput.init(me.controls.vendor, {
-                type: 'select',
-                prefetch: true,
-                query: {
-                    from: 'vendors',
-                    select: ['id', 'name', 'code', 'tax_number', 'phone_number', 'address'],
-                    searchFields: { name: 'LIKE', phone_number: 'LIKE' }
-                },
-                columns: { name: 'Name', phone_number: 'Phone' },
-                showColumnHeader: true,
-                placeholder: 'Search vendor',
-                onSelect: (vendor) => {
-                    me._selectedVendorId = vendor.id;
-
-                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`,
-                    { vendor_id: vendor.id }, {})
+            const applyVendorInfo = (vendorId) => {
+                me._selectedVendorId = vendorId || '';
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (!vendorId) {
+                    if (me.controls.phone_number) me.controls.phone_number.value = '';
+                    if (me.controls.address) me.controls.address.value = '';
+                    return;
+                }
+                vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
                     .then(res => {
                         const d = res.data || {};
                         const v = d.vendor || {};
+                        if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                        if (me.controls.address) me.controls.address.value = v.address || '';
+                    })
+                    .catch(() => {});
+            };
 
-                        me.controls.vendor.value = v.name || '';
-                        me.controls.phone_number.value = v.phone_number || '';
-                        me.controls.address.value = v.address || '';
-                         me._selectedVendorId = vendor.id;
-                    });
+            // Keep the same dropdown UI style as screenshot (VSSearchInput),
+            // but source data from purchase order form-options vendors list.
+            if (me.controls.vendor) {
+                me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                    type: 'select',
+                    prefetch: true,
+                    minChars: 0,
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/purchase/order/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const vendors = res?.data?.vendors || [];
+                        return (Array.isArray(vendors) ? vendors : []).map(v => ({
+                            ...v,
+                            vendor: v.vendor || v.name || v.vendor_name || v.code || '',
+                            phone_number: v.phone_number || v.contact_phone || v.phone || ''
+                        }));
+                    },
+                    columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
+                    showColumnHeader: true,
+                    placeholder: 'Search vendor',
+                    onSelect: (vendor) => {
+                        const id = vendor?.id || '';
+                        me.controls.vendor.value = vendor?.vendor || '';
+                        applyVendorInfo(id);
+                    }
+                });
+
+                // prefill in modify mode
+                if (me._selectedVendorId) {
+                    applyVendorInfo(me._selectedVendorId);
                 }
-            });
-
-            me.searchVendor.reset('');
+            }
             me.purchaseItemsView = new ItemsView('purchase_item_list', {
                 columns: [
                     { name:"item_id", transTitle:"titles.Item", displayType:"select" },
@@ -516,24 +722,73 @@ var PurchaseOrdersComponent = (() => {
                 showColumnHeaders: true,
                 showAddLineButton: true,
                 addLineButtonText: 'Add Item',
-                onItemChange:async(row_id, item, col_name, td, tr) => {
-                const p = {item_id : item.item_id || item.id, vendor_id : me.dataOptions.vendor_id || me.dataOptions.owner_id};
-                const res = await vsapi.call(`${main_view.base_url}/prm/item/details`, p,false);
-                const d = res.data ?? {};
-                me.current_item = d;
-                tr.dataset.code = d.code;
+                onItemChange: async (row_id, item, col_name, td, tr) => {
+                    if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
+
+                    if (col_name !== 'item_id') return;
+
+                    const itemId = item.item_id || item.id;
+                    if (!itemId) return;
+
+                    const res = await vsapi.call(`${main_view.base_url}/prm/item/details`, {
+                        item_id: itemId,
+                        vendor_id: me.dataOptions.vendor_id || me.dataOptions.owner_id
+                    }, false);
+                    const itemDetails = res.data || {};
+                    me.current_item = itemDetails;
+                    tr.dataset.code = itemDetails.code || '';
+
+                    if (!itemDetails.unit || !me.purchaseItemsView.setCellValue) return;
+
+                    const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
+                    const unitNum = Number(itemDetails.unit);
+                    const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(itemDetails.unit).toLowerCase()] ?? itemDetails.unit);
+                    me.purchaseItemsView.setCellValue(tr, 'unit', unitValue);
+
+                    if (typeof me.updatePOTotals === 'function') me.updatePOTotals();
                 },
                 "keyup": (e, col_name, td) => {
                     const tr = td.parentNode;
                     const item = me.purchaseItemsView.getDataRow(tr,'code');
                 },
             });
+            const itemListEl = me.divModal.querySelector('#purchase_item_list');
+            if (itemListEl) {
+                itemListEl.addEventListener('input', () => { if (typeof me.updatePOTotals === 'function') me.updatePOTotals(); });
+                itemListEl.addEventListener('change', () => { if (typeof me.updatePOTotals === 'function') me.updatePOTotals(); });
+            }
             me.purchaseItemsView.setSelectOptions("unit", [
                     { value: 1, label: "pcs" },
                     { value: 2, label: "kg" },
                     { value: 3, label: "box" },
                     { value: 4, label: "meter" },
                 ],'',{value:'id', label:'Select unit'});
+            const formatMoney = (n) => '$ ' + (Number(n).toFixed(2));
+            me.updatePOTotals = () => {
+                if (!me.divModal || !me.purchaseItemsView) return;
+                const items = me.purchaseItemsView.getItems ? me.purchaseItemsView.getItems() : [];
+                let subTotal = 0;
+                if (Array.isArray(items)) {
+                    items.forEach(it => {
+                        const t = Number(it.total_price) || (Number(it.qty) * Number(it.unit_price || 0));
+                        subTotal += t;
+                    });
+                }
+                const discountEl = me.controls.discount_value || me.divModal.querySelector('[data-field="discount_value"]');
+                const discountTypeEl = me.controls.discount_type || me.divModal.querySelector('[data-field="discount_type"]');
+                const discountVal = Number(discountEl?.value) || 0;
+                const discountType = (discountTypeEl?.value || 'percent') === 'percent' ? 'percent' : 'amount';
+                const discountAmount = discountType === 'percent' ? (subTotal * discountVal / 100) : discountVal;
+                const afterDiscount = Math.max(0, subTotal - discountAmount);
+                const taxAmount = 0;
+                const total = afterDiscount + taxAmount;
+                const subtotalEl = me.divModal.querySelector('#po_subtotal_display');
+                const taxEl = me.divModal.querySelector('#po_tax_display');
+                const totalEl = me.divModal.querySelector('#po_total_display');
+                if (subtotalEl) subtotalEl.textContent = formatMoney(subTotal);
+                if (taxEl) taxEl.textContent = formatMoney(taxAmount);
+                if (totalEl) totalEl.textContent = formatMoney(total);
+            };
             me.clear = ()=>{
                 for(const name in me.fields){
                 const el = me.fields[name];
@@ -545,9 +800,41 @@ var PurchaseOrdersComponent = (() => {
                     el.textContent = '';
                 }
                 }
+                if (me.controls.discount_value) me.controls.discount_value.value = '0';
+                if (me.controls.discount_type) me.controls.discount_type.value = 'percent';
                 me.purchaseItemsView.setData(null);
+                me.updatePOTotals();
+            };
+            ['discount_value', 'discount_type'].forEach(field => {
+                const el = me.controls[field];
+                if (el) {
+                    el.addEventListener('input', () => me.updatePOTotals());
+                    el.addEventListener('change', () => me.updatePOTotals());
+                }
+            });
+            me.updatePOTotals();
+        },
+        onShow: (me) => {
+            const editPoId = _currentEditPoId ?? me?._editPoId ?? (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ?? (me?.dataOptions && me.dataOptions.id);
+            console.log('[PO] onShow', { editPoId, hasItemsView: !!me?.purchaseItemsView });
+            if (!editPoId) return;
+
+            const tryLoad = (attempt = 0) => {
+                if (!me.purchaseItemsView || typeof me.purchaseItemsView.setData !== 'function') {
+                    if (attempt === 0) console.log('[PO] waiting for purchaseItemsView...');
+                    if (attempt < 60) return setTimeout(() => tryLoad(attempt + 1), 50);
+                    return cv_interact.error('Purchase items view not ready.');
+                }
+                loadPurchaseOrderForEdit(me, editPoId)
+                    .then((items) => console.log('[PO] loaded items', { editPoId, count: Array.isArray(items) ? items.length : null }))
+                    .catch((err) => {
+                        console.error('[PO] load failed', err);
+                        cv_interact.error(err?.message || 'Failed to load purchase order for edit.');
+                    });
             };
 
+            // Run after GeneralDialog internal setData() which can clear [name] controls.
+            setTimeout(() => tryLoad(0), 0);
         },
         buttons:[
            {
@@ -564,47 +851,61 @@ var PurchaseOrdersComponent = (() => {
              click:(me) =>{
                   let p = me.getData();
                   p.items = me.purchaseItemsView.getItems();
-
-                //   p.items = me.purchaseItemsView.getItems(null,['item_id','qty','unit','unit_price','total_price']);
-                  p.vendor_id =me._selectedVendorId;
-                  console.log(4444,me._selectedVendorId);
-
-                //   console.log(2,JSON.stringify(p,null,2));
-                  vsapi.call(`${main_view.base_url}/prm/purchase/order/save`,p,false).then(res =>{
-                      if(res.status_code ==200){
-                        cv_interact.success('Created Purchase Order success!');
+                  p.vendor_id = me._selectedVendorId;
+                  const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
+                  if (savePoId) p.id = savePoId;
+                  vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res =>{
+                      if (res.status_code == 200) {
+                        cv_interact.success(savePoId ? 'Purchase order updated.' : 'Purchase order created.');
                         me.hide(true);
                         PoListView.showPage(getFilterData());
-                      }else cv_interact.warning(res.error_message);
+                      } else cv_interact.warning(res.error_message);
                   });
              }
            }
         ],
        onPrepareForm:(me,data)=>{
-           //LocaleManager.translateZone(me.divModal); //This translation is done automatically
-           const title = me.divModal.querySelector('.modal-title');
-           title.innerHTML = `<h2 class="text-prm-custom text-start fw-bold">PURCHASE ORDER</h2>`;
-           //   me.controls.merchant_name.textContent = data.merchant.name;
-          me.purchaseItemsView.setSelectOptions('item_id',data.item,null);
-          if(me.dataOptions.id){
-            me.purchaseItemsView.setData(data.transfer.items,['sku','code']);
-          }else
-          me.clear();
+           const editPoId = _currentEditPoId ?? me._editPoId ?? (PurchaseOrderDialog && PurchaseOrderDialog._editPoId) ?? (me.dataOptions && me.dataOptions.id);
+           const isModify = !!editPoId;
+           const titleEl = me.divModal.querySelector('.modal-title');
+           if (titleEl) {
+               titleEl.innerHTML = isModify
+                   ? '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>'
+                   : '<h2 class="text-prm-custom text-start fw-bold">Create Purchase Order</h2>';
+           }
+           me._itemOptions = data.item || [];
+           if (me.purchaseItemsView && me.purchaseItemsView.setSelectOptions) {
+               me.purchaseItemsView.setSelectOptions('item_id', me._itemOptions, null);
+           }
+           // Only clear defaults when creating a new PO (not in modify mode).
+           // `onPrepareForm` may run before `contentCreated`, so don't reset edit state here.
+           if (!isModify) {
+               _currentEditPoId = null;
+               me.clear();
+           }
        },
        prepareFormOptions:{
-          modifyTitle: LocaleManager.trans("Edit Purchase Order","titles"),
-          createTitle: LocaleManager.trans("Create Purchase Order","titles"),
+          modifyTitle: "Purchase Order",
+          createTitle: "Purchase Order",
           targetProp:"item_details",
           api:{
             endpoint:`${main_view.base_url}/prm/item/form-options`,
             params:(dataOptions)=>{
-              return {id: dataOptions?.id, owner_id: dataOptions?.owner_id};
+              return { owner_id: dataOptions?.owner_id };
             }
           }
        }
     });
 
+    _currentEditPoId = op.id || null;
+    PurchaseOrderDialog._editPoId = op.id || null;
     PurchaseOrderDialog.show(op);
+    if (op.id) {
+        setTimeout(() => {
+            const t = PurchaseOrderDialog.divModal && PurchaseOrderDialog.divModal.querySelector('.modal-title');
+            if (t) t.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Modify Purchase Order</h2>';
+        }, 250);
+    }
   };
     mThis.prepareFormOptions = (onFinish) => {
         vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, null, null, null)

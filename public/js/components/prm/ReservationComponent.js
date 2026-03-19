@@ -394,12 +394,7 @@ var ReservationComponent = (() => {
                 const d = res.status_code == 200 ? res.data : {};
                 VSUtil.setComboItems(
                     mThis.elFilter_status,
-                    d.reservation_statuses,
-                    "id",
-                    "reservation_status",
-                    "",
-                    "Statuses",
-                    "",
+                    d.reservation_statuses, "id", "reservation_status", "", "All Status", "",
                 );
                 if (typeof onFinish === "function") onFinish();
             });

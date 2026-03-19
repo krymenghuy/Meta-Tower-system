@@ -148,8 +148,8 @@ function formatOfficialTime(?string $dateTime): ?string
         return null;
     }
 }
- 
- 
+
+
 /**
  * Format date/time fields using official formats.
  *
@@ -219,7 +219,7 @@ function processOfficialColumn(&$row, string $definition, string $format): void
         // silently ignore invalid date
     }
 }
- 
+
 
 // function getAuthCode($d){
 

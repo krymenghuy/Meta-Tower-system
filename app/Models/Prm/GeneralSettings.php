@@ -435,7 +435,7 @@ class GeneralSettings //extends Model
     static function options_tenant($ss)
     {
         return DB::table('tenants')->selectRaw('id,name AS tenant')->get();
-    }
+    } 
     static function options_tenant_status($ss)
     {
         return DB::table('tenant_statuses')->selectRaw('id,name')->get();
@@ -528,6 +528,7 @@ class GeneralSettings //extends Model
     {
         return DB::table('request_statuses')->selectRaw('id,name')->get();
     }
+    
      static function options_vendor_types($ss)
     {
         return DB::table('vendor_types')->selectRaw('id,name as vendor_type')->get();
@@ -540,6 +541,10 @@ class GeneralSettings //extends Model
     static function options_vendor_statuses($ss)
     {
         return DB::table('vendor_statuses')->selectRaw('id,name as vendor_status')->get();
+    }
+    static function options_bill_statuses($ss)
+    {
+        return DB::table('bill_statuses')->selectRaw('id,name as bill_status')->get();
     }
     static function options_contracts($ss)
     {
@@ -609,7 +614,10 @@ class GeneralSettings //extends Model
     }
     static function options_vendor($ss)
     {
-        return DB::table('vendors')->where('status_id',1)->selectRaw('id,name AS vendor')->get();
+        return DB::table('vendors')
+            ->where('status_id', 1)
+            ->selectRaw('id, name AS vendor, phone_number')
+            ->get();
     }
      static function options_po_status($ss)
     {
