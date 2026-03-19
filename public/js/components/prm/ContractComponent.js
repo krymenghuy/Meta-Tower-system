@@ -1,13 +1,11 @@
 "use strict";
 
-var ContractComponent = new (function() {
+var ContractComponent = new (function () {
     const mThis = this;
     mThis.title_prop = "Contract Management";
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_contract_component"
-    );
+    mThis.self = main_view.VSAppContent.querySelector("#_main_contract_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnAddContract");
-    mThis.btnPDF = mThis.self.querySelector("#_asusp_btn_pdf");
+    mThis.btnPDF = mThis.self.querySelector('#_asusp_btn_pdf');
     // mThis.elTenant = mThis.self.querySelector('#tenant_id');
     // mThis.elBusinessType = mThis.self.querySelector('#business_type_id');
     // mThis.elSpaceType = mThis.self.querySelector('#space_type_id');
@@ -15,83 +13,73 @@ var ContractComponent = new (function() {
     mThis.elStatus = mThis.self.querySelector("#el_contract_status_id");
     mThis.elSearch = mThis.self.querySelector("#_search_contract");
 
+
+
     mThis.cols = [
         {
             title: "",
-            className: "align-middle"
+            className: "align-middle",
         },
         {
             transTitle: "titles.Name",
             className: "align-middle",
             data: (data, index) => `<div class="text-prm-custom">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ??
-                            ""}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.tenant_name ?? ''}</span>
                     </div>
-                    `
+                    `,
         },
         {
             transTitle: "titles.Contact Info",
             className: "align-middle",
-            data: data => {
-                return `<span class="d-block">${data.phone_number ?? ""}</span>
-                        <small class="d-block text-primary">${
-                            data.email
-                        }</small>`;
+            data: (data) => {
+                return `<span class="d-block">${data.phone_number ?? ''}</span>
+                        <small class="d-block text-primary">${data.email}</small>`;
             }
         },
-        {
+         {
             transTitle: "titles.Start Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                const displayDate =
-                    data.last_renewal_date && data.last_renewal_date.trim()
-                        ? data.last_renewal_date
-                        : data.start_date ?? "";
+                const displayDate = (data.last_renewal_date && data.last_renewal_date.trim()) ? data.last_renewal_date : (data.start_date ?? '');
                 return `<small class="px-2 py-1 bg-body-secondary text-nowrap text-muted rounded-5"><i class="fa-regular fa-clock"></i> ${displayDate}</small>`;
             }
         },
-        {
+         {
             transTitle: "titles.End Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<small class="px-2 py-1 bg-body-secondary text-muted text-nowrap rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ??
-                    ""}</smaLL>`;
+                return `<small class="px-2 py-1 bg-body-secondary text-muted text-nowrap rounded-5"><i class="fa-regular fa-clock"></i> ${data.end_date ?? ''}</smaLL>`;
             }
         },
         {
             transTitle: "titles.Business",
             className: "align-middle",
-            data: data => {
-                return `<span class="text-nowrap text-prm-custom">${data.business_type ??
-                    ""}</span>`;
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.business_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Unit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ??
-                    ""}</span>`;
+                return `<span class="px-2 py-1 bg-prm-custom text-nowrap text-white rounded font-medium">${data.space_code ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Type",
             className: "align-middle",
-            data: data => {
-                return `<span class="text-nowrap text-prm-custom">${data.space_type ??
-                    ""}</span>`;
+            data: (data) => {
+                return `<span class="text-nowrap text-prm-custom">${data.space_type ?? ''}</span>`;
             }
         },
         {
             transTitle: "titles.Price",
             className: "align-middle",
-            data: data => {
-                const cur = data.cur_symbol ?? "$";
-                const price = data.price
-                    ? Number(data.price).toLocaleString()
-                    : "-";
+            data: (data) => {
+                const cur = data.cur_symbol ?? '$';
+                const price = data.price ? Number(data.price).toLocaleString() : '-';
 
-                if (data.price_type === "total") {
+                if (data.price_type === 'total') {
                     return `
                         <span class="fw-semibold">
                             ${cur} ${price}
@@ -107,7 +95,7 @@ var ContractComponent = new (function() {
                         <small class="text-muted">/sqm</small>
                     </span>
                     <div class="text-muted small">
-                        ${data.sqm_size ?? "-"} sqm
+                        ${data.sqm_size ?? '-'} sqm
                     </div>
                 `;
             }
@@ -115,15 +103,13 @@ var ContractComponent = new (function() {
         {
             title: "DEPOSIT",
             className: "align-middle",
-            data: data => {
-                const cur = data.cur_symbol ?? "$";
+            data: (data) => {
+                const cur = data.cur_symbol ?? '$';
                 const amount = data.deposit ?? data.deposit_amount;
-                if (amount === null || amount === undefined || amount === "") {
+                if (amount === null || amount === undefined || amount === '') {
                     return `<span class="text-muted">-</span>`;
                 }
-                return `<span class="fw-semibold">${cur} ${Number(
-                    amount
-                ).toLocaleString()}</span>`;
+                return `<span class="fw-semibold">${cur} ${Number(amount).toLocaleString()}</span>`;
             }
         },
 
@@ -133,43 +119,41 @@ var ContractComponent = new (function() {
             data: (data, index, tr) => {
                 return `
                     <div class="text-prm-custom">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ??
-                            "N/A"}</span>
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.remarks ?? 'N/A'}</span>
                     </div>
                 `;
             }
         },
-        {
+         {
             transTitle: "titles.Status",
             className: "align-middle",
-            data: data => {
-                const status = (data.status ?? "").toLowerCase();
+            data: (data) => {
 
-                let cls =
-                    "badge rounded-5 border border-warning text-warning bg-warning-subtle";
-                let icon = "bi-check-circle-fill";
-                let dot = "bg-warning";
+                const status = (data.status ?? '').toLowerCase();
 
-                if (status === "active") {
-                    cls =
-                        "badge rounded-4 shadow-sm border border-success text-success bg-success-subtle";
-                    icon = "fa-regular fa-circle-check";
-                    dot = "bg-success";
-                } else if (status === "pending") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle";
-                    icon = "fa-regular fa-hourglass-half";
-                    dot = "bg-warning";
-                } else if (status === "expired") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle";
-                    icon = "fa-regular fa-clock";
-                    dot = "bg-danger";
-                } else if (status === "terminated") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle";
-                    icon = "fa-regular fa-circle-xmark";
-                    dot = "bg-warning";
+                let cls  = 'badge rounded-5 border border-warning text-warning bg-warning-subtle';
+                let icon = 'bi-check-circle-fill';
+                let dot  = 'bg-warning';
+
+                if (status === 'active') {
+                    cls  = 'badge rounded-4 shadow-sm border border-success text-success bg-success-subtle';
+                    icon = 'fa-regular fa-circle-check';
+                    dot  = 'bg-success';
+                }
+                else if (status === 'pending') {
+                    cls  = 'badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle';
+                    icon = 'fa-regular fa-hourglass-half';
+                    dot  = 'bg-warning';
+                }
+                else if (status === 'expired') {
+                    cls  = 'badge rounded-5 shadow-sm border border-danger text-danger bg-danger-subtle';
+                    icon = 'fa-regular fa-clock';
+                    dot  = 'bg-danger';
+                }
+                else if (status === 'terminated') {
+                    cls  = 'badge rounded-5 shadow-sm border border-dark text-white bg-dark';
+                    icon = 'fa-regular fa-circle-xmark';
+                    dot  = 'bg-dark';
                 }
 
                 const statusLabel = (status === 'terminated') ? 'Terminated' : (data.status ?? '');
@@ -179,34 +163,26 @@ var ContractComponent = new (function() {
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
 
-                        <span class="text-capitalize">${data.status ??
-                            ""}</span>
+                        <span class="text-capitalize">${statusLabel}</span>
                     </span>
                 `;
-            }
+            },
         },
         {
             transTitle: "titles.Updated By",
-            className: "align-middle text-nowrap",
+            className: 'align-middle text-nowrap',
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ??
-                        ""}</span>
-                    <small class="text-muted">${data.updated_at ?? ""}</small>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold">${data.update_user ?? ''}</span>
+                    <small class="text-muted">${data.updated_at ?? ''}</small>
                 </div>`;
             }
         },
         {
-            className: "col_action align-middle",
-            data: data => `
+            className: 'col_action align-middle',
+            data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${
-                        data.id
-                    }" data-statusid="${
-                data.status_id
-            }" data-status="${data.status ??
-                ""}" data-end-date="${data.end_date ??
-                ""}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn_contract_action" data-id="${data.id}" data-statusid="${data.status_id}" data-status="${data.status ?? ''}" data-end-date="${data.end_date ?? ''}" aria-haspopup="true" aria-expanded="false">
                        <button class="btn btn-sm  rounded-2 text-nowrap">
                             <span>
                                 <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
@@ -214,32 +190,29 @@ var ContractComponent = new (function() {
                        </button>
                     </a>
                 </div>`
-        }
+        },
     ];
 
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.ContractListView = new ListView("_contract_list", {
+        mThis.ContractListView = new ListView('_contract_list', {
             fetchApi: `${main_view.base_url}/prm/contract/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-2 header-uppercase",
+            tableClass: 'table table--white rounded-2 header-uppercase',
             rowCreated: (data, index, tr) => {
                 tr.dataset.statusid = data.status_id;
-                tr.dataset.status = data.status ?? "";
-                tr.dataset.endDate = data.end_date ?? "";
-                tr.classList.add("contract");
-                tr.setAttribute(
-                    "id",
-                    ["contract_invoice_id", data.id].join("")
-                );
+                tr.dataset.status = data.status ?? '';
+                tr.dataset.endDate = data.end_date ?? '';
+                tr.classList.add('contract');
+                tr.setAttribute('id', ['contract_invoice_id', data.id].join(''));
             },
             listContainerClass: null
         });
 
-        mThis.btnAdd.onclick = function(e) {
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             const op = {
                 id: null,
@@ -253,43 +226,41 @@ var ContractComponent = new (function() {
 
         mThis.pr_tbl = mThis.ContractListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
-        sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
+        sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
-            sh_parent.style.maxHeight = window.innerHeight - 200 + "px";
-        };
+            sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
+        }
 
         mThis.tblContract = mThis.ContractListView.getTable();
         mThis.initDropdownMenus(mThis.tblContract);
 
-        if (!mThis.tblContract.id)
-            mThis.tblContract.id = "_contract_list_table";
+        if (!mThis.tblContract.id) mThis.tblContract.id = '_contract_list_table';
         new ExpandableRowConfig(mThis.tblContract.id, {
-            dontExpandByClickingOn: ["btn_contract_action"],
+            dontExpandByClickingOn: ['btn_contract_action'],
             onOpen: (container, detail_tr, parent_tr) => {
-                const rawId = parent_tr.getAttribute("id") || "";
-                const id = rawId.replace(/^contract_invoice_id/, "");
-                if (id && !Number.isNaN(Number(id)))
-                    mThis.displayContractDetail(container, id);
+                const rawId = parent_tr.getAttribute('id') || '';
+                const id = rawId.replace(/^contract_invoice_id/, '');
+                if (id && !Number.isNaN(Number(id))) mThis.displayContractDetail(container, id);
             }
         });
 
         // Filter change handler with tooltip reinitialization
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
-            el.onchange = e => {
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = (e) => {
                 e.preventDefault();
                 mThis.ContractListView.showPage(mThis.getFilterData());
 
                 // Re-initialize tooltips after filter
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip("dispose");
+                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
-            };
+            }
         });
 
         // Search handler with tooltip reinitialization
-        mThis.elSearch.addEventListener("keyup", e => {
+        mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -297,7 +268,7 @@ var ContractComponent = new (function() {
 
                 // Re-initialize tooltips after search
                 setTimeout(() => {
-                    $('[data-bs-toggle="tooltip"]').tooltip("dispose");
+                    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }, 500);
             }, 250);
@@ -308,10 +279,10 @@ var ContractComponent = new (function() {
 
     mThis.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value
+            search_value: mThis.elSearch.value,
         };
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach(el => {
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
@@ -319,53 +290,39 @@ var ContractComponent = new (function() {
         return p;
     };
 
-    mThis.parseSafeDate = value => {
+    mThis.parseSafeDate = (value) => {
         if (!value) return null;
         const raw = String(value).trim();
         if (!raw) return null;
 
         const monthMap = {
-            jan: 0,
-            feb: 1,
-            mar: 2,
-            apr: 3,
-            may: 4,
-            jun: 5,
-            jul: 6,
-            aug: 7,
-            sep: 8,
-            oct: 9,
-            nov: 10,
-            dec: 11
+            jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+            jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
         };
 
         if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-            const [year, month, day] = raw.split("-").map(Number);
+            const [year, month, day] = raw.split('-').map(Number);
             return new Date(year, month - 1, day);
         }
 
         if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
-            const [dayStr, monthStr, yearStr] = raw.split("-");
+            const [dayStr, monthStr, yearStr] = raw.split('-');
             const month = monthMap[monthStr.toLowerCase()];
             if (month === undefined) return null;
             return new Date(Number(yearStr), month, Number(dayStr));
         }
 
         if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
-            const [day, month, year] = raw.split("/").map(Number);
+            const [day, month, year] = raw.split('/').map(Number);
             return new Date(year, month - 1, day);
         }
 
         const parsed = new Date(raw);
         if (Number.isNaN(parsed.getTime())) return null;
-        return new Date(
-            parsed.getFullYear(),
-            parsed.getMonth(),
-            parsed.getDate()
-        );
+        return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
     };
 
-    mThis.isWithinNextThreeMonths = date => {
+    mThis.isWithinNextThreeMonths = (date) => {
         if (!date) return false;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -379,36 +336,16 @@ var ContractComponent = new (function() {
     mThis.displayContractDetail = (container, id) => {
         container.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div></div>`;
         Promise.all([
-            vsapi.call(
-                `${main_view.base_url}/prm/contract/details`,
-                { id },
-                null,
-                null
-            ),
-            vsapi.call(
-                `${main_view.base_url}/prm/contract/list-renewals`,
-                { contract_id: id, per_page: 50 },
-                null,
-                null
-            )
+            vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null),
+            vsapi.call(`${main_view.base_url}/prm/contract/list-renewals`, { contract_id: id, per_page: 50 }, null, null)
         ])
             .then(([detailsRes, renewalsRes]) => {
                 if (detailsRes.status_code !== 200) {
                     container.innerHTML = `<div class="alert alert-danger m-3">Failed to load contract details</div>`;
                     return;
                 }
-                const renewals =
-                    renewalsRes.status_code === 200 &&
-                    renewalsRes.data &&
-                    renewalsRes.data.data
-                        ? renewalsRes.data.data
-                        : [];
-                mThis.renderContractDetail(
-                    container,
-                    detailsRes.data || {},
-                    id,
-                    renewals
-                );
+                const renewals = (renewalsRes.status_code === 200 && renewalsRes.data && renewalsRes.data.data) ? renewalsRes.data.data : [];
+                mThis.renderContractDetail(container, detailsRes.data || {}, id, renewals);
             })
             .catch(() => {
                 container.innerHTML = `<div class="alert alert-danger m-3">Network error loading contract details</div>`;
@@ -416,78 +353,43 @@ var ContractComponent = new (function() {
     };
 
     mThis.renderContractDetail = (container, d, contractId, renewals) => {
-        const cur = d.cur_symbol != null ? d.cur_symbol : "$";
-        const priceLabel = d.price_type === "total" ? "Whole Room" : "Per sqm";
-        const priceVal =
-            d.price != null
-                ? Number(d.price).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                  })
-                : "—";
-        const depositVal =
-            d.deposit != null && d.deposit !== ""
-                ? Number(d.deposit).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                  })
-                : "—";
+        const cur = (d.cur_symbol != null) ? d.cur_symbol : '$';
+        const priceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per sqm';
+        const priceVal = d.price != null ? Number(d.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        const depositVal = (d.deposit != null && d.deposit !== '') ? Number(d.deposit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
 
         const renewalsList = Array.isArray(renewals) ? renewals : [];
-        const currentSpaceCode = (d.space_code ?? "").trim();
-        const escapeHtml = str => {
-            if (!str) return "";
-            const div = document.createElement("div");
+        const currentSpaceCode = (d.space_code ?? '').trim();
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         };
-        let renewalTableHtml = "";
+        let renewalTableHtml = '';
         if (renewalsList.length > 0) {
-            const unitPillClass =
-                "px-2 py-1 bg-prm-custom text-white rounded font-medium";
-            const rows = renewalsList
-                .map(r => {
-                    const spaceCode = (r.space_code ?? "").trim() || "—";
-                    const unitChanged =
-                        currentSpaceCode &&
-                        spaceCode !== "—" &&
-                        spaceCode !== currentSpaceCode;
-                    const unitCell = unitChanged
-                        ? `<span class="d-inline-flex align-items-center gap-1"><span class="${unitPillClass}">${escapeHtml(
-                              spaceCode
-                          )}</span><span class="badge bg-info text-white" style="font-size:0.7rem;">New unit</span></span>`
-                        : `<span class="${unitPillClass}">${escapeHtml(
-                              spaceCode
-                          )}</span>`;
-                    return `
+            const unitPillClass = 'px-2 py-1 bg-prm-custom text-white rounded font-medium';
+            const rows = renewalsList.map((r) => {
+                const spaceCode = (r.space_code ?? '').trim() || '—';
+                const unitChanged = currentSpaceCode && spaceCode !== '—' && spaceCode !== currentSpaceCode;
+                const unitCell = unitChanged
+                    ? `<span class="d-inline-flex align-items-center gap-1"><span class="${unitPillClass}">${escapeHtml(spaceCode)}</span><span class="badge bg-info text-white" style="font-size:0.7rem;">New unit</span></span>`
+                    : `<span class="${unitPillClass}">${escapeHtml(spaceCode)}</span>`;
+                return `
                 <tr>
-                    <td class="align-middle">${(r.renewal_date ?? "").trim() ||
-                        "—"}</td>
-                    <td class="align-middle">${(r.start_date ?? "").trim() ||
-                        "—"}</td>
-                    <td class="align-middle">${(r.end_date ?? "").trim() ||
-                        "—"}</td>
+                    <td class="align-middle">${(r.renewal_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${(r.start_date ?? '').trim() || '—'}</td>
+                    <td class="align-middle">${(r.end_date ?? '').trim() || '—'}</td>
                     <td class="align-middle">${unitCell}</td>
-                    <td class="text-break align-middle">${(
-                        r.remarks ?? ""
-                    ).trim() || "—"}</td>
-                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml(
-                        (r.update_user ?? "").trim()
-                    ) || "—"}</span><small class="text-muted">${(
-                        r.updated_at ?? ""
-                    ).trim() || ""}</small></div></td>
+                    <td class="text-break align-middle">${(r.remarks ?? '').trim() || '—'}</td>
+                    <td class="align-middle"><div class="d-flex flex-column"><span class="text-capitalize fw-semibold">${escapeHtml((r.update_user ?? '').trim()) || '—'}</span><small class="text-muted">${(r.updated_at ?? '').trim() || ''}</small></div></td>
                 </tr>`;
-                })
-                .join("");
+            }).join('');
             renewalTableHtml = `
                     <div class="card border-0 shadow-sm overflow-hidden">
                         <div class="card-header bg-transparent border-bottom py-2 px-3 d-flex align-items-center gap-2">
                             <h5 class="mb-0 fw-semibold text-dark">Renewal history</h5>
-                            <span class="badge bg-light text-dark border ms-auto">${
-                                renewalsList.length
-                            } ${
-                renewalsList.length === 1 ? "renewal" : "renewals"
-            }</span>
+                            <span class="badge bg-light text-dark border ms-auto">${renewalsList.length} ${renewalsList.length === 1 ? 'renewal' : 'renewals'}</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -523,31 +425,29 @@ var ContractComponent = new (function() {
 
 
                  ${renewalTableHtml}`;
+
     };
 
-    mThis.initDropdownMenus = table => {
+    mThis.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_contract_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Generate Invoice"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Generate Invoice"></span>',
                     icon: `<i class="fa-solid fa-dollar-sign text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "generate_invoice"
                 },
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Modify Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_contract"
                 },
                 {
-                    html:
-                        '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Renew Contract"></span>',
                     icon: `<i class="fa-solid fa-arrows-rotate fs-5 text-prm-custom"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "renew_contract"
@@ -559,9 +459,9 @@ var ContractComponent = new (function() {
                     name: "terminate_contract"
                 },
                 {
-                    html: '<span class="ps-0"vslang="titles.Print Contract"></span>',
+                    html: '<span class="ps-2 " vslang="titles.Print Contract"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-info"></i>`,
-                    cssClass: "border-bottom px-2",
+                    cssClass: "border-bottom pb-2",
                     name: "print_contract"
                 },
                 {
@@ -577,10 +477,10 @@ var ContractComponent = new (function() {
                 const statusId = Number(container.dataset.statusid ?? row?.dataset?.statusid);
                 const statusText = String(container.dataset.status ?? row?.dataset?.status ?? '').trim().toLowerCase();
                 const isActive = statusText === 'active' || statusId === 2;
-                const isPending = statusText === 'pending';
                 const endDate = mThis.parseSafeDate(container.dataset.endDate ?? row?.dataset?.endDate ?? '');
-                // show renew only when status is active and end date is within next 3 months (not for pending)
-                const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
+                const isPending = statusText === 'pending';
+                              // show renew only when status is active and end date is within next 3 months (not for pending)
+                              const showRenew = isActive && endDate && mThis.isWithinNextThreeMonths(endDate);
 
                 menu.edit_contract.style.display = isActive ? 'none' : 'block';
                 menu.generate_invoice.style.display = statusId == 2 ? 'none' : 'block';
@@ -596,19 +496,23 @@ var ContractComponent = new (function() {
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "generate_invoice": {
-                        mThis.generateInvoice(id, menuLink);
+                    case 'generate_invoice':{
+                        mThis.generateInvoice(id,menuLink);
                         break;
                     }
-                    case "edit_contract": {
+                    case 'edit_contract': {
                         mThis.editContract(id, menuLink);
                         break;
                     }
-                    case "renew_contract": {
+                    case 'renew_contract': {
                         mThis.renewContract(id, menuLink);
                         break;
                     }
-                    case "print_contract": {
+                    case 'terminate_contract': {
+                        mThis.terminateContract(id, menuLink);
+                        break;
+                    }
+                    case 'print_contract': {
                         mThis.printContract(id, menuLink);
                         break;
                     }
@@ -621,9 +525,9 @@ var ContractComponent = new (function() {
                     }
                 }
             }
-        };
+        }
         new VSDropdownMenu(menuOptopns);
-    };
+    }
 
     mThis.generateInvoice = (id, menuLink) => {
         let op = {
@@ -645,7 +549,7 @@ var ContractComponent = new (function() {
             }
         };
         ContractDialog.show(op);
-    };
+    }
     mThis.renewContract = (id, menulink) => {
         if (!id) return;
 
@@ -698,7 +602,6 @@ var ContractComponent = new (function() {
             },
         );
     };
-
     mThis.deleteContract = (id, menuLink) => {
         if (!id) return;
 
@@ -735,56 +638,37 @@ var ContractComponent = new (function() {
     mThis.printContract = (id, menulink) => {
         if (!id) return;
 
-        const printWindow = window.open("", "_blank");
+        const printWindow = window.open('', '_blank');
         if (!printWindow) {
-            cv_interact.error(
-                "Unable to open print window. Please allow popups and try again."
-            );
+            cv_interact.error('Unable to open print window. Please allow popups and try again.');
             return;
         }
 
-        const escapeHtml = value => {
-            const str = String(value ?? "");
+        const escapeHtml = (value) => {
+            const str = String(value ?? '');
             return str
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#39;");
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
         };
 
-        const formatMoney = amount => {
+        const formatMoney = (amount) => {
             const n = Number(amount || 0);
-            return Number.isNaN(n)
-                ? "0.00"
-                : n.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                  });
+            return Number.isNaN(n) ? '0.00' : n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
 
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/contract/details`,
-                { id },
-                null,
-                null
-            )
-            .then(res => {
+        vsapi.call(`${main_view.base_url}/prm/contract/details`, { id }, null, null)
+            .then((res) => {
                 if (res.status_code !== 200 || !res.data) {
                     printWindow.close();
-                    cv_interact.error(
-                        res.error_message ||
-                            "Unable to load contract data for print."
-                    );
+                    cv_interact.error(res.error_message || 'Unable to load contract data for print.');
                     return;
                 }
 
                 const d = res.data;
-                const unitPriceLabel =
-                    d.price_type === "total"
-                        ? "Whole Room"
-                        : "Per Square Meter";
+                const unitPriceLabel = (d.price_type === 'total') ? 'Whole Room' : 'Per Square Meter';
                 const html = `<!doctype html>
 <html>
 <head>
@@ -814,9 +698,7 @@ var ContractComponent = new (function() {
         <div class="row"><b>Tenant</b> ${escapeHtml(d.tenant_name)}</div>
         <div class="row"><b>Legal Name</b> ${escapeHtml(d.legal_name)}</div>
         <div class="row"><b>Unit Code</b> ${escapeHtml(d.space_code)}</div>
-        <div class="row"><b>Business Type</b> ${escapeHtml(
-            d.business_name
-        )}</div>
+        <div class="row"><b>Business Type</b> ${escapeHtml(d.business_name)}</div>
         <div class="row"><b>Unit Type</b> ${escapeHtml(d.space_name)}</div>
         <div class="row"><b>Size (m2)</b> ${escapeHtml(d.sqm_size)}</div>
         <div class="row"><b>Start Date</b> ${escapeHtml(d.start_date)}</div>
@@ -828,7 +710,7 @@ var ContractComponent = new (function() {
     <div class="section">
         <div class="box">
             <b>Remarks</b>
-            <div class="remarks">${escapeHtml(d.remarks || "-")}</div>
+            <div class="remarks">${escapeHtml(d.remarks || '-')}</div>
         </div>
     </div>
 
@@ -849,29 +731,23 @@ var ContractComponent = new (function() {
             })
             .catch(() => {
                 printWindow.close();
-                cv_interact.error("Failed to prepare contract print.");
+                cv_interact.error('Failed to prepare contract print.');
             });
-    };
+    }
 
-    mThis.prepareFormOptions = onFinish => {
-        vsapi
-            .call(
-                `${main_view.base_url}/prm/contract/form-options`,
-                null,
-                null,
-                null
-            )
+    mThis.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/prm/contract/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
                 // VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenants', null);
                 VSUtil.setComboItems(mThis.elStatus, d.statuses, 'id', 'status_name', '', 'All Statues','');
                 // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'id', 'business_type', true, 'business type', null);
 
-                if (typeof onFinish === "function") onFinish();
-            });
-    };
+                if (typeof onFinish === 'function') onFinish();
+            })
+    }
 
-    mThis.show = options => {
+    mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
         mThis.prepareFormOptions(() => {
@@ -887,12 +763,12 @@ var ContractComponent = new (function() {
             // Auto-refresh every hour to update contract statuses
             if (!mThis.autoRefreshInterval) {
                 mThis.autoRefreshInterval = setInterval(() => {
-                    console.log("Auto-refreshing contracts...");
+                    console.log('Auto-refreshing contracts...');
                     mThis.ContractListView.showPage(mThis.getFilterData());
 
                     // Re-initialize tooltips after refresh
                     setTimeout(() => {
-                        $('[data-bs-toggle="tooltip"]').tooltip("dispose");
+                        $('[data-bs-toggle="tooltip"]').tooltip('dispose');
                         $('[data-bs-toggle="tooltip"]').tooltip();
                     }, 800);
                 }, 3600000); // 1 hour = 3600000ms
@@ -907,7 +783,7 @@ const CreateInvoiceContractDialog = (() => {
     const self = {};
     let dialog = null;
 
-    self.show = op => {
+    self.show = (op) => {
         if (!dialog) {
             dialog = new GeneralDialog({
                 cssClass: "modal-xl vs-modal",
@@ -1034,182 +910,106 @@ const CreateInvoiceContractDialog = (() => {
                     </div>
                 `,
 
-                contentCreated: me => {
+                contentCreated: (me) => {
                     me.controls = {};
-                    me.divModal.querySelectorAll(".data-input").forEach(el => {
-                        if (el.dataset.field)
-                            me.controls[el.dataset.field] = el;
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+                        if (el.dataset.field) me.controls[el.dataset.field] = el;
                     });
 
                     const calculateAndUpdate = () => {
                         if (!me._subtotal) return;
 
                         const subtotal = parseFloat(me._subtotal);
-                        const discType =
-                            document.getElementById("discount_type")?.value ||
-                            "percent";
-                        const discVal = parseFloat(
-                            document.getElementById("discount_value")?.value ||
-                                0
-                        );
-                        const taxType =
-                            document.getElementById("tax_type")?.value ||
-                            "percent";
-                        const taxVal = parseFloat(
-                            document.getElementById("tax_value")?.value || 0
-                        );
+                        const discType = document.getElementById('discount_type')?.value || 'percent';
+                        const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                        const taxType  = document.getElementById('tax_type')?.value  || 'percent';
+                        const taxVal   = parseFloat(document.getElementById('tax_value')?.value  || 0);
 
-                        const discount =
-                            discType === "percent"
-                                ? subtotal * (discVal / 100)
-                                : discVal;
-                        const tax =
-                            taxType === "percent"
-                                ? subtotal * (taxVal / 100)
-                                : taxVal;
-                        const net = subtotal - discount + tax;
+                        const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                        const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
+                        const net      = subtotal - discount + tax;
 
-                        document.getElementById(
-                            "calc-subtotal"
-                        ).textContent = `$${subtotal.toFixed(2)}`;
-                        document.getElementById(
-                            "calc-discount"
-                        ).textContent = `-$${discount.toFixed(2)}`;
-                        document.getElementById(
-                            "calc-tax"
-                        ).textContent = `+$${tax.toFixed(2)}`;
-                        document.getElementById(
-                            "calc-total"
-                        ).textContent = `$${net.toFixed(2)}`;
+                        document.getElementById('calc-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                        document.getElementById('calc-discount').textContent = `-$${discount.toFixed(2)}`;
+                        document.getElementById('calc-tax').textContent      = `+$${tax.toFixed(2)}`;
+                        document.getElementById('calc-total').textContent    = `$${net.toFixed(2)}`;
 
-                        const itemDiscountEl = document.getElementById(
-                            "item-discount"
-                        );
-                        const itemTaxEl = document.getElementById("item-tax");
-                        const itemNetEl = document.getElementById("item-net");
+                        const itemDiscountEl = document.getElementById('item-discount');
+                        const itemTaxEl      = document.getElementById('item-tax');
+                        const itemNetEl      = document.getElementById('item-net');
 
-                        if (itemDiscountEl)
-                            itemDiscountEl.textContent = `-$${discount.toFixed(
-                                2
-                            )}`;
-                        if (itemTaxEl)
-                            itemTaxEl.textContent = `+$${tax.toFixed(2)}`;
-                        if (itemNetEl)
-                            itemNetEl.textContent = `$${net.toFixed(2)}`;
+                        if (itemDiscountEl) itemDiscountEl.textContent = `-$${discount.toFixed(2)}`;
+                        if (itemTaxEl)      itemTaxEl.textContent      = `+$${tax.toFixed(2)}`;
+                        if (itemNetEl)      itemNetEl.textContent      = `$${net.toFixed(2)}`;
                     };
 
-                    ["discount_value", "tax_value"].forEach(id => {
+                    ['discount_value', 'tax_value'].forEach(id => {
                         const el = document.getElementById(id);
-                        if (el)
-                            el.addEventListener("input", calculateAndUpdate);
+                        if (el) el.addEventListener('input', calculateAndUpdate);
                     });
-                    ["discount_type", "tax_type"].forEach(id => {
+                    ['discount_type', 'tax_type'].forEach(id => {
                         const el = document.getElementById(id);
-                        if (el)
-                            el.addEventListener("change", calculateAndUpdate);
+                        if (el) el.addEventListener('change', calculateAndUpdate);
                     });
 
-                    me.loadContractData = op => loadContractData(me, op);
+                    me.loadContractData = (op) => loadContractData(me, op);
                     me.calculateAndUpdate = calculateAndUpdate;
                 },
 
                 buttons: [
+                    { label: 'Cancel', cssClass: 'btn btn-secondary', click: me => me.hide(false) },
                     {
-                        label: "Cancel",
-                        cssClass: "btn btn-secondary",
-                        click: me => me.hide(false)
-                    },
-                    {
-                        label: "Generate Invoice",
-                        cssClass: "btn btn-primary",
+                        label: 'Generate Invoice',
+                        cssClass: 'btn btn-primary',
                         click: (me, btn) => {
-                            if (!me._contractData)
-                                return cv_interact.error(
-                                    "No contract data loaded"
-                                );
+                            if (!me._contractData) return cv_interact.error('No contract data loaded');
 
                             const formData = me.getData() || {};
 
-                            const discType =
-                                document.getElementById("discount_type")
-                                    ?.value || "percent";
-                            const discVal = parseFloat(
-                                document.getElementById("discount_value")
-                                    ?.value || 0
-                            );
-                            const taxType =
-                                document.getElementById("tax_type")?.value ||
-                                "percent";
-                            const taxVal = parseFloat(
-                                document.getElementById("tax_value")?.value || 0
-                            );
+                            const discType = document.getElementById('discount_type')?.value || 'percent';
+                            const discVal  = parseFloat(document.getElementById('discount_value')?.value || 0);
+                            const taxType  = document.getElementById('tax_type')?.value  || 'percent';
+                            const taxVal   = parseFloat(document.getElementById('tax_value')?.value  || 0);
 
                             const subtotal = me._subtotal || 0;
-                            const discount =
-                                discType === "percent"
-                                    ? subtotal * (discVal / 100)
-                                    : discVal;
-                            const tax =
-                                taxType === "percent"
-                                    ? subtotal * (taxVal / 100)
-                                    : taxVal;
+                            const discount = discType === 'percent' ? subtotal * (discVal / 100) : discVal;
+                            const tax      = taxType  === 'percent' ? subtotal * (taxVal  / 100) : taxVal;
 
-                            const itemType =
-                                me._contractData.space_type || "Rent";
-                            const description =
-                                me._contractData.description ||
-                                `Monthly Rent - ${me._contractData.space_code ||
-                                    "Unit"} (${me._contractData.period ||
-                                    "Contract Period"})`;
+                            const itemType = me._contractData.space_type || 'Rent';
+                            const description = me._contractData.description ||
+                                                `Monthly Rent - ${me._contractData.space_code || 'Unit'} (${me._contractData.period || 'Contract Period'})`;
 
-                            formData.items = [
-                                {
-                                    description: description,
-                                    type: itemType,
-                                    amount: subtotal,
-                                    discount_type: discType,
-                                    discount_value: discVal,
-                                    discount: discount,
-                                    tax_type: taxType,
-                                    tax_value: taxVal,
-                                    tax: tax,
-                                    contract_invoice_id: me._contractData.id
-                                }
-                            ];
+                            formData.items = [{
+                                description: description,
+                                type: itemType,
+                                amount: subtotal,
+                                discount_type: discType,
+                                discount_value: discVal,
+                                discount: discount,
+                                tax_type: taxType,
+                                tax_value: taxVal,
+                                tax: tax,
+                                contract_invoice_id: me._contractData.id
+                            }];
 
-                            formData.tenant_id = me._contractData.tenant_id;
-                            formData.space_id = me._contractData.space_id;
-                            formData.contract_invoice_id =
-                                op.contract_invoice_id || op.id;
-                            formData.due_date =
-                                formData.due_date ||
-                                new Date().toISOString().split("T")[0];
+                            formData.tenant_id    = me._contractData.tenant_id;
+                            formData.space_id     = me._contractData.space_id;
+                            formData.contract_invoice_id = op.contract_invoice_id || op.id;
+                            formData.due_date = formData.due_date || new Date().toISOString().split('T')[0];
 
                             console.log("Invoice payload:", formData);
 
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/prm/invoice/save`,
-                                    formData,
-                                    btn
-                                )
+                            vsapi.call(`${main_view.base_url}/prm/invoice/save`, formData, btn)
                                 .then(res => {
                                     if (res.status_code === 200) {
                                         me.hide(true);
-                                        cv_interact.success(
-                                            "Contract invoice generated!"
-                                        );
+                                        cv_interact.success('Contract invoice generated!');
                                         if (op.onClose) op.onClose();
                                     } else {
-                                        cv_interact.error(
-                                            res.error_message ||
-                                                "Failed to generate invoice"
-                                        );
+                                        cv_interact.error(res.error_message || 'Failed to generate invoice');
                                     }
                                 })
-                                .catch(() =>
-                                    cv_interact.error("Network error")
-                                );
+                                .catch(() => cv_interact.error('Network error'));
                         }
                     }
                 ]
@@ -1233,30 +1033,19 @@ const CreateInvoiceContractDialog = (() => {
         me._subtotal = 0;
 
         // Reset UI
-        [
-            "info-tenant",
-            "info-space",
-            "info-business",
-            "info-type",
-            "info-start-date",
-            "info-end-date",
-            "info-price",
-            "info-email"
-        ].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = "-";
-        });
-        document.getElementById("items-body").innerHTML = "";
+        ['info-tenant','info-space','info-business','info-type','info-start-date','info-end-date','info-price','info-email']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '-';
+            });
+        document.getElementById('items-body').innerHTML = '';
 
-        vsapi
-            .call(`${main_view.base_url}/prm/contract/list-paginate`, {
-                id: op.contract_invoice_id
-            })
+        vsapi.call(`${main_view.base_url}/prm/contract/list-paginate`, { id: op.contract_invoice_id })
             .then(res => {
                 console.log("[Contract Invoice] Full response:", res);
 
                 if (res.status_code !== 200 || !res.data?.data?.length) {
-                    cv_interact.error("No contract found");
+                    cv_interact.error('No contract found');
                     console.warn("No data found in paginate response");
                     return;
                 }
@@ -1265,104 +1054,79 @@ const CreateInvoiceContractDialog = (() => {
 
                 console.log("[Contract Invoice] Selected contract:", data);
 
-                const start = data.start_date || "-";
-                const end = data.end_date || "-";
-                const period =
-                    start !== "-" && end !== "-" ? `${start} → ${end}` : "-";
+                const start  = data.start_date  || '-';
+                const end    = data.end_date    || '-';
+                const period = (start !== '-' && end !== '-') ? `${start} → ${end}` : '-';
 
                 // Fill UI
-                document.getElementById("info-tenant").textContent =
-                    data.tenant_name || "-";
-                document.getElementById("info-space").textContent =
-                    data.space_code || "-";
-                document.getElementById("info-business").textContent =
-                    data.business_type || "-";
-                document.getElementById("info-type").textContent =
-                    data.space_type || "-";
-                document.getElementById("info-start-date").textContent = start;
-                document.getElementById("info-end-date").textContent = end;
-                document.getElementById("info-price").textContent = data.price
-                    ? `$${Number(data.price).toFixed(2)}`
-                    : "-";
-                document.getElementById("info-email").textContent =
-                    data.email || "-";
-                const description = `Monthly Rent - ${data.space_code ||
-                    "Unit"} (${period})`;
+                document.getElementById('info-tenant').textContent     = data.tenant_name   || '-';
+                document.getElementById('info-space').textContent      = data.space_code    || '-';
+                document.getElementById('info-business').textContent   = data.business_type || '-';
+                document.getElementById('info-type').textContent       = data.space_type    || '-';
+                document.getElementById('info-start-date').textContent = start;
+                document.getElementById('info-end-date').textContent   = end;
+                document.getElementById('info-price').textContent      = data.price ? `$${Number(data.price).toFixed(2)}` : '-';
+                document.getElementById('info-email').textContent      = data.email || '-';
+                const description = `Monthly Rent - ${data.space_code || 'Unit'} (${period})`;
                 me._contractData = {
                     id: data.id,
                     tenant_id: data.tenant_id,
                     space_id: data.space_id,
                     price: parseFloat(data.price || 0),
                     description: description,
-                    space_type: data.space_type || "Rent",
+                    space_type: data.space_type || 'Rent',
                     period: period,
-                    space_code: data.space_code || "Unit"
+                    space_code: data.space_code || 'Unit'
                 };
                 if (me.controls) {
-                    if (me.controls.tenant_id)
-                        me.controls.tenant_id.value = data.tenant_id || "";
-                    if (me.controls.space_id)
-                        me.controls.space_id.value = data.space_id || "";
+                    if (me.controls.tenant_id)  me.controls.tenant_id.value  = data.tenant_id || '';
+                    if (me.controls.space_id)   me.controls.space_id.value   = data.space_id  || '';
                     if (me.controls.contract_invoice_id)
-                        me.controls.contract_invoice_id.value =
-                            data.id || op.contract_invoice_id;
+                        me.controls.contract_invoice_id.value = data.id || op.contract_invoice_id;
                 }
 
                 me._subtotal = me._contractData.price;
-                document.getElementById("items-body").innerHTML = `
+                document.getElementById('items-body').innerHTML = `
                     <tr>
                         <td>${description}</td>
-                        <td class="text-center">${
-                            me._contractData.space_type
-                        }</td>   <!-- shows space_type -->
+                        <td class="text-center">${me._contractData.space_type}</td>   <!-- shows space_type -->
                         <td class="text-end">$${me._subtotal.toFixed(2)}</td>
                         <td class="text-end text-danger" id="item-discount">-$0.00</td>
                         <td class="text-end text-info" id="item-tax">+$0.00</td>
-                        <td class="text-end fw-bold" id="item-net">$${me._subtotal.toFixed(
-                            2
-                        )}</td>
+                        <td class="text-end fw-bold" id="item-net">$${me._subtotal.toFixed(2)}</td>
                     </tr>`;
 
                 if (me.calculateAndUpdate) me.calculateAndUpdate();
             })
             .catch(err => {
                 console.error("[Contract Invoice] API failed:", err);
-                cv_interact.error("Failed to load contract data");
+                cv_interact.error('Failed to load contract data');
             });
     };
 
     return self;
 })();
 
+
 const ContractDialog = (() => {
     const self = {};
     let dialog = null;
-    const parseDateInput = value => {
+    const parseDateInput = (value) => {
         if (!value) return null;
 
         const raw = String(value).trim();
         if (!raw) return null;
 
         if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-            const [year, month, day] = raw.split("-").map(Number);
+            const [year, month, day] = raw.split('-').map(Number);
             return new Date(year, month - 1, day);
         }
 
         if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(raw)) {
-            const [dayStr, monthStr, yearStr] = raw.split("-");
+            const [dayStr, monthStr, yearStr] = raw.split('-');
             const monthMap = {
-                Jan: 0,
-                Feb: 1,
-                Mar: 2,
-                Apr: 3,
-                May: 4,
-                Jun: 5,
-                Jul: 6,
-                Aug: 7,
-                Sep: 8,
-                Oct: 9,
-                Nov: 10,
-                Dec: 11
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
             };
             const month = monthMap[monthStr];
             if (month === undefined) return null;
@@ -1370,7 +1134,7 @@ const ContractDialog = (() => {
         }
 
         if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
-            const [day, month, year] = raw.split("/").map(Number);
+            const [day, month, year] = raw.split('/').map(Number);
             return new Date(year, month - 1, day);
         }
 
@@ -1388,25 +1152,20 @@ const ContractDialog = (() => {
         return endDate.getDate() >= startDate.getDate();
     };
 
-    self.show = op => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return [
-                        `<div class="row justify-content-start">
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return [
+                    `<div class="row justify-content-start">
                  <div class="p-3 mb-4 bg-light border rounded">
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select data-style="material" placeholder="Tenant Name" name="tenant_id" class="data-input form-control" data-field="tenant_id" required>
-                                    <option value="" disabled selected hidden>Tenant Name</option>
-                                    <!-- Tenant options rendered here -->
-                                </select>
-
+                                <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" " />
+                                <label style="color:#777777;padding-left:6px;" for="tenant">Tenant</label>
                             </div>
                         </div>
                         <div class="col-6">
@@ -1434,10 +1193,9 @@ const ContractDialog = (() => {
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="material-input outlined">
-                                <select  data-style="material" name="code" placeholder="Unit Code" class="data-input form-control" data-field="space_id"></select>
-                                <label style="display:none; color:#777777; padding-left:6px;" for="Code">Unit Code</label>
-                            </div>
+                          <div class="material-input outlined">
+                     <select data-style="material" placeholder="unit code" name="code" class="data-input form-control" data-field="space_id"> </select>
+                                </div>
                         </div>
                         <div class="col-4">
                             <div class="material-input outlined">
@@ -1485,243 +1243,207 @@ const ContractDialog = (() => {
                     </div>
                 </div>
                     </div>`
-                    ].join("");
+                ].join("");
+            },
+
+            contentCreated: (me) => {
+                me.searchTenant= VSSearchInput.init(me.controls.tenant,{
+                    type: 'select',
+                    prefetch: true,
+                    // api:
+                    query: {
+                        from: 'tenants',
+                        select: ['id', 'name', 'code', 'legal_name'],
+                        searchFields: { name: 'LIKE', code: '=',legal_name:'LIKE' },
+                        orderBy:[['id','desc']]
+                    },
+                    // showColumnHeader: false,
+                    columns:{
+                        code: "Code",
+                        name: "Name",
+                        // legal_name: "Legal Name"
+                    },
+                    onSelect: (item) => {
+                        console.log(123,item);
+                        me.tenant_id = item.id;
+                        me.controls.legal_name.value = item.legal_name || '';
+                        me.tenant_id = item.id || '';
+
+                    }
+                });
+            },
+
+            configSelect: [
+                {
+                    name: "tenant_id",
+                    data: "tenants",
+                    textField: "tenant",
+                    valueField: "id",
                 },
+                {
+                    name: "business_type_id",
+                    data: "business_types",
+                    textField: "business_type",
+                    valueField: "id",
+                },
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
+            prepareFormOptions: {
+                createTitle: "Create Contract",
+                modifyTitle: "Modify Contract",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options",].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+            },
 
-                contentCreated: me => {
-                    // Use the tenant_id <select> (from configSelect) and fetch legal name on change.
-                    const tenantSelect = me.controls?.tenant_id;
-                    if (!tenantSelect) return;
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                // Preselect tenant when coming from TenantComponent (create-from-tenant)
+                if (!me.dataOptions.id && me.dataOptions.tenant_id) {
+                    me.tenant_id = me.dataOptions.tenant_id;
+                    vsapi
+                        .call(
+                            [main_view.base_url, "/prm/tenant/details"].join(""),
+                            { id: me.dataOptions.tenant_id },
+                            false,
+                            null,
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200 && res.data) {
+                                const t = res.data;
+                                const tenantInput =
+                                    me.divModal.querySelector('input[name="tenant"]');
+                                if (tenantInput) {
+                                    tenantInput.value = t.name || "";
+                                }
+                                if (me.controls.legal_name) {
+                                    me.controls.legal_name.value = t.legal_name || "";
+                                }
+                            }
+                        })
+                        .catch(() => {});
+                } else {
+                    me.tenant_id = data?.contract_details?.tenant_id ?? null;
+                }
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const toggleUnitInputs = (isDisabled) => {
+                    ['space_type_id', 'sqm_size', 'price_type', 'price'].forEach((field) => {
+                        if (me.controls[field]) {
+                            me.controls[field].disabled = isDisabled;
+                        }
+                    });
+                };
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const applyUnitData = (spaceId) => {
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (!selected) {
+                        me._createContractSpaceTypeId = null;
+                        toggleUnitInputs(false);
+                        return;
+                    }
+                    me._createContractSpaceTypeId = selected.space_type_id ?? null;
+                    if (me.controls.space_type_id) {
+                        me.controls.space_type_id.value = selected.space_type ?? getSpaceTypeName(selected.space_type_id) ?? '';
+                    }
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = selected.sqm_size ?? '';
+                    if (me.controls.price_type) me.controls.price_type.value = selected.price_type ?? '';
+                    if (me.controls.price) me.controls.price.value = selected.price ?? '';
+                    toggleUnitInputs(true);
+                };
 
-                    const loadTenant = tenantId => {
-                        const id = String(tenantId || "").trim();
-                        me.tenant_id = id || "";
-                        if (!id) {
-                            if (me.controls?.legal_name) me.controls.legal_name.value = "";
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+                    if (unitSelect.value) {
+                        applyUnitData(unitSelect.value);
+                    } else {
+                        toggleUnitInputs(false);
+                    }
+                }
+
+                // const isReadOnly = me.dataOptions.data.code > 0;
+                // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
+                const header = me.divModal.querySelector('.modal-header');
+                const btnClose = header.querySelector('button');
+                if(btnClose) btnClose.classList.add('d-none');
+
+                // me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
+                // me.controls.code.value = me.dataOptions.data.code;
+                // me.controls.price_type.value = me.dataOptions.data.price_type;
+                // me.controls.price.value = me.dataOptions.data.price;
+                // me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
+            },
+
+            buttons: [
+                {
+                    label: '<span vslang="buttons.Cancel"></span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: '<span vslang="buttons.Submit"></span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        // front-end validation: deposit is required
+                        const depositCtrl = me.controls?.deposit;
+                        const depositVal = depositCtrl ? String(depositCtrl.value || "").trim() : "";
+                        if (!depositVal) {
+                            cv_interact.error("Deposit is required.");
+                            if (depositCtrl) depositCtrl.focus();
                             return;
                         }
-                        vsapi
-                            .call(
-                                [main_view.base_url, "/prm/tenant/details"].join(""),
-                                { id },
-                                null,
-                                null,
-                            )
-                            .then(res => {
-                                if (res.status_code === 200 && res.data && me.controls?.legal_name) {
-                                    me.controls.legal_name.value = res.data.legal_name || "";
-                                }
-                            })
-                            .catch(() => {});
-                    };
 
-                    tenantSelect.addEventListener("change", e => loadTenant(e.target.value));
-                    if (tenantSelect.value) loadTenant(tenantSelect.value);
-                },
-
-                configSelect: [
-                    {
-                        name: "tenant_id",
-                        data: "tenants",
-                        textField: "tenant",
-                        valueField: "id"
-                    },
-                    {
-                        name: "business_type_id",
-                        data: "business_types",
-                        textField: "business_type",
-                        valueField: "id"
-                    },
-                    {
-                        name: "code",
-                        data: "building_spaces",
-                        textField: "code",
-                        valueField: "id"
-                    }
-                ],
-                prepareFormOptions: {
-                    createTitle: "Create Contract",
-                    modifyTitle: "Modify Contract",
-                    targetProp: "contract_details",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/prm/contract/form-options"
-                        ].join(""),
-                        params: op => {
-                            return { id: op.id };
+                        const op = me.getData();
+                        if (me._createContractSpaceTypeId !== undefined && me._createContractSpaceTypeId !== null) {
+                            op.space_type_id = me._createContractSpaceTypeId;
                         }
-                    }
-                },
-
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    //LocaleManager.translateZone(me.divModal);
-                    me.tenant_id = data?.contract_details?.tenant_id ?? null;
-                    const unitSelect = me.divModal.querySelector(
-                        '[data-field="space_id"]'
-                    );
-                    const spaceRows = Array.isArray(data?.building_spaces)
-                        ? data.building_spaces
-                        : [];
-                    const toggleUnitInputs = isDisabled => {
-                        [
-                            "space_type_id",
-                            "sqm_size",
-                            "price_type",
-                            "price"
-                        ].forEach(field => {
-                            if (me.controls[field]) {
-                                me.controls[field].disabled = isDisabled;
+                        op.tenant_id = me.tenant_id;
+                        op.id = me.dataOptions.id;
+                        op.tenant_id = me.tenant_id;
+                        const startDate = parseDateInput(op.start_date);
+                        const endDate = parseDateInput(op.end_date);
+                        if (op.start_date && op.end_date && startDate && endDate && startDate >= endDate) {
+                            cv_interact.error("Start date must be before end date");
+                            return;
+                        }
+                        if (op.start_date && op.end_date && startDate && endDate && !hasAtLeastOneMonth(startDate, endDate)) {
+                            cv_interact.error("Duration between start date and end date must be at least 1 month");
+                            return;
+                        }
+                        console.log(123,op);
+                        vsapi.call([main_view.base_url, "/prm/contract/save",].join(""), op, btn, null).then((res) => {
+                            if (res.status_code === 200) {
+                                me.hide(true, op);
+                                if (me.dataOptions.id > 0) {
+                                    cv_interact.success("Contract has been updated successfully");
+                                } else {
+                                    cv_interact.success("New contract has been added successfully");
+                                }
+                            } else {
+                                cv_interact.error(res.error_message);
                             }
                         });
-                    };
-                    const spaceTypes = Array.isArray(data?.space_types)
-                        ? data.space_types
-                        : [];
-                    const getSpaceTypeName = spaceTypeId => {
-                        const row = spaceTypes.find(
-                            x => String(x.id) === String(spaceTypeId)
-                        );
-                        return row?.space_type ?? "";
-                    };
-                    const applyUnitData = spaceId => {
-                        const selected = spaceRows.find(
-                            row => String(row.id) === String(spaceId)
-                        );
-                        if (!selected) {
-                            me._createContractSpaceTypeId = null;
-                            toggleUnitInputs(false);
-                            return;
-                        }
-                        me._createContractSpaceTypeId =
-                            selected.space_type_id ?? null;
-                        if (me.controls.space_type_id) {
-                            me.controls.space_type_id.value =
-                                selected.space_type ??
-                                getSpaceTypeName(selected.space_type_id) ??
-                                "";
-                        }
-                        if (me.controls.sqm_size)
-                            me.controls.sqm_size.value =
-                                selected.sqm_size ?? "";
-                        if (me.controls.price_type)
-                            me.controls.price_type.value =
-                                selected.price_type ?? "";
-                        if (me.controls.price)
-                            me.controls.price.value = selected.price ?? "";
-                        toggleUnitInputs(true);
-                    };
-
-                    if (unitSelect) {
-                        unitSelect.onchange = e => {
-                            applyUnitData(e.target.value);
-                        };
-                        if (unitSelect.value) {
-                            applyUnitData(unitSelect.value);
-                        } else {
-                            toggleUnitInputs(false);
-                        }
-                    }
-
-                    // const isReadOnly = me.dataOptions.data.code > 0;
-                    // me.setReadOnly(isReadOnly, ['code','space_type_id','price_type','price','sqm_size']);
-                    const header = me.divModal.querySelector(".modal-header");
-                    const btnClose = header.querySelector("button");
-                    if (btnClose) btnClose.classList.add("d-none");
-
-                    // me.controls.space_type_id.value = me.dataOptions.data.space_type_id;
-                    // me.controls.code.value = me.dataOptions.data.code;
-                    // me.controls.price_type.value = me.dataOptions.data.price_type;
-                    // me.controls.price.value = me.dataOptions.data.price;
-                    // me.controls.sqm_size.value = me.dataOptions.data.sqm_size;
-                },
-
-                buttons: [
-                    {
-                        label: '<span vslang="buttons.Cancel"></span>',
-                        cssClass: "btn btn-secondary",
-                        click: (me, btn) => {
-                            me.hide(false);
-                        }
                     },
-                    {
-                        label: '<span vslang="buttons.Submit"></span>',
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            if (
-                                me._createContractSpaceTypeId !== undefined &&
-                                me._createContractSpaceTypeId !== null
-                            ) {
-                                op.space_type_id =
-                                    me._createContractSpaceTypeId;
-                            }
-                            op.id = me.dataOptions.id;
-                            const tenantId = op.tenant_id || me.tenant_id;
-                            if (!tenantId) {
-                                cv_interact.error("Tenant is required.");
-                                if (me.controls?.tenant_id) me.controls.tenant_id.focus();
-                                return;
-                            }
-                            op.tenant_id = tenantId;
-                            const startDate = parseDateInput(op.start_date);
-                            const endDate = parseDateInput(op.end_date);
-                            if (
-                                op.start_date &&
-                                op.end_date &&
-                                startDate &&
-                                endDate &&
-                                startDate >= endDate
-                            ) {
-                                cv_interact.error(
-                                    "Start date must be before end date"
-                                );
-                                return;
-                            }
-                            if (
-                                op.start_date &&
-                                op.end_date &&
-                                startDate &&
-                                endDate &&
-                                !hasAtLeastOneMonth(startDate, endDate)
-                            ) {
-                                cv_interact.error(
-                                    "Duration between start date and end date must be at least 1 month"
-                                );
-                                return;
-                            }
-                            console.log(123, op);
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/contract/save"
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        if (me.dataOptions.id > 0) {
-                                            cv_interact.success(
-                                                "Contract has been updated successfully"
-                                            );
-                                        } else {
-                                            cv_interact.success(
-                                                "New contract has been added successfully"
-                                            );
-                                        }
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        }
-                    }
-                ]
-            });
+                },
+            ],
+        });
         dialog.show(op);
     };
     return self;
@@ -1740,36 +1462,34 @@ const RenewDialog = (() => {
         return endDate.getDate() >= startDate.getDate();
     };
 
-    self.show = op => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-lg vs-modal",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            backdrop: "static",
+            keyboard: true,
+           createContent: () => {
+                return `
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="p-3 mb-3 bg-light border rounded">
                                 <h6 class="mb-3 text-secondary-custom">Old Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">Start Date</label>
+
                                         <div class="material-input outlined">
-                                            <input type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                            <input placeholder="start date" data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">End Date</label>
+
                                         <div class="material-input outlined">
-                                            <input type="date" name="end_date" class="data-input form-control" data-field="end_date" disabled />
+                                            <input placeholder="end date" data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" disabled />
                                         </div>
                                     </div>
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">Price</label>
+
                                         <div class="material-input outlined">
-                                            <input type="number" name="price" class="data-input form-control" data-field="price" disabled />
+                                            <input placeholder="price" data-style="material" type="number" name="price" class="data-input form-control" data-field="price" disabled />
                                         </div>
                                     </div>
                                 </div>
@@ -1781,21 +1501,21 @@ const RenewDialog = (() => {
                                 <h6 class="mb-3 text-primary">Renew Contract</h6>
                                 <div class="row g-2">
                                     <div class="col-4">
-                                       <label style="color:#777777;padding-left:6px;">Start Date</label>
+
                                        <div class="material-input outlined">
-                                           <input type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
+                                           <input placeholder="start date" data-style="material" type="date" name="start_date" class="data-input form-control" data-field="start_date" disabled />
                                        </div>
                                    </div>
                                     <div class="col-4">
-                                        <label style="color:#777777;padding-left:6px;">End Date</label>
+
                                         <div class="material-input outlined">
-                                            <input type="date" name="end_date" class="data-input form-control" data-field="end_date" />
+                                            <input placeholder="end date" data-style="material" type="date" name="end_date" class="data-input form-control" data-field="end_date" />
                                         </div>
                                     </div>
                                     <div class="col-4">
 
                                         <div class="material-input outlined">
-                                            <select data-style="material" name="code" placeholder="Unit Code " class="data-input form-control" data-field="space_id">
+                                            <select placeholder="unit code" data-style="material" name="code" placeholder=" " class="data-input form-control" data-field="space_id">
                                             </select>
                                         </div>
                                     </div>
@@ -1816,234 +1536,185 @@ const RenewDialog = (() => {
                                 <div class="row g-2">
 
                                     <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
-                                        <div class="material-input outlined">
-                                            <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
-
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;">Size (m²)</label>
-                                        <div class="material-input outlined">
-                                            <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
-                                        <div class="material-input outlined">
-                                            <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label style="color:#777777;padding-left:6px;">Price</label>
-                                        <div class="material-input outlined">
-                                            <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
-                                        </div>
-                                    </div>
+                                <div class="material-input outlined">
+                                    <input type="text" name="space_type_id" class="data-input form-control" data-field="space_type_id" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;" for="spaceType">Unit Type</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="sqm_size" class="data-input form-control" data-field="sqm_size" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Size (m²)</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="text" name="price_type" class="data-input form-control" data-field="price_type" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;" for="priceType">Unit Price</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="material-input outlined">
+                                    <input type="number" name="price" class="data-input form-control" data-field="price" placeholder=" " />
+                                    <label style="color:#777777;padding-left:6px;">Price</label>
+                                </div>
+                            </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
-                },
+            },
 
-                contentCreated: me => {
-                    DateTimePicker.initAll(me.divModal);
-                },
 
-                prepareFormOptions: {
-                    createTitle: "Renew Contract",
-                    modifyTitle: "Renew Contract",
-                    targetProp: "contract_details",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/prm/contract/form-options"
-                        ].join(""),
-                        params: op => ({ id: op.id })
-                    }
-                },
-                configSelect: [
-                    {
-                        name: "code",
-                        data: "building_spaces",
-                        textField: "code",
-                        valueField: "id"
-                    }
-                ],
+            contentCreated: (me) => {
+                DateTimePicker.initAll(me.divModal);
+            },
 
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                    // Renew Start Date shows Old Contract End Date (format as YYYY-MM-DD for date input).
-                    const oldEndRaw = data.contract_details?.end_date;
-                    let renewStart = "";
-                    if (oldEndRaw) {
-                        const s = String(oldEndRaw).trim();
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-                            renewStart = s;
+            prepareFormOptions: {
+                createTitle: "Renew Contract",
+                modifyTitle: "Renew Contract",
+                targetProp: "contract_details",
+                api: {
+                    endpoint: [main_view.base_url, "/prm/contract/form-options"].join(""),
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            configSelect: [
+                {
+                    name: "code",
+                    data: "building_spaces",
+                    textField: "code",
+                    valueField: "id",
+                },
+            ],
+
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                // Renew Start Date shows Old Contract End Date (format as YYYY-MM-DD for date input).
+                const oldEndRaw = data.contract_details?.end_date;
+                let renewStart = '';
+                if (oldEndRaw) {
+                    const s = String(oldEndRaw).trim();
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                        renewStart = s;
+                    } else {
+                        const d = new Date(oldEndRaw);
+                        if (!Number.isNaN(d.getTime())) {
+                            renewStart = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                         } else {
-                            const d = new Date(oldEndRaw);
-                            if (!Number.isNaN(d.getTime())) {
-                                renewStart =
-                                    d.getFullYear() +
-                                    "-" +
-                                    String(d.getMonth() + 1).padStart(2, "0") +
-                                    "-" +
-                                    String(d.getDate()).padStart(2, "0");
-                            } else {
-                                renewStart = oldEndRaw;
-                            }
+                            renewStart = oldEndRaw;
                         }
                     }
-                    me.controls.start_date.value = renewStart || "";
-                    me.controls.end_date.value = "";
-                    me.controls.price.value = "";
-                    me.controls.price_type.value = "";
-                    me.controls.remarks.value = "";
+                }
+                me.controls.start_date.value = renewStart || '';
+                me.controls.end_date.value = '';
+                me.controls.price.value = '';
+                me.controls.price_type.value = '';
+                me.controls.remarks.value = '';
 
-                    const unitSelect = me.divModal.querySelector(
-                        '[data-field="space_id"]'
-                    );
-                    const spaceRows = Array.isArray(data?.building_spaces)
-                        ? data.building_spaces
-                        : [];
-                    const spaceTypes = Array.isArray(data?.space_types)
-                        ? data.space_types
-                        : [];
-                    const getSpaceTypeName = spaceTypeId => {
-                        const row = spaceTypes.find(
-                            x => String(x.id) === String(spaceTypeId)
-                        );
-                        return row?.space_type ?? "";
-                    };
-                    const setUnitFields = unitData => {
-                        if (!unitData) return;
-                        if (me.controls.space_type_id) {
-                            me.controls.space_type_id.value =
-                                unitData.space_type ??
-                                getSpaceTypeName(unitData.space_type_id);
-                        }
-                        if (me.controls.sqm_size)
-                            me.controls.sqm_size.value =
-                                unitData.sqm_size ?? "";
-                        if (me.controls.price_type)
-                            me.controls.price_type.value =
-                                unitData.price_type ?? "";
-                        if (me.controls.price)
-                            me.controls.price.value = unitData.price ?? "";
-                    };
-                    const applyUnitData = spaceId => {
-                        if (!spaceId) return;
-                        const selected = spaceRows.find(
-                            row => String(row.id) === String(spaceId)
-                        );
-                        if (selected) {
-                            setUnitFields(selected);
-                        }
-
-                        // Refresh selected unit data from API when unit code changes.
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/prm/building-space/details`,
-                                { id: spaceId },
-                                null,
-                                null
-                            )
-                            .then(res => {
-                                if (res.status_code !== 200 || !res.data)
-                                    return;
-                                const merged = selected
-                                    ? { ...selected, ...res.data }
-                                    : res.data;
-                                setUnitFields(merged);
-                            })
-                            .catch(() => {});
-                    };
-
-                    if (unitSelect) {
-                        unitSelect.onchange = e => {
-                            applyUnitData(e.target.value);
-                        };
-
-                        const defaultSpaceId =
-                            data?.contract_details?.space_id ?? "";
-                        if (defaultSpaceId) {
-                            unitSelect.value = defaultSpaceId;
-                            applyUnitData(defaultSpaceId);
-                        }
+                const unitSelect = me.divModal.querySelector('[data-field="space_id"]');
+                const spaceRows = Array.isArray(data?.building_spaces) ? data.building_spaces : [];
+                const spaceTypes = Array.isArray(data?.space_types) ? data.space_types : [];
+                const getSpaceTypeName = (spaceTypeId) => {
+                    const row = spaceTypes.find((x) => String(x.id) === String(spaceTypeId));
+                    return row?.space_type ?? '';
+                };
+                const setUnitFields = (unitData) => {
+                    if (!unitData) return;
+                    if (me.controls.space_type_id) {
+                        me.controls.space_type_id.value = unitData.space_type ?? getSpaceTypeName(unitData.space_type_id);
                     }
-                    // me.controls.price.value = data.contract_details.price;
-                    // me.controls.price_type.value = data.contract_details.price_type;
-                    // me.controls.remarks.value = data.contract_details.remarks;
-                    me.detail = data.contract_details;
+                    if (me.controls.sqm_size) me.controls.sqm_size.value = unitData.sqm_size ?? '';
+                    if (me.controls.price_type) me.controls.price_type.value = unitData.price_type ?? '';
+                    if (me.controls.price) me.controls.price.value = unitData.price ?? '';
+                };
+                const applyUnitData = (spaceId) => {
+                    if (!spaceId) return;
+                    const selected = spaceRows.find((row) => String(row.id) === String(spaceId));
+                    if (selected) {
+                        setUnitFields(selected);
+                    }
+
+                    // Refresh selected unit data from API when unit code changes.
+                    vsapi.call(`${main_view.base_url}/prm/building-space/details`, { id: spaceId }, null, null)
+                        .then((res) => {
+                            if (res.status_code !== 200 || !res.data) return;
+                            const merged = selected ? { ...selected, ...res.data } : res.data;
+                            setUnitFields(merged);
+                        })
+                        .catch(() => {});
+                };
+
+                if (unitSelect) {
+                    unitSelect.onchange = (e) => {
+                        applyUnitData(e.target.value);
+                    };
+
+                    const defaultSpaceId = data?.contract_details?.space_id ?? '';
+                    if (defaultSpaceId) {
+                        unitSelect.value = defaultSpaceId;
+                        applyUnitData(defaultSpaceId);
+                    }
+                }
+                // me.controls.price.value = data.contract_details.price;
+                // me.controls.price_type.value = data.contract_details.price_type;
+                // me.controls.remarks.value = data.contract_details.remarks;
+                me.detail = data.contract_details;
+            },
+
+            buttons: [
+                {
+                    label: '<span>Cancel</span>',
+                    cssClass: 'btn btn-secondary',
+                    click: (me) => me.hide(false),
                 },
-
-                buttons: [
-                    {
-                        label: "<span>Cancel</span>",
-                        cssClass: "btn btn-secondary",
-                        click: me => me.hide(false)
-                    },
-                    {
-                        label: "<span>Renew</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const op = me.getData();
-                            op.id = me.dataOptions.id; // existing contract id
-                            const startDate = new Date(op.start_date);
-                            const endDate = new Date(op.end_date);
-                            if (
-                                op.start_date &&
-                                op.end_date &&
-                                !Number.isNaN(startDate.getTime()) &&
-                                !Number.isNaN(endDate.getTime()) &&
-                                startDate >= endDate
-                            ) {
-                                cv_interact.error(
-                                    "Start date must be before end date"
-                                );
-                                return;
-                            }
-                            if (
-                                op.start_date &&
-                                op.end_date &&
-                                !Number.isNaN(startDate.getTime()) &&
-                                !Number.isNaN(endDate.getTime()) &&
-                                !hasAtLeastOneMonth(startDate, endDate)
-                            ) {
-                                cv_interact.error(
-                                    "Duration between start date and end date must be at least 1 month"
-                                );
-                                return;
-                            }
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/prm/contract/renew"
-                                    ].join(""),
-                                    op,
-                                    btn,
-                                    null
-                                )
-                                .then(res => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, op);
-                                        cv_interact.success(
-                                            "Contract has been renewed successfully"
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
+                {
+                    label: '<span>Renew</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const op = me.getData();
+                        op.id = me.dataOptions.id; // existing contract id
+                        const startDate = new Date(op.start_date);
+                        const endDate = new Date(op.end_date);
+                        if (
+                            op.start_date &&
+                            op.end_date &&
+                            !Number.isNaN(startDate.getTime()) &&
+                            !Number.isNaN(endDate.getTime()) &&
+                            startDate >= endDate
+                        ) {
+                            cv_interact.error("Start date must be before end date");
+                            return;
                         }
-                    }
-                ]
-            });
+                        if (
+                            op.start_date &&
+                            op.end_date &&
+                            !Number.isNaN(startDate.getTime()) &&
+                            !Number.isNaN(endDate.getTime()) &&
+                            !hasAtLeastOneMonth(startDate, endDate)
+                        ) {
+                            cv_interact.error("Duration between start date and end date must be at least 1 month");
+                            return;
+                        }
+
+                        vsapi.call([main_view.base_url, "/prm/contract/renew"].join(""), op, btn, null)
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, op);
+                                    cv_interact.success("Contract has been renewed successfully");
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                    },
+                },
+            ],
+        });
 
         dialog.show(op);
     };
 
     return self;
 })();
+

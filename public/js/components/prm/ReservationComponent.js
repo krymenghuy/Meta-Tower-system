@@ -286,27 +286,6 @@ var ReservationComponent = (() => {
     };
     mThis.deleteReservation = (id, menuLink) => {
         if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this reservation?', {
-            transTitle: 'Delete Reservation',
-            context: 'delete',
-            confirmButtonText: 'Delete'
-        }, (e) => {
-            if (!e) return;
-            vsapi.call(`${main_view.base_url}/prm/reservation/delete`, { id: id }, false, false, false).then(res => {
-                if (res.status_code === 200) {
-                    cv_interact.success('Reservation deleted.');
-                    mThis.ReservationListView.showPage(mThis.getFilterData());
-                } else {
-                    cv_interact.error(res.error_message || 'Delete failed');
-                }
-            });
-        });
-    };
-
-
-    mThis.changeStatus = (id, link) =>{
-        const tr = link.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
         cv_interact.confirm(
             "Delete this reservation?",
             {
@@ -430,8 +409,6 @@ const CreateReservationDialog = (() => {
                                 <input name="tenant_id" class="d-none data-input form-control" data-field="tenant_id">
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input name="tenant" class="data-input form-control" data-field="tenant_name">
-
                                     <input name="tenant" class="data-input form-control" data-field="tenant_name" placeholder=" "></input>
                                     <label style="color:#777777;padding-left:6px;">Tenant</label>
                                 </div>
@@ -481,13 +458,6 @@ const CreateReservationDialog = (() => {
                             <div class="col-4">
                                 <div class=" material-input outlined">
                                     <input type="time" name="end_time" required class="data-input form-control form_input" data-field="end_time" />
-                                </div>
-                            </div>
-
-                            <div class="col-6 d-none ">
-                                <label style="color:#777777;padding-left:6px;">Title / Event</label>
-                                <div class="material-input outlined">
-                                    <input name="title" class="data-input form-control" data-field="title"></input>
                                     <label style="color:#777777;padding-left:6px;">End Time</label>
                                 </div>
                             </div>
@@ -576,8 +546,6 @@ const CreateReservationDialog = (() => {
                             phone_number: "Phone",
                         },
                         onSelect: (tenant) => {
-                            console.log(1111, tenant);
-
                             me._selectedTenantId = tenant.id;
 
                             // Direct mapping from the search result
@@ -680,35 +648,6 @@ const CreateReservationDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
-                    const header = me.divModal.querySelector('.modal-header');
-                    const btnClose = header.querySelector('button');
-                    if (btnClose) btnClose.classList.add('d-none');
-
-                    // Amenity auto-fill logic
-                    const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
-
-                    if (amenitySelect) {
-                        const applyAmenityData = (amenityId) => {
-                            if (!amenityId) {
-
-                                if (codeInput)     codeInput.value = '';
-                                if (capacityInput) capacityInput.value = '';
-                                return;
-                            }
-
-                            const amenities = Array.isArray(data?.amenities) ? data.amenities : [];
-                            const selected = amenities.find(item => String(item.id) === String(amenityId));
-
-                            const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
-                            const capacityInput = me.divModal.querySelector('[data-field="amenity_capacity"]');
-
-                            if (codeInput) {
-                                codeInput.value = selected?.amenity_code ?? '';
-                            }
-                            if (capacityInput) {
-                                capacityInput.value = selected?.max_capacity ?? '';
-                            }
-                        };
 
                     const details = data?.reservation_details || {};
                     console.log(12121, details);
