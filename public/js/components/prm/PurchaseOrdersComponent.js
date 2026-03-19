@@ -444,7 +444,8 @@ var PurchaseOrdersComponent = (() => {
                 const vendorId = poDetails.vendor_id;
                 const vendor = vendors.find(v => Number(v.id) === Number(vendorId));
 
-                if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || '') : '';
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || vendor.code || '') : '';
                 if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
                 if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
 
@@ -562,9 +563,12 @@ var PurchaseOrdersComponent = (() => {
                         <span class="mx-2 fw-bold">:</span>
                         <input
                             name="vendor"
-                            class="data-input form-control flex-grow-1"
-                            data-field="vendor_id"
+                            class="form-control flex-grow-1"
                             placeholder="">
+                        <input type="hidden"
+                            name="vendor_id"
+                            class="data-input"
+                            data-field="vendor_id">
                     </div>
                     <div class="d-flex align-items-center mb-2">
                         <span class="fw-bold" style="min-width:90px;">Phone</span>
@@ -652,35 +656,57 @@ var PurchaseOrdersComponent = (() => {
             // },
         ],
         contentCreated:(me)=>{
-           me.searchVendor = VSSearchInput.init(me.controls.vendor, {
-                type: 'select',
-                prefetch: true,
-                query: {
-                    from: 'vendors',
-                    select: ['id', 'name', 'code', 'tax_number', 'phone_number', 'address'],
-                    searchFields: { name: 'LIKE', phone_number: 'LIKE' }
-                },
-                columns: { name: 'Name', phone_number: 'Phone' },
-                showColumnHeader: true,
-                placeholder: 'Search vendor',
-                onSelect: (vendor) => {
-                    me._selectedVendorId = vendor.id;
-
-                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`,
-                    { vendor_id: vendor.id }, {})
+            const applyVendorInfo = (vendorId) => {
+                me._selectedVendorId = vendorId || '';
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (!vendorId) {
+                    if (me.controls.phone_number) me.controls.phone_number.value = '';
+                    if (me.controls.address) me.controls.address.value = '';
+                    return;
+                }
+                vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
                     .then(res => {
                         const d = res.data || {};
                         const v = d.vendor || {};
+                        if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                        if (me.controls.address) me.controls.address.value = v.address || '';
+                    })
+                    .catch(() => {});
+            };
 
-                        me.controls.vendor.value = v.name || '';
-                        me.controls.phone_number.value = v.phone_number || '';
-                        me.controls.address.value = v.address || '';
-                         me._selectedVendorId = vendor.id;
-                    });
+            // Keep the same dropdown UI style as screenshot (VSSearchInput),
+            // but source data from purchase order form-options vendors list.
+            if (me.controls.vendor) {
+                me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                    type: 'select',
+                    prefetch: true,
+                    minChars: 0,
+                    api: {
+                        endpoint: `${main_view.base_url}/prm/purchase/order/form-options`,
+                    },
+                    processResponse: (res) => {
+                        const vendors = res?.data?.vendors || [];
+                        return (Array.isArray(vendors) ? vendors : []).map(v => ({
+                            ...v,
+                            vendor: v.vendor || v.name || v.vendor_name || v.code || '',
+                            phone_number: v.phone_number || v.contact_phone || v.phone || ''
+                        }));
+                    },
+                    columns: { vendor: 'VENDOR', phone_number: 'PHONE' },
+                    showColumnHeader: true,
+                    placeholder: 'Search vendor',
+                    onSelect: (vendor) => {
+                        const id = vendor?.id || '';
+                        me.controls.vendor.value = vendor?.vendor || '';
+                        applyVendorInfo(id);
+                    }
+                });
+
+                // prefill in modify mode
+                if (me._selectedVendorId) {
+                    applyVendorInfo(me._selectedVendorId);
                 }
-            });
-
-            me.searchVendor.reset('');
+            }
             me.purchaseItemsView = new ItemsView('purchase_item_list', {
                 columns: [
                     { name:"item_id", transTitle:"titles.Item", displayType:"select" },

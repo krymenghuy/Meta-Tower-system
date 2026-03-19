@@ -308,14 +308,14 @@ const CreateMaintenanceDialog = (() => {
                             </div>
                             <div id="_maintenance_unit_space_row" class="col-12 col-sm-6" style="display:none;">
                                 <div class="material-input outlined">
-                                    <select name="space_id" class="data-input form-control" data-field="space_id" placeholder=" "><option value="">Select space</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Space</label>
+                                    <select data-style="material" name="space_id" class="data-input form-control" data-field="space_id" placeholder="Select space"><option value="">Select space</option></select>
+
                                 </div>
                             </div>
                             <div id="_maintenance_unit_amenity_row" class="col-12 col-sm-6" style="display:none;">
-                                <div class="material-input outlined">
-                                    <select name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder=" "><option value="">Select amenity</option></select>
-                                    <label style="color:#777777;padding-left:6px;">Amenity</label>
+                                                      <div class="material-input outlined">
+                                    <select data-style="material" name="amenity_id" class="data-input form-control" data-field="amenity_id" placeholder="Select code amenity"><option value="">Select code amenity</option></select>
+
                                 </div>
                             </div>
                         </div>
@@ -379,7 +379,8 @@ const CreateMaintenanceDialog = (() => {
             configSelect: [
                 { name: "building_id", data: "buildings", textField: "building", valueField: "id" },
                 { name: "space_id", data: "building_spaces", textField: "code", valueField: "id" },
-                { name: "amenity_id", data: "amenities", textField: "code", valueField: "id" }
+                // Prefer showing amenity code (list view uses `amenity_code`).
+                { name: "amenity_id", data: "amenities", textField: "amenity_code", valueField: "id" }
             ],
             prepareFormOptions: {
                 createTitle: "Create Maintenance",
