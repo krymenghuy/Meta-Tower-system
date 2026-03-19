@@ -162,8 +162,18 @@ class Contract
     {
         if (!$space_id) return null;
 
+        // Only treat as duplicate if the space has an Active or Pending contract.
+        // Expired or Terminated contracts do not block creating a new contract for the same space.
+        $activeId = self::getActiveStatusId();
+        $pendingId = self::getPendingStatusId();
+        $statusIds = array_filter([$activeId, $pendingId]);
+
         $query = DB::table('contracts as c')
             ->where('c.space_id', $space_id);
+
+        if (!empty($statusIds)) {
+            $query->whereIn('c.status_id', $statusIds);
+        }
 
         if ($id) {
             $query->where('c.id', '<>', $id);
