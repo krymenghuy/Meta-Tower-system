@@ -17,6 +17,7 @@ use App\Http\Controllers\Prm\ServiceController;
 use App\Http\Controllers\Prm\VendorController;
 
 use App\Http\Controllers\Prm\InvoiceController;
+use App\Http\Controllers\Prm\ExpenseController;
 use App\Http\Controllers\Prm\PaymentController;
 use App\Http\Controllers\Prm\ServiceRequestController;
 use App\Http\Controllers\Prm\ReservationController;
@@ -202,6 +203,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('invoice')->gr
     Route::post('/form-options', [InvoiceController::class, 'getFormOptions']);
     Route::post('/delete', [InvoiceController::class, 'deleteInvoice']);
     Route::post('/update-status', [InvoiceController::class, 'updateInvoiceStatus']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->group(function () {
+    Route::post('/save', [ExpenseController::class, 'saveExpense']);
+    Route::post('/list-paginate', [ExpenseController::class, 'getListPaginate']);
+    Route::post('/details', [ExpenseController::class, 'expenseDetails']);
+
+
+    
 });
 
 
