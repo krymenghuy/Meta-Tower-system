@@ -1,158 +1,528 @@
-<!-- <div class="container py-5">
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-            <div>
-                <h5 class="mb-0 fw-bold text-dark text-uppercase tracking-wide">Record Vendor Bill</h5>
-                <p class="mb-0 small text-muted">Store Inventory & Accounts Payable</p>
-            </div>
-            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold">Pending Record</span>
-        </div>
+const showBillDialog = (op) => {
+    const loadBillForEdit = (me, editBillId) => {
+        if (!me || !editBillId) return Promise.resolve(null);
 
-        <div class="card-body p-4">
-            <div class="row g-4 mb-5 p-4 bg-light rounded-3">
-                <div class="col-md-4">
-                    <label class="form-label small text-muted fw-bold">Select Vendor</label>
-                    <select class="form-select border-0 shadow-sm py-2">
-                        <option>Phnom Penh Hardware Ltd.</option>
-                        <option>Mega Tech Supply</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small text-muted fw-bold">Link to PO #</label>
-                    <input type="text" class="form-control border-0 shadow-sm py-2" placeholder="PO-2026-005">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small text-muted fw-bold">Vendor Invoice #</label>
-                    <input type="text" class="form-control border-0 shadow-sm py-2" placeholder="As written on bill">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small text-muted fw-bold">Bill Date</label>
-                    <input type="date" class="form-control border-0 shadow-sm py-2">
-                </div>
-            </div>
+        return vsapi
+            .call(
+                `${main_view.base_url}/prm/bill/form-options`,
+                { id: editBillId },
+                null,
+                false,
+            )
+            .then((formRes) => {
+                if (!formRes || formRes.status_code !== 200) {
+                    throw new Error(
+                        formRes?.error_message || "Failed to load bill details",
+                    );
+                }
 
-            <div class="table-responsive mb-4">
-                <table class="table table-hover align-middle">
-                    <thead class="bg-white text-muted small text-uppercase">
-                        <tr>
-                            <th style="min-width: 300px;">Item Description</th>
-                            <th class="text-center" width="100">Qty</th>
-                            <th class="text-center" width="150">Unit Price</th>
-                            <th class="text-end" width="150">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="border-top-0">
-                        <tr>
-                            <td class="py-3">
-                                <div class="fw-bold">LED Light Bulbs (12W)</div>
-                                <div class="text-muted small">Part #INV-992-B</div>
-                            </td>
-                            <td><input type="number" class="form-control text-center border-0 bg-light py-2" value="50"></td>
-                            <td><input type="number" class="form-control text-center border-0 bg-light py-2" value="4.50"></td>
-                            <td class="text-end fw-bold text-dark">$225.00</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button type="button" class="btn btn-sm btn-link text-decoration-none fw-bold p-0">+ Add New Item</button>
-            </div>
+                const titleEl = me.divModal?.querySelector(".modal-title");
+                if (titleEl)
+                    titleEl.innerHTML =
+                        '<span class="fw-semibold">Modify Bill</span>';
 
-            <hr class="my-5 opacity-10">
+                const billDetails = (formRes.data || {}).bill_details || {};
 
-            <div class="row pt-2 align-items-end">
-                <div class="col-md-7">
-                    <label class="form-label small text-muted fw-bold">Internal Notes / Observations</label>
-                    <textarea class="form-control border-0 bg-light p-3" rows="3" placeholder="Notes for partial deliveries or damaged items..."></textarea>
-                </div>
-                <div class="col-md-5">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Subtotal:</span>
-                        <span class="fw-bold text-dark">$225.00</span>
+                if (me.controls.vendor_id)
+                    me.controls.vendor_id.value = billDetails.vendor_id || "";
+                if (me.controls.vendor)
+                    me.controls.vendor.value = billDetails.vendor_name || "";
+                if (me.controls.po_ref)
+                    me.controls.po_ref.value = billDetails.po_number || "";
+                if (me.controls.bill_number)
+                    me.controls.bill_number.value = billDetails.bill_number || "";
+                if (me.controls.bill_date)
+                    me.controls.bill_date.value = billDetails.bill_date || "";
+                if (me.controls.due_date)
+                    me.controls.due_date.value = billDetails.due_date || "";
+                if (me.controls.payment_date)
+                    me.controls.payment_date.value = billDetails.payment_date || "";
+                if (me.controls.sub_total)
+                    me.controls.sub_total.value = billDetails.sub_total || "";
+                if (me.controls.amount_paid)
+                    me.controls.amount_paid.value = billDetails.amount_paid || "";
+                if (me.controls.remark)
+                    me.controls.remark.value = billDetails.remark || "";
+
+                if (me.controls.photo_preview && billDetails.photo_path) {
+                    me.controls.photo_preview.src = billDetails.photo_path;
+                    me.controls.photo_preview.style.display = "block";
+                    const placeholder = me.divModal.querySelector(".upload-placeholder");
+                    if (placeholder) placeholder.style.display = "none";
+                }
+
+                me._selectedVendorId = billDetails.vendor_id;
+
+                if (typeof me.calcPayment === "function") me.calcPayment();
+                if (typeof me.checkOverdue === "function") me.checkOverdue();
+            });
+    };
+
+    CreateBillDialog =
+        CreateBillDialog ||
+        new GeneralDialog({
+            cssClass: "modal-lg vs-modal",
+            createContent: () => {
+                return `
+                <style>
+                    .bill-section-title {
+                        font-size: 11px;
+                        font-weight: 700;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: #6c757d;
+                        margin-bottom: 12px;
+                        padding-bottom: 6px;
+                        border-bottom: 1px solid #e9ecef;
+                    }
+                    .bill-field-group {
+                        margin-bottom: 14px;
+                    }
+                    .bill-field-group label {
+                        display: block;
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #495057;
+                        margin-bottom: 4px;
+                    }
+                    .bill-field-group .form-control,
+                    .bill-field-group select {
+                        font-size: 13px;
+                        height: 36px;
+                        border-color: #dee2e6;
+                        border-radius: 6px;
+                        background-color: #fff;
+                        transition: border-color 0.15s ease;
+                    }
+                    .bill-field-group textarea.form-control {
+                        height: auto;
+                    }
+                    .bill-field-group .form-control:focus,
+                    .bill-field-group select:focus {
+                        border-color: #86b7fe;
+                        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+                    }
+                    .bill-card {
+                        background: #f8f9fa;
+                        border: 1px solid #e9ecef;
+                        border-radius: 10px;
+                        padding: 18px 20px;
+                        margin-bottom: 16px;
+                    }
+                    .bill-upload-box {
+                        border: 2px dashed #ced4da;
+                        border-radius: 8px;
+                        background: #fff;
+                        height: 90px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        color: #adb5bd;
+                        font-size: 13px;
+                        transition: border-color 0.2s, color 0.2s;
+                    }
+                    .bill-upload-box:hover {
+                        border-color: #86b7fe;
+                        color: #0d6efd;
+                    }
+                    .bill-upload-box img {
+                        max-height: 80px;
+                        border-radius: 4px;
+                        display: none;
+                    }
+                    .bill-summary-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 4px 0;
+                        font-size: 13px;
+                    }
+                    .bill-summary-row .label {
+                        color: #6c757d;
+                        font-weight: 500;
+                    }
+                    .bill-divider {
+                        border: none;
+                        border-top: 1px solid #e9ecef;
+                        margin: 8px 0;
+                    }
+                    .bill-amount-input {
+                        width: 130px;
+                        border-radius: 6px;
+                        font-size: 13px;
+                        text-align: right;
+                        height: 34px;
+                        border: 1px solid #dee2e6;
+                        padding: 0 10px;
+                        transition: border-color 0.15s ease;
+                    }
+                    .bill-amount-input:focus {
+                        outline: none;
+                        border-color: #86b7fe;
+                        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+                    }
+                    .due-date-overdue {
+                        border-color: #dc3545 !important;
+                        color: #dc3545 !important;
+                        background-color: #fff5f5 !important;
+                    }
+                    .bill-pay-full-btn {
+                        font-size: 11px;
+                        padding: 2px 8px;
+                        border-radius: 20px;
+                        white-space: nowrap;
+                        line-height: 1.6;
+                    }
+                    .payment-date-row {
+                        display: none;
+                    }
+                    .payment-date-row.visible {
+                        display: flex;
+                    }
+                </style>
+
+                <div class="row g-3 px-1 pt-1">
+
+                    <!-- LEFT COLUMN -->
+                    <div class="col-md-7">
+
+                        <!-- Vendor Info -->
+                        <div class="bill-card">
+                            <div class="bill-section-title">Vendor Info</div>
+                            <div class="bill-field-group">
+                                <label>Vendor</label>
+                                <input name="vendor" class="form-control" placeholder="Search vendor...">
+                                <input type="hidden" name="vendor_id" class="data-input" data-field="vendor_id">
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6 bill-field-group">
+                                    <label>PO Reference</label>
+                                    <input type="text" name="po_ref" class="data-input form-control"
+                                        data-field="po_ref" placeholder="Linked PO #">
+                                </div>
+                                <div class="col-6 bill-field-group mb-0">
+                                    <label>Bill Number</label>
+                                    <input type="text" name="bill_number" class="data-input form-control"
+                                        data-field="bill_number" placeholder="e.g. INV-0001">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="bill-card">
+                            <div class="bill-section-title">Dates</div>
+                            <div class="row g-2">
+                                <div class="col-6 bill-field-group mb-0">
+                                    <label>
+                                        <i class="fa fa-file-invoice fa-xs me-1 text-muted"></i>
+                                        Bill Date
+                                    </label>
+                                    <input type="date" name="bill_date" class="data-input form-control"
+                                        data-field="bill_date">
+                                </div>
+                                <div class="col-6 bill-field-group mb-0">
+                                    <label>
+                                        <i class="fa fa-calendar-xmark fa-xs me-1 text-muted"></i>
+                                        Due Date
+                                    </label>
+                                    <input type="date" name="due_date" class="data-input form-control"
+                                        data-field="due_date" id="bill_due_date_input">
+                                    <small id="overdue_warning" class="text-danger d-none" style="font-size:11px;">
+                                        <i class="fa fa-triangle-exclamation me-1"></i>Overdue!
+                                    </small>
+                                </div>
+
+                                <!-- Payment Date — shown only when Paid or Partial -->
+                                <div class="col-6 bill-field-group mb-0 payment-date-row" id="payment_date_row">
+                                    <label>
+                                        <i class="fa fa-circle-check fa-xs me-1 text-success"></i>
+                                        Payment Date
+                                    </label>
+                                    <input type="date" name="payment_date" class="data-input form-control"
+                                        data-field="payment_date" id="bill_payment_date_input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remark -->
+                        <div class="bill-card mb-0">
+                            <div class="bill-section-title">Remark</div>
+                            <div class="bill-field-group mb-0">
+                                <textarea name="remark" class="data-input form-control" data-field="remark"
+                                    rows="3" placeholder="Optional note..."></textarea>
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted">VAT (10%):</span>
-                        <span class="fw-bold text-dark">$22.50</span>
+
+                    <!-- RIGHT COLUMN -->
+                    <div class="col-md-5">
+
+                        <!-- Payment -->
+                        <div class="bill-card">
+                            <div class="bill-section-title">Payment</div>
+
+                            <!-- Sub Total -->
+                            <div class="bill-summary-row mb-2">
+                                <span class="label">Sub Total :</span>
+                                <input type="number" name="sub_total"
+                                    class="data-input bill-amount-input"
+                                    data-field="sub_total" placeholder="0.00" min="0" step="0.01">
+                            </div>
+
+                            <hr class="bill-divider">
+
+                            <!-- Amount Paid -->
+                            <div class="bill-summary-row mb-1">
+                                <span class="label">Amount Paid :</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" id="btn_pay_full"
+                                        class="btn btn-outline-success bill-pay-full-btn">
+                                        Pay Full
+                                    </button>
+                                    <input type="number" name="amount_paid"
+                                        class="data-input bill-amount-input"
+                                        data-field="amount_paid" placeholder="0.00" min="0" step="0.01">
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="mt-2 mb-1 px-1">
+                                <div class="d-flex justify-content-between mb-1" style="font-size:11px; color:#6c757d;">
+                                    <span id="bill_progress_label">Paid: $0.00</span>
+                                    <span id="bill_progress_pct">0%</span>
+                                </div>
+                                <div class="progress" style="height:6px; border-radius:10px; background:#e9ecef;">
+                                    <div id="bill_progress_bar" class="progress-bar bg-danger"
+                                        role="progressbar" style="width:0%; transition: width 0.3s ease;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="bill-divider">
+
+                            <!-- Balance Due -->
+                            <div class="bill-summary-row mb-2">
+                                <span style="color:#dc3545; font-weight:600; font-size:13px;">Balance Due :</span>
+                                <span id="bill_balance_display"
+                                    style="font-weight:700; font-size:14px; color:#dc3545;">$ 0.00</span>
+                                <input type="hidden" name="grand_total" class="data-input"
+                                    data-field="grand_total" value="0">
+                            </div>
+
+                            <hr class="bill-divider">
+
+                            <!-- Auto Status Badge -->
+                            <div class="bill-summary-row mt-1">
+                                <span class="label">Status :</span>
+                                <span id="bill_status_badge"
+                                    class="badge rounded-pill px-3 py-2"
+                                    style="font-size:12px; background:#fff0f0; color:#dc3545; border:1px solid #dc3545;">
+                                    🔴 Unpaid
+                                </span>
+                                <input type="hidden" name="status" class="data-input"
+                                    data-field="status" value="0">
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div class="bill-card mb-0">
+                            <div class="bill-section-title">Bill Photo / Evidence</div>
+                            <div class="bill-upload-box" onclick="this.querySelector('input').click()">
+                                <img name="photo_preview" src="">
+                                <span class="upload-placeholder">
+                                    <i class="fa fa-camera me-1"></i> Click to upload
+                                </span>
+                                <input type="file" name="bill_photo" class="d-none" accept="image/*"
+                                    onchange="
+                                        const img = this.parentElement.querySelector('img');
+                                        const ph  = this.parentElement.querySelector('.upload-placeholder');
+                                        img.src = URL.createObjectURL(this.files[0]);
+                                        img.style.display = 'block';
+                                        if (ph) ph.style.display = 'none';
+                                    ">
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="d-flex justify-content-between align-items-center py-3 border-top border-2">
-                        <h5 class="fw-bold mb-0">Grand Total:</h5>
-                        <h3 class="fw-bold text-primary mb-0">$247.50</h3>
-                    </div>
-                    <button class="btn btn-primary btn-lg w-100 mt-3 shadow fw-bold py-3">SAVE BILL RECORD</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
+                </div>`;
+            },
 
+            contentCreated: (me) => {
+                // Vendor search
+                if (me.controls.vendor) {
+                    me.searchVendor = VSSearchInput.init(me.controls.vendor, {
+                        type: "select",
+                        prefetch: true,
+                        api: {
+                            endpoint: `${main_view.base_url}/prm/purchase/order/form-options`,
+                        },
+                        onSelect: (vendor) => {
+                            me.controls.vendor_id.value = vendor?.id || "";
+                            me._selectedVendorId = vendor?.id;
+                        },
+                    });
+                }
 
+                // Payment calculation
+                me.calcPayment = () => {
+                    const modal    = me.divModal;
+                    const subTotal = parseFloat(modal.querySelector('[name="sub_total"]')?.value)   || 0;
+                    const amtPaid  = parseFloat(modal.querySelector('[name="amount_paid"]')?.value) || 0;
+                    const balance  = Math.max(0, subTotal - amtPaid);
+                    const pct      = subTotal > 0 ? Math.min(100, (amtPaid / subTotal) * 100) : 0;
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordBillModal">
-  <i class="bi bi-plus-circle me-2"></i>Record New Bill
-</button>
+                    // Balance
+                    const balanceEl = modal.querySelector("#bill_balance_display");
+                    if (balanceEl) balanceEl.textContent = "$ " + balance.toFixed(2);
 
-<div class="modal fade" id="recordBillModal" tabindex="-1" aria-labelledby="recordBillLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered shadow-lg">
-    <div class="modal-content border-0 rounded-4">
-      
-      <div class="modal-header bg-primary text-white py-3 rounded-top-4">
-        <h5 class="modal-title fw-bold" id="recordBillLabel">
-          <i class="bi bi-file-earmark-arrow-down me-2"></i>Record Vendor Bill
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+                    // Grand total hidden
+                    const gtInput = modal.querySelector('[name="grand_total"]');
+                    if (gtInput) gtInput.value = subTotal.toFixed(2);
 
-      <div class="modal-body p-4 bg-light-subtle">
-        <form id="vendorBillForm" enctype="multipart/form-data">
-          
-          <div class="row g-4">
-            <div class="col-lg-8">
-              <div class="card border-0 shadow-sm p-3 mb-3">
-                <h6 class="fw-bold mb-3 text-muted small text-uppercase">General Information</h6>
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">Select Vendor</label>
-                    <select class="form-select border-light-subtle shadow-sm" name="vendor_id" required>
-                      <option selected disabled>Choose Vendor...</option>
-                      <option value="1">Phnom Penh Hardware Ltd.</option>
-                      <option value="2">EDC (Electricity)</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label small fw-bold">Link to PO #</label>
-                    <input type="text" class="form-control border-light-subtle shadow-sm" placeholder="e.g. PO-2026-005">
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label small fw-bold">Invoice Date</label>
-                    <input type="date" class="form-control border-light-subtle shadow-sm" required>
-                  </div>
-                </div>
-              </div>
+                    // Progress bar
+                    const bar    = modal.querySelector("#bill_progress_bar");
+                    const lbl    = modal.querySelector("#bill_progress_label");
+                    const pctLbl = modal.querySelector("#bill_progress_pct");
+                    if (bar) {
+                        bar.style.width = pct + "%";
+                        bar.className   = "progress-bar " +
+                            (pct >= 100 ? "bg-success" : pct > 0 ? "bg-warning" : "bg-danger");
+                    }
+                    if (lbl)    lbl.textContent    = "Paid: $" + amtPaid.toFixed(2);
+                    if (pctLbl) pctLbl.textContent = pct.toFixed(0) + "%";
 
-              <div class="card border-0 shadow-sm p-3">
-                <h6 class="fw-bold mb-3 text-muted small text-uppercase">Billed Items</h6>
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead class="small text-muted border-bottom">
-                      <tr>
-                        <th>Item / Description</th>
-                        <th width="100" class="text-center">Qty</th>
-                        <th width="120" class="text-center">Rate</th>
-                        <th width="120" class="text-end">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="border-bottom-0">
-                        <td>
-                          <input type="text" class="form-control form-control-sm border-0 bg-light" placeholder="Item name...">
-                        </td>
-                        <td><input type="number" class="form-control form-control-sm text-center border-0 bg-light" value="1"></td>
-                        <td><input type="number" class="form-control form-control-sm text-center border-0 bg-light" value="0.00"></td>
-                        <td class="text-end fw-bold">$0.00</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <button type="button" class="btn btn-sm btn-link text-decoration-none">+ Add Item</button>
-                </div>
-              </div>
-            </div>
+                    // Status
+                    let statusVal  = "0";
+                    let badgeStyle = "background:#fff0f0; color:#dc3545; border:1px solid #dc3545;";
+                    let badgeText  = "🔴 Unpaid";
 
-            <div class="col-lg-4">
+                    if (subTotal > 0 && amtPaid >= subTotal) {
+                        statusVal  = "2";
+                        badgeStyle = "background:#f0fff4; color:#15803d; border:1px solid #22c55e;";
+                        badgeText  = "🟢 Paid";
+                    } else if (amtPaid > 0 && amtPaid < subTotal) {
+                        statusVal  = "1";
+                        badgeStyle = "background:#fff8e1; color:#b45309; border:1px solid #f59e0b;";
+                        badgeText  = "🟡 Partial";
+                    }
+
+                    const badge       = modal.querySelector("#bill_status_badge");
+                    const statusInput = modal.querySelector('[name="status"]');
+                    if (badge) {
+                        badge.textContent = badgeText;
+                        badge.setAttribute("style", `font-size:12px; ${badgeStyle}`);
+                    }
+                    if (statusInput) statusInput.value = statusVal;
+
+                    // Show/hide Payment Date row
+                    const paymentDateRow = modal.querySelector("#payment_date_row");
+                    const paymentDateInput = modal.querySelector('[name="payment_date"]');
+                    if (paymentDateRow) {
+                        const shouldShow = statusVal === "1" || statusVal === "2";
+                        paymentDateRow.classList.toggle("visible", shouldShow);
+
+                        // Auto-fill today if becoming Paid and field is empty
+                        if (statusVal === "2" && paymentDateInput && !paymentDateInput.value) {
+                            paymentDateInput.value = new Date().toISOString().split("T")[0];
+                        }
+                        // Clear if back to Unpaid
+                        if (statusVal === "0" && paymentDateInput) {
+                            paymentDateInput.value = "";
+                        }
+                    }
+
+                    // Re-check overdue
+                    if (typeof me.checkOverdue === "function") me.checkOverdue(statusVal);
+                };
+
+                // Overdue check
+                me.checkOverdue = (statusVal) => {
+                    const dueDateInput = me.divModal.querySelector("#bill_due_date_input");
+                    const warning      = me.divModal.querySelector("#overdue_warning");
+                    if (!dueDateInput) return;
+
+                    const currentStatus = statusVal || me.divModal.querySelector('[name="status"]')?.value || "0";
+                    const isPaid        = currentStatus === "2";
+                    const hasDate       = !!dueDateInput.value;
+                    const isOverdue     = hasDate && new Date(dueDateInput.value) < new Date() && !isPaid;
+
+                    dueDateInput.classList.toggle("due-date-overdue", isOverdue);
+                    if (warning) warning.classList.toggle("d-none", !isOverdue);
+                };
+
+                // Pay Full button
+                const btnPayFull = me.divModal.querySelector("#btn_pay_full");
+                if (btnPayFull) {
+                    btnPayFull.addEventListener("click", () => {
+                        const subTotal    = me.divModal.querySelector('[name="sub_total"]');
+                        const amountPaid  = me.divModal.querySelector('[name="amount_paid"]');
+                        if (subTotal && amountPaid) {
+                            amountPaid.value = subTotal.value;
+                            me.calcPayment();
+                        }
+                    });
+                }
+
+                // Input listeners
+                ["sub_total", "amount_paid"].forEach((name) => {
+                    const el = me.divModal.querySelector(`[name="${name}"]`);
+                    if (el) el.addEventListener("input", () => me.calcPayment());
+                });
+
+                // Due date change listener
+                const dueDateEl = me.divModal.querySelector("#bill_due_date_input");
+                if (dueDateEl) {
+                    dueDateEl.addEventListener("change", () => me.checkOverdue());
+                }
+            },
+
+            onShow: (me) => {
+                const editBillId = op.id || me._editBillId;
+                if (editBillId) {
+                    setTimeout(() => loadBillForEdit(me, editBillId), 100);
+                } else {
+                    me.clear();
+                }
+            },
+
+            buttons: [
+                {
+                    label: "Cancel",
+                    cssClass: "btn btn-light border",
+                    click: (me) => me.hide(false),
+                },
+                {
+                    label: '<i class="fa fa-save me-1"></i> Save Bill',
+                    cssClass: "btn btn-primary px-4",
+                    click: (me) => {
+                        const formData = new FormData();
+                        const p        = me.getData();
+                        p.vendor_id    = me._selectedVendorId;
+
+                        Object.keys(p).forEach((key) => formData.append(key, p[key]));
+
+                        const fileInput = me.divModal.querySelector('input[name="bill_photo"]');
+                        if (fileInput?.files[0])
+                            formData.append("photo", fileInput.files[0]);
+
+                        vsapi
+                            .post(`${main_view.base_url}/prm/bill/save`, formData)
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    cv_interact.success("Bill saved successfully.");
+                                    me.hide(true);
+                                    if (typeof op.onClose === "function") op.onClose();
+                                } else {
+                                    cv_interact.warning(res.error_message);
+                                }
+                            });
+                    },
+                },
+            ],
+        });
+
+    CreateBillDialog.show(op);
+};

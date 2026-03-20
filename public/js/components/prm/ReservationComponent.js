@@ -3,9 +3,7 @@ var ReservationComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Reservation Management";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_reservation_component",
-    );
+    mThis.self = main_view.VSAppContent.querySelector("#_main_reservation_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnReservation");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
@@ -230,13 +228,7 @@ var ReservationComponent = (() => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-                // {
-                //     html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                //     icon: `<i class="fa fa-exchange fs-5 text-info"></i>`,
-
-                //     cssClass: "border-bottom pb-2",
-                //     name: "change_status"
-                // },
+               
                 {
                     html: '<span class="ps-2 " vslang="titles.Modify Reservation"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
@@ -254,11 +246,6 @@ var ReservationComponent = (() => {
             onShow: (me, container) => {
                 const menu = me.getActiveMenus(container);
                 const status_id = Number(container.dataset.statusid);
-
-                // LOGIC:
-                // Status 1 (Upcoming): BOTH visible (Allow changes before it starts)
-                // Status 2 (Started):  BOTH hidden  (Block while in progress)
-                // Status 3 (Finished): EDIT hidden, DELETE visible (Record keeping)
 
                 if (menu.edit_reservation) {
                     // Hide if status is 2 or 3
@@ -345,42 +332,6 @@ var ReservationComponent = (() => {
         );
     };
 
-    // mThis.changeStatus = (id, link) =>{
-    //     const tr = link.closest('tr');
-    //     const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-
-    //     const inputOptions = {
-    //         context:'success',
-    //         transTitle: 'Change Status',
-    //         label: "Reservation Status",
-    //         valueKey: "status_id",
-    //         labelKey: "name",
-    //         confirmButtonText: "Save",
-    //         requiredMessage: 'Status is not correct!',
-    //         blankErrorMessage: "Status is not correct!",
-    //         data:[
-    //             {status_id:"1",name:"Upcoming"},
-    //             {status_id:"2",name:"In Progress"},
-    //             {status_id: "3", name: "Completed" },
-    //         ],
-    //         defaultValue: status_id,
-    //         onConfirm:(status,btn, me)=>{
-    //                 //if(!AuthManager.allowed(321)) return;
-    //                 const payload = {id, status_id :status.status_id};
-    //                 vsapi.post(`${mThis.base_url}/prm/reservation/update-status`,payload,{loader:false,agent:btn}).then(res=>{
-    //                     if(res.status_code ===200){
-    //                         me.close();
-    //                         cv_interact.success('Reservation Status has been updated');
-    //                         mThis.ReservationListView.showPage(mThis.getFilterData());
-    //                     }else{
-    //                         me.setError(res.error_message || 'Unable to update status');
-    //                         //cv_interact.error(res.error_message || 'Unable to update status');
-    //                     }
-    //                 });
-    //         }
-    //     };
-    //     InputBox.show(inputOptions);
-    // };
 
     mThis.prepareFormOptions = (onFinish) => {
         vsapi
@@ -493,63 +444,6 @@ const CreateReservationDialog = (() => {
                     ].join("");
                 },
 
-                // contentCreated: (me) => {
-                //     me.searchTenant = VSSearchInput.init(me.controls.tenant, {
-                //         type: "select",
-                //         prefetch: true,
-                //         query: {
-                //             from: "tenants",
-                //             select: ["id", "name", "phone_number"],
-                //             searchFields: {
-                //                 name: "LIKE",
-                //                 phone_number: "LIKE",
-                //             },
-                //         },
-                //         columns: {
-                //             name: "Name",
-                //             phone_number: "Phone",
-                //         },
-                //         onSelect: (tenant) => {
-                //             console.log(1111, tenant);
-
-                //             me._selectedTenantId = tenant.id;
-                //             vsapi
-                //                 .post(
-                //                     `${main_view.base_url}/prm/tenant/options-tenant-info`,
-                //                     { tenant_id: tenant.id },
-                //                     {},
-                //                 )
-                //                 .then((res) => {
-                //                     const d = res.data || {};
-                //                     me.controls.phone_number.val = d.tenant?.phone_number || "";
-                //                     me._selectedTenantId = tenant.id;
-                //                 });
-                //         },
-                //     });
-                //     me.searchTenant.reset("");
-                // },
-
-                // configSelect: [
-                //     {
-                //         name: "amenity_id",
-                //         data: "amenities",
-                //         textField: "amenity",
-                //         valueField: "id",
-                //     },
-                //     {
-                //         name: "amenity_category",
-                //         data: "amenity_categories",
-                //         textField: "amenity_category",
-                //         valueField: "id",
-                //     },
-                //     {
-                //         name: "reservation_statuses",
-                //         data: "reservation_statuses",
-                //         textField: "reservation_status",
-                //         valueField: "id",
-                //     },
-                // ],
-
                 contentCreated: (me) => {
                     me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                         type: "select",
@@ -585,13 +479,13 @@ const CreateReservationDialog = (() => {
 
                 configSelect: [
                     {
-                        name: "amenity_id", // Matches reservation_details.amenity_id
+                        name: "amenity_id", 
                         data: "amenities",
                         textField: "amenity",
                         valueField: "id",
                     },
                     {
-                        name: "category_id", // Changed from "amenity_category" to match API
+                        name: "category_id", 
                         data: "amenity_categories",
                         textField: "amenity_category",
                         valueField: "id",
@@ -714,10 +608,9 @@ const CreateReservationDialog = (() => {
                                 amenitySelect.value = details.amenity_id;
                                 applyAmenityData(details.amenity_id);
                             }
-                            // Trigger a refresh if you are using a custom select library (like Select2)
                             $(categorySelect).trigger("change");
                             $(amenitySelect).trigger("change");
-                        }, 500); // Increased delay to ensure configSelect finishes rendering
+                        }, 500);
                     }
 
                     // if (details.tenant_name && me.searchTenant) {

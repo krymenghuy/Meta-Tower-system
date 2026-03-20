@@ -124,7 +124,7 @@ class Bill //extends Model
         }
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 }
-    public static function vendorDetails($id, $ss = null)
+    public static function billDetails($id, $ss = null)
     {
         return DB::table('bills as b')
             ->where('b.id', $id)
