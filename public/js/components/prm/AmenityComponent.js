@@ -51,7 +51,7 @@ var AmenityComponent = (() => {
             title: "Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
-                `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span>`,
+                `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span> <span class="text-muted">PAX/Room</span>`,
         },
         {
             title: "Booking",
@@ -70,21 +70,21 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-center",
             data: (data) => {
                 const status = (data.status ?? "").toLowerCase();
-                let cls = "text-info";
+                let cls = " text-info ";
 
                 if (status == "inactive") {
                     cls =
-                        "badge text-danger bg-danger-subtle border border-danger";
+                        "text-danger bg-danger-subtle border border-danger";
                 } else if (status == "active") {
                     cls =
-                        "badge text-success bg-success-subtle border border-success";
+                        "text-success bg-success-subtle border border-success";
                 } else if (status == "maintenance") {
                     cls =
-                        "badge text-warning bg-warning-subtle border border-warning";
+                        "text-warning bg-warning-subtle border border-warning";
                 }
 
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
-            },
+            }
         },
         {
             title: "Updated By",
@@ -425,7 +425,7 @@ var AmenityComponent = (() => {
                 `${main_view.base_url}/prm/amenity/form-options`,null,null,null,)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","Statuses",'');
+                VSUtil.setComboItems(mThis.elFilter_status,d.amenity_statuses,"id","amenity_status","","All Status",'');
                 VSUtil.setComboItems(mThis.elBuilding, d.buildings, 'id', 'building', '', 'All Building', '');
                 VSUtil.setComboItems(mThis.elFloor, d.floors, 'id', 'name', '', 'All Floor', '');
                 VSUtil.setComboItems(mThis.elFilter_category, d.amenity_categories, 'id', 'amenity_category', '', 'All Categories', '');
@@ -476,32 +476,28 @@ const AmenityDialog = (() => {
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select name="building_id" class="data-input form-control" data-field="building_id">
+                                <select data-style="material" name="building_id" class="data-input form-control" data-field="building_id" placeholder="Building Name">
                                 </select>
-                                <label style="display:none;color:#777777;padding-left:6px;" for="building">Building</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select name="floor_id" class="data-input form-control" data-field="floor_id">
+                                <select data-style="material" name="floor_id" class="data-input form-control" data-field="floor_id" placeholder="Floor Number">
                                 </select>
-                                <label style="display:none;color:#777777;padding-left:6px;">Floor Number</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder=" " >
+                                <select data-style="material" type="text" name="category_id" required class="data-input form-control" data-field="category_id" placeholder="Amenity Category" >
                                 </select>
-                                <label style="display:none;color:#777777;padding-left:6px;">Category</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="material-input outlined">
-                                <select name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder=" ">
+                                <select  data-style="material" name="requirebooking" class="data-input form-control" data-field="requires_booking" placeholder="Booking ">
                                     <option value="0">No</option>
                                     <option value="1">Yes</option>
                                 </select>
-                                <label style="display:none;color:#777777;padding-left:6px;" for ="requires_booking">Requires Booking</label>
                             </div>
                         </div>
                         <div class="col-12">
