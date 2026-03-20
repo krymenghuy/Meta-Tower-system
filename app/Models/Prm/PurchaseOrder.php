@@ -270,6 +270,8 @@ class PurchaseOrder //extends Model
             "po_number" => "0|string|0-50",
             "po_date" => "1|timestamp",
             "remarks" => "0|string|1-255",
+            "discount_value" => "0|number|min=0",
+            "discount_type" => "0|choice|percent,amount",
             "items" => "1|array"
         ];
 
@@ -289,6 +291,12 @@ class PurchaseOrder //extends Model
             $po_date = getNowTime();
 
         $inputs['po_date'] = $po_date;
+        $inputs['discount_value'] = (float) ($inputs['discount_value'] ?? 0);
+        $discount_type = $inputs['discount_type'] ?? 'percent';
+        $inputs['discount_type'] = in_array($discount_type, ['percent', 'amount']) ? $discount_type : 'percent';
+        // Save PO first, then compute summary totals from persisted line items.
+        $inputs['total_amount'] = 0;
+        $inputs['sub_total'] = 0;
 
         unset($inputs['items']);
 
@@ -300,14 +308,25 @@ class PurchaseOrder //extends Model
         $count = 0;
 
         if ($po_id) {
-            if (!$create) {
-                DB::table('purchase_order_items')->where('po_id', $po_id)->delete();
-            }
             foreach ($items as $item) {
 
                 $item = (object) $item;
+                $trx_id = $item->id ?? $item->trx_id ?? null;
+                // In modify mode, keep old rows and update by row id when available.
+                // If row id is not sent, try to match existing row by item_id.
+                if (!$create && !$trx_id && !empty($item->item_id)) {
+                    $existing_row = DB::table('purchase_order_items')
+                        ->where('po_id', $po_id)
+                        ->where('item_id', $item->item_id)
+                        ->orderBy('id', 'asc')
+                        ->first();
+                    if ($existing_row) {
+                        $trx_id = $existing_row->id;
+                    }
+                }
 
                 $input_item = [
+                    'trx_id' => $trx_id,
                     'item_id' => $item->item_id ?? null,
                     'unit' => $item->unit ?? null,
                     'unit_price' => $item->unit_price ?? 0,
@@ -323,6 +342,16 @@ class PurchaseOrder //extends Model
 
                 $count++;
             }
+
+            $sub_total = (float) DB::table('purchase_order_items')->where('po_id', $po_id)->sum('total_price');
+            $discount_amount = $inputs['discount_type'] === 'percent'
+                ? ($sub_total * $inputs['discount_value'] / 100)
+                : $inputs['discount_value'];
+            $total_amount = max(0, $sub_total - $discount_amount);
+            DB::table('purchase_orders')->where('id', $po_id)->update([
+                'sub_total' => $sub_total,
+                'total_amount' => $total_amount
+            ]);
         }
 
         return DV::success([
@@ -337,9 +366,12 @@ class PurchaseOrder //extends Model
     {
 
         $item = (object) $item;
+        $trx_id = $item->trx_id ?? null;
+        if (!is_numeric($trx_id) || (int) $trx_id <= 0) {
+            $trx_id = null;
+        }
 
         $inputs = [
-            "id" => $item->trx_id ?? null,
             "po_id" => $po_id,
             "item_id" => $item->item_id ?? $item->id ?? null,
             "qty" => $item->qty ?? 0,
@@ -351,7 +383,7 @@ class PurchaseOrder //extends Model
         $id = DBX::saveData(
             $ss,
             'purchase_order_items',
-            ['id' => $inputs['id']],
+            ['id' => $trx_id],
             $inputs,
             [],
             1,
@@ -394,7 +426,12 @@ class PurchaseOrder //extends Model
         }
         $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
         $po_date = DBX::formatDate('po.po_date', 'po_date');
-        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,ps.name as status';
+        $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
+        $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
+        $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
+        $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
+        $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
+        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,ps.name as status,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
@@ -413,7 +450,7 @@ class PurchaseOrder //extends Model
     {
         return DB::table('purchase_orders as po')
             ->where('po.id', $id)
-            ->selectRaw('po.id,po.po_number,po.vendor_id,po.po_date,po.status_id,po.remarks')->first();
+            ->selectRaw('po.id,po.po_number,po.vendor_id,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount')->first();
     }
     public static function getFormOptions($id = null, $ss = null)
     {
