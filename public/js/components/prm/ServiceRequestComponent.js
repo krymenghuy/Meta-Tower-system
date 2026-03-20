@@ -706,7 +706,7 @@ const CreateServiceRequestDialog = (() => {
                                 <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="tenant_id" class="data-input form-control" data-field="tenant_id" required>
+                                <select name="tenant" class="data-input form-control" data-field="tenant_id" required>
                                     <option value="">-- Select Tenant --</option>
                                 </select>
                             </div>
@@ -859,6 +859,7 @@ const CreateServiceRequestDialog = (() => {
                     } else if (previewRow) {
                         previewRow.style.display = 'none';
                     }
+
                 };
 
                 me.controls?.service_id?.addEventListener('change', () => {
@@ -878,6 +879,7 @@ const CreateServiceRequestDialog = (() => {
 
 
             },
+
 
             configSelect: [
                 {

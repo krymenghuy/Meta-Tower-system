@@ -357,7 +357,8 @@ const InvoiceDialog = (() => {
 
                         <div class="col-md-auto">
                             <div class="d-flex gap-2">
-                                <button name="btnRend"    class="btn btn-primary" type="button">Rend</button>
+                                <button name="btnRend"    class="btn btn-primary" type="button">Rent</button>
+                                <button name="btnService"    class="btn btn-primary" type="button">Service</button>
                                 <button name="btnUtility" class="btn btn-primary" type="button">Utility</button>
                             </div>
                         </div>
@@ -388,106 +389,132 @@ const InvoiceDialog = (() => {
 
                 const spaces = me._tenantSpaces || [];
                 const months = me._tenantMonths || [];
-                console.log("AA33",months);
-
+                console.log("spaces:", spaces);
+                console.log("months:", months);
 
                 if (spaces.length === 0) {
                     return cv_interact.error("No rooms/spaces available for this tenant");
                 }
 
-                const selectedSpaceId = me.controls.space_id?.value || me.controls.space?.value || '';
-                const matchedContract = spaces.find(s => String(s.space_id) === String(selectedSpaceId));
-                const defaultContractId = matchedContract?.contract_id || spaces[0]?.contract_id;
+                const selectedSpaceId   = me.controls.space_id?.value || me.controls.space?.value || '';
+                const matchedContract   = spaces.find(s => String(s.space_id) === String(selectedSpaceId));
+                const defaultContractId = matchedContract?.contract_id ?? spaces[0]?.contract_id;
+
+                // ✅ Build <option> HTML from live arrays BEFORE createContent runs
+                const spaceOptions = spaces.map(s =>
+                    `<option value="${s.contract_id}">${s.space_code}</option>`
+                ).join('');
+
+                const monthOptions = months.map(m =>
+                    `<option value="${m.month}">${m.month}</option>`
+                ).join('');
 
                 InputBox.resetInstance("rentPopUp");
 
                 InputBox.show({
                     title: "Rent",
                     instanceKey: "rentPopUp",
-                    columns: 2,
-                    fields: [
-                        {
-                            name: "contract_id",
-                            label: "Unit Code / Room",
-                            type: "text",
-                            required: true,
-                            textField: 'space_code',
-                            valueField: 'contract_id',
-                            data: spaces
-                        },
-                        {
-                            name: "monthly",                        // ← Changed
-                            label: "Month",
-                            type: "select",
-                            valueField: 'contract_id',              // ← MUST be contract_id (unique)
-                            textField: 'month',                     // ← What user sees
-                            data: months
-                        },
-                        { name: "start_date", label: "Start Date", type: 'text' },
-                        { name: "end_date",   label: "End Date",   type: 'text' },
-                        { name: "price",      label: "Price",      type: 'money' },
-                        { name: "remark",     label: "Remark",     type: "textarea", colSpan: 2 }
-                    ],
+                    createContent() {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;';
+                        div.innerHTML = `
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">
+                                    Unit Code / Room <span style="color:red">*</span>
+                                </label>
+                                <select class="data-input form-control" data-field="contract_id" name="contract_id">
+                                    <option value="">-- Select Room --</option>
+                                    ${spaceOptions}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Month</label>
+                                <select class="data-input form-control" data-field="monthly" name="monthly">
+                                    <option value="">-- Select Month --</option>
+                                    ${monthOptions}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Start Date</label>
+                                <input class="data-input form-control" data-field="start_date"
+                                    name="start_date" type="text" readonly placeholder="Auto filled">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">End Date</label>
+                                <input class="data-input form-control" data-field="end_date"
+                                    name="end_date" type="text" readonly placeholder="Auto filled">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                <input class="data-input form-control" data-field="price"
+                                    name="price" type="text" placeholder="Auto filled">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                <div style="display:flex; gap:8px;">
+                                    <input class="data-input form-control" data-field="discount"
+                                        name="discount" type="text" placeholder="0">
+                                        <select class="data-input form-control" data-field="discount_type"
+                                                name="discount_type" style="width:80px;">
+                                            <option value="percent">%</option>
+                                            <option value="amount">$</option>
+                                        </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                <input class="data-input form-control" data-field="tax_rate"
+                                    name="tax_rate" type="text" placeholder="0">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                <textarea class="data-input form-control" data-field="remark"
+                                        name="remark" rows="3"></textarea>
+                            </div>
+                        `;
+                        return div;
+                    },
 
                     onOpen(ibMe) {
                         const ac = new AbortController();
 
-                        const fillFields = (contractId) => {
-                            if (!contractId) return;
+                        // ✅ Query elements by data-field after DOM is ready
+                        const elContract  = document.querySelector('[data-field="contract_id"]');
+                        const elMonthly   = document.querySelector('[data-field="monthly"]');
+                        const elPrice     = document.querySelector('[data-field="price"]');
+                        const elStartDate = document.querySelector('[data-field="start_date"]');
+                        const elEndDate   = document.querySelector('[data-field="end_date"]');
 
-                            const id = String(contractId).trim();
+                        const fillFields = (contractId) => {
+                            const id = String(contractId || '').trim();
+                            if (!id) return;
 
                             const matchedSpace = spaces.find(s => String(s.contract_id) === id);
-                            const matchedMonth = months.find(m => String(m.contract_id) === id);
+                            const matchedMonth = months.find(m => String(m.contract_id) === id) || months[0];
 
-                            if (!matchedSpace || !matchedMonth) {
-                                console.warn("No matching data for contract_id:", id);
-                                return;
-                            }
+                            console.log("fillFields →", id, matchedSpace, matchedMonth);
+                            if (!matchedSpace) return;
 
-                            console.log("fillFields → contract_id:", id, "Month:", matchedMonth.month);
-
-                            // Auto fill all related fields
-                            ibMe.controls.price.value      = matchedSpace.price || '0.00';
-                            ibMe.controls.start_date.value = matchedMonth.start_date || '';
-                            ibMe.controls.end_date.value   = matchedMonth.end_date   || '';
-                            ibMe.controls.monthly.value    = matchedMonth.contract_id;   // ← Important: set contract_id
-
-                            // Trigger events
-                            [ibMe.controls.price, ibMe.controls.start_date,
-                            ibMe.controls.end_date, ibMe.controls.monthly]
-                                .forEach(el => {
-                                    if (el) {
-                                        el.dispatchEvent(new Event('change', { bubbles: true }));
-                                        el.dispatchEvent(new Event('input',  { bubbles: true }));
-                                    }
-                                });
+                            if (elPrice)     elPrice.value     = matchedSpace.price       || '0.00';
+                            if (elStartDate) elStartDate.value = matchedMonth?.start_date || '';
+                            if (elEndDate)   elEndDate.value   = matchedMonth?.end_date   || '';
+                            if (elMonthly)   elMonthly.value   = matchedMonth?.month      || '';
                         };
 
-                        // Initialize when controls are ready
-                        const initialize = () => {
-                            const contractSelect = ibMe.controls?.contract_id;
-                            if (!contractSelect) {
-                                requestAnimationFrame(initialize);
-                                return;
-                            }
+                        // ✅ Pre-select based on main form Room/Space dropdown selection
+                        const preId = String(defaultContractId || '');
+                        if (preId) {
+                            elContract.value = preId;
+                            fillFields(preId);
+                        }
 
-                            // Pre-select room from main form
-                            if (defaultContractId && contractSelect.value !== String(defaultContractId)) {
-                                contractSelect.value = defaultContractId;
-                            }
+                        // ✅ Single listener — AbortController prevents stacking on reopen
+                        elContract.addEventListener('change', (e) => {
+                            console.log("contract changed →", e.target.value);
+                            fillFields(e.target.value);
+                        }, { signal: ac.signal });
 
-                            fillFields(contractSelect.value);
-
-                            // When user changes Room → update everything
-                            contractSelect.addEventListener('change', (e) => {
-                                fillFields(e.target.value);
-                            }, { signal: ac.signal });
-                        };
-
-                        requestAnimationFrame(initialize);
-
-                        // Cleanup
+                        // ✅ Cleanup listener when dialog closes
                         const originalClose = ibMe.close.bind(ibMe);
                         ibMe.close = (...args) => {
                             ac.abort();
@@ -496,28 +523,43 @@ const InvoiceDialog = (() => {
                     },
 
                     onConfirm(data, btn, ibMe) {
-                        let contractId = data.contract_id;
-                        if (typeof contractId === 'object' && contractId !== null) {
-                            contractId = contractId.contract_id ?? contractId.value ?? contractId.id;
-                        }
-                        contractId = String(contractId ?? '').trim();
+                        console.log("Rent confirmed:", data);
 
-                        const roomCode = spaces.find(s => String(s.contract_id) === contractId)?.space_code || '—';
-                        const selectedMonthObj = months.find(m => String(m.contract_id) === contractId);
+                        if (!data.contract_id) {
+                            cv_interact.error('Please select Unit Code / Room');
+                            return;
+                        }
+
+                        // ✅ Get roomCode from spaces array using contract_id
+                        const contractId = String(data.contract_id || '').trim();
+                        const matchedSpace = spaces.find(s => String(s.contract_id) === contractId);
+                        const roomCode = matchedSpace?.space_code || data.space_code || '—';
+
+                        // ✅ Get matched month for display
+                        const filteredMonths = months.filter(m => String(m.contract_id) === contractId);
+                        const matchedMonth   = filteredMonths.find(m => m.month === data.monthly)
+                                            || filteredMonths[0]
+                                            || null;
+
+                        console.log("roomCode →", roomCode);
+                        console.log("matchedMonth →", matchedMonth);
 
                         me.itemsView.addRow({
-                            item_id:     null,
-                            price:       Number(data.price) || 0,
-                            qty:         1,
-                            remarks:     `Rent - ${roomCode} (${selectedMonthObj?.month || data.monthly || 'N/A'})`,
-                            unit_type:   roomCode,
-                            contract_id: contractId,
-                            monthly:     selectedMonthObj?.month || data.monthly,   // save month name for display
-                            start_date:  data.start_date,
-                            end_date:    data.end_date,
-                            space_code:  roomCode,
-                            space_price: data.price
-                        });
+                            item_id:      `Rent - ${roomCode}`,
+                            price:         Number(data.price)    || 0,
+                            qty:           1,
+                            remarks:       `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
+                            unit_type:     roomCode,
+                            contract_id:   contractId,
+                            monthly:       data.monthly,
+                            start_date:    data.start_date   || matchedMonth?.start_date || '',
+                            end_date:      data.end_date     || matchedMonth?.end_date   || '',
+                            space_code:    roomCode,
+                            space_price:   data.price,
+                            discount:      Number(data.discount)  || 0,
+                            discount_type: data.discount_type     || 'percent',
+                            tax_rate:      Number(data.tax_rate)  || 0
+                        }, 0);
 
                         cv_interact.success("Rent item added");
                         ibMe.close();
@@ -525,6 +567,122 @@ const InvoiceDialog = (() => {
                 });
             };
 
+
+
+           // ************************** BTN SERVICE *************************
+            me.controls.btnService.onclick = () => {
+                if (!me._selectedTenantId) {
+                    return cv_interact.error("Please select Tenant first");
+                }
+
+                const services = availableItem || [];
+
+                if (services.length === 0) {
+                    return cv_interact.error("No services available");
+                }
+
+                // Build options for dropdown
+                const serviceOptions = services.map(s =>
+                    `<option value="${s.id}">${s.service || s.name || `Service #${s.id}`}</option>`
+                ).join('');
+
+                InputBox.show({
+                    title: "Add Service",
+                    instanceKey: "servicePopUp",
+
+                    createContent() {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;';
+                        div.innerHTML = `
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">
+                                    Service <span style="color:red">*</span>
+                                </label>
+                                <select class="data-input form-control" data-field="service_id" name="service_id">
+                                    <option value="">-- Select Service --</option>
+                                    ${serviceOptions}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
+                                <input class="data-input form-control" data-field="unit_type"
+                                    name="unit_type" type="text" readonly placeholder="Auto filled">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                <input class="data-input form-control" data-field="price"
+                                    name="price" type="text" readonly placeholder="Auto filled">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                <div style="display:flex; gap:8px;">
+                                    <input class="data-input form-control" data-field="discount"
+                                        name="discount" type="text" placeholder="0">
+                                    <select class="data-input form-control" data-field="discount_type"
+                                            name="discount_type" style="width:80px;">
+                                        <option value="percent">%</option>
+                                        <option value="amount">$</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                <input class="data-input form-control" data-field="tax_rate"
+                                    name="tax_rate" type="text" placeholder="0">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                <textarea class="data-input form-control" data-field="remark"
+                                        name="remark" rows="3"></textarea>
+                            </div>
+                        `;
+                        return div;
+                    },
+
+                    onOpen(ibMe) {
+                        const elService   = document.querySelector('[data-field="service_id"]');
+                        const elUnitType  = document.querySelector('[data-field="unit_type"]');
+                        const elPrice     = document.querySelector('[data-field="price"]');
+
+                        const fillFields = (serviceId) => {
+                            const selected = services.find(s => String(s.id) === String(serviceId));
+                            if (!selected) return;
+
+                            if (elUnitType) elUnitType.value = selected.unit_type || '—';
+                            if (elPrice)    elPrice.value    = selected.price || '0.00';
+                        };
+
+                        // Auto fill when user selects a service
+                        elService.addEventListener('change', (e) => {
+                            fillFields(e.target.value);
+                        });
+                    },
+
+                    onConfirm(data, btn, ibMe) {
+                        if (!data.service_id) {
+                            cv_interact.error("Please select a Service");
+                            return;
+                        }
+
+                        const selectedService = services.find(s => String(s.id) === String(data.service_id));
+                        if (!selectedService) return;
+
+                        const newItem = {
+                            item_id:     selectedService.id,
+                            price:       Number(selectedService.price) || 0,
+                            qty:         1,
+                            remarks:     selectedService.service || selectedService.name || 'Service',
+                            unit_type:   selectedService.unit_type || '—',
+                            discount:    Number(data.discount) || 0,
+                            discount_type: data.discount_type || 'percent',
+                            tax_rate:    Number(data.tax_rate) || 0
+                        };
+
+                        cv_interact.success("Service added at the top");
+                        ibMe.close();
+                    }
+                });
+            };
 
 
 
@@ -541,7 +699,9 @@ const InvoiceDialog = (() => {
                             {
                                 name: "item_id",
                                 transTitle: "titles.Item",
-                                displayType: "select"
+                                displayType: "select",
+                                dataType: "string",
+                                readOnly: true
                             },
                             {
                                 name: "remarks",
