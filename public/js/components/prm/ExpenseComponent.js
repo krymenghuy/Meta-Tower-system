@@ -4,14 +4,9 @@ var ExpenseComponent = (() => {
     mThis.title_prop = "Expense Management";
     mThis.self = main_view.VSAppContent.querySelector("#_main_expense_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnExpense");
-    mThis.elTenant = mThis.self.querySelector('#tenant_id');
-    mThis.elBuilding = mThis.self.querySelector('#building_id');
-    mThis.elInvoice = mThis.self.querySelector('#invoice_id');
-    mThis.elSpace = mThis.self.querySelector('#space_id');
-    mThis.elPaymentMethod = mThis.self.querySelector('#payment_method_id');
-    mThis.elFilter_status = mThis.self.querySelector('#payment_status');
     mThis.divFilter = mThis.self.querySelector("#_divFilter_expense");
-    mThis.elFilter_status = mThis.self.querySelector('#el_status');
+    mThis.elFilter_category = mThis.self.querySelector('#_expense_category_id');
+    mThis.elFilter_status = mThis.self.querySelector('#_expense_status_id');
     mThis.elSearch = mThis.self.querySelector("#_search_expense");
 
 
@@ -21,9 +16,14 @@ var ExpenseComponent = (() => {
             className: "align-middle",
         },
         {
-            title: "Code",
+            title: "Expense Num",
             className: "align-middle",
             data: (data) => `<span class="text-prm-custom">${data.expense_no}</span>`,
+        },
+        {
+            title: "Vendor",
+            className: "align-middle",
+            data: (data) => `<span class="text-prm-custom">${data.vendor_name}</span>`,
         },
         {
             title: "Date",
@@ -36,46 +36,35 @@ var ExpenseComponent = (() => {
             data: (data) => `<span class="text-prm-custom">${data.reference_no}</span>`,
         },
         {
-            title: "Type",
+            title: "Category",
             className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.expense_type}</span>`,
-        },
-        {
-            title: "Vendor",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.vendor_name}</span>`,
+            data: (data) => `<span class="text-prm-custom">${data.expense_category}</span>`,
         },
         {
             title: "Amount",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.amount}</span>`,
+            className: "align-middle text-end", // align right for numbers
+            data: (data) => {
+                if (!data.amount) return `<span class="text-muted">0.00</span>`;
+                const amount = parseFloat(data.amount).toFixed(2);
+                return `<span class="text-prm-custom">$ ${amount}</span>`;
+            },
         },
         {
-            title: "Tax",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.tax_amount}</span>`,
-        },
-        {
-            title: "Total",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.total_amount}</span>`,
-        },
-        {
-            title: "Pmt Status",
+            title: "Status",
             className: "align-middle",
             data: (data) => {
                 const status = (data.status ?? '').toLowerCase();
-                let cls = 'text-info';
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
 
-                if (status === 'paid') {
-                    cls = 'text-success px-2 py-1 d-inline-block';
-                } else if (status === 'unpaid') {
-                    cls = 'text-danger px-2 py-1 d-inline-block';
-                } else if (status === 'partially paid') {
-                    cls = 'text-warning px-2 py-1 d-inline-block';
+                if (status === 'pending') {
+                    cls = 'badge text-warning bg-warning-subtle border border-warning';
+                } else if (status === 'approved') {
+                    cls = 'badge text-primary bg-primary-subtle border border-primary';
+                } else if (status === 'paid') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
                 }
 
-                return `<span class="${cls} text-capitalize" data-status_id="${data.status_id}"><small>${data.status ?? ''}</small></span>`;
+                return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">${data.status ?? ''}</span>`;
             },
         },
        {
@@ -103,7 +92,7 @@ var ExpenseComponent = (() => {
     mThis.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.BillingListView = new ListView('_expense_list', {
+        mThis.ExpenseListView = new ListView('_expense_list', {
             fetchApi: `${main_view.base_url}/prm/expense/list-paginate`,
             perPage: 10,
             // rememberCurrentPage: false,
@@ -127,14 +116,14 @@ var ExpenseComponent = (() => {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.BillingListView.showPage(mThis.getFilterData());
+                    mThis.ExpenseListView.showPage(mThis.getFilterData());
                 }
             };
-            CreateBillingdialog.show(op);
+            CreateExpenseDialog.show(op);
         };
 
 
-        mThis.pr_tbl = mThis.BillingListView.getListContainer();
+        mThis.pr_tbl = mThis.ExpenseListView.getListContainer();
         const sh_parent = mThis.pr_tbl.parentElement;
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add("overflow-y-auto");
@@ -142,7 +131,7 @@ var ExpenseComponent = (() => {
         window.onresize = () => {
             sh_parent.style.maxHeight = (window.innerHeight - 200) + 'px';
         }
-        mThis.tblBilling = mThis.BillingListView.getTable();
+        mThis.tblBilling = mThis.ExpenseListView.getTable();
         mThis.initDropdownMenus(mThis.tblBilling);
 
 
@@ -152,7 +141,7 @@ var ExpenseComponent = (() => {
 
             el.onchange = (e) => {
                 e.preventDefault();
-                mThis.BillingListView.showPage(mThis.getFilterData());
+                mThis.ExpenseListView.showPage(mThis.getFilterData());
             }
         });
 
@@ -160,7 +149,7 @@ var ExpenseComponent = (() => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.BillingListView.showPage(mThis.getFilterData());
+                mThis.ExpenseListView.showPage(mThis.getFilterData());
             }, 250);
         });
 
@@ -170,7 +159,8 @@ var ExpenseComponent = (() => {
 
     mThis.getFilterData = () => {
         let p = {
-            // status_id: mThis.elFilter_status.value,
+            status_id: mThis.elFilter_status.value,
+            category_id: mThis.elFilter_category.value,
             search_value: mThis.elSearch.value,
         };
 
@@ -189,18 +179,17 @@ var ExpenseComponent = (() => {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
-
                 {
-                    html: '<span class="ps-2 " vslang="titles.Modify "></span>',
+                    html: '<span class="ps-2 " vslang="titles.Edit Expense"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "edit_billing"
+                    name: "edit_expense"
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete"></span>',
+                    html: '<span class="ps-2  " vslang="titles.Delete Expense"></span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "delete_billing"
+                    name: "delete_expense"
                 },
             ],
             // adjustPosition: {
@@ -211,19 +200,15 @@ var ExpenseComponent = (() => {
             onClick: (menuLink, id, name) => {
                 switch (name) {
 
-                    case 'change_status': {
-                        mThis.changeStatus(id, menuLink);
+                   
+                    case 'edit_expense': {
+                        mThis.editExpense(id, menuLink);
                         break;
                     }
-                    case 'edit_billing': {
-                        mThis.editBilling(id, menuLink);
+                    case 'delete_expense': {
+                        mThis.deleteExpense(id, menuLink);
                         break;
                     }
-                    case 'delete_billing': {
-                        mThis.deleteBilling(id, menuLink);
-                        break;
-                    }
-
                     default: {
                         break;
                     }
@@ -233,124 +218,53 @@ var ExpenseComponent = (() => {
         new VSDropdownMenu(menuOptopns);
     }
 
-    mThis.editBilling = (id, menulink) => {
+    mThis.editExpense = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
                 ;
-                mThis.BillingListView.showPage(mThis.getFilterData());
+                mThis.ExpenseListView.showPage(mThis.getFilterData());
             }
         };
 
-        CreateBillingdialog.show(op);
+        CreateExpenseDialog.show(op);
     }
-    mThis.deleteBilling = (id, menuLink) => {
+    mThis.deleteExpense = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.BillingListView.showPage(mThis.getFilterData());
+                mThis.ExpenseListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Billing??', {
-            title: 'Delete Billing',
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Expense?', {
+            title: 'Delete Expense',
             context: 'delete',
             confirmButtonText: "Delete"
         }, function (e) {
             if (e) {
-                vsapi.call(`${main_view.base_url}/prm/payments/delete`, op, false, false, false).then(res => {
+                vsapi.call(`${main_view.base_url}/prm/expense/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
-                        mThis.BillingListView.showPage();
+                        mThis.ExpenseListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
-            else {
-                cv_interact.error(res.error_message);
-            }
+           
         });
     }
 
-    mThis.changeStatus = (id, lnk) => {
-        const tr = lnk.closest('tr');
-        const status_id = VSUtil.properCase(tr?.dataset.statusid || "");
-
-        // const inputOptions = {
-        //     title: 'Change Status',
-        //     dataLabel: "Payment Status",
-        //     valueMember: "status_id",
-        //     textMember: "name",
-        //     confirmButtonText: "Save",
-        //     blankErrorMessage: "Status is not correct!",
-        //     data:[
-        //         {status_id:"1",name:"Paid"},
-        //         {status_id:"2",name:"Unpaid"},
-        //         {status_id:"3",name:"partially Paid"},
-        //     ],
-        //     defaultValue: status_id
-        // };
-
-        // InputBox2.show(inputOptions,(selected)=>{
-        //     if(!selected) return;
-        //     if(!AuthManager.allowed(321)) return;
-
-        //     const payload = {id, status_id :selected.value};
-        //     vsapi.call(`${mThis.base_url}/prm/payment/update-status`,payload).then(res=>{
-        //         if(res.status_code ===200){
-        //             InputBox2.close();
-        //             cv_interact.success('Payment Status has been updated');
-        //             mThis.BillingListView.showPage(mThis.getFilterData());
-
-        //         }else{
-        //             cv_interact.error(res.error_message || 'Unable to update status');
-        //         }
-        //     });
-        // });
-
-        const options = {
-            title: 'Change Status',
-            cssClass: '',
-            backdropClose: true,
-            //type:'select',
-            label: 'Payment Status',
-            valueField: 'status_id',
-            textField: 'name',
-            confirmButtonText: "Submit",
-            requiredMessage: 'Select one valid status!',
-            context: 'success', // sucess | prmary | delete | danger | error
-            data: [
-                { status_id: "1", name: "Paid" },
-                { status_id: "2", name: "Unpaid" },
-                { status_id: "3", name: "partially Paid" },
-            ],
-            defaultValue: status_id,
-            onConfirm: (value, btn, me) => {
-                const payload = { id, value: selected.value };
-                vsapi.post(`${mThis.base_url}/prm/payment/update-status`, payload, { loader: false }).then(res => {
-                    if (res.status_code === 200) {
-                        me.close();
-                        cv_interact.success('Payment Status has been updated');
-                        mThis.BillingListView.showPage(mThis.getFilterData());
-
-                    } else {
-                        me.setError(res.error_message || 'Unable to update status');
-                    }
-                });
-            }
-        };
-
-        InputBox.show(options);
-
-    };
+   
     mThis.prepareFormOptions = (onFinish) => {
 
-        vsapi.call(`${main_view.base_url}/prm/payments/form-options`, null, null, null)
+        vsapi.call(`${main_view.base_url}/prm/expense/form-options`, null, null, null)
             .then(res => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'payment_status', true, 'All Statuses', null);
-                VSUtil.setComboItems(mThis.elTenant, d.tenants, 'id', 'tenant', '', 'All Tenant', null);
-                VSUtil.setComboItems(mThis.elPaymentMethod, d.payment_methods, 'id', 'payment_method', '', 'All Payment Method', null);
+                VSUtil.setComboItems(mThis.elFilter_status, d.statuses, 'id', 'expense_status', '', 'All Statuses', '');
+                VSUtil.setComboItems(mThis.elFilter_category, d.categories, 'id', 'expense_category', '', 'All Category', '');
                 if (typeof onFinish === 'function') onFinish();
             })
     }
@@ -359,7 +273,7 @@ var ExpenseComponent = (() => {
         mThis.options = options;
         mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
-            mThis.BillingListView.showPage(mThis.getFilterData());
+            mThis.ExpenseListView.showPage(mThis.getFilterData());
         });
 
     };
@@ -396,7 +310,7 @@ const CreateExpenseDialog = (() => {
 
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="expense_type_id" data-style="material" class="data-input form-control" data-field="expense_type_id" placeholder="Expense Type">
+                                    <select name="category_id" data-style="material" class="data-input form-control" data-field="category_id" placeholder="Category">
                                     </select>
                                 </div>
                             </div>
@@ -412,6 +326,13 @@ const CreateExpenseDialog = (() => {
                                     <label style="color:#777777;padding-left:6px;">Amount</label>
                                 </div>
                             </div>
+                            <div class="col-12">
+                                <div class="material-input outlined">
+                                    <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
+                                    <label style="padding-left:6px;color:#777777;">Remarks</label>
+
+                                </div>
+                            </div>
 
                             
 
@@ -424,15 +345,15 @@ const CreateExpenseDialog = (() => {
                 },
                 configSelect: [
                     {
-                        name: "vendor_type_id",
-                        data: "types",
-                        textField: "vendor_type",
+                        name: "category_id",
+                        data: "categories",
+                        textField: "expense_category",
                         valueField: "id",
                     },
                     {
-                        name: "vendor_category_id",
-                        data: "categories",
-                        textField: "vendor_category",
+                        name: "vendor_id",
+                        data: "vendors",
+                        textField: "vendor",
                         valueField: "id",
                     },
 
@@ -442,7 +363,7 @@ const CreateExpenseDialog = (() => {
                     modifyTitle: "Modify Expense",
                     targetProp: "expense_details",
                     api: {
-                        endpoint: [main_view.base_url, "/prm/vendor/form-options",].join(""),
+                        endpoint: [main_view.base_url, "/prm/expense/form-options",].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
@@ -455,6 +376,12 @@ const CreateExpenseDialog = (() => {
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
                     if (btnClose) btnClose.classList.add('d-none');
+                    if(me.dataOptions.vendor_id){
+                        console.log(8888,me.dataOptions.vendor_id);
+                        
+                        me.controls.vendor_id.value = me.dataOptions.vendor_id;
+                    }
+                    
                 },
 
 
@@ -472,16 +399,18 @@ const CreateExpenseDialog = (() => {
                         click: (me, btn) => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
-                            vsapi.call([main_view.base_url, "/prm/vendor/save",].join(""), op, btn, null).then((res) => {
+                            console.log(4444,op);
+                            
+                            vsapi.call([main_view.base_url, "/prm/expense/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
                                     if (me.dataOptions.id > 0) {
                                         cv_interact.success(
-                                            "Vendor has been updated successfully"
+                                            "Expense has been updated successfully"
                                         );
                                     } else {
                                         cv_interact.success(
-                                            "New vendor has been added successfully"
+                                            "New Expense has been added successfully"
                                         );
                                     }
                                 } else {

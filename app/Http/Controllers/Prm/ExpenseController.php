@@ -32,4 +32,33 @@ class ExpenseController extends Controller
         }
         return JDV::result($this->expenses->getListPaginate($req->all(),$ss));
     }
+    public function expenseDetails(Request $req){
+        $ss = XAuthService::verifyAuth($req,1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::result($this->expenses->expenseDetails($req->id));
+    }
+
+    public function getFormOptions(Request $req){
+        $ss = XAuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->expenses->getFormOptions($req->id,$ss));
+    }
+
+    public function deleteExpense(Request $req){
+        $ss = XAuthService::verifyAuth($req, -1);
+        if($ss->status_code !==200){
+            return JDV::raw($ss);
+        }
+        if(!isset($req->id) || !is_numeric($req->id)){
+            return JDV::error('Invalid ID');
+        }
+        return JDV::raw($this->expenses->deleteExpense($req->id,$ss));
+    }
 }
