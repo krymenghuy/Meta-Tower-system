@@ -13,6 +13,28 @@ var PurchaseOrdersComponent = (() => {
     let PurchaseOrderDialog = null;
     let _currentEditPoId = null;
 
+    const formatCurrency = (amount) => {
+        const value = Number(amount || 0);
+        return `$ ${value.toFixed(2)}`;
+    };
+    const formatQty = (qty) => {
+        const n = Number(qty || 0);
+        if (Number.isInteger(n)) return String(n);
+        // Show up to 2 decimals, trim trailing zeros.
+        return n.toFixed(2).replace(/\.?0+$/, '');
+    };
+    const formatDiscount = (data) => {
+        const discountType = (data?.discount_type || 'percent') === 'amount' ? 'amount' : 'percent';
+        const discountValue = Number(data?.discount_value || 0);
+        if (discountType === 'percent') {
+            // Show `12 %` instead of `12.00 %` when value is integer.
+            const isInt = Number.isInteger(discountValue);
+            const v = isInt ? String(discountValue) : discountValue.toFixed(2).replace(/\.?0+$/, '');
+            return `${v} %`;
+        }
+        return formatCurrency(discountValue);
+    };
+
 //     mThis.itemColumns = [
 //       {
 //           "name": "item_id",
@@ -98,6 +120,27 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle",
             data: (data) =>
                 `<span class="text-prm-custom text-nowrap">${data.po_date}</span>`,
+        },
+        {
+            title: "Total Price",
+            className: "align-middle text-end",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatCurrency(data.sub_total)}</span>`;
+            }
+        },
+        {
+            title: "Discount",
+            className: "align-middle text-end",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatDiscount(data)}</span>`;
+            }
+        },
+        {
+            title: "Total Amount",
+            className: "align-middle text-end",
+            data: (data) => {
+                return `<span class="d-block text-prm-custom">${formatCurrency(data.total_amount)}</span>`;
+            }
         },
         {
             title: "Status",
@@ -310,7 +353,7 @@ var PurchaseOrdersComponent = (() => {
                     <tr>
                         <td class="text-nowrap">${item.code ?? ''}</td>
                         <td class="text-nowrap">${item.item_name ?? ''}</td>
-                        <td class="text-nowrap">${item.qty ?? ''}</td>
+                        <td class="text-nowrap">${formatQty(item.qty)}</td>
                         <td class="text-nowrap">${item.unit ?? ''}</td>
                         <td class="text-nowrap">${item.unit_price ?? ''}</td>
                         <td class="text-nowrap">${item.total_price ?? ''}</td>
@@ -448,6 +491,8 @@ var PurchaseOrdersComponent = (() => {
                 if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || vendor.code || '') : '';
                 if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
                 if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
+                if (me.controls.discount_value) me.controls.discount_value.value = poDetails.discount_value || 0;
+                if (me.controls.discount_type) me.controls.discount_type.value = poDetails.discount_type || 'percent';
 
                 me._selectedVendorId = vendorId;
 
@@ -485,8 +530,9 @@ var PurchaseOrdersComponent = (() => {
                     const unitNum = Number(it.unit);
                     const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
                     return {
+                        id: it.id,
                         item_id: it.item_id,
-                        qty: it.qty,
+                        qty: it.qty != null ? Number(it.qty) : 0,
                         unit: unitValue,
                         unit_price: it.unit_price || 0,
                         total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
@@ -763,7 +809,6 @@ var PurchaseOrdersComponent = (() => {
                     { value: 3, label: "box" },
                     { value: 4, label: "meter" },
                 ],'',{value:'id', label:'Select unit'});
-            const formatMoney = (n) => '$ ' + (Number(n).toFixed(2));
             me.updatePOTotals = () => {
                 if (!me.divModal || !me.purchaseItemsView) return;
                 const items = me.purchaseItemsView.getItems ? me.purchaseItemsView.getItems() : [];
@@ -785,9 +830,9 @@ var PurchaseOrdersComponent = (() => {
                 const subtotalEl = me.divModal.querySelector('#po_subtotal_display');
                 const taxEl = me.divModal.querySelector('#po_tax_display');
                 const totalEl = me.divModal.querySelector('#po_total_display');
-                if (subtotalEl) subtotalEl.textContent = formatMoney(subTotal);
-                if (taxEl) taxEl.textContent = formatMoney(taxAmount);
-                if (totalEl) totalEl.textContent = formatMoney(total);
+                if (subtotalEl) subtotalEl.textContent = formatCurrency(subTotal);
+                if (taxEl) taxEl.textContent = formatCurrency(taxAmount);
+                if (totalEl) totalEl.textContent = formatCurrency(total);
             };
             me.clear = ()=>{
                 for(const name in me.fields){
