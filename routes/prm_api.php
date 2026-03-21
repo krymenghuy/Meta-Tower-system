@@ -210,8 +210,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
     Route::post('/save', [ExpenseController::class, 'saveExpense']);
     Route::post('/list-paginate', [ExpenseController::class, 'getListPaginate']);
     Route::post('/details', [ExpenseController::class, 'expenseDetails']);
-
-
+    Route::post('/form-options', [ExpenseController::class, 'getFormOptions']);
+    Route::post('/delete', [ExpenseController::class, 'deleteExpense']);
     
 });
 

@@ -623,4 +623,15 @@ class GeneralSettings //extends Model
     {
         return DB::table('purchase_order_statuses')->selectRaw('id,name')->get();
     }
+    static function options_expense_categories($ss)
+    {
+        return DB::table('expense_categories')->selectRaw('id,name as expense_category')->get();
+    }
+
+    
+    static function options_expense_statuses($ss)
+    {
+        return DB::table('expense_statuses')->selectRaw('id,name as expense_status')->get();
+    }
+
 }
