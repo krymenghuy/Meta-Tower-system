@@ -25,13 +25,13 @@ class BillController extends Controller
         $res = $bill->saveBill($req->all());
         return JDV::raw($res);
     }
-     public function getListPaginate(Request $req){
+     public function getListBill(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
        
-        return JDV::result($this->bills->getListPaginate($req->all(),$ss));
+        return JDV::result($this->bills->getListBill($req->all(),$ss));
     }
 
     public function billDetails(Request $req){

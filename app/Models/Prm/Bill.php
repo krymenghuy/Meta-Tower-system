@@ -28,28 +28,31 @@ class Bill //extends Model
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'bill_number'       => '1|string|1-100',
+            'bill_number'       => '0|string|1-100',
             'purchase_order_id' => '0|number|exists=purchase_orders.id',
-            'vendor_id'         => '1|number|exists=vendors.id',
+            // 'vendor_id'         => '1|number|exists=vendors.id',
             'bill_date'         => '1|date',
-            'due_date'          => '1|date',
+            'due_date'          => '0|date',
             'file_image'        => '0|string|0-255',
-            'sub_total'         => '1|number|min=0',
-            'tax_amount'        => '1|number|min=0',
-            'grand_total'       => '1|number|min=0',
+            'total_amount'         => '1|number|min=0',
+            'balance'        => '1|number|min=0',
+            'paid_amount'       => '1|number|min=0',
             'status_id'         => '1|number|exists=bill_statuses.id',
             'remark'            => '0|string|0-255',
         ];
 
         $email_char = ['@', '.', '-', '_'];
+        $remark_char = ['@', ',', '.', '#'];
         $tax_char = ['@', '.', '-', '_'];
-        $address_char = ['@', ',', '.', '#'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'address' => $address_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'remark' => $remark_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
         $inputs = $res->values;
+        $inputs['total_amount'] = 0;
+        $inputs['paid_amount'] = 0;
+        $inputs['balance'] = 0;
         $exist = DB::table('bills')
             ->where('vendor_id', $inputs['vendor_id'])
             ->whereRaw('LOWER(bill_number) = ?', [strtolower($inputs['bill_number'])])
@@ -72,11 +75,11 @@ class Bill //extends Model
         return DV::error('Error saving bill record!');
     }
 
-   public function getListPaginate($arr = [], $ss = null)
+   public function getListBill($arr = [], $ss = null)
 {
     $d = (object) $arr;
     $search_value = $d->search_value ?? null;
-    $vendor_id    = $d->vendor_id ?? null;
+    $purchase_order_id    = $d->purchase_order_id ?? null;
     $status_id    = $d->status_id ?? null;
     $current_page = $d->current_page ?? 1;
     $per_page     = $d->per_page ?? 10;
@@ -99,8 +102,8 @@ class Bill //extends Model
     }
 
     // Filter by specific Vendor
-    if ($vendor_id) {
-        $str_moreWhere .= ' AND b.vendor_id =' . $vendor_id;
+    if ($purchase_order_id) {
+        $str_moreWhere .= ' AND b.purchase_order_id =' . $purchase_order_id;
     }
 
     // Filter by Bill Status (e.g., Pending, Paid)
@@ -108,13 +111,13 @@ class Bill //extends Model
         $str_moreWhere .= ' AND b.status_id =' . $status_id;
     }
 
-    // $updated_at = DBX::formatTime('b.updated_at', 'updated_at');
     $query = DB::table('bills as b')
+        ->join('purchase_orders as po', 'po.id', 'b.purchase_order_id')
         ->join('vendors as v', 'v.id', 'b.vendor_id')
         ->join('bill_statuses as s', 's.id', 'b.status_id')
         ->whereRaw($str_search)
         ->whereRaw($str_moreWhere)
-        ->selectRaw(" b.id,b.bill_number,b.vendor_id,v.name as vendor_name,b.bill_date,b.due_date,b.sub_total,b.tax_amount,b.grand_total,b.status_id,s.name as status,b.file_image,b.update_user,b.remark,b.updated_at")
+        ->selectRaw(" b.id,b.bill_number,b.purchase_order_id,po.vendor_id,v.name as vendor_name,v.phone_number,b.bill_date,b.due_date,b.total_amount,b.balance,b.paid_amount,b.status_id,s.name as status,b.file_image,b.update_user,b.remark,b.updated_at")
         ->orderBy('b.id', 'desc');
     $clone_query = clone $query;
     $count = $clone_query->count('b.id');
@@ -127,8 +130,10 @@ class Bill //extends Model
     public static function billDetails($id, $ss = null)
     {
         return DB::table('bills as b')
+            ->join('purchase_orders as po', 'po.id', 'b.purchase_order_id')
+            ->join('vendors as v', 'v.id', 'b.vendor_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id,b.bill_number,b.purchase_order_id,b.vendor_id,b.bill_date,b.due_date,b.file_image,b.sub_total,b.tax_amount,b.grand_total,b.status_id,b.remark')
+            ->selectRaw('b.id,b.bill_number,b.purchase_order_id,po.vendor_id,v.name as vendor_name,v.phone_number,b.bill_date,b.due_date,b.file_image,b.total_amount,b.balance,b.paid_amount,b.status_id,b.remark')
             ->first();
     }
     public static function getFormOptions($id = null, $ss = null)
