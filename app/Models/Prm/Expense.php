@@ -25,6 +25,7 @@ class Expense //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
 
         $v_rule = [
             'vendor_id' => '1|number|exists=vendors.id',
@@ -57,9 +58,27 @@ class Expense //extends Model
             ->exists();
         if ($exist)
             return DV::error('Reference number already exists!');
+        $invoice_image = $d->invoice_image ?? null;
+        unset($inputs['invoice_image']);
+        $delete_pre_image = ($id > 0 && (!$invoice_image || isImage($invoice_image)));
+
+        $created =  !$id;
         $id = DBX::saveData($ss, 'expenses', ['id' => $id], $inputs, [], 1);
+        if($id && $created){
+            $prefix = 'EXP-';
+            $res = setOfficialExpenseNo($branch_id,'expense_code_control','expenses', ['id' => $id], $prefix,4,null);
+        }
 
         if ($id > 0) {
+
+            if($delete_pre_image){
+                $file_name = DB::table('expenses as e')->where('e.id',$id)->take(1)->value('e.invoice_image');
+                if($file_name){
+                    XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id,'dir' => self::$img_dir],'images',$file_name);
+                }
+                DB::table('expenses')->where('id', $id)->update(['invoice_image' => null]);
+            }
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $invoice_image, null, ['id' => $id, 'store' => 'expenses.invoice_image']);
             return DV::depends(1, ['expenses' => $inputs, 'id' => $id]);
         }
 
