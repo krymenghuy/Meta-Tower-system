@@ -64,7 +64,7 @@ class ServiceRequest extends VSModel
 
         $input = $res->values;
         $total_price = null;
-        
+
 
         if($input['unit_type']=="2" && $input['duration_hours'] == ""){
              return DV::error('Please select value duration hour');

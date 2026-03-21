@@ -83,6 +83,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
     Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
     Route::post('/option-tenant-with-contract', [TenantController::class, 'getTenantOptionsWithSpacesAndMonths']);
+    Route::post('/option-tenant-with-service', [TenantController::class, 'option_select_all_tenant_info_service']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
     Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
@@ -212,7 +213,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
     Route::post('/details', [ExpenseController::class, 'expenseDetails']);
 
 
-    
+
 });
 
 

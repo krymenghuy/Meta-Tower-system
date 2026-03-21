@@ -699,76 +699,73 @@ const CreateServiceRequestDialog = (() => {
             createContent: () => `
                 <div class="container-fluid">
                     <div class="row g-3 mb-3">
+                        <!-- HIDDEN real tenant_id (sent to backend) -->
+                        <input type="hidden" class="data-input" data-field="tenant_id">
 
-                    <input type="text" name="code" class="data-input d-none" date-field="code">
+                        <!-- Visible Tenant Search (NO data-field so name is NOT sent) -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
+                            <label style="padding-left:6px;color:#777;">
                                 <i class="fas fa-user me-2 text-primary"></i>Tenant <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="tenant" class="data-input form-control" data-field="tenant_id" required>
-                                    <option value="">-- Select Tenant --</option>
-                                </select>
+                                <input name="tenant" class="form-control" placeholder="Search tenant..." autocomplete="off">
                             </div>
                         </div>
 
+                        <!-- Room / Space -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
-                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space Code <span class="text-danger">*</span>
+                            <label style="padding-left:6px;color:#777;">
+                                <i class="fas fa-door-open me-2 text-info"></i>Room / Space <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="space_id" class="data-input form-control" data-field="space_id" required>
-                                    <option value="">-- Select Room --</option>
-                                </select>
+                                <select class="data-input form-control" data-field="space_id" required></select>
                             </div>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
+                        <!-- Service Category -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
-                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Type <span class="text-danger">*</span>
+                            <label style="padding-left:6px;color:#777;">
+                                <i class="fas fa-layer-group me-2 text-warning"></i>Service Category <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="service_type_id" class="data-input form-control" data-field="service_type_id" required>
-                                    <option value="">-- Select Service Type --</option>
-                                </select>
+                                <select class="data-input form-control" data-field="service_type_id" required></select>
                             </div>
                         </div>
 
+                        <!-- Service -->
                         <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
+                            <label style="padding-left:6px;color:#777;">
                                 <i class="fas fa-concierge-bell me-2 text-success"></i>Service <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="service_id" class="data-input form-control" data-field="service_id" required>
-                                    <option value="">-- Select Service --</option>
-                                </select>
+                                <select class="data-input form-control" data-field="service_id" required></select>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Charge Unit - uses 1/2 (matches your PHP validation) -->
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label style="padding-left:6px; color:#777;">
+                            <label style="padding-left:6px;color:#777;">
                                 <i class="fas fa-dollar-sign me-2 text-success"></i>Charge Unit <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="unit_type" class="data-input form-control" data-field="unit_type" required>
+                                <select class="data-input form-control" data-field="unit_type" required>
                                     <option value="">-- Select Unit --</option>
-                                     <option value="1">📅 Price Per One Time</option>
+                                    <option value="1">📅 Price Per One Time</option>
                                     <option value="2">⏱️ Price Per Hour</option>
-
                                 </select>
                             </div>
                         </div>
 
                         <div class="col-md-6 select-type-time" style="display:none;">
-                            <label style="padding-left:6px; color:#777;">
+                            <label style="padding-left:6px;color:#777;">
                                 <i class="fas fa-clock me-2 text-info"></i>Duration (hours) <span class="text-danger">*</span>
                             </label>
                             <div class="material-input outlined">
-                                <select name="duration_hours" class="data-input form-control" data-field="duration_hours">
+                                <select class="data-input form-control" data-field="duration_hours">
                                     <option value="">-- Select Duration --</option>
                                     <option value="0.5">30 minutes</option>
                                     <option value="1">1 hour</option>
@@ -782,6 +779,7 @@ const CreateServiceRequestDialog = (() => {
                         </div>
                     </div>
 
+                    <!-- Price Preview, Date, Time, Remarks (your exact HTML) -->
                     <div class="row g-3 mb-3" id="price-preview-row" style="display:none;">
                         <div class="col-12">
                             <div class="alert alert-info d-flex align-items-center justify-content-between shadow-sm price-alert">
@@ -799,47 +797,40 @@ const CreateServiceRequestDialog = (() => {
                             </div>
                         </div>
                     </div>
-                     <div class="row g-3">
-                       <div class="col-md-3">
-                            <label class="form-label fw-semibold"><i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span></label>
-                            <input type="date" name="scheduled_date" class="form-control data-input" data-field="scheduled_date" placeholder="YYYY-MM-DD">
-                        </div>
 
-                        <div class="col-6">
-                                <label style="padding-left:6px;">Start Time</label>
-                                <div class=" material-input outlined">
-                                    <input type="time" name="start_time" required class="data-input form-control form_input" data-field="start_time" />
-                                </div>
-                            </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-calendar-alt text-warning me-1"></i>Scheduled Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control data-input" data-field="scheduled_date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Start Time</label>
+                            <input type="time" class="form-control data-input" data-field="start_time">
+                        </div>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-12">
-                            <label style="padding-left:6px; color:#777;">
+                            <label style="padding-left:6px;color:#777;">
                                 <i class="fas fa-comment-dots me-2 text-primary"></i>Remarks
                             </label>
                             <div class="material-input outlined position-relative">
-                                <textarea class="data-input form-control"
-                                        data-field="description"
-                                        rows="4"
-                                        placeholder="Enter any additional details..."
-                                        maxlength="500"></textarea>
-                                <div class="char-counter">
-                                    <small class="text-muted">
-                                        <span id="char-count">0</span> / 500
-                                    </small>
-                                </div>
+                                <textarea class="data-input form-control" data-field="description"
+                                    rows="4" placeholder="Enter any additional details..." maxlength="500"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <input type="hidden" name="status_id" data-field="status_id" value="1" />
+                    <input type="hidden" class="data-input" data-field="status_id" value="1">
                 </div>
             `,
 
             contentCreated: (me) => {
+
                 const updatePricePreview = () => {
-                    const unit = me.controls?.unit_type?.value || '';
+                    const unit = me.controls.unit_type?.value || '';
                     const showDuration = unit === '2';
                     const durationRow = me.divModal.querySelector('.select-type-time');
                     const previewRow  = me.divModal.querySelector('#price-preview-row');
@@ -847,8 +838,7 @@ const CreateServiceRequestDialog = (() => {
                     if (durationRow) durationRow.style.display = showDuration ? 'block' : 'none';
                     if (!showDuration) { if (previewRow) previewRow.style.display = 'none'; return; }
 
-                    const hours = parseFloat(me.controls?.duration_hours?.value || 0);
-
+                    const hours = parseFloat(me.controls.duration_hours?.value || 0);
                     const price = parseFloat(me.servicePrice || 0);
 
                     if (hours > 0 && price > 0) {
@@ -859,71 +849,88 @@ const CreateServiceRequestDialog = (() => {
                     } else if (previewRow) {
                         previewRow.style.display = 'none';
                     }
-
                 };
 
-                me.controls?.service_id?.addEventListener('change', () => {
-                    const serviceId = me.controls.service_id.value;
-                    if (!serviceId) return;
-                    const service = me.data?.services?.find(s => String(s.id) === String(serviceId));
-                    if (service) {
-                        me.servicePrice = service.price;
-                        me.controls.unit_type.value = service.unit_type || '';
+                me.searchTenant = VSSearchInput.init(me.controls.tenant, {
+                    type: 'select',
+                    prefetch: true,
+                    query: {
+                        from: 'tenants',
+                        select: ['id', 'name', 'legal_name', 'email', 'phone_number'],
+                        searchFields: { name: 'LIKE', legal_name: 'LIKE', email: '=', phone_number: '=' }
+                    },
+                    columns: { name: "Name", phone_number: "Phone" },
+                    onSelect: (tenant) => {
+                        me.controls.tenant_id.value = tenant.id;
+                        // me._selectedTenantId = tenant.id;
+
+                        vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-service`, {
+                            tenant_id: tenant.id
+                        }).then(res => {
+                            const d = res.data || {};
+                            VSUtil.setComboItems(me.controls.space_id, d.spaces || [], 'space_id', 'space_code', '', '-- Select Room --');
+
+                            const typesMap = {};
+                            (d.service || []).forEach(s => {
+                                if (!typesMap[s.service_type_id]) {
+                                    typesMap[s.service_type_id] = { id: s.service_type_id, service_type: s.service_type };
+                                }
+                            });
+                            VSUtil.setComboItems(me.controls.service_type_id, Object.values(typesMap), 'id', 'service_type', '', '-- Select Category --');
+
+                            me._availableServices = d.service || [];
+                            me.controls.service_id.innerHTML = '<option value="">-- Select Service --</option>';
+                            updatePricePreview();
+                        });
+                    }
+                });
+
+                // Service selected → force numeric unit_type
+                me.controls.service_id?.addEventListener('change', () => {
+                    const svc = me._availableServices?.find(s => String(s.id) === me.controls.service_id.value);
+                    if (svc) {
+                        me.servicePrice = parseFloat(svc.price) || 0;
+                        me.controls.unit_type.value = (svc.unit_type === 'hour') ? '2' : '1';  // ← CRITICAL
                         updatePricePreview();
                     }
                 });
 
-                ['unit_type', 'duration_hours'].forEach(f => {
-                    me.controls?.[f]?.addEventListener('change', updatePricePreview);
+                me.controls.service_type_id?.addEventListener('change', () => {
+                    const typeId = me.controls.service_type_id.value;
+                    let filtered = me._availableServices || [];
+                    if (typeId) filtered = filtered.filter(s => String(s.service_type_id) === typeId);
+                    VSUtil.setComboItems(me.controls.service_id, filtered, 'id', 'service_name', '', '-- Select Service --');
+                    me.controls.service_id.value = '';
+                    me.servicePrice = 0;
+                    updatePricePreview();
                 });
 
-
+                ['unit_type', 'duration_hours'].forEach(f => {
+                    me.controls[f]?.addEventListener('change', updatePricePreview);
+                });
             },
 
 
-            configSelect: [
-                {
-                    name: "tenant_id",
-                    data: "tenants",
-                    textField: "tenant",
-                    valueField: "id",
-                    dependents: [
-                        {
-                            name: "space_id",
-                            itemsLoaded: (me, items) => {
-                                me.controls.space_id.value = me.detail?.space_id || '';
-                            },
-                            api: {
-                                endpoint: `${main_view.base_url}/prm/tenant/options-active-space`,
-                            },
-                            textField: "space_code",
-                            valueField: "id"
-                        }
-                    ]
-                },
-                {
-                    name: "service_type_id",
-                    data: "service_types",
-                    textField: "service_type",
-                    valueField: "id"
-                },
-                {
-                    name: "service_id",
-                    textField: "service_name",
-                    valueField: "id",
-                    depends: {
-                        name: "service_type_id",
-                        api: {
-                            endpoint: `${main_view.base_url}/prm/settings/options-service`,
-                            params: (me) => ({
-                                service_type_id: me.controls.service_type_id.value || null
-                            })
+            onPrepareForm: (me, data) => {
+                me.detail = data.request_details;
+                if (me.detail) {
+                    const raw = (me.detail.scheduled_date || '').trim();
+                    if (raw) {
+                        const d = new Date(raw);
+                        if (!isNaN(d.getTime())) {
+                            const y = d.getFullYear();
+                            const m = String(d.getMonth() + 1).padStart(2, '0');
+                            const day = String(d.getDate()).padStart(2, '0');
+                            me.controls.scheduled_date.value = `${y}-${m}-${day}`;
                         }
                     }
+                    if (me.detail.start_time && me.controls.start_time) {
+                        me.controls.start_time.value = me.detail.start_time.substring(0, 5);
+                    }
                 }
-            ],
+            },
 
-            prepareFormOptions: {
+             prepareFormOptions: {
                 createTitle: "Create Service Request",
                 modifyTitle: "Modify Service Request",
                 targetProp: "request_details",
@@ -933,54 +940,29 @@ const CreateServiceRequestDialog = (() => {
                 }
             },
 
-            onPrepareForm: (me, data) => {
-                me.detail = data.request_details;
-                if (me.detail) {
-                    const raw = (me.detail.scheduled_date || '').toString().trim();
-                    if (raw) {
-                        const d = new Date(raw);
-                        if (!Number.isNaN(d.getTime())) {
-                            const y = d.getFullYear();
-                            const m = String(d.getMonth() + 1).padStart(2, '0');
-                            const day = String(d.getDate()).padStart(2, '0');
-                            if (me.controls.scheduled_date) me.controls.scheduled_date.value = `${y}-${m}-${day}`;
-                        }
-                    }
-                    const timeRaw = (me.detail.start_time || '').toString().trim();
-                    if (timeRaw && me.controls.start_time) {
-                        const t = timeRaw.substring(0, 5);
-                        me.controls.start_time.value = t;
-                    }
-                }
-            },
-
             buttons: [
                 {
                     label: '<span vslang="buttons.Cancel"></span>',
                     cssClass: 'btn btn-secondary',
-                    click: (me) => me.hide(false)
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
                 },
                 {
                     label: '<span vslang="buttons.Submit"></span>',
                     cssClass: 'btn btn-primary',
                     click: (me, btn) => {
                         const data = me.getData();
-                        console.log('666666', data);
-                        data.id = me.dataOptions.id;
-                        data.code = me.controls.code.value;
-
-                        console.log('555555', data);
-
-                        vsapi.call(`${main_view.base_url}/prm/service-request/save`, data, btn, null)
-                            .then(res => {
+                        data.id = op?.id || null;
+                        vsapi.call([main_view.base_url, "/prm/service-request/save",].join(""), data, btn, null)
+                            .then((res) => {
                                 if (res.status_code === 200) {
-                                    me.hide(true, data);
-                                    cv_interact.success(data.id ? " Updated!" : " Created Service Request!");
-                                    // if (op?.onClose) op.onClose();/
+                                    me.hide(true,data);
+                                    cv_interact.success(data.id ? "Updated!" : "Created!");
                                 } else {
-                                    cv_interact.error(res.error_message || "Save failed");
+                                    cv_interact.error(res.error_message);
                                 }
-                            });
+                        });
                     }
                 }
             ]
@@ -991,7 +973,6 @@ const CreateServiceRequestDialog = (() => {
 
     return self;
 })();
-
 
 
 
