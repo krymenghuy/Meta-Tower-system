@@ -38,49 +38,29 @@ var VendorComponent = (() => {
                     bgClass = 'bg-primary-subtle text-primary';
                 } else if (code === 'maintenance') {
                     bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
+                } 
 
                 return `
             <div class="d-flex text-nowrap align-items-center gap-2">
                 <div class="rounded ${bgClass} d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">
                     ${initials}
                 </div>
-                <span class="fw-semibold text-dark">
-                    ${name}
-                </span>
+
+                <div>
+                    <span class="fw-semibold text-dark d-block">
+                        ${name}
+                    </span>
+                    <span class="d-block text-muted small">
+                        ${data.type ?? ""}
+                    </span>
+                </div>
             </div>
         `;
             }
         },
-        {
-            title: "Contact Info",
-            className: "align-middle",
-            data: (data) =>
-                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
-                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
-        },
-        {
-            transTitle: "titles.Vattin",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-nowrap text-prm-custom"> ${data.tax_number ?? ""}</span>`;
-            }
-        },
-        {
-            transTitle: "titles.Type",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="d-block text-prm-custom"> ${data.type ?? ""}</span>`;
-            }
-        },
+       
         {
             transTitle: "titles.Category",
             className: "align-middle",
@@ -95,27 +75,31 @@ var VendorComponent = (() => {
                     bgClass = 'bg-primary-subtle text-primary';
                 } else if (code === 'maintenance') {
                     bgClass = 'bg-warning-subtle text-warning';
-                } else if (code === 'cleaning') {
-                    bgClass = 'bg-info-subtle text-info';
-                } else if (code === 'security') {
-                    bgClass = 'bg-danger-subtle text-danger';
                 } else if (code === 'utility') {
                     bgClass = 'bg-success-subtle text-success';
-                } else if (code === 'internet') {
-                    bgClass = 'bg-info-subtle text-info';
-                }
+                } 
 
-                return `<span class="badge ${bgClass} text-uppercase fw-bold">
+                return `<span class="badge ${bgClass} text-uppercase fw-bold" style="min-width:120px;">
                     ${name}
                 </span>`;
             }
         },
+
+       
+        {
+            title: "Contact Info",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="d-block text-prm-custom text-nowrap"><i class="fa-solid text-success px-1 fa-phone" style="font-size:12px;"></i> ${data.phone_number ?? ""}</span>
+                 <span class="d-block text-primary text-nowrap"><i class="fa-solid text-primary px-1 fa-envelope" style="font-size:12px;"></i> ${data.email ?? ""}</span>`,
+        },
+        
         {
             transTitle: "titles.Contact Person",
             className: "align-middle text-nowrap",
             data: (data) => {
                 return `<span class="d-block text-prm-custom"> ${data.contact_person ?? ""}</span>
-                         <span class="d-block text-primary"> ${data.contact_phone ?? ""}</span>`;
+                         <span class="d-block text-prm-custom"> ${data.contact_phone ?? ""}</span>`;
             }
         },
         {
@@ -123,7 +107,7 @@ var VendorComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
+                    <div class="text-primary-custom" style="width:250px;">
                         <span class="text-wrap text-break" style ="word-break:break-word;">${data.address ?? '...'}</span>
                     </div>
                 `;
@@ -313,7 +297,8 @@ var VendorComponent = (() => {
     }
     mThis.createExpense = (id, menulink) => {
         let op = {
-            id: id,
+            id: null,
+            vendor_id: id,
             btn: menulink,
             onClose: () => {
                 ;
@@ -322,7 +307,7 @@ var VendorComponent = (() => {
         };
 
         CreateExpenseDialog.show(op);
-    }
+    };
     mThis.changeStatus = (id, link) => {
         const tr = link.closest("tr");
         const status_id = tr?.dataset.statusid || "";

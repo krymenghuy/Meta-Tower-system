@@ -7,6 +7,13 @@
                     <i class="fa fa-search fs-6 text-muted position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
                 </div>
             </div>
+
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_expense_category_id" class="data-input filter-field form-control" data-field="category_id"></select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2 ">
+                <select type="id" id="_expense_status_id" class="data-input filter-field form-control" data-field="status_id"></select>
+            </div>
             <div class="col-12 col-md-3 col-lg-2 ms-auto text-md-end">
                 <button type="button" class="btnAddNewPrm w-100 w-md-auto" id="_btnExpense">
                     <i class="fa-solid fa-receipt mr-2"></i>
@@ -16,5 +23,5 @@
         </div>
     </div> 
 
-    <div id="_expense_list" class="table-responsive  my-3 p-3 bg-white rounded-2 shadow"></div>
+    <div id="_expense_list" class="table-responsive  mt-3 rounded-2"></div>
 </div>

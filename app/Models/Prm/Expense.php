@@ -25,22 +25,20 @@ class Expense //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
 
         $v_rule = [
             'vendor_id' => '1|number|exists=vendors.id',
-            'expense_type_id' => '1|number|exists=expense_types.id',
+            'category_id' => '1|number|exists=expense_categories.id',
             'expense_date' => '1|date',
-            'expense_no' => '1|string|0-50',
             'amount' => '1|number',
-            'tax_amount' => '0|number',
-            'pmt_method' => '0|string|0-50',
+            'currency_code' => '0|string|default=USD',
             'reference_no' => '0|string|0-100',
             'remarks' => '0|string|0-255',
             'invoice_image' => '0|string|0-255',
         ];
-        $expense_no_char = ['@', '.', '-', '_'];
         $reference_no_char = ['@', '.', '-', '_'];
-        $res = DBX::validateObject($arr, $v_rule, 1, ['expense_no' => $expense_no_char,'reference_no' => $reference_no_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['reference_no' => $reference_no_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
@@ -52,22 +50,35 @@ class Expense //extends Model
                 $inputs['payee_name'] = $vendor->name;
             }
         }
-
-        $amount = $inputs['amount'] ?? 0;
-        $tax = $inputs['tax_amount'] ?? 0;
-        $inputs['total_amount'] = $amount + $tax;
-
         $exist = DB::table('expenses')
-            ->whereRaw('LOWER(expense_no)=?', [strtolower($inputs['expense_no'])])
+            ->whereRaw('LOWER(reference_no)=?', [strtolower($inputs['reference_no'])])
             ->when($id, function ($q) use ($id) {
                 $q->where('id', '<>', $id);
             })
             ->exists();
         if ($exist)
-            return DV::error('Expense number already exists!');
+            return DV::error('Reference number already exists!');
+        $invoice_image = $d->invoice_image ?? null;
+        unset($inputs['invoice_image']);
+        $delete_pre_image = ($id > 0 && (!$invoice_image || isImage($invoice_image)));
+
+        $created =  !$id;
         $id = DBX::saveData($ss, 'expenses', ['id' => $id], $inputs, [], 1);
+        if($id && $created){
+            $prefix = 'EXP-';
+            $res = setOfficialExpenseNo($branch_id,'expense_code_control','expenses', ['id' => $id], $prefix,4,null);
+        }
 
         if ($id > 0) {
+
+            if($delete_pre_image){
+                $file_name = DB::table('expenses as e')->where('e.id',$id)->take(1)->value('e.invoice_image');
+                if($file_name){
+                    XPublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id,'dir' => self::$img_dir],'images',$file_name);
+                }
+                DB::table('expenses')->where('id', $id)->update(['invoice_image' => null]);
+            }
+            XPublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $invoice_image, null, ['id' => $id, 'store' => 'expenses.invoice_image']);
             return DV::depends(1, ['expenses' => $inputs, 'id' => $id]);
         }
 
@@ -79,7 +90,7 @@ class Expense //extends Model
 
         $d = (object) $arr;
         $search_value = $d->search_value ?? null;
-        $type_id = $d->expense_type_id ?? null;
+        $category_id = $d->category_id ?? null;
         $status_id = $d->status_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -94,19 +105,19 @@ class Expense //extends Model
             $search_value = escape_like_str($search_value);
             $str_search = "(e.expense_no Like '%" . $search_value . "%' OR v.name Like '%" . $search_value . "%' OR e.reference_no Like '%" . $search_value . "%')";
         }
-        if ($type_id) {
-            $str_moreWhere .= ' AND e.expense_type_id =' . $type_id;
+        if ($category_id) {
+            $str_moreWhere .= ' AND e.category_id =' . $category_id;
         }
         if ($status_id) {
             $str_moreWhere .= ' AND e.status_id =' . $status_id;
         }
         $query = DB::table('expenses as e')
             ->join('vendors as v', 'v.id', 'e.vendor_id')
-            ->join('expense_types as et', 'et.id', 'e.expense_type_id')
+            ->join('expense_categories as ec', 'ec.id', 'e.category_id')
             ->join('expense_statuses as es', 'es.id', 'e.status_id')
             ->whereRaw($str_search)
             ->whereRaw($str_moreWhere)
-            ->selectRaw("e.id,e.expense_no,e.expense_date,e.reference_no,e.amount,e.tax_amount,e.total_amount,e.pmt_method,e.remarks,e.update_user,e.updated_at, v.name as vendor_name,et.name as expense_type,es.name as status")
+            ->selectRaw("e.id,e.expense_no,e.expense_date,e.reference_no,e.amount,e.currency_code,e.remarks,e.update_user,e.updated_at, v.name as vendor_name,ec.name as expense_category,es.name as status")
             ->orderBy('e.id', 'desc');
         $clone_query = clone $query;
         $count = $clone_query->count('e.id');
@@ -116,4 +127,43 @@ class Expense //extends Model
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+    public static function expenseDetails($id,$ss = null){
+
+        return DB::table('expenses as e')
+            ->where('e.id',$id)
+            ->selectRaw('e.id,e.vendor_id,e.category_id,e.status_id,e.expense_no,e.expense_date,e.reference_no,e.amount,e.currency_code,e.remarks')
+            ->first();
+    }
+
+
+    public static function getFormOptions($id = null, $ss = null){
+        $expense_details = $id ? self::expenseDetails($id,$ss) : null;
+        return (object)[
+            'expense_details' => $expense_details,
+            'vendors' => GeneralSettings::options_vendor($ss),
+            'categories' => GeneralSettings::options_expense_categories($ss),
+            'statuses' =>GeneralSettings::options_expense_statuses($ss),
+        ];
+
+
+    }
+
+    public function deleteExpense($id = null, $ss = null){
+        $id = $id ?? $this->id;
+        $expense = DB::table('expenses as e')->select('e.id','e.status_id')->where('e.id',$id)->first();
+        if(!$expense){
+            return DV::error('Expense not found.');
+        }
+        if($expense->status_id > 1){
+            return DV::error('Cannot delete this expense. It is already processed.');
+        }
+        $deleted = DB::table('expenses as e')->where('e.id', $id)->delete();
+        return $deleted
+            ? DV::depends($deleted, ['action' => 'deleted'])
+            : DV::error('Delete failed.');
+    }
+
+    
+
 }

@@ -89,7 +89,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                     <a href="MaintenanceComponent" modid="244" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/space.svg') }}" />
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/maintenance.svg') }}" />
                         </span>
                         <span class="kt-menu__link-text font-color" vslang="menus.Maintenance"></span>
                     </a>
@@ -144,7 +144,7 @@ function v_display($mod_id, $module_ids = null)
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                     <a href="ExpenseComponent" modid="270" class="menu-item kt-menu__link">
                         <span class="kt-menu__link-icon">
-                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/money.svg') }}" />
+                            <img class="icons opacity-icons" src="{{ asset('assets/images/icons/expense.svg') }}" />
                         </span>
                         <span class="kt-menu__link-text font-color " vslang="menus.Expense"></span>
                     </a>
@@ -239,7 +239,7 @@ function v_display($mod_id, $module_ids = null)
                                 <a href="AmenityComponent" modid="270" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="icons opacity-icons"
-                                            src="{{ asset('assets/images/icons/bill.png') }}" />
+                                            src="{{ asset('assets/images/icons/amenity.svg') }}" />
                                     </span>
                                     <span class="kt-menu__link-text font-color " vslang="menus.Amenities"></span>
                                 </a>
@@ -248,7 +248,7 @@ function v_display($mod_id, $module_ids = null)
                                 <a href="ItemsComponent" modid="270" class="menu-item kt-menu__link">
                                     <span class="kt-menu__link-icon">
                                         <img class="icons opacity-icons"
-                                            src="{{ asset('assets/images/icons/bill.png') }}" />
+                                            src="{{ asset('assets/images/icons/items.svg') }}" />
                                     </span>
                                     <span class="kt-menu__link-text font-color " vslang="menus.Items"></span>
                                 </a>

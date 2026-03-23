@@ -270,6 +270,8 @@ class PurchaseOrder //extends Model
             "po_number" => "0|string|0-50",
             "po_date" => "1|timestamp",
             "remarks" => "0|string|1-255",
+            "discount_value" => "0|number|min=0",
+            "discount_type" => "0|choice|percent,amount",
             "items" => "1|array"
         ];
 
@@ -289,6 +291,12 @@ class PurchaseOrder //extends Model
             $po_date = getNowTime();
 
         $inputs['po_date'] = $po_date;
+        $inputs['discount_value'] = (float) ($inputs['discount_value'] ?? 0);
+        $discount_type = $inputs['discount_type'] ?? 'percent';
+        $inputs['discount_type'] = in_array($discount_type, ['percent', 'amount']) ? $discount_type : 'percent';
+        // Save PO first, then compute summary totals from persisted line items.
+        $inputs['total_amount'] = 0;
+        $inputs['sub_total'] = 0;
 
         unset($inputs['items']);
 
@@ -300,20 +308,35 @@ class PurchaseOrder //extends Model
         $count = 0;
 
         if ($po_id) {
-            if (!$create) {
-                DB::table('purchase_order_items')->where('po_id', $po_id)->delete();
-            }
             foreach ($items as $item) {
 
                 $item = (object) $item;
+                $trx_id = $item->id ?? $item->trx_id ?? null;
+                // In modify mode, keep old rows and update by row id when available.
+                // If row id is not sent, try to match existing row by item_id.
+                if (!$create && !$trx_id && !empty($item->item_id)) {
+                    $existing_row = DB::table('purchase_order_items')
+                        ->where('po_id', $po_id)
+                        ->where('item_id', $item->item_id)
+                        ->orderBy('id', 'asc')
+                        ->first();
+                    if ($existing_row) {
+                        $trx_id = $existing_row->id;
+                    }
+                }
+                if (empty($item->item_id)) {
+                    return DV::error('Item ID is required to save purchase order item');
+                }
 
                 $input_item = [
+                    'trx_id' => $trx_id,
                     'item_id' => $item->item_id ?? null,
                     'unit' => $item->unit ?? null,
                     'unit_price' => $item->unit_price ?? 0,
                     'qty' => $item->qty ?? 0,
                     'po_id' => $po_id
                 ];
+
 
                 $po_item = self::savePoItem($ss, $input_item, $po_id);
 
@@ -323,6 +346,16 @@ class PurchaseOrder //extends Model
 
                 $count++;
             }
+
+            $sub_total = (float) DB::table('purchase_order_items')->where('po_id', $po_id)->sum('total_price');
+            $discount_amount = $inputs['discount_type'] === 'percent'
+                ? ($sub_total * $inputs['discount_value'] / 100)
+                : $inputs['discount_value'];
+            $total_amount = max(0, $sub_total - $discount_amount);
+            DB::table('purchase_orders')->where('id', $po_id)->update([
+                'sub_total' => $sub_total,
+                'total_amount' => $total_amount
+            ]);
         }
 
         return DV::success([
@@ -337,9 +370,12 @@ class PurchaseOrder //extends Model
     {
 
         $item = (object) $item;
+        $trx_id = $item->trx_id ?? null;
+        if (!is_numeric($trx_id) || (int) $trx_id <= 0) {
+            $trx_id = null;
+        }
 
         $inputs = [
-            "id" => $item->trx_id ?? null,
             "po_id" => $po_id,
             "item_id" => $item->item_id ?? $item->id ?? null,
             "qty" => $item->qty ?? 0,
@@ -351,7 +387,7 @@ class PurchaseOrder //extends Model
         $id = DBX::saveData(
             $ss,
             'purchase_order_items',
-            ['id' => $inputs['id']],
+            ['id' => $trx_id],
             $inputs,
             [],
             1,
@@ -394,7 +430,12 @@ class PurchaseOrder //extends Model
         }
         $updated_at = DBX::formatTime('po.updated_at', 'updated_at');
         $po_date = DBX::formatDate('po.po_date', 'po_date');
-        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,ps.name as status';
+        $item_total = '(SELECT COALESCE(SUM(pi.total_price), 0) FROM purchase_order_items as pi WHERE pi.po_id = po.id)';
+        $sub_total = 'COALESCE(po.sub_total, ' . $item_total . ')';
+        $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
+        $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
+        $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
+        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,ps.name as status,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
@@ -413,7 +454,7 @@ class PurchaseOrder //extends Model
     {
         return DB::table('purchase_orders as po')
             ->where('po.id', $id)
-            ->selectRaw('po.id,po.po_number,po.vendor_id,po.po_date,po.status_id,po.remarks')->first();
+            ->selectRaw('po.id,po.po_number,po.vendor_id,po.po_date,po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total,po.total_amount')->first();
     }
     public static function getFormOptions($id = null, $ss = null)
     {
@@ -443,6 +484,128 @@ function getItemsByPurchaseOrder($data,$ss){
       }
       return $rows;
   }
+
+    /**
+     * Receive quantity on selected purchase order lines (partial or full).
+     * Reduces line qty by received amount; line is fully received (status_id = 2) when remaining qty is 0.
+     * When every line is fully received, the purchase order header is set to received (status_id = 2).
+     *
+     * @param array $payload Expects receive_items: [ ['id' => po_line_id, 'qty' => float], ... ]
+     *                        Legacy: po_item_ids: int[] receives full remaining qty per line.
+     */
+    public function receivePurchaseOrder($id, $ss = null, $payload = [])
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = (int) $id;
+        if ($id <= 0) {
+            return DV::error('Invalid purchase order ID.');
+        }
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        if ((int) $po->status_id === 2) {
+            return DV::error('This purchase order is already fully received.');
+        }
+        $itemCount = DB::table('purchase_order_items')->where('po_id', $id)->count();
+        if ($itemCount === 0) {
+            return DV::error('Purchase order has no line items to receive.');
+        }
+
+        $now = getNowTime();
+        $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+
+        $receiveItems = $payload['receive_items'] ?? null;
+        if (is_array($receiveItems) && count($receiveItems) > 0) {
+            $seenLineIds = [];
+            foreach ($receiveItems as $row) {
+                $row = is_object($row) ? (array) $row : $row;
+                $lineId = (int) ($row['id'] ?? $row['po_item_id'] ?? 0);
+                $recvQty = (float) ($row['qty'] ?? 0);
+                if ($lineId <= 0) {
+                    return DV::error('Invalid purchase order line id.');
+                }
+                if (isset($seenLineIds[$lineId])) {
+                    return DV::error('Duplicate purchase order line in receive list.');
+                }
+                $seenLineIds[$lineId] = true;
+                if ($recvQty <= 0) {
+                    return DV::error('Received quantity must be greater than zero.');
+                }
+                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
+                if (!$pi) {
+                    return DV::error('Purchase order line not found.');
+                }
+                if ((int) $pi->status_id === 2) {
+                    return DV::error('Line #' . $lineId . ' is already fully received.');
+                }
+                $orderQty = (float) $pi->qty;
+                if ($recvQty > $orderQty + 0.0000001) {
+                    return DV::error('Received quantity cannot exceed remaining order quantity on a line.');
+                }
+                $unitPrice = (float) $pi->unit_price;
+                $remaining = $orderQty - $recvQty;
+                if ($remaining <= 0.0000001) {
+                    DB::table('purchase_order_items')->where('id', $lineId)->update([
+                        'qty' => 0,
+                        'total_price' => 0,
+                        'status_id' => 2,
+                    ]);
+                } else {
+                    $newTotal = round($remaining * $unitPrice, 2);
+                    DB::table('purchase_order_items')->where('id', $lineId)->update([
+                        'qty' => $remaining,
+                        'total_price' => $newTotal,
+                        'status_id' => 1,
+                    ]);
+                }
+            }
+        } else {
+            $rawIds = $payload['po_item_ids'] ?? [];
+            $lineIds = is_array($rawIds)
+                ? array_values(array_unique(array_filter(array_map('intval', $rawIds))))
+                : [];
+            if (count($lineIds) === 0) {
+                return DV::error('Select at least one line to receive.');
+            }
+            $validIds = DB::table('purchase_order_items')
+                ->where('po_id', $id)
+                ->whereIn('id', $lineIds)
+                ->pluck('id')
+                ->all();
+            if (count($validIds) !== count($lineIds)) {
+                return DV::error('Invalid purchase order line selection.');
+            }
+            foreach ($lineIds as $lineId) {
+                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
+                if (!$pi || (float) $pi->qty <= 0) {
+                    continue;
+                }
+                DB::table('purchase_order_items')->where('id', $lineId)->update([
+                    'qty' => 0,
+                    'total_price' => 0,
+                    'status_id' => 2,
+                ]);
+            }
+        }
+
+        $pending = DB::table('purchase_order_items')
+            ->where('po_id', $id)
+            ->where(function ($q) {
+                $q->whereNull('status_id')->orWhere('status_id', '!=', 2);
+            })
+            ->count();
+
+        if ($pending === 0) {
+            DB::table('purchase_orders')->where('id', $id)->update([
+                'status_id' => 2,
+                'updated_at' => $now,
+                'update_user' => $updateUser,
+            ]);
+        }
+
+        return DV::success(['message' => 'Receive recorded successfully.']);
+    }
 
     /**
      * Delete a purchase order and its line items.
