@@ -16,7 +16,7 @@ var ExpenseComponent = (() => {
             className: "align-middle",
         },
         {
-            title: "Expense Num",
+            title: "Expense No",
             className: "align-middle",
             data: (data) => `<span class="text-prm-custom">${data.expense_no}</span>`,
         },
@@ -342,6 +342,7 @@ const CreateExpenseDialog = (() => {
                     `;
                 },
                 contentCreated: (me) => {
+                    
                 },
                 configSelect: [
                     {
@@ -400,7 +401,6 @@ const CreateExpenseDialog = (() => {
                             const op = me.getData();
                             op.id = me.dataOptions.id;
                             console.log(4444,op);
-                            
                             vsapi.call([main_view.base_url, "/prm/expense/save",].join(""), op, btn, null).then((res) => {
                                 if (res.status_code === 200) {
                                     me.hide(true, op);
