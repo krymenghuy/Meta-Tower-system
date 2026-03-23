@@ -275,7 +275,8 @@ var VendorComponent = (() => {
                     case 'create_expense': {
                         mThis.createExpense(id, menuLink);
                         break;
-                    }case 'change_vendor_status': {
+                    }
+                    case 'change_vendor_status': {
                         mThis.changeStatus(id, menuLink);
                         break;
                     }
@@ -447,18 +448,15 @@ const CreateVendorDialog = (() => {
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id">
+                                    <select data-style="material" name="vendor_type_id" class="data-input form-control" data-field="vendor_type_id" placeholder="Vendor Type">
                                     <!-- <option value="" selected hidden></option> -->
                                     </select>
-                                    <label style="display:none; color:#777777;padding-left:6px;">Vendor Type</label>
                                 </div>
                             </div>
                              <div class="col-12 col-md-6">
                                 <div class="material-input outlined">
-                                    <select name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="">
-                                        <!-- <option value="" selected hidden></option> -->
+                                    <select data-style="material" name="vendor_category_id" class="data-input form-control" data-field="category_id" placeholder="Category">
                                     </select>
-                                    <label style="display:none; color:#777777;padding-left:6px;">Category</label>
                                 </div>
                             </div>
 
@@ -492,9 +490,8 @@ const CreateVendorDialog = (() => {
                                 </div>
                             </div>
                             <div class="col-12">
-
                                 <div class="material-input outlined">
-                                    <textarea class="data-input form-control" data-field="address" rows="3" placeholder=" "> </textarea>
+                                    <textarea class="data-input form-control" data-field="address" placeholder=" "></textarea>
                                     <label style="color:#777777;padding-left:6px;">Address</label>
                                 </div>
                             </div>

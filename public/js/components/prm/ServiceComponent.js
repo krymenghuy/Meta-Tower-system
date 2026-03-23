@@ -1,5 +1,5 @@
 "use strict";
-var ServiceComponent =   ( () => {
+var ServiceComponent = (() => {
     const mThis = {};
     mThis.title_prop = "Service Management";
     mThis.base_url = main_view.base_url;
@@ -38,21 +38,41 @@ var ServiceComponent =   ( () => {
                 // const formattedPrice = data.price ? Number(data.price).toLocaleString() : '-';
                 const currency = data.currency_code ?? 'USD';
                 // const currency =  'KHR';
-                const formattedPrice = VSMoney.formatAmount(data.price,currency);
+                const formattedPrice = VSMoney.formatAmount(data.price, currency);
                 const unitLabel = data.unit_type ? `/ ${data.unit_type}` : '';
                 return `<span class="text-nowrap fw-semibold text-primary">${formattedPrice} <small class="text-muted ">${unitLabel}</small></span>`;
-        }
+            }
         },
         {
             transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
-                    <div class="text-primary-custom" style="width:150px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? '...'}</span>
+                    <div class="text-primary-custom" style="width:120px;">
+                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.description ?? ''}</span>
                     </div>
                 `;
             }
+        },
+        {
+            title: "Status",
+            className: "align-middle text-center",
+            data: (data) => {
+
+                const status = (data.status ?? '').toLowerCase();
+                let cls = 'badge text-dark bg-warning-subtle border border-warning';
+                if (status === 'active') {
+                    cls = 'badge text-success bg-success-subtle border border-success';
+                }
+                else if (status === 'inactive') {
+                    cls = 'badge text-dark bg-danger-subtle border border-danger';
+                }
+                return `
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px">
+                        ${data.status ?? ''}
+                    </span>
+                `;
+            },
         },
         {
             transTitle: "titles.Updated By",
@@ -65,7 +85,7 @@ var ServiceComponent =   ( () => {
             }
         },
         {
-            transTitle : "titles.Action",
+            transTitle: "titles.Action",
             className: 'col_action align-middle',
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-end">
@@ -87,12 +107,12 @@ var ServiceComponent =   ( () => {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-               rowCreated:(data,index,tr)=>{
+            rowCreated: (data, index, tr) => {
 
 
-              tr.dataset.statusid = data.status_id;
-              tr.classList.add('service');
-              tr.setAttribute('id',['service_id',data.id].join(''));
+                tr.dataset.statusid = data.status_id;
+                tr.classList.add('service');
+                tr.setAttribute('id', ['service_id', data.id].join(''));
 
             },
             listContainerClass: null
@@ -166,6 +186,12 @@ var ServiceComponent =   ( () => {
             cssClass: "bg-white shadow",
             menus: [
                 {
+                    html: '<span class="ps-2 " vslang="titles.Change Status"></span>',
+                    icon: `<i class="fa-solid fa-bolt fs-5 text-primary"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "change_service_status"
+                },
+                {
                     html: '<span class="ps-2 " vslang="titles.Modify Service"></span>',
                     icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -181,6 +207,10 @@ var ServiceComponent =   ( () => {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case 'change_service_status': {
+                        mThis.changeServiceStatus(id, menuLink);
+                        break;
+                    }
                     case 'edit_service': {
                         mThis.editService(id, menuLink);
                         break;
@@ -197,19 +227,62 @@ var ServiceComponent =   ( () => {
         }
         new VSDropdownMenu(menuOptopns);
     }
-
-    mThis.editService = (id, menulink) =>{
+    mThis.changeServiceStatus = (id, link) => {
+        const tr = link.closest("tr");
+        const status_id = tr?.dataset.statusid || "";
+        const inputOptions = {
+            context: "success",
+            title: "Change Status",
+            label: "Service Status",
+            valueKey: "status_id",
+            labelKey: "name",
+            confirmButtonText: "Save",
+            requiredMessage: "Please select a status",
+            data: [
+                { status_id: "1", name: "Active" },
+                { status_id: "2", name: "Inactive" },
+            ],
+            defaultValue: status_id,
+            onConfirm: (status, btn, me) => {
+                const payload = { id, status_id: status.status_id };
+                vsapi
+                    .post(
+                        `${mThis.base_url}/prm/service/update-status`,
+                        payload,
+                        { loader: false, agent: btn },
+                    )
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            me.close();
+                            cv_interact.success(
+                                "Service status has been updated",
+                            );
+                            mThis.ServiceListView.showPage(
+                                mThis.getFilterData(),
+                            );
+                        } else {
+                            me.setError(
+                                res.error_message || "Unable to update status",
+                            );
+                        }
+                    });
+            },
+        };
+        InputBox.show(inputOptions);
+    };
+    mThis.editService = (id, menulink) => {
         let op = {
-            id:id,
-            btn:menulink,
-            onClose:()=>{;
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                ;
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
 
         CreateServiceDialog.show(op);
     }
-     mThis.deleteService = (id, menuLink) => {
+    mThis.deleteService = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -217,8 +290,10 @@ var ServiceComponent =   ( () => {
                 mThis.ServiceListView.showPage(mThis.getFilterData());
             }
         };
-        if (!AuthManager.allowed(242)) return;
-        cv_interact.confirm('Delete this Service??', {
+        console.log(89,op);
+        
+        // if (!AuthManager.allowed(242)) return;
+        cv_interact.confirm('Delete this Service?', {
             transTitle: 'Delete Service',
             context: 'delete',
             confirmButtonText: "Delete"
@@ -227,12 +302,12 @@ var ServiceComponent =   ( () => {
                 vsapi.call(`${main_view.base_url}/prm/service/delete`, op, false, false, false).then(res => {
                     if (res.status_code == 200) {
                         mThis.ServiceListView.showPage();
+                    } else {
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
-            else {
-                cv_interact.error(res.error_message);
-            }
+
         });
     };
 
@@ -250,7 +325,7 @@ var ServiceComponent =   ( () => {
     mThis.show = (options) => {
         mThis.init();
         mThis.options = options;
-        mThis.prepareFormOptions(()=>{
+        mThis.prepareFormOptions(() => {
             main_view.setContentView(mThis.self, mThis.title_prop);
             mThis.ServiceListView.showPage(mThis.getFilterData());
         });
@@ -276,25 +351,24 @@ const CreateServiceDialog = (() => {
                             <div class="col-6">
                                 <div class="material-input outlined">
                                     <input type="text" name="name" required class="data-input form-control" data-field="name" placeholder="" />
-                                    <label style="padding-left:6px;color:#777777;">Name<span class="text-danger">*</span></label>
+                                    <label style="padding-left:6px;color:#777777;">Name</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="service_types" class="data-input form-control" data-field="service_type_id">
+                                    <select data-style="material" name="service_types" class="data-input form-control" data-field="service_type_id" placeholder="Service Type">
                                     </select>
-                                    <label style="display:none;padding-left:6px;color:#777777;">Category<span class="text-danger">*</span></label>
                                 </div>
                            </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="0" />
-                                    <label style="padding-left:6px;color:#777777;">Price<span class="text-danger">*</span></label>
+                                    <input type="number" name="price" required class="data-input form-control" data-field="price" placeholder="" />
+                                    <label style="padding-left:6px;color:#777777;">Price</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="material-input outlined">
-                                    <select name="unit_type" class="data-input form-control" data-field="unit_type">
+                                    <select data-style="material" name="unit_type" class="data-input form-control" data-field="unit_type" placeholder="Unit Type">
                                         <option value="hour">Price Per Hour</option>
                                         <option value="month">Price Per Month</option>
                                         <option value="one_time">One Time Charge</option>
@@ -302,16 +376,12 @@ const CreateServiceDialog = (() => {
                                         <option value="m3">Price Per M3</option>
                                         <option value="sqm">Price Per Sqm</option>
                                     </select>
-                                    <label style="display:none;padding-left:6px;color:#777777;" for="service_types">Charge As</label>
-
                                 </div>
                             </div>
-
                             <div class="col-12">
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="description" placeholder=" "></textarea>
                                     <label style="padding-left:6px;color:#777777;">Remarks</label>
-
                                 </div>
                             </div>
                         </div>`
@@ -345,7 +415,7 @@ const CreateServiceDialog = (() => {
                 onPrepareForm: (me, data) => {
                     const header = me.divModal.querySelector('.modal-header');
                     const btnClose = header.querySelector('button');
-                    if(btnClose) btnClose.classList.add('d-none');
+                    if (btnClose) btnClose.classList.add('d-none');
                 },
 
 
