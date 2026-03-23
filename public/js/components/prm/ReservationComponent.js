@@ -513,53 +513,7 @@ const CreateReservationDialog = (() => {
                     },
                 },
 
-                // onPrepareForm: (me, data) => {
-                //     LocaleManager.translateZone(me.divModal);
-
-                //     console.log("DEBUG 2: Full Data from API:", data);
-
-                //     const header = me.divModal.querySelector('.modal-header');
-                //     const btnClose = header.querySelector('button');
-                //     if (btnClose) btnClose.classList.add('d-none');
-
-                //     // Amenity auto-fill logic
-                //     const amenitySelect = me.divModal.querySelector('[data-field="amenity_id"]');
-
-                //     if (amenitySelect) {
-                //         const applyAmenityData = (amenityId) => {
-                //             if (!amenityId) {
-
-                //                 if (codeInput)     codeInput.value = '';
-                //                 if (capacityInput) capacityInput.value = '';
-                //                 return;
-                //             }
-
-                //             const amenities = Array.isArray(data?.amenities) ? data.amenities : [];
-                //             const selected = amenities.find(item => String(item.id) === String(amenityId));
-
-                //             const codeInput = me.divModal.querySelector('[data-field="amenity_code"]');
-                //             const capacityInput = me.divModal.querySelector('[data-field="amenity_capacity"]');
-
-                //             if (codeInput) {
-                //                 codeInput.value = selected?.amenity_code ?? '';
-                //             }
-                //             if (capacityInput) {
-                //                 capacityInput.value = selected?.max_capacity ?? '';
-                //             }
-                //         };
-
-                //         amenitySelect.onchange = (e) => {
-                //             applyAmenityData(e.target.value);
-                //         };
-
-                //         // Pre-fill when editing
-                //         // const initialId = data?.reservation_details?.amenity_id ?? '';
-                //         // if (initialId) {
-                //         //     amenitySelect.value = initialId;
-                //         //     applyAmenityData(initialId);
-                //         // }
-                //     }
-                // },
+                
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);

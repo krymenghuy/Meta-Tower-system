@@ -20,7 +20,7 @@ class BillController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        $id = $req->id ?? $req->vendor_id;
+        $id = $req->id ?? $req->bill_id;
         $bill = new Bill($id, $ss);
         $res = $bill->saveBill($req->all());
         return JDV::raw($res);
