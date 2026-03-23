@@ -141,98 +141,106 @@ var InvoiceComponent = (() => {
             });
     };
 
+mThis.renderInvoiceDetail = (container, invoice) => {
+    const currency = mThis.currency_symbol || '$';
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
 
-    mThis.renderInvoiceDetail = (container, invoice) => {
-        const items      = invoice.items || [];
-        const currency   = mThis.currency_symbol;
+    const itemsHtml = (invoice.items || []).map(item => {
+        // Use real type from backend
+        const rawType = (item.type || 'service').toLowerCase().trim();
 
-        let itemsHtml = '', subtotal = 0, totalDiscount = 0, totalTax = 0;
+        let badgeClass = 'bg-light border text-dark';
+        if (rawType === 'rent')    badgeClass = 'bg-primary text-white border-0';
+        if (rawType === 'utility') badgeClass = 'bg-warning text-dark border-0';
 
-        if (items.length <= 0) {
-            itemsHtml = `<tr><td colspan="8" class="text-center text-muted py-3">No items found</td></tr>`;
-        } else {
-            items.forEach(item => {
-                const amount   = Number(item.amount   || 0);
-                const discount = Number(item.discount || item.special_discount_value || 0);
-                const taxRate  = Number(item.tax_rate || 0);
-                const tax      = (amount - discount) * (taxRate / 100);
+        const qty     = Number(item.qty || 1);
+        const price   = Number(item.price || (item.amount / (qty || 1)) || 0);
+        const amount  = qty * price;
+        const disc    = Number(item.discount || item.special_discount_value || 0);
+        const taxRate = Number(item.tax_rate || 0);
+        const taxAmt  = (amount - disc) * (taxRate / 100);
+        const net     = amount - disc + taxAmt;
 
-                subtotal      += amount;
-                totalDiscount += discount;
-                totalTax      += tax;
+        subtotal      += amount;
+        totalDiscount += disc;
+        totalTax      += taxAmt;
 
-                const typeName = item.type || item.item_name || '—';
-                const unitType = item.unit_type || '—';
 
-                itemsHtml += `
-                    <tr>
-                        <td>
-                            <div class="fw-semibold">${item.item_name || item.description || '—'}</div>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-dark border">${typeName}</span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-light text-dark border">${unitType}</span>
-                        </td>
-                        <td class="text-end">${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                        <td class="text-end text-danger">-${currency}${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                        <td class="text-end text-info">${currency}${tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                        <td class="text-end fw-bold">${currency}${(amount - discount + tax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                    </tr>`;
-            });
-        }
+        const startDate = item.start_date
+            ? new Date(item.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            : '—';
+        const endDate = item.end_date
+            ? new Date(item.end_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            : '—';
 
-        const grandTotal = subtotal - totalDiscount + totalTax;
+        return `
+            <tr>
+                <td class="fw-medium">${ item.remarks || item.description || '—'}</td>
+                <td class="text-center">
+                    <span class="badge rounded-pill ${badgeClass} px-3 py-1 text-capitalize">
+                        ${rawType}
+                    </span>
+                </td>
+                <td class="text-center text-muted small">${item.unit_type ? item.unit_type.trim() : '—'}</td>
+                <td class="text-center small">${startDate}</td>
+                <td class="text-center small">${endDate}</td>
+                <td class="text-end">${currency}${amount.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                <td class="text-end text-danger">-${currency}${disc.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                <td class="text-end text-info">${currency}${taxAmt.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+                <td class="text-end fw-bold">${currency}${net.toLocaleString('en-US', {minimumFractionDigits:2})}</td>
+            </tr>`;
+    }).join('');
 
-        container.innerHTML = `
-            <div class="bg-white rounded p-1">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered mb-0">
-                        <thead style="background-color:#f0f4ff;">
-                            <tr>
-                                <th>Description</th>
-                                <th class="text-center" >Type</th>
-                                <th class="text-center" >Unit</th>
-                                <th class="text-end"    >Amount</th>
-                                <th class="text-end"    >Discount</th>
-                                <th class="text-end"    >Tax</th>
-                                <th class="text-end"    >Net Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsHtml}</tbody>
-                        <tfoot class="table-light">
-                            <tr>
-                                <td colspan="3" class="text-end fw-bold">Subtotal</td>
-                                <td class="text-end fw-bold">
-                                    ${currency}${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                </td>
-                                <td class="text-end fw-bold text-danger">
-                                    -${currency}${totalDiscount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                </td>
-                                <td class="text-end fw-bold text-info">
-                                    ${currency}${totalTax.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                </td>
-                                <td class="text-end fw-bold fs-6 text-success">
-                                    ${currency}${grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+    const grandTotal = subtotal - totalDiscount + totalTax;
+
+    container.innerHTML = `
+        <div class="bg-white rounded shadow-sm p-3">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead style="background:#f0f4ff;">
+                        <tr>
+                            <th class="text-center" style="width:250px;">Description</th>
+                            <th class="text-center" style="width:110px;">Type</th>
+                            <th class="text-center" style="width:90px;">Charge As</th>
+                            <th class="text-center" style="width:110px;">Start Date</th>
+                            <th class="text-center" style="width:110px;">End Date</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Discount</th>
+                            <th class="text-end">Tax</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml || '<tr><td colspan="9" class="text-center py-4 text-muted">No items found</td></tr>'}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="5" class="text-end fw-bold">Total</td>
+                            <td class="text-end fw-bold">${currency}${subtotal.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                            <td class="text-end fw-bold text-danger">-${currency}${totalDiscount.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                            <td class="text-end fw-bold text-info">${currency}${totalTax.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                            <td class="text-end fw-bold text-success fs-5">${currency}${grandTotal.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            ${invoice.remarks ? `
+                <div class="mt-3 p-3 bg-light rounded border">
+                    <small class="text-muted fw-semibold d-block mb-1">Remarks:</small>
+                    <p class="mb-0 small">${invoice.remarks}</p>
                 </div>
-                ${invoice.remarks ? `
-                    <div class="mt-3 p-2 bg-light rounded">
-                        <small class="text-muted fw-semibold">Remarks:</small>
-                        <p class="mb-0 small">${invoice.remarks}</p>
-                    </div>` : ''}
-                <div class="text-end mt-3">
-                    <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-                        <i class="bi bi-printer me-1"></i> Print Invoice
-                    </button>
-                </div>
-            </div>`;
-    };
+            ` : ''}
 
+            <div class="text-end mt-4">
+                <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Print Invoice
+                </button>
+            </div>
+        </div>`;
+};
     mThis.getFilterData = () => {
         const params = {
             payment_status_id: mThis.elFilter_status.value,
@@ -396,10 +404,10 @@ const InvoiceDialog = (() => {
                     const matchedContract = spaces.find(s => String(s.space_id) === String(selectedSpaceId));
                     const defaultContractId = matchedContract?.contract_id ?? spaces[0]?.contract_id;
 
-                    // Build month options (for the month dropdown)
-                    const monthOptions = months.map(m =>
-                        `<option value="${m.month}">${m.month}</option>`
-                    ).join('');
+                   const monthOptions = months
+                        .filter(m => String(m.contract_id) === String(defaultContractId))
+                        .map(m => `<option value="${m.month}">${m.month}</option>`)
+                        .join('');
 
                     InputBox.resetInstance("rentPopUp");
 
@@ -474,28 +482,42 @@ const InvoiceDialog = (() => {
                             const elStartDate  = document.querySelector('[data-field="start_date"]');
                             const elEndDate    = document.querySelector('[data-field="end_date"]');
 
-                            if (!elContract) {
-                                console.warn("Rent popup: contract_id input not found");
-                                return;
-                            }
+                            if (!elContract || !elMonthly) return;
+                            const updateDates = (selectedMonth, contractId) => {
+                                const matchedMonth = months.find(m =>
+                                    String(m.contract_id) === String(contractId) &&
+                                    m.month === selectedMonth
+                                );
 
-                            const fillFields = (contractId) => {
+                                if (matchedMonth) {
+                                    if (elStartDate) elStartDate.value = matchedMonth.start_date || "";
+                                    if (elEndDate) elEndDate.value = matchedMonth.end_date || "";
+                                } else {
+                                    if (elStartDate) elStartDate.value = "";
+                                    if (elEndDate) elEndDate.value = "";
+                                }
+                            };
+                            elMonthly.addEventListener('change', (e) => {
+                                const currentContractId = elContract.dataset.contractId;
+                                updateDates(e.target.value, currentContractId);
+                            });
+
+                            const fillFields = contractId => {
                                 if (!contractId) return;
 
                                 const matchedSpace = spaces.find(s => String(s.contract_id) === String(contractId));
-                                const matchedMonth = months.find(m => String(m.contract_id) === String(contractId))
-                                                || months[0] || {};
 
-                                console.log("Filling rent fields → contract:", contractId, matchedSpace?.space_code);
+                                // Find the first available month for this specific contract as default
+                                const defaultMonth = months.find(m => String(m.contract_id) === String(contractId)) || {};
 
                                 if (matchedSpace && elPrice) {
                                     elPrice.value = Number(matchedSpace.price || 0).toFixed(2);
                                 }
-                                if (matchedMonth) {
-                                    if (elStartDate) elStartDate.value = matchedMonth.start_date || '';
-                                    if (elEndDate)   elEndDate.value   = matchedMonth.end_date   || '';
-                                    if (elMonthly)   elMonthly.value   = matchedMonth.month      || '';
-                                }
+
+                                // Set initial values in the UI
+                                if (elMonthly) elMonthly.value = defaultMonth.month || "";
+                                if (elStartDate) elStartDate.value = defaultMonth.start_date || "";
+                                if (elEndDate) elEndDate.value = defaultMonth.end_date || "";
                             };
 
                             // Determine which contract/space to pre-select
@@ -516,17 +538,10 @@ const InvoiceDialog = (() => {
                                 displaySpaceCode = spaces[0].space_code || '';
                             }
 
-                            // Apply to UI
                             if (targetContractId) {
-                                // Store real contract_id (important for saving)
                                 elContract.dataset.contractId = String(targetContractId);
-
-                                // Show user-friendly space code
-                                elContract.value = displaySpaceCode || '(No room code)';
-
+                                elContract.value = displaySpaceCode || "(No room code)";
                                 fillFields(targetContractId);
-                            } else {
-                                elContract.value = '(No space available)';
                             }
 
                         },
@@ -550,24 +565,30 @@ const InvoiceDialog = (() => {
                                                 || filteredMonths[0]
                                                 || null;
 
-                            console.log("roomCode →", roomCode);
-                            console.log("matchedMonth →", matchedMonth);
+                            // ✅ Resolve start/end date from input fields OR matched month
+                            const elStartDate = document.querySelector('[data-field="start_date"]');
+                            const elEndDate   = document.querySelector('[data-field="end_date"]');
+
+                            const resolvedStartDate = elStartDate?.value || matchedMonth?.start_date || '';
+                            const resolvedEndDate   = elEndDate?.value   || matchedMonth?.end_date   || '';
 
                             me.itemsView.addRow({
-                                item_id:      `Rent - ${roomCode}`,
+                                item_id:        null,
+                                item_name:     `Rent - ${roomCode}`,
+                                type:          'rent',
                                 price:         Number(data.price)    || 0,
                                 qty:           1,
                                 remarks:       `Rent - ${roomCode} (${data.monthly || 'N/A'})`,
-                                unit_type:     roomCode,
+                                // unit_type:     roomCode,
                                 contract_id:   realContractId,
                                 monthly:       data.monthly,
-                                start_date:    data.start_date   || matchedMonth?.start_date || '',
-                                end_date:      data.end_date     || matchedMonth?.end_date   || '',
+                                start_date:    resolvedStartDate,   // ✅ correctly resolved
+                                end_date:      resolvedEndDate,     // ✅ correctly resolved
                                 space_code:    roomCode,
                                 space_price:   data.price,
-                                discount:      Number(data.discount)  || 0,
-                                discount_type: data.discount_type     || 'percent',
-                                tax_rate:      Number(data.tax_rate)  || 0
+                                discount:      Number(data.discount)      || 0,
+                                discount_type: data.discount_type         || 'percent',
+                                tax_rate:      Number(data.tax_rate)      || 0
                             }, 0);
 
                             cv_interact.success("Rent item added");
@@ -580,127 +601,124 @@ const InvoiceDialog = (() => {
 
 
 
-           // ************************** BTN SERVICE *************************
-            me.controls.btnService.onclick = () => {
-                if (!me._selectedTenantId) {
-                    return cv_interact.error("Please select Tenant first");
-                }
+                me.controls.btnService.onclick = () => {
+                    if (!me._selectedTenantId) {
+                        return cv_interact.error("Please select Tenant first");
+                    }
 
-                const services = availableItem || [];
+                    const services = availableItem || [];
 
-                if (services.length === 0) {
-                    return cv_interact.error("No services available");
-                }
+                    if (services.length === 0) {
+                        return cv_interact.error("No services available");
+                    }
 
-                // Build options for dropdown
-                const serviceOptions = services.map(s =>
-                    `<option value="${s.id}">${s.service || s.name || `Service #${s.id}`}</option>`
-                ).join('');
+                    // Build options for dropdown
+                    const serviceOptions = services
+                        .map(s => `<option value="${s.id}">${s.service || s.name || `Service #${s.id}`}</option>`)
+                        .join('');
 
-                InputBox.show({
-                    title: "Add Service",
-                    instanceKey: "servicePopUp",
+                    InputBox.show({
+                        title: "Add Service",
+                        instanceKey: "servicePopUp",
 
-                    createContent() {
-                        const div = document.createElement('div');
-                        div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;';
-                        div.innerHTML = `
-                            <div>
-                                <label class="form-label" style="font-size:13px;color:#555;">
-                                    Service <span style="color:red">*</span>
-                                </label>
-                                <select class="data-input form-control" data-field="service_id" name="service_id">
-                                    <option value="">-- Select Service --</option>
-                                    ${serviceOptions}
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
-                                <input class="data-input form-control" data-field="unit_type"
-                                    name="unit_type" type="text" readonly placeholder="Auto filled">
-                            </div>
-                            <div>
-                                <label class="form-label" style="font-size:13px;color:#555;">Price</label>
-                                <input class="data-input form-control" data-field="price"
-                                    name="price" type="text" readonly placeholder="Auto filled">
-                            </div>
-                            <div>
-                                <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
-                                <div style="display:flex; gap:8px;">
-                                    <input class="data-input form-control" data-field="discount"
-                                        name="discount" type="text" placeholder="0">
-                                    <select class="data-input form-control" data-field="discount_type"
-                                            name="discount_type" style="width:80px;">
-                                        <option value="percent">%</option>
-                                        <option value="amount">$</option>
+                        createContent() {
+                            const div = document.createElement('div');
+                            div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:4px 2px;';
+                            div.innerHTML = `
+                                <div>
+                                    <label class="form-label" style="font-size:13px;color:#555;">
+                                        Service <span style="color:red">*</span>
+                                    </label>
+                                    <select class="data-input form-control" data-field="service_id" name="service_id">
+                                        <option value="">-- Select Service --</option>
+                                        ${serviceOptions}
                                     </select>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
-                                <input class="data-input form-control" data-field="tax_rate"
-                                    name="tax_rate" type="text" placeholder="0">
-                            </div>
-                            <div style="grid-column: span 2;">
-                                <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
-                                <textarea class="data-input form-control" data-field="remark"
-                                        name="remark" rows="3"></textarea>
-                            </div>
-                        `;
-                        return div;
-                    },
+                                <div>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Unit Type</label>
+                                    <input class="data-input form-control" data-field="unit_type"
+                                        name="unit_type" type="text" readonly placeholder="Auto filled">
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Price</label>
+                                    <input class="data-input form-control" data-field="price"
+                                        name="price" type="text" readonly placeholder="Auto filled">
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Discount</label>
+                                    <div style="display:flex; gap:8px;">
+                                        <input class="data-input form-control" data-field="discount"
+                                            name="discount" type="text" placeholder="0">
+                                        <select class="data-input form-control" data-field="discount_type"
+                                                name="discount_type" style="width:80px;">
+                                            <option value="percent">%</option>
+                                            <option value="amount">$</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size:13px;color:#555;">Tax %</label>
+                                    <input class="data-input form-control" data-field="tax_rate"
+                                        name="tax_rate" type="text" placeholder="0">
+                                </div>
+                                <div style="grid-column: span 2;">
+                                    <label class="form-label" style="font-size:13px;color:#555;">Remark</label>
+                                    <textarea class="data-input form-control" data-field="remark"
+                                            name="remark" rows="3"></textarea>
+                                </div>
+                            `;
+                            return div;
+                        },
 
-                    onOpen(ibMe) {
-                        const elService   = document.querySelector('[data-field="service_id"]');
-                        const elUnitType  = document.querySelector('[data-field="unit_type"]');
-                        const elPrice     = document.querySelector('[data-field="price"]');
+                        onOpen(ibMe) {
+                            const elService   = document.querySelector('[data-field="service_id"]');
+                            const elUnitType  = document.querySelector('[data-field="unit_type"]');
+                            const elPrice     = document.querySelector('[data-field="price"]');
 
-                        const fillFields = (serviceId) => {
-                            const selected = services.find(s => String(s.id) === String(serviceId));
-                            if (!selected) return;
+                            const fillFields = (serviceId) => {
+                                const selected = services.find(s => String(s.id) === String(serviceId));
+                                if (!selected) return;
 
-                            if (elUnitType) elUnitType.value = selected.unit_type || '—';
-                            if (elPrice)    elPrice.value    = selected.price || '0.00';
-                        };
+                                if (elUnitType) elUnitType.value = selected.unit_type || '—';
+                                if (elPrice)    elPrice.value    = Number(selected.price || 0).toFixed(2);
+                            };
 
-                        // Auto fill when user selects a service
-                        elService.addEventListener('change', (e) => {
-                            fillFields(e.target.value);
-                        });
-                    },
+                            // Auto fill when user selects a service
+                            elService.addEventListener('change', (e) => {
+                                fillFields(e.target.value);
+                            });
+                        },
 
-                    onConfirm(data, btn, ibMe) {
-                        if (!data.service_id) {
-                            cv_interact.error("Please select a Service");
-                            return;
+                        onConfirm(data, btn, ibMe) {
+                            if (!data.service_id) {
+                                cv_interact.error("Please select a Service");
+                                return;
+                            }
+
+                            const selectedService = services.find(s => String(s.id) === String(data.service_id));
+                            if (!selectedService) return;
+
+                            // ── Important: set item_name for display + item_id null for save ──
+                            const serviceDisplayName = selectedService.service || selectedService.name || `Service #${selectedService.id}`;
+
+                            me.itemsView.addRow({
+                                item_id:   null,
+                                item_name: serviceDisplayName,
+                                type:          'service',
+                                price:     Number(selectedService.price) || 0,
+                                qty:       1,
+                                remarks:   selectedService.service || selectedService.name || 'Service',
+                                unit_type: selectedService.unit_type || '—',
+                                discount:  Number(data.discount) || 0,
+                                discount_type: data.discount_type || 'percent',
+                                tax_rate:  Number(data.tax_rate) || 0
+                            }, 0);
+
+                            cv_interact.success("Service added at the top");
+                            ibMe.close();
                         }
-
-                        const selectedService = services.find(s => String(s.id) === String(data.service_id));
-                        if (!selectedService) return;
-
-                        const newItem = {
-                            item_id:     selectedService.id,
-                            price:       Number(selectedService.price) || 0,
-                            qty:         1,
-                            remarks:     selectedService.service || selectedService.name || 'Service',
-                            unit_type:   selectedService.unit_type || '—',
-                            discount:    Number(data.discount) || 0,
-                            discount_type: data.discount_type || 'percent',
-                            tax_rate:    Number(data.tax_rate) || 0
-                        };
-
-                        cv_interact.success("Service added at the top");
-                        ibMe.close();
-                    }
-                });
-            };
-
-
-
-
-
-
-
+                    });
+                };
 
                 me.itemsView = new ItemsView(
                     me.controls.divItemsView,
@@ -709,10 +727,24 @@ const InvoiceDialog = (() => {
                         columns: [
                             {
                                 name: "item_id",
+                                displayType: "hidden",
+                                readOnly: true,
+                                width: "20px"
+                            },
+                            {
+                                name: "item_name",
                                 transTitle: "titles.Item",
-                                displayType: "select",
+                                displayType: "text",
                                 dataType: "string",
-                                readOnly: true
+                                readOnly: true,
+                                className: "col-item-name"
+                            },
+                            {
+                                name: "type",
+                                transTitle: "titles.Type",
+                                dataType: "text",
+                                readOnly: true,
+                                displayType: "hidden",
                             },
                             {
                                 name: "remarks",
@@ -724,35 +756,54 @@ const InvoiceDialog = (() => {
                                 name: "qty",
                                 transTitle: "titles.Qty",
                                 dataType: "number",
-                                defaultValue: 1,
-                                isNumeric: true
+                                readOnly: true,
                             },
                             {
                                 name: "price",
                                 transTitle: "titles.Price",
-                                dataType: "number", defaultValue: 0,
-                                isNumeric: true
+                                dataType: "number",
+                                readOnly: true,
                             },
                             {
-                                name: "discount", transTitle: "titles.Disc",
-                                isDiscount: true,
+                                name: "start_date",
+                                transTitle: "titles.Start Date",
+                                dataType: "text",
+                                readOnly: true,
+
+                            },
+                            {
+                                name: "end_date",
+                                transTitle: "titles.End Date",
+                                dataType: "text",
+                                readOnly: true,
+                            },
+
+                            {
+                                name: "unit_type",
+                                transTitle: "titles.Charge As",
+                                dataType: "text",
+                                readOnly: true,
+                            },
+                            {
+                                name: "discount",
+                                transTitle: "titles.Disc",
+                                // isDiscount: true,
                                 discountType: ["percent", "amount"],
                                 defaultDiscountType: "percent",
-                                discountBeforeTax: true
+                                discountBeforeTax: true,
+                                readOnly: true,
                             },
                             {
                                 name: "tax_rate",
                                 transTitle: "titles.Tax %",
                                 dataType: "number",
-                                defaultValue: 0,
-                                isNumeric: true
+                                readOnly: true,
                             },
                             {
                                 name: "total",
                                 transTitle: "titles.Total",
                                 dataType: "number",
                                 readOnly: true,
-                                isNumeric: true
                             },
                         ],
                         calc: {
@@ -792,39 +843,6 @@ const InvoiceDialog = (() => {
                     }
                 );
 
-                me.populateItemDropdown = function(retries = 3) {
-                    if (!availableItem || availableItem.length === 0) return;
-
-                    const options = availableItem.map(s => ({
-                        value: s.id,
-                        text: s.service || s.name || s.service_type || `Service #${s.id}`
-                    }));
-
-                    const iv = me.itemsView;
-                    if (typeof iv.setColumnOptions === 'function') {
-                        iv.setColumnOptions('item_id', options);
-                    } else if (typeof iv.setSelectOptions === 'function') {
-                        iv.setSelectOptions('item_id', options);
-                    } else if (typeof iv.setOptionsForColumn === 'function') {
-                        iv.setOptionsForColumn('item_id', options);
-                    } else {
-                        setTimeout(() => {
-                            const selects = me.controls.divItemsView.querySelectorAll('select');
-                            if (selects.length > 0) {
-                                selects.forEach(select => {
-                                    select.innerHTML = '<option value="">-- Select Service --</option>';
-                                    options.forEach(opt => {
-                                        const o = new Option(opt.text, opt.value);
-                                        select.add(o);
-                                    });
-                                });
-                            } else if (retries > 0) {
-                                me.populateItemDropdown(retries - 1);
-                            }
-                        }, 350);
-                    }
-                };
-
                 me.searchTenant = VSSearchInput.init(me.controls.tenant, {
                     type: 'select',
                     prefetch: true,
@@ -837,14 +855,12 @@ const InvoiceDialog = (() => {
                     onSelect: (tenant) => {
                         me._selectedTenantId = tenant.id;
                         vsapi.post(`${main_view.base_url}/prm/tenant/option-tenant-with-contract`, { tenant_id: tenant.id }, {})
-                        // vsapi.post(`${main_view.base_url}/prm/tenant/options-tenant-info`, { tenant_id: tenant.id }, {})
                             .then(res => {
                                  const d = res.data || {};
                                 me.controls.phone_number.value = d.tenant?.phone_number || '';
                                 me.controls.email.value = d.tenant?.email || '';
                                 me._selectedTenantId = tenant.id;
 
-                                //  Store spaces directly for use in rent popup
                                 me._tenantData   = d;
                                 me._tenantSpaces = d.spaces || [];
                                 me._tenantMonths = d.months || [];
@@ -880,13 +896,17 @@ const InvoiceDialog = (() => {
                             ...item,
                             description: item.remarks || item.description || '',
                             amount: amount,
+                            type: item.type || 'service',
                             unit_type: item.unit_type || '—',
                             service_id: item.item_id || null,
 
                             discount: discountValue,
                             special_discount_value: discountValue,
                             special_discount_type: discountType,
-                            tax_rate: parseFloat(item.tax_rate || 0)
+                            tax_rate: parseFloat(item.tax_rate || 0),
+                            start_date:             item.start_date || null,
+                            end_date:               item.end_date   || null,
+
                         };
                     });
                     return { ...header, items: mappedItem, ...totals };

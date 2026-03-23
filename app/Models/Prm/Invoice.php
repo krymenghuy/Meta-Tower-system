@@ -90,17 +90,20 @@ class Invoice extends VSModel
 
             DB::table('invoice_items')->where('invoice_id', $id)->delete();
 
+
             $itemRows = [];
             foreach ($items as $item) {
                 $itemType = strtolower($item['type'] ?? $item['item_type'] ?? 'service');
 
-                \Log::info('Received discount from frontend', [
-                    'item' => $item,
-                    'discount_sent' => $item['discount'] ?? 'NOT SENT',
-                    'special_sent'  => $item['special_discount_value'] ?? 'NOT SENT'
-                ]);
+                    if (!in_array($itemType, ['service', 'rent', 'utility'])) {
+                        \Log::warning("Invalid item type received, forced to 'service'", [
+                            'received' => $item['type'] ?? 'missing',
+                            'item'     => $item
+                        ]);
+                        $itemType = 'service';
+                    }
 
-                if (!in_array($itemType, ['service', 'rend','utility',])) {
+                if (!in_array($itemType, ['service', 'rent','utility',])) {
                     $itemType = 'service';
                 }
 
@@ -109,8 +112,8 @@ class Invoice extends VSModel
                 $price  = (float)($item['price'] ?? 0);
                 $unitType = '-';
 
-                // Auto-load price from contract when type = rend
-                if ($itemType === 'rend' && $itemId) {
+                // Auto-load price from contract when type = rent
+                if ($itemType === 'rent' && $itemId) {
                     $contractPrice = DB::table('contracts')
                         ->where('id', $itemId)
                         ->value('price');
@@ -155,6 +158,7 @@ class Invoice extends VSModel
 
                 $amount = round($finalAmount, 2);
 
+
                 $itemRows[] = [
                     'invoice_id'              => $id,
                     'item_id'                 => $itemId,
@@ -171,6 +175,8 @@ class Invoice extends VSModel
                     'tax_rate'                => $taxRate,
                     'created_at'              => now(),
                     'updated_at'              => now(),
+                    'start_date'              => $item['start_date'] ?? null,
+                    'end_date'                => $item['end_date']   ?? null,
                 ];
             }
 
@@ -293,24 +299,13 @@ class Invoice extends VSModel
                 'i.amount',
                 'i.paid_amount',
                 DB::raw('(i.amount - COALESCE(i.paid_amount, 0)) as balance'),
-                'i.due_date',
-                'i.created_at',
-                'i.updated_at',
                 'i.payment_status_id',
                 'i.remarks',
                 'i.contract_id',
                 't.name as tenant_name',
-                't.legal_name as tenant_legal_name',
-                't.phone_number as tenant_phone',
-                't.email as tenant_email',
-                't.address as tenant_address',
                 'bs.code as space_code',
-                'ct.price as contract_price',
-                'ct.sqm_size as contract_sqm_size',
-                'ct.price_type as price_type_id',
-                'ct.start_date as contract_start_date',
-                'ct.end_date as contract_end_date',
-                'ps.name as payment_status_name',
+                'ct.legal_name as contract_legal_name'
+
             )
             ->first();
 
@@ -325,7 +320,7 @@ class Invoice extends VSModel
             })
             ->leftJoin('contracts as c', function ($join) {
                 $join->on('c.id', '=', 'ii.item_id')
-                     ->where('ii.type', '=', 'rend');
+                     ->where('ii.type', '=', 'rent');
             })
             ->where('ii.invoice_id', $id)
             ->select(
@@ -340,14 +335,31 @@ class Invoice extends VSModel
                 'ii.discount',
                 'ii.special_discount_value',
                 'ii.special_discount_type',
+                'ii.start_date',
+                'ii.end_date',
                 'ii.tax_rate',
-                DB::raw("COALESCE(s.name, c.legal_name, '—') as item_name"),
-                DB::raw("COALESCE(s.unit_type, '—') as unit_type")
+                DB::raw("
+                    COALESCE(
+                        s.name,
+                        CASE
+                            WHEN ii.type = 'rent' THEN CONCAT('Rent - ', ii.remarks)
+                            ELSE ii.remarks
+                        END,
+                        '—'
+                    ) as item_name
+                "),
+                DB::raw("
+                    COALESCE(
+                        NULLIF(ii.unit_type, ''),
+                        '—'
+                    ) as unit_type_display"
+                ),
             )
             ->get();
 
         return $header;
     }
+
     public static function getFormOptions($id, $ss)
     {
         return (object) [
