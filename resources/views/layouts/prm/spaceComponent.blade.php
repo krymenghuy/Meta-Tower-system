@@ -32,7 +32,7 @@
 
 
 
-    <div id="_space_list" class="p-3"></div>
+    <div id="_space_list" class="table-responsive  mt-3 rounded-2"></div>
     <div id="space_container_pagination" class="px-3 d-flex justify-content-start"></div>
 
 </div>

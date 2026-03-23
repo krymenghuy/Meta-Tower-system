@@ -29,7 +29,6 @@ class ServiceRequest extends VSModel
         $branch_id = $ss->branch_id;
 
         // $created = !$id;
-
         $v_rule = [
             'tenant_id'         => '1|number|exists=tenants.id',
             'service_id'        => '1|number|exists=services.id',
@@ -44,28 +43,13 @@ class ServiceRequest extends VSModel
             'start_time'        => '1|time',
             'complete_date'    => '0|date',
         ];
-
         $allowed_chars = ['@', ',', '-', '.', '#', '!', '?', '(', ')', "\n"];
-
-        $res = DBX::validateObject(
-            $arr,
-            $v_rule,
-            1,
-            ['description' => $allowed_chars],
-            $ss->lang ?? 'en',
-            0,
-            null
-        );
-
-
+        $res = DBX::validateObject($arr,$v_rule,1,['description' => $allowed_chars],$ss->lang ?? 'en',0,null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $input = $res->values;
         $total_price = null;
-
-
         if($input['unit_type']=="2" && $input['duration_hours'] == ""){
              return DV::error('Please select value duration hour');
 
@@ -76,22 +60,12 @@ class ServiceRequest extends VSModel
             ? (int) date('Ymd', strtotime($input['request_date']))
             : (int) date('Ymd');
             $save_id = DBX::saveData($ss, 'service_requests', ['id' => $id], $input, [], 1);
-
             if (!$save_id) {
                 return DV::error('Failed to save service request.');
             }
             if ($created) {
-                $prefix = 'S-';  // adjust prefix if needed (S- or S)
-                $codeRes = setOfficialCode(
-                    $branch_id,
-                    'service_request_code_control',
-                    'service_requests',
-                    ['id' => $save_id],
-                    $prefix,
-                    5,
-                    null
-                );
-
+                $prefix = 'REQ-';
+                $codeRes = setOfficialCode($branch_id,'service_request_code_control','service_requests',['id' => $save_id],$prefix,5,null);
                 if (isset($codeRes->code)) {
                     $return_data['code'] = $codeRes->code;
                 } else {
@@ -101,15 +75,11 @@ class ServiceRequest extends VSModel
                     // Still success, but log issue
                 }
             } else {
-
-            Log::info('11111', $input);
-
                 // On update/modify: return existing code
                 $return_data['code'] = DB::table('service_requests')
                     ->where('id', $id)
                     ->value('code') ?? '123';
             }
-
             $message = $created ? 'Service request created successfully' : 'Service request updated successfully';
 
             return DV::success($return_data + ['message' => $message]);
@@ -125,52 +95,47 @@ class ServiceRequest extends VSModel
 
 
 
-    public function getServiceRequestList($arr, $ss = null)
+    public function getServiceRequestList($arr = [], $ss = null)
     {
         $d = (object) $arr;
-        $branch_id         = $ss->branch_id ?? null;
         $search_value      = $d->search_value ?? null;
         $service_type_id   = $d->service_type_id ?? null;
+        $service_id        = $d->service_id ?? null;
         $status_id         = $d->status_id ?? null;
-        $current_page      = (int) ($d->current_page ?? 1);
-        $per_page          = (int) ($d->per_page ?? 10);
-
-        $skip_rows = ($current_page - 1) * $per_page;
-
-        $where_search = "1=1";
-        $where_more   = "1=1";
-
-        if ($branch_id) {
-            $where_more .= ' AND sr.branch_id = ' . (int)$branch_id;
+        $current_page      = $d->current_page ?? 1;
+        $per_page          = $d->per_page ?? 10;
+        if (!is_numeric($current_page) || !is_numeric($per_page)) {
+            return null;
         }
-
+        $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = "1=1";
+        $str_moreWhere = "2=2";
         if ($search_value) {
-            $search = escape_like_str($search_value);
-            $where_search = "(
-                sr.description LIKE '%{$search}%'
-                OR t.name LIKE '%{$search}%'
-                OR bs.code LIKE '%{$search}%'
-            )";
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(sr.code LIKE '%" .$search_value . "%' OR t.name LIKE '%" . $search_value . "%')";
         }
 
         if ($service_type_id) {
-            $where_more .= ' AND s.service_type_id = ' . (int)$service_type_id;
+            $str_moreWhere .= ' AND s.service_type_id = ' . $service_type_id;
         }
 
-        if ($status_id !== null && $status_id !== '' && $status_id !== 'all') {
-            $where_more .= ' AND sr.status_id = ' . (int)$status_id;
+       if ($status_id) {
+            $str_moreWhere .= ' AND sr.status_id =' . $status_id;
+        }
+         if ($service_id) {
+            $str_moreWhere .= ' AND sr.service_id =' . $service_id;
         }
 
-        // $updated_at = DBX::formatTime("sr.updated_at", 'updated_at');
-        // $scheduled_date = DBX::formatTime("sr.scheduled_date");
+        
         $query = DB::table('service_requests as sr')
             ->join('tenants as t', 't.id', '=', 'sr.tenant_id')
             ->join('building_spaces as bs', 'bs.id', '=', 'sr.space_id')
             ->join('services as s', 's.id', '=', 'sr.service_id')
             ->join('service_types as st', 'st.id', '=', 's.service_type_id')
-            ->leftJoin('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
-            ->whereRaw($where_search)
-            ->whereRaw($where_more)
+            ->join('request_statuses as rs', 'rs.id', '=', 'sr.status_id')
+            ->whereRaw($str_search)
+            ->whereRaw($str_moreWhere)
             ->selectRaw("
                 sr.id, sr.code, sr.tenant_id, t.name as tenant_name, t.email as tenant_email, t.phone_number as tenant_phone,
                 sr.space_id, bs.code as space_code,
@@ -187,16 +152,13 @@ class ServiceRequest extends VSModel
             ")
             ->orderBy('sr.id', 'DESC');
 
-        $total = (clone $query)->count('sr.id');
+        $clone_query = clone $query;
+        $count = $clone_query->count('sr.id');
         $rows  = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
-
             $row = setOfficialDates($row,['complete_date','scheduled_date'],['updated_at','created_at as created_at'],[]);
-
-            //$row = setOfficialDates($row,['complete_date'],['updated_at','created_at as created_at','scheduled_date'],[]);
-
-        return new LengthAwarePaginator($rows, $total, $per_page, $current_page);
-    }
+        }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     public function getServiceRequestDetails($id)
