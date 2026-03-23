@@ -81,8 +81,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tenant')->gro
     Route::post('/update-status', [TenantController::class, 'updateMemberStatus']);
     Route::post('/lease-history', [TenantController::class, 'getLeaseHistory']);
     Route::post('/options-active-space', [TenantController::class, 'options_active_space']);
-    // Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
+    Route::post('/options-tenant-info', [TenantController::class, 'option_select_all_tenant_info']);
     Route::post('/option-tenant-with-contract', [TenantController::class, 'getTenantOptionsWithSpacesAndMonths']);
+    Route::post('/option-tenant-with-service', [TenantController::class, 'option_select_all_tenant_info_service']);
 
     Route::post('document/save', [TenantDocumentController::class, 'saveTenantDocument']);
     Route::post('document/list', [TenantDocumentController::class, 'getListDocument']);
@@ -212,7 +213,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
     Route::post('/details', [ExpenseController::class, 'expenseDetails']);
     Route::post('/form-options', [ExpenseController::class, 'getFormOptions']);
     Route::post('/delete', [ExpenseController::class, 'deleteExpense']);
-    
+
 });
 
 
@@ -257,6 +258,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
     Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
     Route::post('/delete', [PurchaseOrderController::class, 'deletePurchaseOrder']);
+    Route::post('/receive', [PurchaseOrderController::class, 'receivePurchaseOrder']);
     Route::post('/details', [PurchaseOrderController::class, 'purchaseOrderDetails']);
     Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
     Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
