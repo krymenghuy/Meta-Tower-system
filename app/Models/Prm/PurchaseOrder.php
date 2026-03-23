@@ -324,6 +324,9 @@ class PurchaseOrder //extends Model
                         $trx_id = $existing_row->id;
                     }
                 }
+                if (empty($item->item_id)) {
+                    return DV::error('Item ID is required to save purchase order item');
+                }
 
                 $input_item = [
                     'trx_id' => $trx_id,
@@ -333,6 +336,7 @@ class PurchaseOrder //extends Model
                     'qty' => $item->qty ?? 0,
                     'po_id' => $po_id
                 ];
+
 
                 $po_item = self::savePoItem($ss, $input_item, $po_id);
 
@@ -480,6 +484,128 @@ function getItemsByPurchaseOrder($data,$ss){
       }
       return $rows;
   }
+
+    /**
+     * Receive quantity on selected purchase order lines (partial or full).
+     * Reduces line qty by received amount; line is fully received (status_id = 2) when remaining qty is 0.
+     * When every line is fully received, the purchase order header is set to received (status_id = 2).
+     *
+     * @param array $payload Expects receive_items: [ ['id' => po_line_id, 'qty' => float], ... ]
+     *                        Legacy: po_item_ids: int[] receives full remaining qty per line.
+     */
+    public function receivePurchaseOrder($id, $ss = null, $payload = [])
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = (int) $id;
+        if ($id <= 0) {
+            return DV::error('Invalid purchase order ID.');
+        }
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        if ((int) $po->status_id === 2) {
+            return DV::error('This purchase order is already fully received.');
+        }
+        $itemCount = DB::table('purchase_order_items')->where('po_id', $id)->count();
+        if ($itemCount === 0) {
+            return DV::error('Purchase order has no line items to receive.');
+        }
+
+        $now = getNowTime();
+        $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+
+        $receiveItems = $payload['receive_items'] ?? null;
+        if (is_array($receiveItems) && count($receiveItems) > 0) {
+            $seenLineIds = [];
+            foreach ($receiveItems as $row) {
+                $row = is_object($row) ? (array) $row : $row;
+                $lineId = (int) ($row['id'] ?? $row['po_item_id'] ?? 0);
+                $recvQty = (float) ($row['qty'] ?? 0);
+                if ($lineId <= 0) {
+                    return DV::error('Invalid purchase order line id.');
+                }
+                if (isset($seenLineIds[$lineId])) {
+                    return DV::error('Duplicate purchase order line in receive list.');
+                }
+                $seenLineIds[$lineId] = true;
+                if ($recvQty <= 0) {
+                    return DV::error('Received quantity must be greater than zero.');
+                }
+                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
+                if (!$pi) {
+                    return DV::error('Purchase order line not found.');
+                }
+                if ((int) $pi->status_id === 2) {
+                    return DV::error('Line #' . $lineId . ' is already fully received.');
+                }
+                $orderQty = (float) $pi->qty;
+                if ($recvQty > $orderQty + 0.0000001) {
+                    return DV::error('Received quantity cannot exceed remaining order quantity on a line.');
+                }
+                $unitPrice = (float) $pi->unit_price;
+                $remaining = $orderQty - $recvQty;
+                if ($remaining <= 0.0000001) {
+                    DB::table('purchase_order_items')->where('id', $lineId)->update([
+                        'qty' => 0,
+                        'total_price' => 0,
+                        'status_id' => 2,
+                    ]);
+                } else {
+                    $newTotal = round($remaining * $unitPrice, 2);
+                    DB::table('purchase_order_items')->where('id', $lineId)->update([
+                        'qty' => $remaining,
+                        'total_price' => $newTotal,
+                        'status_id' => 1,
+                    ]);
+                }
+            }
+        } else {
+            $rawIds = $payload['po_item_ids'] ?? [];
+            $lineIds = is_array($rawIds)
+                ? array_values(array_unique(array_filter(array_map('intval', $rawIds))))
+                : [];
+            if (count($lineIds) === 0) {
+                return DV::error('Select at least one line to receive.');
+            }
+            $validIds = DB::table('purchase_order_items')
+                ->where('po_id', $id)
+                ->whereIn('id', $lineIds)
+                ->pluck('id')
+                ->all();
+            if (count($validIds) !== count($lineIds)) {
+                return DV::error('Invalid purchase order line selection.');
+            }
+            foreach ($lineIds as $lineId) {
+                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
+                if (!$pi || (float) $pi->qty <= 0) {
+                    continue;
+                }
+                DB::table('purchase_order_items')->where('id', $lineId)->update([
+                    'qty' => 0,
+                    'total_price' => 0,
+                    'status_id' => 2,
+                ]);
+            }
+        }
+
+        $pending = DB::table('purchase_order_items')
+            ->where('po_id', $id)
+            ->where(function ($q) {
+                $q->whereNull('status_id')->orWhere('status_id', '!=', 2);
+            })
+            ->count();
+
+        if ($pending === 0) {
+            DB::table('purchase_orders')->where('id', $id)->update([
+                'status_id' => 2,
+                'updated_at' => $now,
+                'update_user' => $updateUser,
+            ]);
+        }
+
+        return DV::success(['message' => 'Receive recorded successfully.']);
+    }
 
     /**
      * Delete a purchase order and its line items.

@@ -11,6 +11,7 @@ var PurchaseOrdersComponent = (() => {
     mThis.elFilter_status = mThis.self.querySelector('#_po_status_id');
     mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
+    let ReceivePurchaseOrderDialog = null;
     let _currentEditPoId = null;
 
     const formatCurrency = (amount) => {
@@ -33,6 +34,747 @@ var PurchaseOrdersComponent = (() => {
             return `${v} %`;
         }
         return formatCurrency(discountValue);
+    };
+
+    /** At least one line must have a real catalog item (empty default row does not count). */
+    const hasValidPurchaseOrderLineItems = (items) => {
+        if (!Array.isArray(items) || items.length === 0) return false;
+        return items.some((row) => {
+            const id = row?.item_id ?? row?.id;
+            if (id === null || id === undefined || id === '') return false;
+            const n = Number(id);
+            return !Number.isNaN(n) && n > 0;
+        });
+    };
+
+    /** Detect ItemsView row-delete column (trash icon / action-only cell) and remove it from thead+tbody. */
+    const stripReceiveItemsDeleteColumn = (table) => {
+        const theadRow = table.querySelector('thead tr');
+        const tbody = table.querySelector('tbody');
+        if (!theadRow || !tbody) return;
+        const firstTr = tbody.querySelector('tr');
+        if (!firstTr) return;
+        const tds = firstTr.querySelectorAll('td');
+        if (!tds.length) return;
+
+        const looksLikeDeleteCell = (td) => {
+            if (!td) return false;
+            const h = (td.innerHTML || '').toLowerCase();
+            if (td.querySelector('.fa-trash')) return true;
+            if (td.querySelector('.fa-trash-alt')) return true;
+            if (td.querySelector('.fa-trash-can')) return true;
+            if (td.querySelector('.bi-trash')) return true;
+            if (td.querySelector('[class*="fa-trash"]')) return true;
+            if (td.querySelector('[class*="trash"]')) return true;
+            if (td.querySelector('i[class*="Trash"]')) return true;
+            if (h.includes('trash') || h.includes('delete-row') || h.includes('remove-line')) return true;
+            if (td.querySelector('[title*="elete" i], [aria-label*="elete" i]')) return true;
+            return false;
+        };
+
+        const hasEditableField = (td) => {
+            if (!td) return false;
+            return !!td.querySelector('input:not([type="hidden"]), select, textarea');
+        };
+
+        let deleteIdx = -1;
+        tds.forEach((td, i) => {
+            if (looksLikeDeleteCell(td)) deleteIdx = i;
+        });
+
+        if (deleteIdx < 0) {
+            const last = tds[tds.length - 1];
+            if (last && last.querySelector) {
+                if (!hasEditableField(last) && (looksLikeDeleteCell(last) || last.querySelector('a,button,i,svg'))) {
+                    deleteIdx = tds.length - 1;
+                }
+            }
+        }
+
+        if (deleteIdx < 0) {
+            const n = tds.length;
+            for (let i = n - 1; i >= 0; i--) {
+                const td = tds[i];
+                if (looksLikeDeleteCell(td)) {
+                    deleteIdx = i;
+                    break;
+                }
+            }
+        }
+
+        if (deleteIdx < 0) return;
+
+        tbody.querySelectorAll('tr').forEach((tr) => {
+            const cells = tr.querySelectorAll('td');
+            if (cells[deleteIdx]) cells[deleteIdx].remove();
+        });
+        const thCells = theadRow.querySelectorAll('th');
+        if (thCells[deleteIdx]) thCells[deleteIdx].remove();
+    };
+
+    /** Strip ItemsView row-delete column and append Receive checkboxes (last column). */
+    const applyReceiveCheckboxColumn = (me, rows) => {
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
+        if (!root || !Array.isArray(rows) || !rows.length) return;
+        const table = root.querySelector('table');
+        if (!table) return;
+        const theadRow = table.querySelector('thead tr');
+        const tbody = table.querySelector('tbody');
+        if (!theadRow || !tbody) return;
+
+        theadRow.querySelectorAll('th[data-receive-po-col]').forEach((el) => el.remove());
+        tbody.querySelectorAll('td[data-receive-po-col]').forEach((el) => el.remove());
+
+        stripReceiveItemsDeleteColumn(table);
+
+        const th = document.createElement('th');
+        th.className = 'text-center align-middle';
+        th.setAttribute('data-receive-po-col', '1');
+        th.style.textAlign = 'center';
+        th.textContent = 'Receive';
+        theadRow.appendChild(th);
+
+        const byId = new Map(rows.map((r) => [String(r.id), r]));
+        const items = (me.receiveItemsView && me.receiveItemsView.getItems)
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
+        const trList = tbody.querySelectorAll('tr');
+
+        const resolveRowMeta = (tr, idx) => {
+            const line = items[idx];
+            let lid = '';
+            if (line) {
+                if (line.id != null && line.id !== '') lid = String(line.id);
+                else if (line.trx_id != null && line.trx_id !== '') lid = String(line.trx_id);
+            }
+            if (lid && byId.has(lid)) return byId.get(lid);
+            if (lid) {
+                const found = rows.find((r) => String(r.id) === lid);
+                if (found) return found;
+            }
+            if (line && line.item_id != null && String(line.item_id) !== '') {
+                const byItem = rows.filter((r) => String(r.item_id) === String(line.item_id));
+                if (byItem.length === 1) return byItem[0];
+            }
+            if (trList.length === rows.length) return rows[idx] || null;
+            return null;
+        };
+
+        trList.forEach((tr, idx) => {
+            const rowMeta = resolveRowMeta(tr, idx);
+            if (!rowMeta || !rowMeta.id) return;
+
+            const td = document.createElement('td');
+            td.className = 'text-center align-middle';
+            td.setAttribute('data-receive-po-col', '1');
+            td.style.textAlign = 'center';
+            const linePending = !rowMeta.status_id || Number(rowMeta.status_id) === 1;
+            const orderQty = Math.max(0, Number(rowMeta.qty) || 0);
+            const unitPrice = Number(rowMeta.unit_price) || 0;
+
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'form-check-input receive-po-line-cb';
+            cb.dataset.poItemId = String(rowMeta.id);
+            cb.checked = false;
+            cb.disabled = !linePending || orderQty <= 0;
+
+            const qtyWrap = document.createElement('div');
+            qtyWrap.className = 'receive-po-qty-wrap';
+            qtyWrap.setAttribute('aria-hidden', 'true');
+
+            const qtyLabel = document.createElement('span');
+            qtyLabel.className = 'receive-po-qty-label';
+            qtyLabel.textContent = 'QTY';
+
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.className = 'receive-po-qty-input';
+            qtyInput.min = '0.01';
+            qtyInput.step = 'any';
+            qtyInput.value = orderQty > 0 ? String(orderQty) : '1';
+            qtyInput.max = orderQty > 0 ? String(orderQty) : '';
+            qtyInput.placeholder = '—';
+            qtyInput.title = orderQty > 0 ? `Received qty (max ${orderQty})` : '';
+            qtyInput.disabled = !linePending || orderQty <= 0;
+            qtyInput.dataset.unitPrice = String(unitPrice);
+
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'receive-po-input-group';
+            inputGroup.appendChild(qtyLabel);
+            inputGroup.appendChild(qtyInput);
+            qtyWrap.appendChild(inputGroup);
+
+            const wrapCb = document.createElement('div');
+            wrapCb.className = 'receive-po-chk-wrap';
+            wrapCb.appendChild(cb);
+
+            const toolbar = document.createElement('div');
+            toolbar.className = 'receive-po-receive-toolbar';
+            toolbar.appendChild(wrapCb);
+            toolbar.appendChild(qtyWrap);
+
+            const cellCard = document.createElement('div');
+            cellCard.className = 'receive-po-cell-card';
+            cellCard.appendChild(toolbar);
+
+            const bumpReceiveTotals = () => {
+                if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+            };
+
+            cb.addEventListener('change', () => {
+                if (!linePending) return;
+                if (cb.checked) {
+                    qtyWrap.classList.add('is-open');
+                    qtyWrap.setAttribute('aria-hidden', 'false');
+                    if (orderQty > 0) {
+                        qtyInput.value = String(orderQty);
+                        qtyInput.max = String(orderQty);
+                    }
+                } else {
+                    qtyWrap.classList.remove('is-open');
+                    qtyWrap.setAttribute('aria-hidden', 'true');
+                }
+                bumpReceiveTotals();
+            });
+
+            qtyInput.addEventListener('input', () => {
+                bumpReceiveTotals();
+            });
+
+            td.appendChild(cellCard);
+            tr.appendChild(td);
+        });
+    };
+
+    const lockReceivePurchaseOrderFields = (me) => {
+        const root = me.divModal;
+        if (!root) return;
+        root.querySelectorAll('.data-input').forEach((el) => {
+            if (el.closest && el.closest('#receive_purchase_item_list')) return;
+            if (el.tagName === 'SELECT') el.disabled = true;
+            else if (el.type !== 'hidden') el.readOnly = true;
+        });
+        const v = root.querySelector('[name="vendor"]');
+        if (v) v.readOnly = true;
+        const itemRoot = root.querySelector('#receive_purchase_item_list');
+        if (itemRoot) {
+            itemRoot.querySelectorAll('input:not(.receive-po-line-cb):not(.receive-po-qty-input), select, textarea').forEach((el) => {
+                el.disabled = true;
+            });
+        }
+    };
+
+    const loadReceivePurchaseOrder = (me) => {
+        const poId = me.dataOptions?.id;
+        if (!poId) return Promise.resolve(null);
+        if (!me.receiveItemsView || typeof me.receiveItemsView.setData !== 'function') {
+            return Promise.reject(new Error('Receive items view is not initialized'));
+        }
+        return Promise.all([
+            vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, { id: poId }, null, false),
+            vsapi.call(`${main_view.base_url}/prm/purchase/order/items-by-po`, { id: poId, po_id: poId }, null, false)
+        ])
+            .then(([formRes, itemsRes]) => {
+                if (!formRes || formRes.status_code !== 200) {
+                    throw new Error(formRes?.error_message || 'Failed to load purchase order details');
+                }
+                if (!itemsRes || itemsRes.status_code !== 200) {
+                    throw new Error(itemsRes?.error_message || 'Failed to load purchase order items');
+                }
+                const formData = formRes.data || {};
+                const poDetails = formData.po_details || {};
+                const vendors = formData.vendors || [];
+                const vendorId = poDetails.vendor_id;
+                const vendor = vendors.find(v => Number(v.id) === Number(vendorId));
+
+                if (me.controls.vendor_id) me.controls.vendor_id.value = vendorId || '';
+                if (me.controls.vendor) me.controls.vendor.value = vendor ? (vendor.vendor || vendor.name || vendor.vendor_name || '') : '';
+                if (me.controls.po_date) me.controls.po_date.value = poDetails.po_date || '';
+                if (me.controls.po_number) me.controls.po_number.value = poDetails.po_number || '';
+                if (me.controls.discount_value) me.controls.discount_value.value = poDetails.discount_value ?? 0;
+                if (me.controls.discount_type) me.controls.discount_type.value = poDetails.discount_type || 'percent';
+
+                me._selectedVendorId = vendorId;
+                if (vendorId && (me.controls.phone_number || me.controls.address)) {
+                    vsapi.post(`${main_view.base_url}/prm/vendor/options-vendor-info`, { vendor_id: vendorId }, {})
+                        .then(r => {
+                            const d = r.data || {};
+                            const v = d.vendor || {};
+                            if (me.controls.phone_number) me.controls.phone_number.value = v.phone_number || '';
+                            if (me.controls.address) me.controls.address.value = v.address || '';
+                        })
+                        .catch(() => {});
+                }
+
+                if (me._itemOptions && me.receiveItemsView?.setSelectOptions) {
+                    const normalizedItemOptions = (me._itemOptions || []).map(o => {
+                        const iv = o?.id ?? o?.value ?? o?.item_id;
+                        const lb = o?.name ?? o?.label ?? o?.item_name;
+                        return { id: iv, value: iv, name: lb, label: lb };
+                    });
+                    me.receiveItemsView.setSelectOptions('item_id', normalizedItemOptions, null);
+                }
+
+                const raw = itemsRes.data;
+                const items = Array.isArray(raw) ? raw : (Array.isArray(raw?.items) ? raw.items : (Array.isArray(raw?.data) ? raw.data : []));
+                const unitByName = { pcs: 1, kg: 2, box: 3, meter: 4 };
+
+                const rows = items.map(it => {
+                    const unitNum = Number(it.unit);
+                    const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
+                    return {
+                        id: it.id,
+                        status_id: it.status_id,
+                        item_id: it.item_id,
+                        qty: it.qty != null ? Number(it.qty) : 0,
+                        unit: unitValue,
+                        unit_price: it.unit_price || 0,
+                        total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
+                        code: it.code || ''
+                    };
+                });
+
+                // Use setData([]) not setData(null): null leaves a blank template row so row index no longer matches API lines.
+                if (!rows.length) {
+                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData([]);
+                } else if (typeof me.receiveItemsView.addRow === 'function') {
+                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData([]);
+                    rows.forEach(r => me.receiveItemsView.addRow(r));
+                } else {
+                    me.receiveItemsView.setData(rows);
+                }
+                if (typeof me.receiveItemsView.render === 'function') me.receiveItemsView.render();
+                if (typeof me.receiveItemsView.refresh === 'function') me.receiveItemsView.refresh();
+                if (typeof me.receiveItemsView.draw === 'function') me.receiveItemsView.draw();
+
+                setTimeout(() => {
+                    applyReceiveCheckboxColumn(me, rows);
+                    lockReceivePurchaseOrderFields(me);
+                    if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
+                }, 100);
+
+                me._receivePoStatusId = poDetails.status_id;
+                if (!items.length) {
+                    cv_interact.warning('This purchase order has no items.');
+                }
+                return items;
+            });
+    };
+
+    const showReceivePurchaseOrderDialog = (op) => {
+        ReceivePurchaseOrderDialog = ReceivePurchaseOrderDialog || new GeneralDialog({
+            cssClass: 'modal-xl vs-modal',
+            backdrop: 'static',
+            override: {
+                setData: (dlg, data) => {
+                    data = data || {};
+                    const rootEl = dlg?.divModal;
+                    if (!rootEl || !rootEl.querySelectorAll) return;
+                    rootEl.querySelectorAll('.data-input').forEach((el) => {
+                        if (el.closest && el.closest('#receive_purchase_item_list')) return;
+                        const field = el.dataset?.field || el.getAttribute('name');
+                        if (!field) return;
+                        const val = data[field] ?? '';
+                        if (el.tagName === 'SELECT') {
+                            el.value = val;
+                            el.dispatchEvent(new Event('change'));
+                        } else if (el.tagName === 'IMG') {
+                            el.setAttribute('src', val);
+                        } else {
+                            el.value = val;
+                        }
+                    });
+                },
+            },
+            createContent: () => `
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">Vendor</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input
+                            name="vendor"
+                            class="form-control flex-grow-1"
+                            placeholder=""
+                            readonly>
+                        <input type="hidden"
+                            name="vendor_id"
+                            class="data-input"
+                            data-field="vendor_id">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">Phone</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input type="text"
+                            name="phone_number"
+                            class="data-input form-control flex-grow-1"
+                            data-field="phone_number"
+                            placeholder=""
+                            readonly>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">Address</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input type="text"
+                            name="address"
+                            class="data-input form-control flex-grow-1"
+                            data-field="address"
+                            placeholder=""
+                            readonly>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                </div>
+                <div class="col-md-3 mt-3 mt-md-0">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="fw-bold" style="min-width:90px;">PO Date</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input data-type="date"
+                            name="po_date"
+                            class="data-input form-control flex-grow-1"
+                            data-field="po_date"
+                            readonly>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="fw-bold" style="min-width:90px;">PO Number</span>
+                        <span class="mx-2 fw-bold">:</span>
+                        <input type="text"
+                            name="po_number"
+                            class="data-input form-control flex-grow-1"
+                            data-field="po_number"
+                            placeholder=""
+                            readonly>
+                    </div>
+                </div>
+                <div class="col-lg-12 mt-3 p-3" style="background-color:#ebebeb;">
+                    <div id="receive_po_loading" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="small text-muted mt-2">Loading purchase order…</div>
+                    </div>
+                    <div id="receive_po_content_wrap" style="display:none;">
+                        <style>
+                            #receive_purchase_item_list td[data-receive-po-col],
+                            #receive_purchase_item_list th[data-receive-po-col] {
+                                text-align: center !important;
+                                vertical-align: middle !important;
+                            }
+                            #receive_purchase_item_list th[data-receive-po-col] {
+                                min-width: 148px;
+                            }
+                            #receive_purchase_item_list td[data-receive-po-col] {
+                                padding-left: 0.35rem !important;
+                                padding-right: 0.35rem !important;
+                            }
+                            #receive_purchase_item_list .receive-po-cell-card {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                width: 100%;
+                                margin: 0 auto;
+                            }
+                            #receive_purchase_item_list .receive-po-receive-toolbar {
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 0.55rem;
+                                flex-wrap: nowrap;
+                                padding: 0.35rem 0.45rem;
+                                background: linear-gradient(165deg, #f8fafc 0%, #f1f5f9 100%);
+                                border: 1px solid #e2e8f0;
+                                border-radius: 0.5rem;
+                                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+                            }
+                            #receive_purchase_item_list .receive-po-chk-wrap {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-shrink: 0;
+                                width: 1.15rem;
+                                height: 1.15rem;
+                            }
+                            #receive_purchase_item_list .receive-po-line-cb {
+                                float: none !important;
+                                margin: 0 !important;
+                                cursor: pointer;
+                            }
+                            #receive_purchase_item_list .receive-po-qty-wrap {
+                                display: none;
+                                flex-direction: column;
+                                align-items: stretch;
+                                gap: 0.2rem;
+                            }
+                            #receive_purchase_item_list .receive-po-qty-wrap.is-open {
+                                display: inline-flex !important;
+                            }
+                            #receive_purchase_item_list .receive-po-input-group {
+                                display: flex;
+                                align-items: stretch;
+                                border-radius: 0.35rem;
+                                border: 1px solid #cbd5e1;
+                                overflow: hidden;
+                                background: #fff;
+                                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+                            }
+                            #receive_purchase_item_list .receive-po-qty-label {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background: linear-gradient(180deg, #eef2f7 0%, #e2e8f0 100%);
+                                border-right: 1px solid #cbd5e1;
+                                padding: 0 0.5rem;
+                                font-size: 0.62rem;
+                                font-weight: 700;
+                                color: #475569;
+                                text-transform: uppercase;
+                                letter-spacing: 0.08em;
+                                white-space: nowrap;
+                                user-select: none;
+                            }
+                            #receive_purchase_item_list .receive-po-qty-input {
+                                width: 4rem !important;
+                                min-width: 3rem;
+                                max-width: 6rem;
+                                text-align: center;
+                                font-size: 0.875rem;
+                                font-weight: 600;
+                                font-variant-numeric: tabular-nums;
+                                line-height: 1.2;
+                                padding: 0.3rem 0.4rem;
+                                border: none !important;
+                                margin: 0 !important;
+                                background: #fff;
+                                color: #0f172a;
+                            }
+                            #receive_purchase_item_list .receive-po-qty-input:focus {
+                                outline: none !important;
+                                background: #f8fafc;
+                                box-shadow: none !important;
+                            }
+                            #receive_purchase_item_list .receive-po-input-group:focus-within {
+                                border-color: #94a3b8;
+                                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+                            }
+                        </style>
+                        <div id="receive_purchase_item_list" class="purchase-item-list"></div>
+                    </div>
+                </div>
+                <div class="col-lg-12 mt-3 d-flex justify-content-end">
+                    <div class="p-3 rounded-3 shadow-sm border" style="background-color:#fff; min-width:280px;">
+                        <div class="d-flex align-items-center mb-2">
+                            <span id="receive_po_subtotal_label" class="fw-bold" style="min-width:90px;">Sub Total</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="receive_po_subtotal_display" class="ms-2">$ 0.00</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Discount</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <input type="number" name="discount_value" class="data-input form-control ms-2" data-field="discount_value" style="width:80px" value="0" min="0" step="0.01" placeholder="0" readonly>
+                            <select name="discount_type" class="data-input form-control ms-1" data-field="discount_type" style="width:60px" disabled>
+                                <option value="percent">%</option>
+                                <option value="amount">$</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Tax</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="receive_po_tax_display" class="ms-2">$ 0.00</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fw-bold" style="min-width:90px;">Total</span>
+                            <span class="mx-2 fw-bold">:</span>
+                            <span id="receive_po_total_display" class="ms-2 fw-bold">$ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `,
+            contentCreated: (me) => {
+                me.receiveItemsView = new ItemsView('receive_purchase_item_list', {
+                    columns: [
+                        { name: 'item_id', transTitle: 'titles.Item', displayType: 'select', readOnly: true },
+                        { name: 'qty', transTitle: 'titles.Qty', dataType: 'number', defaultValue: 1, isNumeric: true, readOnly: true },
+                        { name: 'unit', transTitle: 'titles.Unit', displayType: 'select', readOnly: true },
+                        { name: 'unit_price', transTitle: 'titles.UnitPrice', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true },
+                        { name: 'total_price', transTitle: 'titles.TotalPrice', readOnly: true, dataType: 'number', isNumeric: true }
+                    ],
+                    calc: { mode: 'auto', qtyField: 'qty', priceField: 'unit_price', totalField: 'total_price', currencyPrecision: 2 },
+                    totalSummary: { container: '#sum', showTax: false, allowDiscount: false, currency: 'USD' },
+                    validateColumns: {},
+                    tableClass: 'table',
+                    showColumnHeaders: true,
+                    showAddLineButton: false,
+                    addLineButtonText: 'Add Item',
+                    showDeleteButton: false,
+                    showRowDeleteButton: false,
+                    allowDeleteRow: false
+                });
+                me.receiveItemsView.setSelectOptions('unit', [
+                    { value: 1, label: 'pcs' },
+                    { value: 2, label: 'kg' },
+                    { value: 3, label: 'box' },
+                    { value: 4, label: 'meter' },
+                ], '', { value: 'id', label: 'Select unit' });
+
+                me.updateReceiveTotals = () => {
+                    if (!me.divModal || !me.receiveItemsView) return;
+                    const itemRoot = me.divModal.querySelector('#receive_purchase_item_list');
+                    let subTotal = 0;
+                    let useReceiveCalc = false;
+                    if (itemRoot) {
+                        itemRoot.querySelectorAll('.receive-po-line-cb:checked:not(:disabled)').forEach((cbox) => {
+                            useReceiveCalc = true;
+                            const qtyIn = cbox.closest('td')?.querySelector('.receive-po-qty-input');
+                            const q = parseFloat(qtyIn?.value || '0');
+                            const u = parseFloat(qtyIn?.dataset.unitPrice || '0');
+                            if (Number.isFinite(q) && Number.isFinite(u) && q > 0) {
+                                subTotal += q * u;
+                            }
+                        });
+                    }
+                    if (!useReceiveCalc) {
+                        const items = me.receiveItemsView.getItems ? me.receiveItemsView.getItems() : [];
+                        subTotal = 0;
+                        if (Array.isArray(items)) {
+                            items.forEach(it => {
+                                const t = Number(it.total_price) || (Number(it.qty) * Number(it.unit_price || 0));
+                                subTotal += t;
+                            });
+                        }
+                    }
+                    const discountEl = me.controls.discount_value || me.divModal.querySelector('[data-field="discount_value"]');
+                    const discountTypeEl = me.controls.discount_type || me.divModal.querySelector('[data-field="discount_type"]');
+                    const discountVal = Number(discountEl?.value) || 0;
+                    const discountType = (discountTypeEl?.value || 'percent') === 'percent' ? 'percent' : 'amount';
+                    const discountAmount = discountType === 'percent' ? (subTotal * discountVal / 100) : discountVal;
+                    const afterDiscount = Math.max(0, subTotal - discountAmount);
+                    const taxAmount = 0;
+                    const total = afterDiscount + taxAmount;
+                    const subtotalEl = me.divModal.querySelector('#receive_po_subtotal_display');
+                    const subtotalLabel = me.divModal.querySelector('#receive_po_subtotal_label');
+                    const taxEl = me.divModal.querySelector('#receive_po_tax_display');
+                    const totalEl = me.divModal.querySelector('#receive_po_total_display');
+                    if (subtotalLabel) {
+                        subtotalLabel.textContent = useReceiveCalc ? 'Receive total' : 'Sub Total';
+                    }
+                    if (subtotalEl) {
+                        subtotalEl.textContent = formatCurrency(subTotal);
+                        subtotalEl.title = useReceiveCalc
+                            ? 'Sum of (receive qty × unit price) for selected lines'
+                            : 'Sum of line totals on this purchase order';
+                    }
+                    if (taxEl) taxEl.textContent = formatCurrency(taxAmount);
+                    if (totalEl) totalEl.textContent = formatCurrency(total);
+                };
+            },
+            onPrepareForm: (me, data) => {
+                const raw = data.item || [];
+                me._itemOptions = raw.map(o => ({
+                    ...o,
+                    id: o.id ?? o.value ?? o.item_id,
+                    name: o.name ?? o.label ?? o.item_name
+                }));
+                if (me.receiveItemsView && me.receiveItemsView.setSelectOptions) {
+                    me.receiveItemsView.setSelectOptions('item_id', me._itemOptions, null);
+                }
+            },
+            onShow: (me) => {
+                const titleEl = me.divModal && me.divModal.querySelector('.modal-title');
+                if (titleEl) {
+                    titleEl.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Receive Purchase Order</h2>';
+                }
+                const loadingEl = me.divModal.querySelector('#receive_po_loading');
+                const wrap = me.divModal.querySelector('#receive_po_content_wrap');
+                if (loadingEl) loadingEl.style.display = '';
+                if (wrap) wrap.style.display = 'none';
+
+                const tryLoad = (attempt = 0) => {
+                    if (!me.receiveItemsView || typeof me.receiveItemsView.setData !== 'function') {
+                        if (attempt < 60) return setTimeout(() => tryLoad(attempt + 1), 50);
+                        return cv_interact.error('Receive items view is not ready.');
+                    }
+                    loadReceivePurchaseOrder(me)
+                        .then(() => {
+                            if (loadingEl) loadingEl.style.display = 'none';
+                            if (wrap) wrap.style.display = '';
+                        })
+                        .catch((err) => {
+                            cv_interact.error(err?.message || 'Failed to load purchase order.');
+                            if (loadingEl) loadingEl.style.display = 'none';
+                        });
+                };
+                setTimeout(() => tryLoad(0), 0);
+            },
+            buttons: [
+                {
+                    label: 'Cancel',
+                    cssClass: 'btn btn-warning',
+                    click: (me) => { me.hide(false); }
+                },
+                {
+                    label: '<span>Confirm receive</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const poId = me.dataOptions?.id;
+                        if (!poId) {
+                            return cv_interact.error('Invalid purchase order.');
+                        }
+                        if (Number(me._receivePoStatusId) === 2) {
+                            return cv_interact.warning('This purchase order is already fully received.');
+                        }
+                        const root = me.divModal.querySelector('#receive_purchase_item_list');
+                        const receive_items = [];
+                        if (root) {
+                            const cbs = root.querySelectorAll('.receive-po-line-cb:checked:not(:disabled)');
+                            for (let i = 0; i < cbs.length; i++) {
+                                const cb = cbs[i];
+                                const id = Number(cb.dataset.poItemId);
+                                if (Number.isNaN(id) || id <= 0) continue;
+                                const cell = cb.closest('td');
+                                const qtyIn = cell ? cell.querySelector('.receive-po-qty-input') : null;
+                                const raw = qtyIn ? String(qtyIn.value).trim() : '';
+                                const qty = parseFloat(raw);
+                                if (!Number.isFinite(qty) || qty <= 0) {
+                                    return cv_interact.error('Enter a valid received quantity for each selected line.');
+                                }
+                                const maxQ = qtyIn && qtyIn.max !== '' ? parseFloat(qtyIn.max) : null;
+                                if (maxQ != null && Number.isFinite(maxQ) && qty > maxQ + 0.0000001) {
+                                    return cv_interact.error('Received quantity cannot exceed the remaining order quantity.');
+                                }
+                                receive_items.push({ id, qty });
+                            }
+                        }
+                        if (receive_items.length < 1) {
+                            return cv_interact.error('Select at least one line and enter quantity to receive.');
+                        }
+                        vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, {
+                            id: poId,
+                            receive_items
+                        }, btn).then((res) => {
+                            if (res.status_code === 200) {
+                                cv_interact.success(res.message || 'Purchase order received.');
+                                me.hide(true);
+                                if (mThis.PoListView && mThis.getFilterData) {
+                                    mThis.PoListView.showPage(mThis.getFilterData());
+                                }
+                            } else {
+                                cv_interact.warning(res.error_message || 'Could not receive purchase order.');
+                            }
+                        });
+                    }
+                }
+            ],
+            prepareFormOptions: {
+                createTitle: 'Receive Purchase Order',
+                modifyTitle: 'Receive Purchase Order',
+                targetProp: 'item_details',
+                api: {
+                    endpoint: `${main_view.base_url}/prm/item/form-options`,
+                    params: (dataOptions) => ({ owner_id: dataOptions?.owner_id })
+                }
+            }
+        });
+        ReceivePurchaseOrderDialog.show(op);
     };
 
 //     mThis.itemColumns = [
@@ -309,6 +1051,12 @@ var PurchaseOrdersComponent = (() => {
                     cssClass: "border-bottom pb-2",
                     name: "delete_purchase_order"
                 },
+                {
+                    html: '<span class="ps-2" vslang="titles.Receive Purchase Order"></span>',
+                    icon: `<i class="fa-solid fa-box-open fs-5 text-primary"></i>`,
+                    cssClass: '',
+                    name: "receive_purchase_order"
+                },
             ],
 
             onClick: (menuLink, id, name) => {
@@ -319,6 +1067,10 @@ var PurchaseOrdersComponent = (() => {
                     }
                     case 'delete_purchase_order': {
                         mThis.deletePurchaseOrder(id, menuLink);
+                        break;
+                    }
+                    case 'receive_purchase_order': {
+                        mThis.receivePurchaseOrder(id, menuLink);
                         break;
                     }
                     case 'modify_vendor': {
@@ -417,6 +1169,10 @@ var PurchaseOrdersComponent = (() => {
 
         showPurchaseOrderDialog(op);
     }
+    mThis.receivePurchaseOrder = (id, menuLink) => {
+        showReceivePurchaseOrderDialog({ id, btn: menuLink });
+    };
+
     mThis.deletePurchaseOrder = (id, menuLink) => {
         cv_interact.confirm('Delete this Purchase Order?', {
             transTitle: 'Delete Purchase Order',
@@ -895,8 +1651,15 @@ var PurchaseOrdersComponent = (() => {
              cssClass:"btn btn-primary",
              click:(me) =>{
                   let p = me.getData();
-                  p.items = me.purchaseItemsView.getItems();
+                  if (!me.purchaseItemsView || typeof me.purchaseItemsView.getItems !== 'function') {
+                      return cv_interact.error('Purchase items are not ready. Please try again.');
+                  }
+                  p.items = me.purchaseItemsView.getItems() || [];
+                  if (!hasValidPurchaseOrderLineItems(p.items)) {
+                      return cv_interact.error('Please select at least one item before saving the purchase order.');
+                  }
                   p.vendor_id = me._selectedVendorId;
+
                   const savePoId = _currentEditPoId ?? me._editPoId ?? (me.dataOptions && me.dataOptions.id);
                   if (savePoId) p.id = savePoId;
                   vsapi.call(`${main_view.base_url}/prm/purchase/order/save`, p, false).then(res =>{
