@@ -5,6 +5,7 @@ namespace App\Models\Prm;
 use App\Models\Prm\GeneralSettings;
 use DV;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
@@ -435,7 +436,10 @@ class PurchaseOrder //extends Model
         $discount_amount = "CASE WHEN po.discount_type = 'percent' THEN (" . $item_total . " * COALESCE(po.discount_value, 0) / 100) ELSE COALESCE(po.discount_value, 0) END";
         $computed_total_amount = 'GREATEST(0, (' . $item_total . ') - (' . $discount_amount . '))';
         $total_amount = 'COALESCE(po.total_amount, ' . $computed_total_amount . ')';
-        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,ps.name as status,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
+        // status_id 2 = all lines received, status_id 3 = partial receive.
+        // For this UI we want both to show "Received".
+        $statusLabel = "CASE WHEN po.status_id IN (2,3) THEN 'Received' ELSE ps.name END";
+        $cols = 'po.id,po.po_number,po.vendor_id,' . $po_date . ',po.status_id,po.remarks,po.discount_value,po.discount_type,po.sub_total as stored_sub_total,po.total_amount as stored_total_amount,' . $updated_at . ',po.update_user,v.id as vendor_id,v.name as vendor_name,v.phone_number,' . $statusLabel . ' as status,' . $sub_total . ' as sub_total,' . $total_amount . ' as total_amount';
         $query = DB::table('purchase_orders as po')
             ->join('vendors as v', 'v.id', '=', 'po.vendor_id')
             ->join('purchase_order_statuses as ps', 'ps.id', '=', 'po.status_id')
@@ -467,15 +471,36 @@ class PurchaseOrder //extends Model
             'po_statuses' => GeneralSettings::options_po_status($ss),
         ];
     }
+
+    /**
+     * Column on purchase_order_items that stores received quantity.
+     * Supports receive_qty (preferred) or legacy DB typo recieve_amount.
+     */
+    public static function purchaseOrderItemReceiveQtyColumnName(): ?string
+    {
+        if (Schema::hasColumn('purchase_order_items', 'receive_qty')) {
+            return 'receive_qty';
+        }
+        if (Schema::hasColumn('purchase_order_items', 'recieve_amount')) {
+            return 'recieve_amount';
+        }
+
+        return null;
+    }
+
 function getItemsByPurchaseOrder($data,$ss){
       //$branch_id = $ss->branch_id;
       //$warehouse_id = $data['warehouse_id'] ?? 1;
       $po_id = $data['po_id'] ?? $data['id'] ?? null ;
+      $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
+      $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
+      $receiveQtyCol = $receiveQtyColumn ? ('IFNULL(pi.' . $receiveQtyColumn . ',0)') : '0';
+      $breakAmountCol = $hasBreakAmount ? 'IFNULL(pi.break_amount,0)' : '0';
 
       $rows = DB::table('purchase_order_items as pi')
             ->join('items as i', 'i.id', '=', 'pi.item_id')
             ->where('pi.po_id', $po_id)
-            ->selectRaw("pi.id, pi.qty, i.unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . " as updated_at")
+            ->selectRaw("pi.id, pi.qty, i.unit, pi.remarks, pi.status_id, pi.unit_price, pi.total_price, $receiveQtyCol as receive_qty, $breakAmountCol as break_amount, i.code, i.id as item_id, i.name as item_name, pi.update_user, " . DBX::formatDate('i.updated_at') . " as updated_at")
             ->orderByRaw("i.name ASC")
             ->get();
       foreach($rows as $row){
@@ -486,12 +511,10 @@ function getItemsByPurchaseOrder($data,$ss){
   }
 
     /**
-     * Receive quantity on selected purchase order lines (partial or full).
-     * Reduces line qty by received amount; line is fully received (status_id = 2) when remaining qty is 0.
-     * When every line is fully received, the purchase order header is set to received (status_id = 2).
+     * Save Receive Qty / Break Amount on selected line items and mark those lines received (status_id = 2).
+     * Does NOT change purchase_orders header status — use confirmPurchaseOrderReceived for PO status "Received".
      *
-     * @param array $payload Expects receive_items: [ ['id' => po_line_id, 'qty' => float], ... ]
-     *                        Legacy: po_item_ids: int[] receives full remaining qty per line.
+     * @param array $payload Expects po_item_ids: int[] (purchase_order_items.id)
      */
     public function receivePurchaseOrder($id, $ss = null, $payload = [])
     {
@@ -512,99 +535,143 @@ function getItemsByPurchaseOrder($data,$ss){
             return DV::error('Purchase order has no line items to receive.');
         }
 
-        $now = getNowTime();
-        $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+        $rawIds = $payload['po_item_ids'] ?? $payload['items'] ?? [];
+        $lineIds = is_array($rawIds)
+            ? array_values(array_unique(array_filter(array_map('intval', $rawIds))))
+            : [];
+        if (count($lineIds) === 0) {
+            return DV::error('Select at least one line to receive.');
+        }
 
-        $receiveItems = $payload['receive_items'] ?? null;
-        if (is_array($receiveItems) && count($receiveItems) > 0) {
-            $seenLineIds = [];
-            foreach ($receiveItems as $row) {
-                $row = is_object($row) ? (array) $row : $row;
-                $lineId = (int) ($row['id'] ?? $row['po_item_id'] ?? 0);
-                $recvQty = (float) ($row['qty'] ?? 0);
-                if ($lineId <= 0) {
-                    return DV::error('Invalid purchase order line id.');
-                }
-                if (isset($seenLineIds[$lineId])) {
-                    return DV::error('Duplicate purchase order line in receive list.');
-                }
-                $seenLineIds[$lineId] = true;
-                if ($recvQty <= 0) {
-                    return DV::error('Received quantity must be greater than zero.');
-                }
-                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
-                if (!$pi) {
-                    return DV::error('Purchase order line not found.');
-                }
-                if ((int) $pi->status_id === 2) {
-                    return DV::error('Line #' . $lineId . ' is already fully received.');
-                }
-                $orderQty = (float) $pi->qty;
-                if ($recvQty > $orderQty + 0.0000001) {
-                    return DV::error('Received quantity cannot exceed remaining order quantity on a line.');
-                }
-                $unitPrice = (float) $pi->unit_price;
-                $remaining = $orderQty - $recvQty;
-                if ($remaining <= 0.0000001) {
-                    DB::table('purchase_order_items')->where('id', $lineId)->update([
-                        'qty' => 0,
-                        'total_price' => 0,
-                        'status_id' => 2,
-                    ]);
-                } else {
-                    $newTotal = round($remaining * $unitPrice, 2);
-                    DB::table('purchase_order_items')->where('id', $lineId)->update([
-                        'qty' => $remaining,
-                        'total_price' => $newTotal,
-                        'status_id' => 1,
-                    ]);
-                }
+        $validIds = DB::table('purchase_order_items')
+            ->where('po_id', $id)
+            ->whereIn('id', $lineIds)
+            ->pluck('id')
+            ->all();
+        if (count($validIds) !== count($lineIds)) {
+            return DV::error('Invalid purchase order line selection.');
+        }
+
+        $receiveQtyColumn = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreakAmount = Schema::hasColumn('purchase_order_items', 'break_amount');
+        $payloadReceiveQty = null;
+        if (isset($payload['receive_qty'])) {
+            $payloadReceiveQty = (float) $payload['receive_qty'];
+        } elseif (isset($payload['recieve_amount'])) {
+            $payloadReceiveQty = (float) $payload['recieve_amount'];
+        }
+        $payloadBreakAmount = isset($payload['break_amount']) ? (float) $payload['break_amount'] : null;
+
+        $selectedRows = DB::table('purchase_order_items')
+            ->where('po_id', $id)
+            ->whereIn('id', $lineIds)
+            ->selectRaw('id, qty')
+            ->get();
+        foreach ($selectedRows as $row) {
+            $orderedQty = (float) ($row->qty ?? 0);
+            $receiveQty = $payloadReceiveQty !== null ? $payloadReceiveQty : $orderedQty;
+            $breakAmount = $payloadBreakAmount !== null ? $payloadBreakAmount : 0;
+            if ($receiveQty < 0 || $breakAmount < 0) {
+                return DV::error('Receive qty and break amount must be 0 or greater.');
             }
-        } else {
-            $rawIds = $payload['po_item_ids'] ?? [];
-            $lineIds = is_array($rawIds)
-                ? array_values(array_unique(array_filter(array_map('intval', $rawIds))))
-                : [];
-            if (count($lineIds) === 0) {
-                return DV::error('Select at least one line to receive.');
+            if (($receiveQty + $breakAmount) > $orderedQty) {
+                return DV::error('Receive qty + break amount cannot exceed ordered qty.');
             }
-            $validIds = DB::table('purchase_order_items')
-                ->where('po_id', $id)
-                ->whereIn('id', $lineIds)
-                ->pluck('id')
-                ->all();
-            if (count($validIds) !== count($lineIds)) {
-                return DV::error('Invalid purchase order line selection.');
+
+            $updateData = ['status_id' => 2];
+            if ($receiveQtyColumn) {
+                $updateData[$receiveQtyColumn] = $receiveQty;
             }
-            foreach ($lineIds as $lineId) {
-                $pi = DB::table('purchase_order_items')->where('po_id', $id)->where('id', $lineId)->first();
-                if (!$pi || (float) $pi->qty <= 0) {
-                    continue;
-                }
-                DB::table('purchase_order_items')->where('id', $lineId)->update([
-                    'qty' => 0,
-                    'total_price' => 0,
-                    'status_id' => 2,
-                ]);
+            if ($hasBreakAmount) {
+                $updateData['break_amount'] = $breakAmount;
+            }
+            DB::table('purchase_order_items')->where('id', $row->id)->update($updateData);
+        }
+
+        return DV::success(['message' => 'Selected lines were received successfully.']);
+    }
+
+    /**
+     * Confirm PO as fully received: every real line must have Receive Qty + Break Amount = Ordered Qty (stored on items).
+     * Use after user saved each line via Receive Line Item. Sets header and line status to received.
+     */
+    public function confirmPurchaseOrderReceived($id, $ss = null, $payload = [])
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = (int) $id;
+        if ($id <= 0) {
+            return DV::error('Invalid purchase order ID.');
+        }
+        $po = DB::table('purchase_orders')->where('id', $id)->first();
+        if (!$po) {
+            return DV::error('Purchase order not found.');
+        }
+        if ((int) $po->status_id === 2) {
+            return DV::error('This purchase order is already fully received.');
+        }
+
+        $receiveCol = self::purchaseOrderItemReceiveQtyColumnName();
+        $hasBreak = Schema::hasColumn('purchase_order_items', 'break_amount');
+
+        $lines = DB::table('purchase_order_items')
+            ->where('po_id', $id)
+            ->whereNotNull('item_id')
+            ->where('item_id', '>', 0)
+            ->get();
+
+        if ($lines->isEmpty()) {
+            return DV::error('Purchase order has no line items to receive.');
+        }
+
+        $hasIncomplete = false;
+        foreach ($lines as $line) {
+            $ordered = (float) ($line->qty ?? 0);
+            $recv = 0.0;
+            if ($receiveCol) {
+                $recv = (float) ($line->{$receiveCol} ?? 0);
+            }
+            $brk = $hasBreak ? (float) ($line->break_amount ?? 0) : 0.0;
+            if (abs(($recv + $brk) - $ordered) > 0.02) {
+                $hasIncomplete = true;
+                break;
             }
         }
 
-        $pending = DB::table('purchase_order_items')
-            ->where('po_id', $id)
-            ->where(function ($q) {
-                $q->whereNull('status_id')->orWhere('status_id', '!=', 2);
-            })
-            ->count();
-
-        if ($pending === 0) {
+        $allowPartial = !empty($payload['allow_partial']);
+        if ($hasIncomplete) {
+            if (!$allowPartial) {
+                return DV::error('Not all items are fully received. For each line, Receive amount + Break Amount must equal Ordered Qty (save each line first).');
+            }
+            $remarks = trim((string) ($payload['remarks'] ?? $payload['remark'] ?? ''));
+            if ($remarks === '') {
+                return DV::error('Please enter remarks.');
+            }
+            $now = getNowTime();
+            $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+            // Partial receive status for header (id:3 in this project)
             DB::table('purchase_orders')->where('id', $id)->update([
-                'status_id' => 2,
+                'status_id' => 3,
+                'remarks' => $remarks,
                 'updated_at' => $now,
                 'update_user' => $updateUser,
             ]);
+            return DV::success(['message' => 'Remarks saved. Purchase order marked as partially received.']);
         }
 
-        return DV::success(['message' => 'Receive recorded successfully.']);
+        $now = getNowTime();
+        $updateUser = $ss->login_name ?? $ss->user_name ?? 'User';
+
+        foreach ($lines as $line) {
+            DB::table('purchase_order_items')->where('id', $line->id)->update(['status_id' => 2]);
+        }
+
+        DB::table('purchase_orders')->where('id', $id)->update([
+            'status_id' => 2,
+            'updated_at' => $now,
+            'update_user' => $updateUser,
+        ]);
+
+        return DV::success(['message' => 'Purchase order confirmed as received.']);
     }
 
     /**
