@@ -110,7 +110,7 @@ class Invoice extends VSModel
                 $itemId = $item['item_id']  ?? null;
                 $qty    = (int)($item['qty'] ?? 1);
                 $price  = (float)($item['price'] ?? 0);
-                $unitType = '-';
+                $unitType = $item['unit_type'] ?? '-';
 
                 // Auto-load price from contract when type = rent
                 if ($itemType === 'rent' && $itemId) {
@@ -347,13 +347,7 @@ class Invoice extends VSModel
                         END,
                         '—'
                     ) as item_name
-                "),
-                DB::raw("
-                    COALESCE(
-                        NULLIF(ii.unit_type, ''),
-                        '—'
-                    ) as unit_type_display"
-                ),
+                ")
             )
             ->get();
 
