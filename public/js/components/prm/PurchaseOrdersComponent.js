@@ -12,6 +12,7 @@ var PurchaseOrdersComponent = (() => {
     mThis.elSearch = mThis.self.querySelector("#_po_search");
     let PurchaseOrderDialog = null;
     let ReceivePurchaseOrderDialog = null;
+    let ReceivePoLineDialog = null;
     let _currentEditPoId = null;
 
     const formatCurrency = (amount) => {
@@ -47,73 +48,8 @@ var PurchaseOrdersComponent = (() => {
         });
     };
 
-    /** Detect ItemsView row-delete column (trash icon / action-only cell) and remove it from thead+tbody. */
-    const stripReceiveItemsDeleteColumn = (table) => {
-        const theadRow = table.querySelector('thead tr');
-        const tbody = table.querySelector('tbody');
-        if (!theadRow || !tbody) return;
-        const firstTr = tbody.querySelector('tr');
-        if (!firstTr) return;
-        const tds = firstTr.querySelectorAll('td');
-        if (!tds.length) return;
-
-        const looksLikeDeleteCell = (td) => {
-            if (!td) return false;
-            const h = (td.innerHTML || '').toLowerCase();
-            if (td.querySelector('.fa-trash')) return true;
-            if (td.querySelector('.fa-trash-alt')) return true;
-            if (td.querySelector('.fa-trash-can')) return true;
-            if (td.querySelector('.bi-trash')) return true;
-            if (td.querySelector('[class*="fa-trash"]')) return true;
-            if (td.querySelector('[class*="trash"]')) return true;
-            if (td.querySelector('i[class*="Trash"]')) return true;
-            if (h.includes('trash') || h.includes('delete-row') || h.includes('remove-line')) return true;
-            if (td.querySelector('[title*="elete" i], [aria-label*="elete" i]')) return true;
-            return false;
-        };
-
-        const hasEditableField = (td) => {
-            if (!td) return false;
-            return !!td.querySelector('input:not([type="hidden"]), select, textarea');
-        };
-
-        let deleteIdx = -1;
-        tds.forEach((td, i) => {
-            if (looksLikeDeleteCell(td)) deleteIdx = i;
-        });
-
-        if (deleteIdx < 0) {
-            const last = tds[tds.length - 1];
-            if (last && last.querySelector) {
-                if (!hasEditableField(last) && (looksLikeDeleteCell(last) || last.querySelector('a,button,i,svg'))) {
-                    deleteIdx = tds.length - 1;
-                }
-            }
-        }
-
-        if (deleteIdx < 0) {
-            const n = tds.length;
-            for (let i = n - 1; i >= 0; i--) {
-                const td = tds[i];
-                if (looksLikeDeleteCell(td)) {
-                    deleteIdx = i;
-                    break;
-                }
-            }
-        }
-
-        if (deleteIdx < 0) return;
-
-        tbody.querySelectorAll('tr').forEach((tr) => {
-            const cells = tr.querySelectorAll('td');
-            if (cells[deleteIdx]) cells[deleteIdx].remove();
-        });
-        const thCells = theadRow.querySelectorAll('th');
-        if (thCells[deleteIdx]) thCells[deleteIdx].remove();
-    };
-
-    /** Strip ItemsView row-delete column and append Receive checkboxes (last column). */
-    const applyReceiveCheckboxColumn = (me, rows) => {
+    /** Strip ItemsView row-delete column and append Action column with Receive button (last column). */
+    const applyReceiveActionColumn = (me, rows) => {
         const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
         if (!root || !Array.isArray(rows) || !rows.length) return;
         const table = root.querySelector('table');
@@ -121,129 +57,255 @@ var PurchaseOrdersComponent = (() => {
         const theadRow = table.querySelector('thead tr');
         const tbody = table.querySelector('tbody');
         if (!theadRow || !tbody) return;
-
+        const isDeleteCell = (cell) => {
+            if (!cell) return false;
+            if (cell.classList.contains('iv-td-action')) return true;
+            return !!cell.querySelector('i.fa-trash, i.fa-trash-can, i.fa-trash-alt, .fa-regular.fa-trash-can, .fa-solid.fa-trash-can');
+        };
         theadRow.querySelectorAll('th[data-receive-po-col]').forEach((el) => el.remove());
         tbody.querySelectorAll('td[data-receive-po-col]').forEach((el) => el.remove());
 
-        stripReceiveItemsDeleteColumn(table);
+        theadRow.querySelectorAll('th.iv-th-action').forEach((el) => el.remove());
+        tbody.querySelectorAll('td.iv-td-action').forEach((el) => el.remove());
 
         const th = document.createElement('th');
         th.className = 'text-center align-middle';
         th.setAttribute('data-receive-po-col', '1');
-        th.style.textAlign = 'center';
-        th.textContent = 'Receive';
+        th.textContent = 'Action';
         theadRow.appendChild(th);
+        const expectedCellCount = theadRow.querySelectorAll('th').length;
 
-        const byId = new Map(rows.map((r) => [String(r.id), r]));
-        const items = (me.receiveItemsView && me.receiveItemsView.getItems)
+        const liveItems = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
             ? (me.receiveItemsView.getItems() || [])
             : [];
-        const trList = tbody.querySelectorAll('tr');
 
-        const resolveRowMeta = (tr, idx) => {
-            const line = items[idx];
-            let lid = '';
-            if (line) {
-                if (line.id != null && line.id !== '') lid = String(line.id);
-                else if (line.trx_id != null && line.trx_id !== '') lid = String(line.trx_id);
-            }
-            if (lid && byId.has(lid)) return byId.get(lid);
-            if (lid) {
-                const found = rows.find((r) => String(r.id) === lid);
-                if (found) return found;
-            }
-            if (line && line.item_id != null && String(line.item_id) !== '') {
-                const byItem = rows.filter((r) => String(r.item_id) === String(line.item_id));
-                if (byItem.length === 1) return byItem[0];
-            }
-            if (trList.length === rows.length) return rows[idx] || null;
-            return null;
-        };
-
-        trList.forEach((tr, idx) => {
-            const rowMeta = resolveRowMeta(tr, idx);
-            if (!rowMeta || !rowMeta.id) return;
-
-            const td = document.createElement('td');
+        tbody.querySelectorAll('tr').forEach((tr, idx) => {
+            const existingActionCell = Array.from(tr.querySelectorAll('td')).find((cell) => isDeleteCell(cell));
+            const row = liveItems[idx] || rows[idx] || {};
+            const td = existingActionCell || document.createElement('td');
             td.className = 'text-center align-middle';
             td.setAttribute('data-receive-po-col', '1');
-            td.style.textAlign = 'center';
-            const linePending = !rowMeta.status_id || Number(rowMeta.status_id) === 1;
-            const orderQty = Math.max(0, Number(rowMeta.qty) || 0);
-            const unitPrice = Number(rowMeta.unit_price) || 0;
+            td.innerHTML = '';
+            const linePending = !row.status_id || Number(row.status_id) === 1;
+            if (linePending) {
+                const sendBtn = document.createElement('button');
+                sendBtn.type = 'button';
+                sendBtn.className = 'btn btn-sm btn-primary receive-po-line-btn';
+                const poItemId = Number(row.id || 0);
+                sendBtn.dataset.poItemId = String(poItemId || '');
+                sendBtn.textContent = 'Receive';
+                sendBtn.disabled = !(poItemId > 0);
+                td.appendChild(sendBtn);
+            } else {
+                const span = document.createElement('span');
+                span.className = 'text-muted small';
+                span.textContent = 'Received';
+                td.appendChild(span);
+            }
+            if (!existingActionCell) tr.appendChild(td);
 
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.className = 'form-check-input receive-po-line-cb';
-            cb.dataset.poItemId = String(rowMeta.id);
-            cb.checked = false;
-            cb.disabled = !linePending || orderQty <= 0;
+            let cells = Array.from(tr.children).filter((el) => el.tagName === 'TD');
+            while (cells.length > expectedCellCount) {
+                const customActionCell = tr.querySelector('td[data-receive-po-col]');
+                const removable = (customActionCell && customActionCell.previousElementSibling && customActionCell.previousElementSibling.tagName === 'TD')
+                    ? customActionCell.previousElementSibling
+                    : cells.slice().reverse().find((cell) => !cell.hasAttribute('data-receive-po-col'));
+                if (!removable) break;
+                removable.remove();
+                cells = Array.from(tr.children).filter((el) => el.tagName === 'TD');
+            }
+        });
+    };
 
-            const qtyWrap = document.createElement('div');
-            qtyWrap.className = 'receive-po-qty-wrap';
-            qtyWrap.setAttribute('aria-hidden', 'true');
+    const syncReceiveActionColumn = (me, rows) => {
+        applyReceiveActionColumn(me, rows);
+        requestAnimationFrame(() => applyReceiveActionColumn(me, rows));
+        setTimeout(() => applyReceiveActionColumn(me, rows), 120);
+    };
 
-            const qtyLabel = document.createElement('span');
-            qtyLabel.className = 'receive-po-qty-label';
-            qtyLabel.textContent = 'QTY';
-
-            const qtyInput = document.createElement('input');
-            qtyInput.type = 'number';
-            qtyInput.className = 'receive-po-qty-input';
-            qtyInput.min = '0.01';
-            qtyInput.step = 'any';
-            qtyInput.value = orderQty > 0 ? String(orderQty) : '1';
-            qtyInput.max = orderQty > 0 ? String(orderQty) : '';
-            qtyInput.placeholder = '—';
-            qtyInput.title = orderQty > 0 ? `Received qty (max ${orderQty})` : '';
-            qtyInput.disabled = !linePending || orderQty <= 0;
-            qtyInput.dataset.unitPrice = String(unitPrice);
-
-            const inputGroup = document.createElement('div');
-            inputGroup.className = 'receive-po-input-group';
-            inputGroup.appendChild(qtyLabel);
-            inputGroup.appendChild(qtyInput);
-            qtyWrap.appendChild(inputGroup);
-
-            const wrapCb = document.createElement('div');
-            wrapCb.className = 'receive-po-chk-wrap';
-            wrapCb.appendChild(cb);
-
-            const toolbar = document.createElement('div');
-            toolbar.className = 'receive-po-receive-toolbar';
-            toolbar.appendChild(wrapCb);
-            toolbar.appendChild(qtyWrap);
-
-            const cellCard = document.createElement('div');
-            cellCard.className = 'receive-po-cell-card';
-            cellCard.appendChild(toolbar);
-
-            const bumpReceiveTotals = () => {
-                if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
-            };
-
-            cb.addEventListener('change', () => {
-                if (!linePending) return;
-                if (cb.checked) {
-                    qtyWrap.classList.add('is-open');
-                    qtyWrap.setAttribute('aria-hidden', 'false');
-                    if (orderQty > 0) {
-                        qtyInput.value = String(orderQty);
-                        qtyInput.max = String(orderQty);
-                    }
-                } else {
-                    qtyWrap.classList.remove('is-open');
-                    qtyWrap.setAttribute('aria-hidden', 'true');
+    const refreshReceivePoHeaderStatus = (me) => {
+        const poId = me.dataOptions?.id;
+        if (!poId) return;
+        vsapi.call(`${main_view.base_url}/prm/purchase/order/form-options`, { id: poId }, null, false)
+            .then((res) => {
+                if (res && res.status_code === 200 && res.data && res.data.po_details) {
+                    me._receivePoStatusId = res.data.po_details.status_id;
                 }
-                bumpReceiveTotals();
-            });
+            })
+            .catch(() => {});
+    };
 
-            qtyInput.addEventListener('input', () => {
-                bumpReceiveTotals();
-            });
+    /** Real line: Receive amount + Break Amount must equal Ordered Qty (saved on item). */
+    const isReceiveLineRowComplete = (it) => {
+        const itemId = Number(it.item_id ?? 0);
+        if (!itemId || itemId <= 0) return true;
+        const ordered = Number(it.qty) || 0;
+        const recvRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
+        const recv = Number(recvRaw) || 0;
+        const brk = Number(it.break_amount) || 0;
+        return Math.abs((recv + brk) - ordered) < 0.02;
+    };
 
-            td.appendChild(cellCard);
-            tr.appendChild(td);
+    const validateAllReceiveLinesComplete = (me) => {
+        const items = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
+        if (!items.length) return false;
+        return items.every(isReceiveLineRowComplete);
+    };
+
+    const showIncompleteReceiveRemarkDialog = ({ poId, triggerEl, onConfirmed }) => {
+        let incompleteReceiveDialog = mThis._incompleteReceiveDialog;
+        incompleteReceiveDialog = incompleteReceiveDialog || new GeneralDialog({
+            cssClass: 'modal-lg vs-modal',
+            backdrop: 'static',
+            createContent: () => `
+                <div class="py-2">
+                    <label class="form-label fw-bold fs-2 mb-3">Remarks</label>
+                    <textarea
+                        name="remarks"
+                        class="form-control data-input"
+                        data-field="remarks"
+                        rows="5"
+                        placeholder=""></textarea>
+                </div>
+            `,
+            onShow: (dlg) => {
+                const titleEl = dlg.divModal && dlg.divModal.querySelector('.modal-title');
+                if (titleEl) titleEl.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Confirm Receive</h2>';
+                if (dlg.controls.remarks) dlg.controls.remarks.value = '';
+            },
+            buttons: [
+                {
+                    label: 'Cancel',
+                    cssClass: 'btn btn-secondary',
+                    click: (dlg) => dlg.hide(false)
+                },
+                {
+                    label: '<span>Confirm</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (dlg, btn) => {
+                        const remarks = String(dlg.controls.remarks?.value || '').trim();
+                        if (!remarks) return cv_interact.warning('Please enter remarks.');
+                        if (typeof onConfirmed === 'function') onConfirmed({ remarks, btn, dlg });
+                    }
+                }
+            ]
+        });
+        mThis._incompleteReceiveDialog = incompleteReceiveDialog;
+        incompleteReceiveDialog.show({ id: poId, btn: triggerEl });
+    };
+
+    /** Current line row from ItemsView (by purchase_order_items.id or table row index). */
+    const getReceiveLineRowData = (me, poItemId, tr) => {
+        const id = Number(poItemId);
+        const items = (me.receiveItemsView && typeof me.receiveItemsView.getItems === 'function')
+            ? (me.receiveItemsView.getItems() || [])
+            : [];
+        let row = items.find((it) => Number(it.id) === id);
+        if (!row && tr && tr.parentNode) {
+            const rows = Array.from(tr.parentNode.querySelectorAll('tr'));
+            const idx = rows.indexOf(tr);
+            if (idx >= 0) row = items[idx];
+        }
+        const orderedQty = row && row.qty != null && !Number.isNaN(Number(row.qty)) ? Number(row.qty) : 0;
+        const receiveRaw = row && (row.receive_qty != null ? row.receive_qty : row.recieve_amount);
+        const receiveQty = receiveRaw != null && !Number.isNaN(Number(receiveRaw)) ? Number(receiveRaw) : 0;
+        const breakAmount = row && row.break_amount != null && !Number.isNaN(Number(row.break_amount))
+            ? Number(row.break_amount)
+            : 0;
+        return { orderedQty, receiveQty, breakAmount, row };
+    };
+
+    const showReceivePoLineDialog = ({ me, poId, poItemId, orderedQty, receiveQty, breakAmount, triggerEl, onSuccess }) => {
+        const payload = {
+            id: poId,
+            po_item_id: poItemId,
+            ordered_qty: Number(orderedQty) || 0,
+            receive_qty: Number(receiveQty) || 0,
+            break_amount: Number(breakAmount) || 0,
+            onLineReceiveSuccess: onSuccess,
+            btn: triggerEl
+        };
+
+        InputBox.resetInstance('receivePoLinePopup');
+        InputBox.show({
+            title: "Receive Line Item",
+            instanceKey: "receivePoLinePopup",
+            columns: 2,
+            fields: [
+                { name: "ordered_qty", label: "Ordered Qty", type: "text", readOnly: true },
+                { name: "receive_qty", label: "Receive Qty", type: "number", required: true },
+                { name: "break_amount", label: "Break Amount", type: "number", required: true, colSpan: 2 },
+            ],
+            onOpen: (ibMe) => {
+                if (ibMe.controls.ordered_qty) ibMe.controls.ordered_qty.value = payload.ordered_qty;
+                if (ibMe.controls.receive_qty) ibMe.controls.receive_qty.value = payload.receive_qty;
+                if (ibMe.controls.break_amount) ibMe.controls.break_amount.value = payload.break_amount;
+            },
+            onConfirm: (data, btn, ibMe) => {
+                const rq = Number(data.receive_qty ?? payload.receive_qty ?? 0);
+                const ba = Number(data.break_amount ?? payload.break_amount ?? 0);
+                const oq = Number(data.ordered_qty ?? payload.ordered_qty ?? 0);
+                const linePoId = payload.id;
+                const linePoItemId = Number(payload.po_item_id);
+                if (!linePoId || !linePoItemId) return cv_interact.error('Invalid line.');
+                if (Number.isNaN(rq) || rq < 0) return cv_interact.error('Receive qty must be 0 or greater.');
+                if (Number.isNaN(ba) || ba < 0) return cv_interact.error('Break amount must be 0 or greater.');
+                if ((rq + ba) > oq) return cv_interact.error('Receive qty + break amount cannot exceed ordered qty.');
+                vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, {
+                    id: linePoId,
+                    po_item_ids: [linePoItemId],
+                    receive_qty: rq,
+                    break_amount: ba
+                }, btn).then((res) => {
+                    if (res.status_code === 200) {
+                        cv_interact.success(res.message || 'Line received.');
+                        ibMe.close();
+                        if (typeof payload.onLineReceiveSuccess === 'function') payload.onLineReceiveSuccess();
+                    } else {
+                        cv_interact.warning(res.error_message || 'Could not receive line.');
+                    }
+                });
+            }
+        });
+    };
+
+    const bindReceiveLineButtonDelegation = (me) => {
+        const root = me.divModal && me.divModal.querySelector('#receive_purchase_item_list');
+        if (!root || root.dataset.receiveLineDelegateBound === '1') return;
+        root.dataset.receiveLineDelegateBound = '1';
+        root.addEventListener('click', (e) => {
+            const sendBtn = e.target && e.target.closest && e.target.closest('.receive-po-line-btn');
+            if (!sendBtn || sendBtn.disabled) return;
+            e.preventDefault();
+            const poId = me.dataOptions && me.dataOptions.id;
+            const poItemId = Number(sendBtn.dataset.poItemId);
+            if (!poId || !poItemId) return;
+            if (Number(me._receivePoStatusId) === 2) {
+                return cv_interact.warning('This purchase order is already fully received.');
+            }
+            const tr = sendBtn.closest('tr');
+            const { orderedQty, receiveQty, breakAmount } = getReceiveLineRowData(me, poItemId, tr);
+            showReceivePoLineDialog({
+                me,
+                poId,
+                poItemId,
+                orderedQty,
+                receiveQty,
+                breakAmount,
+                triggerEl: sendBtn,
+                onSuccess: () => {
+                    refreshReceivePoHeaderStatus(me);
+                    loadReceivePurchaseOrder(me)
+                        .then(() => {
+                            if (mThis.PoListView && mThis.getFilterData) {
+                                mThis.PoListView.showPage(mThis.getFilterData());
+                            }
+                        })
+                        .catch(() => {});
+                }
+            });
         });
     };
 
@@ -259,7 +321,7 @@ var PurchaseOrdersComponent = (() => {
         if (v) v.readOnly = true;
         const itemRoot = root.querySelector('#receive_purchase_item_list');
         if (itemRoot) {
-            itemRoot.querySelectorAll('input:not(.receive-po-line-cb):not(.receive-po-qty-input), select, textarea').forEach((el) => {
+            itemRoot.querySelectorAll('input, select, textarea').forEach((el) => {
                 el.disabled = true;
             });
         }
@@ -323,6 +385,7 @@ var PurchaseOrdersComponent = (() => {
                 const rows = items.map(it => {
                     const unitNum = Number(it.unit);
                     const unitValue = (unitNum >= 1 && unitNum <= 4) ? unitNum : (unitByName[String(it.unit).toLowerCase()] ?? it.unit);
+                    const receiveRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
                     return {
                         id: it.id,
                         status_id: it.status_id,
@@ -331,15 +394,16 @@ var PurchaseOrdersComponent = (() => {
                         unit: unitValue,
                         unit_price: it.unit_price || 0,
                         total_price: it.total_price || (Number(it.qty) * Number(it.unit_price || 0)),
+                        receive_qty: receiveRaw != null ? Number(receiveRaw) : 0,
+                        break_amount: it.break_amount != null ? Number(it.break_amount) : 0,
                         code: it.code || ''
                     };
                 });
 
-                // Use setData([]) not setData(null): null leaves a blank template row so row index no longer matches API lines.
                 if (!rows.length) {
                     if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData([]);
                 } else if (typeof me.receiveItemsView.addRow === 'function') {
-                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData([]);
+                    if (typeof me.receiveItemsView.setData === 'function') me.receiveItemsView.setData(null);
                     rows.forEach(r => me.receiveItemsView.addRow(r));
                 } else {
                     me.receiveItemsView.setData(rows);
@@ -349,10 +413,11 @@ var PurchaseOrdersComponent = (() => {
                 if (typeof me.receiveItemsView.draw === 'function') me.receiveItemsView.draw();
 
                 setTimeout(() => {
-                    applyReceiveCheckboxColumn(me, rows);
+                    bindReceiveLineButtonDelegation(me);
+                    syncReceiveActionColumn(me, rows);
                     lockReceivePurchaseOrderFields(me);
                     if (typeof me.updateReceiveTotals === 'function') me.updateReceiveTotals();
-                }, 100);
+                }, 60);
 
                 me._receivePoStatusId = poDetails.status_id;
                 if (!items.length) {
@@ -453,116 +518,13 @@ var PurchaseOrdersComponent = (() => {
                         <div class="small text-muted mt-2">Loading purchase order…</div>
                     </div>
                     <div id="receive_po_content_wrap" style="display:none;">
-                        <style>
-                            #receive_purchase_item_list td[data-receive-po-col],
-                            #receive_purchase_item_list th[data-receive-po-col] {
-                                text-align: center !important;
-                                vertical-align: middle !important;
-                            }
-                            #receive_purchase_item_list th[data-receive-po-col] {
-                                min-width: 148px;
-                            }
-                            #receive_purchase_item_list td[data-receive-po-col] {
-                                padding-left: 0.35rem !important;
-                                padding-right: 0.35rem !important;
-                            }
-                            #receive_purchase_item_list .receive-po-cell-card {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                width: 100%;
-                                margin: 0 auto;
-                            }
-                            #receive_purchase_item_list .receive-po-receive-toolbar {
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.55rem;
-                                flex-wrap: nowrap;
-                                padding: 0.35rem 0.45rem;
-                                background: linear-gradient(165deg, #f8fafc 0%, #f1f5f9 100%);
-                                border: 1px solid #e2e8f0;
-                                border-radius: 0.5rem;
-                                box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
-                            }
-                            #receive_purchase_item_list .receive-po-chk-wrap {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                flex-shrink: 0;
-                                width: 1.15rem;
-                                height: 1.15rem;
-                            }
-                            #receive_purchase_item_list .receive-po-line-cb {
-                                float: none !important;
-                                margin: 0 !important;
-                                cursor: pointer;
-                            }
-                            #receive_purchase_item_list .receive-po-qty-wrap {
-                                display: none;
-                                flex-direction: column;
-                                align-items: stretch;
-                                gap: 0.2rem;
-                            }
-                            #receive_purchase_item_list .receive-po-qty-wrap.is-open {
-                                display: inline-flex !important;
-                            }
-                            #receive_purchase_item_list .receive-po-input-group {
-                                display: flex;
-                                align-items: stretch;
-                                border-radius: 0.35rem;
-                                border: 1px solid #cbd5e1;
-                                overflow: hidden;
-                                background: #fff;
-                                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-                            }
-                            #receive_purchase_item_list .receive-po-qty-label {
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                background: linear-gradient(180deg, #eef2f7 0%, #e2e8f0 100%);
-                                border-right: 1px solid #cbd5e1;
-                                padding: 0 0.5rem;
-                                font-size: 0.62rem;
-                                font-weight: 700;
-                                color: #475569;
-                                text-transform: uppercase;
-                                letter-spacing: 0.08em;
-                                white-space: nowrap;
-                                user-select: none;
-                            }
-                            #receive_purchase_item_list .receive-po-qty-input {
-                                width: 4rem !important;
-                                min-width: 3rem;
-                                max-width: 6rem;
-                                text-align: center;
-                                font-size: 0.875rem;
-                                font-weight: 600;
-                                font-variant-numeric: tabular-nums;
-                                line-height: 1.2;
-                                padding: 0.3rem 0.4rem;
-                                border: none !important;
-                                margin: 0 !important;
-                                background: #fff;
-                                color: #0f172a;
-                            }
-                            #receive_purchase_item_list .receive-po-qty-input:focus {
-                                outline: none !important;
-                                background: #f8fafc;
-                                box-shadow: none !important;
-                            }
-                            #receive_purchase_item_list .receive-po-input-group:focus-within {
-                                border-color: #94a3b8;
-                                box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-                            }
-                        </style>
                         <div id="receive_purchase_item_list" class="purchase-item-list"></div>
                     </div>
                 </div>
                 <div class="col-lg-12 mt-3 d-flex justify-content-end">
                     <div class="p-3 rounded-3 shadow-sm border" style="background-color:#fff; min-width:280px;">
                         <div class="d-flex align-items-center mb-2">
-                            <span id="receive_po_subtotal_label" class="fw-bold" style="min-width:90px;">Sub Total</span>
+                            <span class="fw-bold" style="min-width:90px;">Sub Total</span>
                             <span class="mx-2 fw-bold">:</span>
                             <span id="receive_po_subtotal_display" class="ms-2">$ 0.00</span>
                         </div>
@@ -597,6 +559,8 @@ var PurchaseOrdersComponent = (() => {
                         { name: 'unit', transTitle: 'titles.Unit', displayType: 'select', readOnly: true },
                         { name: 'unit_price', transTitle: 'titles.UnitPrice', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true },
                         { name: 'total_price', transTitle: 'titles.TotalPrice', readOnly: true, dataType: 'number', isNumeric: true }
+                        ,{ name: 'receive_qty', transTitle: 'Receive amount', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true }
+                        ,{ name: 'break_amount', transTitle: 'Break Amount', dataType: 'number', defaultValue: 0, isNumeric: true, readOnly: true }
                     ],
                     calc: { mode: 'auto', qtyField: 'qty', priceField: 'unit_price', totalField: 'total_price', currencyPrecision: 2 },
                     totalSummary: { container: '#sum', showTax: false, allowDiscount: false, currency: 'USD' },
@@ -604,10 +568,7 @@ var PurchaseOrdersComponent = (() => {
                     tableClass: 'table',
                     showColumnHeaders: true,
                     showAddLineButton: false,
-                    addLineButtonText: 'Add Item',
-                    showDeleteButton: false,
-                    showRowDeleteButton: false,
-                    allowDeleteRow: false
+                    addLineButtonText: 'Add Item'
                 });
                 me.receiveItemsView.setSelectOptions('unit', [
                     { value: 1, label: 'pcs' },
@@ -618,29 +579,15 @@ var PurchaseOrdersComponent = (() => {
 
                 me.updateReceiveTotals = () => {
                     if (!me.divModal || !me.receiveItemsView) return;
-                    const itemRoot = me.divModal.querySelector('#receive_purchase_item_list');
+                    const items = me.receiveItemsView.getItems ? me.receiveItemsView.getItems() : [];
                     let subTotal = 0;
-                    let useReceiveCalc = false;
-                    if (itemRoot) {
-                        itemRoot.querySelectorAll('.receive-po-line-cb:checked:not(:disabled)').forEach((cbox) => {
-                            useReceiveCalc = true;
-                            const qtyIn = cbox.closest('td')?.querySelector('.receive-po-qty-input');
-                            const q = parseFloat(qtyIn?.value || '0');
-                            const u = parseFloat(qtyIn?.dataset.unitPrice || '0');
-                            if (Number.isFinite(q) && Number.isFinite(u) && q > 0) {
-                                subTotal += q * u;
-                            }
+                    if (Array.isArray(items)) {
+                        items.forEach((it) => {
+                            const receiveRaw = it.receive_qty != null ? it.receive_qty : it.recieve_amount;
+                            const receiveAmt = Number(receiveRaw) || 0;
+                            const unitPrice = Number(it.unit_price) || 0;
+                            subTotal += receiveAmt * unitPrice;
                         });
-                    }
-                    if (!useReceiveCalc) {
-                        const items = me.receiveItemsView.getItems ? me.receiveItemsView.getItems() : [];
-                        subTotal = 0;
-                        if (Array.isArray(items)) {
-                            items.forEach(it => {
-                                const t = Number(it.total_price) || (Number(it.qty) * Number(it.unit_price || 0));
-                                subTotal += t;
-                            });
-                        }
                     }
                     const discountEl = me.controls.discount_value || me.divModal.querySelector('[data-field="discount_value"]');
                     const discountTypeEl = me.controls.discount_type || me.divModal.querySelector('[data-field="discount_type"]');
@@ -651,18 +598,9 @@ var PurchaseOrdersComponent = (() => {
                     const taxAmount = 0;
                     const total = afterDiscount + taxAmount;
                     const subtotalEl = me.divModal.querySelector('#receive_po_subtotal_display');
-                    const subtotalLabel = me.divModal.querySelector('#receive_po_subtotal_label');
                     const taxEl = me.divModal.querySelector('#receive_po_tax_display');
                     const totalEl = me.divModal.querySelector('#receive_po_total_display');
-                    if (subtotalLabel) {
-                        subtotalLabel.textContent = useReceiveCalc ? 'Receive total' : 'Sub Total';
-                    }
-                    if (subtotalEl) {
-                        subtotalEl.textContent = formatCurrency(subTotal);
-                        subtotalEl.title = useReceiveCalc
-                            ? 'Sum of (receive qty × unit price) for selected lines'
-                            : 'Sum of line totals on this purchase order';
-                    }
+                    if (subtotalEl) subtotalEl.textContent = formatCurrency(subTotal);
                     if (taxEl) taxEl.textContent = formatCurrency(taxAmount);
                     if (totalEl) totalEl.textContent = formatCurrency(total);
                 };
@@ -722,43 +660,42 @@ var PurchaseOrdersComponent = (() => {
                         if (Number(me._receivePoStatusId) === 2) {
                             return cv_interact.warning('This purchase order is already fully received.');
                         }
-                        const root = me.divModal.querySelector('#receive_purchase_item_list');
-                        const receive_items = [];
-                        if (root) {
-                            const cbs = root.querySelectorAll('.receive-po-line-cb:checked:not(:disabled)');
-                            for (let i = 0; i < cbs.length; i++) {
-                                const cb = cbs[i];
-                                const id = Number(cb.dataset.poItemId);
-                                if (Number.isNaN(id) || id <= 0) continue;
-                                const cell = cb.closest('td');
-                                const qtyIn = cell ? cell.querySelector('.receive-po-qty-input') : null;
-                                const raw = qtyIn ? String(qtyIn.value).trim() : '';
-                                const qty = parseFloat(raw);
-                                if (!Number.isFinite(qty) || qty <= 0) {
-                                    return cv_interact.error('Enter a valid received quantity for each selected line.');
+                        if (!validateAllReceiveLinesComplete(me)) {
+                            return showIncompleteReceiveRemarkDialog({
+                                poId,
+                                triggerEl: btn,
+                                onConfirmed: ({ remarks, btn: remarkBtn, dlg }) => {
+                                    vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
+                                        id: poId,
+                                        allow_partial: 1,
+                                        remarks
+                                    }, remarkBtn).then((res) => {
+                                        if (res.status_code === 200) {
+                                            cv_interact.success(res.message || 'Purchase order updated.');
+                                            dlg.hide(true);
+                                            me.hide(true);
+                                            if (mThis.PoListView && mThis.getFilterData) {
+                                                mThis.PoListView.showPage(mThis.getFilterData());
+                                            }
+                                        } else {
+                                            cv_interact.warning(res.error_message || 'Could not update purchase order.');
+                                        }
+                                    });
                                 }
-                                const maxQ = qtyIn && qtyIn.max !== '' ? parseFloat(qtyIn.max) : null;
-                                if (maxQ != null && Number.isFinite(maxQ) && qty > maxQ + 0.0000001) {
-                                    return cv_interact.error('Received quantity cannot exceed the remaining order quantity.');
-                                }
-                                receive_items.push({ id, qty });
-                            }
+                            });
                         }
-                        if (receive_items.length < 1) {
-                            return cv_interact.error('Select at least one line and enter quantity to receive.');
-                        }
-                        vsapi.call(`${main_view.base_url}/prm/purchase/order/receive`, {
-                            id: poId,
-                            receive_items
+                        vsapi.call(`${main_view.base_url}/prm/purchase/order/confirm-received`, {
+                            id: poId
                         }, btn).then((res) => {
                             if (res.status_code === 200) {
-                                cv_interact.success(res.message || 'Purchase order received.');
+                                cv_interact.success(res.message || 'Purchase order confirmed as received.');
+                                me._receivePoStatusId = 2;
                                 me.hide(true);
                                 if (mThis.PoListView && mThis.getFilterData) {
                                     mThis.PoListView.showPage(mThis.getFilterData());
                                 }
                             } else {
-                                cv_interact.warning(res.error_message || 'Could not receive purchase order.');
+                                cv_interact.warning(res.error_message || 'Could not confirm purchase order.');
                             }
                         });
                     }
@@ -889,8 +826,10 @@ var PurchaseOrdersComponent = (() => {
             className: "align-middle text-center",
             data: (data) => {
 
-                const status_id = data.status_id;
+                const status_id = Number(data.status_id || 0);
+                const isReceived = status_id === 2 || status_id === 3;
                 let cls = 'badge text-warning bg-warning-subtle border border-warning';
+                let badgeStyle = 'min-width:90px';
 
                 if (status_id == 1) {
                     cls = 'badge text-warning bg-warning-subtle border border-warning';
@@ -911,12 +850,26 @@ var PurchaseOrdersComponent = (() => {
                     cls = 'badge text-danger bg-danger-subtle border border-danger';
                 }
 
+                if (isReceived) {
+                    cls = 'badge border';
+                    badgeStyle = 'min-width:90px;background:#dff3ea;color:#37b07f;border-color:#70c39f !important;font-weight:500;';
+                }
+
+                const statusText = isReceived ? 'Received' : (data.status ?? '');
                 return `
-                    <span class="${cls} text-capitalize d-inline-block text-center" style="min-width:90px">
-                        ${data.status ?? ''}
+                    <span class="${cls} text-capitalize d-inline-block text-center" style="${badgeStyle}">
+                        ${statusText}
                     </span>
                 `;
             },
+        },
+        {
+            title: "Remarks",
+            className: "align-middle",
+            data: (data) => {
+                const remarks = String(data.remarks || '').trim();
+                return `<span class="text-prm-custom d-block text-truncate" style="max-width:180px;" title="${remarks}">${remarks || '-'}</span>`;
+            }
         },
         {
             transTitle: "titles.Updated By",
@@ -931,12 +884,17 @@ var PurchaseOrdersComponent = (() => {
         {
             transTitle: "titles.Action",
             className: 'col_action align-middle',
-            data: (data) => `
+            data: (data) => {
+                const statusId = Number(data.status_id || 0);
+                const isReceived = statusId === 2 || statusId === 3;
+                const actionBtnClass = isReceived ? 'btn_dropdown_vendor_action_received' : 'btn_dropdown_vendor_action';
+                return `
                 <div class="d-flex justify-content-center align-items-end">
-                    <a href="javascript:void(0)" class="btn--Options btn_dropdown_vendor_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="btn--Options ${actionBtnClass}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-ellipsis-vertical text-black fs-5"></i>
                     </a>
-                </div>`
+                </div>`;
+            }
         },
 
 
@@ -1034,23 +992,55 @@ var PurchaseOrdersComponent = (() => {
 
     mThis.initDropdownMenus = (table) => {
 
-        const menuOptopns = {
+        const baseMenus = [
+            {
+                html: '<span class="ps-2 " vslang="titles.Modify Purchase Order"></span>',
+                icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
+                cssClass: "border-bottom pb-2",
+                name: "modify_purchase_order"
+            },
+            {
+                html: '<span class="ps-2  " vslang="titles.Delete Purchase Order"></span>',
+                icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
+                cssClass: "border-bottom pb-2",
+                name: "delete_purchase_order"
+            }
+        ];
+
+        const onMenuClick = (menuLink, id, name) => {
+            switch (name) {
+                case 'modify_purchase_order': {
+                    mThis.editPurchaseOrder(id, menuLink);
+                    break;
+                }
+                case 'delete_purchase_order': {
+                    mThis.deletePurchaseOrder(id, menuLink);
+                    break;
+                }
+                case 'receive_purchase_order': {
+                    mThis.receivePurchaseOrder(id, menuLink);
+                    break;
+                }
+                case 'modify_vendor': {
+                    mThis.editVendor(id, menuLink);
+                    break;
+                }
+                case 'delete_vendor': {
+                    mThis.deleteVendor(id, menuLink);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        };
+
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_dropdown_vendor_action",
             cssClass: "bg-white shadow",
             menus: [
-                {
-                    html: '<span class="ps-2 " vslang="titles.Modify Purchase Order"></span>',
-                    icon: `<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "modify_purchase_order"
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete Purchase Order"></span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_purchase_order"
-                },
+                ...baseMenus,
                 {
                     html: '<span class="ps-2" vslang="titles.Receive Purchase Order"></span>',
                     icon: `<i class="fa-solid fa-box-open fs-5 text-primary"></i>`,
@@ -1059,35 +1049,19 @@ var PurchaseOrdersComponent = (() => {
                 },
             ],
 
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case 'modify_purchase_order': {
-                        mThis.editPurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'delete_purchase_order': {
-                        mThis.deletePurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'receive_purchase_order': {
-                        mThis.receivePurchaseOrder(id, menuLink);
-                        break;
-                    }
-                    case 'modify_vendor': {
-                        mThis.editVendor(id, menuLink);
-                        break;
-                    }
-                    case 'delete_vendor': {
-                        mThis.deleteVendor(id, menuLink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-        new VSDropdownMenu(menuOptopns);
+            onClick: onMenuClick
+        };
+
+        const menuOptionsReceived = {
+            containerElement: table,
+            actionButtonClass: "btn_dropdown_vendor_action_received",
+            cssClass: "bg-white shadow",
+            menus: [...baseMenus],
+            onClick: onMenuClick
+        };
+
+        new VSDropdownMenu(menuOptions);
+        new VSDropdownMenu(menuOptionsReceived);
     }
     const renderPoItem = (po, container, onFinish) => {
         if (!container) return;
