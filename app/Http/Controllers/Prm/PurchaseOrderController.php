@@ -77,4 +77,17 @@ class PurchaseOrderController extends Controller
         $res = $this->purchaseOrders->deletePurchaseOrder((int) $req->id, $ss);
         return JDV::raw($res);
     }
+
+    public function receivePurchaseOrder(Request $req)
+    {
+        $ss = XAuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        if (!isset($req->id) || !is_numeric($req->id)) {
+            return JDV::error('Invalid ID');
+        }
+        $res = $this->purchaseOrders->receivePurchaseOrder((int) $req->id, $ss, $req->all());
+        return JDV::raw($res);
+    }
 }

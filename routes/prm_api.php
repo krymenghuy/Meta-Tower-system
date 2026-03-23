@@ -213,7 +213,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('expense')->gr
     Route::post('/details', [ExpenseController::class, 'expenseDetails']);
     Route::post('/form-options', [ExpenseController::class, 'getFormOptions']);
     Route::post('/delete', [ExpenseController::class, 'deleteExpense']);
-    
+
 });
 
 
@@ -258,6 +258,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('reservation')
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('purchase/order')->group(function(){
     Route::post('/save', [PurchaseOrderController::class, 'savePurchaseOrder']);
     Route::post('/delete', [PurchaseOrderController::class, 'deletePurchaseOrder']);
+    Route::post('/receive', [PurchaseOrderController::class, 'receivePurchaseOrder']);
     Route::post('/details', [PurchaseOrderController::class, 'purchaseOrderDetails']);
     Route::post('/items-by-po', [PurchaseOrderController::class, 'getItemsByPurchaseOrder']);
     Route::post('/list-paginate', [PurchaseOrderController::class, 'getPurchaseOrderList']);
