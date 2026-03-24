@@ -19,12 +19,17 @@ var AmenityComponent = (() => {
             className: "align-middle text-nowrap text-capitalize",
         },
         {
+            title: "Code",
+            className: "align-middle text-nowrap",
+            data: (data) =>
+            `<span class="text-prm-custom">${data.code ?? ""}</span>`,
+        },
+        {
             title: "Name",
             className: "align-middle text-nowrap",
             data: (data) =>
                 `<div class="text-prm-custom text-capitalize" style="width:120px; ">
                     <span class="text-wrap text-break" style ="word-break:break-word;">${data.name ?? ""}</span>
-                    <small class="d-block text-muted">${data.code ?? ""}</small>
                 </div>`,
         },
 
@@ -32,7 +37,7 @@ var AmenityComponent = (() => {
             title: "Category",
             className: "align-middle text-nowrap",
             data: (data) =>
-                `<span class="badge text-primary-emphasis bg-dark-subtle px-3 py-2" style="min-width:120px">${data.category ?? ""}</span>`,
+                `<span class="badge text-primary border border-primary bg-primary-subtle px-3 py-2" style="min-width:100px">${data.category ?? ""}</span>`,
         },
 
         {
@@ -41,8 +46,7 @@ var AmenityComponent = (() => {
             data: (data) =>
                 `
                     <div class="text-prm-custom" style="width:120px;">
-                        <span class="text-wrap text-break" style ="word-break:break-word;">${data.floor_number ?? ""}</span>
-                        <small class="d-block text-muted">${data.building_name ?? ""}</small>
+                        <span>${data.building_name ?? ""}, ${data.floor_number ?? ""}</span>
                     </div>
                 `
         },
@@ -51,7 +55,7 @@ var AmenityComponent = (() => {
             title: "Capacity",
             className: "align-middle text-nowrap text-center",
             data: (data) =>
-                `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span> <span class="text-muted">PAX/Room</span>`,
+                `<span class="text-primary-custom">${data.max_capacity ?? "-"}</span> <small class="text-muted">PAX/Room</small>`,
         },
         {
             title: "Booking",
@@ -74,13 +78,13 @@ var AmenityComponent = (() => {
 
                 if (status == "inactive") {
                     cls =
-                        "text-danger bg-danger-subtle border border-danger";
+                        "badge text-danger bg-danger-subtle border border-danger";
                 } else if (status == "active") {
                     cls =
-                        "text-success bg-success-subtle border border-success";
+                        "badge text-success bg-success-subtle border border-success";
                 } else if (status == "maintenance") {
                     cls =
-                        "text-warning bg-warning-subtle border border-warning";
+                        "badge text-warning bg-warning-subtle border border-warning";
                 }
 
                 return `<span class="${cls} text-capitalize d-inline-block text-center" style="min-width:70px" data-status_id="${data.status_id}"><small>${data.status ?? ""}</small></span>`;
