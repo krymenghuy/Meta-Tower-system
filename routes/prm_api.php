@@ -25,6 +25,7 @@ use App\Http\Controllers\Prm\AmenityController;
 use App\Http\Controllers\Prm\ItemController;
 use App\Http\Controllers\Prm\MaintenanceController;
 use App\Http\Controllers\Prm\BillController;
+use App\Http\Controllers\Prm\BillDocumentController;
 
 
 use App\Http\Controllers\tenant\AccountStaffController;
@@ -273,6 +274,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('bill')->group
     Route::post('/form-options', [BillController::class, 'getFormOptions']);
     Route::post('/delete', [BillController::class, 'deleteBill']);
     Route::post('/update-status', [BillController::class, 'updateBillStatus']);
+
+    Route::post('/attachment',[TenantController::class,'getAttachment']);
+    Route::post('/attachment/delete',[TenantController::class,'deleteAttachment']);
+    Route::post('/attachment/create',[TenantController::class,'createAttachment']);
+    Route::post('/attachment/view', [BillDocumentController::class, 'viewAttachment']);
 });
 
 
