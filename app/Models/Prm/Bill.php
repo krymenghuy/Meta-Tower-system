@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DBX;
 use XPublicStorage;
+use Log;
 
 
 class Bill //extends Model
@@ -28,28 +29,53 @@ class Bill //extends Model
         $ss = $ss ?? $this->userInfo;
 
         $v_rule = [
-            'bill_number'       => '1|string|1-100',
+            'bill_number'       => '0|string|1-100',
             'purchase_order_id' => '0|number|exists=purchase_orders.id',
             'vendor_id'         => '1|number|exists=vendors.id',
             'bill_date'         => '1|date',
-            'due_date'          => '1|date',
+            // 'due_date'          => '0|date',
             'file_image'        => '0|string|0-255',
-            'sub_total'         => '1|number|min=0',
-            'tax_amount'        => '1|number|min=0',
-            'grand_total'       => '1|number|min=0',
-            'status_id'         => '1|number|exists=bill_statuses.id',
+            'total_amount'         => '1|number|min=0',
+            'balance'        => '0|number|min=0',
+            'paid_amount'       => '1|number|min=0',
             'remark'            => '0|string|0-255',
         ];
 
         $email_char = ['@', '.', '-', '_'];
+        $remark_char = ['@', ',', '.', '#'];
         $tax_char = ['@', '.', '-', '_'];
-        $address_char = ['@', ',', '.', '#'];
 
-        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'address' => $address_char], $ss->lang, 0, null);
+        $res = DBX::validateObject($arr, $v_rule, 1, ['email' => $email_char, 'tax_number' => $tax_char, 'remark' => $remark_char], $ss->lang, 0, null);
         if ($res->error)
             return DV::error($res->error);
 
         $inputs = $res->values;
+
+        $total    = floatval($inputs['total_amount'] ?? 0);
+        $paid     = floatval($inputs['paid_amount']  ?? 0);
+
+        // Paid cannot exceed total
+        $safe_paid = min($paid, $total);
+        $balance   = max(0, $total - $safe_paid);
+
+        // Set calculated values back
+        $inputs['paid_amount']   = $safe_paid;
+        $inputs['balance']       = $balance;
+        $inputs['total_amount']  = $total;
+
+        // Also set payment_status based on amounts
+        if ($total > 0 && $safe_paid >= $total) {
+            $inputs['status_id'] = 1; // Paid
+        } elseif ($safe_paid > 0 && $safe_paid < $total) {
+            $inputs['status_id'] = 3; // Partially Paid
+        } else {
+        $inputs['status_id'] = 2; // Unpaid
+        }
+        if (request()->hasFile('file_image')) {
+        $file = request()->file('file_image');
+        $path = $file->store('bills', 'public'); // saves to storage/app/public/bills/
+        $inputs['file_image'] = $path;
+    }
         $exist = DB::table('bills')
             ->where('vendor_id', $inputs['vendor_id'])
             ->whereRaw('LOWER(bill_number) = ?', [strtolower($inputs['bill_number'])])
@@ -72,11 +98,11 @@ class Bill //extends Model
         return DV::error('Error saving bill record!');
     }
 
-   public function getListPaginate($arr = [], $ss = null)
+   public function getListBill($arr = [], $ss = null)
 {
     $d = (object) $arr;
     $search_value = $d->search_value ?? null;
-    $vendor_id    = $d->vendor_id ?? null;
+    $purchase_order_id    = $d->purchase_order_id ?? null;
     $status_id    = $d->status_id ?? null;
     $current_page = $d->current_page ?? 1;
     $per_page     = $d->per_page ?? 10;
@@ -92,43 +118,40 @@ class Bill //extends Model
     if ($search_value) {
         $skip_rows = 0;
         $search_value = escape_like_str($search_value);
-        // Search by Vendor Name, Bill Number, or Grand Total
-        $str_search = "(v.name Like '%" . $search_value . "%' 
-                        OR b.bill_number Like '%" . $search_value . "%' 
-                        OR b.grand_total Like '%" . $search_value . "%')";
-    }
-
-    // Filter by specific Vendor
-    if ($vendor_id) {
-        $str_moreWhere .= ' AND b.vendor_id =' . $vendor_id;
-    }
-
-    // Filter by Bill Status (e.g., Pending, Paid)
+        
+        $str_search = "(v.name Like '%" . $search_value . "%' OR b.bill_number Like '%" . $search_value . "%' OR b.grand_total Like '%" . $search_value . "%')";
+    }   
+    if ($purchase_order_id) {
+        $str_moreWhere .= ' AND b.purchase_order_id =' . $purchase_order_id;
+    }  
     if ($status_id) {
         $str_moreWhere .= ' AND b.status_id =' . $status_id;
     }
-
-    // $updated_at = DBX::formatTime('b.updated_at', 'updated_at');
+      
     $query = DB::table('bills as b')
-        ->join('vendors as v', 'v.id', 'b.vendor_id')
-        ->join('bill_statuses as s', 's.id', 'b.status_id')
+        ->leftJoin('purchase_orders as po', 'po.id', 'b.purchase_order_id')
+        ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')            
+        ->leftJoin('bill_statuses as s', 's.id', 'b.status_id')            
         ->whereRaw($str_search)
         ->whereRaw($str_moreWhere)
-        ->selectRaw(" b.id,b.bill_number,b.vendor_id,v.name as vendor_name,b.bill_date,b.due_date,b.sub_total,b.tax_amount,b.grand_total,b.status_id,s.name as status,b.file_image,b.update_user,b.remark,b.updated_at")
+        ->selectRaw("b.id, b.bill_number, b.purchase_order_id, b.vendor_id,v.name as vendor_name, v.phone_number,b.bill_date, b.total_amount, b.balance, b.paid_amount,
+                 b.status_id, s.name as status,b.file_image, b.update_user, b.remark, b.updated_at")
         ->orderBy('b.id', 'desc');
     $clone_query = clone $query;
     $count = $clone_query->count('b.id');
     $rows = $query->skip($skip_rows)->take($per_page)->get();
     foreach($rows as $row){
-            $row = setOfficialDates($row,['updated_at', 'bill_date', 'due_date'],[],[]);
+            $row = setOfficialDates($row,['updated_at', 'bill_date'],[],[]);
         }
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 }
-    public static function vendorDetails($id, $ss = null)
+    public static function billDetails($id, $ss = null)
     {
         return DB::table('bills as b')
+            ->leftJoin('purchase_orders as po', 'po.id', 'b.purchase_order_id')
+            ->leftJoin('vendors as v', 'v.id', 'b.vendor_id')
             ->where('b.id', $id)
-            ->selectRaw('b.id,b.bill_number,b.purchase_order_id,b.vendor_id,b.bill_date,b.due_date,b.file_image,b.sub_total,b.tax_amount,b.grand_total,b.status_id,b.remark')
+            ->selectRaw('b.id,b.bill_number,b.purchase_order_id,po.vendor_id,v.name as vendor_name,v.phone_number,b.bill_date,b.file_image,b.total_amount,b.balance,b.paid_amount,b.status_id,b.remark')
             ->first();
     }
     public static function getFormOptions($id = null, $ss = null)

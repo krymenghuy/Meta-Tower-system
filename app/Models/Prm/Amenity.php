@@ -195,7 +195,6 @@ class Amenity extends VSModel
             $str_moreWhere .= ' AND a.status_id =' . $status_id;
         }
 
-        // $updated_at = DBX::formatTime("a.updated_at", 'updated_at');
         $query = DB::table('amenities as a')
             ->join('amenity_statuses as as', 'as.id', '=', 'a.status_id')
             ->join('amenity_categories as ac','ac.id','=','a.category_id')

@@ -11,12 +11,8 @@ var TenantComponent = new (function () {
     mThis.elSearch = mThis.self.querySelector("#_search_tenant_");
     mThis.elStatus = mThis.self.querySelector("#_el_tenant_status");
     mThis.btnBack = document.querySelector("#_btn_back_tenant");
-
-    mThis.divTenantListContainer = mThis.self.querySelector(
-        "#_tenant_list_container",
-    );
+    mThis.divTenantListContainer = mThis.self.querySelector("#_tenant_list_container");
     mThis.divProfileView = document.querySelector("#_ten_profile_view");
-
     mThis.cardViewContainer = mThis.self.querySelector("#_tenant_card_view");
     mThis.listViewContainer = mThis.self.querySelector("#_tenant_list_view");
     mThis.currentViewMode = "card";
@@ -25,7 +21,6 @@ var TenantComponent = new (function () {
         tenant_list: this.divTenantListContainer,
         profile_view: this.divProfileView,
     };
-    // console.log(8989,this.pages);
     mThis.profile_info_tenant = this.divProfileView.querySelector("#profile_info_tenant",);
     mThis.cols = [
         {
@@ -37,6 +32,13 @@ var TenantComponent = new (function () {
             className: "align-middle",
             data: (data) =>
                 `<img class="btn-view-tenant-photo" data-id="${data.id}" src="${data.image_url || `${main_view.base_url}/assets/images/default/default-staff1.png`}" alt="" style="width: 50px; height: 50px; border-radius: 6px; margin-right: 10px;"/>`,
+        },
+         {
+            title: "Code",
+            className: "align-middle",
+            data: (data) => {
+                return `<span class="text-prm-custom text-nowrap">${data.code ?? ""}</span>`;
+            },
         },
         {
             title: "Name",
