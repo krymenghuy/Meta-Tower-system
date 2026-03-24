@@ -330,7 +330,6 @@ const CreateExpenseDialog = (() => {
                                 <div class="material-input outlined">
                                     <textarea class="data-input form-control" data-field="remarks" placeholder=" "></textarea>
                                     <label style="padding-left:6px;color:#777777;">Remarks</label>
-
                                 </div>
                             </div>
 
