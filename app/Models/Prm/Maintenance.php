@@ -104,7 +104,7 @@ class Maintenance extends VSModel
                 DB::table('building_spaces')->where('id', $input['space_id'])->update(['maintenance_status_id' => 1]);
             }
             if (!empty($input['amenity_id'])) {
-                $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['under maintenance'])->value('id');
+                $underMaintenanceId = DB::table('amenity_statuses')->whereRaw('LOWER(TRIM(name)) = ?', ['maintenance'])->value('id');
                 if ($underMaintenanceId) {
                     DB::table('amenities')->where('id', $input['amenity_id'])->update([
                         'status_id'   => $underMaintenanceId,
