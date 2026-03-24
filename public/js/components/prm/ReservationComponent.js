@@ -1,11 +1,9 @@
 "use strict";
 var ReservationComponent = (() => {
     const mThis = {};
-    mThis.title_prop = "Reservation Management";
+    mThis.title_prop = "Reservation";
     mThis.base_url = main_view.base_url;
-    mThis.self = main_view.VSAppContent.querySelector(
-        "#_main_reservation_component",
-    );
+    mThis.self = main_view.VSAppContent.querySelector("#_main_reservation_component");
     mThis.btnAdd = mThis.self.querySelector("#_btnReservation");
     mThis.divFilter = mThis.self.querySelector("#_divFilter_reservation");
     mThis.elFilter_status = mThis.self.querySelector("#_reservation_status");
@@ -49,7 +47,7 @@ var ReservationComponent = (() => {
             },
         },
         {
-            transTitle: "titles.Schedule-Date",
+            transTitle: "titles.Schedule Date",
             className: "align-middle",
             data: (data) => {
                 const to12h = (hhmm) => {
@@ -63,19 +61,19 @@ var ReservationComponent = (() => {
                 };
                 const start12 = to12h((data.start_time ?? "").substring(0, 5));
                 const end12 = to12h((data.end_time ?? "").substring(0, 5));
-                return `<span class="d-block text-muted">${data.date ?? ""}</span>
-                            <small class="text-primary-custom">${start12} - ${end12}</small>`;
+                return `<span class="d-block text-prm-custom">${data.date ?? ""}</span>
+                            <small class="text-muted">${start12} - ${end12}</small>`;
             },
         },
+        // {
+        //     transTitle: "titles.MAX Capacity",
+        //     className: "align-middle",
+        //     data: (data) => {
+        //         return `<span class="text-primary-custom">${data.amenity_capacity ?? ""}</span> <span class="text-muted">PAX/Room</span>`;
+        //     },
+        // },
         {
-            transTitle: "titles.MAX Capacity",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-primary-custom">${data.amenity_capacity ?? ""}</span> <span class="text-muted">PAX/Room</span>`;
-            },
-        },
-        {
-            transTitle: "titles.Description",
+            transTitle: "titles.Remark",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `
@@ -92,30 +90,27 @@ var ReservationComponent = (() => {
                 // Standardize the status string
                 const status = (data.status ?? "").toLowerCase();
                 let cls =
-                    "badge rounded-5 border border-secondary text-secondary bg-secondary-subtle";
+                    "badge border border-secondary text-secondary bg-secondary-subtle";
                 let icon = "fa-regular fa-calendar";
                 let label = "Upcoming";
 
                 if (status === "upcoming") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-info text-info bg-info-subtle";
+                    cls ="badge border border-info text-info bg-info-subtle";
                     icon = "fa-regular fa-clock fa-spin";
                     label = "Upcoming";
                 } else if (status === "in-progress") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-warning text-warning bg-warning-subtle";
+                    cls ="badge border border-warning text-warning bg-warning-subtle";
                     icon = "fa-solid fa-spinner fa-spin-pulse"; 
                     label = "In-Progress";
                 } else if (status === "completed") {
-                    cls =
-                        "badge rounded-5 shadow-sm border border-success text-success bg-success-subtle";
+                    cls ="badge border border-success text-success bg-success-subtle";
                     icon = "fa-regular fa-circle-check fa-beat-fade";
                     label = "Completed";
                 }
 
                 return `
                     <span class="${cls} px-3 py-2 d-inline-flex align-items-center gap-2"
-                        style="min-width:125px; font-weight: 500;"
+                        style="min-width:120px"
                         data-status_id="${data.status_id}">
                         <i class="${icon}" style="font-size:13px;"></i>
                         <span>${label}</span>
@@ -128,7 +123,7 @@ var ReservationComponent = (() => {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<div class="d-flex flex-column">
-                    <span class="text-capitalize text-start text-yp-custom fw-semibold"><span>${data.update_user ?? ""}</span></span>
+                    <span class="text-capitalize text-start text-prm-custom fw-semibold"><span>${data.update_user ?? ""}</span></span>
                     <span class="text-muted">${data.updated_at ?? ""}</span>
                 </div>`;
             },
