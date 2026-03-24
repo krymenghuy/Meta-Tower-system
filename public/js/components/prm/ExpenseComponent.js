@@ -21,16 +21,16 @@ var ExpenseComponent = (() => {
             data: (data) => `<span class="text-prm-custom">${data.expense_no}</span>`,
         },
         {
+            title: "Expense Date",
+            className: "align-middle",
+            data: (data) => `<span class="text-prm-custom">${data.expense_date}</span>`,
+        }, 
+        {
             title: "Vendor",
             className: "align-middle",
             data: (data) => `<span class="text-prm-custom">${data.vendor_name}</span>`,
         },
         {
-            title: "Date",
-            className: "align-middle",
-            data: (data) => `<span class="text-prm-custom">${data.expense_date}</span>`,
-        }, 
-         {
             title: "Ref No",
             className: "align-middle",
             data: (data) => `<span class="text-prm-custom">${data.reference_no}</span>`,
