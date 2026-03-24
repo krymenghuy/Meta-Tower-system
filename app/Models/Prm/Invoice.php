@@ -137,12 +137,11 @@ class Invoice extends VSModel
 
                 $baseAmount = $qty * $price;
 
-                // === FIXED CALCULATION (your requested example) ===
                 $discountValue   = (float)($item['discount'] ?? $item['special_discount_value'] ?? 0);
                 $discountType    = $item['special_discount_type'] ?? 'percent';
                 $taxRate         = (float)($item['tax_rate'] ?? 0);
 
-                // Step 1: Apply discount (10% or $10)
+               
                 if ($discountType === 'percent') {
                     $discountAmount = $baseAmount * ($discountValue / 100);
                 } else {
@@ -150,10 +149,8 @@ class Invoice extends VSModel
                 }
                 $afterDiscount = $baseAmount - $discountAmount;
 
-                // Step 2: Apply tax on the discounted amount (10%)
                 $taxAmount = $afterDiscount * ($taxRate / 100);
 
-                // Final net amount
                 $finalAmount = $afterDiscount + $taxAmount;
 
                 $amount = round($finalAmount, 2);

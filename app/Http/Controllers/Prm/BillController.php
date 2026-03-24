@@ -20,18 +20,18 @@ class BillController extends Controller
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
-        $id = $req->id ?? $req->vendor_id;
+        $id = $req->id ?? $req->bill_id;
         $bill = new Bill($id, $ss);
         $res = $bill->saveBill($req->all());
         return JDV::raw($res);
     }
-     public function getListPaginate(Request $req){
+     public function getListBill(Request $req){
         $ss = XAuthService::verifyAuth($req, -1);
         if($ss->status_code !==200){
             return JDV::raw($ss);
         }
        
-        return JDV::result($this->bills->getListPaginate($req->all(),$ss));
+        return JDV::result($this->bills->getListBill($req->all(),$ss));
     }
 
     public function billDetails(Request $req){
