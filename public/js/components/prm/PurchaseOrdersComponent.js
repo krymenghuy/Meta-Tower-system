@@ -155,45 +155,23 @@ var PurchaseOrdersComponent = (() => {
     };
 
     const showIncompleteReceiveRemarkDialog = ({ poId, triggerEl, onConfirmed }) => {
-        let incompleteReceiveDialog = mThis._incompleteReceiveDialog;
-        incompleteReceiveDialog = incompleteReceiveDialog || new GeneralDialog({
-            cssClass: 'modal-lg vs-modal',
-            backdrop: 'static',
-            createContent: () => `
-                <div class="py-2">
-                    <label class="form-label fw-bold fs-2 mb-3">Remarks</label>
-                    <textarea
-                        name="remarks"
-                        class="form-control data-input"
-                        data-field="remarks"
-                        rows="5"
-                        placeholder=""></textarea>
-                </div>
-            `,
-            onShow: (dlg) => {
-                const titleEl = dlg.divModal && dlg.divModal.querySelector('.modal-title');
-                if (titleEl) titleEl.innerHTML = '<h2 class="text-prm-custom text-start fw-bold">Confirm Receive</h2>';
-                if (dlg.controls.remarks) dlg.controls.remarks.value = '';
+        InputBox.resetInstance('confirmReceivePopup');
+        InputBox.show({
+            title: 'Confirm Receive',
+            instanceKey: 'confirmReceivePopup',
+            columns: 2,
+            fields: [
+                { name: 'remarks', label: 'Remarks', type: 'textarea', required: true, colSpan: 2 }
+            ],
+            onOpen: (ibMe) => {
+                if (ibMe.controls.remarks) ibMe.controls.remarks.value = '';
             },
-            buttons: [
-                {
-                    label: 'Cancel',
-                    cssClass: 'btn btn-secondary',
-                    click: (dlg) => dlg.hide(false)
-                },
-                {
-                    label: '<span>Confirm</span>',
-                    cssClass: 'btn btn-primary',
-                    click: (dlg, btn) => {
-                        const remarks = String(dlg.controls.remarks?.value || '').trim();
-                        if (!remarks) return cv_interact.warning('Please enter remarks.');
-                        if (typeof onConfirmed === 'function') onConfirmed({ remarks, btn, dlg });
-                    }
-                }
-            ]
+            onConfirm: (data, btn, ibMe) => {
+                const remarks = String(data.remarks || '').trim();
+                if (!remarks) return cv_interact.warning('Please enter remarks.');
+                if (typeof onConfirmed === 'function') onConfirmed({ remarks, btn, dlg: ibMe });
+            }
         });
-        mThis._incompleteReceiveDialog = incompleteReceiveDialog;
-        incompleteReceiveDialog.show({ id: poId, btn: triggerEl });
     };
 
     /** Current line row from ItemsView (by purchase_order_items.id or table row index). */
@@ -672,7 +650,8 @@ var PurchaseOrdersComponent = (() => {
                                     }, remarkBtn).then((res) => {
                                         if (res.status_code === 200) {
                                             cv_interact.success(res.message || 'Purchase order updated.');
-                                            dlg.hide(true);
+                                            if (dlg && typeof dlg.close === 'function') dlg.close();
+                                            else if (dlg && typeof dlg.hide === 'function') dlg.hide(true);
                                             me.hide(true);
                                             if (mThis.PoListView && mThis.getFilterData) {
                                                 mThis.PoListView.showPage(mThis.getFilterData());
