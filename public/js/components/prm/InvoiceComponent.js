@@ -471,7 +471,7 @@ const InvoiceDialog = (() => {
     let availableItem = [];
 
     const self = {};
-    self.show = (op = {}) => {
+    self.show = op => {
         dlg =
             dlg ||
             new GeneralDialog({
@@ -535,8 +535,8 @@ const InvoiceDialog = (() => {
 
                 contentCreated: me => {
                     me.controls = me.controls || {};
-                    const btn_close = me.divModal.querySelector('.close');
-                    if(btn_close) btn_close.classList.add('d-none');
+                    const btn_close = me.divModal.querySelector(".close");
+                    if (btn_close) btn_close.classList.add("d-none");
                     const allInputs = me.divModal.querySelectorAll(
                         ".data-input, input, select, textarea"
                     );
@@ -1270,11 +1270,68 @@ const InvoiceDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    // 1. Reset Internal State Variables
                     availableItem = data.services || [];
+                    me._selectedTenantId = null;
+                    me._tenantData = null;
+                    me._tenantSpaces = [];
+                    me._tenantMonths = [];
+
+                    // 2. Clear Standard Inputs & Textareas
+                    if (me.controls) {
+                        Object.values(me.controls).forEach(el => {
+                            if (
+                                el &&
+                                (el.tagName === "INPUT" ||
+                                    el.tagName === "TEXTAREA")
+                            ) {
+                                el.value = "";
+                            }
+                        });
+
+                        // 3. FIX: Clear Room/Space Dropdown
+                        if (me.controls.space) {
+                            // Empty the actual HTML select
+                            me.controls.space.innerHTML =
+                                '<option value="">-- Select Room / Space --</option>';
+                            me.controls.space.value = "";
+
+                            // Trigger 'change' so custom plugins (like Select2) update their UI
+                            const event = new Event("change", {
+                                bubbles: true
+                            });
+                            me.controls.space.dispatchEvent(event);
+
+                            // If you are explicitly using Select2, uncomment the line below:
+                            // $(me.controls.space).val(null).trigger('change');
+                        }
+                    }
+
+                    // 4. Reset Search Components
+                    if (me.searchTenant) {
+                        me.searchTenant.reset("");
+                    }
+
+                    // 5. Clear the Items Table/Grid
+                    if (me.itemsView) {
+                        me.itemsView.setData([]);
+                    }
+
+                    // 6. Handle Edit/Modify Logic
                     me.detail = op.id ? data.invoice_details || {} : {};
 
+                    // If modifying an existing invoice, re-populate the fields
+                    if (op.id && data.invoice_details) {
+                        const d = data.invoice_details;
+                        // The GeneralDialog usually handles basic mapping via data-field,
+                        // but ensure custom logic for tenant/space triggers here if needed.
+                    }
+
+                    // 7. Refresh dynamic UI components
                     setTimeout(() => {
-                        if (me.populateItemDropdown) me.populateItemDropdown();
+                        if (me.populateItemDropdown) {
+                            me.populateItemDropdown();
+                        }
                     }, 300);
                 },
                 prepareFormOptions: {
@@ -1287,10 +1344,20 @@ const InvoiceDialog = (() => {
                     }
                 },
 
-                onClose: (me) => {
-                    console.log(22,me);
+                onClose: me => {
 
-                    me.itemsView.setData(null);
+                    if (me.controls && me.controls.space) {
+                        me.controls.space.innerHTML =
+                            '<option value="">-- Select Room / Space --</option>';
+                    }
+
+                    if (me.searchTenant) {
+                        me.searchTenant.reset("");
+                    }
+
+                    if (me.itemsView) {
+                        me.itemsView.setData([]);
+                    }
                 },
 
                 buttons: [
@@ -1299,7 +1366,6 @@ const InvoiceDialog = (() => {
                         cssClass: "btn btn-secondary",
                         click: me => {
                             me.itemsView.setData(null);
-
                             me.hide(false);
                         }
                     },
